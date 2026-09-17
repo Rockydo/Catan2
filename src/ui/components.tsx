@@ -35,7 +35,15 @@ export function GoodIcon({ good, size = 24 }: { good: Good; size?: number }) {
 
   return <ResourceIcon good={good} size={size} />;
 }
-export function Cost({ cost, available }: { cost: Stock; available?: Stock }) {
+export function Cost({
+  cost,
+  available,
+  payment,
+}: {
+  cost: Stock;
+  available?: Stock;
+  payment?: Stock;
+}) {
   useLocale();
 
   return (
@@ -54,15 +62,17 @@ export function Cost({ cost, available }: { cost: Stock; available?: Stock }) {
             key={g}
             className={
               available &&
-              (available[g] ?? 0) +
-                (RAW_SUBSTITUTES[g]
-                  ? Math.max(
-                      0,
-                      (available[RAW_SUBSTITUTES[g]!] ?? 0) -
-                        (cost[RAW_SUBSTITUTES[g]!] ?? 0),
-                    )
-                  : 0) <
-                cost[g]!
+              (payment
+                ? (available[g] ?? 0) < (payment[g] ?? 0)
+                : (available[g] ?? 0) +
+                    (RAW_SUBSTITUTES[g]
+                      ? Math.max(
+                          0,
+                          (available[RAW_SUBSTITUTES[g]!] ?? 0) -
+                            (cost[RAW_SUBSTITUTES[g]!] ?? 0),
+                        )
+                      : 0) <
+                  cost[g]!)
                 ? "cost-shortage"
                 : undefined
             }
@@ -162,6 +172,31 @@ export function GoodsPicker({
     </div>
   );
 }
+export function GoldPaymentNotice({
+  cost,
+  payment,
+}: {
+  cost: Stock;
+  payment: Stock;
+}) {
+  useLocale();
+  return (
+    <>
+      {(["gold", "goldbars"] as const).map((good) => {
+        const used = (payment[good] ?? 0) - (cost[good] ?? 0);
+        return used > 0 ? (
+          <small className="fish-payment" key={good}>
+            {tx(
+              good === "gold"
+                ? "Uses {0} Gold for missing raw resources."
+                : "Uses {0} Gold bars for missing processed goods.",
+            ).replace("{0}", String(used))}
+          </small>
+        ) : null;
+      })}
+    </>
+  );
+}
 export function ActionButton({
   game,
   command,
@@ -210,6 +245,7 @@ export function ActionButton({
             ) : null;
           }),
       )}
+      {payment && cost && <GoldPaymentNotice cost={cost} payment={payment} />}
     </button>
   );
 }

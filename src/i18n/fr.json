@@ -1656,5 +1656,7 @@
   "· {0}": "· {0}",
   "{0}: +{1}": "{0} : +{1}",
   "Recruit {0} {1}": "Recruter {0} {1}",
-  "Launch {0} {1}": "Mettre à l’eau {0} {1}"
+  "Launch {0} {1}": "Mettre à l’eau {0} {1}",
+  "Uses {0} Gold for missing raw resources.": "Utilise {0} Or pour les ressources brutes manquantes.",
+  "Uses {0} Gold bars for missing processed goods.": "Utilise {0} Lingots d’or pour les produits transformés manquants."
 }

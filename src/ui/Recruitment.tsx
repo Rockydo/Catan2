@@ -1,3 +1,4 @@
+import { GoldPaymentNotice } from "./components";
 import { localize as tx, useLocale } from "../i18n";
 import { affordable, recipePayment } from "../game/selectors";
 import { useState } from "react";
@@ -355,7 +356,15 @@ export function Recruitment({
                     {tx(naval ? "Launch" : "Recruit")}
                     {tx(count > 1 ? ` ×${count}` : "")}
                   </span>
-                  <Cost cost={cost} available={inventory(s, viewer)} />
+                  <Cost
+                    cost={cost}
+                    available={inventory(s, viewer)}
+                    payment={recipePayment(s, cost, viewer)}
+                  />
+                  <GoldPaymentNotice
+                    cost={cost}
+                    payment={recipePayment(s, cost, viewer)}
+                  />
                 </button>
                 {tx(
                   !result.ok && (

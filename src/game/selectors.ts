@@ -575,6 +575,25 @@ export function recipePayment(s: Game, cost: Stock, p = s.active): Stock {
       out[alternate] = (out[alternate] ?? 0) + used;
     }
   }
+  // Reserve any explicitly requested currency before covering other shortages.
+  // One shared budget per group prevents spending the same Gold twice.
+  for (const [goods, currency] of [
+    [RAW, "gold"],
+    [PROCESSED, "goldbars"],
+  ] as const) {
+    let available = Math.max(0, (stock[currency] ?? 0) - (out[currency] ?? 0));
+    for (const good of goods) {
+      if (good === currency || !available) continue;
+      const used = Math.min(
+        available,
+        Math.max(0, (out[good] ?? 0) - (stock[good] ?? 0)),
+      );
+      if (!used) continue;
+      out[good] = (out[good] ?? 0) - used;
+      out[currency] = (out[currency] ?? 0) + used;
+      available -= used;
+    }
+  }
   return out;
 }
 export function bankRate(
