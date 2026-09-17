@@ -29,6 +29,7 @@ import {
   townThreats,
   threatPower,
   townGuardPower,
+  urgentTownDefense,
   minimumFieldPower,
   campaignPowerTarget,
   conquestDrive,
@@ -620,7 +621,14 @@ export function economyProjects(s: Game): Project[] {
       ),
       near = townThreats(s, t).filter((u) => warTarget(s, u.owner)),
       danger = threatPower(s, near, tiles),
-      protectedPower = townGuardPower(s, t);
+      protectedPower = townGuardPower(s, t),
+      defendNow = urgentTownDefense(
+        s,
+        t,
+        danger,
+        protectedPower,
+        militaryNeeded,
+      );
     if (besieged(s, t.id)) continue;
     if (t.level < 4) {
       const cost = effectiveCost(s, COSTS[CITY_RECIPES[t.level + 1]], "civic");
@@ -708,7 +716,7 @@ export function economyProjects(s: Game): Project[] {
       ((!strandedRegion ||
         localForce.length < Math.max(2, Math.ceil(towns.length / 2))) &&
         ourPower < militaryNeeded) ||
-      danger > protectedPower ||
+      defendNow ||
       coastalThreat ||
       s.players[s.active].bonuses.recruits.length
     ) {
@@ -735,6 +743,14 @@ export function economyProjects(s: Game): Project[] {
                 (b) => b.tier === tier && b.classes.includes(kind),
               ),
               cost = free ? {} : unitCost(kind, tier);
+            if (
+              strandedRegion &&
+              localForce.length >= Math.max(2, Math.ceil(towns.length / 2)) &&
+              !defendNow &&
+              kind !== "artillery" &&
+              !free
+            )
+              continue;
             const neededArtillery =
               coastalThreat ||
               (!!target &&
@@ -752,18 +768,17 @@ export function economyProjects(s: Game): Project[] {
             )
               continue;
             const favored = UNIT_INFO[kind].family === TERRAIN[terrain].family;
-            const urgency =
-              danger > protectedPower
-                ? 35 + danger * 3
-                : ourPower < minimumFieldPower(s)
-                  ? 35
-                  : ourPower < militaryNeeded
-                    ? round > 18
-                      ? 13 * drive
-                      : round > 7
-                        ? 10 * drive
-                        : 4 * drive
-                    : 0;
+            const urgency = defendNow
+              ? 35 + danger * 3
+              : ourPower < minimumFieldPower(s)
+                ? 35
+                : ourPower < militaryNeeded
+                  ? round > 18
+                    ? 13 * drive
+                    : round > 7
+                      ? 10 * drive
+                      : 4 * drive
+                  : 0;
             const tierEfficiency = tier / (1 + stockValue(cost, values) / 10),
               score =
                 (urgency + (ourPower < militaryNeeded ? resistance * 30 : 0)) *
@@ -864,7 +879,16 @@ export function economyProjects(s: Game): Project[] {
               cost = free ? {} : shipCost(kind, tier);
             const need = info.capacity
               ? overseas
-                ? Math.max(0, Math.min(8, localLand.length) - berths)
+                ? Math.max(
+                    0,
+                    Math.min(
+                      localLand.length,
+                      Math.max(
+                        4,
+                        Math.ceil(localLand.length * (0.5 + resistance * 0.35)),
+                      ),
+                    ) - berths,
+                  )
                 : 0
               : Math.max(0, escortTarget - escortPower);
             const urgent =
@@ -1083,6 +1107,29 @@ export function economyProjects(s: Game): Project[] {
   const needsEscape = mayExplore && isCornered(s);
   const catchUp =
     mayExplore && strengthGap >= 0.25 && (expansionRoom < 2 || missingRaw >= 3);
+  // Expeditions can create a new approach at a blocked border. Only public
+  // geography and visible enemies are scored; unseen terrain is never assumed.
+  const bypassSites = new Set<string>();
+  if (mayExplore && blockedFront && round >= 4) {
+    for (const unit of units.filter(
+      (u) => !u.carrier && !collector(u) && ready(s, u),
+    )) {
+      if (!unit.naval && hasLandObjective(s, unit.tile)) continue;
+      if (
+        !enemyTowns.some(
+          (t) =>
+            leaderPressure(s, t.owner) >= 1.5 &&
+            s.vertices[t.vertex].tiles.some(
+              (tile) => distance(unit.tile, tile) <= 5,
+            ),
+        )
+      )
+        continue;
+      for (const vertex of s.tiles[unit.tile].vertices)
+        if (unknownAtVertex(s, vertex).length) bypassSites.add(vertex);
+    }
+  }
+  const warBypass = bypassSites.size > 0;
   const explorationStart = needsEscape ? 3 : catchUp ? 4 : 6;
   const explorationDue =
     round >= explorationStart &&
@@ -1125,6 +1172,7 @@ export function economyProjects(s: Game): Project[] {
     !s.players[s.active].expeditionUsed &&
     (s.players[s.active].bonuses.expedition ||
       explorationDue ||
+      warBypass ||
       (round >= 6 &&
         expansionRoom < 2 &&
         blockedFront &&
@@ -1138,6 +1186,7 @@ export function economyProjects(s: Game): Project[] {
           vertex,
           score:
             unknownAtVertex(s, vertex).length * 2 +
+            (bypassSites.has(vertex) ? 35 * (1 + resistance) : 0) +
             (Object.values(s.towns).some(
               (t) =>
                 warTarget(s, t.owner) &&
@@ -1166,6 +1215,7 @@ export function economyProjects(s: Game): Project[] {
               (expansionRoom < 2 ? 12 : 0) +
               (blockedFront ? 9 : 0) +
               (explorationDue ? 8 : 0) +
+              (bypassSites.has(site.vertex) ? 25 * (1 + resistance) : 0) +
               (needsEscape ? 18 : catchUp ? 12 * strengthGap : 0) +
               site.score) *
               (1 + (tier - 1) * 0.25) *
@@ -1364,13 +1414,19 @@ function chooseEconomy(s: Game): Command {
   const fieldPower = ownPieces(s)
     .filter((u) => !u.naval && !collector(u) && u.kind !== "artillery")
     .reduce((n, u) => n + u.tier, 0);
-  const endangered = ownTowns(s).filter(
-    (t) =>
+  const defenseBudget = campaignPowerTarget(s);
+  const endangered = ownTowns(s).filter((t) =>
+    urgentTownDefense(
+      s,
+      t,
       threatPower(
         s,
         townThreats(s, t).filter((u) => warTarget(s, u.owner)),
         landAtVertex(s, t.vertex),
-      ) > townGuardPower(s, t),
+      ),
+      townGuardPower(s, t),
+      defenseBudget,
+    ),
   );
   const reserveNeeded =
     fieldPower < minimumFieldPower(s) ||
@@ -1574,6 +1630,13 @@ function hasLandObjective(s: Game, origin: string): boolean {
         ? neighbors(u.tile).some((id) => landRegions(s).get(id) === region)
         : landRegions(s).get(u.tile) === region),
   );
+  const fieldGroups = new Map<string, Piece[]>();
+  for (const unit of available) {
+    const key = unit.carrier
+      ? (s.pieces[unit.carrier]?.tile ?? unit.tile)
+      : unit.tile;
+    fieldGroups.set(key, [...(fieldGroups.get(key) ?? []), unit]);
+  }
   const result = Object.values(s.towns).some((t) => {
     if (!warTarget(s, t.owner)) return false;
     const tiles = landAtVertex(s, t.vertex);
@@ -1592,8 +1655,10 @@ function hasLandObjective(s: Game, origin: string): boolean {
     // strand every unit on this island. Seek another beach or an expedition.
     return (
       !defenders.length ||
-      tiles.some(
-        (tile) => power(s, available, tile) > threatPower(s, defenders, [tile]),
+      tiles.some((tile) =>
+        [...fieldGroups.values()].some(
+          (force) => power(s, force, tile) > threatPower(s, defenders, [tile]),
+        ),
       )
     );
   });
@@ -1613,7 +1678,10 @@ function townOperation(s: Game): Command | null {
       const siege = s.sieges[`${s.active}:${town.id}`];
       if (siege?.last === s.players[s.active].turns) continue;
       if (siege?.raided != null) {
-        const ids = group.filter((u) => fresh(s, u)).map((u) => u.id);
+        const ids = group
+          .filter((u) => fresh(s, u))
+          .slice(0, 1)
+          .map((u) => u.id);
         const destroy = { type: "destroy-town", town: town.id, ids };
         if (ids.length && check(s, destroy)) return destroy;
       }
@@ -1650,8 +1718,34 @@ function townOperation(s: Game): Command | null {
           if (check(s, dismantle)) return dismantle;
         }
       }
-      const action = { type: "siege", town: town.id, ids };
-      if (ids.length && check(s, action)) return action;
+      // Siege strength is independent of army size. Keep the slowest cheap
+      // operator and only equipment that actually shortens this siege.
+      const ordered = [...eligible].sort(
+        (a, b) => speed(a) - speed(b) || a.tier - b.tier,
+      );
+      const crew: Piece[] = ordered.length ? [ordered[0]] : [];
+      for (const unit of ordered
+        .slice(1)
+        .sort(
+          (a, b) =>
+            (b.kind === "artillery" ? b.tier : 0) +
+            (b.guildSiege ?? 0) -
+            (a.kind === "artillery" ? a.tier : 0) -
+            (a.guildSiege ?? 0),
+        )) {
+        if (siegeRequirement(s, town, crew) <= (siege?.progress ?? 0)) break;
+        if (
+          siegeRequirement(s, town, [...crew, unit]) <
+          siegeRequirement(s, town, crew)
+        )
+          crew.push(unit);
+      }
+      const action = {
+        type: "siege",
+        town: town.id,
+        ids: crew.map((u) => u.id),
+      };
+      if (crew.length && check(s, action)) return action;
     }
   }
   return null;
@@ -1929,6 +2023,12 @@ function chooseMilitary(s: Game): Command {
   const choices: { action: Command; score: number }[] = [];
   for (const original of groups) {
     const variants = [original];
+    if (original.length > 1) {
+      const keeper = [...original].sort(
+        (a, b) => speed(a) - speed(b) || points(a) - points(b),
+      )[0];
+      variants.push(original.filter((u) => u.id !== keeper.id));
+    }
     if (!original[0].naval && original.length > 1) {
       const fastest = Math.max(...original.map(speed));
       const mobile = original.filter((u) => speed(u) === fastest);
@@ -1977,7 +2077,14 @@ function chooseMilitary(s: Game): Command {
       const fast = original.filter((u) => u.kind === "cavalry");
       if (fast.length) variants.push(fast);
     }
+    const seenVariants = new Set<string>();
     for (const group of variants) {
+      const signature = group
+        .map((u) => u.id)
+        .sort()
+        .join(",");
+      if (seenVariants.has(signature)) continue;
+      seenVariants.add(signature);
       const ids = group.map((u) => u.id),
         origin = group[0].tile,
         naval = group[0].naval;
@@ -1988,7 +2095,13 @@ function chooseMilitary(s: Game): Command {
             siege.owner === s.active &&
             s.towns[siege.town] &&
             warTarget(s, s.towns[siege.town].owner) &&
-            s.vertices[s.towns[siege.town].vertex].tiles.includes(origin),
+            s.vertices[s.towns[siege.town].vertex].tiles.includes(origin) &&
+            !s.vertices[s.towns[siege.town].vertex].tiles.some((tile) =>
+              piecesAt(s, tile, false).some(
+                (u) =>
+                  u.owner === s.active && !collector(u) && !ids.includes(u.id),
+              ),
+            ),
         )
       )
         continue;
@@ -1999,7 +2112,13 @@ function chooseMilitary(s: Game): Command {
             siege.owner === s.active &&
             s.towers[siege.vertex] &&
             warTarget(s, s.towers[siege.vertex].owner) &&
-            s.vertices[siege.vertex].tiles.includes(origin),
+            s.vertices[siege.vertex].tiles.includes(origin) &&
+            !s.vertices[siege.vertex].tiles.some((tile) =>
+              piecesAt(s, tile, false).some(
+                (u) =>
+                  u.owner === s.active && !collector(u) && !ids.includes(u.id),
+              ),
+            ),
         )
       )
         continue;
@@ -2069,41 +2188,45 @@ function chooseMilitary(s: Game): Command {
       } else {
         const defense = allies.find(
           (t) =>
+            landAtVertex(s, t.vertex).some(
+              (tile) =>
+                distance(origin, tile) <= Math.max(...group.map(speed)) * 2,
+            ) &&
             threatPower(
               s,
               townThreats(s, t).filter((u) => warTarget(s, u.owner)),
               landAtVertex(s, t.vertex),
             ) > townGuardPower(s, t),
         );
-        objectives = defense
-          ? landAtVertex(s, defense.vertex)
-          : [
-              ...enemyTowns.flatMap((t) => landAtVertex(s, t.vertex)),
-              ...Object.values(s.routes)
-                .filter((r) => warTarget(s, r.owner))
-                .flatMap((r) =>
-                  (r.owner === crisis.leader && crisis.severity >= 0.2
-                    ? s.edges[r.edge].tiles
-                    : Object.keys(r.camps)
-                  ).filter((id) => s.tiles[id].resource !== "water"),
-                ),
-              ...Object.values(s.pieces)
-                .filter(
-                  (u) =>
-                    !u.naval &&
-                    !u.carrier &&
-                    warTarget(s, u.owner) &&
-                    power(s, group, u.tile) >
-                      power(
-                        s,
-                        piecesAt(s, u.tile, false).filter(
-                          (v) => !friendly(s, v.owner, s.active),
-                        ),
-                        u.tile,
-                      ),
-                )
+        objectives = [
+          ...(defense ? landAtVertex(s, defense.vertex) : []),
+          ...enemyTowns.flatMap((t) => landAtVertex(s, t.vertex)),
+          ...Object.values(s.routes)
+            .filter((r) => warTarget(s, r.owner))
+            .flatMap((r) =>
+              (r.owner === crisis.leader && crisis.severity >= 0.2
+                ? s.edges[r.edge].tiles
+                : Object.keys(r.camps)
+              ).filter((id) => s.tiles[id].resource !== "water"),
+            ),
+          ...[
+            ...new Set(
+              Object.values(s.pieces)
+                .filter((u) => !u.naval && !u.carrier && warTarget(s, u.owner))
                 .map((u) => u.tile),
-            ];
+            ),
+          ].filter(
+            (tile) =>
+              power(s, group, tile) >
+              power(
+                s,
+                piecesAt(s, tile, false).filter(
+                  (v) => !friendly(s, v.owner, s.active),
+                ),
+                tile,
+              ),
+          ),
+        ];
       }
       if (group.every((u) => u.kind === "artillery")) {
         const targets = [
@@ -2143,6 +2266,7 @@ function chooseMilitary(s: Game): Command {
           ),
         ]),
       ].filter((target) => {
+        if (target === origin) return false;
         const foes = piecesAt(s, target, naval).filter(
           (u) => !friendly(s, u.owner, s.active),
         );
@@ -2152,11 +2276,13 @@ function chooseMilitary(s: Game): Command {
             power(s, group, target) > power(s, foes, target))
         );
       });
+      const weights = new Map<string, number>();
       const objectiveWeight = (target: string) => {
+        if (weights.has(target)) return weights.get(target)!;
         const near = naval ? neighbors(target) : [target];
-        return Math.max(
+        const value = Math.max(
           1,
-          Math.min(2, denialAt(target, group)),
+          Math.min(5, denialAt(target, group) * 2),
           ...enemyTowns
             .filter((t) =>
               landAtVertex(s, t.vertex).some((id) => near.includes(id)),
@@ -2169,7 +2295,10 @@ function chooseMilitary(s: Game): Command {
                 );
               return (
                 leaderPressure(s, t.owner) *
-                (protects(s, t) ? 0.2 : 1.6) *
+                (protects(s, t)
+                  ? 0.2
+                  : (2.5 + Math.min(3, sumStock(t.stock) / 20)) /
+                    (1 + siegeRequirement(s, t, group) * 0.35)) *
                 (1 + 0.8 / Math.max(1, ownTowns(s, t.owner).length)) *
                 (1 +
                   Math.min(2, new Set(helpers.map((u) => u.owner)).size) * 0.3)
@@ -2182,7 +2311,22 @@ function chooseMilitary(s: Game): Command {
                 Object.keys(r.camps).some((id) => near.includes(id)),
             )
             .map((r) => leaderPressure(s, r.owner)),
+          ...allies
+            .filter((t) => landAtVertex(s, t.vertex).includes(target))
+            .map((t) => {
+              const danger = threatPower(
+                s,
+                townThreats(s, t),
+                landAtVertex(s, t.vertex),
+              );
+              return danger > townGuardPower(s, t) &&
+                distance(origin, target) <= Math.max(...group.map(speed)) * 2
+                ? 3
+                : 0;
+            }),
         );
+        weights.set(target, value);
+        return value;
       };
       const goalPaths = objectives
         .map((target) => ({
@@ -2246,13 +2390,20 @@ function chooseMilitary(s: Game): Command {
             leaderPressure(s, foes[0].owner) *
             drive;
         } else if (chosen) {
-          const after = pathTo(s, to, chosen.target, naval, s.active);
-          if (after)
-            score =
-              ((chosen.path!.length - after.length) * 5 +
-                (!after.length ? 8 : 0)) *
-              drive *
-              objectiveWeight(chosen.target);
+          for (const goal of [
+            chosen,
+            ...goalPaths.filter((g) => g !== chosen).slice(0, 3),
+          ]) {
+            const after = pathTo(s, to, goal.target, naval, s.active);
+            if (after && after.length < goal.path!.length)
+              score = Math.max(
+                score,
+                ((goal.path!.length - after.length) * 5 +
+                  (!after.length ? 8 : 0)) *
+                  drive *
+                  objectiveWeight(goal.target),
+              );
+          }
         }
         if (!naval || blockade)
           score += (denialAt(to, group) - denialAt(origin, group)) * 10;

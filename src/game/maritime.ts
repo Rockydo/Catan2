@@ -65,6 +65,22 @@ export function harvestTiles(
   );
 }
 export function towerSites(s: Game, owner = s.active) {
+  const enemyTowns = new Set(
+    Object.values(s.towns)
+      .filter((t) => t.owner !== owner)
+      .map((t) => t.vertex),
+  );
+  const blocked = new Set(
+    Object.values(s.pieces)
+      .filter(
+        (u) =>
+          !u.naval &&
+          !u.carrier &&
+          u.kind !== "merchant" &&
+          !friendly(s, u.owner, owner),
+      )
+      .map((u) => u.tile),
+  );
   return Object.keys(s.vertices).filter((v) => {
     const existing = s.towers[v];
     if (existing && (existing.owner !== owner || existing.tier >= 4))
@@ -73,19 +89,8 @@ export function towerSites(s: Game, owner = s.active) {
       s.vertices[v].edges.some(
         (e) => s.routes[e]?.kind === "road" && s.routes[e].owner === owner,
       ) &&
-      !Object.values(s.towns).some(
-        (t) => t.vertex === v && t.owner !== owner,
-      ) &&
-      !s.vertices[v].tiles.some((tile) =>
-        Object.values(s.pieces).some(
-          (u) =>
-            u.tile === tile &&
-            !u.naval &&
-            !u.carrier &&
-            u.kind !== "merchant" &&
-            !friendly(s, u.owner, owner),
-        ),
-      )
+      !enemyTowns.has(v) &&
+      !s.vertices[v].tiles.some((tile) => blocked.has(tile))
     );
   });
 }

@@ -62,8 +62,9 @@ npm test                # Rules, AI and localization tests
 npm run test:coverage   # Same tests with coverage
 npx playwright install chromium firefox
 npm run test:e2e         # Chromium, Firefox and mobile-browser checks
-npm run test:soak        # Seeded AI campaigns
+npm run test:soak        # Seeded AI campaigns (5 factions by default)
 npm run test:stress      # Larger-map stress checks
+FACTIONS=10 SEEDS=1 ROUNDS=40 npm run test:soak  # Grand campaign audit
 npm run format:check
 npm run docs            # Refresh both Markdown rule references
 ```

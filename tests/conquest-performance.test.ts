@@ -82,3 +82,26 @@ describe("conquest priorities and lossless planning optimizations", () => {
     expect(chooseAIAction(weak).type).not.toBe("bombard");
   });
 });
+
+it("uses identical tower support inside a planning frame and never reuses it for a changed state", async () => {
+  const { power, bombardmentPower, withPlanningFrame } =
+    await import("../src/game/selectors");
+  const { s, gun } = coastalFixture();
+  const extra = piece(s, gun.tile, 0, "heavy", 2);
+  const vertex = s.tiles[gun.tile].vertices[0];
+  s.towers = { [vertex]: { id: "w9000", owner: 0, vertex, tier: 4 } };
+  const normal = power(s, [gun, extra], gun.tile);
+  const shell = bombardmentPower(s, [gun]);
+  withPlanningFrame(s, () => {
+    expect(power(s, [gun, extra], gun.tile)).toBe(normal);
+    expect(bombardmentPower(s, [gun])).toBe(shell);
+    const changed = structuredClone(s);
+    changed.towers = {};
+    expect(power(changed, [gun, extra], gun.tile)).toBe(normal - 4);
+  });
+  const changed = structuredClone(s);
+  changed.towers = {};
+  expect(
+    withPlanningFrame(changed, () => power(changed, [gun, extra], gun.tile)),
+  ).toBe(normal - 4);
+});

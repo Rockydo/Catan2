@@ -5,6 +5,7 @@ import {
   points,
   ownTowns,
   ownPieces,
+  piecesAt,
   income,
   power,
   pathTo,
@@ -275,16 +276,26 @@ export function townGuardPower(
   excluded: string[] = [],
 ): number {
   const tiles = landAtVertex(s, t.vertex);
-  return Object.values(s.pieces)
+  const leaving = new Set(excluded);
+  return tiles
+    .flatMap((tile) => piecesAt(s, tile, false))
     .filter((u) => friendly(s, u.owner, t.owner))
-    .filter(
-      (u) =>
-        !u.naval &&
-        !u.carrier &&
-        tiles.includes(u.tile) &&
-        !excluded.includes(u.id),
-    )
+    .filter((u) => !leaving.has(u.id))
     .reduce((n, u) => n + power(s, [u], u.tile), 0);
+}
+/** Maintain a delaying guard without spending an entire economy trying to
+ * match a stack far beyond the campaign budget. Transport and raids still need funding. */
+export function urgentTownDefense(
+  s: Game,
+  t: Town,
+  danger: number,
+  guards: number,
+  budget = campaignPowerTarget(s),
+): boolean {
+  return (
+    danger > guards &&
+    (guards < Math.min(6, t.level + 1) || danger <= budget * 1.5)
+  );
 }
 export function minimumFieldPower(s: Game): number {
   const turn = s.players[s.active].turns;
@@ -304,13 +315,26 @@ export function leavesTownExposed(
     const threats = townThreats(s, t).filter(
       (u) => !defeated.includes(u.id) && warTarget(s, u.owner, t.owner),
     );
-    return (
-      threatPower(s, threats, tiles) >
-      townGuardPower(
-        s,
-        t,
-        group.map((u) => u.id),
-      )
+    const danger = threatPower(s, threats, tiles);
+    const remaining = townGuardPower(
+      s,
+      t,
+      group.map((u) => u.id),
     );
+    if (danger <= remaining) return false;
+    const current = townGuardPower(s, t);
+    // If even the full garrison cannot hold, hoarding every unit cannot save
+    // it. Keep a delaying guard and allow counter-raids against the leader.
+    // A defensible town still requires enough troops to match the real threat.
+    const survivalThreat = threats.some(
+      (u) => leaderPressure(s, u.owner, t.owner) >= 1.5,
+    );
+    if (
+      survivalThreat &&
+      danger > current * 1.3 &&
+      remaining >= Math.max(1, current * 0.25)
+    )
+      return false;
+    return true;
   });
 }

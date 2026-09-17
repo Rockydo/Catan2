@@ -1,5 +1,17 @@
 # Release verification
 
+## Offensive AI review: 2026-09-18
+
+- 632 unit and localization tests pass across 47 files. Nine new warfare scenarios cover minimal raid crews, keeping a siege while surplus troops move, distant defense distractions, exposed economic targets, larger transport budgets, conquest around a land choke, border expeditions, transport funding under overwhelming pressure and island recruitment.
+- 30 focused browser checks pass on Chromium, Firefox and mobile, covering the AI worker, Grand campaign, siege inspection and bilingual guide. The 15 worker, Grand campaign and siege checks were repeated successfully after the final optimization.
+- The final 200-action late-game replay passes command validation and state invariants. Decision times on this machine were 38.5 ms median and 44.3 ms p95. The previous AI on the same starting save measured 54.7 ms and 74.3 ms, with different subsequent decisions. These are workload measurements, not general timing guarantees.
+- A separate optimization-only comparison reproduced all 200 commands and the same final game state. Caching tower support within the immutable planning frame and removing repeated stack, guard and tower-site scans reduced that revised planner’s median from 63.1 ms to 38.5 ms. Changed engine states do not reuse the cache.
+- A 40-action replay starting with 1,518 units also reproduces every command and final state after optimization. Median decision time fell from 305.2 ms to 48.5 ms, with p95 falling from 314.0 ms to 65.3 ms. This sample covers recruitment and ship funding decisions, including the military scans performed before them.
+- A time-bounded 10-faction campaign validates 14,019 commands through part of round 38 on 310 tiles, ending with 2,569 units. The final snapshot passes invariants and save/load validation. The run exercises 56 embarkations, 30 landings and nine expeditions; it was stopped for runtime and did not finish the planned 40 rounds. This is a regression sample, not proof of long-term balance.
+- Production build, formatting and diff checks pass. The English and French rules describe the revised target selection and use of detachments.
+
+Evidence is in the local, untracked `test-artifacts/aggressive-ai-*` files. The saved benchmark is a test fixture; the player’s live campaign was not changed.
+
 ## French localization and interactive rules
 
 - 597 engine and localization tests pass across 45 files.
@@ -255,7 +267,7 @@ npm ci
 npm run check
 npm run test:coverage
 npm run format:check
-SEEDS=16 ROUNDS=180 npm run test:soak
+FACTIONS=4 SEEDS=16 ROUNDS=180 npm run test:soak
 npm run test:stress
 # With npm start running:
 npm run test:http

@@ -48,6 +48,7 @@ interface PlanningIndex {
   tiles: Map<string, Piece[]>;
   stocks: Map<number, Stock>;
   nearest: Map<string, Town | undefined>;
+  towerSupport: Map<string, number>;
 }
 let planningIndex: PlanningIndex | undefined;
 export const ownTowns = (s: Game, p = s.active) => {
@@ -125,6 +126,11 @@ export const unitName = (u: Piece) =>
     ? shipStats(u.kind as ShipClass, u.tier).name
     : UNIT_INFO[u.kind as UnitClass].names[u.tier - 1];
 export const probability = (n: number) => (6 - Math.abs(7 - n)) / 36;
+function combatTowerPower(s: Game, owner: number, tile: string) {
+  return planningIndex?.source === s
+    ? (planningIndex.towerSupport.get(`${owner}/${tile}`) ?? 0)
+    : towerPower(s, owner, tile);
+}
 export function power(s: Game, units: Piece[], tile: string) {
   const family = TERRAIN[s.tiles[tile].resource].family;
   return units.reduce(
@@ -134,7 +140,7 @@ export function power(s: Game, units: Piece[], tile: string) {
         (!u.naval && UNIT_INFO[u.kind as UnitClass].family === family ? 2 : 1),
     units.some((u) => u.naval || points(u) > 0)
       ? [...new Set(units.map((u) => u.owner))].reduce(
-          (n, owner) => n + towerPower(s, owner, tile),
+          (n, owner) => n + combatTowerPower(s, owner, tile),
           0,
         )
       : 0,
@@ -144,7 +150,7 @@ export function power(s: Game, units: Piece[], tile: string) {
 export function bombardmentPower(s: Game, units: Piece[]) {
   return (
     units.reduce((n, u) => n + points(u) * 2, 0) +
-    (units.length ? towerPower(s, units[0].owner, units[0].tile) : 0)
+    (units.length ? combatTowerPower(s, units[0].owner, units[0].tile) : 0)
   );
 }
 export function bombardmentTargets(s: Game, ids: string[]): string[] {
@@ -516,7 +522,16 @@ export function withPlanningFrame<T>(source: Game, run: () => T): T {
     tiles: new Map(),
     stocks: new Map(),
     nearest: new Map(),
+    towerSupport: new Map(),
   };
+  for (const tower of Object.values(source.towers ?? {}))
+    for (const tile of source.vertices[tower.vertex].tiles) {
+      const key = `${tower.owner}/${tile}`;
+      index.towerSupport.set(
+        key,
+        (index.towerSupport.get(key) ?? 0) + tower.tier,
+      );
+    }
   for (const town of Object.values(source.towns)) {
     if (!index.towns.has(town.owner)) index.towns.set(town.owner, []);
     index.towns.get(town.owner)!.push(town);
