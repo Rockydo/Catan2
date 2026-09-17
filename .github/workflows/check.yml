@@ -1,0 +1,27 @@
+name: Game verification
+on: [push, pull_request]
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium firefox
+      - run: npm run format:check
+      - run: npm run build
+      - run: npm run test:coverage
+      - run: npm run test:e2e
+      - run: SEEDS=4 ROUNDS=120 npm run test:soak
+      - run: npm run test:stress
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: |
+            playwright-report/
+            coverage/

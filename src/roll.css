@@ -1,0 +1,635 @@
+/* The roll is a short presentation of an already validated, saved outcome. */
+.dice {
+  border: 1px solid transparent;
+  background: transparent;
+  border-radius: 8px;
+  padding: 4px 6px;
+  flex-shrink: 0;
+}
+button.dice:hover:not(:disabled) {
+  background: #fffbed;
+  border-color: #d2c5a3;
+}
+button.dice:disabled {
+  opacity: 1;
+  cursor: default;
+}
+.dice.is-rolling .dice-face {
+  animation: banner-rattle 0.16s ease-in-out infinite alternate;
+}
+.dice .dice-replay {
+  color: #617453;
+  margin-left: 3px;
+}
+.resource-chip {
+  position: relative;
+}
+.resource-gain {
+  position: absolute;
+  top: -7px;
+  right: 3px;
+  background: #356244;
+  color: #fff9df;
+  border: 1px solid #f3eacc;
+  border-radius: 8px;
+  padding: 1px 4px;
+  font-size: 9px;
+  font-weight: 750;
+  font-style: normal;
+  box-shadow: 0 2px 4px #18382625;
+  animation: harvest-enter 0.35s ease-out;
+  pointer-events: none;
+}
+.roll-experience {
+  position: absolute;
+  top: 78px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(620px, calc(100% - 32px));
+  max-height: calc(100% - 156px);
+  overflow: auto;
+  z-index: 6;
+  background: #f8f4e7;
+  color: #2d473b;
+  border: 1px solid #d1bf8f;
+  border-radius: 15px;
+  box-shadow:
+    0 18px 60px #062b3b70,
+    0 1px 0 #fff inset;
+  scrollbar-width: thin;
+  scrollbar-color: #adb79a #eeeada;
+}
+.roll-heading {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 18px 21px 12px;
+}
+.roll-owner {
+  width: 33px;
+  height: 39px;
+  display: grid;
+  place-items: center;
+  color: #fff9e5;
+  font: bold 19px Georgia;
+  clip-path: polygon(0 0, 100% 0, 100% 78%, 50% 100%, 0 78%);
+  flex-shrink: 0;
+  box-shadow: inset 0 2px 0 #ffffff44;
+}
+.roll-heading .eyebrow {
+  font-size: 9px;
+}
+.roll-heading h2 {
+  font:
+    25px Georgia,
+    serif;
+  margin: 5px 0 0;
+}
+.roll-heading h2 strong {
+  color: #a05929;
+  font-weight: normal;
+}
+.roll-close {
+  margin-left: auto;
+  align-self: flex-start;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid #d5ccb2;
+  background: #eee9d8;
+  color: #365245;
+  flex-shrink: 0;
+}
+.roll-close:hover {
+  background: #e1e5d2;
+}
+.dice-theatre {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  min-height: 143px;
+  margin: 0 13px 12px;
+  border: 1px solid #264d4d;
+  border-radius: 10px;
+  background: radial-gradient(ellipse at 50% 20%, #396863, #183f45 78%);
+  box-shadow:
+    inset 0 0 25px #082f3b70,
+    inset 0 0 0 4px #bba47518;
+  overflow: hidden;
+}
+.dice-rings {
+  position: absolute;
+  inset: -50px;
+  z-index: -1;
+  opacity: 0.3;
+  background: repeating-radial-gradient(
+    ellipse at center,
+    transparent 0 45px,
+    #a9c1ac55 46px,
+    transparent 47px 90px
+  );
+  transform: rotate(-15deg);
+}
+.dice-pair {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  padding: 10px 0;
+}
+.roll-die {
+  --size: 56px;
+  width: var(--size);
+  height: var(--size);
+  position: relative;
+  perspective: 600px;
+  margin: 10px 0;
+}
+.roll-die::after {
+  content: "";
+  position: absolute;
+  width: 72px;
+  height: 20px;
+  left: -8px;
+  bottom: -21px;
+  border-radius: 50%;
+  background: #071f2c75;
+  filter: blur(5px);
+  z-index: -1;
+}
+.die-rotor {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transform: rotateX(-16deg) rotateY(20deg) var(--landing);
+}
+.die-plane {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  backface-visibility: hidden;
+  border-radius: 9px;
+  background: #eddfb7;
+}
+.die-plane .dice-face {
+  width: 100%;
+  height: 100%;
+  display: block;
+  filter: none;
+}
+.face-1 {
+  transform: translateZ(calc(var(--size) / 2));
+}
+.face-2 {
+  transform: rotateY(90deg) translateZ(calc(var(--size) / 2));
+}
+.face-3 {
+  transform: rotateX(90deg) translateZ(calc(var(--size) / 2));
+}
+.face-4 {
+  transform: rotateX(-90deg) translateZ(calc(var(--size) / 2));
+}
+.face-5 {
+  transform: rotateY(-90deg) translateZ(calc(var(--size) / 2));
+}
+.face-6 {
+  transform: rotateY(180deg) translateZ(calc(var(--size) / 2));
+}
+.second .die-rotor {
+  transform: rotateX(-12deg) rotateY(-18deg) var(--landing);
+}
+.is-rolling .die-rotor {
+  animation: dice-tumble 1s cubic-bezier(0.16, 0.67, 0.28, 1) both;
+}
+.is-rolling .second .die-rotor {
+  animation-name: dice-tumble-second;
+  animation-delay: 0.08s;
+}
+.is-rolling .roll-die::after {
+  animation: dice-shadow 1s ease-out;
+}
+.roll-result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 98px;
+  color: #fff0c4;
+}
+.roll-result b {
+  font:
+    64px Georgia,
+    serif;
+  line-height: 1;
+  text-shadow: 0 3px 4px #133639;
+}
+.roll-result span {
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  margin-top: 8px;
+}
+.is-rolling .roll-result {
+  display: none;
+}
+.roll-anticipation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1px 22px 18px;
+  gap: 8px;
+}
+.roll-anticipation > span {
+  font:
+    italic 13px Georgia,
+    serif;
+  color: #606b54;
+}
+.roll-anticipation button,
+.harvest-footer button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  background: #eceedd;
+  border: 1px solid #c8cfb8;
+  color: #425d43;
+  border-radius: 6px;
+  padding: 7px 9px;
+  font-size: 10px;
+  flex-shrink: 0;
+}
+.harvest-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px 12px;
+  gap: 8px;
+}
+.harvest-heading > span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.harvest-heading small {
+  font-size: 10px;
+  color: #5e6b53;
+}
+.harvest-players {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+  padding: 0 15px;
+}
+.harvest-player {
+  min-width: 0;
+  border: 1px solid #d6d7c3;
+  border-left: 3px solid var(--realm);
+  border-radius: 8px;
+  background: #fffdf5;
+  padding: 10px;
+}
+.harvest-player-heading {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.harvest-player-heading i {
+  width: 22px;
+  height: 25px;
+  background: var(--realm);
+  color: #fff8e3;
+  display: grid;
+  place-items: center;
+  font:
+    13px Georgia,
+    serif;
+  clip-path: polygon(0 0, 100% 0, 100% 80%, 50% 100%, 0 80%);
+}
+.harvest-player-heading b {
+  font-size: 12px;
+  flex: 1;
+}
+.harvest-player-heading > span {
+  font-size: 17px;
+  color: #386343;
+  font-weight: 750;
+}
+.harvest-goods {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding-top: 8px;
+}
+.harvest-good {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #f4f2e5;
+  border: 1px solid #e0decd;
+  padding: 3px 5px;
+  border-radius: 5px;
+  font-size: 10px;
+  white-space: nowrap;
+}
+.harvest-good b {
+  color: #355b3b;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+.harvest-empty {
+  font-size: 11px;
+  color: #485e42;
+  padding: 3px 0;
+}
+.no-yield {
+  background: #eeefe3;
+}
+.harvest-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 9px;
+  padding: 13px 17px;
+}
+.harvest-footer > span {
+  color: #5e6a52;
+  font-size: 10px;
+  line-height: 1.5;
+}
+.harvest-countdown {
+  height: 3px;
+  background: #9aa973;
+  transform-origin: left;
+  animation: harvest-countdown var(--duration) linear both;
+}
+.world-map .production-flare {
+  pointer-events: none;
+  fill: #ffe49c12;
+  stroke: #ffe1a0;
+  stroke-width: 2.5;
+  animation: production-flare 1.15s ease-out 3;
+}
+@keyframes dice-tumble {
+  0% {
+    transform: translate(-50px, -24px) rotateX(240deg) rotateY(-190deg)
+      rotateZ(30deg);
+  }
+  55% {
+    transform: translate(3px, -12px) rotateX(-190deg) rotateY(210deg)
+      rotateZ(-8deg);
+  }
+  82% {
+    transform: translate(0, 2px) rotateX(-9deg) rotateY(27deg) var(--landing);
+  }
+  100% {
+    transform: rotateX(-16deg) rotateY(20deg) var(--landing);
+  }
+}
+@keyframes dice-tumble-second {
+  0% {
+    transform: translate(48px, -36px) rotateX(-200deg) rotateY(150deg)
+      rotateZ(-25deg);
+  }
+  58% {
+    transform: translate(-3px, -8px) rotateX(190deg) rotateY(-180deg);
+  }
+  84% {
+    transform: translate(0, 2px) rotateX(-8deg) rotateY(-12deg) var(--landing);
+  }
+  100% {
+    transform: rotateX(-12deg) rotateY(-18deg) var(--landing);
+  }
+}
+@keyframes dice-shadow {
+  0% {
+    opacity: 0.2;
+    transform: scale(0.6);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes result-land {
+  from {
+    opacity: 0;
+    transform: scale(0.72);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes harvest-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes report-arrive {
+  from {
+    opacity: 0;
+    translate: 0 -8px;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+@keyframes harvest-countdown {
+  to {
+    transform: scaleX(0);
+  }
+}
+@keyframes production-flare {
+  0% {
+    stroke-width: 4;
+    fill: #ffe49c38;
+  }
+  100% {
+    stroke-width: 1;
+    fill: #ffe49c00;
+  }
+}
+@keyframes banner-rattle {
+  to {
+    transform: translateY(-2px) rotate(8deg);
+  }
+}
+@media (max-width: 1300px) {
+  .roll-experience {
+    width: min(570px, calc(100% - 24px));
+  }
+}
+@media (max-width: 760px) {
+  .roll-experience {
+    top: 67px;
+    width: calc(100% - 20px);
+    max-height: calc(100% - 145px);
+    border-radius: 12px;
+  }
+  .roll-heading {
+    padding: 13px 13px 10px;
+    gap: 8px;
+  }
+  .roll-heading h2 {
+    font-size: 21px;
+  }
+  .roll-heading .eyebrow {
+    font-size: 8px;
+  }
+  .roll-owner {
+    width: 28px;
+    height: 33px;
+    font-size: 16px;
+  }
+  .dice-theatre {
+    min-height: 103px;
+    gap: 22px;
+    margin: 0 9px 10px;
+  }
+  .roll-die {
+    --size: 40px;
+  }
+  .dice-pair {
+    gap: 23px;
+  }
+  .roll-result {
+    min-width: 65px;
+  }
+  .roll-result b {
+    font-size: 46px;
+  }
+  .roll-result span {
+    font-size: 8px;
+  }
+  .harvest-heading {
+    padding: 0 13px 8px;
+  }
+  .harvest-heading > span {
+    font-size: 11px;
+  }
+  .harvest-heading small {
+    font-size: 9px;
+  }
+  .harvest-players {
+    grid-template-columns: 1fr;
+    gap: 6px;
+    padding: 0 9px;
+  }
+  .harvest-player {
+    padding: 8px 9px;
+  }
+  .harvest-player-heading b {
+    font-size: 11px;
+  }
+  .harvest-player-heading i {
+    width: 19px;
+    height: 22px;
+    font-size: 12px;
+  }
+  .harvest-player-heading > span {
+    font-size: 15px;
+  }
+  .harvest-goods {
+    padding-top: 5px;
+  }
+  .harvest-good {
+    padding: 1px 4px;
+  }
+  .harvest-footer {
+    padding: 10px 12px;
+  }
+  .harvest-footer > span {
+    font-size: 9px;
+  }
+  .roll-anticipation {
+    padding: 0 12px 13px;
+  }
+  .roll-anticipation > span {
+    font-size: 11px;
+  }
+  .resource-gain,
+  .dice-replay {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .roll-experience,
+  .roll-experience *,
+  .dice .dice-face,
+  .world-map .production-flare,
+  .resource-gain {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+/* Keep the outcome and controls in view while abundant receipts scroll. */
+.roll-experience {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.roll-heading,
+.dice-theatre,
+.harvest-heading,
+.harvest-footer,
+.harvest-countdown,
+.roll-anticipation {
+  flex-shrink: 0;
+}
+.harvest-players {
+  overflow: auto;
+  min-height: 0;
+  padding-bottom: 2px;
+  scrollbar-width: thin;
+  scrollbar-color: #9cae85 #f1eddf;
+}
+.harvest-players:focus-visible {
+  outline: 2px solid #748d5b;
+  outline-offset: -3px;
+}
+.is-revealed .dice-theatre {
+  min-height: 113px;
+}
+@media (max-width: 760px) {
+  .is-revealed .dice-theatre {
+    min-height: 83px;
+  }
+}
+
+.harvest-scroll-hint {
+  display: none;
+}
+.harvest-players::-webkit-scrollbar {
+  width: 5px;
+}
+.harvest-players::-webkit-scrollbar-thumb {
+  background: #9eac88;
+  border-radius: 5px;
+}
+.harvest-players::-webkit-scrollbar-track {
+  background: #ece9db;
+}
+@media (max-width: 760px) {
+  .harvest-heading .harvest-source-count {
+    display: none;
+  }
+  .harvest-scroll-hint {
+    display: block;
+  }
+}
+
+.harvest-scroll-hint.many-realms {
+  display: block;
+}

@@ -1,0 +1,193 @@
+.military-icon {
+  flex-shrink: 0;
+  vertical-align: middle;
+  overflow: visible;
+}
+.unit-portrait.military-portrait {
+  position: relative;
+  display: inline-flex;
+  width: 51px;
+  height: 58px;
+  border-radius: 9px;
+  padding: 0;
+  overflow: visible;
+  border: 2px solid var(--rank-metal);
+  background: linear-gradient(145deg, #536d60, #263f42);
+  box-shadow:
+    0 2px 5px #152e3030,
+    inset 0 0 0 1px #fcf0cf;
+  flex-shrink: 0;
+}
+.military-portrait .portrait-window {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border-radius: 7px;
+}
+.portrait-class {
+  position: absolute;
+  bottom: -4px;
+  left: -5px;
+  width: 25px;
+  height: 25px;
+  background: #f3e9cc;
+  border: 1px solid #567366;
+  box-shadow: 0 1px 3px #1e39372b;
+  display: grid;
+  place-items: center;
+  border-radius: 6px;
+}
+.portrait-rank {
+  position: absolute;
+  right: -4px;
+  top: -5px;
+  min-width: 21px;
+  height: 20px;
+  border: 1px solid #4f604c;
+  border-radius: 5px;
+  display: grid;
+  place-items: center;
+  background: var(--rank-metal);
+  color: #061a17;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 0 3px;
+  box-shadow: 0 1px 3px #24393635;
+}
+.recruit-heading .military-portrait {
+  width: 65px;
+  height: 74px;
+}
+.recruit-heading {
+  gap: 14px;
+}
+.recruit-heading > div {
+  min-width: 0;
+}
+.unit-category {
+  display: block;
+  font-size: 9px;
+  font-weight: 650;
+  color: #5c6e51;
+  letter-spacing: 0.025em;
+  margin-bottom: 5px;
+}
+.recruit-heading b {
+  font-size: 14px;
+  line-height: 1.25;
+}
+.recruit-heading small {
+  margin-top: 5px;
+}
+.recruit-card {
+  padding: 17px 0;
+}
+.recruit-card .action-button {
+  margin-top: 13px;
+}
+.unit-choice {
+  min-height: 77px;
+  gap: 14px;
+}
+.unit-choice:has(input:checked) {
+  background: #e9eddb;
+  border-radius: 8px;
+  box-shadow: inset 3px 0 #7b925e;
+  padding-left: 7px;
+  padding-right: 7px;
+}
+.stack-symbols {
+  display: flex;
+  gap: 2px;
+  background: #e8ecdc;
+  border: 1px solid #cbd4bc;
+  border-radius: 7px;
+  padding: 4px;
+}
+.stack-symbols .military-icon {
+  width: 19px;
+  height: 19px;
+}
+@media (max-width: 760px) {
+  .recruit-heading .military-portrait {
+    width: 60px;
+    height: 69px;
+  }
+  .recruit-heading b {
+    font-size: 13px;
+  }
+  .unit-category {
+    font-size: 9px;
+  }
+}
+
+.faction-research,
+.public-research-note {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.faction-research {
+  margin-top: 4px;
+}
+.public-research-note {
+  font-size: 11px;
+  color: #425b4e;
+  padding: 10px;
+  border-radius: 7px;
+  background: #e9eddf;
+  line-height: 1.5;
+}
+.research-intelligence {
+  margin: 12px 0 22px;
+  border: 1px solid #cbd4bc;
+  border-radius: 9px;
+  overflow: hidden;
+}
+.research-intelligence > div {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 11px;
+  border-bottom: 1px solid #dbe0cf;
+  font-size: 12px;
+}
+.research-intelligence > div:last-child {
+  border-bottom: 0;
+}
+.research-intelligence .realm-dot {
+  width: 9px;
+  height: 24px;
+  border-radius: 3px;
+}
+.research-intelligence small {
+  display: block;
+  color: #53654e;
+  font-size: 10px;
+  margin-top: 3px;
+}
+.research-intelligence b {
+  margin-left: auto;
+  font-size: 17px;
+}
+
+.army-summary > span {
+  color: #52654e;
+}
+
+.troop-roster {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+.troop-roster .recruit-heading {
+  padding: 8px 0;
+}
+.troop-roster b {
+  display: block;
+}
+@media (max-width: 600px) {
+  .troop-roster {
+    grid-template-columns: 1fr;
+  }
+}

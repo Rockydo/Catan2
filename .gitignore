@@ -1,0 +1,22 @@
+node_modules/
+dist/
+coverage/
+playwright-report/
+test-results/
+*.tsbuildinfo
+.DS_Store
+
+# Local campaigns, review evidence and release bundles
+test-artifacts/
+releases/
+archive/
+__pycache__/
+.env
+.env.*
+!.env.example
+*.log
+
+# Historical local reports are not part of a shared game copy
+test-results-*/
+PROGRESS.md
+TROUBLESHOOTING-CODEX.md

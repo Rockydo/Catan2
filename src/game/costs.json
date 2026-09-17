@@ -1,0 +1,754 @@
+{
+  "Road": {
+    "lumber": 1,
+    "brick": 1
+  },
+  "Settlement": {
+    "lumber": 1,
+    "brick": 1,
+    "wool": 1,
+    "grain": 1
+  },
+  "City I / level 2": {
+    "ore": 3,
+    "grain": 2
+  },
+  "Seafarers route ship": {
+    "lumber": 1,
+    "wool": 1
+  },
+  "Tier-I research": {
+    "ore": 1,
+    "wool": 1,
+    "grain": 1
+  },
+  "City II / level 3": {
+    "ore": 3,
+    "grain": 3,
+    "masonry": 3,
+    "ceramics": 2
+  },
+  "City III / level 4": {
+    "masonry": 5,
+    "planks": 4,
+    "ceramics": 4,
+    "cloth": 3,
+    "reagents": 2
+  },
+  "Sawmill I": {
+    "lumber": 2,
+    "ore": 1,
+    "stone": 1
+  },
+  "Sawmill II": {
+    "planks": 2,
+    "steel": 2,
+    "lumber": 1
+  },
+  "Sawmill III": {
+    "planks": 4,
+    "steel": 3,
+    "coke": 2
+  },
+  "Kiln I": {
+    "brick": 2,
+    "coal": 1,
+    "stone": 1
+  },
+  "Kiln II": {
+    "ceramics": 2,
+    "coke": 2,
+    "brick": 1
+  },
+  "Kiln III": {
+    "ceramics": 4,
+    "coke": 3,
+    "masonry": 2
+  },
+  "Weaver I": {
+    "wool": 2,
+    "lumber": 1,
+    "salt": 1
+  },
+  "Weaver II": {
+    "cloth": 2,
+    "wool": 1,
+    "ceramics": 2
+  },
+  "Weaver III": {
+    "cloth": 4,
+    "leather": 2,
+    "reagents": 3
+  },
+  "Forge I": {
+    "ore": 2,
+    "coal": 1,
+    "stone": 1
+  },
+  "Forge II": {
+    "steel": 2,
+    "coke": 2,
+    "ore": 1
+  },
+  "Forge III": {
+    "steel": 4,
+    "coke": 3,
+    "reagents": 2
+  },
+  "Stoneworks I": {
+    "stone": 2,
+    "ore": 1,
+    "lumber": 1
+  },
+  "Stoneworks II": {
+    "masonry": 2,
+    "steel": 2,
+    "stone": 1
+  },
+  "Stoneworks III": {
+    "masonry": 4,
+    "steel": 3,
+    "planks": 2
+  },
+  "Tannery I": {
+    "hides": 2,
+    "salt": 1,
+    "brick": 1
+  },
+  "Tannery II": {
+    "leather": 2,
+    "reagents": 2,
+    "hides": 1
+  },
+  "Tannery III": {
+    "leather": 4,
+    "reagents": 3,
+    "ceramics": 2
+  },
+  "Hillguard": {
+    "grain": 1,
+    "ore": 2
+  },
+  "Iron Sentinel": {
+    "steel": 2,
+    "leather": 1,
+    "provisions": 1
+  },
+  "Granite Praetorian": {
+    "steel": 3,
+    "leather": 2,
+    "coke": 2,
+    "provisions": 1
+  },
+  "Brushrunner": {
+    "grain": 1,
+    "wool": 1,
+    "hides": 1
+  },
+  "Thorn Ranger": {
+    "leather": 2,
+    "provisions": 1,
+    "cloth": 1
+  },
+  "Veil Warden": {
+    "leather": 3,
+    "cloth": 2,
+    "reagents": 1,
+    "provisions": 2
+  },
+  "Outrider": {
+    "grain": 2,
+    "hides": 2
+  },
+  "Lancer": {
+    "leather": 2,
+    "cloth": 1,
+    "provisions": 2
+  },
+  "Sunsteel Cataphract": {
+    "steel": 3,
+    "leather": 3,
+    "cloth": 2,
+    "provisions": 2
+  },
+  "Field Ballista": {
+    "lumber": 2,
+    "ore": 1,
+    "hides": 1
+  },
+  "Siege Onager": {
+    "planks": 2,
+    "steel": 1,
+    "leather": 2
+  },
+  "Great Bombard": {
+    "planks": 3,
+    "steel": 3,
+    "reagents": 3,
+    "coke": 3
+  },
+  "Palisade": {
+    "lumber": 1
+  },
+  "Stone Curtain": {
+    "stone": 3
+  },
+  "Bastion": {
+    "masonry": 3
+  },
+  "Citadel Ring": {
+    "masonry": 4,
+    "steel": 2
+  },
+  "Land expedition I \u00b7 Reconnaissance": {
+    "grain": 2,
+    "lumber": 1,
+    "hides": 1
+  },
+  "Sea expedition I \u00b7 Reconnaissance": {
+    "grain": 2,
+    "lumber": 2,
+    "salt": 1
+  },
+  "Land expedition II \u00b7 Survey": {
+    "provisions": 3,
+    "leather": 2,
+    "ceramics": 2
+  },
+  "Sea expedition II \u00b7 Survey": {
+    "provisions": 3,
+    "cloth": 2,
+    "planks": 3
+  },
+  "Land expedition III \u00b7 Great Expedition": {
+    "provisions": 5,
+    "leather": 4,
+    "reagents": 2,
+    "ceramics": 3
+  },
+  "Sea expedition III \u00b7 Great Expedition": {
+    "provisions": 5,
+    "planks": 4,
+    "cloth": 3,
+    "reagents": 4
+  },
+  "Lumber camp": {
+    "hides": 1,
+    "ore": 1
+  },
+  "Lumber camp II": {
+    "steel": 2,
+    "leather": 2
+  },
+  "Brick camp": {
+    "stone": 1,
+    "ore": 1
+  },
+  "Brick camp II": {
+    "masonry": 2,
+    "steel": 1
+  },
+  "Wool camp": {
+    "stone": 1,
+    "grain": 1
+  },
+  "Wool camp II": {
+    "cloth": 2,
+    "leather": 1
+  },
+  "Grain camp": {
+    "ore": 1,
+    "hides": 1
+  },
+  "Grain camp II": {
+    "provisions": 2,
+    "ceramics": 2
+  },
+  "Ore camp": {
+    "lumber": 1,
+    "hides": 1
+  },
+  "Ore camp II": {
+    "planks": 2,
+    "coke": 1,
+    "reagents": 2
+  },
+  "Stone camp": {
+    "ore": 1,
+    "hides": 1
+  },
+  "Stone camp II": {
+    "steel": 2,
+    "coke": 1
+  },
+  "Hides camp": {
+    "salt": 1,
+    "stone": 1
+  },
+  "Hides camp II": {
+    "leather": 2,
+    "reagents": 1
+  },
+  "Salt camp": {
+    "brick": 1,
+    "coal": 1
+  },
+  "Salt camp II": {
+    "ceramics": 2,
+    "coke": 1,
+    "masonry": 1
+  },
+  "Coal camp": {
+    "lumber": 1,
+    "stone": 1
+  },
+  "Coal camp II": {
+    "masonry": 2,
+    "leather": 1,
+    "coke": 2
+  },
+  "Bakery I": {
+    "grain": 2,
+    "salt": 1,
+    "brick": 1
+  },
+  "Bakery II": {
+    "provisions": 2,
+    "ceramics": 2,
+    "grain": 1
+  },
+  "Bakery III": {
+    "provisions": 4,
+    "ceramics": 3,
+    "cloth": 2
+  },
+  "Chemical works I": {
+    "salt": 2,
+    "coal": 1,
+    "brick": 1
+  },
+  "Chemical works II": {
+    "reagents": 2,
+    "ceramics": 2,
+    "salt": 1
+  },
+  "Chemical works III": {
+    "reagents": 4,
+    "ceramics": 3,
+    "coke": 2
+  },
+  "Fuel works I": {
+    "coal": 2,
+    "stone": 1,
+    "brick": 1
+  },
+  "Fuel works II": {
+    "coke": 2,
+    "masonry": 2,
+    "coal": 1
+  },
+  "Fuel works III": {
+    "coke": 4,
+    "masonry": 3,
+    "steel": 2
+  },
+  "Spearguard": {
+    "steel": 1,
+    "grain": 2
+  },
+  "Trail Scout": {
+    "leather": 1,
+    "wool": 1,
+    "grain": 1
+  },
+  "Horseman": {
+    "leather": 1,
+    "grain": 2,
+    "hides": 1
+  },
+  "Light Catapult": {
+    "lumber": 2,
+    "ore": 1,
+    "masonry": 1
+  },
+  "Gold camp": {
+    "ore": 1,
+    "hides": 1
+  },
+  "Gold camp II": {
+    "steel": 2,
+    "planks": 1
+  },
+  "Fish camp": {
+    "wool": 1,
+    "salt": 1
+  },
+  "Fish camp II": {
+    "cloth": 2,
+    "planks": 1
+  },
+  "Goldsmith I": {
+    "ore": 2,
+    "coal": 1,
+    "stone": 1
+  },
+  "Goldsmith II": {
+    "steel": 2,
+    "ceramics": 2
+  },
+  "Goldsmith III": {
+    "steel": 3,
+    "coke": 3,
+    "masonry": 2
+  },
+  "Smokehouse I": {
+    "salt": 2,
+    "coal": 1,
+    "stone": 1
+  },
+  "Smokehouse II": {
+    "ceramics": 2,
+    "coke": 1,
+    "salt": 1
+  },
+  "Smokehouse III": {
+    "ceramics": 3,
+    "coke": 3,
+    "planks": 2
+  },
+  "Peddler": {
+    "hides": 2,
+    "wool": 1,
+    "grain": 2
+  },
+  "Trader": {
+    "leather": 2,
+    "wool": 2,
+    "grain": 2
+  },
+  "Caravan Master": {
+    "leather": 3,
+    "cloth": 2,
+    "provisions": 3
+  },
+  "Merchant Prince": {
+    "leather": 4,
+    "cloth": 3,
+    "provisions": 4,
+    "goldbars": 1
+  },
+  "Coastal Transport": {
+    "lumber": 2,
+    "wool": 1,
+    "hides": 1
+  },
+  "Sailing Transport": {
+    "lumber": 3,
+    "cloth": 2,
+    "hides": 1
+  },
+  "Ocean Transport": {
+    "planks": 3,
+    "cloth": 2,
+    "leather": 2
+  },
+  "Royal Transport": {
+    "planks": 4,
+    "cloth": 3,
+    "leather": 3,
+    "steel": 2
+  },
+  "Cargo Barge": {
+    "lumber": 3,
+    "wool": 1,
+    "hides": 2
+  },
+  "Convoy Cog": {
+    "lumber": 4,
+    "leather": 3,
+    "wool": 1
+  },
+  "Convoy Galleon": {
+    "planks": 4,
+    "leather": 3,
+    "cloth": 2
+  },
+  "Grand Convoy": {
+    "planks": 5,
+    "leather": 4,
+    "cloth": 3,
+    "steel": 2
+  },
+  "Patrol Galley": {
+    "lumber": 2,
+    "ore": 2,
+    "wool": 1
+  },
+  "War Galley": {
+    "lumber": 3,
+    "steel": 2,
+    "wool": 1
+  },
+  "War Frigate": {
+    "planks": 3,
+    "steel": 3,
+    "cloth": 2
+  },
+  "Royal Frigate": {
+    "planks": 4,
+    "steel": 4,
+    "cloth": 3,
+    "coke": 2
+  },
+  "Guard Carrack": {
+    "lumber": 3,
+    "ore": 3,
+    "coal": 1
+  },
+  "Battle Carrack": {
+    "lumber": 4,
+    "steel": 3,
+    "coal": 1
+  },
+  "Armored Carrack": {
+    "planks": 4,
+    "steel": 4,
+    "masonry": 2
+  },
+  "Dreadnought": {
+    "planks": 5,
+    "steel": 5,
+    "masonry": 3,
+    "coke": 3
+  },
+  "Fishing Skiff": {
+    "lumber": 2,
+    "wool": 2,
+    "salt": 1
+  },
+  "Fishing Cutter": {
+    "lumber": 3,
+    "cloth": 2,
+    "salt": 1
+  },
+  "Deepwater Trawler": {
+    "planks": 3,
+    "cloth": 3,
+    "ceramics": 2
+  },
+  "Grand Trawler": {
+    "planks": 4,
+    "cloth": 4,
+    "ceramics": 3,
+    "reagents": 2
+  },
+  "Trading Sloop": {
+    "lumber": 2,
+    "wool": 1,
+    "hides": 2
+  },
+  "Merchant Cog": {
+    "lumber": 3,
+    "leather": 2,
+    "wool": 1
+  },
+  "Merchant Galleon": {
+    "planks": 3,
+    "cloth": 2,
+    "leather": 3
+  },
+  "Treasure Galleon": {
+    "planks": 4,
+    "cloth": 3,
+    "leather": 4,
+    "goldbars": 1
+  },
+  "Watchtower 1": {
+    "lumber": 2
+  },
+  "Watchtower 2": {
+    "stone": 2,
+    "ore": 1
+  },
+  "Watchtower 3": {
+    "stone": 2,
+    "steel": 1
+  },
+  "Watchtower 4": {
+    "masonry": 2,
+    "steel": 1
+  },
+  "Research I \u00b7 Practical Knowledge": {
+    "grain": 1,
+    "wool": 1,
+    "ore": 1
+  },
+  "Research II \u00b7 Guild Knowledge": {
+    "stone": 1,
+    "salt": 1,
+    "cloth": 1
+  },
+  "Research III \u00b7 Engineering": {
+    "ceramics": 2,
+    "provisions": 1,
+    "coke": 1
+  },
+  "Research IV \u00b7 Statecraft": {
+    "cloth": 2,
+    "reagents": 2,
+    "coke": 2
+  },
+  "Watchtower 1 \u00b7 Stone": {
+    "stone": 2
+  },
+  "Prospectors' Guild I": {
+    "stone": 3,
+    "hides": 2,
+    "ore": 1
+  },
+  "Prospectors' Guild II": {
+    "stone": 4,
+    "coal": 2,
+    "leather": 2
+  },
+  "Prospectors' Guild III": {
+    "masonry": 4,
+    "coke": 2,
+    "steel": 3
+  },
+  "Artisans' Guild I": {
+    "stone": 3,
+    "coal": 2,
+    "brick": 1
+  },
+  "Artisans' Guild II": {
+    "stone": 4,
+    "coal": 2,
+    "planks": 2
+  },
+  "Artisans' Guild III": {
+    "masonry": 4,
+    "coke": 2,
+    "reagents": 3
+  },
+  "Merchants' Guild I": {
+    "stone": 3,
+    "salt": 2,
+    "hides": 1
+  },
+  "Merchants' Guild II": {
+    "stone": 4,
+    "coal": 2,
+    "cloth": 2
+  },
+  "Merchants' Guild III": {
+    "masonry": 4,
+    "coke": 2,
+    "leather": 3
+  },
+  "Commanders' Guild I": {
+    "stone": 3,
+    "ore": 2,
+    "grain": 1
+  },
+  "Commanders' Guild II": {
+    "stone": 4,
+    "coal": 2,
+    "steel": 2
+  },
+  "Commanders' Guild III": {
+    "masonry": 4,
+    "coke": 2,
+    "steel": 3
+  },
+  "Navigators' Guild I": {
+    "stone": 3,
+    "salt": 2,
+    "lumber": 1
+  },
+  "Navigators' Guild II": {
+    "stone": 4,
+    "coal": 2,
+    "cloth": 2
+  },
+  "Navigators' Guild III": {
+    "masonry": 4,
+    "coke": 2,
+    "planks": 3
+  },
+  "Farmers' Guild I": {
+    "stone": 3,
+    "salt": 2,
+    "coal": 1
+  },
+  "Farmers' Guild II": {
+    "stone": 4,
+    "coal": 2,
+    "reagents": 2
+  },
+  "Farmers' Guild III": {
+    "masonry": 4,
+    "coke": 2,
+    "reagents": 3
+  },
+  "Extractors' Guild I": {
+    "stone": 3,
+    "ore": 2,
+    "hides": 1
+  },
+  "Extractors' Guild II": {
+    "stone": 4,
+    "coal": 2,
+    "steel": 2
+  },
+  "Extractors' Guild III": {
+    "masonry": 4,
+    "coke": 2,
+    "steel": 3
+  },
+  "Engineers' Guild I": {
+    "stone": 3,
+    "ore": 2,
+    "coal": 1
+  },
+  "Engineers' Guild II": {
+    "stone": 4,
+    "coal": 2,
+    "steel": 2
+  },
+  "Engineers' Guild III": {
+    "masonry": 4,
+    "coke": 2,
+    "steel": 3
+  },
+  "Builders' Guild I": {
+    "stone": 3,
+    "lumber": 2,
+    "brick": 1
+  },
+  "Builders' Guild II": {
+    "stone": 4,
+    "coal": 2,
+    "planks": 2
+  },
+  "Builders' Guild III": {
+    "masonry": 4,
+    "coke": 2,
+    "planks": 3
+  },
+  "Scholars' Guild I": {
+    "stone": 3,
+    "wool": 2,
+    "salt": 1
+  },
+  "Scholars' Guild II": {
+    "stone": 4,
+    "coal": 2,
+    "reagents": 2
+  },
+  "Scholars' Guild III": {
+    "masonry": 4,
+    "coke": 2,
+    "cloth": 3
+  }
+}
