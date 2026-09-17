@@ -2,47 +2,62 @@
 
 Generated from the interactive guide and game data. Launch the game and choose Learn to play for the illustrated version.
 
-## Your first game
+## Setup and turn sequence
 
-### The goal
-Win by destroying every rival settlement and city. There are no victory points or turn limit. You do not need to occupy empty land or explore the whole world. Losing your last town eliminates you and removes your remaining pieces, goods and cards. Eliminated factions can return through expeditions; eliminated AI factions can also return through rebellions while a campaign continues. The last surviving faction wins immediately.
-### Place your first two settlements
-Choose Classic (5 factions, 110 tiles) or Grand campaign (10 factions, 220 tiles). Each faction places a settlement and an adjoining road or sea route, first in player order, then in reverse order. Your second settlement gives one of each adjacent productive tile's raw goods, including both Hides and Oil from Whales. There are no starting troops or processed goods.
-A settlement needs at least one adjoining land tile. Leave at least one empty intersection between settlements, including rival settlements. Look for several resource types and several useful numbers. Six, seven and eight roll most often. Gold is valuable, but a varied income is usually easier to build with.
-### Roll, act, end your turn
-Roll two ordinary six-sided dice. Every faction produces from matching tiles. Seven works normally: no robber, discard or inventory limit. Then build, trade, recruit, move, fight, raid, explore and buy or play research in any order. Spend raided goods immediately if useful. Press End turn when finished. A turn belongs to one faction; a round gives each surviving faction a turn.
-### A practical first plan
-Build camps on your roads to improve income. Extend roads to a useful settlement site. Upgrade a settlement to City I for two raw goods per adjacent matching tile and access to industries. Recruit guards before leaving valuable warehouses exposed. A coastal city also opens mobile shipbuilding. Research and guilds offer other ways to obtain missing materials.
-### What differs from Catan
-The original costs for roads, settlements, City I, sea-route pieces and tier-I development cards are preserved. There is no robber, pirate, desert, knight reward, Largest Army, Longest Road reward or victory-point card. Pieces, reserve stock and research supplies are unlimited. This game adds local warehouses, military conquest, industries, guilds and an expanding map. A fleet is a moving force, separate from the sea routes used to connect settlements.
+### Objective
+Win by destroying every rival settlement and city. There are no victory points or turn limit. Empty land does not need to be occupied or explored. The last surviving faction wins immediately.
+A town means either a settlement or a city. Losing your last town eliminates your faction and removes its remaining pieces, goods and cards. During an unfinished game, eliminated factions may return through expeditions; eliminated AI factions may also return through rebellions.
+### Setup
+Choose Classic (5 factions, 110 tiles) or Grand campaign (10 factions, 220 tiles).
+- In player order, each faction places one settlement and one adjoining road or sea route.
+- Repeat in reverse player order. Each faction now has two settlements and two route pieces.
+- The second settlement receives one raw good from each adjacent productive tile. A Whale tile gives both 1 Hides and 1 Oil. Start with no troops or processed goods.
+Each settlement must touch at least one land tile. At least one empty intersection must separate any two settlements, regardless of owner.
+### Turn sequence
+- Production: roll two independent six-sided dice. All factions collect production from tiles whose number matches the total. Seven produces normally. There is no robber, discard or stock limit.
+- Actions: build, trade, recruit, move, fight, raid, explore, buy research and play cards in any order. Raided goods are immediately available to spend.
+- End turn: pass to the next surviving faction. A round is complete when every surviving faction has had a turn.
+Held research cards may also be played before rolling, if their conditions allow it. There is no separate military phase.
+### Construction access
+Camps add raw production along routes. City I produces two raw goods per adjacent matching tile and unlocks workshops. A coastal town can build mobile ships; the available tier depends on its level. Research and guilds provide additional effects and resource exchanges. See the relevant chapters for costs and requirements.
+### Differences from Catan
+The original costs of roads, settlements, City I, sea-route pieces and tier-I development cards are unchanged. There is no robber, pirate, desert, Knight reward, Largest Army reward, Longest Road reward or victory-point card. Pieces, reserve stock and research supplies are unlimited.
+Goods are stored in individual towns but spent from a common pool. Armies can raid and destroy towns. Workshops, guilds, research and expeditions add actions. Sea routes connect settlements; fleets are separate moving pieces.
 
-## The world and dice
+## Map and dice
 
-### How the map is made
+### Map generation
 Each coordinate independently has a 50% chance of water and 50% chance of land. The nine ordinary land resources have equal weight; Gold has half that weight. No resource, continent, port or balanced starting position is guaranteed. Terrain is never rearranged to look natural. The initial footprint is compact, with random ordering on its outer ring.
 A coastal water tile touches at least one land tile. Fish appears on 15% of coastal water and 10% of offshore water. Then remaining water gets a Whale roll: 5% coastal, 10% offshore. Whales never replace Fish. Effective Whale chances before the Fish roll are therefore 4.25% coastal and 9% offshore. Fish and Whales remain water for movement and combat. Whales produce Hides and Oil together.
+### Tile numbers and dice
 Every productive tile receives a uniform random number from 2 through 12, including 7. Dice are two independent d6, so tile numbers are equally common in generation but not equally likely to activate. Dice, terrain, research and rebellion randomness are saved separately. Reloading does not reroll an offer or the map. Hidden coordinates cannot be inspected by players or AI.
-### Ports and exceptional maps
-Eligible fully revealed coastal edges have a 10% port-candidate chance. Half are generic 3:1 ports; half are specific 2:1 raw-resource ports, excluding Gold and Oil. Ports cannot share an intersection. A town on either end uses the port, unless under siege or its sea tile is blockaded. Old Gold ports become generic ports on load.
-An extreme map may lack enough legal starting sites. The game reports an unstartable seed rather than silently repairing it. During setup a placement cannot make it impossible to finish everyone's two settlements. A missing resource alone does not invalidate a map: the reserve can supply it through trade.
+### Ports
+Eligible fully revealed coastal edges have a 10% port-candidate chance. Half are generic 3:1 ports; half are specific 2:1 raw-resource ports, excluding Gold and Oil. Ports cannot share an intersection. A town on either end uses the port, unless under siege or its sea tile is blockaded. In older saves, Gold ports are treated as generic ports.
+### Setup restrictions
+An extreme map may lack enough legal starting sites. The game rejects a seed with insufficient legal starting sites. During setup a placement cannot make it impossible to finish everyone's two settlements. A missing resource alone does not invalidate a map: the reserve can supply it through trade.
 
 ## Goods, storage and trade
 
 ### Production and storage
 There are twelve raw goods and ten processed goods. Towns receive their level in raw goods from each adjacent matching tile. Extensions add processed output without consuming or reducing the raw harvest. All players produce on every roll. New buildings and collectors can produce on the next matching roll.
+### Storage destinations
 Town output stays in that town. Camps and mobile collectors send goods to the nearest owned town, using hex distance to its adjacent land and oldest town ID to break ties. Future output changes destination when towns change; old stocks stay where they are. Trades and research rewards enter your home store, the oldest surviving town. Raids use the operating army's hex to find their destination.
+### Paying costs
 All warehouses form one spending pool, even during a siege. Each good is debited proportionally across towns, using whole-card largest remainders and town ID for ties. Stores with 8 and 2 Grain pay a five-Grain cost as 4 and 1. You cannot freely relocate a warehouse, choose a sole paying town or change your home store.
 ### Fish, Oil and Gold
 Recipes show Grain and Coal. Pay Grain first, then substitute missing Grain with Fish at 1:1. Pay Coal first, then substitute missing Coal with Oil at 1:1. This also applies to discounted recipes and guild construction. Explicit player trades, reserve trades, merchant contracts and research exchanges spend exactly the offered goods, without automatic substitution.
+### Gold exchange rates
 Gold has its own reserve rates: 1 Gold buys 1 raw good; 2 Gold buy 1 processed good. One Gold bar buys 2 raw goods of one type or 1 processed good. These rates need no port. Goldsmiths produce Gold bars. Grain and Fish both make Rations; Coal and Oil both make Fuel through Artisans. Whale-linked extensions make Leather, not Oil or Fuel.
 ### Trading
 Only trades involving the active player are allowed. All 22 goods can be offered in explicit quantities. No gifts, same-good wash trades, buildings or research cards can be traded. AI offers appear as dismissible prompts. Public stockpiles, production, scarcity and each AI's planned needs affect its valuation; bank prices do not fluctuate.
+### Reserve and port rates
 Default reserve rates: 4 identical raw → 1 different raw; 6 identical raw → 1 processed; 4 identical processed → 1 different processed; 2 identical processed → 1 raw. A generic port improves only raw-to-raw exchange to 3:1. A matching specific port improves it to 2:1. Gold rates take precedence. Any good can be imported even if absent from the map. There is no free raw-to-processed crafting action.
 ### Occupation and blockades
 An enemy armed land unit blocks ordinary town, extension and camp output from its tile. It does not block its own or allied production. Enemy fleets block ordinary Fish and Whale production, including fishing ships harvesting that tile. Land merchants and merchant ships ignore production blockades on covered tiles. Land merchants cannot blockade, protect a town or attack.
+### Construction under occupation
 Enemy occupation prevents new towns beside it and roads bordering it. Camps only need their linked side clear. Existing roads remain until destroyed. A besieged town cannot upgrade, recruit, build extensions or walls, operate guilds, launch fleets or expeditions, or use a port. Its goods stay spendable and its other unoccupied adjacent tiles still produce.
 
-## Build your economy
+## Construction and upgrades
 
 ### Routes and settlements
 A new route must connect to your own road, sea route or town. Roads and sea routes connect directly without requiring a coastal town between them. Another faction's town or tower interrupts your junction; allied infrastructure is not yours to build from. A settlement must connect to your network after setup, touch land and obey the one-empty-intersection distance rule. Troops do not found remote settlements.
@@ -96,12 +111,13 @@ Click a siege badge, town, tower or dashed link for defenses, progress, attackin
 
 ### Routes are not fleets
 A sea route is an edge piece that extends your settlement network. A mobile ship occupies a water hex, moves and fights. Neither substitutes for the other. Build mobile ships beside a coastal town, without needing a printed port, on a revealed water hex without enemies. Town level at the start of the turn gates ship tier. No limit on hulls per order, town, turn or fleet, provided you pay. Ships cannot upgrade.
-Transports are fast carriers; convoys carry more units but move more slowly. Galleys intercept; carracks concentrate power. Each ship class has four tiers. Fleets move at the slowest participating ship's speed. Combat follows whole-piece losses and retreats, using each hull's listed power/casualty points. Passengers add no naval power. Surviving ships keep full power and berths.
+Transports are fast carriers; convoys carry more units but move more slowly. The ship tables list combat power, movement and capacity for every class. Each ship class has four tiers. Fleets move at the slowest participating ship's speed. Combat follows whole-piece losses and retreats, using each hull's listed power/casualty points. Passengers add no naval power. Surviving ships keep full power and berths.
 ### Fishing and merchant ships
 Fishing ships collect from their own tile and all six neighbours, only Fish and Whales. Merchant ships collect from all adjacent land tiles, including enemy-occupied or rival-used land, but never Fish or Whales. Each matching tile yields the ship's tier in raw goods; Whales yield that amount of both Hides and Oil. Output goes directly to the nearest owned town. Collectors can produce immediately after construction. There is no collector limit per tile or cargo capacity for goods.
 Both economic ship types have 0/1/2/3 power at tiers I/II/III/IV and no passenger berths. Unarmed ships in a defeated fleet are lost automatically. Higher tiers follow normal whole-ship casualty calculations. Production coverage and economic ships are visible when inspecting fleets.
 ### Transport troops
 Load or unload across a shared land-water edge, with no port required. Every participating ship and passenger must be fresh. Loading and unloading end their activation. One berth holds one unit of any tier, including a merchant. Embarked troops cannot produce, guard or act separately. Land on a clear or allied beach, never directly assault an enemy-occupied tile. Unloaded troops can attack on a later owner turn.
+### Loss of a carrier
 If a carrier sinks, move passengers into spare berths on friendly surviving participating ships on that water hex. Any without a berth die. There is no goods cargo system. A fleet cannot raid or destroy a town from offshore, and cannot cut a land road.
 ### Shore bombardment
 Land artillery can attack an adjacent enemy fleet. Only the selected artillery participates, at twice its tier in combat power, plus its normal tower support. The fleet returns fire with ordinary naval power and its tower support. Spend 1 movement point, including after movement if points remain. Use normal power-difference losses and whole-unit rounding. Artillery stays on land; defeated ships retreat if possible or remain trapped. You can bombard again with another point. This lets land forces deal with fleets in isolated lakes.
@@ -110,24 +126,30 @@ Land artillery can attack an adjacent enemy fleet. Only the selected artillery p
 
 ### Purchase and play
 Each of four tiers has eight different cards. Pay to see two distinct random cards from that tier and keep one. All pairs are equally likely; previous purchases and choices do not affect the next draw. No deck depletion, discard pile or reroll. An unresolved offer survives save/load.
+### Tier requirements and costs
 Tier I needs a settlement and costs 1 Grain + 1 Wool + 1 Iron ore. Tier II needs an unbesieged City I and costs 1 Stone + 1 Salt + 1 Cloth. Tier III needs City II and costs 2 Pottery + 1 Rations + 1 Fuel. Tier IV needs City III and costs 2 Cloth + 2 Chemicals + 2 Fuel. Buy and play any number per turn; finish a pending choice before buying another.
 Cards can be played immediately after selection, including Scholar discoveries. Play held cards before rolling or during your action phase whenever legal. No off-turn reactions, resale, trading or hand limit. Rivals can see hand counts, purchases and played effects, but not hidden card identities. A pending discovery counts as one held card.
 ### Grants, discounts and movement
-Read every card's exact effect in the catalogue below. Free placements expire at turn end and still obey city tier, placement, occupation, readiness and sequential-upgrade rules. New recruits cannot act this turn. Commissions cover their printed ship tier only. Local Levy excludes artillery and merchants; other unrestricted unit commissions include merchants.
+The tables below list each card’s exact effect. Free placements expire at turn end and still obey city tier, placement, occupation, readiness and sequential-upgrade rules. New recruits cannot act this turn. Commissions cover their printed ship tier only. Local Levy excludes artillery and merchants; other unrestricted unit commissions include merchants.
 Free routes and recruits accumulate; separate ship grants retain their tiers. Upgrade discounts queue, with the oldest matching one used first. They do not combine on one upgrade and unused allowances produce no refund or stored goods. The normal one-expedition-per-turn and one-operation-per-target limits still apply.
+### Movement and siege effects
 Movement bonuses add and can affect forces that have already used all their normal points, but never undo an activation-ending action, ready new recruits, permit passage through enemies or enable stationary destruction after moving. Siege Engineers adds three steps before a legal siege operation. Campaign Orders can also add two steps with a separate adjacent fresh army; the same unit cannot receive both parts. No siege progress can be added to a town already operated against or raided this turn. Guards must still be cleared, and the raid-to-destruction delay remains.
 
 ## City guilds
 
 ### Slots and tiers
-City I/II/III has 1/2/3 slots for different guild types and supports guild tiers I/II/III. Build every tier in order. Stone anchors the early costs; Blocks and Fuel support advanced guilds. The catalogue shows all construction prices and each tier's contract. Different cities can repeat the same specialization.
+City I/II/III has 1/2/3 slots for different guild types and supports guild tiers I/II/III. Build every tier in order. Tier-I guilds use raw goods; tier II uses raw and processed goods; tier III uses processed goods only. The catalogue shows all construction prices and each tier's contract. Different cities can repeat the same specialization.
+### Contract timing
 A newly built or upgraded tier opens next owner turn. Each unlocked tier has its own one-order-per-owner-turn allowance. A tier-III guild may use all three contracts in any order, with different targets. No upkeep. Orders draw from the faction pool and deliver output to that guild's city, without reducing ordinary production. Sieged cities cannot build, upgrade, dissolve or use guilds.
+### Standing orders and removal
 Economic guilds except Scholars may save a separate standing recipe for each tier. After your dice roll, cities in founding order try tier I→III once each. Unaffordable or blocked recipes wait while other valid orders can run. No borrowing or automatic bank imports. Pause or edit each tier separately. Dissolving refunds nothing; a replacement starts at I and opens next turn. Guilds disappear with a destroyed city, transfer in a rebellion and add six public power points per tier. Rebel standing orders are paused.
 ### Local production and trade
 Prospectors require an adjacent clear Stone, Coal, Iron ore, Salt or Gold deposit. Gold yields half the mineral quantity. Farmers require adjacent clear Grain or Wool land, never Hides, Fish or Whales. Extractors require adjacent clear Wood or Clay. Their number does not matter for orders; their normal dice output continues. Without a suitable deposit that specialization cannot work.
+### Conversion and exchange
 Artisans convert the selected raw to its normal processed partner without an extension. Grain or Fish makes Rations, Coal or Oil makes Fuel, Gold makes Gold bars. Pay the selected raw inputs plus listed supporting inputs; where these coincide, the quantities add. Merchant contracts use the exact selected goods and their stated batch rates, independently of ports and normal bank rates.
 ### Army and fleet services
-Commanders and Navigators supply entire selected eligible formations beside the guild city, regardless of size. The bonus follows each unit through splits and merges; each unit can receive that guild service once per owner turn. They add movement, not battle power. New or embarked units and units whose activation ended are ineligible. Navigator repair of movement does not skip transport readiness rules. Consult the tier contract for the exact bonus and range.
+Commanders and Navigators supply entire selected eligible formations beside the guild city, regardless of size. The bonus follows each unit through splits and merges; each unit can receive that guild service once per owner turn. They add movement, not battle power. New or embarked units and units whose activation ended are ineligible. Navigator movement recovery does not skip transport readiness rules. Consult the tier contract for the exact bonus and range.
+### Engineer equipment
 Engineers equip every eligible combat unit in one adjacent army. Its siege bonus is the highest equipped unit's bonus, not a sum: +2/+4/+6 by contract tier. Splitting retains equipment, merging does not multiply it. Each unit receives tools once per owner turn, separately from Commander supplies. Tools expire at the start of the next owner turn. They affect city and tower sieges, never battles; new and embarked units are ineligible.
 Builders grant 2/3/6 free route segments this turn, with normal connections and blocking; no free settlements or camps. Scholars provide a choice of two ordinary random cards at research tier II/III/IV, playable immediately. They are manual only; finish a pending discovery before another order. Higher guild tiers retain each lower tier's separate contract.
 
@@ -142,7 +164,9 @@ Only the strongest living AI faction is forbidden to fund or use research-funded
 Whenever someone expands the map, each eliminated base faction has a 10% return chance. A returning faction receives one to three legal new settlements and one to three troops in the newly revealed area, subject to space. The new warehouses start empty. The game never forces an illegal placement or replaces occupied territory. Returns restore original faction identities, not new extra factions. They rejoin normal turn order without an immediate bonus turn.
 ### Rebellions
 A rebellion is checked only at the affected faction's own turn start, only while an eliminated base AI faction is available. The strongest living AI has 10% risk; the second AI has 5%. For humans ranked among all survivors, first has 8%, second 4%. One-town factions are exempt without passing the chance down. No cooldown; restored factions can later suffer rebellion themselves. Finished games stay finished.
+### Rebel territory
 Restore a randomly chosen eliminated AI faction. An AI victim loses a random 25–45% share, a human 15–35%, each whole percentage equally likely. A random town anchors one or more compact regions, with nearby assets favoured and some variation. Transfer whole towns with walls, extensions, guilds and colocated towers; at least one defects and one stays loyal. Routes transfer with camps. Attachments can make exact shares differ.
+### Transferred assets
 Transfer the rounded share of each stored good and held research cards, conserving totals. Preserve stores in place where possible and adjust only the difference. Troops and ships follow the region proportionally; carriers and passengers stay together. Divided stacks use a reachable safe tile of the right terrain or remain loyal if none exists. Readiness is preserved so defectors gain no early action. Temporary research grants stay loyal; affected sieges clear. Rebels return to their original seat, with no bonus turn, and no inherited alliance. Announcements show the share and location.
 
 ## Alliances and AI
@@ -156,11 +180,13 @@ A new pact locks for five full rounds. Adding a member does not restart the lock
 AI leaves an unlocked pact if partners are too distant, the strongest faction is inside it, no nearby common enemy remains at least 15% plus four power stronger than every member, or combined alliance power exceeds 150% of the strongest qualifying threat. No extra random delay. Departing partners observe a five-owner-turn contact pause before invitations or reunions, including via mergers. Invitations to the same recipient also have a five-turn pause.
 ### Fighting and sharing space
 Allies cannot attack, bombard, siege, raid or destroy one another's property. They may share tiles, pass through one another and land on allied beaches. They do not block production. Allied land guards protect nearby allied towns, towers and routes. Infrastructure, costs and commands remain separate; allied routes do not extend your building network.
+### Combined defense
 Co-located allied defenders combine terrain-adjusted power. Each represented owner's towers add once. Only the active player's selected units attack. Combined defenders take normal whole-unit losses; a human defender chooses if present, otherwise the lowest-ID defender. Survivors retreat together to a tile safe for all. Neighbouring allied armies do not join automatically.
 Leaving while sharing a tile neither teleports nor kills anyone. Former allies become hostile immediately and may withdraw or fight in place for 1 movement point. It does not allow crossing new hostile stacks. The faction view shows members, combined public power, lock time and the leave action.
 ### AI priorities
 The AI pursues sole victory, using public power, income, military reach and terrain. It protects exposed towns, expands toward useful resources, builds industry, buys tools when useful and seeks winning battles or raids. It uses transports to cross seas and artillery against fleets. Easy, Standard and Hard change planning breadth, not costs, dice or free resources.
 Pressure against a leader begins beyond a 25% or six-point lead, whichever is larger, and rises sharply toward maximum at 1.8 times the runner-up. This applies equally to human and AI leaders. Smaller factions favour the leader's exposed income and towns, support useful neighbours with favourable trades and reduce attacks on other small factions. They avoid hopeless frontal attacks because winners suffer no military losses. Priorities shift as power changes, subject to alliance locks.
+### Public power and difficulty
 Public power is an estimate of economic and military capacity, not a victory score or direct army strength. Inspect the faction panel for its components. Speed settings change the delay between AI actions; they do not change difficulty or rules.
 
 ## Controls and saving

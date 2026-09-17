@@ -1196,3 +1196,178 @@ a svg {
     padding: 12px;
   }
 }
+
+/* Illustrated rule reference. Terrain crops use the same atlas as the board. */
+.terrain-reference {
+  margin: 28px 0 36px;
+}
+.reference-intro,
+.reference-note {
+  font-size: 13px;
+  line-height: 1.65;
+  max-width: 850px;
+  margin: 14px 0 20px;
+  color: var(--muted);
+}
+.reference-note {
+  border-left: 3px solid #96a78d;
+  padding: 8px 16px;
+}
+.terrain-reference-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.terrain-row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: #fffdf7;
+  break-inside: avoid;
+}
+.terrain-caption {
+  flex: 0 0 112px;
+  text-align: center;
+}
+.terrain-picture {
+  display: block;
+  width: 108px;
+  height: 120px;
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  background-color: #287f9c;
+  print-color-adjust: exact;
+}
+.empty-water {
+  background-image: repeating-radial-gradient(
+    ellipse at 10% 0,
+    transparent 0 18px,
+    #7fd5d455 19px 20px,
+    transparent 21px 38px
+  );
+}
+.terrain-caption h3 {
+  font: 600 12px/1.4 system-ui;
+  margin: 9px 0 3px;
+}
+.terrain-caption small {
+  font-size: 11px;
+  color: var(--muted);
+}
+.terrain-yields {
+  min-width: 0;
+}
+.output-label {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+  margin: 12px 0 5px;
+}
+.output-label:first-child {
+  margin-top: 0;
+}
+.terrain-outputs,
+.terrain-outputs > span {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 650;
+}
+.terrain-outputs svg {
+  flex-shrink: 0;
+}
+.terrain-yields p {
+  font-size: 11px;
+  line-height: 1.6;
+  margin-top: 10px;
+  color: var(--muted);
+}
+.good-sources {
+  display: flex;
+  gap: 8px;
+  margin: -5px 0 17px;
+}
+.good-sources .terrain-picture {
+  width: 72px;
+  height: 80px;
+}
+.prose ul {
+  padding-left: 23px;
+  margin: 14px 0 24px;
+}
+.prose li {
+  font-size: 14px;
+  line-height: 1.7;
+  color: #3d5349;
+  padding-left: 5px;
+  margin: 9px 0;
+}
+.prose p {
+  line-height: 1.7;
+}
+.guide-hero {
+  min-height: 340px;
+}
+.hero-copy {
+  padding-top: 32px;
+  padding-bottom: 90px;
+}
+.hero-copy h1 {
+  font-size: clamp(36px, 4vw, 52px);
+}
+.hero-copy p {
+  max-width: 470px;
+}
+@media (max-width: 1100px) {
+  .terrain-reference-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 560px) {
+  .terrain-row {
+    padding: 14px;
+    gap: 14px;
+  }
+  .terrain-caption {
+    flex-basis: 88px;
+  }
+  .terrain-caption .terrain-picture {
+    width: 88px;
+    height: 98px;
+  }
+  .hero-copy {
+    padding-bottom: 100px;
+  }
+  .hero-facts {
+    gap: 18px;
+  }
+  .hero-facts > span {
+    font-size: 22px;
+  }
+}
+@media print {
+  .terrain-reference-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .terrain-reference h2 {
+    font-size: 18pt;
+  }
+  .terrain-row {
+    padding: 10px;
+    gap: 10px;
+  }
+  .terrain-caption {
+    flex-basis: 82px;
+  }
+  .terrain-caption .terrain-picture {
+    width: 80px;
+    height: 90px;
+  }
+  .prose li {
+    font-size: 10pt;
+  }
+}

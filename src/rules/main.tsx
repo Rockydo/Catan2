@@ -23,6 +23,7 @@ import {
   MousePointer2,
 } from "lucide-react";
 import chapters from "./chapters.json";
+import { TerrainReference, GoodSources } from "./TerrainReference";
 import { localize as tx, getLocale, setLocale, useLocale } from "../i18n";
 import { ResourceIcon } from "../ui/ResourceIcon";
 import { MilitaryPortrait } from "../ui/MilitaryArt";
@@ -80,18 +81,30 @@ function Cost({ stock }: { stock: Stock }) {
   );
 }
 function Prose({ body }: { body: string }) {
+  const blocks = body
+    .split("\n")
+    .filter(Boolean)
+    .reduce<string[][]>((result, line) => {
+      if (line.startsWith("- ") && result.at(-1)?.[0].startsWith("- "))
+        result.at(-1)!.push(line);
+      else result.push([line]);
+      return result;
+    }, []);
   return (
     <div className="prose">
-      {body
-        .split("\n")
-        .filter(Boolean)
-        .map((line, i) =>
-          line.startsWith("## ") ? (
-            <h3 key={i}>{line.slice(3)}</h3>
-          ) : (
-            <p key={i}>{line}</p>
-          ),
-        )}
+      {blocks.map((lines, i) =>
+        lines[0].startsWith("## ") ? (
+          <h3 key={i}>{lines[0].slice(3)}</h3>
+        ) : lines[0].startsWith("- ") ? (
+          <ul key={i}>
+            {lines.map((line, j) => (
+              <li key={j}>{line.slice(2)}</li>
+            ))}
+          </ul>
+        ) : (
+          <p key={i}>{lines[0]}</p>
+        ),
+      )}
     </div>
   );
 }
@@ -107,11 +120,13 @@ function ProductionDemo() {
       aria-label={labels("Production example", "Exemple de production")}
     >
       <div>
-        <span className="eyebrow">{labels("TRY IT", "ESSAYEZ")}</span>
+        <span className="eyebrow">
+          {labels("WORKED EXAMPLE", "EXEMPLE DE CALCUL")}
+        </span>
         <h3>
           {labels(
-            "One mountain. Two kinds of income.",
-            "Une montagne, deux productions.",
+            "Production: town and workshop",
+            "Production : agglomération et atelier",
           )}
         </h3>
         <p>
@@ -228,7 +243,7 @@ function SiegeDemo() {
     <section className="demo siege-demo">
       <div>
         <span className="eyebrow">
-          {labels("PLAN THE BREACH", "PRÉPAREZ LA BRÈCHE")}
+          {labels("SIEGE CALCULATION", "CALCUL DU SIÈGE")}
         </span>
         <h3>{labels("When can I raid?", "Quand puis-je piller ?")}</h3>
         <p>
@@ -384,7 +399,7 @@ function Catalogue({ initial = "goods" }: { initial?: CatalogSection }) {
           <span className="eyebrow">
             {labels("LIVE GAME REFERENCE", "DONNÉES DU JEU")}
           </span>
-          <h2>{labels("The field catalogue", "Le catalogue du terrain")}</h2>
+          <h2>{labels("Reference tables", "Tables de référence")}</h2>
         </div>
         <span className="data-note">
           {labels(
@@ -446,6 +461,7 @@ function Catalogue({ initial = "goods" }: { initial?: CatalogSection }) {
         {kind === "goods" &&
           GOODS.filter((g) => matches(tx(GOOD_INFO[g].name))).map((g) => (
             <article className="good-card" key={g}>
+              <GoodSources good={g} />
               <ResourceIcon good={g} size={48} />
               <h3>{tx(GOOD_INFO[g].name)}</h3>
               <span>
@@ -704,7 +720,7 @@ function App() {
         <span>
           CATANE{" "}
           <small>
-            {labels("FRONTIERS / FIELD GUIDE", "FRONTIÈRES / GUIDE DU JOUEUR")}
+            {labels("FRONTIERS / RULEBOOK", "FRONTIÈRES / RÈGLES DU JEU")}
           </small>
         </span>
       </a>
@@ -744,16 +760,18 @@ function App() {
       <>
         <div className="chapter-heading">
           <span className="eyebrow">
-            {labels("FIELD GUIDE", "GUIDE DU JOUEUR")} /{" "}
+            {labels("RULEBOOK", "LIVRET DE RÈGLES")} /{" "}
             {String(chapters.indexOf(c) + 1).padStart(2, "0")}
           </span>
           <h1>{c.title[locale]}</h1>
           <p>{c.summary[locale]}</p>
         </div>
-        {c.id === "economy" && <ProductionDemo />}
+        {c.id === "economy" && <TerrainReference />}
+        {c.id === "sea" && <TerrainReference seaOnly />}
         {c.id === "world" && <DiceOdds />}
         {c.id === "siege" && <SiegeDemo />}
         <Prose body={c.body[locale]} />
+        {c.id === "economy" && <ProductionDemo />}
         {c.id === "research" && <Catalogue initial="cards" />}
         {c.id === "guilds" && <Catalogue initial="guilds" />}
         {c.id === "armies" && <Catalogue initial="units" />}
@@ -849,12 +867,6 @@ function App() {
             "Rules for the current game",
             "Règles de la version actuelle",
           )}
-          <small>
-            {labels(
-              "No account. No outside assets.",
-              "Sans compte ni ressources externes.",
-            )}
-          </small>
         </div>
       </aside>
       <main className="rule-main" id="main">
@@ -865,6 +877,7 @@ function App() {
                 <div className="chapter-heading">
                   <h1>{c.title[locale]}</h1>
                 </div>
+                {c.id === "economy" && <TerrainReference />}
                 <Prose body={c.body[locale]} />
               </section>
             ))}
@@ -912,7 +925,7 @@ function App() {
             <span className="eyebrow">
               {labels("SEARCH RESULTS", "RÉSULTATS")}
             </span>
-            <h1>{labels("Find your answer", "Trouvez votre réponse")}</h1>
+            <h1>{labels("Search results", "Résultats de recherche")}</h1>
             <p>
               {found.length}{" "}
               {labels("matching chapters", "chapitres correspondants")}
@@ -976,22 +989,13 @@ function App() {
               <div className="hero-shade" />
               <div className="hero-copy">
                 <span className="eyebrow">
-                  {labels(
-                    "WELCOME TO THE FRONTIER",
-                    "BIENVENUE À LA FRONTIÈRE",
-                  )}
+                  {labels("CATANE FRONTIERS", "CATANE FRONTIÈRES")}
                 </span>
-                <h1>
-                  {labels("A small settlement.", "Une petite colonie.")}
-                  <br />
-                  <em>
-                    {labels("A world to claim.", "Un monde à conquérir.")}
-                  </em>
-                </h1>
+                <h1>{labels("Rules of play", "Règles du jeu")}</h1>
                 <p>
                   {labels(
-                    "Learn your first turn in minutes. Find every rule when you need it.",
-                    "Apprenez votre premier tour en quelques minutes. Retrouvez chaque règle au bon moment.",
+                    "Setup, turn sequence and complete rules. Costs, unit statistics and card effects are listed in the reference tables.",
+                    "Mise en place, déroulement d’un tour et règles complètes. Les tables de référence regroupent les coûts, les caractéristiques des unités et les effets des cartes.",
                   )}
                 </p>
                 <button className="primary" onClick={() => go("start")}>
@@ -1013,59 +1017,54 @@ function App() {
                   22 <small>{labels("goods", "ressources")}</small>
                 </span>
                 <span>
-                  ∞ <small>{labels("frontier", "frontière")}</small>
+                  110 / 220{" "}
+                  <small>{labels("starting tiles", "tuiles initiales")}</small>
                 </span>
               </div>
             </section>
             <section className="learning-path">
               <span className="eyebrow">
-                {labels("YOUR FIRST FEW TURNS", "VOS PREMIERS TOURS")}
+                {labels("QUICK REFERENCE", "REPÈRES")}
               </span>
               <h2>
                 {labels(
-                  "Start with three decisions.",
-                  "Trois décisions pour commencer.",
+                  "Setup and turn sequence",
+                  "Mise en place et déroulement",
                 )}
               </h2>
               <div className="steps">
                 <button onClick={() => go("start")}>
                   <span>01</span>
                   <Sprout />
-                  <h3>
-                    {labels("Choose your ground", "Choisissez votre terrain")}
-                  </h3>
+                  <h3>{labels("1. Setup", "1. Mise en place")}</h3>
                   <p>
                     {labels(
-                      "Several goods. Several numbers. Room to grow.",
-                      "Plusieurs ressources, plusieurs numéros, de la place pour grandir.",
+                      "Place two settlements, each with a road or sea route. Collect starting resources from the second settlement.",
+                      "Placez deux colonies, chacune avec une route ou liaison maritime. La seconde reçoit les ressources de départ.",
                     )}
                   </p>
                   <ArrowRight />
                 </button>
-                <button onClick={() => go("build")}>
+                <button onClick={() => go("economy")}>
                   <span>02</span>
                   <Pickaxe />
-                  <h3>
-                    {labels("Build your income", "Développez vos revenus")}
-                  </h3>
+                  <h3>{labels("2. Production", "2. Production")}</h3>
                   <p>
                     {labels(
-                      "Camps now, cities and workshops next.",
-                      "Des camps d’abord, puis des villes et ateliers.",
+                      "Roll two dice. Every faction collects from tiles matching the total, including 7.",
+                      "Lancez deux dés. Toutes les factions produisent sur les tuiles portant le total obtenu, y compris 7.",
                     )}
                   </p>
                   <ArrowRight />
                 </button>
-                <button onClick={() => go("armies")}>
+                <button onClick={() => go("start")}>
                   <span>03</span>
                   <Shield />
-                  <h3>
-                    {labels("Keep what you build", "Protégez vos acquis")}
-                  </h3>
+                  <h3>{labels("3. Actions", "3. Actions")}</h3>
                   <p>
                     {labels(
-                      "Guard your warehouses. Watch the next border.",
-                      "Gardez vos entrepôts et surveillez vos frontières.",
+                      "Build, trade, recruit, move and fight in any order. Then end your turn.",
+                      "Construisez, échangez, recrutez, déplacez et combattez dans l’ordre souhaité. Puis terminez votre tour.",
                     )}
                   </p>
                   <ArrowRight />
@@ -1074,12 +1073,8 @@ function App() {
             </section>
             <ProductionDemo />
             <section className="topic-section">
-              <span className="eyebrow">
-                {labels("EXPLORE THE RULES", "EXPLOREZ LES RÈGLES")}
-              </span>
-              <h2>
-                {labels("One question at a time.", "Une question à la fois.")}
-              </h2>
+              <span className="eyebrow">{labels("CONTENTS", "SOMMAIRE")}</span>
+              <h2>{labels("Rules by subject", "Règles par thème")}</h2>
               <div className="topic-grid">
                 {chapters.slice(1).map((c, i) => {
                   const Icon = icons[i + 1];

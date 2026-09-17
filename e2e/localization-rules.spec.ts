@@ -57,7 +57,7 @@ test("bilingual rule guide has responsive navigation, search and working example
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto("/rules.html");
   await expect(
-    page.getByRole("heading", { name: /A small settlement/ }),
+    page.getByRole("heading", { name: "Rules of play" }),
   ).toBeVisible();
   await page.getByRole("button", { name: "Français", exact: true }).click();
   await expect(page).toHaveURL(/rules-fr.html/);
@@ -212,4 +212,81 @@ test("French recruitment, trade and research controls retain working commands", 
       ),
     )
     .toBe(1);
+});
+
+test("illustrated terrain reference pairs artwork with raw and workshop outputs", async ({
+  page,
+}) => {
+  for (const locale of ["en", "fr"]) {
+    await page.goto(`/rules${locale === "fr" ? "-fr" : ""}.html#economy`);
+    await expect(page.locator(".terrain-row")).toHaveCount(13);
+    const whale = page.locator('[data-terrain="whale"]');
+    for (const name of locale === "fr"
+      ? ["Peaux", "Huile", "Cuir"]
+      : ["Hides", "Oil", "Leather"])
+      await expect(whale.locator(".terrain-outputs")).toContainText([name]);
+    await expect(page.locator('[data-terrain="fish"]')).toContainText(
+      "Rations",
+    );
+    await expect(page.locator('[data-terrain="water"]')).toContainText(
+      locale === "fr" ? "Aucune" : "None",
+    );
+    // Load the exact files used by CSS, not just placeholder elements.
+    const art = await page
+      .locator(".terrain-picture")
+      .evaluateAll(async (nodes) => {
+        const urls = [
+          ...new Set(
+            nodes
+              .map(
+                (n) =>
+                  getComputedStyle(n).backgroundImage.match(
+                    /url\(["']?(.*?)["']?\)/,
+                  )?.[1],
+              )
+              .filter(Boolean),
+          ),
+        ];
+        return await Promise.all(
+          urls.map(
+            (url) =>
+              new Promise<boolean>((resolve) => {
+                const image = new Image();
+                image.onload = () => resolve(image.naturalWidth > 0);
+                image.onerror = () => resolve(false);
+                image.src = url!;
+              }),
+          ),
+        );
+      });
+    expect(art).toHaveLength(4);
+    expect(art.every(Boolean)).toBe(true);
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth + 1,
+      ),
+    ).toBe(true);
+    const audit = await new AxeBuilder({ page })
+      .withTags(["wcag2a", "wcag2aa"])
+      .analyze();
+    expect(
+      audit.violations.filter((v) =>
+        ["serious", "critical"].includes(v.impact ?? ""),
+      ),
+    ).toEqual([]);
+  }
+  await page.screenshot({
+    path: `test-artifacts/terrain-rulebook-${test.info().project.name}.png`,
+    fullPage: true,
+  });
+  await page.goto("/rules-fr.html#catalog");
+  await expect(page.locator(".good-card")).toHaveCount(22);
+  await expect(
+    page
+      .locator(".good-card")
+      .filter({
+        has: page.getByRole("heading", { name: "Huile", exact: true }),
+      })
+      .locator(".terrain-picture"),
+  ).toHaveCount(1);
 });
