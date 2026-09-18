@@ -6,6 +6,68 @@ import { chooseAIAction } from "../src/game/ai";
 import { run } from "../tests/helpers";
 import AxeBuilder from "@axe-core/playwright";
 
+test("regional terrain art loads in the climate guide", async ({ page }) => {
+  await page.goto("/rules.html#world");
+  const reference = page.locator(".climate-reference");
+  for (const [climate, assets] of [
+    [
+      "Desert",
+      [
+        "desert-gold",
+        "desert-iron",
+        "desert-stone",
+        "desert-coal",
+        "desert-salt",
+        "oasis",
+      ],
+    ],
+    [
+      "Tropical",
+      [
+        "tropical-gold",
+        "tropical-iron",
+        "tropical-stone",
+        "tropical-coal",
+        "tropical-salt",
+        "tropical-clay",
+      ],
+    ],
+    ["Cold", ["cold-clay", "cold-stone"]],
+    ["Steppe", ["steppe-clay"]],
+  ] as const) {
+    await reference.getByRole("button", { name: climate, exact: true }).click();
+    for (const asset of assets) {
+      const picture = reference.locator(`[style*="terrain-${asset}-v1.webp"]`);
+      await expect(picture).toHaveCount(1);
+      expect(
+        await picture.evaluate(async (el) => {
+          const url = getComputedStyle(el).backgroundImage.match(
+            /url\(["']?(.*?)["']?\)/,
+          )![1];
+          const image = new Image();
+          image.src = url;
+          await image.decode();
+          return image.naturalWidth;
+        }),
+      ).toBe(512);
+    }
+    await reference.screenshot({
+      path: `test-artifacts/regional-${climate}-${test.info().project.name}.png`,
+    });
+  }
+  await reference
+    .getByRole("button", { name: "Temperate", exact: true })
+    .click();
+  await expect(
+    reference.locator('[style*="terrain-atlas-v2.png"]'),
+  ).not.toHaveCount(0);
+  await expect(
+    reference.locator(
+      '[style*="terrain-tropical-"], [style*="terrain-desert-"]',
+    ),
+  ).toHaveCount(0);
+});
+
 for (const locale of ["en", "fr"] as const) {
   test(`${locale}: choose Woods output and preserve it on reload`, async ({
     page,

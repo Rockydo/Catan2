@@ -5,8 +5,16 @@ import { RAW, type World, type Hex, type Vertex, type Edge } from "./types";
 export const WATER_PROBABILITY = generation.waterProbability;
 export const PORT_RESOURCES = RAW.filter((g) => g !== "gold" && g !== "oil");
 export function restoreGoldPorts(world: World) {
-  for (const edge of Object.values(world.edges))
+  for (const edge of Object.values(world.edges)) {
+    if (
+      edge.harbor &&
+      edge.tiles.some((id) => world.tiles[id]?.resource === "ice")
+    ) {
+      delete edge.harbor;
+      continue;
+    }
     if (edge.harbor === "gold") edge.harbor = "generic";
+  }
 }
 export const LAND_RESOURCES = RAW.filter(
   (g) => g !== "fish" && g !== "oil" && g !== "gold",
@@ -201,6 +209,7 @@ export function addHexes(world: World, seed: string, ids: string[]) {
     if (
       e.harbor ||
       e.tiles.length !== 2 ||
+      e.tiles.some((id) => world.tiles[id].resource === "ice") ||
       used.has(e.vertices[0]) ||
       used.has(e.vertices[1])
     )

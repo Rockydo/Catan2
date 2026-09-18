@@ -40,7 +40,7 @@ Old revealed tiles keep their original terrain and yields. They are classified T
 ### Tile numbers and dice
 Every productive tile receives a uniform random number from 2 through 12, including 7. Dice are two independent d6, so tile numbers are equally common in generation but not equally likely to activate. Dice, terrain, research and rebellion randomness are saved separately. Reloading does not reroll an offer or the map. Hidden coordinates cannot be inspected by players or AI.
 ### Ports
-Eligible fully revealed coastal edges have a 10% port-candidate chance. Half are generic 3:1 ports; half are specific 2:1 raw-resource ports, excluding Gold and Oil. Ports cannot share an intersection. A town on either end uses the port, unless under siege or its sea tile is blockaded. In older saves, Gold ports are treated as generic ports.
+Eligible fully revealed coastal edges have a 10% port-candidate chance. Ports require open water beside solid land: frozen sea cannot host a port, but snow plains can. Invalid ice ports from older saves are removed on load. Half are generic 3:1 ports; half are specific 2:1 raw-resource ports, excluding Gold and Oil. Ports cannot share an intersection. A town on either end uses the port, unless under siege or its sea tile is blockaded. In older saves, Gold ports are treated as generic ports.
 ### Setup restrictions
 An extreme map may lack enough legal starting sites. The game rejects a seed with insufficient legal starting sites. During setup a placement cannot make it impossible to finish everyone's two settlements. A missing resource alone does not invalidate a map: the reserve can supply it through trade.
 

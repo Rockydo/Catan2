@@ -6,6 +6,11 @@ import {
   type Biome,
   type TerrainResource,
 } from "../game/climate-content";
+import {
+  REGIONAL_ART_KEYS,
+  terrainPatternKey,
+  terrainArtFile,
+} from "./terrain-art";
 import type { TerrainKey } from "../game/content";
 import { localize as tx, useLocale } from "../i18n";
 import { friendly } from "../game/relations";
@@ -111,7 +116,7 @@ const TerrainPatterns = memo(function TerrainPatterns() {
             "gold",
             "fish",
             "whale",
-            "cold-stone",
+            ...REGIONAL_ART_KEYS,
             ...BIOMES.filter((b) => b !== "water"),
           ]),
         ].map((resource) => {
@@ -135,9 +140,7 @@ const TerrainPatterns = memo(function TerrainPatterns() {
               <image
                 href={
                   dedicated
-                    ? ["gold", "fish", "whale"].includes(art)
-                      ? `./assets/terrain-${art}-${art === "fish" ? "v2" : "v1"}.png`
-                      : `./assets/terrain-${art}-v1.webp${art === "cod" ? "?v=3" : ["forest", "hunting-forest", "jungle"].includes(art) ? "?v=2" : ""}`
+                    ? `./assets/${terrainArtFile(art)}`
                     : "./assets/terrain-atlas-v2.png"
                 }
                 width={dedicated ? 100 : 500}
@@ -156,7 +159,7 @@ const TerrainArt = memo(function TerrainArt({
   y,
   seed,
 }: {
-  resource: TerrainKey | "cold-stone";
+  resource: string;
   x: number;
   y: number;
   seed: number;
@@ -308,11 +311,7 @@ const TerrainLayer = memo(function TerrainLayer({
                 filter="url(#tile-shadow)"
               />
               <TerrainArt
-                resource={
-                  tile.climate === "cold" && tileTerrain(tile) === "stone"
-                    ? "cold-stone"
-                    : tileTerrain(tile)
-                }
+                resource={terrainPatternKey(tileTerrain(tile), tile.climate)}
                 x={x}
                 y={y}
                 seed={hash(tile.id)}

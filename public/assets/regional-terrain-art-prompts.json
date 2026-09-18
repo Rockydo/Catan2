@@ -1,0 +1,89 @@
+{
+  "tool": "Built-in image_gen",
+  "assets": [
+    {
+      "key": "desert-gold",
+      "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-0acb5bad-cd71-40f0-8e38-b66a9b003282.png",
+      "output": "public/assets/terrain-desert-gold-v1.webp",
+      "prompt": "Use case: lighting-weather. Reference/edit target: supplied Gold mountains game tile. Create a DESERT-climate version: retain instantly readable large metallic gold veins in grey-brown rocky mountains, the small timber mine entrance, gold-bearing rock pile and mine cart. Replace ALL forest, grass, moss and green bushes with ochre sand, sun-bleached gravel, eroded rusty sandstone and wind-swept dunes around the rock outcrops. Very dry hot desert, virtually no vegetation. Preserve strong grey rock versus bright metallic gold contrast; avoid making the whole scene uniformly gold. Match the refined painterly miniature board-game aesthetic, elevated three-quarter overhead view, square continuous edge-to-edge landscape, no horizon, no frame or hex outline, no text or people. One single tile, not a sheet."
+    },
+    {
+      "key": "desert-iron",
+      "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-3b381219-f801-46ec-8009-aa14fc81295e.png",
+      "output": "public/assets/terrain-desert-iron-v1.webp",
+      "prompt": "Use case: stylized-concept. Create ONE square DESERT IRON MOUNTAINS terrain for a medieval hex strategy board game. Reference image is the game's terrain atlas for painterly style only, specifically iron mountain mine top right. Single landscape, DO NOT reproduce a grid. Rugged dark slate-grey iron-bearing ridges with rusty red mineral bands, one readable timber mine entrance and small cart of dull grey iron ore, surrounded by golden ochre sand dunes, windblown dust and dry angular gravel. Harsh hot arid desert, no trees, grass, moss, snow or green vegetation. Rock and ore should look dark grey/rusty, not black coal and not bright gold. Terrain continues edge to edge. Elevated three-quarter overhead view, no horizon; refined miniature painterly board-game style, warm dry light, broad readable silhouettes and careful detail, important mine and rocks in upper two thirds, simpler sandy foreground. No text, numbers, border, hex outline, icons, people or watermark."
+    },
+    {
+      "key": "desert-stone",
+      "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-844111bd-7c5b-4adc-92cf-3e7045954fee.png",
+      "output": "public/assets/terrain-desert-stone-v1.webp",
+      "prompt": "Use case: stylized-concept. Create ONE square DESERT STONE QUARRY terrain for a medieval hex board game. Reference atlas supplies painted style and lower-left quarry concept, never reproduce its grid. Large pale beige limestone and sandstone quarry faces, stepped ledges, square cut stone blocks and a small timber lifting tripod, surrounded by dry golden dunes and windblown sand. Clear stone-block geometry differentiates this from iron or gold mountains. No plants, grass, moss, pine trees, snow, water or ore veins. Warm sun-bleached desert palette, soft lavender rock shadows and ochre sand. Elevated three-quarter overhead view, continuous landscape edge to edge with no horizon, beautiful refined painterly miniature style, readable at small hex size. No frame, text, hex outline, people, UI or watermark."
+    },
+    {
+      "key": "desert-coal",
+      "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-f235613d-3e3e-4719-a191-8b368f4376d6.png",
+      "output": "public/assets/terrain-desert-coal-v1.webp",
+      "prompt": "Use case: stylized-concept. Create ONE square DESERT COAL HILLS terrain for a medieval hex board game. Reference atlas is painted style reference, coal mine at lower right for subject only, do not reproduce the grid. Broad low eroded sandstone hills with very obvious black coal seams and chunky black coal piles, a modest timber mine entrance and coal cart. Surround the dark coal outcrops with golden ochre sand dunes, bleached rocky gravel and windblown sand. Hot dry desert with absolutely no grass, trees, green bushes, water, moss or snow. Black coal must be the clear resource cue, no metallic gold veins, no iron-red streaks. Elevated three-quarter overhead view, soft warm natural sunlight, refined painterly miniature board-game aesthetic, strong readable shapes at small tile size, single continuous square landscape edge to edge with no horizon. No text, UI, border, hex outline, people or watermark."
+    },
+    {
+      "key": "desert-salt",
+      "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-ca8a9b71-ada0-4b85-9930-bb6a1a3a6b4e.png",
+      "output": "public/assets/terrain-desert-salt-v1.webp",
+      "prompt": "Use case: stylized-concept. ONE square DESERT SALT FLATS terrain for a painted medieval hex board game. Reference atlas gives the style and salt tile lower row fourth position, do not copy grid. A vast sun-baked salt pan with unmistakable white crystalline crust and large polygonal cracks, small mounds of harvested white salt, a few shallow pale mineral-brine pools taking at most 10 percent of scene, framed by golden sand dunes and ochre desert gravel. No green vegetation, trees, snow or ice. Salt looks dry, chalk-white and crystalline, not snowy mountains, not a turquoise swimming pool. A small timber rake and baskets may suggest harvesting but landscape dominates. Elevated three-quarter overhead view, no horizon, refined painterly miniature aesthetic and broad legible forms at small hex size. Continuous square edge to edge, no text, numbers, border, hex outline, people or watermark."
+    },
+    {
+      "key": "oasis",
+      "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-1d056cc4-db15-4959-93ad-7862ac4f90b2.png",
+      "output": "public/assets/terrain-oasis-v1.webp",
+      "prompt": "Use case: lighting-weather. Edit target: supplied Oasis board-game terrain. Make the surrounding desert clearly more barren, while preserving the oasis as a small fertile refuge. Keep the central turquoise freshwater pool, date palms, small crop beds and cut logs near the pool so its wood and food production remain readable. Remove the scattered green shrubs, ferns and lush plants from the foreground and outer edges, replacing them with wind-rippled ochre sand, small dunes and sun-bleached stones. Concentrate all greenery directly around the water and irrigated garden. No snow. Keep the square composition, elevated three-quarter overhead viewpoint, refined painterly miniature board-game style and edge-to-edge landscape with no horizon. No text, UI, border, people or watermark."
+    },
+    {
+      "key": "cold-clay",
+      "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-9efaa9c0-1031-4fc2-85e5-ce75b176b639.png",
+      "output": "public/assets/terrain-cold-clay-v1.webp",
+      "prompt": "Use case: stylized-concept. ONE square COLD CLIMATE CLAY HILLS game tile. Use the reference atlas's top-row second tile as composition and painterly style guidance, output only one clay landscape not a grid. Stepped exposed clay banks and gullied earthen hills, but noticeably less bright orange: muted dusty reddish-brown clay, subdued warm umber, grey-brown soil and soft cool shadows. Keep enough warm reddish clay to identify the resource immediately. A few dark-green northern pine trees, restrained low green scrub and rocky mossy ground around the edges, clay faces dominate. Northern mild summer with no snow, frost or ice. No glowing orange, no yellow desert dunes, no tropical foliage. Elevated three-quarter overhead view, continuous edge-to-edge square, refined painterly miniature board-game aesthetic, readable shapes at small hex size. No text, people, UI, border, hex outline or watermark."
+    },
+    {
+      "key": "steppe-clay",
+      "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-fde7cd5b-b970-4133-bfbc-ac8fd34ff02d.png",
+      "output": "public/assets/terrain-steppe-clay-v1.webp",
+      "prompt": "Use case: stylized-concept. ONE square STEPPE CLAY HILLS game tile. Reference atlas's top-row second tile gives subject and painting style; output a single landscape, never the grid. Keep the familiar reddish terracotta clay banks and eroded layered hills, but make them just a little drier and subtly more yellowish: dusty warm ochre highlights over still recognizably orange-brown clay. Surround with sparse straw-yellow steppe grasses, a few muted olive scrub bushes and dry earth. This is a subtle regional variation, NOT bright yellow sand dunes or a barren desert. Clay faces remain dominant, no forests. Elevated three-quarter overhead view, no horizon, refined painterly miniature board-game style, single edge-to-edge square with broad readable landforms and fine detail. No people, text, UI, border, hex outline or watermark."
+    },
+    {
+      "key": "tropical-gold",
+      "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-43a61537-7610-44e4-9394-7a2081c8a382.png",
+      "output": "public/assets/terrain-tropical-gold-v1.webp",
+      "prompt": "Use case: lighting-weather. Edit target supplied Gold mountains board-game terrain. Create a restrained TROPICAL climate variant. Preserve the same clear gold-bearing grey rocky outcrops, metallic gold veins, timber mine entrance and mine cart. Replace conifers and temperate shrubs with modest low broadleaf vegetation, a few ferns and one or two small palms at the outer edges. Warm reddish-brown earth, damp-looking stone with only small moss patches. Exposed rock and gold dominate at least 75 percent of the composition; do NOT turn this into jungle, do not overgrow the mine or obscure gold veins. Natural subdued greens, no neon lushness, no oversized tropical flowers. Same elevated overhead viewpoint, refined painterly miniature board-game style, one continuous square edge-to-edge landscape, no horizon, text, UI, frame, hex outline or people."
+    },
+    {
+      "key": "tropical-iron",
+      "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-c7d8d976-bfb4-4584-a126-d15852f0d3e8.png",
+      "output": "public/assets/terrain-tropical-iron-v1.webp",
+      "prompt": "Use case: stylized-concept. ONE square TROPICAL IRON MOUNTAINS terrain. Use atlas top-right iron mine as style/subject reference but never reproduce grid. Grey jagged iron-bearing rocky hills with subtle rusty mineral streaks, timber mine entrance and small cart of grey ore. Restrained tropical setting: warm reddish-brown ground, small ferns and broadleaf shrubs at outer edges, one or two slender palms, no conifers. At least 75 percent exposed rock and earth; mine and grey iron ore dominate, NOT dense jungle. Soft humid daylight, natural muted greens without exaggerated saturation, no large flowers. Keep broad legible resource shapes at small hex size, elevated three-quarter overhead view, refined painterly miniature game aesthetic, single continuous square edge-to-edge landscape. No horizon, snow, text, UI, frame, hex outline, people or watermark."
+    },
+    {
+      "key": "tropical-stone",
+      "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-8e2b26d7-3411-4bd9-a9d4-04598ffd206a.png",
+      "output": "public/assets/terrain-tropical-stone-v1.webp",
+      "prompt": "Use case: stylized-concept. ONE square TROPICAL STONE QUARRY terrain. Use reference atlas's lower-left quarry for style, not grid layout. Large light grey limestone quarry faces with clear stepped ledges, cut square stone blocks, modest timber lifting tripod. A restrained warm-climate variation: reddish soil, small patches of moss on rock edges, low broadleaf ferns and two slim palms at outer corners. Keep 80 percent of view exposed rock and quarry work area, do not overgrow it or turn into jungle. Natural greens, soft warm humid daylight, no bright tropical flowers, no conifers, no snow. Single continuous square landscape, elevated three-quarter overhead view, no horizon, refined painted miniature board-game aesthetic, strong resource readability at small hex size. No text, people, UI, border, hex outline, watermark or multi-image grid."
+    },
+    {
+      "key": "tropical-coal",
+      "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-64b5d6de-4b11-45ff-ba99-1dc106b669ce.png",
+      "output": "public/assets/terrain-tropical-coal-v1.webp",
+      "prompt": "Use case: stylized-concept. ONE square TROPICAL COAL HILLS game terrain. Atlas lower-right coal mine is the subject and painterly style reference, do not output its grid. Charcoal-black coal seams across low grey rocky hills, broad piles of recognizable black coal, small timber mine entrance and coal cart. Restrained regional details: warm brown-red earth, a few small ferns, low tropical broadleaf plants and at most two slender palms near edges. Keep the centre open and coal-dominated, at least 80 percent rock and dirt, no dense jungle or bright flowers. Muted natural greens, soft warm humid light, no conifers or snow, no gold or metallic silver ore. Elevated three-quarter overhead view, edge-to-edge square, refined painterly miniature board-game style, clear readable resource silhouettes. No horizon, text, UI, border, hex outline, people or watermark."
+    },
+    {
+      "key": "tropical-salt",
+      "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-af9f3178-dfb3-419e-99fd-05c170ad2d6e.png",
+      "output": "public/assets/terrain-tropical-salt-v1.webp",
+      "prompt": "Use case: stylized-concept. ONE square TROPICAL SALT FLATS tile for a painted medieval hex board game. Reference atlas salt tile gives the clear white-salt resource cue and painterly style, never reproduce grid. Shallow pale blue mineral brine evaporation pans separated by dry white salt-crust banks, obvious little heaps of harvested crystalline salt, sandy warm beige and reddish margins. Restrained tropical character: a couple of slender palms and small low broadleaf plants only along the outer land edges. White salt and shallow pools occupy at least 80 percent, no lush jungle, no snowy or icy appearance, no excessive bright turquoise, no flowers. Small harvesting baskets and timber rake optional. Elevated three-quarter overhead view, no horizon, one square continuous edge-to-edge landscape, refined miniature painterly board-game style with broad readable forms. No text, numbers, UI, hex outline, frame, people or watermark."
+    },
+    {
+      "key": "tropical-clay",
+      "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-3e936012-3e90-47ee-829f-255c974e8a4d.png",
+      "output": "public/assets/terrain-tropical-clay-v1.webp",
+      "prompt": "Use case: stylized-concept. ONE square TROPICAL CLAY HILLS board-game tile. Reference atlas top row second tile gives composition and painting style, output one single landscape and never a grid. Familiar terracotta-red exposed clay cliffs and gullied clay banks with layered erosion. A subtle tropical regional variation: slightly deeper red moist soil, low ferns and modest broadleaf shrubs around outer edges with just two small palms. Exposed red clay remains at least 80 percent of scene and its unmistakable primary resource cue. No dense jungle, no overgrown cliffs, no giant leaves or showy flowers, no pines or snow. Soft warm humid daylight, restrained natural green vegetation. Elevated three-quarter overhead view, no horizon, continuous square landscape edge to edge, detailed refined miniature painterly board-game style with simple readable forms for small hexes. No text, people, UI, frame, hex outline or watermark."
+    }
+  ]
+}

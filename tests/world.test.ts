@@ -15,6 +15,41 @@ import { newGame, applyCommand } from "../src/game/engine";
 import { assertInvariants, serialize, deserialize } from "../src/game/save";
 import { chooseAIAction } from "../src/game/ai";
 describe("world and setup", () => {
+  it("excludes frozen sea from ports while allowing snow-plain coasts", () => {
+    let snowPorts = 0;
+    for (let i = 0; i < 20; i++) {
+      const w = generateWorld(`ice-ports-${i}`, 250);
+      for (const edge of Object.values(w.edges).filter((e) => e.harbor)) {
+        const resources = edge.tiles.map((id) => w.tiles[id].resource);
+        expect(resources).not.toContain("ice");
+        expect(resources.filter((r) => r === "water")).toHaveLength(1);
+        if (resources.includes("snow")) snowPorts++;
+      }
+    }
+    expect(snowPorts).toBeGreaterThan(0);
+  });
+  it("removes saved ice ports without removing valid snow ports or changing terrain", () => {
+    const s = newGame("ice-port-save");
+    Object.assign(s, generateWorld(s.seed, 2000));
+    const coast = (resource: "ice" | "snow") =>
+      Object.values(s.edges).find((edge) => {
+        const resources = edge.tiles.map((id) => s.tiles[id].resource);
+        return resources.includes(resource) && resources.includes("water");
+      })!;
+    const icy = coast("ice"),
+      snowy = coast("snow");
+    expect(icy).toBeDefined();
+    expect(snowy).toBeDefined();
+    icy.harbor = snowy.harbor = "generic";
+    const restored = deserialize(serialize(s));
+    expect(restored.edges[icy.id].harbor).toBeUndefined();
+    expect(restored.edges[snowy.id].harbor).toBe("generic");
+    expect(restored.tiles).toEqual(s.tiles);
+    expect(restored.players).toEqual(s.players);
+    addHexes(s, s.seed, []);
+    expect(s.edges[icy.id].harbor).toBeUndefined();
+    expect(s.edges[snowy.id].harbor).toBe("generic");
+  });
   it("creates exactly 125 unique climate hexes and consistent shared topology", () => {
     for (let seed = 0; seed < 30; seed++) {
       const s = newGame(`seed-${seed}`);

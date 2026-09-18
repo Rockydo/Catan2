@@ -1,3 +1,4 @@
+import { terrainPatternKey, terrainArtFile } from "../ui/terrain-art";
 import {
   GOOD_INFO,
   TERRAIN,
@@ -37,15 +38,11 @@ export function TerrainImage({
   tile: TerrainKey;
   climate?: Climate;
 }) {
-  const art =
-    climate === "cold" && tile === "stone"
-      ? "cold-stone"
-      : (BIOME_INFO[tile as Biome]?.art ?? tile);
+  const pattern = terrainPatternKey(tile, climate);
+  const art = BIOME_INFO[pattern as Biome]?.art ?? pattern;
   const index = atlas.indexOf(art),
     dedicated = index < 0;
-  const file = ["gold", "fish", "whale"].includes(art)
-    ? `terrain-${art}-${art === "fish" ? "v2" : "v1"}.png`
-    : `terrain-${art}-v1.webp${art === "cod" ? "?v=3" : ["forest", "hunting-forest", "jungle"].includes(art) ? "?v=2" : ""}`;
+  const file = terrainArtFile(art);
   return (
     <span
       className={`terrain-picture ${tile === "water" ? "empty-water" : ""}`}
