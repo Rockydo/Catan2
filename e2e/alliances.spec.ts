@@ -245,3 +245,65 @@ test("declining a merger from inside the target alliance keeps both pacts", asyn
   );
   expect(alliances).toEqual(s.alliances);
 });
+
+for (const language of ["en", "fr"] as const)
+  test(`existing campaigns activate the global coalition immediately (${language})`, async ({
+    page,
+  }) => {
+    const { s } = grandAllianceFixture();
+    for (let i = 0; i < 100; i++) piece(s, "0,2", 3, "heavy", 4);
+    pact(s, [0, 1]);
+    pact(s, [2, 4]);
+    const previous = {
+      round: s.round,
+      actions: s.actions,
+      pieces: s.pieces,
+      towns: s.towns,
+    };
+    await page.addInitScript(
+      ({ key, data, language }) => {
+        localStorage.setItem(key, data);
+        localStorage.setItem("catane-language", language);
+      },
+      { key: SAVE_KEY, data: serialize(s), language },
+    );
+    await page.goto("/");
+    await page
+      .getByRole("button", {
+        name: language === "en" ? /Continue campaign/ : /Reprendre/,
+      })
+      .click();
+    await page
+      .getByRole("button", {
+        name:
+          language === "en" ? "Realms & chronicle" : "Royaumes et chronique",
+        exact: true,
+      })
+      .click();
+    const panel = page.getByLabel("Alliances", { exact: true });
+    await expect(panel.locator(".alliance-pact")).toHaveCount(1);
+    await expect(panel).toContainText(
+      language === "en" ? "Emergency coalition" : "Coalition d’urgence",
+    );
+    await expect(panel).toContainText(language === "en" ? "20%" : "20 %");
+    await expect(
+      panel.getByRole("button", {
+        name: language === "en" ? "Leave alliance" : "Quitter l'alliance",
+      }),
+    ).toBeDisabled();
+    const saved = await page.evaluate(
+      (key) => JSON.parse(localStorage.getItem(key)!).game,
+      SAVE_KEY,
+    );
+    expect(saved.alliances[0]).toMatchObject({
+      emergency: "locked",
+      threat: 3,
+      members: [0, 1, 2, 4, 5, 6, 7],
+    });
+    expect({
+      round: saved.round,
+      actions: saved.actions,
+      pieces: saved.pieces,
+      towns: saved.towns,
+    }).toEqual(previous);
+  });

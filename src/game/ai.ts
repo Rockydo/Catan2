@@ -1,7 +1,7 @@
 import { colonistAction, colonistProjects } from "./ai-colonization";
 import { isSettler } from "./content";
 import { canChooseWoods } from "./selectors";
-import { allianceResponder, friendly } from "./relations";
+import { allianceResponder, friendly, emergencyTarget } from "./relations";
 import { acceptsAlliance } from "./diplomacy";
 import { guildEconomyProjects, guildMilitaryOrder } from "./guild-ai";
 import { aiExpeditionAllowed, isCornered } from "./ai-expansion";
@@ -169,6 +169,7 @@ function tradeNeeds(s: Game, player: number): Stock {
 export function shouldAcceptTrade(s: Game): boolean {
   const t = s.trade;
   if (!t || GOODS.some((g) => t.give[g] && t.take[g])) return false;
+  if (emergencyTarget(s, t.to) === t.from) return false;
   const prices = marketValues(s),
     needs = tradeNeeds(s, t.to);
   const { gain, loss } = tradeEvaluation(
@@ -608,6 +609,22 @@ export function economyProjects(s: Game): Project[] {
     label: string,
     urgent = false,
   ) {
+    if (emergencyTarget(s) !== undefined) {
+      const combatRecruit =
+        (action.type === "recruit" || action.type === "ship") &&
+        ![
+          "merchant",
+          "merchantship",
+          "fishing",
+          "settler",
+          "settlership",
+        ].includes(action.kind ?? "");
+      if (combatRecruit || urgent) score *= 1.5;
+      else if (
+        ["settlement", "camp", "city", "extension"].includes(action.type)
+      )
+        score *= 0.65;
+    }
     if (s.players[s.active].control === "easy") {
       // Public-state deterministic variety: novices misvalue projects, never cheat.
       score *=
@@ -1376,7 +1393,9 @@ export function playerTradeToward(s: Game, cost: Stock): Command | null {
     prices = marketValues(s);
   const evaluateOurs = tradeValuation(s, s.active, cost, prices);
   let best: { action: Command; score: number } | undefined;
-  for (const partner of s.players.filter((p) => p.alive && p.id !== s.active)) {
+  for (const partner of s.players.filter(
+    (p) => p.alive && p.id !== s.active && p.id !== emergencyTarget(s),
+  )) {
     const theirStock = inventory(s, partner.id),
       theirNeeds = tradeNeeds(s, partner.id);
     const evaluateTheirs = tradeValuation(s, partner.id, theirNeeds, prices);
@@ -1990,11 +2009,12 @@ function continueTowerSiege(s: Game): Command | null {
   return null;
 }
 function chooseMilitary(s: Game): Command {
-  const colony = colonistAction(s);
+  const emergency = emergencyTarget(s) !== undefined;
+  const colony = emergency ? undefined : colonistAction(s);
   if (colony) return colony;
   const towerOperation = continueTowerSiege(s);
   if (towerOperation) return towerOperation;
-  const economicMove = collectorMove(s);
+  const economicMove = emergency ? undefined : collectorMove(s);
   if (economicMove) return economicMove;
   const engineering = guildMilitaryOrder(s, true);
   if (engineering && check(s, engineering)) return engineering;
@@ -2450,7 +2470,7 @@ function chooseMilitary(s: Game): Command {
       const objectiveWeight = (target: string) => {
         if (weights.has(target)) return weights.get(target)!;
         const near = naval ? neighbors(target) : [target];
-        const value = Math.max(
+        let value = Math.max(
           1,
           Math.min(5, denialAt(target, group) * 2),
           ...enemyTowns
@@ -2461,7 +2481,10 @@ function chooseMilitary(s: Game): Command {
               const helpers = landAtVertex(s, t.vertex)
                 .flatMap((id) => piecesAt(s, id, false))
                 .filter(
-                  (u) => !friendly(s, u.owner, s.active) && u.owner !== t.owner,
+                  (u) =>
+                    u.owner !== s.active &&
+                    u.owner !== t.owner &&
+                    friendly(s, u.owner, s.active),
                 );
               return (
                 leaderPressure(s, t.owner) *
@@ -2502,6 +2525,28 @@ function chooseMilitary(s: Game): Command {
                 : 0;
             }),
         );
+        if (emergency) {
+          // Spread across productive fronts already occupied by allies. An
+          // uncovered target keeps its full value; combat strength is not pooled.
+          const committed = near
+            .flatMap((id) => piecesAt(s, id, naval))
+            .filter(
+              (u) =>
+                friendly(s, u.owner, s.active) &&
+                !ids.includes(u.id) &&
+                points(u) > 0,
+            );
+          value /=
+            1 +
+            Math.min(
+              3,
+              committed.reduce((n, u) => n + points(u), 0) /
+                Math.max(
+                  2,
+                  group.reduce((n, u) => n + points(u), 0),
+                ),
+            );
+        }
         weights.set(target, value);
         return value;
       };
@@ -2737,6 +2782,10 @@ function chooseMilitary(s: Game): Command {
   choices.sort((a, b) => b.score - a.score);
   for (const choice of choices.slice(0, 12))
     if (check(s, choice.action)) return choice.action;
+  if (emergency) {
+    const support = collectorMove(s) ?? colonistAction(s);
+    if (support) return support;
+  }
   return { type: "end-turn" };
 }
 

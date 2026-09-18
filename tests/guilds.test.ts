@@ -1,3 +1,4 @@
+import { syncEmergencyCoalition } from "../src/game/emergency-coalition";
 import { describe, expect, it } from "vitest";
 import { applyCommand, beginTurn } from "../src/game/engine";
 import {
@@ -327,6 +328,7 @@ it("military supply rejects duplicate, new, embarked, enemy, acted and wrong-kin
 });
 it("rejects malformed saved guilds while loading legacy saves without guilds", () => {
   const { s, home } = guildFixture();
+  syncEmergencyCoalition(s);
   expect(deserialize(serialize(s))).toEqual(s);
   home.guild = {
     kind: "merchants",
@@ -368,6 +370,7 @@ it("rebellions inherit guilds, preserve used orders, and pause inherited automat
     auto: false,
     order: { raw: "coal", tier: 2 },
   });
+  syncEmergencyCoalition(s);
   expect(deserialize(serialize(s))).toEqual(s);
 });
 it("AI considers affordable guild orders, new specializations, upgrades and purposeful supply", () => {

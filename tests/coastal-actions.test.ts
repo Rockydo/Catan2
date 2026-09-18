@@ -187,7 +187,7 @@ describe("shore bombardment", () => {
     expect(next.pieces[civilian.id]).toEqual(civilian);
     expect(next.pieces[guard.id]).toEqual(guard);
     expect(next.pieces[ship.id].tile).toBe(water);
-    expect(next.events.at(-1)?.text).toMatch(/lost 1 unit/);
+    expect(next.events.some((e) => /lost 1 unit/.test(e.text))).toBe(true);
   });
   it("ties consume one movement point but cause no casualties", () => {
     const { s, gun, ship, water } = coastalFixture();

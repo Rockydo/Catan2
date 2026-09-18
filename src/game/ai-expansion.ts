@@ -1,3 +1,4 @@
+import { emergencyTarget } from "./relations";
 import type { Game } from "./types";
 import { factionStrengths } from "./ai-strategy";
 import {
@@ -66,7 +67,11 @@ export function isCornered(s: Game, player = s.active): boolean {
 const eligibility = new WeakMap<Game, Map<number, boolean>>();
 /** Hard expedition rule, shared by engine, research and planner. */
 export function aiExpeditionAllowed(s: Game, player = s.active): boolean {
-  if (s.players[player].control === "human") return true;
+  if (
+    s.players[player].control === "human" ||
+    emergencyTarget(s, player) !== undefined
+  )
+    return true;
   let cached = eligibility.get(s);
   if (cached?.has(player)) return cached.get(player)!;
   const allowed = strongestAI(s)[0] !== player;
@@ -76,4 +81,4 @@ export function aiExpeditionAllowed(s: Game, player = s.active): boolean {
 }
 
 export const AI_EXPEDITION_RESTRICTION =
-  "The strongest AI faction cannot launch expeditions, even when cornered.";
+  "The strongest AI faction cannot launch expeditions unless fighting in an emergency coalition.";

@@ -46,6 +46,7 @@ export const FactionStandings = memo(function FactionStandings({
       }),
     [game],
   );
+  const globalPower = standings.reduce((sum, row) => sum + row.score.total, 0);
   const maximum = Math.max(1, ...standings.map((s) => s.score.total));
   return (
     <section
@@ -119,6 +120,11 @@ export const FactionStandings = memo(function FactionStandings({
                       </small>
                     ),
                   )}
+                  <small>
+                    {tx(
+                      `${(globalPower ? (score.total / globalPower) * 100 : 0).toFixed(1)}% of global power`,
+                    )}
+                  </small>
                   <small
                     className="faction-research"
                     title={tx("Cards held; identities are private")}

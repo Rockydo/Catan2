@@ -226,6 +226,8 @@ export interface Battle {
   required: number;
 }
 export interface Alliance {
+  /** Global pacts may exceed four members; released pacts allow immediate departure. */
+  emergency?: "locked" | "released";
   id: string;
   members: number[];
   threat: number;

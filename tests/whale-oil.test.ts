@@ -1,3 +1,4 @@
+import { syncEmergencyCoalition } from "../src/game/emergency-coalition";
 import { it, expect } from "vitest";
 import { fishingFixture } from "./maritime-fixture";
 import { guildFixture } from "./guild-fixture";
@@ -133,6 +134,7 @@ it("existing saves need no Oil balance migration and gain Oil only on future har
   delete s.tiles[water].fish;
   s.tiles[water].whale = true;
   for (const town of Object.values(s.towns)) delete town.stock.oil;
+  syncEmergencyCoalition(s);
   const loaded = deserialize(serialize(s));
   expect(loaded).toEqual(s);
   expect(inventory(loaded).oil ?? 0).toBe(0);

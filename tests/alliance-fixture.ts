@@ -29,7 +29,10 @@ export function allianceFixture() {
     t.wall = 0;
     s.towns[t.id] = t;
   }
-  for (let i = 0; i < 25; i++) piece(s, "0,2", 3, "heavy", 4);
+  // A significant nearby threat below the 40% global emergency threshold.
+  for (let i = 0; i < 6; i++) piece(s, "0,2", 3, "heavy", 4);
+  for (let owner = 0; owner < 3; owner++)
+    for (let i = 0; i < 5; i++) piece(s, `-5,${owner}`, owner, "heavy", 4);
   return { s, towns };
 }
 export function pact(s: Game, members = [0, 1], threat = 3) {
@@ -62,6 +65,10 @@ export function grandAllianceFixture() {
 
 export function mergerFixture(humans: number[] = []) {
   const { s } = grandAllianceFixture();
+  // Enough common threat for a four-way merger, but under 40% globally.
+  for (let i = 0; i < 12; i++) piece(s, "0,2", 3, "heavy", 4);
+  for (let owner = 5; owner < 8; owner++)
+    for (let i = 0; i < 6; i++) piece(s, `${owner - 6},-4`, owner, "heavy", 4);
   for (const p of s.players)
     p.control = humans.includes(p.id) ? "human" : "standard";
   pact(s, [0, 1]);

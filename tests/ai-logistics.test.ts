@@ -1,3 +1,5 @@
+import { syncEmergencyCoalition } from "../src/game/emergency-coalition";
+import { emergencyTarget } from "../src/game/relations";
 import { it, expect } from "vitest";
 import { funded, piece, run, nextOwnerTurn } from "./helpers";
 import { chooseAIAction } from "../src/game/ai";
@@ -243,3 +245,41 @@ it("uses scarce transport berths for stronger troops first", () => {
   expect(action.ids).toContain(elite.id);
   expect(run(s, action).pieces[elite.id].carrier).toBeDefined();
 });
+
+it("an emergency coalition ferries its army to raid the dominant island power", () => {
+  let { s, home, enemy } = seaCampaign();
+  home.stock = enemy.stock = {};
+  home.level = home.turnLevel = enemy.level = enemy.turnLevel = 1;
+  enemy.wall = 0;
+  s.tiles["3,0"].resource = "grain";
+  // A powerful distant fleet gives the rival a decisive global lead, while its
+  // eastern town remains vulnerable to a transport landing.
+  for (let i = 0; i < 30; i++) piece(s, "-4,0", 1, "galley", 4);
+  piece(s, "0,0", 0, "heavy", 3);
+  piece(s, "1,0", 0, "convoy");
+  syncEmergencyCoalition(s);
+  expect(emergencyTarget(s)).toBe(1);
+  const history: string[] = [];
+  for (
+    let turn = 0;
+    turn < 16 && !s.events.some((e) => e.townAttack?.kind === "raid");
+    turn++
+  ) {
+    s = structuredClone(s);
+    nextOwnerTurn(s);
+    s.phase = "military";
+    for (let step = 0; step < 20; step++) {
+      const action = chooseAIAction(s);
+      if (action.type === "end-turn") break;
+      history.push(action.type);
+      s = run(s, action);
+      if (s.events.some((e) => e.townAttack?.kind === "raid")) break;
+    }
+  }
+  expect(history).toContain("load");
+  expect(history).toContain("unload");
+  expect(
+    s.events.some((e) => e.townAttack?.kind === "raid" && e.owner === 0),
+  ).toBe(true);
+  assertInvariants(s);
+}, 30000);

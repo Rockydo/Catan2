@@ -133,6 +133,9 @@ describe("formal alliances", () => {
     pact(s, [0, 1, 2]);
     s.pieces = {};
     for (let i = 0; i < 40; i++) piece(s, "-2,0", 0, "heavy", 4);
+    for (let owner = 1; owner < 4; owner++)
+      for (let i = 0; i < 24; i++)
+        piece(s, `-5,${owner - 1}`, owner, "heavy", 4);
     s.active = 1;
     s = run(s, { type: "manage-alliance" });
     expect(friendly(s, 0, 1)).toBe(true);

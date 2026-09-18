@@ -109,7 +109,7 @@ describe("survival alliances return to individual competition", () => {
   });
   it("does not let a distant superpower justify an oversized local pact", () => {
     let { s, towns } = grandAllianceFixture();
-    forces(s, [11, 11, 0, 15, 40, 0, 0, 0]);
+    forces(s, [11, 11, 0, 15, 40, 12, 12, 12]);
     addHexes(s, s.seed, ["20,0"]);
     towns[4].vertex = s.tiles["20,0"].vertices[0];
     towns[0].vertex = s.tiles["-5,0"].vertices[0];
@@ -134,7 +134,7 @@ describe("survival alliances return to individual competition", () => {
   });
   it("leaves when its partner is safe even if it personally still fears an enemy", () => {
     let { s } = allianceFixture();
-    forces(s, [12, 2, 0, 13]);
+    forces(s, [12, 2, 10, 13]);
     pact(s);
     s.round += 5;
     s = review(s, 1);

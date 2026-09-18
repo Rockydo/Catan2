@@ -187,9 +187,11 @@ export function AllianceSummary({
               </small>
               <small>
                 {tx(
-                  a.lockedUntil > s.round
-                    ? `Locked for ${a.lockedUntil - s.round} more rounds`
-                    : "Members may leave",
+                  a.emergency === "locked"
+                    ? `Emergency coalition · locked until ${s.players[a.threat].name} falls to 20% of global power`
+                    : a.lockedUntil > s.round
+                      ? `Locked for ${a.lockedUntil - s.round} more rounds`
+                      : "Members may leave",
                 )}
               </small>
             </div>
@@ -202,9 +204,11 @@ export function AllianceSummary({
             disabled={!interactive || s.phase !== "economy" || lock > 0}
             onClick={() => onAction({ type: "leave-alliance" })}
             title={tx(
-              lock
-                ? `Commitment ends at round ${ours.lockedUntil}`
-                : "End your protection with these factions. Others remain allied.",
+              ours.emergency === "locked"
+                ? "The emergency coalition cannot be left until its target falls to 20% of global power."
+                : lock
+                  ? `Commitment ends at round ${ours.lockedUntil}`
+                  : "End your protection with these factions. Others remain allied.",
             )}
           >
             {tx("Leave alliance")}

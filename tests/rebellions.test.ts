@@ -1,3 +1,4 @@
+import { syncEmergencyCoalition } from "../src/game/emergency-coalition";
 import { legacyGame } from "./helpers";
 import { chooseAIAction } from "../src/game/ai";
 import { REALM_NAMES } from "../src/game/content";
@@ -134,6 +135,7 @@ describe("AI regional rebellions", () => {
   it("replays deterministically across save/reload and accepts saves without a rebellion RNG", () => {
     const s = rebellionFixture();
     delete s.rebellionRng;
+    syncEmergencyCoalition(s);
     const loaded = deserialize(serialize(s));
     tryRebellions(s);
     tryRebellions(loaded);

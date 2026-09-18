@@ -188,6 +188,13 @@ Transfer the rounded share of each stored good and held research cards, conservi
 
 ## Alliances and AI
 
+### Emergency coalition
+If one faction holds more than 40% of total surviving faction power, all other surviving factions immediately form one coalition against it. This includes human factions. It replaces existing alliances and ignores distance, the four-member limit and normal commitment timers. Power uses the same town, army and production score shown in Faction power.
+
+The target stays fixed until its share falls to 20% or less, or it is eliminated. Members cannot leave, attack each other, or make other alliances while locked. Returning factions join automatically. When unlocked, members may leave immediately; the alliance and war do not end automatically. A new faction exceeding 40% can trigger another emergency.
+
+AI members commit their available combat forces to the target, keeping only guards against immediate border threats. They prioritize raids, production denial, transport landings and useful expeditions around blocked fronts. Even the strongest AI may launch expeditions while in this coalition. Battles still use each faction’s own troops and normal combat rules. No resources or troops are granted. The rule applies to existing saves when loaded; an unresolved battle finishes first.
+
 ### Forming an alliance
 AI may propose survival alliances of two to four nearby factions. Humans can accept or decline but cannot initiate them. Each faction belongs to at most one alliance. The strongest living individual faction cannot join or form one, whether human or AI; exact power ties use faction ID. An alliance never wins jointly.
 Members must connect through partners whose towns lie within six hexes. AI needs a common non-allied enemy within nine hexes of each member, stronger than each by at least 20% plus six power. Proposed combined strength cannot exceed 150% of that threat. An existing alliance stops recruiting at 120%. Minor differences do not justify a pact.

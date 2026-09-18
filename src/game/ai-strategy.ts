@@ -1,4 +1,4 @@
-import { friendly, allianceOf } from "./relations";
+import { friendly, allianceOf, emergencyTarget } from "./relations";
 import { townGuilds } from "./guilds";
 import type { Game, Piece, Town } from "./types";
 import {
@@ -78,6 +78,8 @@ export function dominanceSeverity(first: number, second: number): number {
 }
 /** Public, faction-neutral balance of power. Small leads do not create coalitions. */
 export function dominance(s: Game): { leader: number; severity: number } {
+  const emergency = emergencyTarget(s);
+  if (emergency !== undefined) return { leader: emergency, severity: 1 };
   const cached = dominanceCache.get(s);
   if (cached) return cached;
   const scores = factionStrengths(s);
@@ -97,6 +99,7 @@ export function leaderPressure(
   target: number,
   viewer = s.active,
 ): number {
+  if (emergencyTarget(s, viewer) === target) return 10;
   const crisis = dominance(s);
   return Math.max(
     target !== viewer && target === crisis.leader ? 1 + crisis.severity * 5 : 1,
@@ -106,6 +109,8 @@ export function leaderPressure(
 /** Cooperation is expedient: local attacks still justify self-defense. */
 export function warTarget(s: Game, target: number, viewer = s.active): boolean {
   if (friendly(s, target, viewer) || !s.players[target]?.alive) return false;
+  const emergency = emergencyTarget(s, viewer);
+  if (emergency !== undefined) return target === emergency;
   const crisis = dominance(s);
   if (allianceOf(s, viewer)?.threat === target) return true;
   if (
@@ -227,6 +232,7 @@ export function conquestDrive(s: Game): number {
     crisis = dominance(s);
   return (
     1.3 +
+    (emergencyTarget(s) !== undefined ? 0.8 : 0) +
     (allianceOf(s, s.active) ? 0.2 : 0) +
     advantage * 0.5 +
     Math.min(0.5, Math.max(0, s.players[s.active].turns - 10) / 40) +
@@ -325,6 +331,10 @@ export function leavesTownExposed(
     );
     if (danger <= remaining) return false;
     const current = townGuardPower(s, t);
+    if (emergencyTarget(s, t.owner) !== undefined)
+      return (
+        remaining < Math.min(danger, Math.max(1, Math.min(6, current * 0.2)))
+      );
     // If even the full garrison cannot hold, hoarding every unit cannot save
     // it. Keep a delaying guard and allow counter-raids against the leader.
     // A defensible town still requires enough troops to match the real threat.

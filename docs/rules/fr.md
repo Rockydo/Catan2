@@ -190,6 +190,13 @@ La part arrondie de chaque ressource stockée et des cartes possédées est tran
 
 ## Alliances et IA
 
+### Coalition d’urgence
+Si une faction détient plus de 40 % de la puissance totale des factions survivantes, toutes les autres forment immédiatement une coalition contre elle, joueurs humains compris. Cette coalition remplace les alliances existantes et ignore la distance, la limite de quatre membres et les engagements habituels. La puissance utilise le même score d’agglomérations, de forces et de production que le classement des factions.
+
+La cible reste la même jusqu’à ce que sa part tombe à 20 % ou moins, ou qu’elle soit éliminée. Aucun membre ne peut quitter la coalition, attaquer un partenaire ou former une autre alliance pendant ce verrouillage. Les factions ressuscitées la rejoignent automatiquement. Après déverrouillage, chacun peut partir immédiatement ; ni l’alliance ni la guerre ne cessent automatiquement. Une nouvelle faction dépassant 40 % peut déclencher une autre urgence.
+
+Les membres IA engagent leurs forces disponibles contre la cible et ne gardent des défenseurs que face aux menaces frontalières immédiates. Ils privilégient les raids, les blocages de production, les débarquements et les expéditions utiles pour contourner les fronts bloqués. Même l’IA la plus puissante peut lancer des expéditions au sein de cette coalition. Les combats utilisent toujours les troupes de chaque faction séparément et les règles habituelles. Aucune troupe ni ressource gratuite. La règle s’applique aux sauvegardes existantes dès leur chargement ; un combat non résolu se termine d’abord.
+
 ### Former une alliance
 L’IA peut proposer des alliances de survie entre deux à quatre factions proches. Les humains acceptent ou refusent, sans pouvoir les initier. Une faction n’appartient qu’à une alliance. La faction individuelle vivante la plus puissante ne peut ni former ni rejoindre un pacte, humaine ou IA ; les égalités utilisent l’identifiant. Aucune victoire commune.
 Les membres doivent être reliés par des partenaires dont les villes sont à six hexagones ou moins. L’IA exige un ennemi commun non allié à neuf hexagones de chaque membre, plus fort que chacun d’au moins 20 % plus six points. La puissance combinée proposée ne dépasse pas 150 % de cette menace. Un pacte existant cesse de recruter à 120 %. Un petit écart ne justifie pas d’alliance.

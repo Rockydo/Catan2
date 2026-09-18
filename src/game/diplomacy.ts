@@ -55,6 +55,8 @@ export function allianceOfferError(
   from: number,
   to: number,
 ): string | undefined {
+  if (s.alliances?.some((a) => a.emergency === "locked"))
+    return "Diplomacy is locked until the coalition target falls to 20% of global power.";
   if (from === to || !s.players[from]?.alive || !s.players[to]?.alive)
     return "Choose a surviving other faction.";
   if (friendly(s, from, to)) return "These factions are already allied.";
@@ -158,6 +160,10 @@ export function leaveAlliance(s: Game, owner: number, reason?: string) {
   const alliance = allianceOf(s, owner);
   rule(alliance, "This faction has no alliance.");
   rule(
+    alliance.emergency !== "locked",
+    "The emergency coalition cannot be left until its target falls to 20% of global power.",
+  );
+  rule(
     allianceLock(s, owner) === 0,
     "The alliance must last at least five rounds before anyone can leave.",
   );
@@ -209,7 +215,9 @@ export function pruneAlliances(s: Game) {
   for (const a of s.alliances ?? [])
     a.members = a.members.filter((id) => s.players[id].alive);
   if (s.alliances)
-    s.alliances = s.alliances.filter((a) => a.members.length >= 2);
+    s.alliances = s.alliances.filter(
+      (a) => a.members.length >= (a.emergency === "locked" ? 1 : 2),
+    );
 }
 /** Once per AI turn, so diplomacy adds no repeated search to military planning. */
 export function manageAlliance(s: Game) {
@@ -218,6 +226,7 @@ export function manageAlliance(s: Game) {
   rule(p.control !== "human", "Only AI factions can initiate alliances.");
   rule(!p.diplomacyDone, "Diplomacy was already considered this turn.");
   p.diplomacyDone = true;
+  if (s.alliances?.some((a) => a.emergency === "locked")) return;
   const alliance = allianceOf(s, p.id);
   if (alliance && allianceLock(s, p.id) === 0) {
     const scores = factionStrengths(view);

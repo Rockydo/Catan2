@@ -1747,5 +1747,12 @@
   "Civilian units cannot siege or raid towns.": "Les unités civiles ne peuvent ni assiéger ni piller les agglomérations.",
   "{0} civilian unit(s) were destroyed in battle.": "{0} unité(s) civile(s) ont été détruites en bataille.",
   "Shore bombardment destroyed the settler ships.": "Le bombardement côtier a détruit les navires de colons.",
-  "No legal site here. Move to a clear tile at least two edges from existing towns.": "Aucun emplacement légal ici. Rejoignez une tuile dégagée à au moins deux arêtes des agglomérations existantes."
+  "No legal site here. Move to a clear tile at least two edges from existing towns.": "Aucun emplacement légal ici. Rejoignez une tuile dégagée à au moins deux arêtes des agglomérations existantes.",
+  "Emergency coalition · locked until {0} falls to 20% of global power": "Coalition d’urgence · verrouillée jusqu’à ce que {0} retombe à 20 % de la puissance mondiale",
+  "The emergency coalition cannot be left until its target falls to 20% of global power.": "Impossible de quitter la coalition d’urgence tant que sa cible dépasse 20 % de la puissance mondiale.",
+  "Diplomacy is locked until the coalition target falls to 20% of global power.": "La diplomatie est verrouillée tant que la cible de la coalition dépasse 20 % de la puissance mondiale.",
+  "The strongest AI faction cannot launch expeditions unless fighting in an emergency coalition.": "La faction IA la plus puissante ne peut lancer d’expédition que si elle combat au sein d’une coalition d’urgence.",
+  "Emergency coalition: all other surviving factions unite against {0}, who holds more than 40% of global power. The pact cannot be left until that faction falls to 20%.": "Coalition d’urgence : toutes les autres factions survivantes s’unissent contre {0}, qui détient plus de 40 % de la puissance mondiale. Impossible de quitter ce pacte tant que cette faction dépasse 20 %.",
+  "The emergency coalition against {0} is unlocked. Its members may leave: the target holds no more than 20% of global power.": "La coalition d’urgence contre {0} est déverrouillée. Ses membres peuvent partir : la cible ne détient plus que 20 % ou moins de la puissance mondiale.",
+  "{0}% of global power": "{0} % de la puissance mondiale"
 }

@@ -1,3 +1,4 @@
+import { syncEmergencyCoalition } from "./emergency-coalition";
 import { tileYield } from "./maritime";
 import { canChooseWoods } from "./selectors";
 import { allianceResponder } from "./relations";
@@ -367,7 +368,8 @@ function commandResult(state: Game, c: Command, preview: boolean): Result {
     execute(s, c);
     breakSieges(s);
     eliminate(s);
-    return { ok: true, state: s };
+    if (!preview) syncEmergencyCoalition(s);
+    return { ok: true, state: { ...s } };
   } catch (error) {
     return {
       ok: false,

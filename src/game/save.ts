@@ -1,3 +1,4 @@
+import { syncEmergencyCoalition } from "./emergency-coalition";
 import {
   CLIMATES,
   CLIMATE_INFO,
@@ -803,12 +804,18 @@ export function assertInvariants(s: Game) {
       id(a.id);
       rule(!ids.has(a.id), "Duplicate alliance ID.");
       ids.add(a.id);
+      rule(
+        a.emergency === undefined ||
+          a.emergency === "locked" ||
+          a.emergency === "released",
+        "Invalid emergency coalition status.",
+      );
       int(a.lockedUntil);
       int(a.threat, 0, s.players.length - 1);
       rule(
         Array.isArray(a.members) &&
-          a.members.length >= 2 &&
-          a.members.length <= 4,
+          a.members.length >= (a.emergency === "locked" ? 1 : 2) &&
+          a.members.length <= (a.emergency ? s.players.length - 1 : 4),
         "Alliances require two to four factions.",
       );
       for (const owner of a.members) {
@@ -1195,7 +1202,8 @@ export function deserialize(text: string): Game {
     }
   restoreCoastalRoads(data.game);
   restoreGoldPorts(data.game);
-  return data.game;
+  syncEmergencyCoalition(data.game);
+  return { ...data.game };
 }
 export function saveLocal(s: Game) {
   const text = serialize(s),

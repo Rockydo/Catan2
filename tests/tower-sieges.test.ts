@@ -72,7 +72,9 @@ it.each([1, 2, 3, 4])(
     s = run(s, { type: "destroy-tower", vertex: tower.vertex, ids: [u.id] });
     expect(s.towers[tower.vertex]).toBeUndefined();
     expect(Object.keys(s.towerSieges ?? {})).toHaveLength(0);
-    expect(s.events.at(-1)?.text).toContain("Watchtower destroyed");
+    expect(s.events.some((e) => e.text.includes("Watchtower destroyed"))).toBe(
+      true,
+    );
   },
 );
 it("tower siege counts only the selected army's artillery and keeps operations once per turn", () => {
@@ -201,7 +203,9 @@ it.each([0, 1])(
       raided: 10,
     });
     expect(sumStock(s.towns[home.id].stock)).toBe(5);
-    expect(s.events.at(-1)?.townAttack?.kind).toBe("raid");
+    expect(s.events.filter((e) => e.townAttack).at(-1)?.townAttack?.kind).toBe(
+      "raid",
+    );
     expect(
       applyCommand(s, { type: "destroy-town", town: enemy.id, ids }).ok,
     ).toBe(false);

@@ -1,3 +1,4 @@
+import { syncEmergencyCoalition } from "../src/game/emergency-coalition";
 import { expect, it } from "vitest";
 import {
   frontierReturnSites,
@@ -88,6 +89,7 @@ it("is deterministic and samples a ten percent return with all sizes possible", 
   expect(count).toBeLessThan(130);
   expect(towns).toEqual(new Set([1, 2, 3]));
   expect(troops).toEqual(new Set([1, 2, 3]));
+  syncEmergencyCoalition(base);
   const a = structuredClone(base),
     b = deserialize(serialize(base));
   a.frontierRng = b.frontierRng = 0;
