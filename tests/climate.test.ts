@@ -63,6 +63,7 @@ it.each([
   ["mediterranean", { temperate: 6000, steppe: 3000, desert: 3000 }],
   ["tropical", { temperate: 4000, desert: 8000 }],
   ["desert", { tropical: 6000, mediterranean: 3000, steppe: 3000 }],
+  ["cold", { temperate: 3000, steppe: 3000, arctic: 6000 }],
 ] as const)(
   "uses the requested destination weights from %s",
   (from, expected) => {
@@ -78,7 +79,7 @@ it.each([
     expect(counts).toEqual(expected);
   },
 );
-it("never introduces excluded climates and leaves Cold destinations uniform", () => {
+it("never introduces excluded climates and renormalizes Cold when Arctic is excluded", () => {
   for (const from of CLIMATES) {
     const choices = CLIMATE_INFO[from].compatible.filter((c) => c !== "cold");
     for (let i = 0; i < 100; i++) {
@@ -90,12 +91,8 @@ it("never introduces excluded climates and leaves Cold destinations uniform", ()
   }
   for (let i = 0; i < 100; i++)
     expect(
-      chooseClimateTransition(
-        "cold",
-        ["temperate", "steppe", "arctic"],
-        i / 100,
-      ),
-    ).toBe(["temperate", "steppe", "arctic"][Math.floor((i / 100) * 3)]);
+      chooseClimateTransition("cold", ["temperate", "steppe"], i / 100),
+    ).toBe(["temperate", "steppe"][Math.floor((i / 100) * 2)]);
 });
 
 it.each(CLIMATES)(

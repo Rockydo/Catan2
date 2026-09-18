@@ -37,7 +37,8 @@ export function chooseClimateTransition(
       return 0.5;
     if (
       (from === "tropical" && to === "desert") ||
-      (from === "desert" && to === "tropical")
+      (from === "desert" && to === "tropical") ||
+      (from === "cold" && to === "arctic")
     )
       return 2;
     return 1;
