@@ -111,6 +111,7 @@ const TerrainPatterns = memo(function TerrainPatterns() {
             "gold",
             "fish",
             "whale",
+            "cold-stone",
             ...BIOMES.filter((b) => b !== "water"),
           ]),
         ].map((resource) => {
@@ -136,7 +137,7 @@ const TerrainPatterns = memo(function TerrainPatterns() {
                   dedicated
                     ? ["gold", "fish", "whale"].includes(art)
                       ? `./assets/terrain-${art}-${art === "fish" ? "v2" : "v1"}.png`
-                      : `./assets/terrain-${art}-v1.webp${["forest", "hunting-forest", "cod", "jungle"].includes(art) ? "?v=2" : ""}`
+                      : `./assets/terrain-${art}-v1.webp${art === "cod" ? "?v=3" : ["forest", "hunting-forest", "jungle"].includes(art) ? "?v=2" : ""}`
                     : "./assets/terrain-atlas-v2.png"
                 }
                 width={dedicated ? 100 : 500}
@@ -155,7 +156,7 @@ const TerrainArt = memo(function TerrainArt({
   y,
   seed,
 }: {
-  resource: TerrainKey;
+  resource: TerrainKey | "cold-stone";
   x: number;
   y: number;
   seed: number;
@@ -292,7 +293,11 @@ const TerrainLayer = memo(function TerrainLayer({
                 filter="url(#tile-shadow)"
               />
               <TerrainArt
-                resource={tileTerrain(tile)}
+                resource={
+                  tile.climate === "cold" && tileTerrain(tile) === "stone"
+                    ? "cold-stone"
+                    : tileTerrain(tile)
+                }
                 x={x}
                 y={y}
                 seed={hash(tile.id)}

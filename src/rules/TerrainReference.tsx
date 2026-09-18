@@ -30,13 +30,22 @@ const atlas = [
   "salt",
   "coal",
 ];
-export function TerrainImage({ tile }: { tile: TerrainKey }) {
-  const art = BIOME_INFO[tile as Biome]?.art ?? tile;
+export function TerrainImage({
+  tile,
+  climate,
+}: {
+  tile: TerrainKey;
+  climate?: Climate;
+}) {
+  const art =
+    climate === "cold" && tile === "stone"
+      ? "cold-stone"
+      : (BIOME_INFO[tile as Biome]?.art ?? tile);
   const index = atlas.indexOf(art),
     dedicated = index < 0;
   const file = ["gold", "fish", "whale"].includes(art)
     ? `terrain-${art}-${art === "fish" ? "v2" : "v1"}.png`
-    : `terrain-${art}-v1.webp${["forest", "hunting-forest", "cod", "jungle"].includes(art) ? "?v=2" : ""}`;
+    : `terrain-${art}-v1.webp${art === "cod" ? "?v=3" : ["forest", "hunting-forest", "jungle"].includes(art) ? "?v=2" : ""}`;
   return (
     <span
       className={`terrain-picture ${tile === "water" ? "empty-water" : ""}`}
@@ -224,7 +233,7 @@ export function ClimateReference({
           <h4>{l("If land is rolled", "Si le tirage donne une terre")}</h4>
           {info.terrain.map(([t, n]) => (
             <div className="climate-terrain" key={t}>
-              <TerrainImage tile={t} />
+              <TerrainImage tile={t} climate={climate} />
               <span>
                 {tx(BIOME_INFO[t].name)}
                 <small>

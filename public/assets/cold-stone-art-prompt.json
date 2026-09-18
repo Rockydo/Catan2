@@ -1,0 +1,6 @@
+{
+  "tool": "Built-in image_gen",
+  "prompt": "Use case: stylized-concept. Create ONE square terrain artwork for a medieval hex board game: a Cold-climate stone quarry / escarpment, producing stone. Reference image 1 is the game's terrain atlas for painterly style only: use the quarry in its lower left as a concept, do not reproduce the grid. Northern grey granite escarpments and stepped quarry faces with large angular blocks, weathered cool-grey exposed stone, abundant green moss and lichen on edges, a few lush deep-green pine and spruce trees around the perimeter, small ferns and low northern undergrowth. A modest timber lifting tripod and several cut stone blocks make stone extraction readable, no mine tunnel or metal ore. Rock must dominate the scene so it reads as stone rather than forest. The atmosphere is a cool northern summer: no snow or ice, no beige Mediterranean limestone or dry yellow ground. Elevated three-quarter overhead view, no horizon, refined painterly miniature board-game aesthetic, broad readable shapes at small hex size. One continuous landscape fills the square edge to edge, central grey rock faces and stone blocks, simpler rocky mossy ground at the lower edge. No people, text, numbers, frame, hex outline, watermark or grid.",
+  "asset": "public/assets/terrain-cold-stone-v1.webp",
+  "derivative": "512px WebP, quality 85"
+}

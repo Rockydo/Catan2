@@ -1,0 +1,6 @@
+{
+  "tool": "Built-in image_gen (edit)",
+  "prompt": "Use case: lighting-weather. Edit target: supplied Cod grounds game terrain. Make a subtle brightness correction: lift the water from dark navy to a medium cold steel-blue, approximately 20 percent lighter overall, especially the deep shadow areas. Keep a distinctly cool northern sea, still bluer and slightly darker than ordinary teal fish terrain, with no tropical turquoise or bright aqua. Preserve exactly the composition, number and appearance of mottled olive-brown Atlantic cod with pale lateral lines and chin barbels; gently brighten their bodies enough to read clearly over the water at small hex-tile size. Preserve the painted wave texture, avoid adding more foam or raising highlights excessively. Keep the painterly board-game aesthetic, square continuous ocean, no horizon, shore, text, border or UI. This is a restrained tonal adjustment to the existing artwork, not a redesign.",
+  "asset": "public/assets/terrain-cod-v1.webp",
+  "derivative": "512px WebP, quality 85"
+}
