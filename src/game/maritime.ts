@@ -1,7 +1,7 @@
 import { BIOME_INFO } from "./climate-content";
-import { TERRAIN, type TerrainKey } from "./content";
+import { TERRAIN, processedFor, type TerrainKey } from "./content";
 import { friendly } from "./relations";
-import type { Game, Hex, Piece, Raw, Watchtower } from "./types";
+import type { Game, Hex, Piece, Raw, Stock, Watchtower } from "./types";
 import { neighbors, vertexNeighbors } from "./world";
 
 /** Per-producer output: Woods choices belong to factions, never to the shared tile owner. */
@@ -22,6 +22,24 @@ export function tileYield(
 }
 export const tileGoods = (tile: Hex, owner?: number): Raw[] =>
   Object.keys(tileYield(tile, owner)) as Raw[];
+/** Rich terrain multiplies raw output; advanced producers add 1/2 processed
+ * goods per resource type, independently of workshops and the terrain yield. */
+export function harvestYield(
+  tile: Hex,
+  owner: number,
+  tier: number,
+  refines = false,
+): Stock {
+  const output: Stock = {};
+  for (const [raw, amount] of Object.entries(tileYield(tile, owner))) {
+    output[raw as Raw] = amount! * tier;
+    if (refines && tier >= 3) {
+      const processed = processedFor(raw as Raw);
+      output[processed] = (output[processed] ?? 0) + tier - 2;
+    }
+  }
+  return output;
+}
 export const tileGood = (tile: Hex, owner?: number): Raw | undefined =>
   tileGoods(tile, owner)[0];
 export const tileOptions = (tile: Hex): Raw[] =>
@@ -70,7 +88,19 @@ export function harvestTiles(
     );
   if (u.kind === "merchantship")
     return around.filter((id) => s.tiles[id].resource !== "water");
-  return [u.tile, ...around].filter(
+  // A fishing radius follows connected water: nets do not cross land or ice.
+  const reached = new Set([u.tile]),
+    queue = [{ id: u.tile, depth: 0 }];
+  for (let i = 0; i < queue.length; i++) {
+    const { id, depth } = queue[i];
+    if (depth >= u.tier) continue;
+    for (const next of neighbors(id)) {
+      if (reached.has(next) || s.tiles[next]?.resource !== "water") continue;
+      reached.add(next);
+      queue.push({ id: next, depth: depth + 1 });
+    }
+  }
+  return [...reached].filter(
     (id) => s.tiles[id] && marineResource(s.tiles[id]),
   );
 }

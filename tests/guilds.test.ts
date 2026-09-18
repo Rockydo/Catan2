@@ -77,7 +77,7 @@ it.each([1, 2, 3])(
       s.tiles[mineral].resource = raw;
       const before = inventory(s);
       const n = run(s, { type: "guild-order", town: home.id, tile: mineral });
-      const amount = [0, 4, 6, 16][tier] / (raw === "gold" ? 2 : 1);
+      const amount = raw === "gold" ? [0, 3, 5, 16][tier] : [0, 6, 9, 32][tier];
       expect(n.towns[home.id].stock[raw]).toBe(
         home.stock[raw]! + amount - (raw === "coal" && tier === 2 ? 1 : 0),
       );
@@ -105,7 +105,7 @@ it.each([1, 2, 3])(
             (quote.cost[good] ?? 0) +
             (quote.gain[good] ?? 0),
         );
-      expect(quote.gain[processedFor(raw)]).toBe([0, 1, 3, 4][tier]);
+      expect(quote.gain[processedFor(raw)]).toBe([0, 2, 5, 8][tier]);
       expect(quote.cost[raw]).toBe(raw === "coal" && tier === 2 ? 3 : 2);
       if (raw === "coal" && tier === 2) expect(quote.cost).toEqual({ coal: 3 });
     }
@@ -125,7 +125,7 @@ it.each([1, 2, 3])(
     const n = run(s, command);
     expect(n.towns[home.id].stock).toMatchObject({
       fish: 6,
-      stone: tier * 2,
+      stone: [0, 3, 6, 12][tier],
     });
     for (const [from, to] of [
       ["grain", "stone"],
@@ -146,7 +146,7 @@ it.each([1, 2, 3])(
     if (processed.ok)
       expect(processed.state.towns[home.id].stock).toMatchObject({
         coke: 7,
-        steel: 3,
+        steel: 6,
       });
   },
 );
@@ -156,7 +156,7 @@ it("Fish pays recipes but not Grain contracts; insufficient payments are atomic"
   expect(
     run(s, { type: "guild-order", town: home.id, tile: mineral }).towns[home.id]
       .stock,
-  ).toEqual({ coal: 4 });
+  ).toEqual({ coal: 6 });
   home.guild!.tier = 3;
   const before = structuredClone(s);
   const result = applyCommand(s, {
@@ -235,7 +235,7 @@ it("standing orders run after the roll, wait without spending, retain saved tier
   });
   n.phase = "roll";
   n = run(n, { type: "roll" });
-  expect(n.towns[home.id].stock.coke).toBe(1);
+  expect(n.towns[home.id].stock.coke).toBe(2);
   expect(n.towns[home.id].guild!.used).toBe(true);
   const once = inventory(n);
   standingGuildOrders(n);
@@ -252,7 +252,7 @@ it("standing orders run after the roll, wait without spending, retain saved tier
   beginTurn(n);
   n.phase = "roll";
   n = run(n, { type: "roll" });
-  expect(n.towns[home.id].stock.coke).toBe(1);
+  expect(n.towns[home.id].stock.coke).toBe(2);
   expect(deserialize(serialize(n))).toEqual(n);
 });
 it.each(["commanders", "navigators"] as const)(
@@ -423,8 +423,8 @@ it("manual orders do not overwrite a saved standing recipe; automation runs in f
   n.phase = "economy";
   n.towns[home.id].stock = { coal: 3 };
   standingGuildOrders(n);
-  expect(n.towns[home.id].stock.coke).toBe(2);
-  expect(second.stock.steel).toBe(3);
+  expect(n.towns[home.id].stock.coke).toBe(4);
+  expect(second.stock.steel).toBe(6);
   expect(second.guild.usedTiers).toEqual([3]);
 });
 it("guild output does not reduce dice production and remains raid loot", () => {
@@ -522,7 +522,7 @@ it("guild actions preserve randomness and normal production on every player's ro
   expect(
     (guild.towns[home.id].stock.coal ?? 0) -
       (base.towns[home.id].stock.coal ?? 0),
-  ).toBe(16);
+  ).toBe(32);
 });
 
 it.each(["prospectors", "artisans", "merchants"] as const)(
@@ -547,9 +547,9 @@ it.each(["prospectors", "artisans", "merchants"] as const)(
     }
     expect(n.towns[home.id].guild!.used).toBe(true);
     const stock = n.towns[home.id].stock;
-    if (kind === "prospectors") expect(stock.coal).toBe(home.stock.coal! + 25);
-    if (kind === "artisans") expect(stock.coke).toBe(home.stock.coke! + 7);
-    if (kind === "merchants") expect(stock.stone).toBe(home.stock.stone! + 12);
+    if (kind === "prospectors") expect(stock.coal).toBe(home.stock.coal! + 46);
+    if (kind === "artisans") expect(stock.coke).toBe(home.stock.coke! + 14);
+    if (kind === "merchants") expect(stock.stone).toBe(home.stock.stone! + 21);
     beginTurn(n);
     n.phase = "economy";
     expect(n.towns[home.id].guild!.usedTiers).toEqual([]);
@@ -601,11 +601,11 @@ it("standing recipes are independent per tier, can be paused separately, and aff
   });
   n.towns[home.id].stock = { salt: 2, ore: 2, coke: 1 };
   standingGuildOrders(n);
-  expect(n.towns[home.id].stock).toEqual({ reagents: 1, steel: 4 });
+  expect(n.towns[home.id].stock).toEqual({ reagents: 2, steel: 8 });
   expect(n.towns[home.id].guild!.usedTiers).toEqual([1, 3]);
   n.towns[home.id].stock.coal = 3;
   standingGuildOrders(n);
-  expect(n.towns[home.id].stock.coke).toBe(3);
+  expect(n.towns[home.id].stock.coke).toBe(5);
   expect(n.towns[home.id].guild!.used).toBe(true);
 });
 it.each(["commanders", "navigators"] as const)(

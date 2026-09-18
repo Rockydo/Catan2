@@ -13,6 +13,7 @@ import {
   productiveAtVertex,
   collector,
   harvestTiles,
+  harvestYield,
   towerSites,
   towerDefense,
 } from "./maritime";
@@ -644,6 +645,18 @@ export function economyProjects(s: Game): Project[] {
         { type: "city", town: t.id },
         cost,
         (output * 30 +
+          (t.level >= 2
+            ? productiveAtVertex(s, t.vertex).reduce(
+                (sum, id) =>
+                  sum +
+                  probability(s.tiles[id].number) *
+                    tileGoods(s.tiles[id], s.active).reduce(
+                      (n, raw) => n + values[processedFor(raw)],
+                      0,
+                    ),
+                0,
+              ) * 30
+            : 0) +
           (t.level === 1
             ? 9
             : 4 +
@@ -857,6 +870,29 @@ export function economyProjects(s: Game): Project[] {
             (u) => shipStats(u.kind as ShipClass, u.tier).capacity === 0,
           ),
           escortPower = escorts.reduce((n, u) => n + points(u), 0),
+          commerceTargets = enemyFleets.filter(
+            (water) =>
+              piecesAt(s, water, true).some(
+                (u) => warTarget(s, u.owner) && collector(u),
+              ) && pathTo(s, tile, water, true, s.active) !== null,
+          ),
+          commerceGuard = commerceTargets.length
+            ? Math.min(
+                ...commerceTargets.map((water) =>
+                  power(
+                    s,
+                    piecesAt(s, water, true).filter(
+                      (u) => !friendly(s, u.owner, s.active),
+                    ),
+                    water,
+                  ),
+                ),
+              )
+            : 0,
+          commerceRaid =
+            round >= 8 &&
+            commerceTargets.length > 0 &&
+            commerceGuard < 12 + towns.length * 5,
           blockade =
             resistance >= 0.2 &&
             ownTowns(s, crisis.leader).some((town) =>
@@ -870,6 +906,7 @@ export function economyProjects(s: Game): Project[] {
             berths > 0 ? 2 : 0,
             Math.ceil(enemyPower * 1.25),
             blockade ? Math.ceil(2 + resistance * 4) : 0,
+            commerceRaid ? Math.ceil(commerceGuard * 1.2 + 3) : 0,
           );
         for (const kind of (Object.keys(SHIP_INFO) as ShipClass[]).filter(
           (k) => k !== "fishing" && k !== "merchantship",
@@ -904,7 +941,10 @@ export function economyProjects(s: Game): Project[] {
               need > 0 &&
               (info.capacity
                 ? overseas && stranded.length > berths
-                : enemyPower > escortPower);
+                : enemyPower > escortPower ||
+                  (commerceRaid &&
+                    resistance >= 0.3 &&
+                    escortPower < escortTarget));
             if (need || free)
               add(
                 { type: "ship", town: t.id, tile, kind, tier },
@@ -991,14 +1031,15 @@ export function economyProjects(s: Game): Project[] {
               (n, id) =>
                 n +
                 probability(s.tiles[id].number) *
-                  tileGoods(s.tiles[id], s.active).reduce(
-                    (sum, good) =>
-                      sum +
-                      values[good] *
-                        (tileYield(s.tiles[id], s.active)[good] ?? 0),
-                    0,
-                  ) *
-                  tier,
+                  stockValue(
+                    harvestYield(
+                      s.tiles[id],
+                      s.active,
+                      tier,
+                      kind !== "fishing",
+                    ),
+                    values,
+                  ),
               0,
             );
             const danger = collectionAtRisk(tile, naval);
@@ -1389,8 +1430,11 @@ export function coalitionTrade(
     prices = marketValues(s);
   const reserve =
     (
-      projects.find((p) => p.urgent || p.action.type === "recruit") ??
-      projects[0]
+      projects.find(
+        (p) =>
+          p.urgent ||
+          (p.action.type === "recruit" && p.action.kind !== "merchant"),
+      ) ?? projects[0]
     )?.cost ?? {};
   const budget = marketStockValue(stock, prices) * 0.15;
   let best: { action: Command; score: number } | undefined;
@@ -1499,7 +1543,10 @@ function chooseEconomy(s: Game): Command {
   // Missing resources are imported; higher-tier wish lists never block a cheap guard.
   const recruits = reserveNeeded
     ? projects.filter(
-        (p) => p.action.type === "recruit" && p.action.kind !== "artillery",
+        (p) =>
+          p.action.type === "recruit" &&
+          p.action.kind !== "artillery" &&
+          p.action.kind !== "merchant",
       )
     : [];
   const emergency = recruits.filter((p) =>
@@ -1657,6 +1704,18 @@ function invasionCoasts(s: Game, excludeLand?: string): string[] {
   if (cached) return cached;
   const region = landRegions(s),
     home = excludeLand ? region.get(excludeLand) : undefined;
+  // A beach behind a choke point must be judged with the army we can ferry
+  // there, not only troops already standing on the far side of that choke.
+  const expeditionaryForce = excludeLand
+    ? ownPieces(s).filter(
+        (u) =>
+          !u.naval &&
+          !u.carrier &&
+          !collector(u) &&
+          region.get(u.tile) === home &&
+          pathTo(s, excludeLand, u.tile, false, s.active) !== null,
+      )
+    : undefined;
   const wanted = new Set(
     Object.values(s.towns)
       .filter((t) => warTarget(s, t.owner))
@@ -1675,30 +1734,38 @@ function invasionCoasts(s: Game, excludeLand?: string): string[] {
             wanted.has(region.get(id)) &&
             (region.get(id) !== home ||
               !excludeLand ||
-              (!hostileAt(s, id) && hasLandObjective(s, id))),
+              (!hostileAt(s, id) &&
+                hasLandObjective(s, id, expeditionaryForce))),
         ),
     )
     .map((t) => t.id);
   cache.set(key, result);
   return result;
 }
-function hasLandObjective(s: Game, origin: string): boolean {
+function hasLandObjective(
+  s: Game,
+  origin: string,
+  arriving?: Piece[],
+): boolean {
   let cache = objectiveCache.get(s);
   if (!cache) {
     cache = new Map();
     objectiveCache.set(s, cache);
   }
-  const key = `${s.active}/${origin}`;
+  const key = `${s.active}/${origin}/${arriving ? `landing:${arriving.map((u) => u.id).join(",")}` : "local"}`;
   if (cache.has(key)) return cache.get(key)!;
   const region = landRegions(s).get(origin);
-  const available = ownPieces(s).filter(
-    (u) =>
-      !u.naval &&
-      !collector(u) &&
-      (u.carrier
-        ? neighbors(u.tile).some((id) => landRegions(s).get(id) === region)
-        : landRegions(s).get(u.tile) === region),
-  );
+  const available =
+    arriving ??
+    ownPieces(s).filter(
+      (u) =>
+        !u.naval &&
+        !collector(u) &&
+        (u.carrier
+          ? neighbors(u.tile).some((id) => landRegions(s).get(id) === region)
+          : landRegions(s).get(u.tile) === region &&
+            pathTo(s, origin, u.tile, false, s.active) !== null),
+    );
   const fieldGroups = new Map<string, Piece[]>();
   for (const unit of available) {
     const key = unit.carrier
@@ -1850,13 +1917,10 @@ function collectorMove(s: Game): Command | null {
         (n, id) =>
           n +
           probability(s.tiles[id].number) *
-            tileGoods(s.tiles[id], s.active).reduce(
-              (sum, good) =>
-                sum +
-                values[good] * (tileYield(s.tiles[id], s.active)[good] ?? 0),
-              0,
-            ) *
-            u.tier,
+            stockValue(
+              harvestYield(s.tiles[id], s.active, u.tier, u.kind !== "fishing"),
+              values,
+            ),
         0,
       );
       return output - (threatened(tile, u.naval) ? 20 : 0);
@@ -1927,7 +1991,10 @@ function chooseMilitary(s: Game): Command {
         (denial.get(tile) ?? 0) +
           probability(s.tiles[tile].number) *
             (town.level * sumStock(tileYield(s.tiles[tile], town.owner)) +
-              (town.extensions[tile] ?? 0)) *
+              tileGoods(s.tiles[tile], town.owner).length *
+                Math.max(0, town.level - 2) *
+                2.5 +
+              (town.extensions[tile] ?? 0) * 2.5) *
             leaderPressure(s, town.owner),
       );
     }
@@ -2063,7 +2130,7 @@ function chooseMilitary(s: Game): Command {
             s.tiles[t] &&
             s.tiles[t].resource !== "water" &&
             !hostileAt(s, t) &&
-            hasLandObjective(s, t),
+            hasLandObjective(s, t, passengers),
         );
         const landing = land
           .map((id) => ({
@@ -2214,7 +2281,7 @@ function chooseMilitary(s: Game): Command {
                   s.tiles[l]?.resource !== "water" &&
                   s.tiles[l] &&
                   !hostileAt(s, l) &&
-                  hasLandObjective(s, l) &&
+                  hasLandObjective(s, l, passengers) &&
                   enemyTowns.some((t) =>
                     landAtVertex(s, t.vertex).some(
                       (v) => pathTo(s, l, v, false, s.active) !== null,
@@ -2382,6 +2449,13 @@ function chooseMilitary(s: Game): Command {
                 Object.keys(r.camps).some((id) => near.includes(id)),
             )
             .map((r) => leaderPressure(s, r.owner)),
+          ...piecesAt(s, target, naval)
+            .filter((u) => warTarget(s, u.owner) && collector(u))
+            .map(
+              (u) =>
+                (2 + u.tier + Math.max(0, u.tier - 2)) *
+                leaderPressure(s, u.owner),
+            ),
           ...allies
             .filter((t) => landAtVertex(s, t.vertex).includes(target))
             .map((t) => {
@@ -2411,7 +2485,7 @@ function chooseMilitary(s: Game): Command {
             b.path!.length / objectiveWeight(b.target),
         );
       let chosen = goalPaths[0];
-      if (!naval && !chosen) {
+      if (!naval && (!chosen || !hasLandObjective(s, origin))) {
         const pickup = ownPieces(s)
           .filter(
             (u) =>
@@ -2429,14 +2503,42 @@ function chooseMilitary(s: Game): Command {
                 !hostileAt(s, l),
             ),
           );
-        chosen =
-          pickup
-            .map((target) => ({
-              target,
-              path: pathTo(s, origin, target, false, s.active),
+        const passage = pickup
+          .map((target) => ({
+            target,
+            path: pathTo(s, origin, target, false, s.active),
+          }))
+          .filter((v) => v.path !== null)
+          .filter((v) => v.path!.length > 0)
+          .sort((a, b) => a.path!.length - b.path!.length)[0];
+        if (passage) {
+          chosen = passage;
+          weights.set(passage.target, 4 + crisis.severity * 3);
+        } else if (
+          aiExpeditionAllowed(s) &&
+          !s.players[s.active].expeditionUsed
+        ) {
+          // A blocked army can scout a new approach from the map edge rather
+          // than orbiting the three guarded sides of the same enemy town.
+          const frontier = Object.values(s.tiles)
+            .filter(
+              (tile) =>
+                tile.resource !== "water" &&
+                tile.id !== origin &&
+                tile.vertices.some((v) => unknownAtVertex(s, v).length) &&
+                !hostileAt(s, tile.id),
+            )
+            .map((tile) => ({
+              target: tile.id,
+              path: pathTo(s, origin, tile.id, false, s.active),
             }))
-            .filter((v) => v.path !== null)
-            .sort((a, b) => a.path!.length - b.path!.length)[0] ?? chosen;
+            .filter((v) => v.path?.length)
+            .sort((a, b) => a.path!.length - b.path!.length)[0];
+          if (frontier) {
+            chosen = frontier;
+            weights.set(frontier.target, 3 + crisis.severity * 2);
+          }
+        }
       }
       for (const [to, path] of Object.entries(targets)) {
         const foes = piecesAt(s, to, naval).filter(

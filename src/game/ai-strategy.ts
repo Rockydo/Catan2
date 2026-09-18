@@ -229,7 +229,8 @@ export function conquestDrive(s: Game): number {
     1.3 +
     (allianceOf(s, s.active) ? 0.2 : 0) +
     advantage * 0.5 +
-    (crisis.leader === s.active ? crisis.severity * 0.3 : 0)
+    Math.min(0.5, Math.max(0, s.players[s.active].turns - 10) / 40) +
+    crisis.severity * (crisis.leader === s.active ? 0.3 : 0.45)
   );
 }
 export function campaignPowerTarget(s: Game): number {
@@ -331,8 +332,9 @@ export function leavesTownExposed(
     );
     if (
       survivalThreat &&
-      danger > current * 1.3 &&
-      remaining >= Math.max(1, current * 0.25)
+      danger > current * (s.players[t.owner].turns >= 12 ? 1.15 : 1.3) &&
+      remaining >=
+        Math.max(1, current * (s.players[t.owner].turns >= 12 ? 0.15 : 0.25))
     )
       return false;
     return true;

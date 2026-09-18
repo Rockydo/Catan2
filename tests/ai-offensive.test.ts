@@ -19,6 +19,36 @@ function front() {
 }
 
 describe("active economic warfare", () => {
+  it("does not let merchants masquerade as required reinforcements and block a city unlock", () => {
+    const { s, home } = maritimeFixture();
+    home.level = home.turnLevel = 2;
+    s.players[0].control = "standard";
+    s.players[0].turns = 25;
+    for (let i = 0; i < 35; i++) piece(s, "3,0", 1, "heavy", 4);
+    for (let i = 0; i < 2; i++) piece(s, "0,0", 0, "heavy", 1).acted = true;
+    expect(
+      economyProjects(s)
+        .filter((p) => p.action.type === "recruit")
+        .every((p) => p.action.kind === "merchant"),
+    ).toBe(true);
+    expect(chooseAIAction(s)).toMatchObject({ type: "city", town: home.id });
+  });
+  it("fills a military shortfall with combat troops even when elite merchants promise richer production", () => {
+    const { s, home } = maritimeFixture();
+    s.players[0].control = "standard";
+    s.players[0].turns = 25;
+    for (const tile of Object.values(s.tiles)) tile.resource = "gold";
+    for (let i = 0; i < 35; i++) piece(s, "3,0", 1, "heavy", 4);
+    expect(home.turnLevel).toBe(4);
+    const projects = economyProjects(s);
+    expect(
+      projects.some((p) => p.action.kind === "merchant" && p.action.tier === 4),
+    ).toBe(true);
+    const action = chooseAIAction(s);
+    expect(action.type).toBe("recruit");
+    expect(["heavy", "light", "cavalry"]).toContain(action.kind);
+    expect(applyCommand(s, action).ok).toBe(true);
+  });
   it("leaves a siege operator in place and sends the rest toward another town", () => {
     const { s, enemy } = front();
     const besieged = {

@@ -41,7 +41,7 @@ describe("nine resources and affordable camps", () => {
     expect(deserialize(serialize(s))).toEqual(s);
     production(s, 7);
     expect(s.production[0].salt).toBe(6);
-    expect(s.production[0].reagents).toBe(2);
+    expect(s.production[0].reagents).toBe(4);
     assertInvariants(s);
   });
   it("converts pending trades and saved raid receipts, cancelling same-good offers caused by conversion", () => {

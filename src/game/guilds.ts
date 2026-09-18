@@ -48,9 +48,9 @@ export const GUILDS: Record<
     color: "#557342",
     purpose: "Fertilize local crops and pastures on demand.",
     tiers: [
-      "1 Salt → 4 Grain or Wool from an adjacent clear land tile.",
-      "1 Salt + 1 Coal → 8 local Grain or Wool.",
-      "1 Salt + 1 Coal + 1 Chemicals → 16 local Grain or Wool.",
+      "1 Salt → 6 Grain or Wool from an adjacent clear land tile.",
+      "1 Salt + 1 Coal → 12 local Grain or Wool.",
+      "1 Salt + 1 Coal + 1 Chemicals → 32 local Grain or Wool.",
     ],
   },
   extractors: {
@@ -58,9 +58,9 @@ export const GUILDS: Record<
     color: "#70603b",
     purpose: "Equip local logging and clay crews with better tools.",
     tiers: [
-      "1 Iron ore → 4 Wood or Clay from an adjacent clear tile.",
-      "1 Iron ore + 1 Steel → 10 local Wood or Clay.",
-      "1 Steel + 1 Fuel → 18 local Wood or Clay.",
+      "1 Iron ore → 6 Wood or Clay from an adjacent clear tile.",
+      "1 Iron ore + 1 Steel → 15 local Wood or Clay.",
+      "1 Steel + 1 Fuel → 36 local Wood or Clay.",
     ],
   },
   engineers: {
@@ -98,9 +98,9 @@ export const GUILDS: Record<
     color: "#7e6034",
     purpose: "Extract local minerals on demand.",
     tiers: [
-      "1 Grain → 4 minerals from an adjacent clear deposit (2 Gold).",
-      "1 Grain + 1 Coal → 6 minerals (3 Gold).",
-      "1 Rations + 1 Fuel → 16 minerals (8 Gold).",
+      "1 Grain → 6 minerals from an adjacent clear deposit (3 Gold).",
+      "1 Grain + 1 Coal → 9 minerals (5 Gold).",
+      "1 Rations + 1 Fuel → 32 minerals (16 Gold).",
     ],
   },
   artisans: {
@@ -108,9 +108,9 @@ export const GUILDS: Record<
     color: "#9b533b",
     purpose: "Manufacture goods without a linked extension.",
     tiers: [
-      "2 raw goods → 1 of their processed good.",
-      "2 raw goods + 1 Coal → 3 of their processed good.",
-      "2 raw goods + 1 Fuel → 4 of their processed good.",
+      "2 raw goods → 2 of their processed good.",
+      "2 raw goods + 1 Coal → 5 of their processed good.",
+      "2 raw goods + 1 Fuel → 8 of their processed good.",
     ],
   },
   merchants: {
@@ -118,9 +118,9 @@ export const GUILDS: Record<
     color: "#886320",
     purpose: "Fulfil better trades once per turn.",
     tiers: [
-      "Trade 2 ordinary raw goods for 2 of another.",
-      "Trade 2 ordinary raw goods for 4 of another.",
-      "Trade 2 raw goods for 6 of another, or 1 processed good for 3 of another. Gold and Gold bars excluded.",
+      "Trade 2 ordinary raw goods for 3 of another.",
+      "Trade 2 ordinary raw goods for 6 of another.",
+      "Trade 2 raw goods for 12 of another, or 1 processed good for 6 of another. Gold and Gold bars excluded.",
     ],
   },
   commanders: {
@@ -404,6 +404,10 @@ export function guildOrderQuote(
               : { leather: 1 },
     );
   }
+  // Every resource-producing contract, including trading contracts, receives
+  // the bonus. Inputs, movement, construction grants and research stay fixed.
+  for (const good of Object.keys(gain) as Good[])
+    gain[good] = Math.ceil(gain[good]! * (tier === 3 ? 2 : 1.5));
   return {
     cost,
     gain,

@@ -47,7 +47,7 @@ Une carte extrême peut manquer d’emplacements initiaux légaux. Le jeu signal
 ## Ressources, stocks et échanges
 
 ### Production et stockage
-Le jeu contient douze ressources brutes et dix produits transformés. Chaque agglomération multiplie la production brute de chaque tuile adjacente activée par son niveau. Les Champs dorés donnent 2/4/6/8 Blés aux niveaux 1/2/3/4 ; les Rizières donnent 3/6/9/12. Les deux productions d’une tuile mixte sont multipliées. Les ateliers ajoutent des produits transformés sans consommer ni réduire cette récolte. Tous les joueurs produisent à chaque lancer. Une nouvelle construction ou unité de collecte peut produire dès le prochain lancer correspondant.
+Le jeu contient douze ressources brutes et dix produits transformés. Chaque agglomération multiplie la production brute de chaque tuile adjacente activée par son niveau. Les Champs dorés donnent 2/4/6/8 Blés aux niveaux 1/2/3/4 ; les Rizières donnent 3/6/9/12. Les deux productions d’une tuile mixte sont multipliées. Les agglomérations de niveaux 3 et 4 (Ville II et Ville III) ajoutent aussi 1 et 2 produits transformés par type de ressource brute sur chaque tuile activée, sans atelier requis. Ce bonus est fixe, quel que soit le rendement brut du terrain. Une ville de niveau 4 reçoit 8 Blés + 2 Rations des Champs dorés ; sur une Steppe, elle reçoit 4 Peaux + 4 Laines + 2 Cuirs + 2 Tissus. Les ateliers ajoutent des produits transformés sans consommer ni réduire cette récolte. Tous les joueurs produisent à chaque lancer. Une nouvelle construction ou unité de collecte peut produire dès le prochain lancer correspondant.
 ### Destination des ressources
 La production d’une agglomération reste sur place. Camps et collecteurs mobiles envoient leur récolte à l’agglomération du propriétaire la plus proche, selon la distance hexagonale à ses terres adjacentes ; en cas d’égalité, la plus ancienne l’emporte. Les récoltes futures changent de destination si les villes changent, pas les stocks existants. Échanges et cartes alimentent votre entrepôt principal, dans votre plus ancienne agglomération survivante. Le pillage mesure la destination depuis la tuile de l’armée.
 ### Paiement des coûts
@@ -74,7 +74,7 @@ Chaque faction choisit séparément Bois ou Peaux pour chaque tuile Bois qu’el
 Une nouvelle liaison doit toucher votre route, liaison maritime ou agglomération. Routes et liaisons maritimes se raccordent directement, sans ville côtière intermédiaire. Une agglomération ou tour d’une autre faction coupe la jonction ; les infrastructures alliées ne deviennent pas les vôtres. Après la mise en place, une colonie doit rejoindre votre réseau, toucher une terre et laisser une intersection libre entre agglomérations. Les troupes ne fondent pas de colonies isolées.
 Toute arête touchant une terre révélée est une route, côte comprise. Les liaisons maritimes occupent des arêtes bordant l’eau sans terre révélée. Révéler une terre transforme la liaison voisine en route, sans changer propriétaire ou camps. Une extrémité maritime libre ne touche ni ville ni autre liaison du propriétaire. Déplacez au plus une de ces pièces par tour vers une autre arête maritime légalement reliée, jamais une pièce construite ce tour. Les liaisons fermées restent fixes. Une seule liaison par arête.
 ### Niveaux des agglomérations
-Niveau 1 : Colonie ; niveau 2 : Ville I ; niveau 3 : Ville II ; niveau 4 : Ville III. Elles multiplient la production de chaque tuile adjacente activée par 1/2/3/4. Leurs paliers maximaux de murailles et de recrutement valent 1/2/3/4. Les villes ont 1/2/3 emplacements de guildes et autorisent les ateliers de palier 1/2/3. Les améliorations conservent stocks, murailles et ateliers. Chaque prix indiqué correspond à l’étape concernée.
+Niveau 1 : Colonie ; niveau 2 : Ville I ; niveau 3 : Ville II ; niveau 4 : Ville III. Elles multiplient la production de chaque tuile adjacente activée par 1/2/3/4. Les niveaux 3/4 ajoutent 1/2 produit transformé par type de ressource brute produit, en plus des ateliers. Leurs paliers maximaux de murailles et de recrutement valent 1/2/3/4. Les villes ont 1/2/3 emplacements de guildes et autorisent les ateliers de palier 1/2/3. Les améliorations conservent stocks, murailles et ateliers. Chaque prix indiqué correspond à l’étape concernée.
 Recrutement et construction navale utilisent le niveau de la ville au début du tour. Une nouvelle agglomération doit attendre votre prochain tour pour recruter ; un nouveau niveau débloque son palier d’unités au tour suivant. Recrutez autant d’unités ou navires autorisés que vos moyens le permettent. Aucun entretien militaire ni plafond de quantité. Les recrues défendent et les collecteurs produisent immédiatement, mais n’agissent qu’au prochain tour de leur propriétaire.
 ### Ateliers
 Une ville peut construire un atelier par tuile productive adjacente, soit trois au maximum. Le lien est permanent, même si deux tuiles fournissent la même ressource. L’eau ordinaire n’a pas d’emplacement ; les Poissons accueillent un fumoir et les Baleines une tannerie. Deux villes voisines peuvent chacune exploiter leur tuile commune.
@@ -95,7 +95,7 @@ Les deux camps utilisent le terrain du défenseur. Tous les défenseurs de la tu
 Aucun dé de combat. Seul le perdant subit des pertes militaires. La cible de pertes vaut l’écart de puissance, plafonné au total de points du perdant. Retirez des unités entières pour atteindre le plus petit total possible au moins égal à cette cible. Le perdant choisit entre les combinaisons minimales équivalentes. Les bonus de terrain ne changent pas les points de pertes. Aucune blessure persistante. Avec des unités de 1 et 3 points et une cible de 2, perdez celle de 3, pas les deux.
 Un défenseur vaincu survivant recule d’une tuile légale sans ennemis ; les forces amies sont autorisées. Un attaquant vaincu revient sur sa tuile d’approche. Sans retraite légale, le défenseur reste et l’attaquant n’occupe pas la tuile. À égalité, aucune perte militaire et le défenseur tient. Les marchands meurent quand même. Si les défenseurs partent ou meurent, les attaquants survivants occupent leur tuile sans coût supplémentaire. Victoire, égalité ou défaite consomment le PM du combat ; le mouvement restant reste disponible.
 ### Marchands terrestres
-Les marchands ont toujours zéro puissance et une vitesse de 1. Ils exploitent leur tuile plus un nombre de voisines productives au plus égal à leur palier, avec une production par tuile égale à ce palier. Ils peuvent couvrir Poissons et Baleines ; ces dernières donnent Peaux et Huile. Leur collecte ignore les blocus ennemis. Le choix automatique préfère l’Or, puis la probabilité du numéro, puis l’ordre des coordonnées, en ignorant l’eau improductive.
+Les marchands ont toujours zéro puissance et une vitesse de 1. Ils exploitent leur tuile plus un nombre de voisines productives au plus égal à leur palier, avec une production par tuile égale à ce palier. Ils peuvent couvrir Poissons et Baleines ; ces dernières donnent Peaux et Huile. Aux paliers III/IV, chaque tuile couverte activée donne aussi 1/2 produit transformé par type de ressource brute, sans consommer la récolte brute. Leur collecte ignore les blocus ennemis. Le choix automatique préfère l’Or, puis la probabilité du numéro, puis l’ordre des coordonnées, en ignorant l’eau improductive.
 Modifiez les voisines durant votre phase d’action ou rétablissez le choix automatique. Un déplacement ou transport réinitialise la sélection ; un marchand embarqué ne produit rien. Il ne peut ni piller, ni assiéger, ni démolir, ni garder une ville. Tous les marchands terrestres participant à une bataille meurent, même si leur escorte gagne. Cliquez sur un marchand pour voir et modifier sa couverture. Les récoltes rejoignent votre agglomération la plus proche.
 Le bonus dépend du terrain, pas de la ressource : Pâturage pauvre est accidenté ; Oliveraie et Oasis sont forestières ; Steppe, Chasse aux phoques, Plaine enneigée, Désert et Banquise sont des plaines.
 
@@ -126,7 +126,7 @@ Cliquez sur un indicateur de siège, une ville, une tour ou le lien pointillé p
 Une liaison maritime est une pièce d’arête qui étend votre réseau de colonies. Un navire mobile occupe une tuile d’eau, se déplace et combat. L’un ne remplace pas l’autre. Construisez les navires près d’une agglomération côtière, sans port imprimé, sur une eau révélée sans ennemis. Le niveau au début du tour limite leur palier. Aucun plafond par commande, ville, tour ou flotte si vous payez chaque navire. Ils ne peuvent pas évoluer.
 Les transports privilégient la vitesse ; les convois portent plus d’unités mais avancent moins vite. Les tables des navires indiquent puissance, mouvement et capacité pour chaque classe. Chaque classe possède quatre paliers. La flotte avance à la vitesse du plus lent de ses participants. Les combats utilisent pertes entières et retraites, selon la puissance et les points de pertes de chaque coque. Les passagers n’ajoutent aucune puissance navale. Les survivants conservent toute leur puissance et capacité.
 ### Navires de pêche et marchands
-Les navires de pêche couvrent leur tuile et les six voisines, seulement pour les Poissons, la Morue et les Baleines. Les navires marchands couvrent toutes les terres voisines, même occupées ou exploitées par un rival, jamais les Poissons ou Baleines. Chaque production de base est multipliée par le palier du navire : la Morue donne 2 Poissons par palier ; les Baleines donnent 1 Peau et 1 Huile par palier. Tout rejoint l’agglomération du propriétaire la plus proche. La collecte commence dès la construction. Aucun plafond de collecteurs par tuile ni capacité de cargaison pour les ressources.
+Les navires de pêche couvrent les Poissons, la Morue et les Baleines sur leur tuile et les eaux reliées à une distance de 1/2/3/4 aux paliers I/II/III/IV. Comptez le plus court trajet par l’eau, pas la distance à vol d’oiseau : terre et glace interrompent la couverture, et les tuiles non révélées sont exclues. Les navires marchands couvrent toutes les terres voisines, même occupées ou exploitées par un rival, jamais les Poissons ou Baleines. Chaque production de base est multipliée par le palier du navire : la Morue donne 2 Poissons par palier ; les Baleines donnent 1 Peau et 1 Huile par palier. Les navires marchands III/IV ajoutent aussi 1/2 produit transformé par type de ressource brute sur chaque tuile couverte activée, sans consommer la récolte brute. Les navires de pêche ne produisent aucun bien transformé. Tout rejoint l’agglomération du propriétaire la plus proche. La collecte commence dès la construction. Aucun plafond de collecteurs par tuile ni capacité de cargaison pour les ressources.
 Les deux classes économiques ont une puissance de 0/1/2/3 aux paliers I/II/III/IV et aucune place de passager. Les navires désarmés d’une flotte vaincue sont automatiquement perdus. Les autres suivent les calculs ordinaires de pertes entières. Couverture et navires économiques sont visibles dans l’inspecteur des flottes.
 ### Transporter les troupes
 Embarquez ou débarquez à travers une arête commune terre-eau, sans port requis. Chaque navire et passager participant doit être frais. Embarquement et débarquement terminent leur activation. Une place porte une unité de n’importe quel palier, marchand compris. Les passagers ne produisent pas, ne gardent pas et n’agissent pas séparément. Débarquez sur une plage libre ou alliée, jamais directement sur une tuile ennemie. Les troupes débarquées attaquent à un tour ultérieur.
@@ -157,7 +157,8 @@ Un palier construit ou amélioré ouvre au prochain tour du propriétaire. Chaqu
 ### Commandes automatiques et suppression
 Les guildes économiques sauf les Érudits peuvent mémoriser une recette permanente par palier. Après vos dés, les villes, dans l’ordre de fondation, tentent une fois chaque palier I→III. Une recette bloquée ou trop chère attend sans empêcher les autres. Aucun emprunt ni importation automatique. Modifiez ou suspendez chaque palier séparément. Dissoudre ne rembourse rien ; un remplacement repart au I et ouvre au tour suivant. Les guildes disparaissent avec la ville, la suivent en cas de rébellion et valent six points de puissance publique par palier. Les commandes permanentes rebelles sont suspendues.
 ### Production locale et commerce
-Les Prospecteurs exigent un dépôt adjacent libre de Pierre, Charbon, Minerai, Sel ou Or. L’Or donne la moitié des quantités minérales. Les Fermiers exigent une terre libre de Blé ou Laine, jamais Peaux, Poissons ou Baleines. Les Extracteurs exigent du Bois ou de l’Argile adjacent et libre. Le numéro ne compte pas pour la commande ; la production par les dés continue. Sans dépôt convenable, la spécialisation ne fonctionne pas.
+Le catalogue inclut les rendements renforcés des cinq guildes économiques : Prospecteurs, Fermiers, Extracteurs, Artisans et Marchands. Les paliers I/II produisent 50 % de plus que les contrats initiaux, arrondis à l’entier supérieur ; le palier III produit le double. Les coûts en intrants sont inchangés. Chaque palier débloqué garde son contrat séparé.
+Les Prospecteurs exigent un dépôt adjacent libre de Pierre, Charbon, Minerai, Sel ou Or. L’Or donne 3/5/16 au lieu des quantités minérales ordinaires de 6/9/32. Les Fermiers exigent une terre libre de Blé ou Laine, jamais Peaux, Poissons ou Baleines. Les Extracteurs exigent du Bois ou de l’Argile adjacent et libre. Le numéro ne compte pas pour la commande ; la production par les dés continue. Sans dépôt convenable, la spécialisation ne fonctionne pas.
 ### Transformation et échange
 Les Artisans transforment la matière choisie en son produit habituel sans atelier. Blé ou Poissons donnent des Rations, Charbon ou Huile du Combustible, Or des Lingots. Payez les intrants choisis et les compléments indiqués ; si une ressource apparaît dans les deux, les quantités s’ajoutent. Les contrats Marchands utilisent exactement les ressources sélectionnées et leurs taux par lots, indépendamment des ports et de la réserve.
 ### Services militaires
@@ -197,7 +198,7 @@ Les alliés ne peuvent ni s’attaquer, ni se bombarder, ni assiéger, piller ou
 Les défenseurs alliés sur la même tuile additionnent leur puissance ajustée au terrain. Les tours de chaque propriétaire représenté s’ajoutent une fois. Seules les unités sélectionnées du joueur actif attaquent. Les défenseurs communs subissent les pertes entières ordinaires ; un humain choisit s’il est présent, sinon le défenseur au plus petit identifiant. Les survivants reculent ensemble vers une tuile sûre pour tous. Les armées alliées voisines ne participent pas automatiquement.
 Quitter sur une tuile partagée ne téléporte ni ne tue personne. Les anciens alliés sont immédiatement hostiles et peuvent se retirer ou combattre sur place pour 1 PM. Cela n’autorise pas à traverser de nouvelles forces ennemies. Le panneau des factions montre membres, puissance combinée, engagement restant et action de départ.
 ### Priorités de l’IA
-L’IA cherche à gagner seule, selon puissance publique, revenus, portée militaire et terrain. Elle protège les villes exposées, cherche les ressources utiles, développe ses industries, finance les outils pertinents et vise les combats gagnables ou pillages. Elle classe les cibles selon les stocks exposés, la production, la durée du siège et la puissance du propriétaire. Elle laisse de petits détachements aux sièges ou blocus et poursuit l’attaque avec les troupes restantes. Les forces proches renforcent les villes défendables ; face à un meneur impossible à contenir, une garnison peut laisser une garde de retardement et envoyer des pillards. Les transports permettent de contourner les voies terrestres bloquées ; les factions autorisées peuvent financer des expéditions en bordure pour chercher une autre approche. Une IA autorisée envisage les expéditions dès son troisième ou quatrième tour, puis à chaque tour si des productions manquantes, un encerclement ou un retard de puissance le justifient. Elle évalue les frontières selon les climats visibles et leur potentiel de ressources manquantes ; les Poissons comptent comme Blé et l’Huile comme Charbon. Elle compare les directions de révélation pour approcher les ennemis proches, peut construire vers une frontière utile et financer l’exploration avant de renforcer ses réserves dès qu’elle possède une armée de base. La défense urgente des villes reste prioritaire. Elle ne consulte ni les terrains cachés ni les climats réservés. L’IA la plus puissante reste interdite d’expédition. L’artillerie peut attaquer les flottes. Facile, Standard et Difficile modifient l’étendue de la planification, pas les coûts, dés ou ressources gratuites.
+L’IA cherche à gagner seule, selon puissance publique, revenus, portée militaire et terrain. Elle protège les villes exposées, cherche les ressources utiles, développe ses industries, finance les outils pertinents et vise les combats gagnables ou pillages. Elle classe les cibles selon les stocks exposés, la production, la durée du siège et la puissance du propriétaire. Elle laisse de petits détachements aux sièges ou blocus et poursuit l’attaque avec les troupes restantes. Les forces proches renforcent les villes défendables ; face à un meneur impossible à contenir, une garnison peut laisser une garde de retardement et envoyer des pillards. L’investissement offensif augmente au milieu et en fin de partie. Les collecteurs avancés sont des cibles de raids navals importantes. Sans assaut terrestre viable, une armée peut quitter un blocus pour rejoindre des transports ou une frontière exploitable. Les transports permettent de contourner les voies terrestres bloquées ; les factions autorisées peuvent financer des expéditions en bordure pour chercher une autre approche. Une IA autorisée envisage les expéditions dès son troisième ou quatrième tour, puis à chaque tour si des productions manquantes, un encerclement ou un retard de puissance le justifient. Elle évalue les frontières selon les climats visibles et leur potentiel de ressources manquantes ; les Poissons comptent comme Blé et l’Huile comme Charbon. Elle compare les directions de révélation pour approcher les ennemis proches, peut construire vers une frontière utile et financer l’exploration avant de renforcer ses réserves dès qu’elle possède une armée de base. La défense urgente des villes reste prioritaire. Elle ne consulte ni les terrains cachés ni les climats réservés. L’IA la plus puissante reste interdite d’expédition. L’artillerie peut attaquer les flottes. Facile, Standard et Difficile modifient l’étendue de la planification, pas les coûts, dés ou ressources gratuites.
 La pression contre le premier commence au-delà de 25 % ou six points d’avance, selon le plus grand seuil, puis monte fortement jusqu’au maximum à 1,8 fois le deuxième. Cela vise autant humains qu’IA. Les petites factions privilégient les revenus et villes exposés du premier, aident les voisins utiles par des échanges favorables et réduisent les attaques contre les autres petites factions. Elles évitent les assauts perdus d’avance puisque le gagnant ne subit pas de pertes militaires. Les priorités changent avec les puissances, sous réserve des engagements.
 ### Puissance publique et difficulté
 La puissance publique estime la capacité économique et militaire ; ce n’est ni un score de victoire ni la force exacte d’une armée. Le panneau des factions en détaille les composantes. La vitesse de l’IA change le délai entre actions, pas la difficulté ni les règles.
@@ -1041,21 +1042,21 @@ Les coûts concernent chaque construction ou étape. La Tour de guet I propose d
 
 Fertiliser les champs et prés locaux à la demande.
 
-- I: 1 Sel → 4 Blé ou Laine d'une tuile terrestre adjacente libre.
+- I: 1 Sel → 6 Blé ou Laine d’une tuile terrestre adjacente libre.
 
-- II: 1 Sel + 1 Charbon → 8 Blé ou Laine locaux.
+- II: 1 Sel + 1 Charbon → 12 Blé ou Laine locaux.
 
-- III: 1 Sel + 1 Charbon + 1 Produits chimiques → 16 Blé ou Laine locaux.
+- III: 1 Sel + 1 Charbon + 1 Produits chimiques → 32 Blé ou Laine locaux.
 
 ### Guilde des extracteurs
 
 Fournir de meilleurs outils aux bûcherons et aux ouvriers de l'argile.
 
-- I: 1 Minerai → 4 Bois ou Argile d'une tuile adjacente libre.
+- I: 1 Minerai de fer → 6 Bois ou Argile d’une tuile adjacente libre.
 
-- II: 1 Minerai + 1 Acier → 10 Bois ou Argile locaux.
+- II: 1 Minerai de fer + 1 Acier → 15 Bois ou Argile locaux.
 
-- III: 1 Acier + 1 Combustible → 18 Bois ou Argile locaux.
+- III: 1 Acier + 1 Combustible → 36 Bois ou Argile locaux.
 
 ### Guilde des ingénieurs
 
@@ -1091,31 +1092,31 @@ Financer des découvertes avancées : choisissez entre deux cartes aléatoires.
 
 Extraire des minerais locaux à la demande.
 
-- I: 1 Blé → 4 minerais d'un gisement adjacent libre (2 Or).
+- I: 1 Blé → 6 minerais d’un gisement adjacent libre (3 Or).
 
-- II: 1 Blé + 1 Charbon → 6 minerais (3 Or).
+- II: 1 Blé + 1 Charbon → 9 minerais (5 Or).
 
-- III: 1 Rations + 1 Combustible → 16 minerais (8 Or).
+- III: 1 Rations + 1 Combustible → 32 minerais (16 Or).
 
 ### Guilde des artisans
 
 Fabriquer des produits sans extension liée.
 
-- I: 2 ressources brutes → 1 produit transformé correspondant.
+- I: 2 ressources brutes → 2 produits transformés correspondants.
 
-- II: 2 ressources brutes + 1 Charbon → 3 produits transformés correspondants.
+- II: 2 ressources brutes + 1 Charbon → 5 produits transformés correspondants.
 
-- III: 2 ressources brutes + 1 Combustible → 4 produits transformés correspondants.
+- III: 2 ressources brutes + 1 Combustible → 8 produits transformés correspondants.
 
 ### Guilde des marchands
 
 Effectuer des échanges avantageux une fois par tour.
 
-- I: Échangez 2 ressources brutes ordinaires contre 2 d'un autre type.
+- I: Échangez 2 ressources brutes ordinaires contre 3 d’une autre.
 
-- II: Échangez 2 ressources brutes ordinaires contre 4 d'un autre type.
+- II: Échangez 2 ressources brutes ordinaires contre 6 d’une autre.
 
-- III: Échangez 2 ressources brutes contre 6 d'un autre type, ou 1 produit transformé contre 3 d'un autre type. Or et Lingots d'or exclus.
+- III: Échangez 2 ressources brutes contre 12 d’une autre, ou 1 produit transformé contre 6 d’un autre. Or et Lingots d’or exclus.
 
 ### Guilde des commandants
 

@@ -15,6 +15,7 @@ import type { Command } from "../src/game/types";
 describe("conquest priorities and lossless planning optimizations", () => {
   it("increases a leading realm's offensive commitment without inspecting private stocks", () => {
     const { s, home } = coastalFixture();
+    home.level = home.turnLevel = 2;
     const baseline = conquestDrive(s),
       target = campaignPowerTarget(s);
     const stronger = structuredClone(s);

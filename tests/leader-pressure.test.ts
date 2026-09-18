@@ -5,6 +5,7 @@ import {
   dominance,
   warTarget,
   leaderPressure,
+  conquestDrive,
 } from "../src/game/ai-strategy";
 import { ownTowns, pathTo, power, inventory } from "../src/game/selectors";
 import { landAtVertex } from "../src/game/world";
@@ -83,6 +84,54 @@ function campaign(state: Game, turns = 15) {
 }
 
 describe("decisive, faction-neutral opposition to a leader", () => {
+  it("increases offensive commitment through mid and late game without changing resources", () => {
+    const { s } = front();
+    const stocks = structuredClone(s.towns);
+    const early = structuredClone(s),
+      late = structuredClone(s);
+    early.players[0].turns = 5;
+    late.players[0].turns = 40;
+    expect(conquestDrive(s)).toBeGreaterThan(conquestDrive(early));
+    expect(conquestDrive(late)).toBeGreaterThan(conquestDrive(s));
+    expect(s.towns).toEqual(stocks);
+  });
+  it.each(["human", "standard"] as const)(
+    "abandons a stalled blockade, boards a distant ship and raids the %s leader's rear",
+    (control) => {
+      const { s, fortress, rear } = front();
+      s.players[1].control = control;
+      s.tiles["1,-1"].resource = "grain";
+      fortress.vertex = s.tiles["0,0"].vertices[1];
+      fortress.level = fortress.turnLevel = 4;
+      for (const u of Object.values(s.pieces)) u.tile = "1,-1";
+      // Two guarded bottlenecks and two lucrative blockade tiles, but an
+      // exposed rear port. The raider must first walk back to embark.
+      for (let i = 0; i < 12; i++) piece(s, "1,0", 1, "heavy", 4);
+      const raider = piece(s, "0,0", 0, "cavalry", 2);
+      piece(s, "-2,1", 0, "transport", 1);
+      const { s: after, history } = campaign(s, 20);
+      expect(
+        history.some((c) => c.type === "load" && c.ids?.includes(raider.id)),
+      ).toBe(true);
+      expect(history.some((c) => c.type === "unload")).toBe(true);
+      expect(
+        history.some((c) => c.type === "siege" && c.town === rear.id),
+      ).toBe(true);
+      expect(inventory(after, 0).hides).toBe(12);
+    },
+  );
+  it("funds warships to hunt distant valuable collectors even without a threatened home coast", () => {
+    const { s, home } = front();
+    s.phase = "economy";
+    home.stock = { lumber: 20, wool: 20, ore: 20, coal: 20 };
+    piece(s, "3,2", 1, "fishing", 4);
+    const projects = economyProjects(s).filter(
+      (p) =>
+        p.action.type === "ship" &&
+        ["galley", "carrack"].includes(p.action.kind!),
+    );
+    expect(projects.some((p) => p.urgent)).toBe(true);
+  });
   it("treats 409 vs 248 as urgent, nearly double as critical, and small leads as ordinary rivalry", () => {
     expect(dominanceSeverity(409, 248)).toBeGreaterThan(0.75);
     expect(dominanceSeverity(409, 248)).toBeLessThan(0.85);
@@ -132,6 +181,20 @@ describe("decisive, faction-neutral opposition to a leader", () => {
           c.type === "move" && c.to === "1,0" && c.ids?.includes(raider.id),
       ),
     ).toBe(false);
+  });
+  it("bypasses the main army to defeat a smaller rear garrison on the same island", () => {
+    const { s, rear } = front();
+    piece(s, "4,0", 1, "heavy", 1);
+    piece(s, "0,0", 0, "cavalry", 2);
+    piece(s, "0,1", 0, "transport", 1);
+    const { s: after, history } = campaign(s, 18);
+    expect(history.some((c) => c.type === "load")).toBe(true);
+    expect(history.some((c) => c.type === "unload")).toBe(true);
+    expect(history.some((c) => c.type === "resolve-battle")).toBe(true);
+    expect(history.some((c) => c.type === "siege" && c.town === rear.id)).toBe(
+      true,
+    );
+    expect(inventory(after, 0).hides).toBe(12);
   });
   it("funds transport for an otherwise blocked same-island attack", () => {
     const { s, home } = front();

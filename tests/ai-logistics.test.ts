@@ -115,6 +115,45 @@ function seaCampaign() {
   return { s, home, enemy };
 }
 
+it.each(["human", "standard"] as const)(
+  "brings its actual embarked force to a defended distant island held by a %s faction",
+  (control) => {
+    let { s, home, enemy } = seaCampaign();
+    home.stock = enemy.stock = {};
+    home.level = home.turnLevel = enemy.level = enemy.turnLevel = 1;
+    enemy.wall = 0;
+    s.players[1].control = control;
+    s.tiles["3,0"].resource = "grain"; // Clear landing beside the garrison.
+    piece(s, "4,0", 1, "heavy", 1);
+    const invader = piece(s, "0,0", 0, "heavy", 3);
+    piece(s, "1,0", 0, "convoy", 1);
+    const history: string[] = [];
+    for (let turn = 0; turn < 18 && s.phase !== "finished"; turn++) {
+      s = structuredClone(s);
+      nextOwnerTurn(s);
+      s.phase = "military";
+      for (let step = 0; step < 20; step++) {
+        const action = chooseAIAction(s);
+        if (action.type === "end-turn") break;
+        history.push(action.type);
+        s = run(s, action);
+        if (s.phase === "finished") break;
+      }
+    }
+    for (const action of [
+      "load",
+      "unload",
+      "resolve-battle",
+      "siege",
+      "destroy-town",
+    ])
+      expect(history).toContain(action);
+    expect(s.pieces[invader.id]).toBeDefined();
+    expect(s.winner).toBe(0);
+    assertInvariants(s);
+  },
+);
+
 it("funds transports for stranded troops before unrelated city development", () => {
   const { s } = seaCampaign();
   for (let i = 0; i < 8; i++) piece(s, "0,0");

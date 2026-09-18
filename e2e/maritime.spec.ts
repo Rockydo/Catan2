@@ -144,6 +144,12 @@ test("shipwright builds tier-IV fishing and merchant ships with distinct portrai
   await page.getByTestId(`army-${water}`).click();
   await panel(page, "Forces");
   await expect(page.locator(".harvest-card")).toHaveCount(2);
+  await expect(
+    page.getByTestId(`harvest-${Object.values(built.pieces)[0].id}`),
+  ).toContainText("Fishing range: 4 water tiles");
+  await expect(
+    page.getByTestId(`harvest-${Object.values(built.pieces)[1].id}`),
+  ).toContainText("Adds 2 processed goods per harvested resource type");
   await expect(page.getByTestId("economic-unit-marker")).toHaveCount(1);
   await page
     .getByTestId(`harvest-${Object.values(built.pieces)[0].id}`)
@@ -226,3 +232,47 @@ test("world census counts fishing grounds as productive water", async ({
     page.getByText(/Fish and Whale grounds are included in the water total/),
   ).toBeVisible();
 });
+
+for (const language of ["en", "fr"] as const)
+  test(`advanced harvest bonuses are readable in ${language}`, async ({
+    page,
+  }) => {
+    const { s, home, water } = fishingFixture();
+    const fisher = piece(s, water, 0, "fishing", 4);
+    const merchant = piece(s, water, 0, "merchantship", 3);
+    await page.addInitScript(
+      ({ key, data, language }) => {
+        localStorage.setItem(key, data);
+        localStorage.setItem("catane-language", language);
+      },
+      { key: SAVE_KEY, data: serialize(s), language },
+    );
+    await page.goto("/");
+    await page
+      .getByRole("button", {
+        name: language === "en" ? /Continue campaign/ : /Reprendre/,
+      })
+      .click();
+    await page.getByTestId(`town-${home.id}`).click();
+    await expect(page.locator(".right-panel")).toContainText(
+      language === "en"
+        ? "Each matching tile adds 2 processed goods per resource type"
+        : "Chaque tuile activée ajoute 2 produits transformés par type de ressource",
+    );
+    const dismiss = page.getByRole("button", {
+      name: language === "en" ? "Close action panel" : /Fermer le panneau/,
+    });
+    if (await dismiss.isVisible()) await dismiss.click();
+    await page.getByTestId(`army-${water}`).click();
+    await page.getByRole("button", { name: "Forces", exact: true }).click();
+    await expect(page.getByTestId(`harvest-${fisher.id}`)).toContainText(
+      language === "en"
+        ? "Fishing range: 4 water tiles"
+        : "Portée de pêche : 4 tuiles d’eau",
+    );
+    await expect(page.getByTestId(`harvest-${merchant.id}`)).toContainText(
+      language === "en"
+        ? "Adds 1 processed goods per harvested resource type"
+        : "Ajoute 1 produits transformés par type de ressource récoltée",
+    );
+  });

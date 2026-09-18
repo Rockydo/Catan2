@@ -98,7 +98,7 @@ describe("offshore Fish and Hides-and-Oil-producing Whales", () => {
     production(s, 7);
     expect(inventory(s).hides! - before.hides!).toBe(9);
     expect(inventory(s).oil! - before.oil!).toBe(9);
-    expect(inventory(s).leather! - before.leather!).toBe(1);
+    expect(inventory(s).leather! - before.leather!).toBe(3);
     assertInvariants(s);
     expect(deserialize(serialize(s))).toEqual(s);
   });

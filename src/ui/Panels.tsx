@@ -545,6 +545,13 @@ function BuildPanel({
                 {tx(town.level)}
               </span>
             </SectionTitle>
+            {town.level >= 3 && (
+              <p className="public-research-note">
+                {tx(
+                  `Each matching tile adds ${town.level - 2} processed goods per resource type, in addition to raw output and workshops.`,
+                )}
+              </p>
+            )}
             <SiegeProgress
               game={s}
               town={town}

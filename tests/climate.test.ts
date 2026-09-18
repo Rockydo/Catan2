@@ -1,3 +1,5 @@
+import type { Raw } from "../src/game/types";
+import { processedFor } from "../src/game/content";
 import { expect, it } from "vitest";
 import {
   CLIMATES,
@@ -339,7 +341,10 @@ it.each([
     );
     expect(Object.fromEntries(rows.map((p) => [p.good, p.amount]))).toEqual(
       Object.fromEntries(
-        Object.entries(output).map(([g, n]) => [g, n * level]),
+        Object.entries(output).flatMap(([g, n]) => [
+          [g, n * level],
+          ...(level >= 3 ? [[processedFor(g as Raw), level - 2]] : []),
+        ]),
       ),
     );
   }
@@ -366,13 +371,20 @@ it("multiplies camps and collectors without multiplying workshop output", () => 
   expect(
     rows.filter((p) => p.good === "grain").reduce((n, p) => n + p.amount, 0),
   ).toBe(12 + 6 + 9);
-  expect(rows.find((p) => p.good === "provisions")?.amount).toBe(3);
+  expect(
+    rows
+      .filter((p) => p.good === "provisions")
+      .reduce((n, p) => n + p.amount, 0),
+  ).toBe(2 + 3 + 1);
   piece(s, tile.id, 1, "heavy");
   expect(
     productionSources(s)
       .filter((p) => p.tile === tile.id && p.owner === 0)
       .map((p) => [p.good, p.amount]),
-  ).toEqual([["grain", 9]]);
+  ).toEqual([
+    ["grain", 9],
+    ["provisions", 1],
+  ]);
 });
 it("Woods choices belong to each faction and leave built workshops unchanged", () => {
   let { s, home, enemy, tile } = biomeFixture("woods");
@@ -391,6 +403,7 @@ it("Woods choices belong to each faction and leave built workshops unchanged", (
   );
   expect(rows.map((p) => [p.good, p.amount])).toEqual([
     ["hides", 4],
+    ["leather", 2],
     ["planks", 1],
   ]);
   s = run(s, { type: "extension", town: home.id, tile: tile.id });
@@ -483,14 +496,14 @@ it("guild extraction can use a secondary resource without multiplying its contra
   const { s, home, tile } = biomeFixture("steppe-plain");
   home.guild = { kind: "farmers", tier: 3, born: 0, used: false, auto: false };
   expect(guildOrderQuote(s, home, { tile: tile.id, tier: 1 }).gain).toEqual({
-    wool: 4,
+    wool: 6,
   });
   Object.assign(tile, { biome: "oasis", resource: "lumber" });
   expect(guildOrderQuote(s, home, { tile: tile.id, tier: 1 }).gain).toEqual({
-    grain: 4,
+    grain: 6,
   });
   home.guild.kind = "extractors";
   expect(guildOrderQuote(s, home, { tile: tile.id, tier: 1 }).gain).toEqual({
-    lumber: 4,
+    lumber: 6,
   });
 });

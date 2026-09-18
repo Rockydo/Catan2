@@ -67,13 +67,13 @@ test("industrial work orders choose lower tiers, save automation and deliver onc
   const panel = page.getByTestId("city-guild");
   await panel.getByLabel("Guild operating tier").selectOption("2");
   await panel.getByLabel("Guild raw material").selectOption("coal");
-  await expect(panel.locator(".guild-receive")).toContainText("3");
+  await expect(panel.locator(".guild-receive")).toContainText("5");
   await panel.getByRole("checkbox", { name: /Standing order/ }).check();
   await panel.getByRole("button", { name: /Complete guild order/ }).click();
   await expect(panel).toContainText("completed its order");
   const n = await saved(page);
   expect(n.towns[home.id].stock.coal).toBe(home.stock.coal! - 3);
-  expect(n.towns[home.id].stock.coke).toBe(home.stock.coke! + 3);
+  expect(n.towns[home.id].stock.coke).toBe(home.stock.coke! + 5);
   expect(n.towns[home.id].guild).toMatchObject({
     auto: true,
     used: false,
@@ -104,7 +104,7 @@ test("merchant contracts stay in category and expose useful processed trades", a
   await panel.getByRole("button", { name: /Complete guild order/ }).click();
   const n = await saved(page);
   expect(n.towns[home.id].stock.coke).toBe(home.stock.coke! - 1);
-  expect(n.towns[home.id].stock.steel).toBe(home.stock.steel! + 3);
+  expect(n.towns[home.id].stock.steel).toBe(home.stock.steel! + 6);
 });
 test("formation supply is clear and rival city guilds are publicly inspectable", async ({
   page,
@@ -174,9 +174,9 @@ test("each unlocked tier has its own contract and separately saved standing reci
   });
   expect(n.towns[home.id].stock).toMatchObject({
     coal: 197,
-    coke: 200,
-    steel: 203,
-    reagents: 204,
+    coke: 201,
+    steel: 205,
+    reagents: 208,
   });
   await panel.getByLabel("Guild operating tier").selectOption("2");
   await expect(panel.getByLabel("Guild raw material")).toHaveValue("ore");

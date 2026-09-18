@@ -6,6 +6,7 @@ import {
   terrainFamily,
   tileGoods,
   harvestTiles,
+  harvestYield,
   towerPower,
   towerDefense,
 } from "./maritime";
@@ -474,14 +475,14 @@ export function productionSources(s: Game) {
         town.extensionGoods?.[id] ?? tileGood(s.tiles[id], town.owner);
       if (!good || blocked(id, town.owner)) continue;
       for (const [raw, amount] of Object.entries(
-        tileYield(s.tiles[id], town.owner),
+        harvestYield(s.tiles[id], town.owner, town.level, true),
       ))
         out.push({
           owner: town.owner,
           town,
           tile: id,
-          good: raw as Raw,
-          amount: town.level * amount!,
+          good: raw as Good,
+          amount: amount!,
         });
       if (town.extensions[id])
         out.push({
@@ -517,14 +518,14 @@ export function productionSources(s: Game) {
       const good = tileGood(s.tiles[id]);
       if (good && (u.kind !== "fishing" || !blocked(id, u.owner)))
         for (const [raw, amount] of Object.entries(
-          tileYield(s.tiles[id], u.owner),
+          harvestYield(s.tiles[id], u.owner, u.tier, u.kind !== "fishing"),
         ))
           out.push({
             owner: u.owner,
             town,
             tile: id,
-            good: raw as Raw,
-            amount: u.tier * amount!,
+            good: raw as Good,
+            amount: amount!,
           });
     }
   }

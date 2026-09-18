@@ -810,6 +810,7 @@ input[type="checkbox"] {
   font-variant-numeric: tabular-nums;
 }
 .map-controls .icon-button.climate-view-toggle {
+  color: #50654e;
   width: auto;
   flex-shrink: 0;
   padding-inline: 10px;

@@ -94,7 +94,7 @@ test("secondary Farmers and Scholars guilds deliver their own effects with indep
   await page.getByLabel("Guild deposit").selectOption(land);
   await page.getByRole("button", { name: /^Complete guild order/ }).click();
   expect((await saved(page)).towns[home.id].stock.grain).toBe(
-    home.stock.grain! + 16,
+    home.stock.grain! + 32,
   );
   await tabs.getByRole("button", { name: /Builders/ }).click();
   await page.getByRole("button", { name: /^Complete guild order/ }).click();

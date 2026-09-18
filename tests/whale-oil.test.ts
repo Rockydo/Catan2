@@ -85,7 +85,7 @@ it("builds and operates industrial guilds with Oil instead of missing Coal", () 
     tier: 2,
     tile: f.land,
   });
-  expect(inventory(after).grain).toBe(8);
+  expect(inventory(after).grain).toBe(12);
   expect(inventory(after).oil ?? 0).toBe(0);
 });
 
@@ -94,7 +94,7 @@ it("Oil refines into Fuel, but named trades never substitute Coal automatically"
   home.stock = { oil: 2 };
   expect(processedFor("oil")).toBe("coke");
   s = run(s, { type: "guild-order", town: home.id, tier: 1, kind: "oil" });
-  expect(inventory(s).coke).toBe(1);
+  expect(inventory(s).coke).toBe(2);
   s.towns[home.id].stock = { oil: 4 };
   expect(
     applyCommand(s, { type: "bank", give: { coal: 4 }, take: { grain: 1 } }).ok,

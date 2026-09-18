@@ -1,12 +1,13 @@
 import { localize as tx, useLocale } from "../i18n";
 import { towerSiegeStatuses } from "../game/siege-status";
-import type { Game, Piece } from "../game/types";
+import type { Game, Piece, Good } from "../game/types";
 import { GOOD_INFO, ROMAN, TOWER_COSTS } from "../game/content";
 import {
   harvestTiles,
   defaultCoverage,
   tileGood,
   tileGoods,
+  harvestYield,
   tileYield,
   towerName,
   towerSites,
@@ -140,9 +141,8 @@ export function HarvestPanel({
                 {tx(unitName(u))} · {s.players[u.owner].name}
               </b>
               <p>
-                {tx(u.tier)}
                 {tx(
-                  " of each listed good per matching roll per covered tile. Stored in",
+                  "Harvests the listed goods on each matching roll. Stored in",
                 )}
                 {tx(" ")}
                 {tx(
@@ -150,6 +150,20 @@ export function HarvestPanel({
                 )}
                 .
               </p>
+              {u.kind === "fishing" && (
+                <p>
+                  {tx(
+                    `Fishing range: ${u.tier} water tiles. Land and ice block coverage.`,
+                  )}
+                </p>
+              )}
+              {u.kind !== "fishing" && u.tier >= 3 && (
+                <p>
+                  {tx(
+                    `Adds ${u.tier - 2} processed goods per harvested resource type.`,
+                  )}
+                </p>
+              )}
               <small>
                 {tx(
                   u.kind === "fishing"
@@ -171,10 +185,17 @@ export function HarvestPanel({
                   covered.map((id) => (
                     <span key={id}>
                       {tx(
-                        tileGoods(s.tiles[id], u.owner)
+                        Object.entries(
+                          harvestYield(
+                            s.tiles[id],
+                            u.owner,
+                            u.tier,
+                            u.kind !== "fishing",
+                          ),
+                        )
                           .map(
-                            (good) =>
-                              `${(tileYield(s.tiles[id], u.owner)[good] ?? 0) * u.tier} ${GOOD_INFO[good].name}`,
+                            ([good, amount]) =>
+                              `${amount} ${GOOD_INFO[good as Good].name}`,
                           )
                           .join(" + "),
                       )}

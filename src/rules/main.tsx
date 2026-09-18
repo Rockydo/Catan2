@@ -216,10 +216,16 @@ function ProductionDemo() {
           </span>
           <span>
             <ResourceIcon good="steel" size={32} />
-            <b>+{active ? workshop : 0}</b>
+            <b>+{active ? workshop + Math.max(0, level - 2) : 0}</b>
             {tx("Steel")}
           </span>
         </div>
+        <small>
+          {labels(
+            `Steel: ${Math.max(0, level - 2)} from the town + ${workshop} from the forge.`,
+            `Acier : ${Math.max(0, level - 2)} pour la ville + ${workshop} pour la forge.`,
+          )}
+        </small>
       </div>
     </section>
   );
@@ -558,8 +564,8 @@ function Catalogue({ initial = "goods" }: { initial?: CatalogSection }) {
                             `−${tier} tours de siège`,
                           )
                         : labels(
-                            `Current tile + ${tier} neighbours · ${tier} goods per roll`,
-                            `Tuile actuelle + ${tier} voisines · ${tier} ressources par lancer`,
+                            `Current tile + ${tier} neighbours · ×${tier} raw output${tier >= 3 ? ` + ${tier - 2} processed per resource type` : ""}`,
+                            `Tuile actuelle + ${tier} voisines · production brute ×${tier}${tier >= 3 ? ` + ${tier - 2} produit transformé par type de ressource` : ""}`,
                           )}
                   </p>
                   <Cost stock={unitCost(k, tier)} />
@@ -600,6 +606,22 @@ function Catalogue({ initial = "goods" }: { initial?: CatalogSection }) {
                       {s.capacity} {labels("berths", "places")}
                     </span>
                   </div>
+                  {k === "fishing" && (
+                    <p>
+                      {labels(
+                        `Fishing range ${tier} water tiles · ×${tier} raw output`,
+                        `Portée de pêche : ${tier} tuiles d’eau · production brute ×${tier}`,
+                      )}
+                    </p>
+                  )}
+                  {k === "merchantship" && (
+                    <p>
+                      {labels(
+                        `Adjacent land · ×${tier} raw output${tier >= 3 ? ` + ${tier - 2} processed per resource type` : ""}`,
+                        `Terres voisines · production brute ×${tier}${tier >= 3 ? ` + ${tier - 2} produit transformé par type de ressource` : ""}`,
+                      )}
+                    </p>
+                  )}
                   <Cost stock={shipCost(k, tier)} />
                 </article>
               );

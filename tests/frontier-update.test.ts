@@ -261,9 +261,9 @@ describe("AI breaks buildup stalemates", () => {
   it("bounds speculative recruitment by our economy rather than multiplying a remote stack", () => {
     const { s } = field();
     for (let i = 0; i < 100; i++) piece(s, "4,0", 1, "heavy", 4);
-    // Survival spending may grow to 2.5× the ordinary economic budget,
+    // Late-game survival spending scales with our economy and offensive drive,
     // but never chases this 400-point remote stack without a bound.
-    expect(campaignPowerTarget(s)).toBeLessThanOrEqual(60);
+    expect(campaignPowerTarget(s)).toBeLessThanOrEqual(70);
     for (let i = 0; i < 30; i++) piece(s, "-3,0", 0, "heavy", 4);
     s.phase = "economy";
     expect(chooseAIAction(s).type).not.toBe("recruit");

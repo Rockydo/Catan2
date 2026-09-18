@@ -82,7 +82,7 @@ it.each(["farmers", "extractors"] as const)(
       };
       const quote = guildOrderQuote(s, home, { tile: land, tier });
       const expected =
-        kind === "farmers" ? [0, 4, 8, 16][tier] : [0, 4, 10, 18][tier];
+        kind === "farmers" ? [0, 6, 12, 32][tier] : [0, 6, 15, 36][tier];
       if (kind === "extractors" && tier === 3)
         expect(quote.cost).toEqual({ steel: 1, coke: 1 });
       expect(quote.gain).toEqual({ [s.tiles[land].resource]: expected });
@@ -134,7 +134,7 @@ it("all guilds and all unlocked tiers have separate orders, resets and standing 
     }
   const grain = inventory(s).grain!;
   standingGuildOrders(s);
-  expect(inventory(s).grain).toBe(grain + 28);
+  expect(inventory(s).grain).toBe(grain + 50);
   expect(s.players[0].bonuses.routes).toBe(11);
   expect(
     townGuilds(s.towns[home.id]).every(
@@ -142,7 +142,7 @@ it("all guilds and all unlocked tiers have separate orders, resets and standing 
     ),
   ).toBe(true);
   standingGuildOrders(s);
-  expect(inventory(s).grain).toBe(grain + 28);
+  expect(inventory(s).grain).toBe(grain + 50);
   beginTurn(s);
   expect(
     townGuilds(s.towns[home.id]).every(

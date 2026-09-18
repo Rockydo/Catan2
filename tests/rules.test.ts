@@ -56,10 +56,10 @@ describe("economy", () => {
     t.extensions = { [id]: 3 };
     t.stock = {};
     production(s, 7);
-    expect(t.stock).toEqual({ ore: 4, steel: 3 });
+    expect(t.stock).toEqual({ ore: 4, steel: 5 });
     piece(s, id, 1);
     production(s, 7);
-    expect(t.stock).toEqual({ ore: 4, steel: 3 });
+    expect(t.stock).toEqual({ ore: 4, steel: 5 });
   });
   it("a seven never steals cards or discards a large inventory", () => {
     const s = funded(),

@@ -120,8 +120,8 @@ export function TerrainReference({ seaOnly = false }: { seaOnly?: boolean }) {
       <h2>{l("Terrain and production", "Terrains et production")}</h2>
       <p className="reference-intro">
         {l(
-          "Output below is for one settlement. Multiply every raw output by town level, camp tier or collector tier. Workshops add their tier in processed goods and consume nothing.",
-          "Les quantités ci-dessous correspondent à une colonie. Multipliez chaque production brute par le niveau de l’agglomération, du camp ou du collecteur. Les ateliers ajoutent leur palier en produits transformés, sans rien consommer.",
+          "Output below is for one settlement. Multiply raw output by town level, camp tier or collector tier. Towns, land merchants and merchant ships at levels III/IV also add 1/2 processed goods per resource type. Workshops add their tier separately; none of these bonuses consume raw goods.",
+          "Les quantités ci-dessous correspondent à une colonie. Multipliez chaque production brute par le niveau de l’agglomération, du camp ou du collecteur. Les agglomérations, marchands terrestres et navires marchands de niveau III/IV ajoutent aussi 1/2 produit transformé par type de ressource. Les ateliers ajoutent leur palier séparément ; ces bonus ne consomment aucune matière première.",
         )}
       </p>
       <div className="terrain-reference-grid">

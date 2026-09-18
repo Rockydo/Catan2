@@ -47,7 +47,7 @@ An extreme map may lack enough legal starting sites. The game rejects a seed wit
 ## Goods, storage and trade
 
 ### Production and storage
-There are twelve raw goods and ten processed goods. Towns receive each adjacent matching tile’s printed output multiplied by town level. Golden fields give 2/4/6/8 Grain at town levels 1/2/3/4; Rice fields give 3/6/9/12. Both goods on a dual-output tile are multiplied. Extensions add processed output without consuming or reducing the raw harvest. All players produce on every roll. New buildings and collectors can produce on the next matching roll.
+There are twelve raw goods and ten processed goods. Towns receive each adjacent matching tile’s printed output multiplied by town level. Golden fields give 2/4/6/8 Grain at town levels 1/2/3/4; Rice fields give 3/6/9/12. Both goods on a dual-output tile are multiplied. Town levels 3 and 4 (City II and City III) also add 1 and 2 processed goods per raw resource type on each matching tile, without an extension. This bonus is flat, regardless of the tile’s raw yield. A level-4 town beside Golden fields receives 8 Grain + 2 Rations; beside Steppe plain it receives 4 Hides + 4 Wool + 2 Leather + 2 Cloth. Extensions add processed output without consuming or reducing the raw harvest. All players produce on every roll. New buildings and collectors can produce on the next matching roll.
 ### Storage destinations
 Town output stays in that town. Camps and mobile collectors send goods to the nearest owned town, using hex distance to its adjacent land and oldest town ID to break ties. Future output changes destination when towns change; old stocks stay where they are. Trades and research rewards enter your home store, the oldest surviving town. Raids use the operating army's hex to find their destination.
 ### Paying costs
@@ -74,7 +74,7 @@ Each faction chooses Wood or Hides separately for each Woods tile it harvests. D
 A new route must connect to your own road, sea route or town. Roads and sea routes connect directly without requiring a coastal town between them. Another faction's town or tower interrupts your junction; allied infrastructure is not yours to build from. A settlement must connect to your network after setup, touch land and obey the one-empty-intersection distance rule. Troops do not found remote settlements.
 Any edge touching revealed land is a road, including a coastline. Sea routes occupy edges touching water with no revealed land. Revealing land beside a sea route converts it to a road, preserving ownership and camps. A movable sea-route end has no town or other owned route at its open end. Move at most one such piece per owner turn to another legal connected sea edge, never one built this turn. Closed routes cannot move. Each edge holds only one route.
 ### Town levels
-Level 1 is a Settlement. Level 2 is City I, level 3 City II, level 4 City III. They multiply each matching adjacent tile’s base yield by 1/2/3/4. Maximum walls and recruitable unit tiers are 1/2/3/4. Cities have 1/2/3 guild slots and allow extension tiers 1/2/3. Upgrades preserve existing stocks, walls and extensions. Pay each upgrade's listed incremental cost.
+Level 1 is a Settlement. Level 2 is City I, level 3 City II, level 4 City III. They multiply each matching adjacent tile’s base yield by 1/2/3/4. Levels 3/4 add 1/2 processed goods for every raw resource type produced, separately from extensions. Maximum walls and recruitable unit tiers are 1/2/3/4. Cities have 1/2/3 guild slots and allow extension tiers 1/2/3. Upgrades preserve existing stocks, walls and extensions. Pay each upgrade's listed incremental cost.
 Recruitment and shipbuilding use the town level at the start of your turn. A new town cannot recruit until your next turn; a town upgraded this turn unlocks its new unit tier next turn. Recruit as many eligible units or ships as you can afford. There is no military upkeep or quantity cap. New units defend and collectors produce immediately, but cannot act until the next owner turn.
 ### Extensions
 A city may build one extension for each adjacent productive tile, at most three. Each is permanently linked to that tile, even if two tiles provide the same raw good. Ordinary water has no slot; Fish supports a Smokehouse and Whales a Tannery. Neighbouring cities can each have an extension on their shared tile.
@@ -95,7 +95,7 @@ Use the defender's terrain for both sides. Every defending unit on the hex parti
 There are no battle dice. Only the loser loses combat units. The loss target is the difference in power, capped at the loser's total casualty points. Remove whole units with the smallest achievable total at least as large as that target. The loser chooses among equally small combinations. Terrain bonuses never increase a unit's casualty points. No wounds persist. With units worth 1 and 3 and a target of 2, lose the 3-point unit, not both.
 A defeated surviving defender retreats one legal adjacent hex, free of enemies; friendly stacks are allowed. A defeated attacker returns to its approach hex. If a defender has no legal retreat, it stays and the attacker does not occupy the tile. Equal power causes no combat casualties; the defender holds. Land merchants still die. When defenders leave or die, surviving attackers occupy their tile without another movement cost. Win, tie or loss spends the battle point; attackers can use remaining points.
 ### Collecting with land merchants
-Merchants have zero power and speed 1 at every tier. They collect their current tile plus up to their tier in selected neighbouring productive tiles, multiplying each matching tile’s base yield by their tier. They can cover Fish and Whales; Whales give both Hides and Oil. Coverage ignores enemy production blocking. Automatic coverage favours Gold, then dice probability, then coordinate order, and ignores unproductive water.
+Merchants have zero power and speed 1 at every tier. They collect their current tile plus up to their tier in selected neighbouring productive tiles, multiplying each matching tile’s base yield by their tier. They can cover Fish and Whales; Whales give both Hides and Oil. At tiers III/IV, each matching covered tile also gives 1/2 processed goods per raw resource type, without consuming the raw harvest. Coverage ignores enemy production blocking. Automatic coverage favours Gold, then dice probability, then coordinate order, and ignores unproductive water.
 Change selected neighbours during your action phase or restore automatic coverage. Moving or transport resets the selection; embarked merchants produce nothing. They cannot raid, siege, demolish or guard. All land merchants involved in a battle die even if their escort wins. Inspect a merchant to see and edit its coverage. All output goes to your nearest town.
 
 ## Sieges and defenses
@@ -124,7 +124,7 @@ Click a siege badge, town, tower or dashed link for defenses, progress, attackin
 A sea route is an edge piece that extends your settlement network. A mobile ship occupies a water hex, moves and fights. Neither substitutes for the other. Build mobile ships beside a coastal town, without needing a printed port, on a revealed water hex without enemies. Town level at the start of the turn gates ship tier. No limit on hulls per order, town, turn or fleet, provided you pay. Ships cannot upgrade.
 Transports are fast carriers; convoys carry more units but move more slowly. The ship tables list combat power, movement and capacity for every class. Each ship class has four tiers. Fleets move at the slowest participating ship's speed. Combat follows whole-piece losses and retreats, using each hull's listed power/casualty points. Passengers add no naval power. Surviving ships keep full power and berths.
 ### Fishing and merchant ships
-Fishing ships collect from their own tile and all six neighbours, only Fish, Cod and Whales. Merchant ships collect from all adjacent land tiles, including enemy-occupied or rival-used land, but never Fish or Whales. Each matching tile’s full base yield is multiplied by ship tier. Cod gives 2 Fish per tier; Whales give 1 Hides and 1 Oil per tier. Output goes directly to the nearest owned town. Collectors can produce immediately after construction. There is no collector limit per tile or cargo capacity for goods.
+Fishing ships collect Fish, Cod and Whales from their own tile and connected water within 1/2/3/4 steps at tiers I/II/III/IV. Count the shortest water route, not straight-line distance: land and ice cannot be crossed, and unrevealed tiles are outside coverage. Merchant ships collect from all adjacent land tiles, including enemy-occupied or rival-used land, but never Fish or Whales. Each matching tile’s full base yield is multiplied by ship tier. Cod gives 2 Fish per tier; Whales give 1 Hides and 1 Oil per tier. Tier-III/IV merchant ships also add 1/2 processed goods per raw resource type on each matching covered tile, without consuming raw output. Fishing ships do not produce processed goods. Output goes directly to the nearest owned town. Collectors can produce immediately after construction. There is no collector limit per tile or cargo capacity for goods.
 Both economic ship types have 0/1/2/3 power at tiers I/II/III/IV and no passenger berths. Unarmed ships in a defeated fleet are lost automatically. Higher tiers follow normal whole-ship casualty calculations. Production coverage and economic ships are visible when inspecting fleets.
 ### Transport troops
 Load or unload across a shared land-water edge, with no port required. Every participating ship and passenger must be fresh. Loading and unloading end their activation. One berth holds one unit of any tier, including a merchant. Embarked troops cannot produce, guard or act separately. Land on a clear or allied beach, never directly assault an enemy-occupied tile. Unloaded troops can attack on a later owner turn.
@@ -155,7 +155,8 @@ A newly built or upgraded tier opens next owner turn. Each unlocked tier has its
 ### Standing orders and removal
 Economic guilds except Scholars may save a separate standing recipe for each tier. After your dice roll, cities in founding order try tier I→III once each. Unaffordable or blocked recipes wait while other valid orders can run. No borrowing or automatic bank imports. Pause or edit each tier separately. Dissolving refunds nothing; a replacement starts at I and opens next turn. Guilds disappear with a destroyed city, transfer in a rebellion and add six public power points per tier. Rebel standing orders are paused.
 ### Local production and trade
-Prospectors require an adjacent clear Stone, Coal, Iron ore, Salt or Gold deposit. Gold yields half the mineral quantity. Farmers require adjacent clear Grain or Wool land, never Hides, Fish or Whales. Extractors require adjacent clear Wood or Clay. Their number does not matter for orders; their normal dice output continues. Without a suitable deposit that specialization cannot work.
+The catalogue includes the increased outputs of all five economic guilds: Prospectors, Farmers, Extractors, Artisans and Merchants. Tiers I/II produce 50% more than their original contracts, rounded up to whole goods; tier III produces twice as much. Input costs are unchanged. Each unlocked tier keeps its separate contract.
+Prospectors require an adjacent clear Stone, Coal, Iron ore, Salt or Gold deposit. Gold yields 3/5/16 instead of the ordinary mineral quantities of 6/9/32. Farmers require adjacent clear Grain or Wool land, never Hides, Fish or Whales. Extractors require adjacent clear Wood or Clay. Their number does not matter for orders; their normal dice output continues. Without a suitable deposit that specialization cannot work.
 ### Conversion and exchange
 Artisans convert the selected raw to its normal processed partner without an extension. Grain or Fish makes Rations, Coal or Oil makes Fuel, Gold makes Gold bars. Pay the selected raw inputs plus listed supporting inputs; where these coincide, the quantities add. Merchant contracts use the exact selected goods and their stated batch rates, independently of ports and normal bank rates.
 ### Army and fleet services
@@ -195,7 +196,7 @@ Allies cannot attack, bombard, siege, raid or destroy one another's property. Th
 Co-located allied defenders combine terrain-adjusted power. Each represented owner's towers add once. Only the active player's selected units attack. Combined defenders take normal whole-unit losses; a human defender chooses if present, otherwise the lowest-ID defender. Survivors retreat together to a tile safe for all. Neighbouring allied armies do not join automatically.
 Leaving while sharing a tile neither teleports nor kills anyone. Former allies become hostile immediately and may withdraw or fight in place for 1 movement point. It does not allow crossing new hostile stacks. The faction view shows members, combined public power, lock time and the leave action.
 ### AI priorities
-The AI pursues sole victory, using public power, income, military reach and terrain. It protects exposed towns, expands toward useful resources, builds industry, buys tools when useful and seeks winning battles or raids. It ranks raid targets by exposed stocks, production, siege delay and the owner’s strength. It leaves small siege or blockade detachments while surplus troops continue attacking. Nearby forces reinforce defensible towns; a garrison that cannot match an overwhelming leader may keep a delaying guard and send counter-raiders. Transports can bypass blocked land routes, and eligible factions can fund border expeditions to seek new approaches. Eligible AI considers expeditions from its third or fourth turn, checking every turn when production gaps, confinement or a large power deficit justify them. It values frontiers by visible climates and expected missing-resource yields, with Fish counted as Grain and Oil as Coal. It compares reveal directions to approach nearby enemies, can build toward a useful frontier, and may fund exploration before adding more reserve troops once it has a basic field army. Immediate town defense retains priority. It does not inspect hidden terrain or reserved climates. The strongest AI remains barred from expeditions. Artillery can attack fleets. Easy, Standard and Hard change planning breadth, not costs, dice or free resources.
+The AI pursues sole victory, using public power, income, military reach and terrain. It protects exposed towns, expands toward useful resources, builds industry, buys tools when useful and seeks winning battles or raids. It ranks raid targets by exposed stocks, production, siege delay and the owner’s strength. It leaves small siege or blockade detachments while surplus troops continue attacking. Nearby forces reinforce defensible towns; a garrison that cannot match an overwhelming leader may keep a delaying guard and send counter-raiders. Offensive investment increases through the middle and late game. Advanced collectors are valuable naval raid targets. Armies with no viable land assault can leave a blockade to reach transports or a usable frontier. Transports can bypass blocked land routes, and eligible factions can fund border expeditions to seek new approaches. Eligible AI considers expeditions from its third or fourth turn, checking every turn when production gaps, confinement or a large power deficit justify them. It values frontiers by visible climates and expected missing-resource yields, with Fish counted as Grain and Oil as Coal. It compares reveal directions to approach nearby enemies, can build toward a useful frontier, and may fund exploration before adding more reserve troops once it has a basic field army. Immediate town defense retains priority. It does not inspect hidden terrain or reserved climates. The strongest AI remains barred from expeditions. Artillery can attack fleets. Easy, Standard and Hard change planning breadth, not costs, dice or free resources.
 Pressure against a leader begins beyond a 25% or six-point lead, whichever is larger, and rises sharply toward maximum at 1.8 times the runner-up. This applies equally to human and AI leaders. Smaller factions favour the leader's exposed income and towns, support useful neighbours with favourable trades and reduce attacks on other small factions. They avoid hopeless frontal attacks because winners suffer no military losses. Priorities shift as power changes, subject to alliance locks.
 ### Public power and difficulty
 Public power is an estimate of economic and military capacity, not a victory score or direct army strength. Inspect the faction panel for its components. Speed settings change the delay between AI actions; they do not change difficulty or rules.
@@ -1039,21 +1040,21 @@ Prices are paid per construction or upgrade step. Watchtower I offers two altern
 
 Fertilize local crops and pastures on demand.
 
-- I: 1 Salt → 4 Grain or Wool from an adjacent clear land tile.
+- I: 1 Salt → 6 Grain or Wool from an adjacent clear land tile.
 
-- II: 1 Salt + 1 Coal → 8 local Grain or Wool.
+- II: 1 Salt + 1 Coal → 12 local Grain or Wool.
 
-- III: 1 Salt + 1 Coal + 1 Chemicals → 16 local Grain or Wool.
+- III: 1 Salt + 1 Coal + 1 Chemicals → 32 local Grain or Wool.
 
 ### Extractors’ Guild
 
 Equip local logging and clay crews with better tools.
 
-- I: 1 Iron ore → 4 Wood or Clay from an adjacent clear tile.
+- I: 1 Iron ore → 6 Wood or Clay from an adjacent clear tile.
 
-- II: 1 Iron ore + 1 Steel → 10 local Wood or Clay.
+- II: 1 Iron ore + 1 Steel → 15 local Wood or Clay.
 
-- III: 1 Steel + 1 Fuel → 18 local Wood or Clay.
+- III: 1 Steel + 1 Fuel → 36 local Wood or Clay.
 
 ### Engineers’ Guild
 
@@ -1089,31 +1090,31 @@ Fund advanced discoveries: choose one of two random cards.
 
 Extract local minerals on demand.
 
-- I: 1 Grain → 4 minerals from an adjacent clear deposit (2 Gold).
+- I: 1 Grain → 6 minerals from an adjacent clear deposit (3 Gold).
 
-- II: 1 Grain + 1 Coal → 6 minerals (3 Gold).
+- II: 1 Grain + 1 Coal → 9 minerals (5 Gold).
 
-- III: 1 Rations + 1 Fuel → 16 minerals (8 Gold).
+- III: 1 Rations + 1 Fuel → 32 minerals (16 Gold).
 
 ### Artisans’ Guild
 
 Manufacture goods without a linked extension.
 
-- I: 2 raw goods → 1 of their processed good.
+- I: 2 raw goods → 2 of their processed good.
 
-- II: 2 raw goods + 1 Coal → 3 of their processed good.
+- II: 2 raw goods + 1 Coal → 5 of their processed good.
 
-- III: 2 raw goods + 1 Fuel → 4 of their processed good.
+- III: 2 raw goods + 1 Fuel → 8 of their processed good.
 
 ### Merchants’ Guild
 
 Fulfil better trades once per turn.
 
-- I: Trade 2 ordinary raw goods for 2 of another.
+- I: Trade 2 ordinary raw goods for 3 of another.
 
-- II: Trade 2 ordinary raw goods for 4 of another.
+- II: Trade 2 ordinary raw goods for 6 of another.
 
-- III: Trade 2 raw goods for 6 of another, or 1 processed good for 3 of another. Gold and Gold bars excluded.
+- III: Trade 2 raw goods for 12 of another, or 1 processed good for 6 of another. Gold and Gold bars excluded.
 
 ### Commanders’ Guild
 

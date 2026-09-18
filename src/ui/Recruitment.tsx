@@ -342,6 +342,9 @@ export function Recruitment({
                             : "",
                     )}
                   </span>
+                  {kind === "fishing" && <span>{tx(`Range ${tier}`)}</span>}
+                  {(kind === "merchant" || kind === "merchantship") &&
+                    tier >= 3 && <span>{tx(`+${tier - 2} processed`)}</span>}
                 </div>
                 <button
                   className="action-button recruit-purchase"

@@ -120,7 +120,7 @@ describe("coastal fisheries and weighted Gold", () => {
     const before = inventory(s);
     production(s, 7);
     expect(inventory(s).fish! - before.fish!).toBe(6);
-    expect(inventory(s).provisions! - before.provisions!).toBe(1);
+    expect(inventory(s).provisions! - before.provisions!).toBe(5);
     expect(s.towns[home.id].extensions[water]).toBe(1);
     expect(tileGood(s.tiles[water])).toBe("fish");
     assertInvariants(s);
@@ -146,7 +146,7 @@ describe("coastal fisheries and weighted Gold", () => {
     const stock = inventory(s);
     production(s, 7);
     expect(inventory(s).gold! - stock.gold!).toBe(5);
-    expect(inventory(s).goldbars! - stock.goldbars!).toBe(1);
+    expect(inventory(s).goldbars! - stock.goldbars!).toBe(3);
     expect(power(s, [piece(s, "0,0", 0, "heavy", 2)], "0,0")).toBe(4);
   });
   it.each(RAW)(

@@ -255,6 +255,7 @@ describe("expeditions for the strongest AI factions", () => {
     const { s } = frontier();
     sealNetwork(s);
     s.pieces = {};
+    for (let i = 0; i < 20; i++) piece(s, "0,0", 1, "heavy", 4);
     s.players[0].turns = 3;
     expect(isCornered(s)).toBe(true);
     const projects = economyProjects(s).filter(

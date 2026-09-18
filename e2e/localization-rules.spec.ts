@@ -65,7 +65,7 @@ test("bilingual rule guide has responsive navigation, search and working example
   await page.getByLabel("Niveau de ville", { exact: true }).selectOption("4");
   await page.getByLabel("Palier de forge", { exact: true }).selectOption("3");
   await expect(page.locator(".harvest-result")).toContainText("+4");
-  await expect(page.locator(".harvest-result")).toContainText("+3");
+  await expect(page.locator(".harvest-result")).toContainText("+5");
   await page.getByLabel("Une armée ennemie occupe la tuile").check();
   await expect(page.locator(".harvest-result")).not.toContainText("+4");
   const menu = page.getByRole("button", { name: "Afficher la navigation" });
