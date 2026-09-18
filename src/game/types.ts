@@ -142,6 +142,8 @@ export interface Watchtower {
   tier: number;
 }
 export interface Piece {
+  /** Persistent AI deployment, retained across moves and saved campaigns. */
+  campaign?: { enemy: number; target: string };
   guildSupplied?: boolean;
   guildSiege?: number;
   coverage?: string[];

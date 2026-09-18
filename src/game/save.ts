@@ -606,6 +606,10 @@ export function assertInvariants(s: Game) {
     int(u.born);
     int(u.moved);
     int(u.bonus);
+    if (u.campaign !== undefined) {
+      int(u.campaign.enemy, 0, s.players.length - 1);
+      rule(!!s.tiles[u.campaign.target], "Invalid campaign destination.");
+    }
     bool(u.acted);
     if (u.guildSupplied !== undefined) bool(u.guildSupplied);
     if (u.guildSiege !== undefined) {

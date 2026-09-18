@@ -7,6 +7,62 @@ import { ownTowns } from "../src/game/selectors";
 import { waterAtVertex } from "../src/game/world";
 import { assertInvariants } from "../src/game/save";
 
+it("brings an inland emergency army and a distant transport to one pickup, then invades", () => {
+  let s = funded();
+  s.phase = "military";
+  s.players[0].control = "standard";
+  for (const tile of Object.values(s.tiles)) tile.resource = "water";
+  for (const id of [
+    "-4,0",
+    "-3,0",
+    "-2,0",
+    "3,0",
+    "4,0",
+    "4,-1",
+    "5,-1",
+    "5,-3",
+  ])
+    s.tiles[id].resource = "grain";
+  const home = ownTowns(s, 0)[0],
+    enemy = ownTowns(s, 1)[0];
+  home.vertex = s.tiles["-4,0"].vertices[0];
+  enemy.vertex = s.tiles["4,0"].vertices[1];
+  for (const id of s.vertices[enemy.vertex].tiles)
+    s.tiles[id].resource = "grain";
+  home.stock = enemy.stock = {};
+  home.level = enemy.level = 1;
+  home.wall = enemy.wall = 0;
+  home.extensions = enemy.extensions = {};
+  s.towns = { [home.id]: home, [enemy.id]: enemy };
+  s.routes = {};
+  s.pieces = {};
+  s.sieges = {};
+  s.players[2].alive = s.players[3].alive = false;
+  piece(s, "-4,0", 0, "heavy", 3);
+  piece(s, "0,1", 0, "convoy");
+  for (let i = 0; i < 40; i++) piece(s, "5,-3", 1, "heavy", 4);
+  syncEmergencyCoalition(s);
+  expect(emergencyTarget(s, 0)).toBe(1);
+  const history: string[] = [];
+  for (let turn = 0; turn < 24 && s.phase !== "finished"; turn++) {
+    nextOwnerTurn(s);
+    s.active = 0;
+    s.phase = "military";
+    for (let action = 0; action < 20; action++) {
+      const c = chooseAIAction(s);
+      if (c.type === "end-turn") break;
+      history.push(c.type);
+      s = run(s, c);
+      if (s.phase === "finished") break;
+    }
+  }
+  expect(history).toContain("load");
+  expect(history).toContain("unload");
+  expect(history).toContain("siege");
+  expect(s.winner).toBe(0);
+  assertInvariants(s);
+}, 30000);
+
 it("transports an army to a beach, marches inland and eliminates the final opponent", () => {
   let s = funded();
   s.phase = "military";

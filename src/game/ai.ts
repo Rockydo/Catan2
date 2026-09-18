@@ -215,12 +215,19 @@ export function shouldAcceptTrade(s: Game): boolean {
 function check(s: Game, c: Command) {
   return canApplyCommand(s, c);
 }
-function armyGroups(s: Game, p = s.active, freshOnly = false): Piece[][] {
+function armyGroups(
+  s: Game,
+  p = s.active,
+  freshOnly = false,
+  mobileOnly = false,
+): Piece[][] {
   const groups = new Map<string, Piece[]>();
   for (const u of ownPieces(s, p)) {
     if (
-      collector(u) ||
+      (collector(u) &&
+        !(emergencyTarget(s, p) !== undefined && u.naval && points(u) > 0)) ||
       isSettler(u.kind) ||
+      (mobileOnly && speed(u) + u.bonus - u.moved < 1) ||
       (freshOnly ? !fresh(s, u) : !ready(s, u))
     )
       continue;
@@ -1744,6 +1751,106 @@ function landRegions(s: Game, water = false) {
 // Cache repeated reachability queries for a whole stack instead of each unit.
 const coastCache = new WeakMap<Game, Map<string, string[]>>();
 const objectiveCache = new WeakMap<Game, Map<string, boolean>>();
+// Shared rendezvous plans bring inland troops and empty transports to the same
+// coast. Looking only beside their current positions makes them chase each other.
+const rendezvousCache = new WeakMap<
+  Game,
+  { land: string; sea: string; army: string; fleet: string }[]
+>();
+function transportRendezvous(s: Game) {
+  const cached = rendezvousCache.get(s);
+  if (cached) return cached;
+  const troops = ownPieces(s).filter(
+    (u) => !u.naval && !u.carrier && !collector(u) && !isSettler(u.kind),
+  );
+  const fleets = ownPieces(s).filter(
+    (u) =>
+      u.naval &&
+      !collector(u) &&
+      !isSettler(u.kind) &&
+      shipStats(u.kind as ShipClass, u.tier).capacity > 0 &&
+      !ownPieces(s).some(
+        (p) => p.carrier && s.pieces[p.carrier]?.tile === u.tile,
+      ),
+  );
+  const pairs: {
+    land: string;
+    sea: string;
+    army: string;
+    fleet: string;
+    cost: number;
+  }[] = [];
+  for (const army of new Set(troops.map((u) => u.tile))) {
+    if (hasLandObjective(s, army)) continue;
+    const landPaths = deploymentPaths(s, army, false);
+    const shores = [...landPaths.keys()]
+      .filter((land) => !hostileAt(s, land))
+      .flatMap((land) =>
+        neighbors(land)
+          .filter(
+            (sea) =>
+              canOccupy(s.tiles[sea], true) &&
+              !hostileAt(s, sea, s.active, true),
+          )
+          .map((sea) => ({ land, sea })),
+      );
+    const invasion = invasionCoasts(s, army);
+    if (!invasion.length) continue;
+    for (const fleet of new Set(fleets.map((u) => u.tile))) {
+      const seaPaths = deploymentPaths(s, fleet, true);
+      if (
+        !invasion.some(
+          (sea) => seaPaths.has(sea) && !hostileAt(s, sea, s.active, true),
+        )
+      )
+        continue;
+      const best = shores
+        .filter(({ sea }) => seaPaths.has(sea))
+        .map(({ land, sea }) => ({
+          land,
+          sea,
+          army,
+          fleet,
+          cost: landPaths.get(land)!.length + seaPaths.get(sea)!.length / 2,
+        }))
+        .sort((a, b) => a.cost - b.cost)[0];
+      if (best) pairs.push(best);
+    }
+  }
+  pairs.sort((a, b) => a.cost - b.cost);
+  const result: typeof pairs = [];
+  for (const pair of pairs)
+    if (!result.some((p) => p.army === pair.army || p.fleet === pair.fleet))
+      result.push(pair);
+  rendezvousCache.set(s, result);
+  return result;
+}
+
+// One search per origin covers every strategic destination. Hostile tiles are
+// endpoints only, matching the movement rules, and can never be bypassed.
+const deploymentCache = new WeakMap<Game, Map<string, Map<string, string[]>>>();
+function deploymentPaths(s: Game, origin: string, naval: boolean) {
+  let cache = deploymentCache.get(s);
+  if (!cache) {
+    cache = new Map();
+    deploymentCache.set(s, cache);
+  }
+  const key = `${s.active}/${origin}/${naval}`;
+  const cached = cache.get(key);
+  if (cached) return cached;
+  const paths = new Map<string, string[]>([[origin, []]]);
+  const queue = [origin];
+  for (let i = 0; i < queue.length; i++) {
+    const id = queue[i];
+    for (const next of neighbors(id)) {
+      if (!canOccupy(s.tiles[next], naval) || paths.has(next)) continue;
+      paths.set(next, [...paths.get(id)!, next]);
+      if (!hostileAt(s, next, s.active, naval)) queue.push(next);
+    }
+  }
+  cache.set(key, paths);
+  return paths;
+}
 function invasionCoasts(s: Game, excludeLand?: string): string[] {
   let cache = coastCache.get(s);
   if (!cache) {
@@ -2029,7 +2136,7 @@ function chooseMilitary(s: Game): Command {
   if (operation) return operation;
   const supply = guildMilitaryOrder(s);
   if (supply && check(s, supply)) return supply;
-  const groups = armyGroups(s),
+  const groups = armyGroups(s, s.active, false, true),
     drive = conquestDrive(s),
     enemyTowns = Object.values(s.towns)
       .filter((t) => warTarget(s, t.owner))
@@ -2121,6 +2228,7 @@ function chooseMilitary(s: Game): Command {
       );
       const ids = group
         .filter((u) => ready(s, u) && speed(u) + u.bonus - u.moved >= 1)
+        .slice(0, 1)
         .map((u) => u.id);
       const action = road && { type: "destroy-route", edge: road.edge, ids };
       if (action && ids.length && check(s, action)) return action;
@@ -2374,8 +2482,17 @@ function chooseMilitary(s: Game): Command {
               ),
             );
           if (pickup.length) objectives = [...new Set(pickup)];
+          if (emergency) {
+            const rendezvous = transportRendezvous(s).find(
+              (p) => p.fleet === origin,
+            );
+            if (rendezvous) {
+              if (rendezvous.sea === origin) continue;
+              objectives = [rendezvous.sea];
+            }
+          }
         }
-        if (!objectives.length)
+        if (!objectives.length && !emergency)
           objectives = ownPieces(s)
             .filter(
               (u) =>
@@ -2385,18 +2502,20 @@ function chooseMilitary(s: Game): Command {
             )
             .map((u) => u.tile);
       } else {
-        const defense = allies.find(
-          (t) =>
-            landAtVertex(s, t.vertex).some(
-              (tile) =>
-                distance(origin, tile) <= Math.max(...group.map(speed)) * 2,
-            ) &&
-            threatPower(
-              s,
-              townThreats(s, t).filter((u) => warTarget(s, u.owner)),
-              landAtVertex(s, t.vertex),
-            ) > townGuardPower(s, t),
-        );
+        const defense =
+          !emergency &&
+          allies.find(
+            (t) =>
+              landAtVertex(s, t.vertex).some(
+                (tile) =>
+                  distance(origin, tile) <= Math.max(...group.map(speed)) * 2,
+              ) &&
+              threatPower(
+                s,
+                townThreats(s, t).filter((u) => warTarget(s, u.owner)),
+                landAtVertex(s, t.vertex),
+              ) > townGuardPower(s, t),
+          );
         objectives = [
           ...(defense ? landAtVertex(s, defense.vertex) : []),
           ...enemyTowns.flatMap((t) => landAtVertex(s, t.vertex)),
@@ -2535,14 +2654,18 @@ function chooseMilitary(s: Game): Command {
         if (emergency) {
           // Spread across productive fronts already occupied by allies. An
           // uncovered target keeps its full value; combat strength is not pooled.
-          const committed = near
-            .flatMap((id) => piecesAt(s, id, naval))
-            .filter(
-              (u) =>
-                friendly(s, u.owner, s.active) &&
-                !ids.includes(u.id) &&
-                points(u) > 0,
-            );
+          const front = new Set([...near, ...near.flatMap(neighbors)]);
+          const committed = Object.values(s.pieces).filter(
+            (u) =>
+              u.naval === naval &&
+              !u.carrier &&
+              (near.includes(u.tile) ||
+                (u.campaign?.enemy === emergencyTarget(s) &&
+                  front.has(u.campaign!.target))) &&
+              friendly(s, u.owner, s.active) &&
+              !ids.includes(u.id) &&
+              points(u) > 0,
+          );
           value /=
             1 +
             Math.min(
@@ -2560,7 +2683,9 @@ function chooseMilitary(s: Game): Command {
       const goalPaths = objectives
         .map((target) => ({
           target,
-          path: pathTo(s, origin, target, naval, s.active),
+          path: emergency
+            ? (deploymentPaths(s, origin, naval).get(target) ?? null)
+            : pathTo(s, origin, target, naval, s.active),
         }))
         .filter((v) => v.path !== null)
         .sort(
@@ -2569,6 +2694,24 @@ function chooseMilitary(s: Game): Command {
             b.path!.length / objectiveWeight(b.target),
         );
       let chosen = goalPaths[0];
+      // Keep marching toward an assigned front instead of changing direction
+      // whenever another army moves or a town's stock changes.
+      if (emergency) {
+        const orders = group.filter(
+          (u) => u.campaign?.enemy === emergencyTarget(s),
+        );
+        const counts = new Map<string, number>();
+        for (const unit of orders)
+          counts.set(
+            unit.campaign!.target,
+            (counts.get(unit.campaign!.target) ?? 0) + 1,
+          );
+        const retained = [...counts]
+          .sort((a, b) => b[1] - a[1])
+          .map(([target]) => goalPaths.find((g) => g.target === target))
+          .find((g) => g !== undefined);
+        if (retained) chosen = retained;
+      }
       if (!naval && (!chosen || !hasLandObjective(s, origin))) {
         const pickup = ownPieces(s)
           .filter(
@@ -2584,7 +2727,11 @@ function chooseMilitary(s: Game): Command {
               (l) => s.tiles[l] && canOccupy(s.tiles[l]) && !hostileAt(s, l),
             ),
           );
-        const passage = pickup
+        const rendezvous = emergency
+          ? transportRendezvous(s).find((p) => p.army === origin)
+          : undefined;
+        if (rendezvous?.land === origin) continue;
+        const passage = (rendezvous ? [rendezvous.land] : pickup)
           .map((target) => ({
             target,
             path: pathTo(s, origin, target, false, s.active),
@@ -2596,6 +2743,7 @@ function chooseMilitary(s: Game): Command {
           chosen = passage;
           weights.set(passage.target, 4 + crisis.severity * 3);
         } else if (
+          !rendezvous &&
           aiExpeditionAllowed(s) &&
           !s.players[s.active].expeditionUsed
         ) {
@@ -2614,7 +2762,20 @@ function chooseMilitary(s: Game): Command {
               path: pathTo(s, origin, tile.id, false, s.active),
             }))
             .filter((v) => v.path?.length)
-            .sort((a, b) => a.path!.length - b.path!.length)[0];
+            .sort((a, b) => {
+              const proximity = (tile: string) =>
+                Math.min(
+                  ...enemyTowns.flatMap((t) =>
+                    landAtVertex(s, t.vertex).map((id) => distance(tile, id)),
+                  ),
+                );
+              return (
+                a.path!.length +
+                proximity(a.target) -
+                b.path!.length -
+                proximity(b.target)
+              );
+            })[0];
           if (frontier) {
             chosen = frontier;
             weights.set(frontier.target, 3 + crisis.severity * 2);
@@ -2644,10 +2805,9 @@ function chooseMilitary(s: Game): Command {
             leaderPressure(s, foes[0].owner) *
             drive;
         } else if (chosen) {
-          for (const goal of [
-            chosen,
-            ...goalPaths.filter((g) => g !== chosen).slice(0, 3),
-          ]) {
+          for (const goal of emergency
+            ? [chosen]
+            : [chosen, ...goalPaths.filter((g) => g !== chosen).slice(0, 3)]) {
             const after = pathTo(s, to, goal.target, naval, s.active);
             if (after && after.length < goal.path!.length)
               score = Math.max(
@@ -2659,8 +2819,14 @@ function chooseMilitary(s: Game): Command {
               );
           }
         }
+        // Emergency marches must make progress toward their assigned objective.
+        // Production denial is a reward for advancing, not a reason to orbit a
+        // valuable tile or turn back every other action.
+        if (emergency && !foes.length && score <= 0) continue;
         if (!naval || blockade)
-          score += (denialAt(to, group) - denialAt(origin, group)) * 10;
+          score += emergency
+            ? Math.max(0, denialAt(to, group) - denialAt(origin, group)) * 10
+            : (denialAt(to, group) - denialAt(origin, group)) * 10;
         if (
           winning &&
           !naval &&
@@ -2723,7 +2889,17 @@ function chooseMilitary(s: Game): Command {
           }
         }
         if (score > 0)
-          choices.push({ action: { type: "move", ids, to }, score });
+          choices.push({
+            action: {
+              type: "move",
+              ids,
+              to,
+              ...(emergency && chosen
+                ? { mode: "campaign", target: chosen.target }
+                : {}),
+            },
+            score,
+          });
       }
       // Merge a weaker army with friendly reinforcements rather than feed it into a stronger defender.
       if (!choices.some((v) => v.action.ids?.join() === ids.join()))
@@ -2774,7 +2950,11 @@ function chooseMilitary(s: Game): Command {
               (r.owner === crisis.leader && crisis.severity >= 0.2)),
         );
         if (road) {
-          const action = { type: "destroy-route", ids, edge: road.edge };
+          const action = {
+            type: "destroy-route",
+            ids: ids.slice(0, 1),
+            edge: road.edge,
+          };
           if (check(s, action))
             choices.push({
               action,

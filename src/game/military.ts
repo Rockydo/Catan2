@@ -1,4 +1,4 @@
-import { friendly } from "./relations";
+import { friendly, emergencyTarget } from "./relations";
 import {
   GOODS,
   type Game,
@@ -315,6 +315,16 @@ export function militaryCommand(s: Game, c: Command): boolean {
           Number(s.players[a.owner].control === "human") || a.owner - b.owner,
     );
     units.forEach((u) => {
+      const enemy = emergencyTarget(s);
+      if (
+        s.players[s.active].control !== "human" &&
+        enemy !== undefined &&
+        c.mode === "campaign" &&
+        c.target &&
+        s.tiles[c.target]
+      )
+        u.campaign = { enemy, target: c.target };
+      else delete u.campaign;
       u.moved += path.length;
       setTile(s, u, defenders.length ? origin : target);
     });

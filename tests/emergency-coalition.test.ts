@@ -17,6 +17,7 @@ import {
   playerTradeToward,
 } from "../src/game/ai";
 import { landAtVertex, distance } from "../src/game/world";
+import { speed, pathTo } from "../src/game/selectors";
 
 function world(leader = 3, troops = 22) {
   const { s, towns } = grandAllianceFixture();
@@ -35,6 +36,94 @@ function world(leader = 3, troops = 22) {
 }
 
 describe("mandatory global survival coalition", () => {
+  it("deploys armed economic ships without being pinned by exhausted escorts", () => {
+    const { s } = world(3, 100);
+    s.phase = "military";
+    s.players[0].control = "standard";
+    for (const tile of ["-4,0", "-3,0", "-2,0", "-1,0"])
+      s.tiles[tile].resource = "water";
+    const ship = piece(s, "-4,0", 0, "merchantship", 3);
+    const escorts = [
+      piece(s, "-4,0", 0, "galley"),
+      piece(s, "-4,0", 0, "galley"),
+    ];
+    for (const u of escorts) u.moved = speed(u);
+    piece(s, "-1,0", 3, "fishing");
+    syncEmergencyCoalition(s);
+    const action = chooseAIAction(s);
+    expect(action.type).toBe("move");
+    expect(action.ids).toContain(ship.id);
+    for (const u of escorts) expect(action.ids).not.toContain(u.id);
+    expect(distance(action.to!, "-1,0")).toBeLessThan(3);
+    expect(canApplyCommand(s, action)).toBe(true);
+  });
+  it("mobilizes every rear stack and spends the fast units' movement after their escorts stop", () => {
+    let { s, towns } = world(3, 100);
+    const vulnerable = {
+      ...structuredClone(towns[3]),
+      id: `t${s.nextId++}`,
+      vertex: s.tiles["4,-2"].vertices[0],
+    };
+    s.towns[vulnerable.id] = vulnerable;
+    s.phase = "military";
+    s.players[0].control = "standard";
+    const troops = ["-5,0", "-5,2", "-4,-1"].flatMap((tile) => [
+      piece(s, tile, 0, "heavy"),
+      piece(s, tile, 0, "cavalry", 4),
+    ]);
+    // A spent escort must not immobilize its two still-mobile companions.
+    for (const tile of ["-5,0", "-5,2", "-4,-1"])
+      for (let i = 0; i < 2; i++) piece(s, tile, 0, "heavy").moved = 1;
+    syncEmergencyCoalition(s);
+    for (let i = 0; i < 30; i++) {
+      const action = chooseAIAction(s);
+      if (action.type === "end-turn") break;
+      s = run(s, action);
+    }
+    for (const u of troops) {
+      expect(s.pieces[u.id].moved, u.id).toBe(speed(u));
+      expect(s.pieces[u.id].tile).not.toBe(u.tile);
+    }
+    assertInvariants(deserialize(serialize(s)));
+  });
+  it("retains an assigned weak front across moves and save reloads", () => {
+    let { s, towns } = world(3, 100);
+    const targetTown = {
+      ...structuredClone(towns[3]),
+      id: `t${s.nextId++}`,
+      vertex: s.tiles["4,-2"].vertices[0],
+    };
+    s.towns[targetTown.id] = targetTown;
+    s.phase = "military";
+    s.players[0].control = "standard";
+    const u = piece(s, "-5,0", 0, "heavy");
+    syncEmergencyCoalition(s);
+    const first = chooseAIAction(s);
+    expect(first.mode).toBe("campaign");
+    s = deserialize(serialize(run(s, first)));
+    expect(s.pieces[u.id].campaign?.target).toBe(first.target);
+    s.pieces[u.id].moved = 0;
+    // A closer decoy with a huge stockpile must not reverse a marching army.
+    const decoy = {
+      ...structuredClone(targetTown),
+      id: `t${s.nextId++}`,
+      vertex: s.tiles["-5,2"].vertices[0],
+      stock: { gold: 100 },
+    };
+    s.towns[decoy.id] = decoy;
+    const before = pathTo(
+      s,
+      s.pieces[u.id].tile,
+      first.target!,
+      false,
+      0,
+    )!.length;
+    const next = chooseAIAction({ ...s });
+    expect(next.target).toBe(first.target);
+    expect(pathTo(s, next.to!, first.target!, false, 0)!.length).toBeLessThan(
+      before,
+    );
+  });
   it("does not trigger at exactly 40%, triggers above it, and includes every distant survivor", () => {
     const { s } = world();
     const scores = factionStrengths(s);
