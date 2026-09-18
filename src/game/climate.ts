@@ -154,14 +154,8 @@ export function planClimates(world: World, seed: string, revealed: string[]) {
         stay = randomAt(seed, id, "climate-stay") < 0.88;
       let climate = base;
       if (!same || !stay) {
-        const withinTwo = [
-          ...new Set(neighbors(id).flatMap((n) => [n, ...neighbors(n)])),
-        ]
-          .filter((n) => n !== id)
-          .map((n) => assigned[n])
-          .filter((c): c is Climate => !!c);
         let choices = CLIMATES.filter((c) =>
-          withinTwo.every((n) => compatibleClimate(c, n)),
+          adjacent.every((n) => compatibleClimate(c, n)),
         );
         if (same && !stay) choices = choices.filter((c) => c !== base);
         if (!same && stay) {

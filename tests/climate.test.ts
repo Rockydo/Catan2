@@ -7,8 +7,9 @@ import {
   compatibleClimate,
   waterProbabilities,
   type Biome,
+  type Climate,
 } from "../src/game/climate-content";
-import { climateTerrain } from "../src/game/climate";
+import { bufferClimates, climateTerrain } from "../src/game/climate";
 import { newGame, applyCommand, canApplyCommand } from "../src/game/engine";
 import {
   addHexes,
@@ -16,6 +17,7 @@ import {
   generateHex,
   expeditionFootprint,
   unknownAtVertex,
+  generateWorld,
 } from "../src/game/world";
 import {
   tileYield,
@@ -103,6 +105,54 @@ it("keeps compatible climate buffers through seeded games, saves and successive 
   }
   expect(seen.size).toBe(7);
 });
+it("repairs conflicting climate proposals with buffers while preserving fixed borders", () => {
+  const baseline: Record<string, Climate> = Object.fromEntries(
+    Array.from({ length: 9 }, (_, i) => [`${i},0`, "temperate"]),
+  );
+  const proposed: Record<string, Climate> = {
+    ...baseline,
+    "1,0": "arctic",
+    "2,0": "arctic",
+    "3,0": "arctic",
+    "4,0": "arctic",
+    "5,0": "arctic",
+    "6,0": "tropical",
+    "7,0": "tropical",
+  };
+  for (let seed = 0; seed < 30; seed++) {
+    const repaired = bufferClimates(
+      baseline,
+      proposed,
+      Object.keys(baseline).slice(1, -1),
+      `repair-${seed}`,
+    );
+    expect(repaired["0,0"]).toBe("temperate");
+    expect(repaired["8,0"]).toBe("temperate");
+    expect(Object.values(repaired)).toContain("cold");
+    expect(Object.values(repaired)).toContain("arctic");
+    expect(Object.values(repaired)).toContain("tropical");
+    for (const [id, climate] of Object.entries(repaired))
+      for (const n of neighbors(id))
+        if (repaired[n])
+          expect(compatibleClimate(climate, repaired[n])).toBe(true);
+  }
+  expect(Object.values(baseline).every((c) => c === "temperate")).toBe(true);
+  expect(proposed["1,0"]).toBe("arctic");
+});
+it.each([125, 250])(
+  "keeps every revealed and reserved border compatible on %i-tile maps",
+  (size) => {
+    for (let seed = 0; seed < 40; seed++) {
+      const world = generateWorld(`adjacent-climates-${seed}`, size);
+      for (const [id, climate] of Object.entries(world.climatePlan!))
+        for (const n of neighbors(id))
+          if (world.climatePlan![n])
+            expect(compatibleClimate(climate, world.climatePlan![n])).toBe(
+              true,
+            );
+    }
+  },
+);
 it("rejects malformed climate reservations and incompatible borders", () => {
   const s = newGame("climate-corruption");
   const invalid = structuredClone(s);
