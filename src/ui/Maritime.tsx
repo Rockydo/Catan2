@@ -160,7 +160,7 @@ export function HarvestPanel({
               {u.kind !== "fishing" && u.tier >= 3 && (
                 <p>
                   {tx(
-                    `Adds ${u.tier - 2} processed goods per harvested resource type.`,
+                    `Adds ${u.tier - 2} times the harvested base yield as processed goods.`,
                   )}
                 </p>
               )}

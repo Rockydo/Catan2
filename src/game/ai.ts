@@ -11,6 +11,7 @@ import {
   tileGood,
   tileGoods,
   tileYield,
+  workshopYield,
   terrainFamily,
   productiveAtVertex,
   collector,
@@ -659,7 +660,10 @@ export function economyProjects(s: Game): Project[] {
                   sum +
                   probability(s.tiles[id].number) *
                     tileGoods(s.tiles[id], s.active).reduce(
-                      (n, raw) => n + values[processedFor(raw)],
+                      (n, raw) =>
+                        n +
+                        values[processedFor(raw)] *
+                          (tileYield(s.tiles[id], s.active)[raw] ?? 0),
                       0,
                     ),
                 0,
@@ -700,7 +704,10 @@ export function economyProjects(s: Game): Project[] {
         add(
           { type: "extension", town: t.id, tile: tileId },
           cost,
-          (probability(tile.number) * values[good] * 30) /
+          (probability(tile.number) *
+            values[good] *
+            workshopYield(tile, s.active, raw, 1) *
+            30) /
             (1 + (inc[good] ?? 0) * 12) +
             (sumStock(cost) === 0 ? 25 : 0) -
             (danger > protectedPower ? 5 : 0),
@@ -2011,10 +2018,17 @@ function chooseMilitary(s: Game): Command {
         (denial.get(tile) ?? 0) +
           probability(s.tiles[tile].number) *
             (town.level * sumStock(tileYield(s.tiles[tile], town.owner)) +
-              tileGoods(s.tiles[tile], town.owner).length *
+              sumStock(tileYield(s.tiles[tile], town.owner)) *
                 Math.max(0, town.level - 2) *
                 2.5 +
-              (town.extensions[tile] ?? 0) * 2.5) *
+              workshopYield(
+                s.tiles[tile],
+                town.owner,
+                town.extensionGoods?.[tile] ??
+                  tileGood(s.tiles[tile], town.owner)!,
+                town.extensions[tile] ?? 0,
+              ) *
+                2.5) *
             leaderPressure(s, town.owner),
       );
     }

@@ -523,13 +523,13 @@ it.each([
       Object.fromEntries(
         Object.entries(output).flatMap(([g, n]) => [
           [g, n * level],
-          ...(level >= 3 ? [[processedFor(g as Raw), level - 2]] : []),
+          ...(level >= 3 ? [[processedFor(g as Raw), n * (level - 2)]] : []),
         ]),
       ),
     );
   }
 });
-it("multiplies camps and collectors without multiplying workshop output", () => {
+it("multiplies camps, collectors and workshops by the base tile yield", () => {
   const { s, home, tile } = biomeFixture("rice-field");
   const edge = s.vertices[home.vertex].edges.find((id) =>
     s.edges[id].tiles.includes(tile.id),
@@ -555,7 +555,7 @@ it("multiplies camps and collectors without multiplying workshop output", () => 
     rows
       .filter((p) => p.good === "provisions")
       .reduce((n, p) => n + p.amount, 0),
-  ).toBe(2 + 3 + 1);
+  ).toBe(6 + 9 + 3);
   piece(s, tile.id, 1, "heavy");
   expect(
     productionSources(s)
@@ -563,7 +563,7 @@ it("multiplies camps and collectors without multiplying workshop output", () => 
       .map((p) => [p.good, p.amount]),
   ).toEqual([
     ["grain", 9],
-    ["provisions", 1],
+    ["provisions", 3],
   ]);
 });
 it("Woods choices belong to each faction and leave built workshops unchanged", () => {

@@ -149,7 +149,7 @@ test("shipwright builds tier-IV fishing and merchant ships with distinct portrai
   ).toContainText("Fishing range: 4 water tiles");
   await expect(
     page.getByTestId(`harvest-${Object.values(built.pieces)[1].id}`),
-  ).toContainText("Adds 2 processed goods per harvested resource type");
+  ).toContainText("Adds 2 times the harvested base yield as processed goods");
   await expect(page.getByTestId("economic-unit-marker")).toHaveCount(1);
   await page
     .getByTestId(`harvest-${Object.values(built.pieces)[0].id}`)
@@ -256,8 +256,8 @@ for (const language of ["en", "fr"] as const)
     await page.getByTestId(`town-${home.id}`).click();
     await expect(page.locator(".right-panel")).toContainText(
       language === "en"
-        ? "Each matching tile adds 2 processed goods per resource type"
-        : "Chaque tuile activée ajoute 2 produits transformés par type de ressource",
+        ? "Each matching tile adds 2 times its base yield as processed goods"
+        : "Chaque tuile activée ajoute 2 fois sa production de base en produits transformés",
     );
     const dismiss = page.getByRole("button", {
       name: language === "en" ? "Close action panel" : /Fermer le panneau/,
@@ -272,7 +272,7 @@ for (const language of ["en", "fr"] as const)
     );
     await expect(page.getByTestId(`harvest-${merchant.id}`)).toContainText(
       language === "en"
-        ? "Adds 1 processed goods per harvested resource type"
-        : "Ajoute 1 produits transformés par type de ressource récoltée",
+        ? "Adds 1 times the harvested base yield as processed goods"
+        : "Ajoute 1 fois la production de base récoltée en produits transformés",
     );
   });

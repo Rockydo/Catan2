@@ -3,6 +3,7 @@ import { friendly } from "./relations";
 import {
   tileGood,
   tileYield,
+  workshopYield,
   terrainFamily,
   tileGoods,
   harvestTiles,
@@ -501,7 +502,12 @@ export function productionSources(s: Game) {
           town,
           tile: id,
           good: processedFor(good),
-          amount: town.extensions[id],
+          amount: workshopYield(
+            s.tiles[id],
+            town.owner,
+            good,
+            town.extensions[id],
+          ),
         });
     }
   for (const r of Object.values(s.routes))

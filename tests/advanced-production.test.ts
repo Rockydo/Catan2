@@ -35,7 +35,7 @@ function terrain(s: Game, id: string, biome: Biome) {
 
 describe("advanced town and merchant production", () => {
   it.each([1, 2, 3, 4])(
-    "town level %i adds the flat processed bonus to rich terrain",
+    "town level %i adds the yield-scaled processed bonus to rich terrain",
     (level) => {
       const { s, home } = fixture();
       home.level = home.turnLevel = level;
@@ -46,14 +46,31 @@ describe("advanced town and merchant production", () => {
       expect(inventory(s)).toEqual(
         level < 3
           ? { grain: 2 * level }
-          : { grain: 2 * level, provisions: level - 2 },
+          : { grain: 2 * level, provisions: 2 * (level - 2) },
       );
       expect(
         Object.fromEntries(
           Object.entries(s.production[0]).filter(([, n]) => n),
         ),
       ).toEqual(inventory(s));
-      expect(income(s).provisions ?? 0).toBeCloseTo(Math.max(0, level - 2) / 6);
+      expect(income(s).provisions ?? 0).toBeCloseTo(
+        (2 * Math.max(0, level - 2)) / 6,
+      );
+    },
+  );
+  it.each([3, 4])(
+    "rice harvest scales city level %i and its workshop independently",
+    (level) => {
+      const { s, home } = fixture();
+      home.level = home.turnLevel = level;
+      terrain(s, "0,0", "rice-field");
+      home.extensions["0,0"] = level - 1;
+      const processed = 3 * (level - 2 + (level - 1));
+      production(s, 7);
+      expect(inventory(s)).toEqual({ grain: 3 * level, provisions: processed });
+      expect(home.stock.provisions).toBe(processed);
+      expect(s.production[0].provisions).toBe(processed);
+      expect(income(s).provisions).toBeCloseTo(processed / 6);
     },
   );
   it("adds both processed partners on mixed terrain, plus the existing workshop", () => {
@@ -98,7 +115,7 @@ describe("advanced town and merchant production", () => {
             : {
                 grain: tier * 2,
                 gold: tier,
-                provisions: tier - 2,
+                provisions: 2 * (tier - 2),
                 goldbars: tier - 2,
               },
         );

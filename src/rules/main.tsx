@@ -572,8 +572,8 @@ function Catalogue({ initial = "goods" }: { initial?: CatalogSection }) {
                               `−${tier} tours de siège`,
                             )
                           : labels(
-                              `Current tile + ${tier} neighbours · ×${tier} raw output${tier >= 3 ? ` + ${tier - 2} processed per resource type` : ""}`,
-                              `Tuile actuelle + ${tier} voisines · production brute ×${tier}${tier >= 3 ? ` + ${tier - 2} produit transformé par type de ressource` : ""}`,
+                              `Current tile + ${tier} neighbours · ×${tier} raw output${tier >= 3 ? ` + ×${tier - 2} base yield as processed goods` : ""}`,
+                              `Tuile actuelle + ${tier} voisines · production brute ×${tier}${tier >= 3 ? ` + ×${tier - 2} production de base en produits transformés` : ""}`,
                             )}
                   </p>
                   <Cost stock={unitCost(k, tier)} />
@@ -633,8 +633,8 @@ function Catalogue({ initial = "goods" }: { initial?: CatalogSection }) {
                   {k === "merchantship" && (
                     <p>
                       {labels(
-                        `Adjacent land · ×${tier} raw output${tier >= 3 ? ` + ${tier - 2} processed per resource type` : ""}`,
-                        `Terres voisines · production brute ×${tier}${tier >= 3 ? ` + ${tier - 2} produit transformé par type de ressource` : ""}`,
+                        `Adjacent land · ×${tier} raw output${tier >= 3 ? ` + ×${tier - 2} base yield as processed goods` : ""}`,
+                        `Terres voisines · production brute ×${tier}${tier >= 3 ? ` + ×${tier - 2} production de base en produits transformés` : ""}`,
                       )}
                     </p>
                   )}

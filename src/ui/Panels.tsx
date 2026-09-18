@@ -18,6 +18,7 @@ import {
   tileGood,
   tileGoods,
   tileYield,
+  workshopYield,
   tileOptions,
   terrainFamily,
   productiveAtVertex,
@@ -551,7 +552,7 @@ function BuildPanel({
             {town.level >= 3 && (
               <p className="public-research-note">
                 {tx(
-                  `Each matching tile adds ${town.level - 2} processed goods per resource type, in addition to raw output and workshops.`,
+                  `Each matching tile adds ${town.level - 2} times its base yield as processed goods, in addition to raw output and workshops.`,
                 )}
               </p>
             )}
@@ -668,7 +669,7 @@ function BuildPanel({
                               {tx(GOOD_INFO[processedFor(raw)].name)} ·{tx(" ")}
                               {tx(
                                 current
-                                  ? `Tier ${ROMAN[current]} · +${current} per roll`
+                                  ? `Tier ${ROMAN[current]} · +${workshopYield(t, town.owner, raw, current)} per roll`
                                   : "Not built",
                               )}
                             </small>

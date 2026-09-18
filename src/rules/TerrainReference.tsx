@@ -121,8 +121,8 @@ export function TerrainReference({ seaOnly = false }: { seaOnly?: boolean }) {
       <h2>{l("Terrain and production", "Terrains et production")}</h2>
       <p className="reference-intro">
         {l(
-          "Output below is for one settlement. Multiply raw output by town level, camp tier or collector tier. Towns, land merchants and merchant ships at levels III/IV also add 1/2 processed goods per resource type. Workshops add their tier separately; none of these bonuses consume raw goods.",
-          "Les quantités ci-dessous correspondent à une colonie. Multipliez chaque production brute par le niveau de l’agglomération, du camp ou du collecteur. Les agglomérations, marchands terrestres et navires marchands de niveau III/IV ajoutent aussi 1/2 produit transformé par type de ressource. Les ateliers ajoutent leur palier séparément ; ces bonus ne consomment aucune matière première.",
+          "Output below is for one settlement. Multiply raw output by town level, camp tier or collector tier. Towns, land merchants and merchant ships at levels III/IV also add 1×/2× the base tile yield as processed goods. Workshops add their tier × the base yield of their linked resource separately; none of these bonuses consume raw goods.",
+          "Les quantités ci-dessous correspondent à une colonie. Multipliez chaque production brute par le niveau de l’agglomération, du camp ou du collecteur. Les agglomérations, marchands terrestres et navires marchands de niveau III/IV ajoutent aussi 1×/2× la production de base de la tuile en produits transformés. Les ateliers ajoutent séparément leur palier × la production de base de leur ressource liée ; ces bonus ne consomment aucune matière première.",
         )}
       </p>
       <div className="terrain-reference-grid">
@@ -151,7 +151,7 @@ export function TerrainReference({ seaOnly = false }: { seaOnly?: boolean }) {
                 {workshops.map((g) => (
                   <div key={g}>
                     <span className="output-label">{tx(extensionName(g))}</span>
-                    <Outputs goods={{ [processedFor(g)]: 1 }} />
+                    <Outputs goods={{ [processedFor(g)]: raw[g] }} />
                   </div>
                 ))}
                 {tile === "woods" && (

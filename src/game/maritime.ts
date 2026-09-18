@@ -22,8 +22,7 @@ export function tileYield(
 }
 export const tileGoods = (tile: Hex, owner?: number): Raw[] =>
   Object.keys(tileYield(tile, owner)) as Raw[];
-/** Rich terrain multiplies raw output; advanced producers add 1/2 processed
- * goods per resource type, independently of workshops and the terrain yield. */
+/** Advanced production adds 1×/2× the base tile yield as processed goods. */
 export function harvestYield(
   tile: Hex,
   owner: number,
@@ -35,10 +34,23 @@ export function harvestYield(
     output[raw as Raw] = amount! * tier;
     if (refines && tier >= 3) {
       const processed = processedFor(raw as Raw);
-      output[processed] = (output[processed] ?? 0) + tier - 2;
+      output[processed] = (output[processed] ?? 0) + amount! * (tier - 2);
     }
   }
   return output;
+}
+/** Workshops retain their selected Woods product even if the raw harvest changes. */
+export function workshopYield(
+  tile: Hex,
+  owner: number,
+  raw: Raw,
+  tier: number,
+): number {
+  const base =
+    tile.biome === "woods" && (raw === "lumber" || raw === "hides")
+      ? 1
+      : (tileYield(tile, owner)[raw] ?? 0);
+  return base * tier;
 }
 export const tileGood = (tile: Hex, owner?: number): Raw | undefined =>
   tileGoods(tile, owner)[0];
