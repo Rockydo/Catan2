@@ -1,0 +1,21 @@
+{
+  "tool": "Built-in image_gen (edit)",
+  "derivatives": "512px WebP, quality 85",
+  "images": [
+    {
+      "name": "forest",
+      "prompt": "Use case: lighting-weather. Edit target: supplied forest game tile. Redraw it as a lush dense GREEN pine and spruce forest with no snow, frost or ice anywhere. Rich emerald and moss green needles, thick layered conifer canopy, luxuriant ferns and moss underneath, warm brown trunks and recognizable cut timber in a small clearing. Increase tree density and richness, reduce bare ground, keep the timber readable. Preserve the beautiful painterly miniature board-game aesthetic, elevated three-quarter overhead view, continuous square edge-to-edge landscape, no horizon, no border, no hex outline, no text. Northern evergreen forest in summer, not tropical, not blue winter trees. Refined detail but strong readable shapes for a small hex tile.",
+      "asset": "public/assets/terrain-forest-v1.webp"
+    },
+    {
+      "name": "hunting-forest",
+      "prompt": "Use case: lighting-weather. Edit target: supplied hunting forest game tile. Keep the autumn character: rich golden birch leaves, copper and amber shrubs amid deep green pine and spruce. Make the woodland denser and richer with layered trees, abundant ferns and moss, without losing the warm autumn colors. Remove ALL snow, frost, ice and white dusting from branches, rocks and ground, replacing it with moss, autumn leaves and exposed natural rock. Preserve the two recognizable brown deer including the antlered stag, visibly separated in a small clearing in the upper middle so the hunting terrain is readable at small tile size. Preserve the refined painterly miniature board-game aesthetic, elevated three-quarter overhead view, continuous square edge-to-edge landscape without horizon, detailed natural foliage, soft warm autumn daylight. No text, UI, frame, hex outline, snow or people.",
+      "asset": "public/assets/terrain-hunting-forest-v1.webp"
+    },
+    {
+      "name": "cod",
+      "prompt": "Use case: precise-object-edit. Asset: square Cod grounds terrain texture for a painterly medieval hex board game. Image 1 is the edit target, current cod grounds. Image 2 is ordinary fish terrain, ONLY a comparison reference: the new cod must look visibly different from its silvery fork-tailed fish. Redraw image 1 with substantially DARKER cold slate-blue and navy North Atlantic water, restrained steel-blue surface ripples, no turquoise tropical shallows, no visible sandy bottom, no shore or coral. Replace tiny indistinct fish with a readable shoal of 5 to 7 substantial Atlantic cod, olive-brown mottled bodies, pale lateral lines, broad heads, small chin barbels, three rounded dorsal fins and almost square tails, not shiny silver tuna or salmon. Arrange several prominent cod in the upper two-thirds and a few deeper subtle silhouettes; clearly legible at small game-tile size. Fish remain in the water, naturalistic painted shapes, not icons. Preserve continuous edge-to-edge square, elevated overhead view, refined painted board-game style, understated water highlights. No horizon, boats, text, numbers, border, hex outline or watermark.",
+      "asset": "public/assets/terrain-cod-v1.webp"
+    }
+  ]
+}

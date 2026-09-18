@@ -151,7 +151,7 @@ export function planClimates(world: World, seed: string, revealed: string[]) {
           Math.floor(randomAt(seed, id, "climate-parent") * adjacent.length)
         ];
       const same = adjacent.every((c) => c === base),
-        stay = randomAt(seed, id, "climate-stay") < 0.95;
+        stay = randomAt(seed, id, "climate-stay") < 0.92;
       let climate = base;
       if (!same || !stay) {
         const withinTwo = [
