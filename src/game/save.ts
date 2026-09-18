@@ -143,6 +143,7 @@ export function assertInvariants(s: Game) {
       "Invalid player controller.",
     );
     bool(p.alive);
+    if (p.researchPurchases !== undefined) int(p.researchPurchases);
     if (p.tradeOffered !== undefined) bool(p.tradeOffered);
     if (p.diplomacyDone !== undefined) bool(p.diplomacyDone);
     if (p.allianceContacts) {

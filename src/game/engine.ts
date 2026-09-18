@@ -180,6 +180,7 @@ export function beginTurn(s: Game) {
   const p = s.players[s.active];
   p.turns++;
   p.researchBought = false;
+  p.researchPurchases = 0;
   p.tradeOffered = false;
   p.diplomacyDone = false;
   p.researchPlayed = false;
@@ -935,6 +936,7 @@ export function execute(s: Game, c: Command) {
       "Upgrade a city to unlock this research tier.",
     );
     pay(s, COSTS[`Research ${RESEARCH_NAMES[c.tier]}`]);
+    p.researchPurchases = (p.researchPurchases ?? 0) + 1;
     drawResearch(s, c.tier);
     return;
   }

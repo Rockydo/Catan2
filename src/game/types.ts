@@ -172,6 +172,8 @@ export interface Player {
   turns: number;
   hand: Card[];
   researchBought: boolean;
+  /** Tracks discretionary spending for AI planning, never limits legal purchases. */
+  researchPurchases?: number;
   tradeOffered?: boolean;
   diplomacyDone?: boolean;
   allianceContacts?: Record<number, number>;

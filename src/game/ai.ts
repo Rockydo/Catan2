@@ -1366,7 +1366,14 @@ export function economyProjects(s: Game): Project[] {
       }
     }
   }
-  if (s.players[s.active].hand.length < 3) {
+  // Card rewards can buy further cards indefinitely in a developed economy.
+  // Budget discretionary purchases so existing forces get another turn; this
+  // is an AI spending policy, not a restriction on buying or playing cards.
+  const researchBudget = Math.max(2, Math.min(6, Math.ceil(towns.length / 2)));
+  if (
+    s.players[s.active].hand.length < 3 &&
+    (s.players[s.active].researchPurchases ?? 0) < researchBudget
+  ) {
     const max = Math.min(
       4,
       Math.max(

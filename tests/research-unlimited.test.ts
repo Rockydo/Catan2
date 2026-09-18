@@ -190,3 +190,14 @@ it("stacked movement cards and long movement survive saving without old one-card
   expect(s.pieces[unit.id].moved).toBe(12);
   expect(deserialize(serialize(s))).toEqual(s);
 });
+
+it("AI finishes its research investment while further purchases remain legal", () => {
+  let { s } = fishingFixture();
+  s.players[0].researchPurchases = 6;
+  expect(economyProjects(s).some((p) => p.action.type === "buy-research")).toBe(
+    false,
+  );
+  s = run(s, { type: "buy-research", tier: 1 });
+  expect(s.players[0].researchPurchases).toBe(7);
+  expect(s.researchChoice).toHaveLength(2);
+});
