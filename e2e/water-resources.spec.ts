@@ -154,6 +154,6 @@ test("guild recipes display Coal while paying an Oil shortfall and saving the re
     (key) => JSON.parse(localStorage.getItem(key)!).game,
     SAVE_KEY,
   );
-  expect(state.towns[home.id].stock.grain).toBe(8);
+  expect(state.towns[home.id].stock.grain).toBe(12);
   expect(state.towns[home.id].stock.oil ?? 0).toBe(0);
 });

@@ -1,4 +1,4 @@
-import { solidAtVertex } from "./world";
+import { solidAtVertex, canOccupy } from "./world";
 import { friendly } from "./relations";
 import {
   tileGood,
@@ -236,8 +236,8 @@ export function pathTo(
   owner: number,
   max = Infinity,
 ): string[] | null {
+  if (!canOccupy(s.tiles[to], naval)) return null;
   if (from === to) return [];
-  if (!s.tiles[to] || (s.tiles[to].resource === "water") !== naval) return null;
   const queue = [from],
     prev = new Map<string, string>(),
     depth = new Map([[from, 0]]);
@@ -246,12 +246,7 @@ export function pathTo(
       d = depth.get(current)!;
     if (d >= max) continue;
     for (const n of neighbors(current)) {
-      if (
-        depth.has(n) ||
-        !s.tiles[n] ||
-        (s.tiles[n].resource === "water") !== naval
-      )
-        continue;
+      if (depth.has(n) || !canOccupy(s.tiles[n], naval)) continue;
       prev.set(n, current);
       depth.set(n, d + 1);
       if (n === to) {
@@ -289,12 +284,7 @@ export function moveTargets(s: Game, ids: string[]): Record<string, string[]> {
     const t = queue[i];
     if (paths[t].length >= max) continue;
     for (const n of neighbors(t)) {
-      if (
-        paths[n] ||
-        !s.tiles[n] ||
-        (s.tiles[n].resource === "water") !== first.naval
-      )
-        continue;
+      if (paths[n] || !canOccupy(s.tiles[n], first.naval)) continue;
       paths[n] = [...paths[t], n];
       result[n] = paths[n];
       if (!hostileAt(s, n, first.owner, first.naval)) queue.push(n);
@@ -312,8 +302,7 @@ export function retreatOptions(
   return neighbors(tile).filter(
     (n) =>
       n !== origin &&
-      s.tiles[n] &&
-      (s.tiles[n].resource === "water") === naval &&
+      canOccupy(s.tiles[n], naval) &&
       !hostileAt(s, n, owner, naval),
   );
 }
@@ -677,8 +666,7 @@ export function expeditionSites(
           !u.carrier &&
           u.born < s.players[p].turns &&
           u.naval === (kind === "sea") &&
-          s.tiles[u.tile] &&
-          (s.tiles[u.tile].resource === "water") === u.naval,
+          canOccupy(s.tiles[u.tile], u.naval),
       )
       .flatMap((u) => s.tiles[u.tile].vertices),
   );

@@ -55,9 +55,9 @@ test("rival extensions and research counts are inspectable without revealing pri
   await expect(extensions).toContainText(`roll ${s.tiles[tile].number}`);
   await expect(extensions).toContainText("Tier II · +2 per roll");
   await expect(extensions.locator("button")).toHaveCount(0);
-  await expect(page.locator(".public-research-note")).toContainText(
-    "holds 1 research cards",
-  );
+  await expect(
+    page.locator(".public-research-note").filter({ hasText: "holds" }),
+  ).toContainText("holds 1 research cards");
   await panel(page, "Research");
   await expect(page.getByTestId("research-count-1")).toContainText("Tidewatch");
   await expect(page.getByTestId("research-count-1").locator("b")).toHaveText(

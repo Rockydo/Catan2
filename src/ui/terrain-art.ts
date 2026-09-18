@@ -20,6 +20,39 @@ const regionalArt: Partial<Record<Climate, Record<string, string>>> = {
   },
   cold: { stone: "cold-stone", brick: "cold-clay" },
   steppe: { brick: "steppe-clay" },
+  oceanic: {
+    woods: "oceanic-woods",
+    "rough-fields": "oceanic-rough-fields",
+    grain: "oceanic-grain",
+    brick: "oceanic-clay",
+    coal: "oceanic-coal",
+    ore: "oceanic-iron",
+    gold: "oceanic-gold",
+  },
+  alpine: {
+    ore: "alpine-iron",
+    coal: "alpine-coal",
+    "rough-fields": "alpine-rough-fields",
+    forest: "alpine-forest",
+    gold: "alpine-gold",
+    brick: "alpine-clay",
+  },
+  subtropical: {
+    stone: "subtropical-stone",
+    coal: "subtropical-coal",
+    ore: "subtropical-iron",
+    salt: "subtropical-salt",
+    gold: "subtropical-gold",
+  },
+  savanna: {
+    "rough-fields": "savanna-rough-fields",
+    "rough-pasture": "savanna-pasture",
+    ore: "savanna-iron",
+    brick: "savanna-clay",
+    stone: "savanna-stone",
+    gold: "savanna-gold",
+    salt: "savanna-salt",
+  },
 };
 export const REGIONAL_ART_KEYS = Object.values(regionalArt).flatMap(
   Object.values,
@@ -29,7 +62,10 @@ export function terrainPatternKey(
   climate?: Climate,
 ): string {
   const art = BIOME_INFO[terrain as Biome]?.art ?? terrain;
-  return (climate && regionalArt[climate]?.[art]) || terrain;
+  return (
+    (climate && regionalArt[climate]?.[art]) ||
+    (terrain === "peaks" ? "bare-peaks" : terrain)
+  );
 }
 export function terrainArtFile(art: string): string {
   if (["gold", "fish", "whale"].includes(art))

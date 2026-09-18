@@ -53,6 +53,7 @@ import {
   expeditionCost,
 } from "./content";
 import {
+  canOccupy,
   generateWorld,
   hash,
   nextRandom,
@@ -726,7 +727,7 @@ export function execute(s: Game, c: Command) {
     rule(
       c.tile &&
         s.vertices[t.vertex].tiles.includes(c.tile) &&
-        (s.tiles[c.tile].resource === "water") === naval,
+        canOccupy(s.tiles[c.tile], naval),
       "Choose a suitable hex adjacent to the recruiting town.",
     );
     rule(

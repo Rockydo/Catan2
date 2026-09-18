@@ -250,9 +250,14 @@ export const vertexNeighbors = (world: World, id: string) =>
 export const landAtVertex = (world: World, v: string) =>
   world.vertices[v]?.tiles.filter((t) => world.tiles[t].resource !== "water") ??
   [];
-/** Permanent structures need solid ground; frozen sea only carries armies. */
+/** Unit occupancy is separate from edge construction: roads can skirt peaks. */
+export const canOccupy = (tile: Hex | undefined, naval = false): boolean =>
+  !!tile && tile.resource !== "peaks" && (tile.resource === "water") === naval;
+export const walkableAtVertex = (world: World, v: string) =>
+  landAtVertex(world, v).filter((id) => canOccupy(world.tiles[id]));
+/** Towns and towers need habitable ground; roads may still follow peak edges. */
 export const solidAtVertex = (world: World, v: string) =>
-  landAtVertex(world, v).filter((t) => world.tiles[t].resource !== "ice");
+  walkableAtVertex(world, v).filter((t) => world.tiles[t].resource !== "ice");
 export const waterAtVertex = (world: World, v: string) =>
   world.vertices[v]?.tiles.filter((t) => world.tiles[t].resource === "water") ??
   [];

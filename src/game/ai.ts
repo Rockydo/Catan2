@@ -76,7 +76,8 @@ import {
   neighbors,
   hash,
   distance,
-  landAtVertex,
+  walkableAtVertex as landAtVertex,
+  canOccupy,
   waterAtVertex,
   vertexNeighbors,
   unknownAtVertex,
@@ -715,7 +716,7 @@ export function economyProjects(s: Game): Project[] {
         neighbors(water).some(
           (shore) =>
             s.tiles[shore] &&
-            s.tiles[shore].resource !== "water" &&
+            canOccupy(s.tiles[shore]) &&
             tiles.some(
               (tile) => landRegions(s).get(tile) === landRegions(s).get(shore),
             ),
@@ -1671,16 +1672,12 @@ function landRegions(s: Game, water = false) {
   const region = new Map<string, number>();
   let label = 0;
   for (const tile of Object.values(s.tiles)) {
-    if ((tile.resource === "water") !== water || region.has(tile.id)) continue;
+    if (!canOccupy(tile, water) || region.has(tile.id)) continue;
     const queue = [tile.id];
     region.set(tile.id, label++);
     for (let i = 0; i < queue.length; i++)
       for (const n of neighbors(queue[i])) {
-        if (
-          s.tiles[n] &&
-          (s.tiles[n].resource === "water") === water &&
-          !region.has(n)
-        ) {
+        if (s.tiles[n] && canOccupy(s.tiles[n], water) && !region.has(n)) {
           region.set(n, label - 1);
           queue.push(n);
         }
@@ -2103,7 +2100,7 @@ function chooseMilitary(s: Game): Command {
                   neighbors(v.tile).some(
                     (shore) =>
                       s.tiles[shore] &&
-                      s.tiles[shore].resource !== "water" &&
+                      canOccupy(s.tiles[shore]) &&
                       landRegions(s).get(shore) === landRegions(s).get(tile),
                   ),
               ),
@@ -2128,7 +2125,7 @@ function chooseMilitary(s: Game): Command {
         const land = neighbors(tile).filter(
           (t) =>
             s.tiles[t] &&
-            s.tiles[t].resource !== "water" &&
+            canOccupy(s.tiles[t]) &&
             !hostileAt(s, t) &&
             hasLandObjective(s, t, passengers),
         );
@@ -2278,7 +2275,7 @@ function chooseMilitary(s: Game): Command {
           ? invasionCoasts(s).filter((w) =>
               neighbors(w).some(
                 (l) =>
-                  s.tiles[l]?.resource !== "water" &&
+                  canOccupy(s.tiles[l]) &&
                   s.tiles[l] &&
                   !hostileAt(s, l) &&
                   hasLandObjective(s, l, passengers) &&
@@ -2345,7 +2342,7 @@ function chooseMilitary(s: Game): Command {
               (r.owner === crisis.leader && crisis.severity >= 0.2
                 ? s.edges[r.edge].tiles
                 : Object.keys(r.camps)
-              ).filter((id) => s.tiles[id].resource !== "water"),
+              ).filter((id) => canOccupy(s.tiles[id])),
             ),
           ...[
             ...new Set(
@@ -2381,7 +2378,7 @@ function chooseMilitary(s: Game): Command {
           return neighbors(water).filter(
             (shore) =>
               s.tiles[shore] &&
-              s.tiles[shore].resource !== "water" &&
+              canOccupy(s.tiles[shore]) &&
               !hostileAt(s, shore) &&
               bombardmentPower(
                 s,
@@ -2398,9 +2395,7 @@ function chooseMilitary(s: Game): Command {
         ...new Set([
           ...objectives,
           ...[...denial.keys()].filter(
-            (tile) =>
-              (!naval || blockade) &&
-              (s.tiles[tile].resource === "water") === naval,
+            (tile) => (!naval || blockade) && canOccupy(s.tiles[tile], naval),
           ),
         ]),
       ].filter((target) => {
@@ -2497,10 +2492,7 @@ function chooseMilitary(s: Game): Command {
           )
           .flatMap((u) =>
             neighbors(u.tile).filter(
-              (l) =>
-                s.tiles[l] &&
-                s.tiles[l].resource !== "water" &&
-                !hostileAt(s, l),
+              (l) => s.tiles[l] && canOccupy(s.tiles[l]) && !hostileAt(s, l),
             ),
           );
         const passage = pickup
@@ -2523,7 +2515,7 @@ function chooseMilitary(s: Game): Command {
           const frontier = Object.values(s.tiles)
             .filter(
               (tile) =>
-                tile.resource !== "water" &&
+                canOccupy(tile) &&
                 tile.id !== origin &&
                 tile.vertices.some((v) => unknownAtVertex(s, v).length) &&
                 !hostileAt(s, tile.id),

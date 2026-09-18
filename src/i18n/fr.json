@@ -1713,5 +1713,22 @@
   "Adds {0} processed goods per harvested resource type.": "Ajoute {0} produits transformés par type de ressource récoltée.",
   "Range {0}": "Portée {0}",
   "+{0} processed": "+{0} transformés",
-  "Each matching tile adds {0} processed goods per resource type, in addition to raw output and workshops.": "Chaque tuile activée ajoute {0} produits transformés par type de ressource, en plus des ressources brutes et des ateliers."
+  "Each matching tile adds {0} processed goods per resource type, in addition to raw output and workshops.": "Chaque tuile activée ajoute {0} produits transformés par type de ressource, en plus des ressources brutes et des ateliers.",
+  "Oceanic": "Océanique",
+  "Alpine": "Alpin",
+  "Subtropical": "Subtropical",
+  "Savanna": "Savane",
+  "Coastal pasture": "Pâturage côtier",
+  "Coastal cliffs": "Falaises côtières",
+  "Mountain quarry": "Carrière de montagne",
+  "Alpine pasture": "Pâturage alpin",
+  "Bare Peaks": "Pics rocheux",
+  "Alluvial clay banks": "Berges argileuses",
+  "River woods": "Bois riverains",
+  "Wildlife grassland": "Prairie à gibier",
+  "Dry woodland": "Bois secs",
+  "Choose an adjacent walkable land hex. Bare Peaks are impassable.": "Choisissez une terre praticable adjacente. Les Pics rocheux sont infranchissables.",
+  "Impassable. No units can enter. Roads may follow the edges.": "Infranchissable. Aucune unité ne peut y entrer. Les routes peuvent suivre les arêtes.",
+  "Settlements need adjacent walkable solid land.": "Les colonies exigent une terre ferme praticable adjacente.",
+  "Impassable": "Infranchissable"
 }

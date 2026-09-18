@@ -3,6 +3,7 @@ import {
   CLIMATE_INFO,
   BIOME_INFO,
   compatibleClimate,
+  climateTransitionWeight,
   type Climate,
   type Biome,
 } from "./climate-content";
@@ -30,19 +31,7 @@ export function chooseClimateTransition(
   roll: number,
 ): Climate {
   if (!choices.length) return from;
-  const weight = (to: Climate) => {
-    if ((from === "temperate" || from === "steppe") && to === "cold")
-      return 1.5;
-    if (from === "mediterranean" && (to === "desert" || to === "steppe"))
-      return 0.5;
-    if (
-      (from === "tropical" && to === "desert") ||
-      (from === "desert" && to === "tropical") ||
-      (from === "cold" && to === "arctic")
-    )
-      return 2;
-    return 1;
-  };
+  const weight = (to: Climate) => climateTransitionWeight(from, to);
   let remaining = roll * choices.reduce((sum, to) => sum + weight(to), 0);
   for (const candidate of choices) {
     remaining -= weight(candidate);

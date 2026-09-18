@@ -8,6 +8,10 @@ export const CLIMATES = [
   "mediterranean",
   "tropical",
   "desert",
+  "oceanic",
+  "alpine",
+  "subtropical",
+  "savanna",
 ] as const;
 export type Climate = (typeof CLIMATES)[number];
 export const BIOMES = [
@@ -42,9 +46,19 @@ export const BIOMES = [
   "cod",
   "whale",
   "ice",
+  "coastal-pasture",
+  "coastal-cliffs",
+  "mountain-quarry",
+  "alpine-pasture",
+  "bare-peaks",
+  "alluvial-clay",
+  "river-woods",
+  "wildlife-grassland",
+  "dry-woodland",
 ] as const;
 export type Biome = (typeof BIOMES)[number];
-export type TerrainResource = Raw | "water" | "snow" | "desert" | "ice";
+export type TerrainResource =
+  Raw | "water" | "snow" | "desert" | "ice" | "peaks";
 export interface BiomeInfo {
   name: string;
   resource: TerrainResource;
@@ -198,6 +212,71 @@ export const BIOME_INFO: Record<Biome, BiomeInfo> = {
     "#287f9c",
   ),
   ice: b("Frozen sea", "ice", {}, "flat", "ice", "#aed7dc"),
+  "coastal-pasture": b(
+    "Coastal pasture",
+    "wool",
+    { wool: 2 },
+    "flat",
+    "oceanic-pasture",
+    "#78a069",
+  ),
+  "coastal-cliffs": b(
+    "Coastal cliffs",
+    "stone",
+    { stone: 1 },
+    "rugged",
+    "oceanic-stone",
+    "#879b99",
+  ),
+  "mountain-quarry": b(
+    "Mountain quarry",
+    "stone",
+    { stone: 2 },
+    "rugged",
+    "alpine-stone",
+    "#979c9e",
+  ),
+  "alpine-pasture": b(
+    "Alpine pasture",
+    "wool",
+    { wool: 1 },
+    "rugged",
+    "alpine-pasture",
+    "#8e9a79",
+  ),
+  "bare-peaks": b("Bare Peaks", "peaks", {}, "rugged", "bare-peaks", "#929ca8"),
+  "alluvial-clay": b(
+    "Alluvial clay banks",
+    "brick",
+    { brick: 2 },
+    "flat",
+    "subtropical-clay",
+    "#a8765a",
+  ),
+  "river-woods": b(
+    "River woods",
+    "lumber",
+    { lumber: 1 },
+    "forest",
+    "river-woods",
+    "#548e69",
+  ),
+  "wildlife-grassland": b(
+    "Wildlife grassland",
+    "hides",
+    { hides: 2 },
+    "flat",
+    "wildlife-grassland",
+    "#bca35d",
+  ),
+  "dry-woodland": b(
+    "Dry woodland",
+    "lumber",
+    { lumber: 1 },
+    "forest",
+    "dry-woodland",
+    "#8c9253",
+  ),
 };
 export interface ClimateInfo {
   name: string;
@@ -227,7 +306,15 @@ export const CLIMATE_INFO: Record<Climate, ClimateInfo> = {
       ["fish", 0.15],
       ["whale", 0.05],
     ],
-    compatible: ["steppe", "mediterranean", "cold", "tropical"],
+    compatible: [
+      "steppe",
+      "mediterranean",
+      "cold",
+      "tropical",
+      "oceanic",
+      "alpine",
+      "subtropical",
+    ],
   },
   cold: {
     name: "Cold",
@@ -249,7 +336,7 @@ export const CLIMATE_INFO: Record<Climate, ClimateInfo> = {
       ["cod", 0.1],
       ["whale", 0.1],
     ],
-    compatible: ["temperate", "steppe", "arctic"],
+    compatible: ["temperate", "steppe", "arctic", "oceanic", "alpine"],
   },
   arctic: {
     name: "Arctic",
@@ -268,7 +355,7 @@ export const CLIMATE_INFO: Record<Climate, ClimateInfo> = {
       ["cod", 0.2],
       ["whale", 0.2],
     ],
-    compatible: ["cold"],
+    compatible: ["cold", "alpine"],
   },
   steppe: {
     name: "Steppe",
@@ -289,7 +376,14 @@ export const CLIMATE_INFO: Record<Climate, ClimateInfo> = {
       ["fish", 0.15],
       ["whale", 0.05],
     ],
-    compatible: ["cold", "temperate", "mediterranean", "desert"],
+    compatible: [
+      "cold",
+      "temperate",
+      "mediterranean",
+      "desert",
+      "alpine",
+      "savanna",
+    ],
   },
   mediterranean: {
     name: "Mediterranean",
@@ -310,7 +404,7 @@ export const CLIMATE_INFO: Record<Climate, ClimateInfo> = {
       ["fish", 0.15],
       ["whale", 0.05],
     ],
-    compatible: ["temperate", "steppe", "desert"],
+    compatible: ["temperate", "steppe", "desert", "oceanic", "subtropical"],
   },
   tropical: {
     name: "Tropical",
@@ -331,7 +425,7 @@ export const CLIMATE_INFO: Record<Climate, ClimateInfo> = {
       ["fish", 0.1],
       ["whale", 0.05],
     ],
-    compatible: ["temperate", "desert"],
+    compatible: ["temperate", "desert", "subtropical", "savanna"],
   },
   desert: {
     name: "Desert",
@@ -350,9 +444,118 @@ export const CLIMATE_INFO: Record<Climate, ClimateInfo> = {
       ["fish", 0.08],
       ["whale", 0.03],
     ],
-    compatible: ["tropical", "mediterranean", "steppe"],
+    compatible: ["tropical", "mediterranean", "steppe", "savanna"],
+  },
+  oceanic: {
+    name: "Oceanic",
+    color: "#438caa",
+    land: 0.35,
+    terrain: [
+      ["coastal-pasture", 25],
+      ["woods", 20],
+      ["rough-fields", 10],
+      ["golden-fields", 5],
+      ["clay", 10],
+      ["coastal-cliffs", 15],
+      ["coal", 8],
+      ["iron", 5],
+      ["gold", 2],
+    ],
+    water: [
+      ["fish", 0.2],
+      ["cod", 0.1],
+      ["whale", 0.1],
+    ],
+    compatible: ["temperate", "cold", "mediterranean"],
+  },
+  alpine: {
+    name: "Alpine",
+    color: "#8985ac",
+    land: 0.75,
+    terrain: [
+      ["mountain-quarry", 20],
+      ["iron", 15],
+      ["coal", 10],
+      ["alpine-pasture", 15],
+      ["rough-fields", 10],
+      ["forest", 10],
+      ["gold", 5],
+      ["clay", 5],
+      ["bare-peaks", 10],
+    ],
+    water: [
+      ["fish", 0.1],
+      ["cod", 0.1],
+      ["whale", 0.03],
+    ],
+    compatible: ["cold", "arctic", "temperate", "steppe"],
+  },
+  subtropical: {
+    name: "Subtropical",
+    color: "#3cae85",
+    land: 0.55,
+    terrain: [
+      ["alluvial-clay", 25],
+      ["rice-field", 20],
+      ["river-woods", 20],
+      ["jungle", 10],
+      ["stone", 10],
+      ["coal", 5],
+      ["iron", 5],
+      ["salt-flats", 3],
+      ["gold", 2],
+    ],
+    water: [
+      ["fish", 0.15],
+      ["whale", 0.03],
+    ],
+    compatible: ["tropical", "temperate", "mediterranean", "savanna"],
+  },
+  savanna: {
+    name: "Savanna",
+    color: "#d18e4d",
+    land: 0.7,
+    terrain: [
+      ["wildlife-grassland", 35],
+      ["rough-fields", 20],
+      ["dry-woodland", 10],
+      ["rough-pasture", 10],
+      ["iron", 10],
+      ["clay", 5],
+      ["stone", 5],
+      ["gold", 3],
+      ["salt-flats", 2],
+    ],
+    water: [
+      ["fish", 0.1],
+      ["whale", 0.03],
+    ],
+    compatible: ["tropical", "desert", "steppe", "subtropical"],
   },
 };
+
+const NEW_CLIMATES: Climate[] = ["oceanic", "alpine", "subtropical", "savanna"];
+const TRANSITION_WEIGHTS: Partial<
+  Record<Climate, Partial<Record<Climate, number>>>
+> = {
+  temperate: { cold: 1.5 },
+  steppe: { cold: 1.5 },
+  mediterranean: { desert: 0.5, steppe: 0.5 },
+  tropical: { desert: 2 },
+  desert: { tropical: 2 },
+  cold: { arctic: 2 },
+  oceanic: { temperate: 2 },
+  alpine: { cold: 2, arctic: 2 },
+  subtropical: { tropical: 2 },
+  savanna: { tropical: 2 },
+};
+/** Relative destination weights, after checking immediate-neighbor compatibility. */
+export function climateTransitionWeight(from: Climate, to: Climate): number {
+  return (
+    TRANSITION_WEIGHTS[from]?.[to] ??
+    (!NEW_CLIMATES.includes(from) && NEW_CLIMATES.includes(to) ? 0.5 : 1)
+  );
+}
 export function compatibleClimate(a: Climate, b: Climate) {
   return (
     a === b ||

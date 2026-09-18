@@ -3,6 +3,7 @@ import {
   CLIMATES,
   CLIMATE_INFO,
   waterProbabilities,
+  climateTransitionWeight,
   type Climate,
 } from "./climate-content";
 import { RAW, RAW_SUBSTITUTES, type Game, type Stock, type Raw } from "./types";
@@ -81,13 +82,21 @@ export function expeditionProspects(s: Game, income: Stock) {
         adjacent.reduce((sum, id) => {
           const climate = s.tiles[id].climate ?? "temperate";
           const next = CLIMATE_INFO[climate].compatible;
+          const totalWeight = next.reduce(
+            (total, c) => total + climateTransitionWeight(climate, c),
+            0,
+          );
           // Nearby climate is the strongest clue. Compatible transitions add a
           // modest long-term diversity value, never certainty of finding a good.
           return (
             sum +
             scores.get(climate)! * 0.8 +
-            (next.reduce((value, c) => value + scores.get(c)!, 0) /
-              Math.max(1, next.length)) *
+            (next.reduce(
+              (value, c) =>
+                value + scores.get(c)! * climateTransitionWeight(climate, c),
+              0,
+            ) /
+              Math.max(1, totalWeight)) *
               0.2
           );
         }, 0) / Math.max(1, adjacent.length)

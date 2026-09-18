@@ -1,0 +1,77 @@
+{
+  "tool": "Built-in image_gen",
+  "date": "2026-09-18",
+  "useCase": "stylized-concept",
+  "derivatives": "Equal 418px atlas cells, resampled to 512px WebP at quality 88. No creative postprocessing.",
+  "referenceStyle": [
+    "public/assets/terrain-cold-stone-v1.webp",
+    "public/assets/terrain-forest-v1.webp"
+  ],
+  "atlases": [
+    {
+      "climate": "oceanic",
+      "prompt": "Use case: stylized-concept. Asset type: a production terrain texture atlas for the board game Catan Frontiers. Create ONE SQUARE image, preferably 3072 by 3072, arranged as exactly 3 columns by 3 rows of equal square illustrations, edge-to-edge, with perfectly straight cell boundaries, no gutters or borders. Each cell will be extracted as its own terrain texture and clipped to a hexagon; every important detail must be inside the central 65 percent of its cell. Input references are STYLE REFERENCES ONLY: match their detailed hand-painted miniature/isometric game terrain, 60 degree overhead view, realistic material texture, crisp small-scale silhouettes, full-bleed terrain, no sky, no horizon, no typography, no UI, no hex outlines, no labels, no people. Climate is OCEANIC: lush windswept green maritime countryside, grey stone and cool soft daylight, believable resources, moderately saturated, rich and immersive. Exactly these nine distinct panels in reading order: TOP LEFT: coastal sheep pasture, rich emerald turf with clearly visible cream sheep concentrated centrally and subtle grey boulders. TOP MIDDLE: windswept mixed deciduous woods with scattered pines, green leafy canopy, a central small stack of brown logs and deer hints, a lighter mixed forest rather than pure conifers. TOP RIGHT: rough cereal fields, sparse brown-gold planted strips among stony green grass. MIDDLE LEFT: lush golden grain fields, dense ripe wheat in curved harvesting rows, a few sheaves centrally, green hedges. MIDDLE CENTER: damp muted reddish-brown clay hills, broad exposed clay-cut terraces centrally framed by green grasses. MIDDLE RIGHT: grey coastal stone cliffs and a working stone quarry with central cut blocks, a little moss and a small timber crane, only a tiny sliver of sea in one corner. BOTTOM LEFT: oceanic coal seam, clearly visible near-black exposed coal face and timber mine entrance centrally, green grass and grey rocks surrounding. BOTTOM MIDDLE: oceanic iron mine, blue-grey mineral rock face with distinct rust-red iron veins, central timber mine entrance, green grass. BOTTOM RIGHT: oceanic gold mine, large visible warm golden ore veins in grey stone at center, small timber mine entrance and green grass. Ensure each cell is independent and does not merge visually into another cell. Keep essential identifiers centrally so hex cropping never removes them. Output only the atlas image.",
+      "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-6f409a16-9ef8-451b-8325-18eedae81d96.png",
+      "cells": [
+        "oceanic-pasture",
+        "oceanic-woods",
+        "oceanic-rough-fields",
+        "oceanic-grain",
+        "oceanic-clay",
+        "oceanic-stone",
+        "oceanic-coal",
+        "oceanic-iron",
+        "oceanic-gold"
+      ]
+    },
+    {
+      "climate": "alpine",
+      "prompt": "Use case: stylized-concept. Asset type: a production terrain texture atlas for Catan Frontiers. ONE SQUARE image preferably 3072x3072, exactly 3 columns by 3 rows of equal square artwork cells, no gutters, no borders, no text. Style references show the required detailed hand-painted isometric miniature terrain, 60 degree overhead camera, full-bleed ground, no sky or horizon. Each square will be extracted and cropped into a hexagon; its main identifying subject must fill the central 65 percent. ALPINE climate: spectacular rugged grey mountains, dark emerald pines, grassy terraces and stony soil, cool clear daylight. Use realistic colors and detailed material texture, bold legible silhouettes at small game size. Nine cells in reading order: TOP LEFT: exceptionally rich mountain stone quarry, enormous grey stepped rock faces, many central stacks of neatly cut pale stone blocks and a timber crane, very little vegetation. TOP MIDDLE: Alpine iron mountain mine, central timber mine entrance in steep grey rock with orange-red iron seams, scree and a few small pines. TOP RIGHT: Alpine coal mine, near-black shiny coal face and central timber entrance, grey craggy mountainous backdrop and sparse pines. MIDDLE LEFT: Alpine pasture, central small flock of cream sheep on narrow lush green stony terraces between grey crags, visually rugged. MIDDLE CENTER: poor mountain grain fields, small sparse gold-brown cereal plots on grassy grey stony terraces with boulders. MIDDLE RIGHT: dense dark-green mountain pine forest, thick rich tree coverage, central timber log pile among trees, grey boulders, no snow on trees. BOTTOM LEFT: Alpine gold mountain mine, clearly visible bright golden veins through grey rock centrally, timber entrance and exposed rugged terrain, little vegetation. BOTTOM CENTER: Alpine clay hills, muted brown clay cut centrally, broken grey rocks and sparse grassy slopes, not bright orange. BOTTOM RIGHT: BARE PEAKS, a striking dense mass of steep sharp jagged grey stone spires and cliffs, central towering serrated summit, touches of old white snow in inaccessible crevices, absolutely no roads, mine, path, people, buildings, animals or visible resources; immediately reads as impassable mountain terrain. Avoid decorative frames, hexagon outlines, numbers or letters. Keep all nine cells independent and aligned to an exact square grid.",
+      "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-22c90d6f-7385-4e63-b65c-494263ce9f15.png",
+      "cells": [
+        "alpine-stone",
+        "alpine-iron",
+        "alpine-coal",
+        "alpine-pasture",
+        "alpine-rough-fields",
+        "alpine-forest",
+        "alpine-gold",
+        "alpine-clay",
+        "bare-peaks"
+      ]
+    },
+    {
+      "climate": "subtropical",
+      "source": "/home/alvinh/.codex/generated_images/01a0b50f-f303-7d33-bfca-f3aa61ed9b06/exec-85be44b1-cfbe-48e6-9faf-7fec9ed16a71.png",
+      "prompt": "Use case: stylized-concept. Asset type: one seamless 3x3 sprite atlas for nine square terrain illustrations in an existing richly painted hex board strategy game. Generate a NEW atlas, not an interface or whole map. Square overall image, three exactly equal columns and three exactly equal rows. Each panel is a separate full-bleed square landscape with no gutters or drawn separators. Rich detailed painterly miniature landscape style, realistic natural materials, 60-degree downward overhead view, no visible sky or horizon. Warm humid SUBTROPICAL region with lush broadleaf greenery, rich damp reddish earth, subtle palms, muted warm daylight. Each tile will be center-cropped to a pointed hexagon, so main resource subjects must be strongly recognizable within central 65% and composition must fill all edges. Style: premium illustrated board-game landscapes with fine crisp brushwork, readable resource colors, consistent scale, artisanal medieval extraction tools, NO people, labels, text, UI, hex outlines, frames, roads crossing panels, modern machinery.\nEXACT ROW-MAJOR PANEL ORDER:\nTop left: broad FLAT alluvial clay banks, terraced reddish-brown wet clay and shallow muddy channels, piles of red clay centrally, humid grasses and broadleaf shrubs surrounding; clearly a flat productive clay floodplain, not rocky mountains.\nTop middle: dense river woods with rich layered green broadleaf canopies, central small clearing with recognizable neatly stacked cut brown timber and fresh stumps, narrow muddy stream, subtle palms.\nTop right: stone quarry in lush subtropical terrain, large central pale grey squared stone ledges and stacked cut blocks with small wooden lifting tripod, thick green foliage on the edges.\nMiddle left: coal mine, black coal seam and open timber supported adit in rocky dark outcrop, small cart loaded with black coal in center, broadleaf tropical greenery.\nMiddle middle: iron mine, visibly rust-red and blue-grey mineral outcrop with central timber supported adit and cart full of reddish iron ore, humid green foliage.\nMiddle right: salt flats, bright off-white salt crystals and shallow pale blue evaporation pools divided by muddy earthen low walls, large central mounds of sparkling white salt, warm green grasses and a few modest palms within center region so distinguishable after hex crop.\nBottom left: gold mine, grey outcrop with unmistakable gold-yellow veins and exposed golden nuggets, central timber supported mine entrance and cart of gold ore, humid broadleaf foliage.\nBottom middle: optional unused rice paddy study with flooded jade green rice terraces and straw bundles.\nBottom right: optional unused subtropical jungle study with very dense broadleaf canopy, animals barely visible.\nAll nine square panels must be aligned exactly to thirds. Do not blend neighboring subjects across panel boundaries. Deliver high-resolution square atlas.",
+      "cells": [
+        "subtropical-clay",
+        "river-woods",
+        "subtropical-stone",
+        "subtropical-coal",
+        "subtropical-iron",
+        "subtropical-salt",
+        "subtropical-gold",
+        null,
+        null
+      ],
+      "notes": "Bottom middle and bottom right studies unused; existing rice-field and jungle assets remain unchanged."
+    },
+    {
+      "climate": "savanna",
+      "source": "/home/alvinh/.codex/generated_images/01a0b50f-f303-7d33-bfca-f3aa61ed9b06/exec-db6680d8-e045-4394-9ef6-5db1a238b75e.png",
+      "prompt": "Use case: stylized-concept. Asset type: one 3x3 sprite atlas for nine square terrain illustrations in a richly painted hex board strategy game. Generate a NEW high-resolution square atlas: three exactly equal columns and three exactly equal rows, nine independent full-bleed square landscape panels, no gutters or drawn separators. Each tile will be center-cropped into a pointed hexagon, so resource subjects must be strongly recognizable within central 65%. Rich detailed painterly miniature landscape, realistic natural materials, elevated 60-degree downward overhead camera, no sky or horizon, warm daylight. Cohesive SAVANNA climate with ochre grasses, dusty red earth, scattered flat-topped acacias and warm grey rock. Fine crisp brushwork and readable resource colors. Premium board-game artwork, vivid natural textures with restrained lighting. Keep small medieval mining/extraction structures where specified. NO people, text, labels, UI, hex outlines, borders, modern machines. Different panels must not blend together.\nEXACT ROW-MAJOR PANEL ORDER:\nTop left: WILDLIFE GRASSLAND, open golden grass with central visible herds of antelope, zebra and wildebeest, several readable animals spanning central region, a few widely spaced acacias at edges, red bare patches of soil. Mostly flat open grass, not forest, no animal skins or corpses.\nTop middle: rough poor grain fields, dry modest strips of golden wheat separated by ochre rocky dry soil, thin grain compared with rich fields, scattered scrub and red earth.\nTop right: dry acacia woodland, dense enough canopy of mature acacias to be clearly forest, warm green leaves and rough trunks, central stack of freshly cut timber with visible circular cut ends and tree stumps, dry ochre grass undergrowth.\nMiddle left: rough rocky pasture, clearly visible central flock of creamy wool sheep among warm grey stones and dry yellow grass, scattered thorn shrubs, rocky upland.\nMiddle middle: iron mine, angular warm grey rocks with prominent rust-red iron ore veins, timber supported central mine entrance and cart full of red ore, dry grass and acacias around.\nMiddle right: clay hills, reddish dry clay extraction terraces with recognizably orange-red earthen cut faces and loose clay chunks, ochre grass and sparse acacias, no stone quarry blocks.\nBottom left: stone quarry, pale warm grey cut stone ledges, central cuboid blocks and small wooden lifting tripod, dusty reddish earth and dry golden grass surrounding.\nBottom middle: gold mine, warm grey rocky outcrop with unmistakable yellow gold veins and exposed nuggets, timber supported central adit with a cart of bright gold ore, dry red soil and yellow grass.\nBottom right: salt flats, broad bright pale salt crust and shallow pale turquoise evaporation pools, large central mound of white salt and wooden baskets, surrounding dry red soil, very sparse scrub.\nSubjects should be centered and fill their tiles clearly. Exact equal thirds grid. No snow or lush wet rainforest. Deliver the complete square atlas.",
+      "cells": [
+        "wildlife-grassland",
+        "savanna-rough-fields",
+        "dry-woodland",
+        "savanna-pasture",
+        "savanna-iron",
+        "savanna-clay",
+        "savanna-stone",
+        "savanna-gold",
+        "savanna-salt"
+      ]
+    }
+  ]
+}

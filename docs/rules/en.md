@@ -12,7 +12,7 @@ Choose Classic (5 factions, 125 tiles) or Grand campaign (10 factions, 250 tiles
 - In player order, each faction places one settlement and one adjoining road or sea route.
 - Repeat in reverse player order. Each faction now has two settlements and two route pieces.
 - The second settlement receives the full printed yield of every adjacent productive tile. For example, Golden fields give 2 Grain and a Whale tile gives 1 Hides plus 1 Oil. Woods initially give Wood. Start with no troops or processed goods.
-Each settlement must touch at least one land tile. At least one empty intersection must separate any two settlements, regardless of owner.
+Each settlement must touch at least one walkable solid land tile. Bare Peaks and Frozen sea do not qualify. At least one empty intersection must separate any two settlements, regardless of owner.
 ### Turn sequence
 - Production: roll two independent six-sided dice. All factions collect production from tiles whose number matches the total. Seven produces normally. There is no robber, discard or stock limit.
 - Actions: build, trade, recruit, move, fight, raid, explore, buy research and play cards in any order. Raided goods are immediately available to spend.
@@ -27,16 +27,17 @@ Goods are stored in individual towns but spent from a common pool. Armies can ra
 ## Map and dice
 
 ### Climate generation
-The initial map contains 125 tiles in Classic or 250 in Grand campaign. Climate is assigned before terrain. Pick a random starting tile and one of seven climates with equal probability. Grow outward through neighbors. If all assigned immediate neighbors agree, retain that climate with 85% probability. On a switch, intersect the compatible climates of assigned immediate neighbors only. When choosing a destination from Temperate or Steppe, Cold has weight 1.5 and other eligible climates have weight 1. From Mediterranean, Steppe and Desert have weight 0.5 each; Temperate has weight 1. Tropical to Desert, Desert to Tropical and Cold to Arctic have weight 2. Other destinations have weight 1. Eligible weights are normalized for each draw. The 85% continuity chance is unchanged. At mixed borders, prefer an existing adjacent compatible climate. If no candidate exists, copy an immediate neighbor.
+The initial map contains 125 tiles in Classic or 250 in Grand campaign. Climate is assigned before terrain. Pick a random starting tile and one of eleven climates with equal probability. Grow outward through neighbors. If all assigned immediate neighbors agree, retain that climate with 85% probability. On a switch, intersect the compatible climates of assigned immediate neighbors only. Destination weights start at 1. From the seven original climates, newly compatible Oceanic, Alpine, Subtropical and Savanna destinations have weight 0.5. Temperate and Steppe favor Cold at 1.5. Mediterranean gives Steppe and Desert weight 0.5. Tropical to Desert, Desert to Tropical and Cold to Arctic have weight 2. Oceanic favors Temperate at 2; Alpine favors Cold and Arctic at 2 each; Subtropical and Savanna favor Tropical at 2. Eligible weights are normalized for each draw. The 85% continuity chance is unchanged. At mixed borders, prefer an existing adjacent compatible climate. If no candidate exists, copy an immediate neighbor.
 Before rolling terrain, a final repair pass leaves intermediate compatible climates as buffer zones where needed. Adjacent climates are always compatible. Climate reservations include an unseen collar, so future expeditions cannot create incompatible seams. Revealed terrain never changes. The same seed and discovery sequence reproduce the same world. Different expedition sequences may extend climate zones differently.
 Choose land or water using that climate’s ratio, then use its terrain table below. Land percentages are conditional on rolling land. Water checks run in the listed order on remaining water only; the first success ends the sequence. Water tiles with no adjacent land double their climate’s Whale check chance. Fish, Cod and Frozen sea checks stay unchanged and run first. Frozen sea does not count as land. Hidden neighbors use their reserved climates and land rolls; the map edge alone does not qualify as open water. Gold frequency varies by climate. No resource, climate, port, continent or balanced start is guaranteed.
-Temperate, Tropical and Desert use 50% land. Cold uses 55%, Steppe 65%, Arctic and Mediterranean 40%. Steppe and Desert are mutually compatible, as are all other listed borders. Oasis food means Grain.
+Temperate, Tropical and Desert use 50% land. Cold and Subtropical use 55%, Steppe 65%, Arctic and Mediterranean 40%, Oceanic 35%, Alpine 75% and Savanna 70%. Steppe and Desert are mutually compatible, as are all other listed borders. Oasis food means Grain.
 ### Climate overview
 Use the Climates button beside the map zoom controls to show only climate colors. The legend counts revealed tiles in each climate. Pan, zoom and select tiles as usual; press Climates again to restore the normal map.
-### Barren terrain and ice
+### Barren terrain, peaks and ice
 Snow plains and Desert produce nothing and have no workshop or camp. Armies can cross them and build normally beside them. Frozen sea is generated by the Arctic water roll. It produces nothing, admits land units and blocks ships. Permanent towns, towers and roads require adjacent solid ground; no route can be built on an edge bordered only by ice. An ice-water edge without land can hold a sea route. Frozen sea never melts.
+Bare Peaks produce nothing and are impassable to every unit. Units cannot move through them, recruit onto them, retreat onto them or disembark onto them. Roads may follow their edges under the normal connection rules, including an edge between two peaks. Towns and watchtowers need at least one adjacent walkable solid land tile. No camp or workshop can use Bare Peaks.
 ### Existing campaigns
-Old revealed tiles keep their original terrain and yields. They are classified Temperate for future climate borders. Newly explored tiles use the climate system. Start a new campaign to use the new terrain tables throughout the map.
+Revealed tiles retain their terrain, yields and assigned climate. Saves made before climates existed classify those older tiles as Temperate for future climate borders. Newly explored tiles can use all eleven climates. Start a new campaign to use the new terrain tables throughout the map.
 ### Tile numbers and dice
 Every productive tile receives a uniform random number from 2 through 12, including 7. Dice are two independent d6, so tile numbers are equally common in generation but not equally likely to activate. Dice, terrain, research and rebellion randomness are saved separately. Reloading does not reroll an offer or the map. Hidden coordinates cannot be inspected by players or AI.
 ### Ports
@@ -214,9 +215,11 @@ Use Show climates in the map controls to color climate regions. Tile inspection 
 
 ## Climate tables
 
-### Temperate: 50% land
+### Temperate: 50% land / 50% water
 
-Compatible : Steppe, Mediterranean, Cold, Tropical
+Compatible : Steppe, Mediterranean, Cold, Tropical, Oceanic, Alpine, Subtropical
+
+Transition weights : Steppe ×1, Mediterranean ×1, Cold ×1.5, Tropical ×1, Oceanic ×0.5, Alpine ×0.5, Subtropical ×0.5
 
 | Land terrain | Conditional chance |
 
@@ -252,9 +255,11 @@ Compatible : Steppe, Mediterranean, Cold, Tropical
 
 Open water (no adjacent land): Whale check 10%; effective share 8.5%. Table above: coastal water.
 
-### Cold: 55% land
+### Cold: 55% land / 45% water
 
-Compatible : Temperate, Steppe, Arctic
+Compatible : Temperate, Steppe, Arctic, Oceanic, Alpine
+
+Transition weights : Temperate ×1, Steppe ×1, Arctic ×2, Oceanic ×0.5, Alpine ×0.5
 
 | Land terrain | Conditional chance |
 
@@ -292,9 +297,11 @@ Compatible : Temperate, Steppe, Arctic
 
 Open water (no adjacent land): Whale check 20%; effective share 14.4%. Table above: coastal water.
 
-### Arctic: 40% land
+### Arctic: 40% land / 60% water
 
-Compatible : Cold
+Compatible : Cold, Alpine
+
+Transition weights : Cold ×1, Alpine ×0.5
 
 | Land terrain | Conditional chance |
 
@@ -326,9 +333,11 @@ Compatible : Cold
 
 Open water (no adjacent land): Whale check 40%; effective share 17.92%. Table above: coastal water.
 
-### Steppe: 65% land
+### Steppe: 65% land / 35% water
 
-Compatible : Cold, Temperate, Mediterranean, Desert
+Compatible : Cold, Temperate, Mediterranean, Desert, Alpine, Savanna
+
+Transition weights : Cold ×1.5, Temperate ×1, Mediterranean ×1, Desert ×1, Alpine ×0.5, Savanna ×0.5
 
 | Land terrain | Conditional chance |
 
@@ -364,9 +373,11 @@ Compatible : Cold, Temperate, Mediterranean, Desert
 
 Open water (no adjacent land): Whale check 10%; effective share 8.5%. Table above: coastal water.
 
-### Mediterranean: 40% land
+### Mediterranean: 40% land / 60% water
 
-Compatible : Temperate, Steppe, Desert
+Compatible : Temperate, Steppe, Desert, Oceanic, Subtropical
+
+Transition weights : Temperate ×1, Steppe ×0.5, Desert ×0.5, Oceanic ×0.5, Subtropical ×0.5
 
 | Land terrain | Conditional chance |
 
@@ -402,9 +413,11 @@ Compatible : Temperate, Steppe, Desert
 
 Open water (no adjacent land): Whale check 10%; effective share 8.5%. Table above: coastal water.
 
-### Tropical: 50% land
+### Tropical: 50% land / 50% water
 
-Compatible : Temperate, Desert
+Compatible : Temperate, Desert, Subtropical, Savanna
+
+Transition weights : Temperate ×1, Desert ×2, Subtropical ×0.5, Savanna ×0.5
 
 | Land terrain | Conditional chance |
 
@@ -440,9 +453,11 @@ Compatible : Temperate, Desert
 
 Open water (no adjacent land): Whale check 10%; effective share 9%. Table above: coastal water.
 
-### Desert: 50% land
+### Desert: 50% land / 50% water
 
-Compatible : Tropical, Mediterranean, Steppe
+Compatible : Tropical, Mediterranean, Steppe, Savanna
+
+Transition weights : Tropical ×2, Mediterranean ×1, Steppe ×1, Savanna ×0.5
 
 | Land terrain | Conditional chance |
 
@@ -473,6 +488,170 @@ Compatible : Tropical, Mediterranean, Steppe
 | Water |  | 89.24% |
 
 Open water (no adjacent land): Whale check 6%; effective share 5.52%. Table above: coastal water.
+
+### Oceanic: 35% land / 65% water
+
+Compatible : Temperate, Cold, Mediterranean
+
+Transition weights : Temperate ×2, Cold ×1, Mediterranean ×1
+
+| Land terrain | Conditional chance |
+
+|---|---|
+
+| Coastal pasture | 25% |
+
+| Woods | 20% |
+
+| Rough fields | 10% |
+
+| Golden fields | 5% |
+
+| Clay hills | 10% |
+
+| Coastal cliffs | 15% |
+
+| Coal hills | 8% |
+
+| Iron mountains | 5% |
+
+| Gold mountains | 2% |
+
+| Water terrain | Sequential check | Effective water share |
+
+|---|---|---|
+
+| Fishing grounds | 20% | 20% |
+
+| Cod grounds | 10% | 8% |
+
+| Whale grounds | 10% | 7.2% |
+
+| Water |  | 64.8% |
+
+Open water (no adjacent land): Whale check 20%; effective share 14.4%. Table above: coastal water.
+
+### Alpine: 75% land / 25% water
+
+Compatible : Cold, Arctic, Temperate, Steppe
+
+Transition weights : Cold ×2, Arctic ×2, Temperate ×1, Steppe ×1
+
+| Land terrain | Conditional chance |
+
+|---|---|
+
+| Mountain quarry | 20% |
+
+| Iron mountains | 15% |
+
+| Coal hills | 10% |
+
+| Alpine pasture | 15% |
+
+| Rough fields | 10% |
+
+| Forest | 10% |
+
+| Gold mountains | 5% |
+
+| Clay hills | 5% |
+
+| Bare Peaks | 10% |
+
+| Water terrain | Sequential check | Effective water share |
+
+|---|---|---|
+
+| Fishing grounds | 10% | 10% |
+
+| Cod grounds | 10% | 9% |
+
+| Whale grounds | 3% | 2.43% |
+
+| Water |  | 78.57% |
+
+Open water (no adjacent land): Whale check 6%; effective share 4.86%. Table above: coastal water.
+
+### Subtropical: 55% land / 45% water
+
+Compatible : Tropical, Temperate, Mediterranean, Savanna
+
+Transition weights : Tropical ×2, Temperate ×1, Mediterranean ×1, Savanna ×1
+
+| Land terrain | Conditional chance |
+
+|---|---|
+
+| Alluvial clay banks | 25% |
+
+| Rice field | 20% |
+
+| River woods | 20% |
+
+| Jungle | 10% |
+
+| Stone quarry | 10% |
+
+| Coal hills | 5% |
+
+| Iron mountains | 5% |
+
+| Salt flats | 3% |
+
+| Gold mountains | 2% |
+
+| Water terrain | Sequential check | Effective water share |
+
+|---|---|---|
+
+| Fishing grounds | 15% | 15% |
+
+| Whale grounds | 3% | 2.55% |
+
+| Water |  | 82.45% |
+
+Open water (no adjacent land): Whale check 6%; effective share 5.1%. Table above: coastal water.
+
+### Savanna: 70% land / 30% water
+
+Compatible : Tropical, Desert, Steppe, Subtropical
+
+Transition weights : Tropical ×2, Desert ×1, Steppe ×1, Subtropical ×1
+
+| Land terrain | Conditional chance |
+
+|---|---|
+
+| Wildlife grassland | 35% |
+
+| Rough fields | 20% |
+
+| Dry woodland | 10% |
+
+| Rough pasture | 10% |
+
+| Iron mountains | 10% |
+
+| Clay hills | 5% |
+
+| Stone quarry | 5% |
+
+| Gold mountains | 3% |
+
+| Salt flats | 2% |
+
+| Water terrain | Sequential check | Effective water share |
+
+|---|---|---|
+
+| Fishing grounds | 10% | 10% |
+
+| Whale grounds | 3% | 2.7% |
+
+| Water |  | 87.3% |
+
+Open water (no adjacent land): Whale check 6%; effective share 5.4%. Table above: coastal water.
 
 ## Terrain yields
 
@@ -541,6 +720,26 @@ Open water (no adjacent land): Whale check 6%; effective share 5.52%. Table abov
 | Whale grounds | 1 Hides + 1 Oil | water |
 
 | Frozen sea | 0 | flat |
+
+| Coastal pasture | 2 Wool | flat |
+
+| Coastal cliffs | 1 Stone | rugged |
+
+| Mountain quarry | 2 Stone | rugged |
+
+| Alpine pasture | 1 Wool | rugged |
+
+| Bare Peaks | 0 | rugged |
+
+| Alluvial clay banks | 2 Clay | flat |
+
+| River woods | 1 Wood | forest |
+
+| Wildlife grassland | 2 Hides | flat |
+
+| Dry woodland | 1 Wood | forest |
+
+Bare Peaks: no production and no unit entry, including recruitment, retreat or disembarkation. Roads may follow their edges; towns need adjacent walkable solid land.
 
 ## All costs
 

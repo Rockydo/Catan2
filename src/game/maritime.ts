@@ -2,7 +2,7 @@ import { BIOME_INFO } from "./climate-content";
 import { TERRAIN, processedFor, type TerrainKey } from "./content";
 import { friendly } from "./relations";
 import type { Game, Hex, Piece, Raw, Stock, Watchtower } from "./types";
-import { neighbors, vertexNeighbors } from "./world";
+import { neighbors, vertexNeighbors, solidAtVertex } from "./world";
 
 /** Per-producer output: Woods choices belong to factions, never to the shared tile owner. */
 export function tileYield(
@@ -16,7 +16,7 @@ export function tileYield(
   }
   if (tile.resource === "water")
     return tile.fish ? { fish: 1 } : tile.whale ? { hides: 1, oil: 1 } : {};
-  return ["snow", "ice", "desert"].includes(tile.resource)
+  return ["snow", "ice", "desert", "peaks"].includes(tile.resource)
     ? {}
     : { [tile.resource]: 1 };
 }
@@ -122,6 +122,7 @@ export function towerSites(s: Game, owner = s.active) {
       .map((u) => u.tile),
   );
   return Object.keys(s.vertices).filter((v) => {
+    if (!solidAtVertex(s, v).length) return false;
     const existing = s.towers[v];
     if (existing && (existing.owner !== owner || existing.tier >= 4))
       return false;

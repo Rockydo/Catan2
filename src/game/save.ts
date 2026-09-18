@@ -23,7 +23,7 @@ import {
   TRADE_RAW,
   TRADE_PROCESSED,
 } from "./guilds";
-import { neighbors, randomAt, restoreGoldPorts } from "./world";
+import { neighbors, randomAt, restoreGoldPorts, canOccupy } from "./world";
 import { shipStats } from "./content";
 import { GOODS, RAW, type Game } from "./types";
 import { hash, tileVertices, edgeKey } from "./world";
@@ -219,7 +219,7 @@ export function assertInvariants(s: Game) {
     int(t.r, -1e7, 1e7);
     rule(
       RAW.includes(t.resource as (typeof RAW)[number]) ||
-        ["water", "snow", "desert", "ice"].includes(t.resource),
+        ["water", "snow", "desert", "ice", "peaks"].includes(t.resource),
       "Invalid terrain resource.",
     );
     if (t.climate !== undefined)
@@ -624,7 +624,7 @@ export function assertInvariants(s: Game) {
       );
     } else {
       rule(
-        (s.tiles[u.tile].resource === "water") === u.naval,
+        canOccupy(s.tiles[u.tile], u.naval),
         "A unit is on impassable terrain.",
       );
       rule(

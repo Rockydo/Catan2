@@ -1,5 +1,10 @@
 import type { Game, Town, UnitClass } from "./types";
-import { hash, nextRandom, distance, landAtVertex } from "./world";
+import {
+  hash,
+  nextRandom,
+  distance,
+  walkableAtVertex as landAtVertex,
+} from "./world";
 import { settlementSites, hostileAt, unusedBonuses } from "./selectors";
 import { log } from "./economy";
 
@@ -18,7 +23,9 @@ export function frontierReturnSites(
 ): string[] {
   const land = new Set(
     revealed.filter(
-      (id) => s.tiles[id] && !["water", "ice"].includes(s.tiles[id].resource),
+      (id) =>
+        s.tiles[id] &&
+        !["water", "ice", "peaks"].includes(s.tiles[id].resource),
     ),
   );
   return settlementSites(s, owner, true).filter((v) =>
@@ -45,7 +52,9 @@ export function restoreOnFrontier(
   const built: Town[] = [];
   const land = new Set(
     revealed.filter(
-      (id) => s.tiles[id] && !["water", "ice"].includes(s.tiles[id].resource),
+      (id) =>
+        s.tiles[id] &&
+        !["water", "ice", "peaks"].includes(s.tiles[id].resource),
     ),
   );
   for (let i = 0; i < townCount; i++) {

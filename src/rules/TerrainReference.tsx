@@ -11,6 +11,7 @@ import {
   BIOME_INFO,
   CLIMATES,
   CLIMATE_INFO,
+  climateTransitionWeight,
   waterProbabilities,
   type Biome,
   type Climate,
@@ -169,6 +170,14 @@ export function TerrainReference({ seaOnly = false }: { seaOnly?: boolean }) {
                     )}
                   </p>
                 )}
+                {tile === "bare-peaks" && (
+                  <p>
+                    {l(
+                      "Impassable to every unit, including recruits and retreating units. Roads may follow the edges. Towns and watchtowers need adjacent walkable solid land.",
+                      "Infranchissable pour toutes les unités, y compris les recrues et les unités en repli. Les routes peuvent suivre les arêtes. Les agglomérations et les tours de guet exigent une terre ferme praticable adjacente.",
+                    )}
+                  </p>
+                )}
               </div>
             </article>
           );
@@ -225,6 +234,19 @@ export function ClimateReference({
         {l("Compatible neighbors: ", "Voisins compatibles : ")}
         {info.compatible.map((c) => tx(CLIMATE_INFO[c].name)).join(", ")}
       </p>
+      <p>
+        {l("Transition weights: ", "Poids des transitions : ")}
+        {info.compatible
+          .map(
+            (c) =>
+              `${tx(CLIMATE_INFO[c].name)} ×${climateTransitionWeight(climate, c).toLocaleString(locale)}`,
+          )
+          .join(" · ")}
+        {l(
+          ". Applied only when changing climate, among destinations compatible with all immediate neighbors. Continuity remains 85%.",
+          ". Appliqués seulement lors d’un changement de climat, parmi les destinations compatibles avec tous les voisins immédiats. La continuité reste de 85 %.",
+        )}
+      </p>
       <div className="climate-columns">
         <div>
           <h4>{l("If land is rolled", "Si le tirage donne une terre")}</h4>
@@ -234,7 +256,16 @@ export function ClimateReference({
               <span>
                 {tx(BIOME_INFO[t].name)}
                 <small>
-                  <Outputs goods={yields(t)} choice={t === "woods"} />
+                  {Object.keys(yields(t)).length ? (
+                    <Outputs goods={yields(t)} choice={t === "woods"} />
+                  ) : t === "bare-peaks" ? (
+                    l(
+                      "No production. Impassable.",
+                      "Aucune production. Infranchissable.",
+                    )
+                  ) : (
+                    l("No production.", "Aucune production.")
+                  )}
                 </small>
               </span>
               <strong>{n}%</strong>

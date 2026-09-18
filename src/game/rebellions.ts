@@ -8,7 +8,7 @@ import {
   unusedBonuses,
   withPlanningFrame,
 } from "./selectors";
-import { distance, hash, neighbors, nextRandom } from "./world";
+import { distance, hash, neighbors, nextRandom, canOccupy } from "./world";
 import { log } from "./economy";
 
 function draw(s: Game): number {
@@ -191,9 +191,7 @@ export function startRebellion(
         break;
       }
       queue.push(
-        ...neighbors(tile).filter(
-          (id) => s.tiles[id] && (s.tiles[id].resource === "water") === naval,
-        ),
+        ...neighbors(tile).filter((id) => canOccupy(s.tiles[id], naval)),
       );
     }
     if (!destination) {

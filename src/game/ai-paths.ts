@@ -1,5 +1,5 @@
 import type { Game } from "./types";
-import { neighbors } from "./world";
+import { neighbors, canOccupy } from "./world";
 import { hostileAt } from "./selectors";
 
 // AI planning treats its input as immutable. A new engine command produces a
@@ -13,8 +13,8 @@ export function planningPath(
   owner: number,
   max = Infinity,
 ): string[] | null {
+  if (!canOccupy(s.tiles[to], naval)) return null;
   if (from === to) return [];
-  if (!s.tiles[to] || (s.tiles[to].resource === "water") !== naval) return null;
   let frame = cache.get(s);
   if (!frame) {
     frame = new Map();
@@ -31,12 +31,7 @@ export function planningPath(
         d = depth.get(current)!;
       if (d >= max) continue;
       for (const next of neighbors(current)) {
-        if (
-          previous.has(next) ||
-          !s.tiles[next] ||
-          (s.tiles[next].resource === "water") !== naval
-        )
-          continue;
+        if (previous.has(next) || !canOccupy(s.tiles[next], naval)) continue;
         previous.set(next, current);
         depth.set(next, d + 1);
         // An enemy tile is a valid attack destination, never a transit tile.

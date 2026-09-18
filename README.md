@@ -36,7 +36,7 @@ Choose **English** or **Français** on the main menu or in campaign settings. Th
 ## What to expect
 
 - Classic: 5 factions on 125 initial tiles. Grand campaign: 10 factions on 250 tiles.
-- Seven climate zones determine terrain and water probabilities. Terrain numbers and shortages vary by seed. Expeditions extend the map without changing existing tiles.
+- Eleven climate zones determine terrain and water probabilities. Terrain numbers and shortages vary by seed. Expeditions extend the map without changing existing tiles.
 - Twelve raw resources and ten processed goods. Cities, camps, collectors and guilds provide different ways to grow.
 - Four tiers of land units and ships, transport, raids, sieges, watchtowers and alliances.
 - Four research tiers, with eight cards each. Buy a choice of two random cards and keep one.
@@ -94,6 +94,6 @@ This is an independent fan project, not an official Catan product or an endorsem
 
 ## Climate maps
 
-New campaigns use seven climates and 31 terrain types. Select a tile for its climate and base production, or use **Show climates** in the map controls. The **Map and dice** rules chapter has interactive tables with all land and water probabilities.
+New campaigns use eleven climates and 40 terrain types. Select a tile for its climate and base production, or use **Show climates** in the map controls. The **Map and dice** rules chapter has interactive tables with all land and water probabilities.
 
-Towns, camps and collectors multiply the terrain’s base yield. Woods let each faction choose Wood or Hides during its action phase. Frozen sea carries land units, blocks ships and cannot support permanent construction without solid ground. Existing saves retain their revealed terrain and yields; newly explored tiles use climate generation.
+Towns, camps and collectors multiply the terrain’s base yield. Woods let each faction choose Wood or Hides during its action phase. Frozen sea carries land units, blocks ships and cannot support permanent construction without solid ground. Bare Peaks are impassable to all units; roads can follow their edges, but towns need adjacent walkable solid land. Existing saves retain their revealed terrain and yields; newly explored tiles use climate generation.

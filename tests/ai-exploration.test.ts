@@ -48,6 +48,22 @@ describe("expedition climate prospects", () => {
     for (const vertex of Object.keys(s.vertices))
       expect(substitutes.score(vertex)).toBe(normal.score(vertex));
   });
+  it("values Subtropical clay and Savanna hides when those supplies are missing", () => {
+    const { s } = maritimeFixture();
+    const humid = s.tiles["-3,0"].vertices[0],
+      dry = s.tiles["3,2"].vertices[0];
+    for (const id of s.vertices[humid].tiles)
+      s.tiles[id].climate = "subtropical";
+    for (const id of s.vertices[dry].tiles) s.tiles[id].climate = "savanna";
+    const income: Stock = Object.fromEntries(RAW.map((good) => [good, 10]));
+    income.brick = 0;
+    let prospects = expeditionProspects(s, income);
+    expect(prospects.score(humid)).toBeGreaterThan(prospects.score(dry));
+    income.brick = 10;
+    income.hides = 0;
+    prospects = expeditionProspects(s, income);
+    expect(prospects.score(dry)).toBeGreaterThan(prospects.score(humid));
+  });
   it("never consults the seed or hidden climate reservations", () => {
     const { s } = maritimeFixture();
     const before = expeditionProspects(s, {});

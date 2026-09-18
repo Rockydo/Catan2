@@ -12,7 +12,7 @@ Choisissez Classique (5 factions, 125 tuiles) ou Grande campagne (10 factions, 2
 - Dans l’ordre des joueurs, chaque faction place une colonie et une route ou liaison maritime adjacente.
 - Répétez dans l’ordre inverse. Chaque faction possède alors deux colonies et deux tronçons.
 - La seconde colonie reçoit la production indiquée de chaque tuile productive adjacente. Par exemple, les Champs dorés donnent 2 Blés et une tuile Baleines donne 1 Peau et 1 Huile. Les Bois donnent initialement du Bois. Aucune troupe ni aucun produit transformé au départ.
-Chaque colonie doit toucher au moins une terre. Au moins une intersection libre doit séparer deux colonies, quel que soit leur propriétaire.
+Chaque colonie doit toucher au moins une terre ferme praticable. Les Pics rocheux et la Banquise ne conviennent pas. Au moins une intersection libre doit séparer deux colonies, quel que soit leur propriétaire.
 ### Déroulement d’un tour
 - Production : lancez deux dés indépendants à six faces. Toutes les factions produisent sur les tuiles dont le numéro correspond au total. Le sept produit normalement. Il n’y a ni voleur, ni défausse, ni limite de stock.
 - Actions : construisez, échangez, recrutez, déplacez, combattez, pillez, explorez, achetez et jouez des cartes dans l’ordre souhaité. Les ressources pillées sont immédiatement utilisables.
@@ -27,16 +27,17 @@ Les ressources sont stockées par agglomération mais dépensées en commun. Les
 ## Carte et dés
 
 ### Génération des climats
-La carte initiale contient 125 tuiles en Classique ou 250 en Grande campagne. Le climat est défini avant le terrain. Une tuile de départ et l’un des sept climats sont tirés au hasard, avec la même probabilité. La génération progresse par les voisins. Si les voisins immédiats déjà définis ont le même climat, il est conservé avec 85 % de probabilité. Lors d’un changement, les climats compatibles sont l’intersection des possibilités des seules tuiles voisines immédiates déjà définies. Lors du choix du climat suivant depuis Tempéré ou Steppe, Froid a un poids de 1,5 contre 1 pour les autres climats admissibles. Depuis Méditerranéen, Steppe et Désertique ont chacun un poids de 0,5 ; Tempéré a un poids de 1. Tropical vers Désertique, Désertique vers Tropical et Froid vers Arctique ont un poids de 2. Les autres destinations ont un poids de 1. Les poids admissibles sont normalisés pour chaque tirage. La probabilité de continuité de 85 % reste inchangée. À une frontière mixte, un climat voisin compatible est privilégié. Sans candidat, le climat d’un voisin immédiat est repris.
+La carte initiale contient 125 tuiles en Classique ou 250 en Grande campagne. Le climat est défini avant le terrain. Une tuile de départ et l’un des onze climats sont tirés au hasard, avec la même probabilité. La génération progresse par les voisins. Si les voisins immédiats déjà définis ont le même climat, il est conservé avec 85 % de probabilité. Lors d’un changement, les climats compatibles sont l’intersection des possibilités des seules tuiles voisines immédiates déjà définies. Le poids de base de chaque destination est de 1. Depuis les sept climats d’origine, les nouvelles destinations compatibles Océanique, Alpin, Subtropical et Savane ont un poids de 0,5. Tempéré et Steppe favorisent Froid à 1,5. Méditerranéen donne un poids de 0,5 à Steppe et Désertique. Tropical vers Désertique, Désertique vers Tropical et Froid vers Arctique ont un poids de 2. Océanique favorise Tempéré à 2 ; Alpin favorise Froid et Arctique à 2 chacun ; Subtropical et Savane favorisent Tropical à 2. Les poids admissibles sont normalisés pour chaque tirage. La probabilité de continuité de 85 % reste inchangée. À une frontière mixte, un climat voisin compatible est privilégié. Sans candidat, le climat d’un voisin immédiat est repris.
 Avant de tirer les terrains, une passe finale de correction conserve des climats intermédiaires comme zones tampons si nécessaire. Deux climats adjacents sont toujours compatibles. Une réserve invisible autour de la carte évite les raccords impossibles lors des expéditions. Aucun terrain révélé ne change. Une même graine et une même séquence d’exploration reproduisent la même carte. Un ordre d’expéditions différent peut prolonger les zones autrement.
 Le ratio du climat détermine terre ou eau, puis sa table détermine le terrain. Les pourcentages terrestres s’appliquent après avoir tiré une terre. Les tirages aquatiques suivent l’ordre indiqué et ne concernent que l’eau restante ; le premier succès termine la séquence. Une tuile aquatique sans terre adjacente double la probabilité du tirage Baleines de son climat. Les tirages Poissons, Morues et Banquise restent inchangés et passent avant. La banquise ne compte pas comme terre. Les voisins cachés utilisent leurs climats réservés et leurs tirages terre/eau ; le bord de carte seul ne suffit pas à définir la haute mer. La fréquence de l’Or varie selon le climat. Aucun climat, ressource, port, continent ou départ équilibré n’est garanti.
-Tempéré, Tropical et Désertique : 50 % de terre. Froid : 55 %. Steppe : 65 %. Arctique et Méditerranéen : 40 %. Les frontières Steppe/Désertique sont mutuellement compatibles, comme toutes les autres frontières autorisées. La nourriture des Oasis correspond au Blé.
+Tempéré, Tropical et Désertique : 50 % de terre. Froid et Subtropical : 55 %. Steppe : 65 %. Arctique et Méditerranéen : 40 %. Océanique : 35 %. Alpin : 75 %. Savane : 70 %. Les frontières Steppe/Désertique sont mutuellement compatibles, comme toutes les autres frontières autorisées. La nourriture des Oasis correspond au Blé.
 ### Vue des climats
 Le bouton Climats près du zoom affiche uniquement les couleurs climatiques. La légende compte les tuiles révélées de chaque climat. Déplacez la carte, zoomez et sélectionnez les tuiles normalement ; appuyez de nouveau sur Climats pour retrouver la carte normale.
-### Terrains stériles et banquise
+### Terrains stériles, pics et banquise
 Plaines enneigées et Désert ne produisent rien et n’accueillent ni camp ni atelier. Les armées les traversent et les constructions voisines restent possibles. La Banquise résulte du tirage aquatique arctique. Elle ne produit rien, accueille les unités terrestres et bloque les navires. Colonies, tours et routes permanentes exigent une terre ferme adjacente ; aucune liaison n’est possible sur une arête bordée uniquement de banquise. Une arête banquise/eau sans terre ferme accueille une liaison maritime. La banquise ne fond pas.
+Les Pics rocheux ne produisent rien et sont infranchissables pour toutes les unités. Aucun déplacement, recrutement, repli ou débarquement ne peut y placer une unité. Les routes peuvent suivre leurs arêtes selon les règles de raccordement ordinaires, même entre deux pics. Une agglomération ou une tour de guet exige au moins une terre ferme praticable adjacente. Aucun camp ni atelier ne peut exploiter les Pics rocheux.
 ### Parties existantes
-Les anciennes tuiles conservent leurs terrains et productions. Elles sont classées Tempéré pour les futures frontières climatiques. Les nouvelles explorations utilisent le système climatique. Commencez une nouvelle partie pour appliquer les nouvelles tables à toute la carte.
+Les tuiles révélées conservent leurs terrains, productions et climats attribués. Les sauvegardes antérieures au système climatique classent leurs anciennes tuiles en Tempéré pour les futures frontières. Les nouvelles explorations peuvent utiliser les onze climats. Commencez une nouvelle partie pour appliquer les nouvelles tables à toute la carte.
 ### Numéros et dés
 Chaque tuile productive reçoit uniformément un numéro de 2 à 12, sept compris. La production utilise deux dés à six faces indépendants : les numéros ont la même fréquence de génération, mais pas la même probabilité d’activation. Dés, terrain, cartes et rébellions utilisent des tirages sauvegardés séparément. Recharger ne change ni les cartes proposées ni la carte du monde. Ni les joueurs ni l’IA ne peuvent consulter les coordonnées cachées.
 ### Ports
@@ -216,9 +217,11 @@ Afficher les climats, dans les commandes de carte, colore les zones climatiques.
 
 ## Tables climatiques
 
-### Tempéré: 50% terre
+### Tempéré: 50% terre / 50% eau
 
-Compatible : Steppe, Méditerranéen, Froid, Tropical
+Compatible : Steppe, Méditerranéen, Froid, Tropical, Océanique, Alpin, Subtropical
+
+Poids des transitions : Steppe ×1, Méditerranéen ×1, Froid ×1,5, Tropical ×1, Océanique ×0,5, Alpin ×0,5, Subtropical ×0,5
 
 | Terrain terrestre | Probabilité conditionnelle |
 
@@ -254,9 +257,11 @@ Compatible : Steppe, Méditerranéen, Froid, Tropical
 
 Haute mer (sans terre adjacente) : tirage Baleines 10 % ; part effective 8.5 %. Tableau ci-dessus : eau côtière.
 
-### Froid: 55% terre
+### Froid: 55% terre / 45% eau
 
-Compatible : Tempéré, Steppe, Arctique
+Compatible : Tempéré, Steppe, Arctique, Océanique, Alpin
+
+Poids des transitions : Tempéré ×1, Steppe ×1, Arctique ×2, Océanique ×0,5, Alpin ×0,5
 
 | Terrain terrestre | Probabilité conditionnelle |
 
@@ -294,9 +299,11 @@ Compatible : Tempéré, Steppe, Arctique
 
 Haute mer (sans terre adjacente) : tirage Baleines 20 % ; part effective 14.4 %. Tableau ci-dessus : eau côtière.
 
-### Arctique: 40% terre
+### Arctique: 40% terre / 60% eau
 
-Compatible : Froid
+Compatible : Froid, Alpin
+
+Poids des transitions : Froid ×1, Alpin ×0,5
 
 | Terrain terrestre | Probabilité conditionnelle |
 
@@ -328,9 +335,11 @@ Compatible : Froid
 
 Haute mer (sans terre adjacente) : tirage Baleines 40 % ; part effective 17.92 %. Tableau ci-dessus : eau côtière.
 
-### Steppe: 65% terre
+### Steppe: 65% terre / 35% eau
 
-Compatible : Froid, Tempéré, Méditerranéen, Désert
+Compatible : Froid, Tempéré, Méditerranéen, Désert, Alpin, Savane
+
+Poids des transitions : Froid ×1,5, Tempéré ×1, Méditerranéen ×1, Désert ×1, Alpin ×0,5, Savane ×0,5
 
 | Terrain terrestre | Probabilité conditionnelle |
 
@@ -366,9 +375,11 @@ Compatible : Froid, Tempéré, Méditerranéen, Désert
 
 Haute mer (sans terre adjacente) : tirage Baleines 10 % ; part effective 8.5 %. Tableau ci-dessus : eau côtière.
 
-### Méditerranéen: 40% terre
+### Méditerranéen: 40% terre / 60% eau
 
-Compatible : Tempéré, Steppe, Désert
+Compatible : Tempéré, Steppe, Désert, Océanique, Subtropical
+
+Poids des transitions : Tempéré ×1, Steppe ×0,5, Désert ×0,5, Océanique ×0,5, Subtropical ×0,5
 
 | Terrain terrestre | Probabilité conditionnelle |
 
@@ -404,9 +415,11 @@ Compatible : Tempéré, Steppe, Désert
 
 Haute mer (sans terre adjacente) : tirage Baleines 10 % ; part effective 8.5 %. Tableau ci-dessus : eau côtière.
 
-### Tropical: 50% terre
+### Tropical: 50% terre / 50% eau
 
-Compatible : Tempéré, Désert
+Compatible : Tempéré, Désert, Subtropical, Savane
+
+Poids des transitions : Tempéré ×1, Désert ×2, Subtropical ×0,5, Savane ×0,5
 
 | Terrain terrestre | Probabilité conditionnelle |
 
@@ -442,9 +455,11 @@ Compatible : Tempéré, Désert
 
 Haute mer (sans terre adjacente) : tirage Baleines 10 % ; part effective 9 %. Tableau ci-dessus : eau côtière.
 
-### Désert: 50% terre
+### Désert: 50% terre / 50% eau
 
-Compatible : Tropical, Méditerranéen, Steppe
+Compatible : Tropical, Méditerranéen, Steppe, Savane
+
+Poids des transitions : Tropical ×2, Méditerranéen ×1, Steppe ×1, Savane ×0,5
 
 | Terrain terrestre | Probabilité conditionnelle |
 
@@ -475,6 +490,170 @@ Compatible : Tropical, Méditerranéen, Steppe
 | Mer |  | 89.24% |
 
 Haute mer (sans terre adjacente) : tirage Baleines 6 % ; part effective 5.52 %. Tableau ci-dessus : eau côtière.
+
+### Océanique: 35% terre / 65% eau
+
+Compatible : Tempéré, Froid, Méditerranéen
+
+Poids des transitions : Tempéré ×2, Froid ×1, Méditerranéen ×1
+
+| Terrain terrestre | Probabilité conditionnelle |
+
+|---|---|
+
+| Pâturage côtier | 25% |
+
+| Bois clairsemés | 20% |
+
+| Champs pauvres | 10% |
+
+| Champs | 5% |
+
+| Collines d'argile | 10% |
+
+| Falaises côtières | 15% |
+
+| Collines de charbon | 8% |
+
+| Iron mountains | 5% |
+
+| Montagnes d'or | 2% |
+
+| Terrain aquatique | Tirage successif | Part effective de l’eau |
+
+|---|---|---|
+
+| Zone de pêche | 20% | 20% |
+
+| Bancs de morue | 10% | 8% |
+
+| Zone de Baleines | 10% | 7.2% |
+
+| Mer |  | 64.8% |
+
+Haute mer (sans terre adjacente) : tirage Baleines 20 % ; part effective 14.4 %. Tableau ci-dessus : eau côtière.
+
+### Alpin: 75% terre / 25% eau
+
+Compatible : Froid, Arctique, Tempéré, Steppe
+
+Poids des transitions : Froid ×2, Arctique ×2, Tempéré ×1, Steppe ×1
+
+| Terrain terrestre | Probabilité conditionnelle |
+
+|---|---|
+
+| Carrière de montagne | 20% |
+
+| Iron mountains | 15% |
+
+| Collines de charbon | 10% |
+
+| Pâturage alpin | 15% |
+
+| Champs pauvres | 10% |
+
+| Forêt | 10% |
+
+| Montagnes d'or | 5% |
+
+| Collines d'argile | 5% |
+
+| Pics rocheux | 10% |
+
+| Terrain aquatique | Tirage successif | Part effective de l’eau |
+
+|---|---|---|
+
+| Zone de pêche | 10% | 10% |
+
+| Bancs de morue | 10% | 9% |
+
+| Zone de Baleines | 3% | 2.43% |
+
+| Mer |  | 78.57% |
+
+Haute mer (sans terre adjacente) : tirage Baleines 6 % ; part effective 4.86 %. Tableau ci-dessus : eau côtière.
+
+### Subtropical: 55% terre / 45% eau
+
+Compatible : Tropical, Tempéré, Méditerranéen, Savane
+
+Poids des transitions : Tropical ×2, Tempéré ×1, Méditerranéen ×1, Savane ×1
+
+| Terrain terrestre | Probabilité conditionnelle |
+
+|---|---|
+
+| Berges argileuses | 25% |
+
+| Rizière | 20% |
+
+| Bois riverains | 20% |
+
+| Jungle | 10% |
+
+| Stone quarry | 10% |
+
+| Collines de charbon | 5% |
+
+| Iron mountains | 5% |
+
+| Salt flats | 3% |
+
+| Montagnes d'or | 2% |
+
+| Terrain aquatique | Tirage successif | Part effective de l’eau |
+
+|---|---|---|
+
+| Zone de pêche | 15% | 15% |
+
+| Zone de Baleines | 3% | 2.55% |
+
+| Mer |  | 82.45% |
+
+Haute mer (sans terre adjacente) : tirage Baleines 6 % ; part effective 5.1 %. Tableau ci-dessus : eau côtière.
+
+### Savane: 70% terre / 30% eau
+
+Compatible : Tropical, Désert, Steppe, Subtropical
+
+Poids des transitions : Tropical ×2, Désert ×1, Steppe ×1, Subtropical ×1
+
+| Terrain terrestre | Probabilité conditionnelle |
+
+|---|---|
+
+| Prairie à gibier | 35% |
+
+| Champs pauvres | 20% |
+
+| Bois secs | 10% |
+
+| Pâturage pauvre | 10% |
+
+| Iron mountains | 10% |
+
+| Collines d'argile | 5% |
+
+| Stone quarry | 5% |
+
+| Montagnes d'or | 3% |
+
+| Salt flats | 2% |
+
+| Terrain aquatique | Tirage successif | Part effective de l’eau |
+
+|---|---|---|
+
+| Zone de pêche | 10% | 10% |
+
+| Zone de Baleines | 3% | 2.7% |
+
+| Mer |  | 87.3% |
+
+Haute mer (sans terre adjacente) : tirage Baleines 6 % ; part effective 5.4 %. Tableau ci-dessus : eau côtière.
 
 ## Production des terrains
 
@@ -543,6 +722,26 @@ Haute mer (sans terre adjacente) : tirage Baleines 6 % ; part effective 5.52 %. 
 | Zone de Baleines | 1 Peaux + 1 Huile | mer |
 
 | Banquise | 0 | plaine |
+
+| Pâturage côtier | 2 Laine | plaine |
+
+| Falaises côtières | 1 Pierre | terrain accidenté |
+
+| Carrière de montagne | 2 Pierre | terrain accidenté |
+
+| Pâturage alpin | 1 Laine | terrain accidenté |
+
+| Pics rocheux | 0 | terrain accidenté |
+
+| Berges argileuses | 2 Argile | plaine |
+
+| Bois riverains | 1 Bois | forêt |
+
+| Prairie à gibier | 2 Peaux | plaine |
+
+| Bois secs | 1 Bois | forêt |
+
+Pics rocheux : aucune production et aucune entrée d’unité, y compris par recrutement, repli ou débarquement. Les routes peuvent suivre leurs arêtes ; une agglomération exige une terre ferme praticable adjacente.
 
 ## Tous les coûts
 

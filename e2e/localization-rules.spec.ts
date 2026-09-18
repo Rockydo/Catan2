@@ -219,7 +219,7 @@ test("illustrated terrain reference pairs artwork with raw and workshop outputs"
 }) => {
   for (const locale of ["en", "fr"]) {
     await page.goto(`/rules${locale === "fr" ? "-fr" : ""}.html#economy`);
-    await expect(page.locator(".terrain-row")).toHaveCount(31);
+    await expect(page.locator(".terrain-row")).toHaveCount(40);
     const whale = page.locator('[data-terrain="whale"]');
     for (const name of locale === "fr"
       ? ["Peaux", "Huile", "Cuir"]
@@ -259,7 +259,7 @@ test("illustrated terrain reference pairs artwork with raw and workshop outputs"
           ),
         );
       });
-    expect(art).toHaveLength(24);
+    expect(art).toHaveLength(33);
     expect(art.every(Boolean)).toBe(true);
     expect(
       await page.evaluate(

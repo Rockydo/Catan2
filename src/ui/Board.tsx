@@ -400,12 +400,13 @@ const MapHex = memo(function MapHex({
       key={id}
       className={`map-tile ${resource === "water" ? "sea-tile" : "land-tile"} ${selected ? "selected" : ""} ${movable ? "reachable" : ""}`}
       data-testid={`hex-${id}`}
+      data-impassable={resource === "peaks" || undefined}
       data-map-x={x}
       data-map-y={y}
       role="button"
       tabIndex={0}
       aria-label={tx(
-        `${style.name}, ${good ? `${outputLabel ?? (terrain === "whale" ? "Hides + Oil" : GOOD_INFO[good].name)}, roll ${number}` : resource === "water" ? "water" : "No resources"}, hex ${id}${movable ? ", reachable" : ""}`,
+        `${style.name}, ${good ? `${outputLabel ?? (terrain === "whale" ? "Hides + Oil" : GOOD_INFO[good].name)}, roll ${number}` : resource === "water" ? "water" : resource === "peaks" ? tx("Impassable") : "No resources"}, hex ${id}${movable ? ", reachable" : ""}`,
       )}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
@@ -416,6 +417,21 @@ const MapHex = memo(function MapHex({
       onClick={() => activate(id, movable)}
     >
       <polygon points={poly} fill="transparent" stroke="transparent" />
+      {resource === "peaks" && (
+        <g
+          transform={`translate(${x},${y + 30})`}
+          pointerEvents="none"
+          aria-hidden="true"
+        >
+          <circle r="8" fill="#23383ee8" stroke="#e6dfcb" strokeWidth="1" />
+          <path
+            d="M-3.5-3.5 3.5 3.5M3.5-3.5-3.5 3.5"
+            stroke="#f1e6d0"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+          />
+        </g>
+      )}
       {tx(
         covered && (
           <polygon
@@ -1021,6 +1037,7 @@ export function Board({
                       s.routes[e.id]?.owner === s.active &&
                       s.edges[e.id].tiles.some(
                         (id) =>
+                          !!tileGood(s.tiles[id], s.active) &&
                           (s.routes[e.id].kind === "road"
                             ? s.tiles[id].resource !== "water"
                             : marineResource(s.tiles[id])) &&

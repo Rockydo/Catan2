@@ -7,6 +7,7 @@ import {
   BIOMES,
   BIOME_INFO,
   compatibleClimate,
+  climateTransitionWeight,
   waterProbabilities,
   type Biome,
   type Climate,
@@ -47,10 +48,23 @@ import { piece, run } from "./helpers";
 import { chooseAIAction } from "../src/game/ai";
 import { existsSync } from "node:fs";
 
+const originalClimates: Climate[] = [
+  "temperate",
+  "cold",
+  "arctic",
+  "steppe",
+  "mediterranean",
+  "tropical",
+  "desert",
+];
+const newClimates: Climate[] = ["oceanic", "alpine", "subtropical", "savanna"];
+
 it.each(["temperate", "steppe"] as const)(
   "gives Cold 1.5 times the destination weight when leaving %s",
   (from) => {
-    const choices = CLIMATE_INFO[from].compatible;
+    const choices = CLIMATE_INFO[from].compatible.filter((c) =>
+      originalClimates.includes(c),
+    );
     const counts: Partial<Record<Climate, number>> = {};
     for (let i = 0; i < 9000; i++) {
       const climate = chooseClimateTransition(from, choices, (i + 0.5) / 9000);
@@ -73,7 +87,9 @@ it.each([
     for (let i = 0; i < 12000; i++) {
       const to = chooseClimateTransition(
         from,
-        CLIMATE_INFO[from].compatible,
+        CLIMATE_INFO[from].compatible.filter((c) =>
+          originalClimates.includes(c),
+        ),
         (i + 0.5) / 12000,
       );
       counts[to] = (counts[to] ?? 0) + 1;
@@ -81,6 +97,159 @@ it.each([
     expect(counts).toEqual(expected);
   },
 );
+it("adds four climates without changing any original transition bias", () => {
+  expect(CLIMATES).toEqual([...originalClimates, ...newClimates]);
+  for (const from of originalClimates)
+    for (const to of CLIMATE_INFO[from].compatible.filter((c) =>
+      newClimates.includes(c),
+    ))
+      expect(climateTransitionWeight(from, to)).toBe(0.5);
+  const expected = {
+    oceanic: { temperate: 2, cold: 1, mediterranean: 1 },
+    alpine: { cold: 2, arctic: 2, temperate: 1, steppe: 1 },
+    subtropical: { tropical: 2, temperate: 1, mediterranean: 1, savanna: 1 },
+    savanna: { tropical: 2, desert: 1, steppe: 1, subtropical: 1 },
+  } as const;
+  for (const from of newClimates)
+    expect(
+      Object.fromEntries(
+        CLIMATE_INFO[from].compatible.map((to) => [
+          to,
+          climateTransitionWeight(from, to),
+        ]),
+      ),
+    ).toEqual(expected[from as keyof typeof expected]);
+});
+it.each(CLIMATES)(
+  "normalizes the full %s destination list and keeps every border reciprocal",
+  (from) => {
+    const choices = CLIMATE_INFO[from].compatible;
+    const total = choices.reduce(
+      (sum, to) => sum + climateTransitionWeight(from, to),
+      0,
+    );
+    const counts: Partial<Record<Climate, number>> = {};
+    const samples = 24000;
+    for (let i = 0; i < samples; i++) {
+      const to = chooseClimateTransition(from, choices, (i + 0.5) / samples);
+      counts[to] = (counts[to] ?? 0) + 1;
+    }
+    for (const to of choices) {
+      expect(CLIMATE_INFO[to].compatible).toContain(from);
+      expect(compatibleClimate(from, to)).toBe(true);
+      expect(
+        Math.abs(
+          counts[to]! - (samples * climateTransitionWeight(from, to)) / total,
+        ),
+      ).toBeLessThanOrEqual(1);
+    }
+  },
+);
+it("uses the approved four-climate land tables and land/water ratios", () => {
+  const expected = {
+    oceanic: {
+      land: 0.35,
+      terrain: [
+        ["coastal-pasture", 25],
+        ["woods", 20],
+        ["rough-fields", 10],
+        ["golden-fields", 5],
+        ["clay", 10],
+        ["coastal-cliffs", 15],
+        ["coal", 8],
+        ["iron", 5],
+        ["gold", 2],
+      ],
+    },
+    alpine: {
+      land: 0.75,
+      terrain: [
+        ["mountain-quarry", 20],
+        ["iron", 15],
+        ["coal", 10],
+        ["alpine-pasture", 15],
+        ["rough-fields", 10],
+        ["forest", 10],
+        ["gold", 5],
+        ["clay", 5],
+        ["bare-peaks", 10],
+      ],
+    },
+    subtropical: {
+      land: 0.55,
+      terrain: [
+        ["alluvial-clay", 25],
+        ["rice-field", 20],
+        ["river-woods", 20],
+        ["jungle", 10],
+        ["stone", 10],
+        ["coal", 5],
+        ["iron", 5],
+        ["salt-flats", 3],
+        ["gold", 2],
+      ],
+    },
+    savanna: {
+      land: 0.7,
+      terrain: [
+        ["wildlife-grassland", 35],
+        ["rough-fields", 20],
+        ["dry-woodland", 10],
+        ["rough-pasture", 10],
+        ["iron", 10],
+        ["clay", 5],
+        ["stone", 5],
+        ["gold", 3],
+        ["salt-flats", 2],
+      ],
+    },
+  };
+  for (const [climate, info] of Object.entries(expected))
+    expect(CLIMATE_INFO[climate as Climate]).toMatchObject(info);
+  expect(BIOME_INFO["rice-field"].yield).toEqual({ grain: 3 });
+  expect(BIOME_INFO["alluvial-clay"].family).toBe("flat");
+  expect(BIOME_INFO["wildlife-grassland"].family).toBe("flat");
+  expect(BIOME_INFO["mountain-quarry"].family).toBe("rugged");
+});
+it("uses sequential Oceanic fish, cod and whale rolls with the revised 10% checks", () => {
+  expect(CLIMATE_INFO.oceanic.water).toEqual([
+    ["fish", 0.2],
+    ["cod", 0.1],
+    ["whale", 0.1],
+  ]);
+  expect(
+    waterProbabilities("oceanic").map(([b, n]) => [b, Number(n.toFixed(4))]),
+  ).toEqual([
+    ["fish", 0.2],
+    ["cod", 0.08],
+    ["whale", 0.072],
+    ["water", 0.648],
+  ]);
+  expect(
+    waterProbabilities("oceanic", true).map(([b, n]) => [
+      b,
+      Number(n.toFixed(4)),
+    ]),
+  ).toEqual([
+    ["fish", 0.2],
+    ["cod", 0.08],
+    ["whale", 0.144],
+    ["water", 0.576],
+  ]);
+  expect(CLIMATE_INFO.alpine.water).toEqual([
+    ["fish", 0.1],
+    ["cod", 0.1],
+    ["whale", 0.03],
+  ]);
+  expect(CLIMATE_INFO.subtropical.water).toEqual([
+    ["fish", 0.15],
+    ["whale", 0.03],
+  ]);
+  expect(CLIMATE_INFO.savanna.water).toEqual([
+    ["fish", 0.1],
+    ["whale", 0.03],
+  ]);
+});
 it("never introduces excluded climates and renormalizes Cold when Arctic is excluded", () => {
   for (const from of CLIMATES) {
     const choices = CLIMATE_INFO[from].compatible.filter((c) => c !== "cold");
@@ -221,7 +390,7 @@ it("keeps compatible climate buffers through seeded games, saves and successive 
       s = deserialize(serialize(s));
     }
   }
-  expect(seen.size).toBe(7);
+  expect([...seen].sort()).toEqual([...CLIMATES].sort());
 });
 it("repairs conflicting climate proposals with buffers while preserving fixed borders", () => {
   const baseline: Record<string, Climate> = Object.fromEntries(
@@ -246,7 +415,9 @@ it("repairs conflicting climate proposals with buffers while preserving fixed bo
     );
     expect(repaired["0,0"]).toBe("temperate");
     expect(repaired["8,0"]).toBe("temperate");
-    expect(Object.values(repaired)).toContain("cold");
+    expect(
+      Object.values(repaired).some((c) => c === "cold" || c === "alpine"),
+    ).toBe(true);
     expect(Object.values(repaired)).toContain("arctic");
     expect(Object.values(repaired)).toContain("tropical");
     for (const [id, climate] of Object.entries(repaired))
@@ -331,6 +502,15 @@ it.each([
   ["snow-plain", {}],
   ["desert", {}],
   ["ice", {}],
+  ["coastal-pasture", { wool: 2 }],
+  ["coastal-cliffs", { stone: 1 }],
+  ["mountain-quarry", { stone: 2 }],
+  ["alpine-pasture", { wool: 1 }],
+  ["bare-peaks", {}],
+  ["alluvial-clay", { brick: 2 }],
+  ["river-woods", { lumber: 1 }],
+  ["wildlife-grassland", { hides: 2 }],
+  ["dry-woodland", { lumber: 1 }],
 ] as const)("scales every %s output through all town levels", (b, output) => {
   const { s, home, tile } = biomeFixture(b);
   expect(tileYield(tile)).toEqual(output);

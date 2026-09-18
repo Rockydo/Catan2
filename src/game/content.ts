@@ -64,7 +64,7 @@ export const GOOD_INFO: Record<
   ].map(([id, name, icon, color]) => [id, { name, icon, color }]),
 ) as Record<Good, { name: string; icon: string; color: string }>;
 export type TerrainKey =
-  Raw | "water" | "whale" | "snow" | "desert" | "ice" | Biome;
+  Raw | "water" | "whale" | "snow" | "desert" | "ice" | "peaks" | Biome;
 export const TERRAIN: Record<
   TerrainKey,
   { name: string; family: Family; color: string; light: string }
@@ -83,6 +83,12 @@ export const TERRAIN: Record<
     family: "flat",
     color: "#dbe9e8",
     light: "#eff6f5",
+  },
+  peaks: {
+    name: "Bare Peaks",
+    family: "rugged",
+    color: "#929ca8",
+    light: "#c8d0d8",
   },
   oil: {
     name: "Whale oil",

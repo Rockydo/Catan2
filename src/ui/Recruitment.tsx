@@ -26,7 +26,7 @@ import {
   shipCost,
   shipStats,
 } from "../game/content";
-import { landAtVertex, waterAtVertex } from "../game/world";
+import { walkableAtVertex as landAtVertex, waterAtVertex } from "../game/world";
 import { terrainName } from "../game/maritime";
 import { ownTowns, hostileAt, inventory } from "../game/selectors";
 import { applyCommand } from "../game/engine";

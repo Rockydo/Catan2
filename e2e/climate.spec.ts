@@ -34,6 +34,60 @@ test("regional terrain art loads in the climate guide", async ({ page }) => {
     ],
     ["Cold", ["cold-clay", "cold-stone"]],
     ["Steppe", ["steppe-clay"]],
+    [
+      "Oceanic",
+      [
+        "oceanic-pasture",
+        "oceanic-woods",
+        "oceanic-rough-fields",
+        "oceanic-grain",
+        "oceanic-clay",
+        "oceanic-stone",
+        "oceanic-coal",
+        "oceanic-iron",
+        "oceanic-gold",
+      ],
+    ],
+    [
+      "Alpine",
+      [
+        "alpine-stone",
+        "alpine-iron",
+        "alpine-coal",
+        "alpine-pasture",
+        "alpine-rough-fields",
+        "alpine-forest",
+        "alpine-gold",
+        "alpine-clay",
+        "bare-peaks",
+      ],
+    ],
+    [
+      "Subtropical",
+      [
+        "subtropical-clay",
+        "river-woods",
+        "subtropical-stone",
+        "subtropical-coal",
+        "subtropical-iron",
+        "subtropical-salt",
+        "subtropical-gold",
+      ],
+    ],
+    [
+      "Savanna",
+      [
+        "wildlife-grassland",
+        "dry-woodland",
+        "savanna-rough-fields",
+        "savanna-pasture",
+        "savanna-iron",
+        "savanna-clay",
+        "savanna-stone",
+        "savanna-gold",
+        "savanna-salt",
+      ],
+    ],
   ] as const) {
     await reference.getByRole("button", { name: climate, exact: true }).click();
     for (const asset of assets) {
@@ -167,6 +221,69 @@ for (const locale of ["en", "fr"] as const) {
       ),
     ).toEqual([]);
   });
+  test(`${locale}: four new climates show revised yields, water rolls and impassable peaks`, async ({
+    page,
+  }) => {
+    const errors: string[] = [];
+    page.on("pageerror", (e) => errors.push(e.message));
+    await page.goto(`/rules${locale === "fr" ? "-fr" : ""}.html#world`);
+    const reference = page.locator(".climate-reference");
+    await expect(reference.locator(".climate-tabs button")).toHaveCount(11);
+    await reference
+      .getByRole("button", {
+        name: locale === "fr" ? "Océanique" : "Oceanic",
+        exact: true,
+      })
+      .click();
+    await expect(reference).toContainText(
+      locale === "fr" ? "35% terre / 65% eau" : "35% land / 65% water",
+    );
+    await expect(reference).toContainText(locale === "fr" ? "7,2%" : "7.2%");
+    await expect(reference).toContainText(locale === "fr" ? "14,4%" : "14.4%");
+    await reference
+      .getByRole("button", {
+        name: locale === "fr" ? "Alpin" : "Alpine",
+        exact: true,
+      })
+      .click();
+    await expect(reference).toContainText(
+      locale === "fr" ? "Pics rocheux" : "Bare Peaks",
+    );
+    await expect(reference).toContainText(
+      locale === "fr" ? "Infranchissable" : "Impassable",
+    );
+    await reference
+      .getByRole("button", { name: "Subtropical", exact: true })
+      .click();
+    const rice = reference
+      .locator(".climate-terrain")
+      .filter({ hasText: locale === "fr" ? "Rizière" : "Rice field" });
+    await expect(rice).toHaveCount(1);
+    await expect(rice).toContainText(locale === "fr" ? "3 Blé" : "3 Grain");
+    await expect(rice).toContainText("20%");
+    await expect(
+      rice.locator('[style*="terrain-rice-field-v1.webp"]'),
+    ).toHaveCount(1);
+    await reference
+      .getByRole("button", {
+        name: locale === "fr" ? "Savane" : "Savanna",
+        exact: true,
+      })
+      .click();
+    const wildlife = reference.locator(".climate-terrain").filter({
+      hasText: locale === "fr" ? "Prairie à gibier" : "Wildlife grassland",
+    });
+    await expect(wildlife).toContainText(
+      locale === "fr" ? "2 Peaux" : "2 Hides",
+    );
+    await expect(wildlife).toContainText("35%");
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth + 1,
+      ),
+    ).toBe(true);
+    expect(errors).toEqual([]);
+  });
 }
 test("climate-only overview hides gameplay details and preserves the campaign", async ({
   page,
@@ -238,12 +355,19 @@ test("climate-only overview hides gameplay details and preserves the campaign", 
   expect(errors).toEqual([]);
 });
 
-test("printed guide includes all seven climate tables", async ({ page }) => {
+test("printed guide includes all eleven climate tables", async ({ page }) => {
   await page.goto("/rules.html#world");
   await page.evaluate(() => window.dispatchEvent(new Event("beforeprint")));
   await expect(page.locator(".print-content .climate-reference")).toHaveCount(
-    7,
+    11,
   );
   await expect(page.locator(".print-content")).toContainText("Rice field");
   await expect(page.locator(".print-content")).toContainText("Cod grounds");
+  for (const terrain of [
+    "Bare Peaks",
+    "Alluvial clay banks",
+    "Wildlife grassland",
+    "Coastal pasture",
+  ])
+    await expect(page.locator(".print-content")).toContainText(terrain);
 });

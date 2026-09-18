@@ -49,7 +49,7 @@ import {
   hostileAt,
   ownTowns,
 } from "../game/selectors";
-import { neighbors, landAtVertex } from "../game/world";
+import { neighbors, landAtVertex, canOccupy } from "../game/world";
 import { terrainName } from "../game/maritime";
 import {
   Modal,
@@ -699,13 +699,11 @@ export function TransportDialog({
                 neighbors(water)
                   .filter(
                     (t) =>
-                      s.tiles[t] &&
-                      s.tiles[t].resource !== "water" &&
-                      !hostileAt(s, t),
+                      s.tiles[t] && canOccupy(s.tiles[t]) && !hostileAt(s, t),
                   )
                   .map((t) => (
                     <option value={t} key={t}>
-                      {tx(s.tiles[t].resource)} · {tx(t)}
+                      {tx(terrainName(s.tiles[t]))} · {tx(t)}
                     </option>
                   )),
               )}

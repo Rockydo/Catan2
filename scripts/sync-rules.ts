@@ -3,6 +3,7 @@ import {
   CLIMATE_INFO,
   BIOMES,
   BIOME_INFO,
+  climateTransitionWeight,
   waterProbabilities,
 } from "../src/game/climate-content";
 /** Export the same bilingual guide and live catalogue as portable Markdown. */
@@ -44,8 +45,9 @@ for (const locale of ["en", "fr"] as const) {
   for (const climate of CLIMATES) {
     const c = CLIMATE_INFO[climate];
     lines.push(
-      `### ${tx(c.name)}: ${Math.round(c.land * 100)}% ${text("land", "terre")}`,
+      `### ${tx(c.name)}: ${Math.round(c.land * 100)}% ${text("land", "terre")} / ${Math.round((1 - c.land) * 100)}% ${text("water", "eau")}`,
       `${text("Compatible", "Compatible")} : ${c.compatible.map((n) => tx(CLIMATE_INFO[n].name)).join(", ")}`,
+      `${text("Transition weights", "Poids des transitions")} : ${c.compatible.map((n) => `${tx(CLIMATE_INFO[n].name)} ×${climateTransitionWeight(climate, n).toLocaleString(locale)}`).join(", ")}`,
       `| ${text("Land terrain | Conditional chance", "Terrain terrestre | Probabilité conditionnelle")} |`,
       "|---|---|",
       ...c.terrain.map(([b, n]) => `| ${tx(BIOME_INFO[b].name)} | ${n}% |`),
@@ -70,6 +72,12 @@ for (const locale of ["en", "fr"] as const) {
     lines.push(
       `| ${tx(BIOME_INFO[b].name)} | ${b === "woods" ? text("1 Wood OR 1 Hides", "1 Bois OU 1 Peau") : cost(BIOME_INFO[b].yield) || "0"} | ${tx(BIOME_INFO[b].family)} |`,
     );
+  lines.push(
+    text(
+      "Bare Peaks: no production and no unit entry, including recruitment, retreat or disembarkation. Roads may follow their edges; towns need adjacent walkable solid land.",
+      "Pics rocheux : aucune production et aucune entrée d’unité, y compris par recrutement, repli ou débarquement. Les routes peuvent suivre leurs arêtes ; une agglomération exige une terre ferme praticable adjacente.",
+    ),
+  );
   lines.push(
     `## ${text("All costs", "Tous les coûts")}`,
     text(

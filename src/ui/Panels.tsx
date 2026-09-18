@@ -207,9 +207,11 @@ export function DetailHeader({
               !tileGood(t)
                 ? t.resource === "water"
                   ? "Fleet movement and transport"
-                  : t.resource === "ice"
-                    ? "Walkable ice. No production. Ships cannot enter."
-                    : "No resources. Land units can cross."
+                  : t.resource === "peaks"
+                    ? "Impassable. No units can enter. Roads may follow the edges."
+                    : t.resource === "ice"
+                      ? "Walkable ice. No production. Ships cannot enter."
+                      : "No resources. Land units can cross."
                 : `${tileGoods(t, viewer)
                     .map(
                       (good) =>

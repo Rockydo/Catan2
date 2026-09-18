@@ -8,7 +8,7 @@ import {
   type Stock,
 } from "./types";
 import { SHIP_INFO, shipStats } from "./content";
-import { neighbors } from "./world";
+import { neighbors, canOccupy } from "./world";
 import { rule, log, addStock } from "./economy";
 import {
   piecesAt,
@@ -594,8 +594,8 @@ export function militaryCommand(s: Game, c: Command): boolean {
     rule(
       c.to &&
         neighbors(ships[0].tile).includes(c.to) &&
-        s.tiles[c.to]?.resource !== "water",
-      "Choose an adjacent revealed land hex.",
+        canOccupy(s.tiles[c.to]),
+      "Choose an adjacent walkable land hex. Bare Peaks are impassable.",
     );
     rule(
       s.tiles[c.to] && !hostileAt(s, c.to, s.active, false),

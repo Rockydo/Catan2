@@ -11,7 +11,7 @@ import {
   pathTo,
   speed,
 } from "./selectors";
-import { landAtVertex, distance } from "./world";
+import { walkableAtVertex as landAtVertex, distance } from "./world";
 
 export interface FactionStrength {
   towns: number;
