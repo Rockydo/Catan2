@@ -136,7 +136,7 @@ const TerrainPatterns = memo(function TerrainPatterns() {
                   dedicated
                     ? ["gold", "fish", "whale"].includes(art)
                       ? `./assets/terrain-${art}-${art === "fish" ? "v2" : "v1"}.png`
-                      : `./assets/terrain-${art}-v1.webp${["forest", "hunting-forest", "cod"].includes(art) ? "?v=2" : ""}`
+                      : `./assets/terrain-${art}-v1.webp${["forest", "hunting-forest", "cod", "jungle"].includes(art) ? "?v=2" : ""}`
                     : "./assets/terrain-atlas-v2.png"
                 }
                 width={dedicated ? 100 : 500}

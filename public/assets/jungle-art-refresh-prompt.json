@@ -1,0 +1,6 @@
+{
+  "tool": "Built-in image_gen (edit)",
+  "prompt": "Use case: precise-object-edit. Edit target: the supplied hides-producing Jungle terrain tile for a medieval hex board game. Make this jungle a bit denser and more lush: fill most of the large bare grassy foreground and wide path with layered tropical undergrowth, overlapping broad leaves, ferns, vines, and additional dense tree canopy. Keep a small natural clearing around the existing boar and tapir so both animals stay clearly recognizable at small tile size. Preserve their appearance, the rich green palette with restrained red flowers, large buttress-root trees, and the refined painterly miniature board-game style. Retain the elevated three-quarter overhead view and square continuous edge-to-edge landscape, no horizon. Increase the impression of dense rainforest without obscuring the animals or turning the picture into visual noise. No text, border, hex outline, UI, people, snow or logging equipment.",
+  "asset": "public/assets/terrain-jungle-v1.webp",
+  "derivative": "512px WebP, quality 85"
+}

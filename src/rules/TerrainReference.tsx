@@ -36,7 +36,7 @@ export function TerrainImage({ tile }: { tile: TerrainKey }) {
     dedicated = index < 0;
   const file = ["gold", "fish", "whale"].includes(art)
     ? `terrain-${art}-${art === "fish" ? "v2" : "v1"}.png`
-    : `terrain-${art}-v1.webp${["forest", "hunting-forest", "cod"].includes(art) ? "?v=2" : ""}`;
+    : `terrain-${art}-v1.webp${["forest", "hunting-forest", "cod", "jungle"].includes(art) ? "?v=2" : ""}`;
   return (
     <span
       className={`terrain-picture ${tile === "water" ? "empty-water" : ""}`}
