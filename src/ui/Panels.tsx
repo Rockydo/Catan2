@@ -183,18 +183,25 @@ export function DetailHeader({
     if (t)
       return (
         <div className="panel-intro">
-          <span className="eyebrow">
-            {tx(terrainFamily(t).toUpperCase())} · {tx(t.id)}
-          </span>
+          <span className="eyebrow">{tx(terrainFamily(t).toUpperCase())}</span>
           <h2>{tx(TERRAIN[tileTerrain(t)].name)}</h2>
-          <span
-            className="climate-chip"
-            style={{
-              borderColor: CLIMATE_INFO[t.climate ?? "temperate"].color,
-            }}
-          >
-            {tx(CLIMATE_INFO[t.climate ?? "temperate"].name)}
-          </span>
+          <div className="tile-metadata">
+            <span
+              className="climate-chip"
+              style={{
+                borderColor: CLIMATE_INFO[t.climate ?? "temperate"].color,
+              }}
+            >
+              {tx(CLIMATE_INFO[t.climate ?? "temperate"].name)}
+            </span>
+            <span className="tile-position">
+              <MapPin size={13} aria-hidden="true" />
+              {tx("Position")}:{" "}
+              <strong>
+                ({t.q}, {t.r})
+              </strong>
+            </span>
+          </div>
           <p>
             {tx(
               !tileGood(t)
