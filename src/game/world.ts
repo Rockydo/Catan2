@@ -1,5 +1,5 @@
 import { planClimates, climateTerrain } from "./climate";
-import type { Climate } from "./climate-content";
+import { CLIMATE_INFO, type Climate } from "./climate-content";
 import generation from "./generation.json" with { type: "json" };
 import { RAW, type World, type Hex, type Vertex, type Edge } from "./types";
 export const WATER_PROBABILITY = generation.waterProbability;
@@ -103,7 +103,12 @@ export function waterResources(
     return { whale: true };
   return {};
 }
-export function generateHex(seed: string, id: string, climate?: Climate): Hex {
+export function generateHex(
+  seed: string,
+  id: string,
+  climate?: Climate,
+  openWater = false,
+): Hex {
   const [q, r] = coord(id);
   const vertices = tileVertices(q, r);
   const water = randomAt(seed, id, "terrain") < WATER_PROBABILITY;
@@ -121,7 +126,7 @@ export function generateHex(seed: string, id: string, climate?: Climate): Hex {
       : pick >= LAND_RESOURCES.length
         ? "gold"
         : LAND_RESOURCES[Math.floor(pick)],
-    ...(climate ? climateTerrain(seed, id, climate) : {}),
+    ...(climate ? climateTerrain(seed, id, climate, openWater) : {}),
     number: 2 + Math.floor(randomAt(seed, id, "number") * 11),
     vertices,
     edges: vertices.map((a, i) => edgeKey(a, vertices[(i + 1) % 6])),
@@ -134,7 +139,19 @@ export function addHexes(world: World, seed: string, ids: string[]) {
   const added = new Set<string>();
   for (const id of ids) {
     if (world.tiles[id]) continue;
-    const hex = generateHex(seed, id, world.climatePlan?.[id]);
+    // Use actual revealed terrain and reserved climate land rolls for hidden
+    // neighbors. Map edges are not automatically open sea, and ice is not land.
+    const openWater = neighbors(id).every((n) => {
+      const existing = world.tiles[n];
+      if (existing)
+        return existing.resource === "water" || existing.resource === "ice";
+      const climate = world.climatePlan?.[n];
+      return (
+        climate !== undefined &&
+        randomAt(seed, n, "terrain") >= CLIMATE_INFO[climate].land
+      );
+    });
+    const hex = generateHex(seed, id, world.climatePlan?.[id], openWater);
     added.add(id);
     world.tiles[id] = hex;
     for (const v of hex.vertices) {

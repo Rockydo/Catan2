@@ -18,6 +18,7 @@ import {
   expeditionFootprint,
   unknownAtVertex,
   generateWorld,
+  randomAt,
 } from "../src/game/world";
 import {
   tileYield,
@@ -75,6 +76,67 @@ it("uses the exact effective Arctic water probabilities", () => {
     ["whale", 0.0896],
     ["water", 0.3584],
   ]);
+});
+it.each(CLIMATES)("doubles only the %s whale roll in open water", (climate) => {
+  const counts: Record<string, number> = {};
+  const samples = 20000;
+  for (let i = 0; i < samples; i++) {
+    const id = `${i},0`;
+    const coastal = climateTerrain("offshore-whales", id, climate);
+    const open = climateTerrain("offshore-whales", id, climate, true);
+    counts[open.biome!] = (counts[open.biome!] ?? 0) + 1;
+    if (coastal.biome !== "water") expect(open).toEqual(coastal);
+    else expect(["water", "whale"]).toContain(open.biome);
+  }
+  const coastalWhales = waterProbabilities(climate).find(
+    ([b]) => b === "whale",
+  )![1];
+  const openWhales = waterProbabilities(climate, true).find(
+    ([b]) => b === "whale",
+  )![1];
+  expect(openWhales).toBeCloseTo(coastalWhales * 2, 12);
+  expect(counts.whale / samples).toBeCloseTo(
+    (1 - CLIMATE_INFO[climate].land) * openWhales,
+    2,
+  );
+});
+it("uses neighboring climates and hidden land at map edges for open-water whales", () => {
+  let openCount = 0,
+    coastCount = 0,
+    extraWhales = 0;
+  for (let seed = 0; seed < 40; seed++) {
+    const world = generateWorld(`offshore-integration-${seed}`, 250);
+    for (const tile of Object.values(world.tiles)) {
+      const open = neighbors(tile.id).every((n) => {
+        const existing = world.tiles[n];
+        return existing
+          ? existing.resource === "water" || existing.resource === "ice"
+          : randomAt(`offshore-integration-${seed}`, n, "terrain") >=
+              CLIMATE_INFO[world.climatePlan![n]].land;
+      });
+      const expected = climateTerrain(
+        `offshore-integration-${seed}`,
+        tile.id,
+        tile.climate!,
+        open,
+      );
+      expect(tile).toMatchObject(expected);
+      expect(!!tile.fish).toBe(!!expected.fish);
+      expect(!!tile.whale).toBe(!!expected.whale);
+      if (tile.resource !== "water") continue;
+      if (open) openCount++;
+      else coastCount++;
+      if (
+        tile.whale &&
+        !climateTerrain(`offshore-integration-${seed}`, tile.id, tile.climate!)
+          .whale
+      )
+        extraWhales++;
+    }
+  }
+  expect(openCount).toBeGreaterThan(0);
+  expect(coastCount).toBeGreaterThan(0);
+  expect(extraWhales).toBeGreaterThan(0);
 });
 it("keeps compatible climate buffers through seeded games, saves and successive expeditions", () => {
   const seen = new Set<string>();

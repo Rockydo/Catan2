@@ -358,10 +358,14 @@ export function compatibleClimate(a: Climate, b: Climate) {
       CLIMATE_INFO[b].compatible.includes(a))
   );
 }
-export function waterProbabilities(climate: Climate): [Biome, number][] {
+export function waterProbabilities(
+  climate: Climate,
+  openWater = false,
+): [Biome, number][] {
   let remaining = 1;
   const result: [Biome, number][] = CLIMATE_INFO[climate].water.map(
     ([biome, chance]) => {
+      chance = Math.min(1, chance * (openWater && biome === "whale" ? 2 : 1));
       const value = remaining * chance;
       remaining *= 1 - chance;
       return [biome, value];

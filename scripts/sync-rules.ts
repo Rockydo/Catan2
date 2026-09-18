@@ -55,6 +55,10 @@ for (const locale of ["en", "fr"] as const) {
         ([b, n]) =>
           `| ${tx(BIOME_INFO[b].name)} | ${b === "water" ? "" : Math.round(c.water.find(([t]) => t === b)![1] * 100) + "%"} | ${Number((n * 100).toFixed(3))}% |`,
       ),
+      text(
+        `Open water (no adjacent land): Whale check ${c.water.find(([b]) => b === "whale")![1] * 200}%; effective share ${Number((waterProbabilities(climate, true).find(([b]) => b === "whale")![1] * 100).toFixed(3))}%. Table above: coastal water.`,
+        `Haute mer (sans terre adjacente) : tirage Baleines ${c.water.find(([b]) => b === "whale")![1] * 200} % ; part effective ${Number((waterProbabilities(climate, true).find(([b]) => b === "whale")![1] * 100).toFixed(3))} %. Tableau ci-dessus : eau côtière.`,
+      ),
     );
   }
   lines.push(

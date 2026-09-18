@@ -189,6 +189,7 @@ export function climateTerrain(
   seed: string,
   id: string,
   climate: Climate,
+  openWater = false,
 ): Pick<Hex, "resource" | "climate" | "biome" | "fish" | "whale"> {
   const info = CLIMATE_INFO[climate];
   let biome: Biome = "water";
@@ -206,7 +207,10 @@ export function climateTerrain(
     }
   } else
     for (const [candidate, chance] of info.water)
-      if (randomAt(seed, id, `water-${candidate}`) < chance) {
+      if (
+        randomAt(seed, id, `water-${candidate}`) <
+        Math.min(1, chance * (openWater && candidate === "whale" ? 2 : 1))
+      ) {
         biome = candidate;
         break;
       }

@@ -248,9 +248,23 @@ export function ClimateReference({
           <h4>{l("If water is rolled", "Si le tirage donne de l’eau")}</h4>
           <p>
             {l(
-              "Checks run in this order on the remaining water only. The first success ends the sequence.",
-              "Les tirages suivants ne concernent que l’eau restante. Le premier résultat positif arrête la séquence.",
+              "Coastal probabilities below. Checks run in this order on the remaining water only. The first success ends the sequence.",
+              "Probabilités côtières ci-dessous. Les tirages suivants ne concernent que l’eau restante. Le premier résultat positif arrête la séquence.",
             )}
+          </p>
+          <p>
+            {l(
+              "Open water (no adjacent land): Whale check ",
+              "Haute mer (sans terre adjacente) : tirage Baleines ",
+            )}
+            {pct(Math.min(1, info.water.find(([b]) => b === "whale")![1] * 2))}
+            {l("; effective share ", " ; part effective ")}
+            {pct(
+              waterProbabilities(climate, true).find(
+                ([b]) => b === "whale",
+              )![1],
+            )}
+            .
           </p>
           {waterProbabilities(climate).map(([t, n]) => (
             <div className="climate-terrain" key={t}>
