@@ -67,6 +67,7 @@ import {
   inventory,
   unusedBonuses,
   settlementSites,
+  colonizationSites,
   canCompleteSetup,
   canRoute,
   restoreCoastalRoads,
@@ -563,6 +564,18 @@ export function execute(s: Game, c: Command) {
     p.routeMoved = true;
     return;
   }
+  if (c.type === "colonize") {
+    rule(c.ids?.length === 1, "Select one settler to found a settlement.");
+    const unit = s.pieces[c.ids[0]];
+    rule(
+      c.vertex && colonizationSites(s, unit).includes(c.vertex),
+      "Choose a clear, legally spaced settlement site beside a ready settler.",
+    );
+    const town = createTown(s, c.vertex);
+    delete s.pieces[unit.id];
+    log(s, `${p.name} founded ${town.name}.`, "build", s.active, unit.tile);
+    return;
+  }
   if (c.type === "settlement") {
     rule(
       c.vertex && settlementSites(s).includes(c.vertex),
@@ -738,6 +751,10 @@ export function execute(s: Game, c: Command) {
       kind = c.kind!,
       tier = c.tier ?? 1,
       free = -1;
+    rule(
+      !["settler", "settlership"].includes(kind) || tier === 1,
+      "Settlers have only one tier.",
+    );
     if (naval) {
       rule(Object.hasOwn(SHIP_INFO, kind), "Choose a ship class.");
       rule(

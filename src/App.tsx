@@ -515,6 +515,15 @@ export default function App() {
       setMode("inspect");
       return;
     }
+    if (type === "colonize") {
+      if (commit({ type, vertex: id, ids: unitIds })) {
+        setSelection({ type: "vertex", id });
+        setUnitIds([]);
+        setMode("inspect");
+        setTab("build");
+      }
+      return;
+    }
     const c: Command =
       type === "setup-route"
         ? {

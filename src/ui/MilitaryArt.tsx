@@ -8,6 +8,7 @@ import {
   SHIP_INFO,
   ROMAN,
   shipStats,
+  isSettler,
 } from "../game/content";
 import { ShipMiniature } from "./MapPieces";
 
@@ -29,6 +30,28 @@ export function MilitaryGlyph({
 }) {
   useLocale();
 
+  if (isSettler(kind))
+    return (
+      <g stroke={shadow} strokeWidth="1.3" strokeLinejoin="round">
+        {kind === "settlership" ? (
+          <>
+            <path d="M2 23H30L24 30H8Z" fill={ink} />
+            <path d="M9 22V3L27 8 10 20Z" fill={accent} />
+            <path d="M14 11 19 6 24 11V17H14Z" fill={ink} />
+            <path d="M18 17V12H21V17" fill={shadow} />
+          </>
+        ) : (
+          <>
+            <path d="M4 18V12Q16-1 28 12V22H4Z" fill={ink} />
+            <path d="M10 21V10Q16 5 22 10V21Z" fill={accent} />
+            <path d="M3 21H30V25H5Z" fill={accent} />
+            <circle cx="9" cy="28" r="3" fill={shadow} />
+            <circle cx="25" cy="28" r="3" fill={shadow} />
+            <path d="M13 17 17 13 21 17V22H13Z" fill={ink} />
+          </>
+        )}
+      </g>
+    );
   if (kind === "merchant")
     return (
       <g stroke={shadow} strokeWidth="1.3" strokeLinejoin="round">
@@ -364,37 +387,66 @@ export function MilitaryPortrait({
         </defs>
         <g clipPath={`url(#${clip})`}>
           <rect x="2" y="2" width="60" height="68" fill="#edddbc" />
-          <svg
-            x="2"
-            y="2"
-            width="60"
-            height="68"
-            viewBox={
-              dedicated
-                ? `${((rank - 1) % 2) * 50} ${Math.floor((rank - 1) / 2) * 50} 50 50`
-                : rank === 2
-                  ? {
-                      heavy: "0 0 512 512",
-                      light: "512 0 512 512",
-                      cavalry: "0 480 512 544",
-                      artillery: "512 512 512 512",
-                    }[unit.kind as "heavy" | "light" | "cavalry" | "artillery"]
-                  : CROPS[unit.kind][rank === 1 ? 0 : rank - 2].join(" ")
-            }
-            preserveAspectRatio={dedicated ? "xMidYMid meet" : "xMidYMid slice"}
-          >
-            <image
-              href={
+          {isSettler(unit.kind) ? (
+            <g>
+              <rect
+                x="2"
+                y="2"
+                width="60"
+                height="68"
+                fill={unit.naval ? "#527c84" : "#9ca57c"}
+              />
+              <path
+                d="M2 43Q18 30 34 44T62 42V68H2Z"
+                fill={unit.naval ? "#244d63" : "#53694d"}
+              />
+              <circle cx="49" cy="14" r="7" fill="#f1d89a" />
+              <g transform="translate(7 17) scale(1.55)">
+                <MilitaryGlyph
+                  kind={unit.kind}
+                  ink="#f5e5bc"
+                  accent={color}
+                  shadow="#3b3d35"
+                />
+              </g>
+            </g>
+          ) : (
+            <svg
+              x="2"
+              y="2"
+              width="60"
+              height="68"
+              viewBox={
                 dedicated
-                  ? `./assets/roster-${unit.kind}-v1.png`
+                  ? `${((rank - 1) % 2) * 50} ${Math.floor((rank - 1) / 2) * 50} 50 50`
                   : rank === 2
-                    ? "./assets/unit-tier-2.png"
-                    : "./assets/unit-roster.png"
+                    ? {
+                        heavy: "0 0 512 512",
+                        light: "512 0 512 512",
+                        cavalry: "0 480 512 544",
+                        artillery: "512 512 512 512",
+                      }[
+                        unit.kind as "heavy" | "light" | "cavalry" | "artillery"
+                      ]
+                    : CROPS[unit.kind][rank === 1 ? 0 : rank - 2].join(" ")
               }
-              width={dedicated ? 100 : rank === 2 ? 1024 : 1254}
-              height={dedicated ? 100 : rank === 2 ? 1024 : 1254}
-            />
-          </svg>
+              preserveAspectRatio={
+                dedicated ? "xMidYMid meet" : "xMidYMid slice"
+              }
+            >
+              <image
+                href={
+                  dedicated
+                    ? `./assets/roster-${unit.kind}-v1.png`
+                    : rank === 2
+                      ? "./assets/unit-tier-2.png"
+                      : "./assets/unit-roster.png"
+                }
+                width={dedicated ? 100 : rank === 2 ? 1024 : 1254}
+                height={dedicated ? 100 : rank === 2 ? 1024 : 1254}
+              />
+            </svg>
+          )}
           <path d="M2 66H62V72H2Z" fill={color} />
         </g>
       </svg>
@@ -511,6 +563,18 @@ export const ArmyMiniature = memo(function ArmyMiniature({
             </MapLabel>
           </g>
         ),
+      )}
+      {units.some((u) => isSettler(u.kind)) && (
+        <g data-testid="settler-unit-marker" transform="translate(-18 -18)">
+          <circle r="9" fill="#efe0b4" stroke="#344f45" />
+          <path
+            d="M-5 0 0-5 5 0V5H-5Z"
+            fill={color}
+            stroke="#344f45"
+            strokeWidth="1"
+          />
+          <path d="M-1 5V1H2V5" fill="#344f45" />
+        </g>
       )}
       <rect
         x={-Math.max(8, String(units.length).length * 2.8 + 3)}

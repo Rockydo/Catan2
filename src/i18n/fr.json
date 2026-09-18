@@ -1730,5 +1730,22 @@
   "Choose an adjacent walkable land hex. Bare Peaks are impassable.": "Choisissez une terre praticable adjacente. Les Pics rocheux sont infranchissables.",
   "Impassable. No units can enter. Roads may follow the edges.": "Infranchissable. Aucune unité ne peut y entrer. Les routes peuvent suivre les arêtes.",
   "Settlements need adjacent walkable solid land.": "Les colonies exigent une terre ferme praticable adjacente.",
-  "Impassable": "Infranchissable"
+  "Impassable": "Infranchissable",
+  "Settlers": "Colons",
+  "Settler ship": "Navire de colons",
+  "Settler Ship": "Navire de colons",
+  "Colonization": "Colonisation",
+  "Founds a settlement": "Fonde une colonie",
+  "Found settlement": "Fonder une colonie",
+  "Choose a highlighted settlement site": "Choisissez un emplacement de colonie en surbrillance",
+  "Consumes one settler. No road or further payment. Normal spacing and clear adjacent tiles required.": "Consomme une unité de colons. Aucune route ni paiement supplémentaire. La règle de distance et l’absence d’ennemis sur les tuiles adjacentes restent obligatoires.",
+  "Founds a settlement. Consumed on use; no road or further payment.": "Fonde une colonie. Consommé à l’utilisation ; aucune route ni paiement supplémentaire.",
+  "Founds a coastal settlement. Consumed on use; no road or further payment.": "Fonde une colonie côtière. Consommé à l’utilisation ; aucune route ni paiement supplémentaire.",
+  "Select one settler to found a settlement.": "Sélectionnez une unité de colons pour fonder une colonie.",
+  "Choose a clear, legally spaced settlement site beside a ready settler.": "Choisissez un emplacement libre respectant la règle de distance, près de colons prêts à agir.",
+  "Settlers have only one tier.": "Les colons n’ont qu’un seul palier.",
+  "Civilian units cannot siege or raid towns.": "Les unités civiles ne peuvent ni assiéger ni piller les agglomérations.",
+  "{0} civilian unit(s) were destroyed in battle.": "{0} unité(s) civile(s) ont été détruites en bataille.",
+  "Shore bombardment destroyed the settler ships.": "Le bombardement côtier a détruit les navires de colons.",
+  "No legal site here. Move to a clear tile at least two edges from existing towns.": "Aucun emplacement légal ici. Rejoignez une tuile dégagée à au moins deux arêtes des agglomérations existantes."
 }

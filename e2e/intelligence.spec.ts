@@ -126,7 +126,7 @@ test("bank give list sorts by current holdings, preserves ties and selected good
   ).toEqual([...GOODS]);
 });
 
-test("all twenty land-unit portraits show class and rank and mixed army counters accept clicks", async ({
+test("all land-unit portraits show class and rank and mixed army counters accept clicks", async ({
   page,
 }) => {
   const s = funded(),
@@ -134,24 +134,25 @@ test("all twenty land-unit portraits show class and rank and mixed army counters
   town.level = town.turnLevel = 4;
   const tile = landAtVertex(s, town.vertex)[0];
   for (const kind of Object.keys(UNIT_INFO) as UnitClass[])
-    for (const tier of [1, 2, 3, 4]) piece(s, tile, 0, kind, tier);
+    for (const tier of UNIT_INFO[kind as UnitClass].names.map((_, i) => i + 1))
+      piece(s, tile, 0, kind, tier);
   await saved(page, s);
   const counter = page.getByTestId(`army-${tile}`);
   await expect(counter.locator("[data-unit-kinds]")).toHaveAttribute(
     "data-unit-kinds",
-    "merchant,heavy,light,cavalry,artillery",
+    "settler,merchant,heavy,light,cavalry,artillery",
   );
   await counter.click();
   await panel(page, "Forces");
   for (const kind of Object.keys(UNIT_INFO))
-    for (const tier of [1, 2, 3, 4])
+    for (const tier of UNIT_INFO[kind as UnitClass].names.map((_, i) => i + 1))
       await expect(
         page.locator(
           `.unit-choice [data-unit-kind="${kind}"][data-unit-tier="${tier}"]`,
         ),
       ).toHaveCount(1);
-  await expect(page.locator(".unit-choice .portrait-rank")).toHaveCount(20);
-  await expect(page.locator(".unit-choice .portrait-class")).toHaveCount(20);
+  await expect(page.locator(".unit-choice .portrait-rank")).toHaveCount(21);
+  await expect(page.locator(".unit-choice .portrait-class")).toHaveCount(21);
   await page.locator(".army-composition > summary").click();
   await page.locator(".unit-choice").first().click();
   await expect(page.locator(".unit-choice input").first()).not.toBeChecked();

@@ -42,6 +42,8 @@ import {
   extensionName,
   UNIT_INFO,
   SHIP_INFO,
+  SHIP_NAMES,
+  isSettler,
   shipStats,
   unitCost,
   shipCost,
@@ -318,7 +320,7 @@ function PrintedRoster() {
             {labels("Movement", "Mouvement")}: {u.speed}.{" "}
             {u.family
               ? `×2 ${tx(u.family)}`
-              : kind === "merchant"
+              : kind === "merchant" || isSettler(kind)
                 ? labels("No combat power.", "Aucune puissance de combat.")
                 : labels(
                     "Siege power equals tier.",
@@ -328,7 +330,7 @@ function PrintedRoster() {
           {u.names.map((n, i) => (
             <p key={n}>
               {ROMAN[i + 1]} · {tx(n)} · {labels("Power", "Puissance")}:{" "}
-              {kind === "merchant" ? 0 : i + 1}
+              {kind === "merchant" || isSettler(kind) ? 0 : i + 1}
             </p>
           ))}
         </article>
@@ -336,7 +338,8 @@ function PrintedRoster() {
       {(Object.keys(SHIP_INFO) as ShipClass[]).map((k) => (
         <article key={k}>
           <h3>{tx(SHIP_INFO[k].name)}</h3>
-          {[1, 2, 3, 4].map((t) => {
+          {SHIP_NAMES[k].map((_, i) => {
+            const t = i + 1;
             const s = shipStats(k, t);
             return (
               <p key={t}>
@@ -527,6 +530,7 @@ function Catalogue({ initial = "goods" }: { initial?: CatalogSection }) {
             ))}
         {kind === "units" &&
           (Object.keys(UNIT_INFO) as UnitClass[])
+            .filter((k) => tier <= UNIT_INFO[k].names.length)
             .filter((k) =>
               matches(
                 tx(UNIT_INFO[k].name) + " " + tx(UNIT_INFO[k].names[tier - 1]),
@@ -544,7 +548,7 @@ function Catalogue({ initial = "goods" }: { initial?: CatalogSection }) {
                   <div className="stats">
                     <span>
                       <Sword size={15} />
-                      {k === "merchant" ? 0 : tier}{" "}
+                      {k === "merchant" || isSettler(k) ? 0 : tier}{" "}
                       {labels("power", "puissance")}
                     </span>
                     <span>
@@ -558,15 +562,19 @@ function Catalogue({ initial = "goods" }: { initial?: CatalogSection }) {
                           `×2 on ${u.family} terrain`,
                           `×2 en ${u.family === "rugged" ? "terrain accidenté" : u.family === "forest" ? "forêt" : "plaine"}`,
                         )
-                      : k === "artillery"
-                        ? labels(
-                            `−${tier} siege turns`,
-                            `−${tier} tours de siège`,
+                      : k === "settler"
+                        ? tx(
+                            "Founds a settlement. Consumed on use; no road or further payment.",
                           )
-                        : labels(
-                            `Current tile + ${tier} neighbours · ×${tier} raw output${tier >= 3 ? ` + ${tier - 2} processed per resource type` : ""}`,
-                            `Tuile actuelle + ${tier} voisines · production brute ×${tier}${tier >= 3 ? ` + ${tier - 2} produit transformé par type de ressource` : ""}`,
-                          )}
+                        : k === "artillery"
+                          ? labels(
+                              `−${tier} siege turns`,
+                              `−${tier} tours de siège`,
+                            )
+                          : labels(
+                              `Current tile + ${tier} neighbours · ×${tier} raw output${tier >= 3 ? ` + ${tier - 2} processed per resource type` : ""}`,
+                              `Tuile actuelle + ${tier} voisines · production brute ×${tier}${tier >= 3 ? ` + ${tier - 2} produit transformé par type de ressource` : ""}`,
+                            )}
                   </p>
                   <Cost stock={unitCost(k, tier)} />
                 </article>
@@ -574,6 +582,7 @@ function Catalogue({ initial = "goods" }: { initial?: CatalogSection }) {
             })}
         {kind === "ships" &&
           (Object.keys(SHIP_INFO) as ShipClass[])
+            .filter((k) => tier <= SHIP_NAMES[k].length)
             .filter((k) =>
               matches(
                 tx(SHIP_INFO[k].name) + " " + tx(shipStats(k, tier).name),
@@ -606,6 +615,13 @@ function Catalogue({ initial = "goods" }: { initial?: CatalogSection }) {
                       {s.capacity} {labels("berths", "places")}
                     </span>
                   </div>
+                  {k === "settlership" && (
+                    <p>
+                      {tx(
+                        "Founds a coastal settlement. Consumed on use; no road or further payment.",
+                      )}
+                    </p>
+                  )}
                   {k === "fishing" && (
                     <p>
                       {labels(

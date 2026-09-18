@@ -36,9 +36,15 @@ export const RAW_SUBSTITUTES: Partial<Record<Good, Raw>> = {
 };
 export type Family = "forest" | "rugged" | "flat" | "water";
 export type UnitClass =
-  "heavy" | "light" | "cavalry" | "artillery" | "merchant";
+  "heavy" | "light" | "cavalry" | "artillery" | "merchant" | "settler";
 export type ShipClass =
-  "transport" | "convoy" | "galley" | "carrack" | "fishing" | "merchantship";
+  | "transport"
+  | "convoy"
+  | "galley"
+  | "carrack"
+  | "fishing"
+  | "merchantship"
+  | "settlership";
 export type Phase =
   "setup-town" | "setup-route" | "roll" | "economy" | "military" | "finished";
 export interface Hex {

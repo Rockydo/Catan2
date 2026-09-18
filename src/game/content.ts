@@ -209,6 +209,13 @@ export const UNIT_INFO: Record<
     icon: string;
   }
 > = {
+  settler: {
+    name: "Settlers",
+    speed: 1,
+    family: null,
+    names: ["Settlers"],
+    icon: "settler",
+  },
   merchant: {
     name: "Merchant",
     speed: 1,
@@ -260,6 +267,13 @@ export const SHIP_INFO: Record<
     level: number;
   }
 > = {
+  settlership: {
+    name: "Settler ship",
+    speed: 2,
+    power: 0,
+    capacity: 0,
+    level: 1,
+  },
   fishing: { name: "Fishing ship", speed: 2, power: 0, capacity: 0, level: 1 },
   merchantship: {
     name: "Merchant ship",
@@ -526,7 +540,10 @@ export const TOWER_COSTS: Stock[] = [
   {},
   ...[1, 2, 3, 4].map((tier) => COSTS[`Watchtower ${tier}`]),
 ];
+export const isSettler = (kind: string) =>
+  kind === "settler" || kind === "settlership";
 export const SHIP_NAMES: Record<ShipClass, string[]> = {
+  settlership: ["Settler Ship"],
   transport: [
     "Coastal Transport",
     "Sailing Transport",
@@ -557,6 +574,7 @@ export const SHIP_NAMES: Record<ShipClass, string[]> = {
 export function shipStats(kind: ShipClass, tier = 1) {
   const i = Math.max(0, Math.min(3, tier - 1));
   const stats = {
+    settlership: { power: [0], speed: [2], capacity: [0] },
     transport: {
       power: [1, 2, 3, 4],
       speed: [3, 3, 4, 4],

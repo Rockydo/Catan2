@@ -29,7 +29,7 @@ describe("active economic warfare", () => {
     expect(
       economyProjects(s)
         .filter((p) => p.action.type === "recruit")
-        .every((p) => p.action.kind === "merchant"),
+        .every((p) => ["merchant", "settler"].includes(p.action.kind!)),
     ).toBe(true);
     expect(chooseAIAction(s)).toMatchObject({ type: "city", town: home.id });
   });
@@ -240,7 +240,9 @@ it("answers a naval-only island threat with artillery or ships, not stranded inf
   piece(s, "0,0", 0, "heavy");
   piece(s, "1,0", 1, "carrack", 4);
   const recruits = economyProjects(s).filter(
-    (p) => p.action.type === "recruit" && p.action.kind !== "merchant",
+    (p) =>
+      p.action.type === "recruit" &&
+      !["merchant", "settler"].includes(p.action.kind!),
   );
   expect(recruits.length).toBeGreaterThan(0);
   expect(recruits.every((p) => p.action.kind === "artillery")).toBe(true);

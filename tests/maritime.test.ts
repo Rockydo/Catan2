@@ -259,7 +259,7 @@ describe("watchtower support", () => {
 
 describe("tiered fleets and merchants", () => {
   for (const kind of Object.keys(SHIP_NAMES) as ShipClass[])
-    it.each([1, 2, 3, 4])(
+    it.each(SHIP_NAMES[kind].map((_, i) => i + 1))(
       `builds ${kind} tier %s with the right price and stats`,
       (tier) => {
         let { s, home, water } = fishingFixture();
@@ -275,7 +275,9 @@ describe("tiered fleets and merchants", () => {
               inventory(s)[g as keyof typeof before]!,
           ).toBe(n);
         const recipe = shipCost(kind, tier);
-        expect(Object.keys(recipe).length).toBeLessThanOrEqual(4);
+        expect(Object.keys(recipe).length).toBeLessThanOrEqual(
+          kind === "settlership" ? 5 : 4,
+        );
         if (tier === 1)
           expect(Object.keys(recipe).every((g) => RAW.includes(g as any))).toBe(
             true,

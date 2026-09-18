@@ -56,6 +56,7 @@ import {
 } from "../game/world";
 import {
   settlementSites,
+  colonizationSites,
   canRoute,
   moveTargets,
   piecesAt,
@@ -71,6 +72,7 @@ export type BoardMode =
   | "road"
   | "route"
   | "settlement"
+  | "colonize"
   | "camp"
   | "move"
   | "move-route"
@@ -530,9 +532,11 @@ export function Board({
         new Set(
           s.phase === "setup-town" || mode === "settlement"
             ? settlementSites(s, s.active, s.phase === "setup-town")
-            : [],
+            : mode === "colonize" && unitIds.length === 1
+              ? colonizationSites(s, s.pieces[unitIds[0]])
+              : [],
         ),
-      [s, mode],
+      [s, mode, unitIds.join(",")],
     ),
     targets = useMemo(
       () => (mode === "move" ? moveTargets(s, unitIds) : {}),
@@ -1253,7 +1257,9 @@ export function Board({
               }),
             )}
             {tx(
-              (s.phase === "setup-town" || mode === "settlement") &&
+              (s.phase === "setup-town" ||
+                mode === "settlement" ||
+                mode === "colonize") &&
                 [...sites].map((v) => {
                   const { x, y } = vertexPoint(s.vertices[v]);
                   return (
@@ -1273,7 +1279,9 @@ export function Board({
                             onBuild(
                               s.phase === "setup-town"
                                 ? "setup-town"
-                                : "settlement",
+                                : mode === "colonize"
+                                  ? "colonize"
+                                  : "settlement",
                               v,
                             );
                         });
@@ -1283,7 +1291,9 @@ export function Board({
                           onBuild(
                             s.phase === "setup-town"
                               ? "setup-town"
-                              : "settlement",
+                              : mode === "colonize"
+                                ? "colonize"
+                                : "settlement",
                             v,
                           );
                       }}

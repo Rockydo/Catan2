@@ -49,33 +49,32 @@ function legacy(s: ReturnType<typeof funded>) {
 }
 
 describe("four troop tiers and unlimited recruitment", () => {
-  it.each(Object.keys(UNIT_INFO) as UnitClass[])(
-    "%s has a one-processed-good middle tier and four legal ranks",
-    (kind) => {
-      expect(UNIT_INFO[kind].names).toHaveLength(4);
-      expect(
-        Object.keys(unitCost(kind, 2)).filter((g) =>
-          (PROCESSED as readonly string[]).includes(g),
-        ),
-      ).toHaveLength(1);
-      for (const tier of [1, 2, 3, 4]) {
-        let s = funded();
-        const town = ownTowns(s)[0];
-        town.level = town.turnLevel = tier;
-        const tile = landAtVertex(s, town.vertex)[0],
-          before = inventory(s);
-        s = run(s, { type: "recruit", town: town.id, tile, kind, tier });
-        const u = Object.values(s.pieces)[0];
-        expect(u.tier).toBe(tier);
-        for (const [good, n] of Object.entries(unitCost(kind, tier)))
-          expect(inventory(s)[good as keyof typeof before]).toBe(
-            before[good as keyof typeof before]! - n!,
-          );
-        expect(moveTargets(s, [u.id])).toEqual({});
-        assertInvariants(deserialize(serialize(s)));
-      }
-    },
-  );
+  it.each(
+    (Object.keys(UNIT_INFO) as UnitClass[]).filter((k) => k !== "settler"),
+  )("%s has a one-processed-good middle tier and four legal ranks", (kind) => {
+    expect(UNIT_INFO[kind].names).toHaveLength(4);
+    expect(
+      Object.keys(unitCost(kind, 2)).filter((g) =>
+        (PROCESSED as readonly string[]).includes(g),
+      ),
+    ).toHaveLength(1);
+    for (const tier of [1, 2, 3, 4]) {
+      let s = funded();
+      const town = ownTowns(s)[0];
+      town.level = town.turnLevel = tier;
+      const tile = landAtVertex(s, town.vertex)[0],
+        before = inventory(s);
+      s = run(s, { type: "recruit", town: town.id, tile, kind, tier });
+      const u = Object.values(s.pieces)[0];
+      expect(u.tier).toBe(tier);
+      for (const [good, n] of Object.entries(unitCost(kind, tier)))
+        expect(inventory(s)[good as keyof typeof before]).toBe(
+          before[good as keyof typeof before]! - n!,
+        );
+      expect(moveTargets(s, [u.id])).toEqual({});
+      assertInvariants(deserialize(serialize(s)));
+    }
+  });
   it("recruits ten units at one settlement, charges every purchase and still rejects unaffordable units", () => {
     let s = funded();
     const town = ownTowns(s)[0],

@@ -68,6 +68,7 @@ export function piece(
       "carrack",
       "fishing",
       "merchantship",
+      "settlership",
     ].includes(kind),
     id = `u${s.nextId++}`;
   const u: Piece = {

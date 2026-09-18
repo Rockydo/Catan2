@@ -130,14 +130,14 @@ describe("second edition economy", () => {
       expect(campCost(raw, 2)).toBeDefined();
     }
   });
-  it("limits every recipe to five types with only one five-type capstone", () => {
+  it("limits every recipe to five types with five types reserved for the city capstone and prepaid settlers", () => {
     const recipes = Object.entries(COSTS);
     expect(
       recipes
         .filter(([, c]) => Object.keys(c).length === 5)
         .map(([name]) => name)
         .sort(),
-    ).toEqual(["City III / level 4"]);
+    ).toEqual(["City III / level 4", "Settler Ship", "Settlers"]);
     for (const [, c] of recipes) {
       expect(Object.keys(c).length).toBeLessThanOrEqual(5);
       for (const [g, n] of Object.entries(c)) {

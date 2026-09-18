@@ -38,7 +38,8 @@ Choose **English** or **Français** on the main menu or in campaign settings. Th
 - Classic: 5 factions on 125 initial tiles. Grand campaign: 10 factions on 250 tiles.
 - Eleven climate zones determine terrain and water probabilities. Terrain numbers and shortages vary by seed. Expeditions extend the map without changing existing tiles.
 - Twelve raw resources and ten processed goods. Cities, camps, collectors and guilds provide different ways to grow.
-- Four tiers of land units and ships, transport, raids, sieges, watchtowers and alliances.
+- Four tiers of military units and ships, transport, raids, sieges, watchtowers and alliances.
+- Single-tier Settlers and Settler ships found towns without a connected road. Their price includes the settlement; select the unit and use **Found settlement**.
 - Four research tiers, with eight cards each. Buy a choice of two random cards and keep one.
 - AI difficulty and action-speed settings are separate. Faster actions do not reduce AI intelligence.
 - No victory points or military upkeep. Destroy every rival's last town to win.

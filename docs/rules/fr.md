@@ -83,6 +83,10 @@ Construisez les paliers dans l’ordre. Un atelier I/II/III produit 1/2/3 produi
 ### Camps de ressources
 Chaque route possédée accueille un camp sur chacun de ses côtés terrestres. Choisissez la tuile liée à la construction. Aucun plafond par tuile au-delà des côtés physiques des routes. Les liaisons maritimes accueillent des pêcheries côté Poissons et des camps baleiniers côté Baleines. Une pêcherie survit à la transformation de sa liaison en route.
 Chaque camp I coûte une carte de deux ressources brutes différentes, jamais celle qu’il produit. Le palier II possède son propre coût d’équipement. Un camp multiplie la production complète de sa tuile par 1/2. Un camp de Forêt donne 2/4 Bois ; un camp de Steppe donne 1/2 Peaux et 1/2 Laines. Aucun intrant, entretien ou produit transformé. Détruire une liaison supprime tous ses camps. Une liaison isolée conserve ses camps ; leur production rejoint l’agglomération du propriétaire la plus proche.
+### Colons et colonisation
+Les Colons et les Navires de colons ont un seul palier et une puissance de combat nulle. Les Colons coûtent le Marchand terrestre de palier I plus une Colonie : 1 Bois, 1 Argile, 2 Laines, 3 Blés et 2 Peaux. Le Navire de colons coûte le Navire marchand de palier I plus une Colonie : 3 Bois, 1 Argile, 2 Laines, 1 Blé et 2 Peaux. Recrutez-les dans une agglomération éligible ; un navire exige une tuile d’eau libre adjacente. Les Colons se déplacent de 1 tuile par tour, les Navires de colons de 2. Les nouvelles unités agissent au tour suivant.
+Sélectionnez l’unité dans Forces, puis Fonder une colonie et un coin en surbrillance de sa tuile actuelle. La fondation consomme une unité et crée immédiatement une colonie de niveau 1 au stock vide. Aucune route, aucun second paiement ni point de mouvement supplémentaire ne sont nécessaires, même après avoir dépensé le dernier point de mouvement. La nouvelle colonie peut recruter au tour suivant selon les règles normales. La règle de distance reste applicable : intersection libre, sans agglomération à une arête. Au moins une tuile adjacente doit être une terre ferme praticable. Des unités ennemies sur une tuile adjacente ou une tour ennemie sur le site empêchent la fondation. Les unités alliées sont autorisées. Un Navire de colons fonde directement sur la côte, sans débarquement.
+Les Colons terrestres peuvent embarquer dans un transport et doivent débarquer avant de fonder. Les Navires de colons n’embarquent aucun passager. Aucun de ces types ne récolte, ne fournit de puissance, ne bloque la production, ne protège les agglomérations et ne peut piller seul. Les colons exposés et les navires de colons sont détruits dès qu’un combat a lieu sur leur tuile, même si leur escorte gagne. Les colons embarqués suivent les règles ordinaires de perte des passagers. Les colons n’empêchent pas l’élimination après la perte de la dernière agglomération. L’IA peut recruter des colons et les envoyer vers des sites productifs accessibles, en privilégiant les ressources rares et en évitant les positions ennemies.
 
 ## Armées et combats
 
@@ -1061,11 +1065,17 @@ Les coûts concernent chaque construction ou étape. La Tour de guet I propose d
 
 | Guilde des érudits III | 4 Blocs + 2 Combustible + 3 Tissu |
 
+| Colons | 2 Peaux + 2 Laine + 3 Blé + 1 Bois + 1 Argile |
+
+| Navire de colons | 3 Bois + 2 Laine + 2 Peaux + 1 Argile + 1 Blé |
+
 ## Unités terrestres
 
 | Unité | Palier | Puissance | Mouvement | Bonus de terrain |
 
 |---|---|---|---|---|
+
+| Colons | I | 0 | 1 | 0 |
 
 | Colporteur | I | 0 | 1 | 0 |
 
@@ -1112,6 +1122,8 @@ Les coûts concernent chaque construction ou étape. La Tour de guet I propose d
 | Navire | Palier | Puissance / points de pertes | Mouvement | Places |
 
 |---|---|---|---|---|
+
+| Navire de colons | I | 0 | 2 | 0 |
 
 | Barque de pêche | I | 0 | 2 | 0 |
 

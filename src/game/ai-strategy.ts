@@ -180,7 +180,7 @@ export function townThreats(s: Game, t: Town): Piece[] {
     (u) =>
       !friendly(s, u.owner, t.owner) &&
       !u.naval &&
-      u.kind !== "merchant" &&
+      points(u) > 0 &&
       !u.carrier &&
       tiles.some(
         (id) =>
@@ -242,7 +242,8 @@ export function campaignPowerTarget(s: Game): number {
       u.naval ||
       u.carrier ||
       u.kind === "artillery" ||
-      u.kind === "merchant"
+      u.kind === "merchant" ||
+      u.kind === "settler"
     )
       continue;
     const key = `${u.owner}/${u.tile}`;

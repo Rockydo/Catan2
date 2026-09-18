@@ -1,3 +1,5 @@
+import { colonistAction, colonistProjects } from "./ai-colonization";
+import { isSettler } from "./content";
 import { canChooseWoods } from "./selectors";
 import { allianceResponder, friendly } from "./relations";
 import { acceptsAlliance } from "./diplomacy";
@@ -214,7 +216,12 @@ function check(s: Game, c: Command) {
 function armyGroups(s: Game, p = s.active, freshOnly = false): Piece[][] {
   const groups = new Map<string, Piece[]>();
   for (const u of ownPieces(s, p)) {
-    if (collector(u) || (freshOnly ? !fresh(s, u) : !ready(s, u))) continue;
+    if (
+      collector(u) ||
+      isSettler(u.kind) ||
+      (freshOnly ? !fresh(s, u) : !ready(s, u))
+    )
+      continue;
     const id = `${u.tile}/${u.naval}`;
     groups.set(id, [...(groups.get(id) ?? []), u]);
   }
@@ -369,7 +376,7 @@ function researchSieges(s: Game) {
           return (
             warTarget(s, t.owner) &&
             s.vertices[t.vertex].tiles.includes(group[0].tile) &&
-            group.some((u) => u.kind !== "merchant") &&
+            group.some((u) => points(u) > 0) &&
             !protects(s, t) &&
             siege?.raided == null &&
             siege?.last !== s.players[s.active].turns &&
@@ -758,7 +765,7 @@ export function economyProjects(s: Game): Project[] {
       for (const tile of tiles.filter((id) => !hostileAt(s, id))) {
         const terrain = s.tiles[tile].resource;
         for (const kind of (Object.keys(UNIT_INFO) as UnitClass[]).filter(
-          (k) => k !== "merchant",
+          (k) => k !== "merchant" && !isSettler(k),
         ))
           for (let tier = 1; tier <= Math.min(4, t.turnLevel); tier++) {
             const free = s.players[s.active].bonuses.recruits.some(
@@ -910,7 +917,7 @@ export function economyProjects(s: Game): Project[] {
             commerceRaid ? Math.ceil(commerceGuard * 1.2 + 3) : 0,
           );
         for (const kind of (Object.keys(SHIP_INFO) as ShipClass[]).filter(
-          (k) => k !== "fishing" && k !== "merchantship",
+          (k) => k !== "fishing" && k !== "merchantship" && !isSettler(k),
         ))
           for (let tier = 1; tier <= t.turnLevel; tier++) {
             const info = shipStats(kind, tier);
@@ -1150,6 +1157,13 @@ export function economyProjects(s: Game): Project[] {
         );
     }
   }
+  for (const project of colonistProjects(s))
+    add(
+      project.action,
+      project.cost,
+      project.score * drive,
+      "Colonize reachable resources without a road chain",
+    );
   const prospects = expeditionProspects(s, inc);
   const missingRaw = prospects.missing;
   const expansionRoom = projects.filter(
@@ -1434,7 +1448,9 @@ export function coalitionTrade(
       projects.find(
         (p) =>
           p.urgent ||
-          (p.action.type === "recruit" && p.action.kind !== "merchant"),
+          (p.action.type === "recruit" &&
+            p.action.kind !== "merchant" &&
+            !isSettler(p.action.kind ?? "")),
       ) ?? projects[0]
     )?.cost ?? {};
   const budget = marketStockValue(stock, prices) * 0.15;
@@ -1446,9 +1462,13 @@ export function coalitionTrade(
     const view = { ...s, active: partner.id, phase: "economy" as const };
     const plan = economyProjects(view).filter(
       (p) =>
-        (p.action.type === "recruit" && p.action.kind !== "merchant") ||
+        (p.action.type === "recruit" &&
+          p.action.kind !== "merchant" &&
+          !isSettler(p.action.kind ?? "")) ||
         (p.action.type === "ship" &&
-          !["fishing", "merchantship"].includes(p.action.kind!)) ||
+          !["fishing", "merchantship", "settlership"].includes(
+            p.action.kind!,
+          )) ||
         p.action.type === "wall",
     );
     for (const project of plan.slice(0, 8))
@@ -1547,7 +1567,8 @@ function chooseEconomy(s: Game): Command {
         (p) =>
           p.action.type === "recruit" &&
           p.action.kind !== "artillery" &&
-          p.action.kind !== "merchant",
+          p.action.kind !== "merchant" &&
+          !isSettler(p.action.kind ?? ""),
       )
     : [];
   const emergency = recruits.filter((p) =>
@@ -1962,6 +1983,8 @@ function continueTowerSiege(s: Game): Command | null {
   return null;
 }
 function chooseMilitary(s: Game): Command {
+  const colony = colonistAction(s);
+  if (colony) return colony;
   const towerOperation = continueTowerSiege(s);
   if (towerOperation) return towerOperation;
   const economicMove = collectorMove(s);

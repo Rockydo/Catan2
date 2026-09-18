@@ -23,6 +23,7 @@ import {
   ownPieces,
   ownTowns,
   ready,
+  points,
   recipePayment,
 } from "./selectors";
 import { waterAtVertex } from "./world";
@@ -373,7 +374,7 @@ export function guildOrderQuote(
           u.naval === naval &&
           ready(s, u) &&
           (g.kind === "engineers"
-            ? !u.guildSiege && u.kind !== "merchant"
+            ? !u.guildSiege && points(u) > 0
             : !u.guildSupplied) &&
           s.vertices[town.vertex].tiles.includes(u.tile) &&
           u.tile === units[0].tile,
@@ -425,7 +426,7 @@ export function guildUnits(s: Game, town: Town): Piece[] {
       u.naval === naval &&
       ready(s, u) &&
       (town.guild?.kind === "engineers"
-        ? !u.guildSiege && u.kind !== "merchant"
+        ? !u.guildSiege && points(u) > 0
         : !u.guildSupplied) &&
       s.vertices[town.vertex].tiles.includes(u.tile),
   );

@@ -7,7 +7,7 @@ import {
   type ShipClass,
   type Stock,
 } from "./types";
-import { SHIP_INFO, shipStats } from "./content";
+import { SHIP_INFO, shipStats, isSettler } from "./content";
 import { neighbors, canOccupy } from "./world";
 import { rule, log, addStock } from "./economy";
 import {
@@ -110,7 +110,7 @@ export function breakSieges(s: Game) {
       towerGuards(s, tower) ||
       !s.vertices[tower.vertex].tiles.some((tile) =>
         piecesAt(s, tile, false).some(
-          (u) => u.owner === siege.owner && u.kind !== "merchant",
+          (u) => u.owner === siege.owner && points(u) > 0,
         ),
       )
     ) {
@@ -133,7 +133,7 @@ export function breakSieges(s: Game) {
       protects(s, town) ||
       !s.vertices[town.vertex].tiles.some((t) =>
         piecesAt(s, t, false).some(
-          (u) => u.owner === siege.owner && u.kind !== "merchant",
+          (u) => u.owner === siege.owner && points(u) > 0,
         ),
       )
     ) {
@@ -207,7 +207,7 @@ export function siegeArmy(s: Game, c: Command) {
     );
   rule(
     units.some((u) => points(u) > 0),
-    "Merchants cannot siege or raid towns.",
+    "Civilian units cannot siege or raid towns.",
   );
   const town = s.towns[c.town ?? ""];
   rule(town && !friendly(s, town.owner, s.active), "Select an enemy town.");
@@ -237,6 +237,26 @@ export function militaryCommand(s: Game, c: Command): boolean {
         Number(s.players[b.owner].control === "human") -
           Number(s.players[a.owner].control === "human") || a.owner - b.owner,
     );
+    const colonists = defenders.filter((u) => isSettler(u.kind));
+    removePieces(
+      s,
+      colonists.map((u) => u.id),
+    );
+    for (let i = defenders.length - 1; i >= 0; i--)
+      if (!s.pieces[defenders[i].id]) defenders.splice(i, 1);
+    if (!defenders.length) {
+      units.forEach((u) => {
+        u.moved += 1;
+      });
+      log(
+        s,
+        "Shore bombardment destroyed the settler ships.",
+        "battle",
+        s.active,
+        target,
+      );
+      return true;
+    }
     const a = bombardmentPower(s, units),
       d = power(s, defenders, target);
     units.forEach((u) => {
@@ -301,9 +321,9 @@ export function militaryCommand(s: Game, c: Command): boolean {
     if (defenders.length) {
       // Entering the hostile hex costs one point, just like an empty hex.
       // Survivors keep any remaining movement after combat (including ties).
-      // Land merchants on either side are lost as soon as combat begins, including ties.
+      // Exposed merchants and colonists are lost when combat begins, including ties.
       const civilians = [...units, ...defenders].filter(
-        (u) => u.kind === "merchant",
+        (u) => u.kind === "merchant" || isSettler(u.kind),
       );
       removePieces(
         s,
@@ -312,7 +332,7 @@ export function militaryCommand(s: Game, c: Command): boolean {
       if (civilians.length)
         log(
           s,
-          `${civilians.length} land merchant(s) were destroyed in battle.`,
+          `${civilians.length} civilian unit(s) were destroyed in battle.`,
           "battle",
           undefined,
           target,

@@ -28,6 +28,7 @@ import {
 import {
   TERRAIN,
   UNIT_INFO,
+  isSettler,
   SHIP_INFO,
   processedFor,
   shipStats,
@@ -100,16 +101,20 @@ export const hostileAt = (
   p = s.active,
   naval?: boolean,
 ) => piecesAt(s, tile, naval).some((u) => !friendly(s, u.owner, p));
+export const navalBlockAt = (s: Game, tile: string, p = s.active) =>
+  piecesAt(s, tile, true).some(
+    (u) => !friendly(s, u.owner, p) && !isSettler(u.kind),
+  );
 export const blockAt = (s: Game, tile: string, p = s.active) =>
   piecesAt(s, tile, false).some(
-    (u) => !friendly(s, u.owner, p) && u.kind !== "merchant",
+    (u) => !friendly(s, u.owner, p) && points(u) > 0,
   );
 export const besieged = (s: Game, town: string) =>
   Object.values(s.sieges).some((x) => x.town === town);
 export const protects = (s: Game, t: Town) =>
   s.vertices[t.vertex].tiles.some((tile) =>
     piecesAt(s, tile, false).some(
-      (u) => friendly(s, u.owner, t.owner) && u.kind !== "merchant",
+      (u) => friendly(s, u.owner, t.owner) && points(u) > 0,
     ),
   );
 export const ready = (s: Game, u: Piece) =>
@@ -118,7 +123,7 @@ export const fresh = (s: Game, u: Piece) => ready(s, u) && u.moved === 0;
 export const points = (u: Piece) =>
   u.naval
     ? shipStats(u.kind as ShipClass, u.tier).power
-    : u.kind === "merchant"
+    : u.kind === "merchant" || isSettler(u.kind)
       ? 0
       : u.tier;
 export const speed = (u: Piece) =>
@@ -321,6 +326,23 @@ export function settlementSites(
       (setup || s.vertices[v].edges.some((e) => s.routes[e]?.owner === p)),
   );
 }
+/** A settler carries the settlement cost; only the road requirement is waived. */
+export function colonizationSites(s: Game, unit: Piece | undefined): string[] {
+  if (
+    !unit ||
+    !isSettler(unit.kind) ||
+    unit.owner !== s.active ||
+    !ready(s, unit) ||
+    !canOccupy(s.tiles[unit.tile], unit.naval)
+  )
+    return [];
+  const corners = new Set(s.tiles[unit.tile].vertices);
+  return settlementSites(s, unit.owner, true).filter(
+    (v) =>
+      corners.has(v) &&
+      !s.vertices[v].tiles.some((tile) => hostileAt(s, tile, unit.owner)),
+  );
+}
 export function canCompleteSetup(s: Game, remaining: number): boolean {
   if (remaining <= 0) return true;
   const candidates = settlementSites(s, s.active, true);
@@ -456,7 +478,7 @@ export function productionSources(s: Game) {
   }[] = [];
   const blocked = (id: string, owner: number) =>
     s.tiles[id].resource === "water"
-      ? hostileAt(s, id, owner, true)
+      ? navalBlockAt(s, id, owner)
       : blockAt(s, id, owner);
   for (const town of Object.values(s.towns))
     for (const id of s.vertices[town.vertex].tiles) {
@@ -644,7 +666,7 @@ export function bankRate(
       if (
         !e.harbor ||
         e.tiles.some(
-          (t) => s.tiles[t].resource === "water" && hostileAt(s, t, p, true),
+          (t) => s.tiles[t].resource === "water" && navalBlockAt(s, t, p),
         )
       )
         continue;
@@ -709,7 +731,7 @@ export const towerSiegeRequirement = (tower: Watchtower, units: Piece[]) =>
 export const towerGuards = (s: Game, tower: Watchtower) =>
   s.vertices[tower.vertex].tiles.some((tile) =>
     piecesAt(s, tile, false).some(
-      (u) => friendly(s, u.owner, tower.owner) && u.kind !== "merchant",
+      (u) => friendly(s, u.owner, tower.owner) && points(u) > 0,
     ),
   );
 export const unusedBonuses = () => ({

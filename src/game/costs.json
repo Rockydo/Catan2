@@ -750,5 +750,19 @@
     "masonry": 4,
     "coke": 2,
     "cloth": 3
+  },
+  "Settlers": {
+    "hides": 2,
+    "wool": 2,
+    "grain": 3,
+    "lumber": 1,
+    "brick": 1
+  },
+  "Settler Ship": {
+    "lumber": 3,
+    "wool": 2,
+    "hides": 2,
+    "brick": 1,
+    "grain": 1
   }
 }

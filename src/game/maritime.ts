@@ -117,6 +117,7 @@ export function towerSites(s: Game, owner = s.active) {
           !u.naval &&
           !u.carrier &&
           u.kind !== "merchant" &&
+          u.kind !== "settler" &&
           !friendly(s, u.owner, owner),
       )
       .map((u) => u.tile),

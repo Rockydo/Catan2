@@ -14,6 +14,7 @@ import {
   CARDS,
   UNIT_INFO,
   SHIP_INFO,
+  SHIP_NAMES,
   shipStats,
   ROMAN,
 } from "../src/game/content";
@@ -99,9 +100,9 @@ for (const locale of ["en", "fr"] as const) {
     "|---|---|---|---|---|",
   );
   for (const [kind, u] of Object.entries(UNIT_INFO))
-    for (let i = 0; i < 4; i++)
+    for (let i = 0; i < u.names.length; i++)
       lines.push(
-        `| ${tx(u.names[i])} | ${ROMAN[i + 1]} | ${kind === "merchant" ? 0 : i + 1} | ${u.speed} | ${u.family ? "×2 " + tx(u.family) : "0"} |`,
+        `| ${tx(u.names[i])} | ${ROMAN[i + 1]} | ${kind === "merchant" || kind === "settler" ? 0 : i + 1} | ${u.speed} | ${u.family ? "×2 " + tx(u.family) : "0"} |`,
       );
   lines.push(
     `## ${text("Ship roster", "Navires")}`,
@@ -114,7 +115,7 @@ for (const locale of ["en", "fr"] as const) {
     "|---|---|---|---|---|",
   );
   for (const k of Object.keys(SHIP_INFO) as ShipClass[])
-    for (let i = 1; i <= 4; i++) {
+    for (let i = 1; i <= SHIP_NAMES[k].length; i++) {
       const s = shipStats(k, i);
       lines.push(
         `| ${tx(s.name)} | ${ROMAN[i]} | ${s.power} | ${s.speed} | ${s.capacity} |`,

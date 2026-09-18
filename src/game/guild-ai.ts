@@ -1,3 +1,4 @@
+import { isSettler } from "./content";
 import type {
   Command,
   Game,
@@ -155,7 +156,7 @@ function suppliedFormation(s: Game, town: Town, planningConstruction = false) {
     : enemies.flatMap((t) => landAtVertex(s, t.vertex));
   let best: { ids: string[]; value: number } | undefined;
   for (const [tile, group] of groups) {
-    if (group.every(collector)) continue;
+    if (group.every((u) => collector(u) || isSettler(u.kind))) continue;
     const selected = group;
     const remaining = Math.min(
       ...selected.map((u) =>

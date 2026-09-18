@@ -20,12 +20,14 @@ const classOrder = [
   "cavalry",
   "artillery",
   "merchant",
+  "settler",
   "galley",
   "carrack",
   "transport",
   "convoy",
   "fishing",
   "merchantship",
+  "settlership",
 ];
 function grouped(units: Piece[]) {
   const groups = new Map<string, Piece[]>();
@@ -195,7 +197,9 @@ export function ArmyComposition({
                     const count = ids.filter((id) => selected.has(id)).length;
                     const economic = [
                       "merchant",
+                      "settler",
                       "merchantship",
+                      "settlership",
                       "fishing",
                     ].includes(u.kind);
                     const deselect =

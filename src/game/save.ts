@@ -586,7 +586,7 @@ export function assertInvariants(s: Game) {
       Object.hasOwn(u.naval ? SHIP_INFO : UNIT_INFO, u.kind),
       "Invalid unit class.",
     );
-    int(u.tier, 1, 4);
+    int(u.tier, 1, ["settler", "settlership"].includes(u.kind) ? 1 : 4);
     if (u.coverage !== undefined)
       rule(
         u.kind === "merchant" &&
@@ -609,7 +609,9 @@ export function assertInvariants(s: Game) {
     if (u.guildSiege !== undefined) {
       int(u.guildSiege, 2, 6);
       rule(
-        !u.naval && u.kind !== "merchant" && u.guildSiege % 2 === 0,
+        !u.naval &&
+          !["merchant", "settler"].includes(u.kind) &&
+          u.guildSiege % 2 === 0,
         "Invalid guild siege tools.",
       );
     }

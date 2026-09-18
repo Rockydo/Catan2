@@ -25,6 +25,7 @@ import {
   unitCost,
   shipCost,
   shipStats,
+  isSettler,
 } from "../game/content";
 import { walkableAtVertex as landAtVertex, waterAtVertex } from "../game/world";
 import { terrainName } from "../game/maritime";
@@ -83,9 +84,9 @@ export function Recruitment({
     : (tiles.find((id) => !hostileAt(s, id, viewer, naval)) ?? tiles[0]);
   const count = naval ? quantity : Math.min(quantity, 100);
   const bonus = s.players[viewer].bonuses;
-  const kinds = Object.keys(naval ? SHIP_INFO : UNIT_INFO) as (
-    UnitClass | ShipClass
-  )[];
+  const kinds = Object.keys(naval ? SHIP_INFO : UNIT_INFO).filter(
+    (kind) => !isSettler(kind) || tier === 1,
+  ) as (UnitClass | ShipClass)[];
   function changeDomain(value: boolean) {
     setNaval(value);
     remember("frontiers-recruit-domain", value ? "navy" : "army");
@@ -289,15 +290,17 @@ export function Recruitment({
                     <small className="unit-category">
                       {tx(
                         naval
-                          ? kind === "merchantship"
-                            ? "Trade ship"
-                            : kind === "fishing"
-                              ? "Fishing ship"
-                              : kind === "convoy"
-                                ? "Convoy"
-                                : kind === "transport"
-                                  ? "Transport"
-                                  : "Warship"
+                          ? kind === "settlership"
+                            ? "Colonization"
+                            : kind === "merchantship"
+                              ? "Trade ship"
+                              : kind === "fishing"
+                                ? "Fishing ship"
+                                : kind === "convoy"
+                                  ? "Convoy"
+                                  : kind === "transport"
+                                    ? "Transport"
+                                    : "Warship"
                           : unit!.name,
                       )}
                     </small>
@@ -309,7 +312,10 @@ export function Recruitment({
                     title={tx("Power before terrain and watchtower bonuses")}
                   >
                     <Shield size={12} />
-                    {tx(ship?.power ?? (kind === "merchant" ? 0 : tier))}
+                    {tx(
+                      ship?.power ??
+                        (kind === "merchant" || isSettler(kind) ? 0 : tier),
+                    )}
                   </span>
                   <span title={tx("Movement per turn")}>
                     <Footprints size={12} />
@@ -325,15 +331,17 @@ export function Recruitment({
                   )}
                   <span>
                     {tx(
-                      kind === "merchant" ||
-                        kind === "merchantship" ||
-                        kind === "fishing"
-                        ? `×${tier} harvest`
-                        : kind === "artillery"
-                          ? `−${tier} siege`
-                          : unit?.family
-                            ? `×2 ${unit.family}`
-                            : "",
+                      isSettler(kind)
+                        ? "Founds a settlement"
+                        : kind === "merchant" ||
+                            kind === "merchantship" ||
+                            kind === "fishing"
+                          ? `×${tier} harvest`
+                          : kind === "artillery"
+                            ? `−${tier} siege`
+                            : unit?.family
+                              ? `×2 ${unit.family}`
+                              : "",
                     )}
                   </span>
                   {kind === "fishing" && <span>{tx(`Range ${tier}`)}</span>}

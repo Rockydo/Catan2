@@ -86,6 +86,7 @@ import {
   bombardmentTargets,
   speed,
   ready,
+  colonizationSites,
   unitName,
   sumStock,
   besieged,
@@ -799,6 +800,16 @@ function ForcesPanel({
     ),
     artilleryIds = artillery.map((u) => u.id),
     bombardTargets = bombardmentTargets(s, artilleryIds);
+  const settler =
+    selected.find(
+      (u) =>
+        u.owner === viewer &&
+        (u.kind === "settler" || u.kind === "settlership"),
+    ) ??
+    mine.find(
+      (u) => ready(s, u) && (u.kind === "settler" || u.kind === "settlership"),
+    );
+  const canFound = !!settler && colonizationSites(s, settler).length > 0;
   const selectedCanSiege =
     selected.length > 0 &&
     selected.every((u) => ready(s, u) && speed(u) + u.bonus - u.moved >= 1);
@@ -857,6 +868,31 @@ function ForcesPanel({
             {tx(
               mine.length > 0 && (
                 <>
+                  {settler && (
+                    <div className="panel-intro">
+                      <button
+                        className="primary full"
+                        disabled={!interactive || !canFound}
+                        onClick={() => {
+                          setUnitIds([settler.id]);
+                          setMode(mode === "colonize" ? "inspect" : "colonize");
+                        }}
+                      >
+                        {tx(
+                          mode === "colonize"
+                            ? "Choose a highlighted settlement site"
+                            : "Found settlement",
+                        )}
+                      </button>
+                      <p>
+                        {tx(
+                          ready(s, settler) && !canFound
+                            ? "No legal site here. Move to a clear tile at least two edges from existing towns."
+                            : "Consumes one settler. No road or further payment. Normal spacing and clear adjacent tiles required.",
+                        )}
+                      </p>
+                    </div>
+                  )}
                   <button
                     className={`primary full ${mode === "move" ? "selected" : ""}`}
                     disabled={

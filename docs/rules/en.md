@@ -83,6 +83,10 @@ Build tiers in order. Tier I/II/III yields 1/2/3 processed goods on that tile's 
 ### Resource camps
 Each owned road can hold one camp on each land side. Choose its linked tile when building. There is no camp limit per tile beyond its physical route sides. Sea routes can hold fisheries on Fish sides and whaling camps on Whale sides. A fishery survives conversion of its parent route into a road.
 Every tier-I camp costs one card of each of two raw types, never the good it produces. Tier II has its own equipment cost. Camps multiply the tile’s full base yield by 1/2. A Forest camp gives 2/4 Wood; a Steppe camp gives 1/2 Hides and 1/2 Wool. No operating inputs, upkeep or processed output. Destroying a route destroys all attached camps. An isolated surviving route keeps its camps and production goes to the nearest owned town.
+### Settlers and colonization
+Settlers and Settler ships each have one tier and zero combat power. Settlers cost the tier-I land Merchant plus a Settlement: 1 Wood, 1 Clay, 2 Wool, 3 Grain and 2 Hides. A Settler ship costs the tier-I Merchant ship plus a Settlement: 3 Wood, 1 Clay, 2 Wool, 1 Grain and 2 Hides. Recruit them at any eligible town; ships require adjacent open water. Settlers move 1 tile per turn, Settler ships 2. New units act next turn.
+Select the unit in Forces, choose Found settlement, then select a highlighted corner of its current tile. Founding consumes one unit and creates a level-1 settlement immediately, with empty storage. No road, second resource payment or additional movement point is required, including after spending the last movement point. The new town follows ordinary next-turn recruitment readiness. Settlement spacing still applies: no settlement on an occupied intersection or one edge from another town. At least one adjacent tile must be walkable solid land. Enemy units on any adjacent tile and enemy watchtowers on the site prevent colonization. Allied units may remain nearby. A Settler ship founds on the coast without disembarking.
+Land settlers can be carried by transports and must disembark before founding. Settler ships carry no passengers. Neither type harvests resources, provides combat power, blocks production, protects towns or conducts raids alone. Exposed settlers and settler ships are destroyed when their tile enters battle, even when escorted by the winning force. Embarked land settlers follow the normal passenger-loss rules. Settlers do not prevent elimination after the last town is lost. The AI can recruit and move colonists toward reachable, productive sites, prioritizing scarce resources and avoiding hostile positions.
 
 ## Armies and battles
 
@@ -1059,11 +1063,17 @@ Prices are paid per construction or upgrade step. Watchtower I offers two altern
 
 | Scholars' Guild III | 4 Blocks + 2 Fuel + 3 Cloth |
 
+| Settlers | 2 Hides + 2 Wool + 3 Grain + 1 Wood + 1 Clay |
+
+| Settler Ship | 3 Wood + 2 Wool + 2 Hides + 1 Clay + 1 Grain |
+
 ## Land roster
 
 | Unit | Tier | Power | Movement | Terrain bonus |
 
 |---|---|---|---|---|
+
+| Settlers | I | 0 | 1 | 0 |
 
 | Peddler | I | 0 | 1 | 0 |
 
@@ -1110,6 +1120,8 @@ Prices are paid per construction or upgrade step. Watchtower I offers two altern
 | Ship | Tier | Power / casualty points | Movement | Berths |
 
 |---|---|---|---|---|
+
+| Settler Ship | I | 0 | 2 | 0 |
 
 | Fishing Skiff | I | 0 | 2 | 0 |
 
