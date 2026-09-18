@@ -30,7 +30,7 @@ Les ressources sont stockées par agglomération mais dépensées en commun. Les
 La carte initiale contient 125 tuiles en Classique ou 250 en Grande campagne. Le climat est défini avant le terrain. Une tuile de départ et l’un des sept climats sont tirés au hasard, avec la même probabilité. La génération progresse par les voisins. Si les voisins immédiats déjà définis ont le même climat, il est conservé avec 88 % de probabilité. Lors d’un changement, les climats compatibles sont l’intersection des possibilités des seules tuiles voisines immédiates déjà définies. À une frontière mixte, un climat voisin compatible est privilégié. Sans candidat, le climat d’un voisin immédiat est repris.
 Avant de tirer les terrains, une passe finale de correction conserve des climats intermédiaires comme zones tampons si nécessaire. Deux climats adjacents sont toujours compatibles. Une réserve invisible autour de la carte évite les raccords impossibles lors des expéditions. Aucun terrain révélé ne change. Une même graine et une même séquence d’exploration reproduisent la même carte. Un ordre d’expéditions différent peut prolonger les zones autrement.
 Le ratio du climat détermine terre ou eau, puis sa table détermine le terrain. Les pourcentages terrestres s’appliquent après avoir tiré une terre. Les tirages aquatiques suivent l’ordre indiqué et ne concernent que l’eau restante ; le premier succès termine la séquence. Une tuile aquatique sans terre adjacente double la probabilité du tirage Baleines de son climat. Les tirages Poissons, Morues et Banquise restent inchangés et passent avant. La banquise ne compte pas comme terre. Les voisins cachés utilisent leurs climats réservés et leurs tirages terre/eau ; le bord de carte seul ne suffit pas à définir la haute mer. La fréquence de l’Or varie selon le climat. Aucun climat, ressource, port, continent ou départ équilibré n’est garanti.
-Tempéré, Tropical et Désertique : 50 % de terre. Froid : 55 %. Steppe : 70 %. Arctique et Méditerranéen : 40 %. Les frontières Steppe/Désertique sont mutuellement compatibles, comme toutes les autres frontières autorisées. La nourriture des Oasis correspond au Blé.
+Tempéré, Tropical et Désertique : 50 % de terre. Froid : 55 %. Steppe : 65 %. Arctique et Méditerranéen : 40 %. Les frontières Steppe/Désertique sont mutuellement compatibles, comme toutes les autres frontières autorisées. La nourriture des Oasis correspond au Blé.
 ### Terrains stériles et banquise
 Plaines enneigées et Désert ne produisent rien et n’accueillent ni camp ni atelier. Les armées les traversent et les constructions voisines restent possibles. La Banquise résulte du tirage aquatique arctique. Elle ne produit rien, accueille les unités terrestres et bloque les navires. Colonies, tours et routes permanentes exigent une terre ferme adjacente ; aucune liaison n’est possible sur une arête bordée uniquement de banquise. Une arête banquise/eau sans terre ferme accueille une liaison maritime. La banquise ne fond pas.
 ### Parties existantes
@@ -325,7 +325,7 @@ Compatible : Froid
 
 Haute mer (sans terre adjacente) : tirage Baleines 40 % ; part effective 17.92 %. Tableau ci-dessus : eau côtière.
 
-### Steppe: 70% terre
+### Steppe: 65% terre
 
 Compatible : Froid, Tempéré, Méditerranéen, Désert
 
@@ -333,9 +333,13 @@ Compatible : Froid, Tempéré, Méditerranéen, Désert
 
 |---|---|
 
-| Plaine de steppe | 55% |
+| Plaine de steppe | 40% |
 
-| Champs pauvres | 17% |
+| Champs pauvres | 15% |
+
+| Pré | 10% |
+
+| Bois clairsemés | 7% |
 
 | Stone quarry | 10% |
 

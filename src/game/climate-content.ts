@@ -273,10 +273,12 @@ export const CLIMATE_INFO: Record<Climate, ClimateInfo> = {
   steppe: {
     name: "Steppe",
     color: "#b9ad75",
-    land: 0.7,
+    land: 0.65,
     terrain: [
-      ["steppe-plain", 55],
-      ["rough-fields", 17],
+      ["steppe-plain", 40],
+      ["rough-fields", 15],
+      ["pasture", 10],
+      ["woods", 7],
       ["stone", 10],
       ["iron", 5],
       ["coal", 5],
