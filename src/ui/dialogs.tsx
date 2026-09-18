@@ -50,6 +50,7 @@ import {
   ownTowns,
 } from "../game/selectors";
 import { neighbors, landAtVertex } from "../game/world";
+import { terrainName } from "../game/maritime";
 import {
   Modal,
   GoodsPicker,
@@ -176,11 +177,7 @@ export function BattleDialog({
               {tx(
                 options.map((id) => (
                   <option key={id} value={id}>
-                    {tx(
-                      s.tiles[id].resource === "water"
-                        ? "Water"
-                        : GOOD_INFO[s.tiles[id].resource as Good].name,
-                    )}
+                    {tx(terrainName(s.tiles[id]))}
                     {tx(" ")}· {tx(id)}
                   </option>
                 )),

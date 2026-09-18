@@ -22,12 +22,12 @@ import {
   UNIT_INFO,
   SHIP_INFO,
   ROMAN,
-  GOOD_INFO,
   unitCost,
   shipCost,
   shipStats,
 } from "../game/content";
 import { landAtVertex, waterAtVertex } from "../game/world";
+import { terrainName } from "../game/maritime";
 import { ownTowns, hostileAt, inventory } from "../game/selectors";
 import { applyCommand } from "../game/engine";
 import { UnitPortrait, Cost } from "./components";
@@ -216,15 +216,9 @@ export function Recruitment({
               ),
             )}
             {tx(
-              tiles.map((id, i) => (
+              tiles.map((id) => (
                 <option value={id} key={id}>
-                  {tx(
-                    naval
-                      ? `Water ${i + 1}${s.tiles[id].fish ? " · Fish" : s.tiles[id].whale ? " · Whales (Hides + Oil)" : ""}`
-                      : GOOD_INFO[
-                          s.tiles[id].resource as keyof typeof GOOD_INFO
-                        ].name,
-                  )}
+                  {tx(terrainName(s.tiles[id]))}
                   {tx(" ")}· {tx(id)}
                   {tx(hostileAt(s, id, viewer, naval) ? " · occupied" : "")}
                 </option>
