@@ -46,6 +46,21 @@ for (const locale of ["en", "fr"] as const)
         await page.locator(".army-composition > summary").click();
         await page.locator(".unit-choice").first().click();
       }
+      const portrait = page
+        .locator(`[data-unit-kind="${unit.kind}"] image`)
+        .first();
+      await expect(portrait).toHaveAttribute(
+        "href",
+        `./assets/portrait-${unit.kind}-v1.webp`,
+      );
+      expect(
+        await portrait.evaluate(async (el) => {
+          const image = new Image();
+          image.src = el.getAttribute("href")!;
+          await image.decode();
+          return image.naturalWidth;
+        }),
+      ).toBe(768);
       await page.screenshot({
         path: `test-artifacts/settler-force-${locale}-${naval}-${test.info().project.name}.png`,
       });

@@ -388,28 +388,14 @@ export function MilitaryPortrait({
         <g clipPath={`url(#${clip})`}>
           <rect x="2" y="2" width="60" height="68" fill="#edddbc" />
           {isSettler(unit.kind) ? (
-            <g>
-              <rect
-                x="2"
-                y="2"
-                width="60"
-                height="68"
-                fill={unit.naval ? "#527c84" : "#9ca57c"}
-              />
-              <path
-                d="M2 43Q18 30 34 44T62 42V68H2Z"
-                fill={unit.naval ? "#244d63" : "#53694d"}
-              />
-              <circle cx="49" cy="14" r="7" fill="#f1d89a" />
-              <g transform="translate(7 17) scale(1.55)">
-                <MilitaryGlyph
-                  kind={unit.kind}
-                  ink="#f5e5bc"
-                  accent={color}
-                  shadow="#3b3d35"
-                />
-              </g>
-            </g>
+            <image
+              href={`./assets/portrait-${unit.kind}-v1.webp`}
+              x="2"
+              y="2"
+              width="60"
+              height="68"
+              preserveAspectRatio="xMidYMid meet"
+            />
           ) : (
             <svg
               x="2"
