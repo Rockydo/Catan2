@@ -37,7 +37,13 @@ export function terrainArtFile(art: string): string {
   const revision =
     art === "cod"
       ? 3
-      : ["forest", "hunting-forest", "jungle", "oasis"].includes(art)
+      : [
+            "forest",
+            "hunting-forest",
+            "jungle",
+            "oasis",
+            "tropical-salt",
+          ].includes(art)
         ? 2
         : 1;
   return `terrain-${art}-v1.webp${revision > 1 ? `?v=${revision}` : ""}`;
