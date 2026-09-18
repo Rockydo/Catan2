@@ -30,12 +30,21 @@ export function chooseClimateTransition(
   roll: number,
 ): Climate {
   if (!choices.length) return from;
-  const favorCold =
-    (from === "temperate" || from === "steppe") && choices.includes("cold");
-  if (!favorCold) return choices[Math.floor(roll * choices.length)];
-  let remaining = roll * (choices.length + 0.5);
+  const weight = (to: Climate) => {
+    if ((from === "temperate" || from === "steppe") && to === "cold")
+      return 1.5;
+    if (from === "mediterranean" && (to === "desert" || to === "steppe"))
+      return 0.5;
+    if (
+      (from === "tropical" && to === "desert") ||
+      (from === "desert" && to === "tropical")
+    )
+      return 2;
+    return 1;
+  };
+  let remaining = roll * choices.reduce((sum, to) => sum + weight(to), 0);
   for (const candidate of choices) {
-    remaining -= candidate === "cold" ? 1.5 : 1;
+    remaining -= weight(candidate);
     if (remaining < 0) return candidate;
   }
   return choices[choices.length - 1];
@@ -168,7 +177,7 @@ export function planClimates(world: World, seed: string, revealed: string[]) {
           Math.floor(randomAt(seed, id, "climate-parent") * adjacent.length)
         ];
       const same = adjacent.every((c) => c === base),
-        stay = randomAt(seed, id, "climate-stay") < 0.88;
+        stay = randomAt(seed, id, "climate-stay") < 0.85;
       let climate = base;
       if (!same || !stay) {
         let choices = CLIMATES.filter((c) =>

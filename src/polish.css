@@ -783,7 +783,7 @@ input[type="checkbox"] {
 .climate-map-legend {
   position: absolute;
   left: 12px;
-  top: 12px;
+  top: 56px;
   display: flex;
   flex-wrap: wrap;
   gap: 6px 12px;
@@ -799,6 +799,28 @@ input[type="checkbox"] {
   display: inline-flex;
   align-items: center;
   gap: 5px;
+}
+.climate-map-legend strong {
+  flex-basis: 100%;
+  font-size: 12px;
+}
+.climate-map-legend b {
+  opacity: 0.7;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+.map-controls .icon-button.climate-view-toggle {
+  width: auto;
+  flex-shrink: 0;
+  padding-inline: 10px;
+  gap: 6px;
+  font-size: 12px;
+}
+.climate-hit-target:hover,
+.climate-hit-target:focus-visible {
+  stroke: #fff8df;
+  stroke-width: 2;
+  outline: none;
 }
 .climate-map-legend i,
 .climate-tabs i {

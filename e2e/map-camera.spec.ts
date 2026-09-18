@@ -169,7 +169,7 @@ test("camera drag, anchored wheel zoom, fit, resize and keyboard selection stay 
   await hex.press("Enter");
   await expect(hex).toHaveClass(/selected/);
   await closePanel(page);
-  await expect(page.locator(".board-frame pattern")).toHaveCount(38);
+  await expect(page.locator(".board-frame pattern")).toHaveCount(39);
   await page.getByRole("button", { name: "Hide dice numbers" }).click();
   await expect(
     page.locator(".terrain-map .production-token circle"),

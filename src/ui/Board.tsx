@@ -281,6 +281,21 @@ const TerrainLayer = memo(function TerrainLayer({
             good = tileGood(tile, viewer),
             poly = shapes[tile.id],
             small = !!compact[tile.id]?.length;
+          if (climates) {
+            const climate = tile.climate ?? "temperate";
+            return (
+              <g key={tile.id} data-map-x={x} data-map-y={y}>
+                <polygon
+                  className="climate-map-tile"
+                  data-climate={climate}
+                  points={poly}
+                  fill={CLIMATE_INFO[climate].color}
+                  stroke="#203c4555"
+                  strokeWidth="0.6"
+                />
+              </g>
+            );
+          }
           return (
             <g key={tile.id} data-map-x={x} data-map-y={y}>
               <polygon
@@ -302,15 +317,6 @@ const TerrainLayer = memo(function TerrainLayer({
                 y={y}
                 seed={hash(tile.id)}
               />
-              {climates && tile.climate && (
-                <polygon
-                  points={poly}
-                  fill={CLIMATE_INFO[tile.climate].color}
-                  fillOpacity=".4"
-                  stroke={CLIMATE_INFO[tile.climate].color}
-                  strokeWidth="3"
-                />
-              )}
               {tx(
                 good && (
                   <>
@@ -618,7 +624,9 @@ export function Board({
     setZoom((z) => Math.max(z, 2));
   }, [focus, s.vertices, bounds.x, bounds.y, bounds.w, bounds.h]);
   return (
-    <div className={`board-frame mode-${mode}`}>
+    <div
+      className={`board-frame mode-${mode}${climates ? " climate-only" : ""}`}
+    >
       <div ref={layer} className="map-camera-layer">
         <TerrainLayer
           viewer={viewer}
@@ -653,367 +661,282 @@ export function Board({
             height={bounds.h}
             fill="transparent"
           />
-          {tx(
+          {climates &&
             tiles.map((tile) => {
               const { x, y } = hexCenter(tile);
+              const climate = tile.climate ?? "temperate";
               return (
-                <MapHex
-                  key={tile.id}
-                  id={tile.id}
-                  resource={tile.resource}
-                  good={tileGood(tile, viewer)}
-                  outputLabel={
-                    tile.biome
-                      ? Object.entries(tileYield(tile, viewer))
-                          .map(([g, n]) => `${n} ${GOOD_INFO[g as Raw].name}`)
-                          .join(" + ")
-                      : undefined
-                  }
-                  terrain={tileTerrain(tile)}
-                  number={tile.number}
-                  x={x}
-                  y={y}
-                  poly={tileShapes[tile.id]}
-                  selected={
-                    selection?.type === "tile" && selection.id === tile.id
-                  }
-                  movable={!!targets[tile.id]}
-                  occupied={(groupUnits[tile.id] ?? []).some(
-                    (u) => !friendly(s, u.owner, s.active),
-                  )}
-                  compact={!!groupUnits[tile.id]?.length}
-                  covered={coverage.has(tile.id)}
-                  towerCovered={
-                    !!(
-                      selection?.type === "vertex" &&
-                      s.towers[selection.id] &&
-                      s.vertices[selection.id].tiles.includes(tile.id)
-                    )
-                  }
-                  production={productionTiles.includes(tile.id)}
-                  active={
-                    !rolling &&
-                    !!s.dice &&
-                    s.dice[0] + s.dice[1] === tile.number
-                  }
-                  numbers={numbers}
-                  activate={activateTile}
-                />
+                <g key={tile.id} data-map-x={x} data-map-y={y}>
+                  <polygon
+                    className="climate-hit-target"
+                    points={tileShapes[tile.id]}
+                    fill="transparent"
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`${tx(CLIMATE_INFO[climate].name)} · ${tile.id}`}
+                    onClick={() =>
+                      clicked(() => onSelect({ type: "tile", id: tile.id }))
+                    }
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        onSelect({ type: "tile", id: tile.id });
+                      }
+                    }}
+                  >
+                    <title>{tx(CLIMATE_INFO[climate].name)}</title>
+                  </polygon>
+                </g>
               );
-            }),
-          )}
-          <g className="coastlines" pointerEvents="none">
+            })}
+          <g
+            className="game-map-contents"
+            display={climates ? "none" : undefined}
+          >
             {tx(
-              coastlines.map(({ id, a, b }) => {
+              tiles.map((tile) => {
+                const { x, y } = hexCenter(tile);
                 return (
-                  <path
-                    key={id}
-                    data-map-x={(a.x + b.x) / 2}
-                    data-map-y={(a.y + b.y) / 2}
-                    d={`M${a.x} ${a.y}L${b.x} ${b.y}`}
-                    fill="none"
-                    stroke="#f3e5be"
-                    strokeWidth="1.25"
+                  <MapHex
+                    key={tile.id}
+                    id={tile.id}
+                    resource={tile.resource}
+                    good={tileGood(tile, viewer)}
+                    outputLabel={
+                      tile.biome
+                        ? Object.entries(tileYield(tile, viewer))
+                            .map(([g, n]) => `${n} ${GOOD_INFO[g as Raw].name}`)
+                            .join(" + ")
+                        : undefined
+                    }
+                    terrain={tileTerrain(tile)}
+                    number={tile.number}
+                    x={x}
+                    y={y}
+                    poly={tileShapes[tile.id]}
+                    selected={
+                      selection?.type === "tile" && selection.id === tile.id
+                    }
+                    movable={!!targets[tile.id]}
+                    occupied={(groupUnits[tile.id] ?? []).some(
+                      (u) => !friendly(s, u.owner, s.active),
+                    )}
+                    compact={!!groupUnits[tile.id]?.length}
+                    covered={coverage.has(tile.id)}
+                    towerCovered={
+                      !!(
+                        selection?.type === "vertex" &&
+                        s.towers[selection.id] &&
+                        s.vertices[selection.id].tiles.includes(tile.id)
+                      )
+                    }
+                    production={productionTiles.includes(tile.id)}
+                    active={
+                      !rolling &&
+                      !!s.dice &&
+                      s.dice[0] + s.dice[1] === tile.number
+                    }
+                    numbers={numbers}
+                    activate={activateTile}
                   />
                 );
               }),
             )}
-          </g>
-          {tx(
-            selection?.type === "vertex" &&
-              towns
-                .filter((t) => t.vertex === selection.id)
-                .map((t) => {
-                  const a = vertexPoint(s.vertices[t.vertex]);
+            <g className="coastlines" pointerEvents="none">
+              {tx(
+                coastlines.map(({ id, a, b }) => {
                   return (
-                    <g key={t.id} pointerEvents="none">
-                      {tx(
-                        Object.keys(t.extensions).map((id) => {
-                          const b = hexCenter(s.tiles[id]);
-                          return (
-                            <path
-                              key={id}
-                              d={`M${a.x} ${a.y}L${b.x} ${b.y - 15}`}
-                              stroke="#fff0bb"
-                              strokeWidth="1.8"
-                              strokeDasharray="3 3"
-                              opacity=".8"
-                            />
-                          );
-                        }),
-                      )}
-                    </g>
+                    <path
+                      key={id}
+                      data-map-x={(a.x + b.x) / 2}
+                      data-map-y={(a.y + b.y) / 2}
+                      d={`M${a.x} ${a.y}L${b.x} ${b.y}`}
+                      fill="none"
+                      stroke="#f3e5be"
+                      strokeWidth="1.25"
+                    />
                   );
                 }),
-          )}
-          {tx(
-            expeditionPreview.map((id) => {
-              const [q, r] = id.split(",").map(Number),
-                { x, y } = hexCenter({ q, r });
-              return (
-                <g key={id} pointerEvents="none">
-                  <polygon
-                    points={Array.from({ length: 6 }, (_, i) => {
-                      const a = (Math.PI / 3) * i - Math.PI / 2;
-                      return `${x + 44 * Math.cos(a)},${y + 44 * Math.sin(a)}`;
-                    }).join(" ")}
-                    fill="#e8da9d55"
-                    stroke="#8b7947"
-                    strokeDasharray="4 4"
-                  />
-                  <MapLabel
-                    x={x}
-                    y={y + 5}
-                    textAnchor="middle"
-                    fill="#32412e"
-                    fontSize="18"
-                  >
-                    ?
-                  </MapLabel>
-                </g>
-              );
-            }),
-          )}
-          {tx(
-            edges
-              .filter((e) => e.harbor)
-              .map((e) => {
-                const mid = edgeMidpoint(s, e),
-                  sea = e.tiles.find((id) => s.tiles[id].resource === "water");
-                if (!sea) return null;
-                const center = hexCenter(s.tiles[sea]),
-                  dx = center.x - mid.x,
-                  dy = center.y - mid.y,
-                  len = Math.hypot(dx, dy),
-                  x = mid.x + (dx / len) * 18,
-                  y = mid.y + (dy / len) * 18;
-                const label =
-                  e.harbor === "generic"
-                    ? "Any raw resource, 3:1"
-                    : `${GOOD_INFO[e.harbor as Raw].name}, 2:1`;
+              )}
+            </g>
+            {tx(
+              selection?.type === "vertex" &&
+                towns
+                  .filter((t) => t.vertex === selection.id)
+                  .map((t) => {
+                    const a = vertexPoint(s.vertices[t.vertex]);
+                    return (
+                      <g key={t.id} pointerEvents="none">
+                        {tx(
+                          Object.keys(t.extensions).map((id) => {
+                            const b = hexCenter(s.tiles[id]);
+                            return (
+                              <path
+                                key={id}
+                                d={`M${a.x} ${a.y}L${b.x} ${b.y - 15}`}
+                                stroke="#fff0bb"
+                                strokeWidth="1.8"
+                                strokeDasharray="3 3"
+                                opacity=".8"
+                              />
+                            );
+                          }),
+                        )}
+                      </g>
+                    );
+                  }),
+            )}
+            {tx(
+              expeditionPreview.map((id) => {
+                const [q, r] = id.split(",").map(Number),
+                  { x, y } = hexCenter({ q, r });
                 return (
-                  <g
-                    key={`harbor${e.id}`}
-                    className="map-harbor"
-                    data-map-x={x}
-                    data-map-y={y}
-                    role="button"
-                    tabIndex={0}
-                    aria-label={tx(`Harbor: ${label}`)}
-                    onClick={(ev) => {
-                      ev.stopPropagation();
-                      clicked(() => onSelect({ type: "edge", id: e.id }));
-                    }}
-                    onKeyDown={(ev) => {
-                      if (ev.key === "Enter" || ev.key === " ") {
-                        ev.preventDefault();
-                        onSelect({ type: "edge", id: e.id });
-                      }
-                    }}
-                  >
-                    <title>
-                      {tx(label)}
-                      {tx(
-                        ". Build a town at either end of the coastal edge to use this harbor.",
-                      )}
-                    </title>
-                    <path
-                      d={`M${mid.x} ${mid.y}L${x} ${y}`}
-                      stroke="#e5d2a1"
-                      strokeWidth="2"
-                      strokeDasharray="2 2"
-                      pointerEvents="none"
+                  <g key={id} pointerEvents="none">
+                    <polygon
+                      points={Array.from({ length: 6 }, (_, i) => {
+                        const a = (Math.PI / 3) * i - Math.PI / 2;
+                        return `${x + 44 * Math.cos(a)},${y + 44 * Math.sin(a)}`;
+                      }).join(" ")}
+                      fill="#e8da9d55"
+                      stroke="#8b7947"
+                      strokeDasharray="4 4"
                     />
-                    <rect
-                      x={x - 14}
-                      y={y - 8}
-                      width="28"
-                      height="16"
-                      rx="6"
-                      fill="#173f4b"
-                      stroke="#e8d8aa"
-                      strokeWidth=".85"
-                    />
-                    {tx(
-                      e.harbor === "generic" ? (
-                        <path
-                          transform={`translate(${x - 7} ${y})`}
-                          d="M0-5V5M-4 1Q-4 7 0 5Q4 7 4 1M-2-2H2"
-                          fill="none"
-                          stroke="#efdca6"
-                          strokeWidth="1.1"
-                          pointerEvents="none"
-                        />
-                      ) : (
-                        <svg
-                          x={x - 13}
-                          y={y - 6}
-                          width="12"
-                          height="12"
-                          viewBox="0 0 24 24"
-                          pointerEvents="none"
-                        >
-                          <ResourceIcon good={e.harbor as Raw} size={24} />
-                        </svg>
-                      ),
-                    )}
                     <MapLabel
-                      x={x + 5}
-                      y={y + 2.7}
+                      x={x}
+                      y={y + 5}
                       textAnchor="middle"
-                      fill="#fff3ce"
-                      fontSize="7"
-                      fontWeight="750"
-                      pointerEvents="none"
+                      fill="#32412e"
+                      fontSize="18"
                     >
-                      {tx(e.harbor === "generic" ? "3:1" : "2:1")}
+                      ?
                     </MapLabel>
                   </g>
                 );
               }),
-          )}
-          {tx(
-            Object.values(s.routes).map((r) => {
-              const e = s.edges[r.edge],
-                a = vertexPoint(s.vertices[e.vertices[0]]),
-                b = vertexPoint(s.vertices[e.vertices[1]]);
-              return (
-                <g
-                  key={r.id}
-                  data-testid={`road-${r.edge}`}
-                  data-map-x={(a.x + b.x) / 2}
-                  data-map-y={(a.y + b.y) / 2}
-                  onClick={(ev) => {
-                    ev.stopPropagation();
-                    clicked(() => onSelect({ type: "edge", id: r.edge }));
-                  }}
-                  role="button"
-                  tabIndex={0}
-                  aria-label={tx(
-                    `${s.players[r.owner].name} ${r.kind === "road" ? "road" : "shipping route"}${Object.keys(r.camps).length ? ", with camps" : ""}`,
-                  )}
-                  onKeyDown={(ev) => {
-                    if (ev.key === "Enter")
-                      onSelect({ type: "edge", id: r.edge });
-                  }}
-                >
-                  <circle
-                    cx={(a.x + b.x) / 2}
-                    cy={(a.y + b.y) / 2}
-                    r="9"
-                    fill="transparent"
-                  />
-                  <path
-                    d={`M${a.x} ${a.y}L${b.x} ${b.y}`}
-                    stroke="#ece0bb"
-                    strokeWidth="6.5"
-                    strokeLinecap="round"
-                  />
-                  <circle
-                    cx={(a.x + b.x) / 2}
-                    cy={(a.y + b.y) / 2}
-                    r="9"
-                    fill="transparent"
-                  />
-                  <path
-                    d={`M${a.x} ${a.y}L${b.x} ${b.y}`}
-                    stroke={COLORS[r.owner]}
-                    strokeWidth="4.5"
-                    strokeLinecap="round"
-                    strokeDasharray={r.kind === "route" ? "8 5" : undefined}
-                  />
-                  {tx(
-                    Object.entries(r.camps).map(([tile, tier]) => {
-                      const mid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 },
-                        center = hexCenter(s.tiles[tile]),
-                        dx = center.x - mid.x,
-                        dy = center.y - mid.y,
-                        len = Math.hypot(dx, dy);
-                      return (
-                        <g
-                          key={tile}
-                          transform={`translate(${mid.x + (dx / len) * 14} ${mid.y + (dy / len) * 14})`}
-                        >
+            )}
+            {tx(
+              edges
+                .filter((e) => e.harbor)
+                .map((e) => {
+                  const mid = edgeMidpoint(s, e),
+                    sea = e.tiles.find(
+                      (id) => s.tiles[id].resource === "water",
+                    );
+                  if (!sea) return null;
+                  const center = hexCenter(s.tiles[sea]),
+                    dx = center.x - mid.x,
+                    dy = center.y - mid.y,
+                    len = Math.hypot(dx, dy),
+                    x = mid.x + (dx / len) * 18,
+                    y = mid.y + (dy / len) * 18;
+                  const label =
+                    e.harbor === "generic"
+                      ? "Any raw resource, 3:1"
+                      : `${GOOD_INFO[e.harbor as Raw].name}, 2:1`;
+                  return (
+                    <g
+                      key={`harbor${e.id}`}
+                      className="map-harbor"
+                      data-map-x={x}
+                      data-map-y={y}
+                      role="button"
+                      tabIndex={0}
+                      aria-label={tx(`Harbor: ${label}`)}
+                      onClick={(ev) => {
+                        ev.stopPropagation();
+                        clicked(() => onSelect({ type: "edge", id: e.id }));
+                      }}
+                      onKeyDown={(ev) => {
+                        if (ev.key === "Enter" || ev.key === " ") {
+                          ev.preventDefault();
+                          onSelect({ type: "edge", id: e.id });
+                        }
+                      }}
+                    >
+                      <title>
+                        {tx(label)}
+                        {tx(
+                          ". Build a town at either end of the coastal edge to use this harbor.",
+                        )}
+                      </title>
+                      <path
+                        d={`M${mid.x} ${mid.y}L${x} ${y}`}
+                        stroke="#e5d2a1"
+                        strokeWidth="2"
+                        strokeDasharray="2 2"
+                        pointerEvents="none"
+                      />
+                      <rect
+                        x={x - 14}
+                        y={y - 8}
+                        width="28"
+                        height="16"
+                        rx="6"
+                        fill="#173f4b"
+                        stroke="#e8d8aa"
+                        strokeWidth=".85"
+                      />
+                      {tx(
+                        e.harbor === "generic" ? (
                           <path
-                            d="M-7 6V-3L0-10 7-3V6Z"
-                            fill="#fff1ce"
-                            stroke={COLORS[r.owner]}
-                            strokeWidth="2"
-                          />
-                          <path
-                            d="M-9-3L0-11 9-3"
-                            stroke="#66482c"
-                            strokeWidth="2"
+                            transform={`translate(${x - 7} ${y})`}
+                            d="M0-5V5M-4 1Q-4 7 0 5Q4 7 4 1M-2-2H2"
                             fill="none"
+                            stroke="#efdca6"
+                            strokeWidth="1.1"
+                            pointerEvents="none"
                           />
-                          <MapLabel
-                            textAnchor="middle"
-                            y="4"
-                            fontSize="8"
-                            fontWeight="800"
-                            fill="#3b3529"
+                        ) : (
+                          <svg
+                            x={x - 13}
+                            y={y - 6}
+                            width="12"
+                            height="12"
+                            viewBox="0 0 24 24"
+                            pointerEvents="none"
                           >
-                            {tx(tier === 2 ? "II" : "I")}
-                          </MapLabel>
-                        </g>
-                      );
-                    }),
-                  )}
-                </g>
-              );
-            }),
-          )}
-          {tx(
-            edges
-              .filter((e) => {
-                if (s.phase === "setup-route")
-                  return (
-                    !!s.setupVertex &&
-                    s.vertices[s.setupVertex].edges.includes(e.id) &&
-                    canRoute(s, e.id, mode === "route" ? "route" : "road")
+                            <ResourceIcon good={e.harbor as Raw} size={24} />
+                          </svg>
+                        ),
+                      )}
+                      <MapLabel
+                        x={x + 5}
+                        y={y + 2.7}
+                        textAnchor="middle"
+                        fill="#fff3ce"
+                        fontSize="7"
+                        fontWeight="750"
+                        pointerEvents="none"
+                      >
+                        {tx(e.harbor === "generic" ? "3:1" : "2:1")}
+                      </MapLabel>
+                    </g>
                   );
-                if (mode === "move-route") return relocations.has(e.id);
-                if (mode === "road" || mode === "route")
-                  return canRoute(s, e.id, mode);
-                if (mode === "camp")
-                  return (
-                    s.routes[e.id]?.owner === s.active &&
-                    s.edges[e.id].tiles.some(
-                      (id) =>
-                        (s.routes[e.id].kind === "road"
-                          ? s.tiles[id].resource !== "water"
-                          : marineResource(s.tiles[id])) &&
-                        (s.routes[e.id].camps[id] ?? 0) < 2,
-                    )
-                  );
-                return false;
-              })
-              .map((e) => {
-                const a = vertexPoint(s.vertices[e.vertices[0]]),
-                  b = vertexPoint(s.vertices[e.vertices[1]]),
-                  setup = s.phase === "setup-route";
+                }),
+            )}
+            {tx(
+              Object.values(s.routes).map((r) => {
+                const e = s.edges[r.edge],
+                  a = vertexPoint(s.vertices[e.vertices[0]]),
+                  b = vertexPoint(s.vertices[e.vertices[1]]);
                 return (
                   <g
-                    key={`target${e.id}`}
-                    className="route-target"
-                    role="button"
-                    tabIndex={interactive ? 0 : -1}
-                    aria-label={tx(
-                      `Build ${mode === "route" ? "shipping route" : "road"} on ${e.id}`,
-                    )}
-                    data-testid={`edge-target-${e.id}`}
+                    key={r.id}
+                    data-testid={`road-${r.edge}`}
                     data-map-x={(a.x + b.x) / 2}
                     data-map-y={(a.y + b.y) / 2}
                     onClick={(ev) => {
                       ev.stopPropagation();
-                      clicked(() => {
-                        if (interactive)
-                          onBuild(setup ? "setup-route" : mode, e.id);
-                      });
+                      clicked(() => onSelect({ type: "edge", id: r.edge }));
                     }}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={tx(
+                      `${s.players[r.owner].name} ${r.kind === "road" ? "road" : "shipping route"}${Object.keys(r.camps).length ? ", with camps" : ""}`,
+                    )}
                     onKeyDown={(ev) => {
-                      if (ev.key === "Enter" && interactive)
-                        onBuild(setup ? "setup-route" : mode, e.id);
+                      if (ev.key === "Enter")
+                        onSelect({ type: "edge", id: r.edge });
                     }}
                   >
                     <circle
@@ -1024,52 +947,388 @@ export function Board({
                     />
                     <path
                       d={`M${a.x} ${a.y}L${b.x} ${b.y}`}
-                      stroke="transparent"
-                      strokeWidth="18"
+                      stroke="#ece0bb"
+                      strokeWidth="6.5"
+                      strokeLinecap="round"
+                    />
+                    <circle
+                      cx={(a.x + b.x) / 2}
+                      cy={(a.y + b.y) / 2}
+                      r="9"
+                      fill="transparent"
                     />
                     <path
-                      d={`M${a.x * 0.82 + b.x * 0.18} ${a.y * 0.82 + b.y * 0.18}L${b.x * 0.82 + a.x * 0.18} ${b.y * 0.82 + a.y * 0.18}`}
-                      stroke="#fff3ab"
+                      d={`M${a.x} ${a.y}L${b.x} ${b.y}`}
+                      stroke={COLORS[r.owner]}
                       strokeWidth="4.5"
                       strokeLinecap="round"
-                      strokeDasharray="3 4"
+                      strokeDasharray={r.kind === "route" ? "8 5" : undefined}
                     />
+                    {tx(
+                      Object.entries(r.camps).map(([tile, tier]) => {
+                        const mid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 },
+                          center = hexCenter(s.tiles[tile]),
+                          dx = center.x - mid.x,
+                          dy = center.y - mid.y,
+                          len = Math.hypot(dx, dy);
+                        return (
+                          <g
+                            key={tile}
+                            transform={`translate(${mid.x + (dx / len) * 14} ${mid.y + (dy / len) * 14})`}
+                          >
+                            <path
+                              d="M-7 6V-3L0-10 7-3V6Z"
+                              fill="#fff1ce"
+                              stroke={COLORS[r.owner]}
+                              strokeWidth="2"
+                            />
+                            <path
+                              d="M-9-3L0-11 9-3"
+                              stroke="#66482c"
+                              strokeWidth="2"
+                              fill="none"
+                            />
+                            <MapLabel
+                              textAnchor="middle"
+                              y="4"
+                              fontSize="8"
+                              fontWeight="800"
+                              fill="#3b3529"
+                            >
+                              {tx(tier === 2 ? "II" : "I")}
+                            </MapLabel>
+                          </g>
+                        );
+                      }),
+                    )}
                   </g>
                 );
               }),
-          )}
-          {tx(
-            Object.values(s.towers).flatMap((tower) =>
-              towerSiegeStatuses(s, tower).flatMap(({ siege, groups }) => {
-                const target = vertexPoint(s.vertices[tower.vertex]);
-                const linked = groups.filter((g) =>
-                  g.units.some((u) => siege.units?.includes(u.id)),
-                );
-                return (linked.length ? linked : groups).map(({ tile }) => {
-                  const origin = hexCenter(s.tiles[tile]);
-                  const d = `M${origin.x + 38} ${origin.y + 12} Q${Math.max(origin.x, target.x) + 40} ${(origin.y + target.y) / 2} ${target.x} ${target.y}`;
+            )}
+            {tx(
+              edges
+                .filter((e) => {
+                  if (s.phase === "setup-route")
+                    return (
+                      !!s.setupVertex &&
+                      s.vertices[s.setupVertex].edges.includes(e.id) &&
+                      canRoute(s, e.id, mode === "route" ? "route" : "road")
+                    );
+                  if (mode === "move-route") return relocations.has(e.id);
+                  if (mode === "road" || mode === "route")
+                    return canRoute(s, e.id, mode);
+                  if (mode === "camp")
+                    return (
+                      s.routes[e.id]?.owner === s.active &&
+                      s.edges[e.id].tiles.some(
+                        (id) =>
+                          (s.routes[e.id].kind === "road"
+                            ? s.tiles[id].resource !== "water"
+                            : marineResource(s.tiles[id])) &&
+                          (s.routes[e.id].camps[id] ?? 0) < 2,
+                      )
+                    );
+                  return false;
+                })
+                .map((e) => {
+                  const a = vertexPoint(s.vertices[e.vertices[0]]),
+                    b = vertexPoint(s.vertices[e.vertices[1]]),
+                    setup = s.phase === "setup-route";
                   return (
                     <g
-                      key={`${siege.owner}-${tower.id}-${tile}`}
+                      key={`target${e.id}`}
+                      className="route-target"
                       role="button"
-                      tabIndex={0}
-                      className="map-siege-link"
+                      tabIndex={interactive ? 0 : -1}
                       aria-label={tx(
-                        `Inspect ${towerName(tower)} siege by ${s.players[siege.owner].name}`,
+                        `Build ${mode === "route" ? "shipping route" : "road"} on ${e.id}`,
                       )}
-                      data-testid={`tower-siege-link-${tower.id}-${tile}`}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        clicked(() => onInspectTowerSiege(tower.vertex));
+                      data-testid={`edge-target-${e.id}`}
+                      data-map-x={(a.x + b.x) / 2}
+                      data-map-y={(a.y + b.y) / 2}
+                      onClick={(ev) => {
+                        ev.stopPropagation();
+                        clicked(() => {
+                          if (interactive)
+                            onBuild(setup ? "setup-route" : mode, e.id);
+                        });
                       }}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" || e.key === " ") {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          onInspectTowerSiege(tower.vertex);
-                        }
+                      onKeyDown={(ev) => {
+                        if (ev.key === "Enter" && interactive)
+                          onBuild(setup ? "setup-route" : mode, e.id);
                       }}
                     >
+                      <circle
+                        cx={(a.x + b.x) / 2}
+                        cy={(a.y + b.y) / 2}
+                        r="9"
+                        fill="transparent"
+                      />
+                      <path
+                        d={`M${a.x} ${a.y}L${b.x} ${b.y}`}
+                        stroke="transparent"
+                        strokeWidth="18"
+                      />
+                      <path
+                        d={`M${a.x * 0.82 + b.x * 0.18} ${a.y * 0.82 + b.y * 0.18}L${b.x * 0.82 + a.x * 0.18} ${b.y * 0.82 + a.y * 0.18}`}
+                        stroke="#fff3ab"
+                        strokeWidth="4.5"
+                        strokeLinecap="round"
+                        strokeDasharray="3 4"
+                      />
+                    </g>
+                  );
+                }),
+            )}
+            {tx(
+              Object.values(s.towers).flatMap((tower) =>
+                towerSiegeStatuses(s, tower).flatMap(({ siege, groups }) => {
+                  const target = vertexPoint(s.vertices[tower.vertex]);
+                  const linked = groups.filter((g) =>
+                    g.units.some((u) => siege.units?.includes(u.id)),
+                  );
+                  return (linked.length ? linked : groups).map(({ tile }) => {
+                    const origin = hexCenter(s.tiles[tile]);
+                    const d = `M${origin.x + 38} ${origin.y + 12} Q${Math.max(origin.x, target.x) + 40} ${(origin.y + target.y) / 2} ${target.x} ${target.y}`;
+                    return (
+                      <g
+                        key={`${siege.owner}-${tower.id}-${tile}`}
+                        role="button"
+                        tabIndex={0}
+                        className="map-siege-link"
+                        aria-label={tx(
+                          `Inspect ${towerName(tower)} siege by ${s.players[siege.owner].name}`,
+                        )}
+                        data-testid={`tower-siege-link-${tower.id}-${tile}`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          clicked(() => onInspectTowerSiege(tower.vertex));
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            onInspectTowerSiege(tower.vertex);
+                          }
+                        }}
+                      >
+                        <path
+                          d={d}
+                          fill="none"
+                          stroke="transparent"
+                          strokeWidth="18"
+                          pointerEvents="stroke"
+                        />
+                        <path
+                          d={d}
+                          fill="none"
+                          stroke="#3d2624"
+                          strokeWidth="5"
+                        />
+                        <path
+                          d={d}
+                          fill="none"
+                          stroke={COLORS[siege.owner]}
+                          strokeWidth="3"
+                          strokeDasharray="5 3"
+                        />
+                      </g>
+                    );
+                  });
+                }),
+              ),
+            )}
+            {tx(
+              Object.values(s.towers).map((t) => {
+                const siege = towerSiegeStatuses(s, t)[0];
+                const v = vertexPoint(s.vertices[t.vertex]);
+                const townHere = towns.some((town) => town.vertex === t.vertex);
+                const x = v.x + (townHere ? 19 : 0),
+                  y = v.y + (townHere ? 9 : 0);
+                return (
+                  <g
+                    key={t.id}
+                    transform={`translate(${x} ${y})`}
+                    data-testid={`tower-${t.vertex}`}
+                    data-map-x={x}
+                    data-map-y={y}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={tx(
+                      `${s.players[t.owner].name} ${towerName(t)}, tier ${t.tier}${siege ? ", under siege, inspect details" : ""}`,
+                    )}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      clicked(() =>
+                        siege
+                          ? onInspectTowerSiege(t.vertex)
+                          : onSelect({ type: "vertex", id: t.vertex }),
+                      );
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        siege
+                          ? onInspectTowerSiege(t.vertex)
+                          : onSelect({ type: "vertex", id: t.vertex });
+                      }
+                    }}
+                  >
+                    {tx(
+                      siege && (
+                        <g data-testid={`tower-siege-badge-${t.vertex}`}>
+                          <rect
+                            x="-30"
+                            y="-36"
+                            width="60"
+                            height="17"
+                            rx="4"
+                            fill="#823b2e"
+                            stroke="#ffe6bd"
+                          />
+                          <MapLabel
+                            textAnchor="middle"
+                            y="-24"
+                            fontSize="8"
+                            fontWeight="800"
+                            fill="#fff3db"
+                          >
+                            {tx(
+                              siege.remaining
+                                ? `SIEGE ${Math.min(siege.siege.progress, siege.required)}/${siege.required}`
+                                : "EXPOSED",
+                            )}
+                          </MapLabel>
+                        </g>
+                      ),
+                    )}
+                    <circle
+                      r="13"
+                      fill="#153b43"
+                      stroke={COLORS[t.owner]}
+                      strokeWidth="2"
+                    />
+                    <path
+                      d="M-7 7-5-5H-7V-11H-3V-7H3V-11H7V-5H5L7 7Z"
+                      fill={COLORS[t.owner]}
+                      stroke="#f5e6bb"
+                      strokeWidth=".8"
+                    />
+                    <path d="M-2 6V0H2V6" fill="#18383d" />
+                    <rect
+                      x="-7"
+                      y="8"
+                      width="14"
+                      height="9"
+                      rx="3"
+                      fill="#f5e5b4"
+                    />
+                    <MapLabel
+                      textAnchor="middle"
+                      y="15"
+                      fontSize="8"
+                      fontWeight="900"
+                      fill="#264a4a"
+                    >
+                      {tx(t.tier)}
+                    </MapLabel>
+                  </g>
+                );
+              }),
+            )}
+            {tx(
+              (s.phase === "setup-town" || mode === "settlement") &&
+                [...sites].map((v) => {
+                  const { x, y } = vertexPoint(s.vertices[v]);
+                  return (
+                    <g
+                      key={`site${v}`}
+                      className="settlement-target"
+                      role="button"
+                      tabIndex={interactive ? 0 : -1}
+                      aria-label={tx(`Found settlement at ${v}`)}
+                      data-testid={`settlement-target-${v}`}
+                      data-map-x={x}
+                      data-map-y={y}
+                      onClick={(ev) => {
+                        ev.stopPropagation();
+                        clicked(() => {
+                          if (interactive)
+                            onBuild(
+                              s.phase === "setup-town"
+                                ? "setup-town"
+                                : "settlement",
+                              v,
+                            );
+                        });
+                      }}
+                      onKeyDown={(ev) => {
+                        if (ev.key === "Enter" && interactive)
+                          onBuild(
+                            s.phase === "setup-town"
+                              ? "setup-town"
+                              : "settlement",
+                            v,
+                          );
+                      }}
+                    >
+                      <circle cx={x} cy={y} r="10" fill="transparent" />
+                      <circle
+                        cx={x}
+                        cy={y}
+                        r="4.8"
+                        fill="#fbf3c8"
+                        stroke="#42755d"
+                        strokeWidth="1.5"
+                      />
+                      <path
+                        d={`M${x - 2} ${y}h4m-2-2v4`}
+                        stroke="#42755d"
+                        strokeWidth="1"
+                      />
+                    </g>
+                  );
+                }),
+            )}
+            {tx(
+              Object.values(s.sieges).flatMap((siege) => {
+                const town = s.towns[siege.town];
+                if (!town) return [];
+                const target = vertexPoint(s.vertices[town.vertex]);
+                return [
+                  ...new Set(
+                    siegeParticipants(s, town, siege.owner).map((u) => u.tile),
+                  ),
+                ].map((tile) => {
+                  const origin = hexCenter(s.tiles[tile]);
+                  const d = `M${origin.x + 38} ${origin.y + 12} Q${Math.max(origin.x + 21, target.x) + 48} ${(origin.y + 12 + target.y) / 2} ${target.x + 20} ${target.y - 4}`;
+                  return (
+                    <g
+                      key={`${siege.owner}-${town.id}-${tile}`}
+                      role="button"
+                      tabIndex={0}
+                      aria-label={tx(
+                        `Inspect siege of ${town.name} by ${s.players[siege.owner].name}`,
+                      )}
+                      className="map-siege-link"
+                      onClick={(ev) => {
+                        ev.stopPropagation();
+                        clicked(() => onInspectSiege(town.id));
+                      }}
+                      onKeyDown={(ev) => {
+                        if (ev.key === "Enter" || ev.key === " ") {
+                          ev.preventDefault();
+                          ev.stopPropagation();
+                          onInspectSiege(town.id);
+                        }
+                      }}
+                      data-testid={`siege-link-${siege.owner}-${town.id}-${tile}`}
+                    >
+                      <title>
+                        {s.players[siege.owner].name}
+                        {tx(" besieging ")}
+                        {town.name}
+                      </title>
                       <path
                         d={d}
                         fill="none"
@@ -1082,6 +1341,7 @@ export function Board({
                         fill="none"
                         stroke="#3d2624"
                         strokeWidth="5"
+                        opacity=".8"
                       />
                       <path
                         d={d}
@@ -1090,519 +1350,307 @@ export function Board({
                         strokeWidth="3"
                         strokeDasharray="5 3"
                       />
+                      <circle
+                        cx={target.x}
+                        cy={target.y}
+                        r="19"
+                        fill="none"
+                        stroke="#a94b36"
+                        strokeWidth="2"
+                        strokeDasharray="4 3"
+                      />
                     </g>
                   );
                 });
               }),
-            ),
-          )}
-          {tx(
-            Object.values(s.towers).map((t) => {
-              const siege = towerSiegeStatuses(s, t)[0];
-              const v = vertexPoint(s.vertices[t.vertex]);
-              const townHere = towns.some((town) => town.vertex === t.vertex);
-              const x = v.x + (townHere ? 19 : 0),
-                y = v.y + (townHere ? 9 : 0);
-              return (
-                <g
-                  key={t.id}
-                  transform={`translate(${x} ${y})`}
-                  data-testid={`tower-${t.vertex}`}
-                  data-map-x={x}
-                  data-map-y={y}
-                  role="button"
-                  tabIndex={0}
-                  aria-label={tx(
-                    `${s.players[t.owner].name} ${towerName(t)}, tier ${t.tier}${siege ? ", under siege, inspect details" : ""}`,
-                  )}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    clicked(() =>
-                      siege
-                        ? onInspectTowerSiege(t.vertex)
-                        : onSelect({ type: "vertex", id: t.vertex }),
-                    );
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
-                      siege
-                        ? onInspectTowerSiege(t.vertex)
-                        : onSelect({ type: "vertex", id: t.vertex });
-                    }
-                  }}
-                >
-                  {tx(
-                    siege && (
-                      <g data-testid={`tower-siege-badge-${t.vertex}`}>
-                        <rect
-                          x="-30"
-                          y="-36"
-                          width="60"
-                          height="17"
-                          rx="4"
-                          fill="#823b2e"
-                          stroke="#ffe6bd"
-                        />
-                        <MapLabel
-                          textAnchor="middle"
-                          y="-24"
-                          fontSize="8"
-                          fontWeight="800"
-                          fill="#fff3db"
-                        >
-                          {tx(
-                            siege.remaining
-                              ? `SIEGE ${Math.min(siege.siege.progress, siege.required)}/${siege.required}`
-                              : "EXPOSED",
-                          )}
-                        </MapLabel>
-                      </g>
-                    ),
-                  )}
-                  <circle
-                    r="13"
-                    fill="#153b43"
-                    stroke={COLORS[t.owner]}
-                    strokeWidth="2"
-                  />
-                  <path
-                    d="M-7 7-5-5H-7V-11H-3V-7H3V-11H7V-5H5L7 7Z"
-                    fill={COLORS[t.owner]}
-                    stroke="#f5e6bb"
-                    strokeWidth=".8"
-                  />
-                  <path d="M-2 6V0H2V6" fill="#18383d" />
-                  <rect
-                    x="-7"
-                    y="8"
-                    width="14"
-                    height="9"
-                    rx="3"
-                    fill="#f5e5b4"
-                  />
-                  <MapLabel
-                    textAnchor="middle"
-                    y="15"
-                    fontSize="8"
-                    fontWeight="900"
-                    fill="#264a4a"
-                  >
-                    {tx(t.tier)}
-                  </MapLabel>
-                </g>
-              );
-            }),
-          )}
-          {tx(
-            (s.phase === "setup-town" || mode === "settlement") &&
-              [...sites].map((v) => {
-                const { x, y } = vertexPoint(s.vertices[v]);
+            )}
+            {tx(
+              towns.map((t) => {
+                const { x, y } = vertexPoint(s.vertices[t.vertex]),
+                  siege = townSiegeStatuses(s, t)[0],
+                  guilds = townGuilds(t),
+                  selected =
+                    selection?.type === "vertex" && selection.id === t.vertex;
                 return (
-                  <g
-                    key={`site${v}`}
-                    className="settlement-target"
-                    role="button"
-                    tabIndex={interactive ? 0 : -1}
-                    aria-label={tx(`Found settlement at ${v}`)}
-                    data-testid={`settlement-target-${v}`}
-                    data-map-x={x}
-                    data-map-y={y}
-                    onClick={(ev) => {
-                      ev.stopPropagation();
-                      clicked(() => {
-                        if (interactive)
-                          onBuild(
-                            s.phase === "setup-town"
-                              ? "setup-town"
-                              : "settlement",
-                            v,
-                          );
-                      });
-                    }}
-                    onKeyDown={(ev) => {
-                      if (ev.key === "Enter" && interactive)
-                        onBuild(
-                          s.phase === "setup-town"
-                            ? "setup-town"
-                            : "settlement",
-                          v,
+                  <g key={t.id}>
+                    <g
+                      className="map-town"
+                      data-map-x={x}
+                      data-map-y={y}
+                      filter="url(#piece-shadow)"
+                      role="button"
+                      tabIndex={0}
+                      aria-label={tx(
+                        `${t.name}, level ${t.level}, wall ${t.wall}, ${s.players[t.owner].name}${guilds.length ? `, ${guilds.map((g) => `${GUILDS[g.kind].name} tier ${g.tier}`).join(", ")}` : ""}${siege ? `, ${siege.label}` : ""}`,
+                      )}
+                      data-testid={`town-${t.id}`}
+                      transform={`translate(${x} ${y})`}
+                      onClick={(ev) => {
+                        ev.stopPropagation();
+                        clicked(() =>
+                          onSelect({ type: "vertex", id: t.vertex }),
                         );
-                    }}
-                  >
-                    <circle cx={x} cy={y} r="10" fill="transparent" />
-                    <circle
-                      cx={x}
-                      cy={y}
-                      r="4.8"
-                      fill="#fbf3c8"
-                      stroke="#42755d"
-                      strokeWidth="1.5"
-                    />
-                    <path
-                      d={`M${x - 2} ${y}h4m-2-2v4`}
-                      stroke="#42755d"
-                      strokeWidth="1"
-                    />
+                      }}
+                      onKeyDown={(ev) => {
+                        if (ev.key === "Enter")
+                          onSelect({ type: "vertex", id: t.vertex });
+                      }}
+                    >
+                      <circle r="17" fill="transparent" />
+                      <title>
+                        {t.name} ·{tx(" ")}
+                        {tx(
+                          ["", "Settlement", "City I", "City II", "City III"][
+                            t.level
+                          ],
+                        )}
+                        {tx(" ")}
+                        {tx("· wall ")}
+                        {tx(t.wall)} · {tx(Object.keys(t.extensions).length)}
+                        {tx(" ")}
+                        {tx("extensions")}
+                        {tx(
+                          guilds
+                            .map((g) => ` · ${GUILDS[g.kind].name} ${g.tier}`)
+                            .join(""),
+                        )}
+                        {tx(siege ? ` · ${siege.label}` : "")}
+                      </title>
+                      <TownMiniature
+                        town={t}
+                        color={COLORS[t.owner]}
+                        selected={selected}
+                      />
+                      {tx(
+                        guilds.length > 0 && (
+                          <g
+                            transform="translate(13 -30)"
+                            pointerEvents="none"
+                            data-testid={`guild-badge-${t.id}`}
+                          >
+                            <GuildCrest
+                              kind={guilds[0].kind}
+                              tier={guilds[0].tier}
+                              size={18}
+                            />
+                            {tx(
+                              guilds.length > 1 && (
+                                <g>
+                                  <circle
+                                    cx="19"
+                                    cy="4"
+                                    r="7"
+                                    fill="#153e37"
+                                    stroke="#f4dba0"
+                                  />
+                                  <text
+                                    x="19"
+                                    y="7"
+                                    textAnchor="middle"
+                                    fontSize="8"
+                                    fontWeight="800"
+                                    fill="#fff0c9"
+                                  >
+                                    {tx(guilds.length)}
+                                  </text>
+                                </g>
+                              ),
+                            )}
+                          </g>
+                        ),
+                      )}
+                    </g>
+                    {tx(
+                      siege && (
+                        <g
+                          className="map-siege-badge"
+                          transform={`translate(${x} ${y - 72})`}
+                          role="button"
+                          tabIndex={0}
+                          aria-label={tx(`Inspect siege of ${t.name}`)}
+                          onClick={(ev) => {
+                            ev.stopPropagation();
+                            clicked(() => onInspectSiege(t.id));
+                          }}
+                          onKeyDown={(ev) => {
+                            if (ev.key === "Enter" || ev.key === " ") {
+                              ev.preventDefault();
+                              ev.stopPropagation();
+                              onInspectSiege(t.id);
+                            }
+                          }}
+                          data-testid={`siege-badge-${t.id}`}
+                        >
+                          <title>{tx("Click for full siege details")}</title>
+                          <rect
+                            x="-33"
+                            y="15"
+                            width="66"
+                            height="29"
+                            fill="transparent"
+                          />
+                          <rect
+                            x="-29"
+                            y="20"
+                            width="58"
+                            height="16"
+                            rx="5"
+                            fill="#823b2e"
+                            stroke="#ffe6bd"
+                            strokeWidth="1"
+                          />
+                          <MapLabel
+                            x="0"
+                            y="31"
+                            textAnchor="middle"
+                            fill="#fff3db"
+                            fontSize="8"
+                            fontWeight="800"
+                          >
+                            {tx(
+                              siege.breached
+                                ? "BREACHED"
+                                : siege.remaining === 0
+                                  ? "EXPOSED"
+                                  : `SIEGE ${siege.completed}/${siege.required}`,
+                            )}
+                          </MapLabel>
+                          <rect
+                            x="-25"
+                            y="37"
+                            width="50"
+                            height="3"
+                            rx="1.5"
+                            fill="#392b28"
+                          />
+                          <rect
+                            x="-25"
+                            y="37"
+                            width={50 * siege.fraction}
+                            height="3"
+                            rx="1.5"
+                            fill="#f1b56b"
+                          />
+                        </g>
+                      ),
+                    )}
                   </g>
                 );
               }),
-          )}
-          {tx(
-            Object.values(s.sieges).flatMap((siege) => {
-              const town = s.towns[siege.town];
-              if (!town) return [];
-              const target = vertexPoint(s.vertices[town.vertex]);
-              return [
-                ...new Set(
-                  siegeParticipants(s, town, siege.owner).map((u) => u.tile),
-                ),
-              ].map((tile) => {
-                const origin = hexCenter(s.tiles[tile]);
-                const d = `M${origin.x + 38} ${origin.y + 12} Q${Math.max(origin.x + 21, target.x) + 48} ${(origin.y + 12 + target.y) / 2} ${target.x + 20} ${target.y - 4}`;
+            )}
+            {tx(
+              Object.entries(groupUnits).map(([tile, units]) => {
+                const { x, y } = hexCenter(s.tiles[tile]),
+                  p = units[0].owner,
+                  naval = units[0].naval,
+                  selected = unitIds.some((id) =>
+                    units.some((u) => u.id === id),
+                  );
+                const activate = () =>
+                  mode === "move" && targets[tile] && interactive
+                    ? onMove(tile)
+                    : onSelect({ type: "tile", id: tile });
                 return (
                   <g
-                    key={`${siege.owner}-${town.id}-${tile}`}
-                    role="button"
-                    tabIndex={0}
-                    aria-label={tx(
-                      `Inspect siege of ${town.name} by ${s.players[siege.owner].name}`,
-                    )}
-                    className="map-siege-link"
-                    onClick={(ev) => {
-                      ev.stopPropagation();
-                      clicked(() => onInspectSiege(town.id));
-                    }}
-                    onKeyDown={(ev) => {
-                      if (ev.key === "Enter" || ev.key === " ") {
-                        ev.preventDefault();
-                        ev.stopPropagation();
-                        onInspectSiege(town.id);
-                      }
-                    }}
-                    data-testid={`siege-link-${siege.owner}-${town.id}-${tile}`}
-                  >
-                    <title>
-                      {s.players[siege.owner].name}
-                      {tx(" besieging ")}
-                      {town.name}
-                    </title>
-                    <path
-                      d={d}
-                      fill="none"
-                      stroke="transparent"
-                      strokeWidth="18"
-                      pointerEvents="stroke"
-                    />
-                    <path
-                      d={d}
-                      fill="none"
-                      stroke="#3d2624"
-                      strokeWidth="5"
-                      opacity=".8"
-                    />
-                    <path
-                      d={d}
-                      fill="none"
-                      stroke={COLORS[siege.owner]}
-                      strokeWidth="3"
-                      strokeDasharray="5 3"
-                    />
-                    <circle
-                      cx={target.x}
-                      cy={target.y}
-                      r="19"
-                      fill="none"
-                      stroke="#a94b36"
-                      strokeWidth="2"
-                      strokeDasharray="4 3"
-                    />
-                  </g>
-                );
-              });
-            }),
-          )}
-          {tx(
-            towns.map((t) => {
-              const { x, y } = vertexPoint(s.vertices[t.vertex]),
-                siege = townSiegeStatuses(s, t)[0],
-                guilds = townGuilds(t),
-                selected =
-                  selection?.type === "vertex" && selection.id === t.vertex;
-              return (
-                <g key={t.id}>
-                  <g
-                    className="map-town"
+                    key={`army${tile}`}
+                    className="army-token"
                     data-map-x={x}
                     data-map-y={y}
                     filter="url(#piece-shadow)"
                     role="button"
                     tabIndex={0}
                     aria-label={tx(
-                      `${t.name}, level ${t.level}, wall ${t.wall}, ${s.players[t.owner].name}${guilds.length ? `, ${guilds.map((g) => `${GUILDS[g.kind].name} tier ${g.tier}`).join(", ")}` : ""}${siege ? `, ${siege.label}` : ""}`,
+                      `${[...new Set(units.map((u) => u.owner))].map((id) => s.players[id].name).join(" & ")} ${naval ? "fleet" : "army"}, ${units.length} pieces, ${units.reduce((n, u) => n + points(u), 0)} base power; ${[...new Set(units.map(unitName))].map((name) => `${units.filter((u) => unitName(u) === name).length} ${name}`).join(", ")}`,
                     )}
-                    data-testid={`town-${t.id}`}
-                    transform={`translate(${x} ${y})`}
-                    onClick={(ev) => {
-                      ev.stopPropagation();
-                      clicked(() => onSelect({ type: "vertex", id: t.vertex }));
+                    data-testid={`army-${tile}`}
+                    transform={`translate(${x + 21} ${y + 12})`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      clicked(activate);
                     }}
-                    onKeyDown={(ev) => {
-                      if (ev.key === "Enter")
-                        onSelect({ type: "vertex", id: t.vertex });
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") activate();
                     }}
                   >
-                    <circle r="17" fill="transparent" />
-                    <title>
-                      {t.name} ·{tx(" ")}
-                      {tx(
-                        ["", "Settlement", "City I", "City II", "City III"][
-                          t.level
-                        ],
-                      )}
-                      {tx(" ")}
-                      {tx("· wall ")}
-                      {tx(t.wall)} · {tx(Object.keys(t.extensions).length)}
-                      {tx(" ")}
-                      {tx("extensions")}
-                      {tx(
-                        guilds
-                          .map((g) => ` · ${GUILDS[g.kind].name} ${g.tier}`)
-                          .join(""),
-                      )}
-                      {tx(siege ? ` · ${siege.label}` : "")}
-                    </title>
-                    <TownMiniature
-                      town={t}
-                      color={COLORS[t.owner]}
-                      selected={selected}
+                    <title>{tx(units.map(unitName).join(" · "))}</title>
+                    <rect
+                      x="-17"
+                      y="-21"
+                      width="34"
+                      height="44"
+                      rx="12"
+                      fill="transparent"
+                      pointerEvents="all"
                     />
                     {tx(
-                      guilds.length > 0 && (
-                        <g
-                          transform="translate(13 -30)"
-                          pointerEvents="none"
-                          data-testid={`guild-badge-${t.id}`}
-                        >
-                          <GuildCrest
-                            kind={guilds[0].kind}
-                            tier={guilds[0].tier}
-                            size={18}
-                          />
+                      [...new Set(units.map((u) => u.owner))].length > 1 && (
+                        <g aria-hidden="true" className="alliance-map-badges">
                           {tx(
-                            guilds.length > 1 && (
-                              <g>
+                            [...new Set(units.map((u) => u.owner))].map(
+                              (owner, i) => (
                                 <circle
-                                  cx="19"
-                                  cy="4"
-                                  r="7"
-                                  fill="#153e37"
-                                  stroke="#f4dba0"
+                                  key={owner}
+                                  cx={-18 + i * 10}
+                                  cy={-27}
+                                  r={5}
+                                  fill={COLORS[owner]}
+                                  stroke="#f3e4bf"
+                                  strokeWidth={1.5}
                                 />
-                                <text
-                                  x="19"
-                                  y="7"
-                                  textAnchor="middle"
-                                  fontSize="8"
-                                  fontWeight="800"
-                                  fill="#fff0c9"
-                                >
-                                  {tx(guilds.length)}
-                                </text>
-                              </g>
+                              ),
                             ),
                           )}
                         </g>
                       ),
                     )}
-                  </g>
-                  {tx(
-                    siege && (
-                      <g
-                        className="map-siege-badge"
-                        transform={`translate(${x} ${y - 72})`}
-                        role="button"
-                        tabIndex={0}
-                        aria-label={tx(`Inspect siege of ${t.name}`)}
-                        onClick={(ev) => {
-                          ev.stopPropagation();
-                          clicked(() => onInspectSiege(t.id));
-                        }}
-                        onKeyDown={(ev) => {
-                          if (ev.key === "Enter" || ev.key === " ") {
-                            ev.preventDefault();
-                            ev.stopPropagation();
-                            onInspectSiege(t.id);
-                          }
-                        }}
-                        data-testid={`siege-badge-${t.id}`}
-                      >
-                        <title>{tx("Click for full siege details")}</title>
-                        <rect
-                          x="-33"
-                          y="15"
-                          width="66"
-                          height="29"
-                          fill="transparent"
-                        />
-                        <rect
-                          x="-29"
-                          y="20"
-                          width="58"
-                          height="16"
-                          rx="5"
-                          fill="#823b2e"
-                          stroke="#ffe6bd"
-                          strokeWidth="1"
-                        />
-                        <MapLabel
-                          x="0"
-                          y="31"
-                          textAnchor="middle"
-                          fill="#fff3db"
-                          fontSize="8"
-                          fontWeight="800"
-                        >
-                          {tx(
-                            siege.breached
-                              ? "BREACHED"
-                              : siege.remaining === 0
-                                ? "EXPOSED"
-                                : `SIEGE ${siege.completed}/${siege.required}`,
-                          )}
-                        </MapLabel>
-                        <rect
-                          x="-25"
-                          y="37"
-                          width="50"
-                          height="3"
-                          rx="1.5"
-                          fill="#392b28"
-                        />
-                        <rect
-                          x="-25"
-                          y="37"
-                          width={50 * siege.fraction}
-                          height="3"
-                          rx="1.5"
-                          fill="#f1b56b"
-                        />
-                      </g>
-                    ),
-                  )}
-                </g>
-              );
-            }),
-          )}
-          {tx(
-            Object.entries(groupUnits).map(([tile, units]) => {
-              const { x, y } = hexCenter(s.tiles[tile]),
-                p = units[0].owner,
-                naval = units[0].naval,
-                selected = unitIds.some((id) => units.some((u) => u.id === id));
-              const activate = () =>
-                mode === "move" && targets[tile] && interactive
-                  ? onMove(tile)
-                  : onSelect({ type: "tile", id: tile });
-              return (
-                <g
-                  key={`army${tile}`}
-                  className="army-token"
-                  data-map-x={x}
-                  data-map-y={y}
-                  filter="url(#piece-shadow)"
-                  role="button"
-                  tabIndex={0}
-                  aria-label={tx(
-                    `${[...new Set(units.map((u) => u.owner))].map((id) => s.players[id].name).join(" & ")} ${naval ? "fleet" : "army"}, ${units.length} pieces, ${units.reduce((n, u) => n + points(u), 0)} base power; ${[...new Set(units.map(unitName))].map((name) => `${units.filter((u) => unitName(u) === name).length} ${name}`).join(", ")}`,
-                  )}
-                  data-testid={`army-${tile}`}
-                  transform={`translate(${x + 21} ${y + 12})`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    clicked(activate);
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") activate();
-                  }}
-                >
-                  <title>{tx(units.map(unitName).join(" · "))}</title>
-                  <rect
-                    x="-17"
-                    y="-21"
-                    width="34"
-                    height="44"
-                    rx="12"
-                    fill="transparent"
-                    pointerEvents="all"
-                  />
-                  {tx(
-                    [...new Set(units.map((u) => u.owner))].length > 1 && (
-                      <g aria-hidden="true" className="alliance-map-badges">
-                        {tx(
-                          [...new Set(units.map((u) => u.owner))].map(
-                            (owner, i) => (
-                              <circle
-                                key={owner}
-                                cx={-18 + i * 10}
-                                cy={-27}
-                                r={5}
-                                fill={COLORS[owner]}
-                                stroke="#f3e4bf"
-                                strokeWidth={1.5}
-                              />
-                            ),
-                          ),
-                        )}
-                      </g>
-                    ),
-                  )}
-                  <ArmyMiniature
-                    units={units}
-                    color={COLORS[p]}
-                    selected={selected}
-                  />
-                </g>
-              );
-            }),
-          )}
-          {tx(
-            mode === "tower" &&
-              towerSites(s).map((v) => {
-                const { x, y } = vertexPoint(s.vertices[v]);
-                return (
-                  <g
-                    key={`tower-site-${v}`}
-                    role="button"
-                    tabIndex={interactive ? 0 : -1}
-                    aria-label={tx(`Build watchtower at ${v}`)}
-                    data-testid={`tower-target-${v}`}
-                    data-map-x={x}
-                    data-map-y={y}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (interactive) onBuild("tower", v);
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" && interactive) onBuild("tower", v);
-                    }}
-                  >
-                    <circle
-                      cx={x}
-                      cy={y}
-                      r="11"
-                      fill="#fff0a080"
-                      stroke="#fff4bb"
-                      strokeWidth="2"
-                    />
-                    <path
-                      d={`M${x - 5} ${y + 5}V${y - 6}h3v3h4v-3h3v11Z`}
-                      fill="#496965"
+                    <ArmyMiniature
+                      units={units}
+                      color={COLORS[p]}
+                      selected={selected}
                     />
                   </g>
                 );
               }),
-          )}
+            )}
+            {tx(
+              mode === "tower" &&
+                towerSites(s).map((v) => {
+                  const { x, y } = vertexPoint(s.vertices[v]);
+                  return (
+                    <g
+                      key={`tower-site-${v}`}
+                      role="button"
+                      tabIndex={interactive ? 0 : -1}
+                      aria-label={tx(`Build watchtower at ${v}`)}
+                      data-testid={`tower-target-${v}`}
+                      data-map-x={x}
+                      data-map-y={y}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (interactive) onBuild("tower", v);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && interactive)
+                          onBuild("tower", v);
+                      }}
+                    >
+                      <circle
+                        cx={x}
+                        cy={y}
+                        r="11"
+                        fill="#fff0a080"
+                        stroke="#fff4bb"
+                        strokeWidth="2"
+                      />
+                      <path
+                        d={`M${x - 5} ${y + 5}V${y - 6}h3v3h4v-3h3v11Z`}
+                        fill="#496965"
+                      />
+                    </g>
+                  );
+                }),
+            )}
+          </g>
         </svg>
       </div>
       <div
@@ -1671,18 +1719,19 @@ export function Board({
           <Focus size={18} />
         </button>
         <button
-          className="icon-button"
+          className="icon-button climate-view-toggle"
           aria-label={tx("Show climates")}
           title={tx("Show climates")}
           aria-pressed={climates}
           onClick={() => setClimates((v) => !v)}
         >
-          ◈
+          <span aria-hidden="true">◈</span> {tx("Climates")}
         </button>
         <button
           className="icon-button"
           aria-label={tx(numbers ? "Hide dice numbers" : "Show dice numbers")}
           title={tx(numbers ? "Hide dice numbers" : "Show dice numbers")}
+          disabled={climates}
           onClick={() => setNumbers((v) => !v)}
         >
           <MapIcon size={18} />
@@ -1690,14 +1739,18 @@ export function Board({
       </div>
       {climates && (
         <div className="climate-map-legend" aria-label={tx("Climates")}>
-          {CLIMATES.filter((c) => tiles.some((t) => t.climate === c)).map(
-            (c) => (
-              <span key={c}>
-                <i style={{ background: CLIMATE_INFO[c].color }} />
-                {tx(CLIMATE_INFO[c].name)}
-              </span>
-            ),
-          )}
+          <strong>{tx("Climate overview")}</strong>
+          {CLIMATES.filter((c) =>
+            tiles.some((t) => (t.climate ?? "temperate") === c),
+          ).map((c) => (
+            <span key={c}>
+              <i style={{ background: CLIMATE_INFO[c].color }} />
+              {tx(CLIMATE_INFO[c].name)}
+              <b>
+                {tiles.filter((t) => (t.climate ?? "temperate") === c).length}
+              </b>
+            </span>
+          ))}
         </div>
       )}
       <div className="map-caption">

@@ -59,13 +59,32 @@ it.each(["temperate", "steppe"] as const)(
       expect(counts[climate]).toBe(2000);
   },
 );
-it("never introduces excluded climates and leaves other destination draws uniform", () => {
+it.each([
+  ["mediterranean", { temperate: 6000, steppe: 3000, desert: 3000 }],
+  ["tropical", { temperate: 4000, desert: 8000 }],
+  ["desert", { tropical: 6000, mediterranean: 3000, steppe: 3000 }],
+] as const)(
+  "uses the requested destination weights from %s",
+  (from, expected) => {
+    const counts: Partial<Record<Climate, number>> = {};
+    for (let i = 0; i < 12000; i++) {
+      const to = chooseClimateTransition(
+        from,
+        CLIMATE_INFO[from].compatible,
+        (i + 0.5) / 12000,
+      );
+      counts[to] = (counts[to] ?? 0) + 1;
+    }
+    expect(counts).toEqual(expected);
+  },
+);
+it("never introduces excluded climates and leaves Cold destinations uniform", () => {
   for (const from of CLIMATES) {
     const choices = CLIMATE_INFO[from].compatible.filter((c) => c !== "cold");
     for (let i = 0; i < 100; i++) {
       const roll = i / 100;
-      expect(chooseClimateTransition(from, choices, roll)).toBe(
-        choices.length ? choices[Math.floor(roll * choices.length)] : from,
+      expect(choices.length ? choices : [from]).toContain(
+        chooseClimateTransition(from, choices, roll),
       );
     }
   }

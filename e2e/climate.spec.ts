@@ -106,7 +106,7 @@ for (const locale of ["en", "fr"] as const) {
     ).toEqual([]);
   });
 }
-test("new climate map shows its overlay without changing saved game state", async ({
+test("climate-only overview hides gameplay details and preserves the campaign", async ({
   page,
 }) => {
   let s = newGame("climate-browser-preview");
@@ -127,6 +127,37 @@ test("new climate map shows its overlay without changing saved game state", asyn
     .getByRole("button", { name: "Show climates", exact: true })
     .click();
   await expect(page.locator(".climate-map-legend")).toBeVisible();
+  await expect(page.locator(".climate-map-tile")).toHaveCount(
+    Object.keys(s.tiles).length,
+  );
+  await expect(page.locator(".game-map-contents")).not.toBeVisible();
+  await expect(
+    page.locator(".terrain-map polygon[fill^='url(#terrain-']"),
+  ).toHaveCount(0);
+  await expect(
+    page.getByRole("button", { name: "Hide dice numbers", exact: true }),
+  ).toBeDisabled();
+  const expectedCounts = Object.values(s.tiles).reduce<Record<string, number>>(
+    (counts, tile) => {
+      const climate = tile.climate ?? "temperate";
+      counts[climate] = (counts[climate] ?? 0) + 1;
+      return counts;
+    },
+    {},
+  );
+  for (const [climate, count] of Object.entries(expectedCounts))
+    await expect(
+      page.locator(`.climate-map-tile[data-climate="${climate}"]`),
+    ).toHaveCount(count);
+  await page.getByRole("button", { name: "Zoom in", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Fit entire map", exact: true })
+    .click();
+  await page.locator(".climate-hit-target").first().press("Enter");
+  await expect(
+    page.getByRole("complementary", { name: "Action inspector" }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Close action panel" }).click();
   expect(
     await page.evaluate((key) => localStorage.getItem(key), SAVE_KEY),
   ).toBe(before);
@@ -137,6 +168,11 @@ test("new climate map shows its overlay without changing saved game state", asyn
     .getByRole("button", { name: "Show climates", exact: true })
     .click();
   await expect(page.locator(".climate-map-legend")).not.toBeVisible();
+  await expect(page.locator(".climate-map-tile")).toHaveCount(0);
+  await expect(page.locator(".game-map-contents")).toBeVisible();
+  await expect(
+    page.locator(".terrain-map polygon[fill^='url(#terrain-']").first(),
+  ).toBeVisible();
   expect(errors).toEqual([]);
 });
 
