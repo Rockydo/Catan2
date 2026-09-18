@@ -9,7 +9,11 @@ import {
   type Biome,
   type Climate,
 } from "../src/game/climate-content";
-import { bufferClimates, climateTerrain } from "../src/game/climate";
+import {
+  bufferClimates,
+  climateTerrain,
+  chooseClimateTransition,
+} from "../src/game/climate";
 import { newGame, applyCommand, canApplyCommand } from "../src/game/engine";
 import {
   addHexes,
@@ -40,6 +44,40 @@ import { maritimeFixture } from "./maritime-fixture";
 import { piece, run } from "./helpers";
 import { chooseAIAction } from "../src/game/ai";
 import { existsSync } from "node:fs";
+
+it.each(["temperate", "steppe"] as const)(
+  "gives Cold 1.5 times the destination weight when leaving %s",
+  (from) => {
+    const choices = CLIMATE_INFO[from].compatible;
+    const counts: Partial<Record<Climate, number>> = {};
+    for (let i = 0; i < 9000; i++) {
+      const climate = chooseClimateTransition(from, choices, (i + 0.5) / 9000);
+      counts[climate] = (counts[climate] ?? 0) + 1;
+    }
+    expect(counts.cold).toBe(3000);
+    for (const climate of choices.filter((c) => c !== "cold"))
+      expect(counts[climate]).toBe(2000);
+  },
+);
+it("never introduces excluded climates and leaves other destination draws uniform", () => {
+  for (const from of CLIMATES) {
+    const choices = CLIMATE_INFO[from].compatible.filter((c) => c !== "cold");
+    for (let i = 0; i < 100; i++) {
+      const roll = i / 100;
+      expect(chooseClimateTransition(from, choices, roll)).toBe(
+        choices.length ? choices[Math.floor(roll * choices.length)] : from,
+      );
+    }
+  }
+  for (let i = 0; i < 100; i++)
+    expect(
+      chooseClimateTransition(
+        "cold",
+        ["temperate", "steppe", "arctic"],
+        i / 100,
+      ),
+    ).toBe(["temperate", "steppe", "arctic"][Math.floor((i / 100) * 3)]);
+});
 
 it.each(CLIMATES)(
   "matches the complete %s terrain distribution, including sequential water checks",

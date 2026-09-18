@@ -23,6 +23,23 @@ const climateDistances = CLIMATES.map((start) => {
 function distanceTo(from: Climate, to: Climate) {
   return climateDistances[CLIMATES.indexOf(from)].get(to)!;
 }
+/** Bias only the destination draw, after compatibility and continuity checks. */
+export function chooseClimateTransition(
+  from: Climate,
+  choices: Climate[],
+  roll: number,
+): Climate {
+  if (!choices.length) return from;
+  const favorCold =
+    (from === "temperate" || from === "steppe") && choices.includes("cold");
+  if (!favorCold) return choices[Math.floor(roll * choices.length)];
+  let remaining = roll * (choices.length + 0.5);
+  for (const candidate of choices) {
+    remaining -= candidate === "cold" ? 1.5 : 1;
+    if (remaining < 0) return candidate;
+  }
+  return choices[choices.length - 1];
+}
 function bounds(ids: string[]) {
   let minQ = Infinity,
     maxQ = -Infinity,
@@ -163,10 +180,11 @@ export function planClimates(world: World, seed: string, revealed: string[]) {
           if (familiar.length) choices = familiar;
         }
         if (choices.length)
-          climate =
-            choices[
-              Math.floor(randomAt(seed, id, "climate-switch") * choices.length)
-            ];
+          climate = chooseClimateTransition(
+            base,
+            choices,
+            randomAt(seed, id, "climate-switch"),
+          );
       }
       assigned[id] = climate;
       pending.delete(id);
