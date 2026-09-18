@@ -17,7 +17,9 @@ export function frontierReturnSites(
   revealed: string[],
 ): string[] {
   const land = new Set(
-    revealed.filter((id) => s.tiles[id] && s.tiles[id].resource !== "water"),
+    revealed.filter(
+      (id) => s.tiles[id] && !["water", "ice"].includes(s.tiles[id].resource),
+    ),
   );
   return settlementSites(s, owner, true).filter((v) =>
     s.vertices[v].tiles.some(
@@ -42,7 +44,9 @@ export function restoreOnFrontier(
     return false;
   const built: Town[] = [];
   const land = new Set(
-    revealed.filter((id) => s.tiles[id]?.resource !== "water"),
+    revealed.filter(
+      (id) => s.tiles[id] && !["water", "ice"].includes(s.tiles[id].resource),
+    ),
   );
   for (let i = 0; i < townCount; i++) {
     const candidates = frontierReturnSites(s, owner, revealed);

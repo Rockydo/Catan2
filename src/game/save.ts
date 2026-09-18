@@ -1,3 +1,10 @@
+import {
+  CLIMATES,
+  CLIMATE_INFO,
+  BIOMES,
+  BIOME_INFO,
+  compatibleClimate,
+} from "./climate-content";
 import { allianceOf, friendly } from "./relations";
 import {
   automatableGuild,
@@ -7,7 +14,7 @@ import {
   extractionGuild,
   extractionTiles,
 } from "./guilds";
-import { marineResource, tileGood } from "./maritime";
+import { marineResource, tileGood, tileOptions } from "./maritime";
 import {
   GUILD_KINDS,
   economicGuild,
@@ -34,7 +41,7 @@ export const SAVE_KEY = "catane-frontiers-save-v1";
 export const BACKUP_KEY = "catane-frontiers-backup-v1";
 export function assertInvariants(s: Game) {
   rule(
-    s && s.version === 5 && s.generation === 4,
+    s && s.version === 5 && [4, 5].includes(s.generation),
     "This save version is unsupported.",
   );
   rule(
@@ -212,9 +219,62 @@ export function assertInvariants(s: Game) {
     int(t.r, -1e7, 1e7);
     rule(
       RAW.includes(t.resource as (typeof RAW)[number]) ||
-        t.resource === "water",
+        ["water", "snow", "desert", "ice"].includes(t.resource),
       "Invalid terrain resource.",
     );
+    if (t.climate !== undefined)
+      rule(CLIMATES.includes(t.climate), "Invalid climate.");
+    if (s.generation === 5) {
+      rule(
+        t.climate && t.biome && s.climatePlan,
+        "Climate terrain is missing.",
+      );
+      const info = CLIMATE_INFO[t.climate!];
+      rule(
+        t.biome === "water" ||
+          [...info.terrain, ...info.water].some(([b]) => b === t.biome),
+        "Terrain does not belong to its climate.",
+      );
+    }
+    if (t.biome !== undefined) {
+      rule(
+        BIOMES.includes(t.biome) && BIOME_INFO[t.biome].resource === t.resource,
+        "Invalid climate terrain.",
+      );
+      rule(
+        !!t.fish === ["fish", "cod"].includes(t.biome) &&
+          !!t.whale === (t.biome === "whale"),
+        "Invalid marine terrain.",
+      );
+    }
+    if (t.woodsChosenOn !== undefined) {
+      object(t.woodsChosenOn);
+      rule(t.biome === "woods", "Only Woods track harvest choices.");
+      for (const [owner, turn] of Object.entries(t.woodsChosenOn)) {
+        rule(
+          !!s.players[Number(owner)] && String(Number(owner)) === owner,
+          "Invalid Woods owner.",
+        );
+        int(turn, 0, s.players[Number(owner)].turns);
+      }
+    }
+    if (t.woodsChoices !== undefined) {
+      object(t.woodsChoices);
+      rule(t.biome === "woods", "Only Woods have a harvest choice.");
+      for (const [owner, good] of Object.entries(t.woodsChoices))
+        rule(
+          String(Number(owner)) === owner &&
+            !!s.players[Number(owner)] &&
+            ["lumber", "hides"].includes(good),
+          "Invalid Woods choice.",
+        );
+    }
+    for (const adjacent of neighbors(key))
+      if (t.climate && s.tiles[adjacent]?.climate)
+        rule(
+          compatibleClimate(t.climate, s.tiles[adjacent].climate!),
+          "Incompatible neighboring climates.",
+        );
     int(t.number, 2, 12);
     rule(t.resource !== "fish", "Fish must remain water terrain.");
     rule(
@@ -423,6 +483,16 @@ export function assertInvariants(s: Game) {
         "Standing guild orders need a saved recipe.",
       );
     }
+    if (t.extensionGoods) {
+      object(t.extensionGoods);
+      for (const [tile, good] of Object.entries(t.extensionGoods))
+        rule(
+          t.extensions[tile] &&
+            s.tiles[tile] &&
+            tileOptions(s.tiles[tile]).includes(good),
+          "Invalid workshop resource.",
+        );
+    }
     object(t.extensions);
     for (const [tile, tier] of Object.entries(t.extensions)) {
       rule(
@@ -431,6 +501,44 @@ export function assertInvariants(s: Game) {
       );
       int(tier, 1, t.level - 1);
     }
+  }
+  if (s.climatePlan !== undefined) {
+    object(s.climatePlan);
+    let minQ = Infinity,
+      maxQ = -Infinity,
+      minR = Infinity,
+      maxR = -Infinity;
+    const reservations = Object.entries(s.climatePlan);
+    rule(reservations.length > 0, "Empty climate reservation.");
+    for (const [tile, climate] of Object.entries(s.climatePlan)) {
+      rule(
+        /^-?\d+,-?\d+$/.test(tile) && CLIMATES.includes(climate),
+        "Invalid climate reservation.",
+      );
+      const [q, r] = tile.split(",").map(Number);
+      int(q, -1e7, 1e7);
+      int(r, -1e7, 1e7);
+      rule(tile === `${q},${r}`, "Invalid climate coordinate.");
+      minQ = Math.min(minQ, q);
+      maxQ = Math.max(maxQ, q);
+      minR = Math.min(minR, r);
+      maxR = Math.max(maxR, r);
+      for (const next of neighbors(tile))
+        if (s.climatePlan[next])
+          rule(
+            compatibleClimate(climate, s.climatePlan[next]),
+            "Incompatible climate reservation.",
+          );
+    }
+    rule(
+      (maxQ - minQ + 1) * (maxR - minR + 1) === reservations.length,
+      "Incomplete climate reservation.",
+    );
+    for (const t of Object.values(s.tiles))
+      rule(
+        t.climate === s.climatePlan[t.id],
+        "Revealed climate differs from its reservation.",
+      );
   }
   object(s.towers);
   for (const [vertex, tower] of Object.entries(s.towers)) {
@@ -830,7 +938,7 @@ export function serialize(s: Game): string {
   const body = JSON.stringify(s);
   return JSON.stringify({
     format: "catane-frontiers",
-    version: 7,
+    version: 8,
     savedAt: new Date().toISOString(),
     checksum: hash(body).toString(16),
     game: s,
@@ -842,7 +950,7 @@ export function deserialize(text: string): Game {
   rule(
     data &&
       data.format === "catane-frontiers" &&
-      [1, 2, 3, 4, 5, 6, 7].includes(data.version) &&
+      [1, 2, 3, 4, 5, 6, 7, 8].includes(data.version) &&
       data.game,
     "This is not a supported Catane save.",
   );
@@ -1065,6 +1173,9 @@ export function deserialize(text: string): Game {
     if (data.game.researchChoice && data.game.researchChoice.length !== 2)
       data.game.legacyResearchChoice = true;
   }
+  if (data.version < 8)
+    for (const tile of Object.values((data.game as Game).tiles))
+      tile.climate ??= "temperate";
   if (data.game.phase === "military") data.game.phase = "economy";
   assertInvariants(data.game);
   // Never silently redirect an old standing order to a different good.

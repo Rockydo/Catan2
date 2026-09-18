@@ -11,9 +11,9 @@ import {
 import { inventory, ownTowns, income } from "../game/selectors";
 import { GoodIcon, Modal, Cost } from "./components";
 const USES: Record<Good, string> = {
-  oil: "Whales produce Oil alongside Hides. Oil replaces Coal one-for-one in recipes: Coal is spent first, then Oil covers a shortfall automatically. Artisans can refine Oil into Fuel. Trades transfer the exact named goods.",
+  oil: "Whales and Seal hunting grounds produce Oil alongside Hides. Oil replaces Coal one-for-one in recipes: Coal is spent first, then Oil covers a shortfall automatically. Artisans can refine Oil into Fuel. Trades transfer the exact named goods.",
   fish: "Replaces Grain one-for-one in any building or recruitment recipe. Grain is spent first; Fish covers a shortfall automatically. Smokehouses add Rations without consuming your Fish.",
-  gold: "Exchange 1 Gold for any raw good, or 2 Gold for any processed good. Gold mountains are half as common as each other land resource.",
+  gold: "Exchange 1 Gold for any raw good, or 2 Gold for any processed good. Gold occurs at different rates in each climate.",
   goldbars:
     "Exchange 1 Gold bar for 2 raw goods of one type or 1 processed good. Produced by Goldsmiths.",
   lumber: "Roads, settlements, ships and camp frames.",
@@ -23,7 +23,7 @@ const USES: Record<Good, string> = {
   ore: "Cities, tools, heavy infantry, artillery and research.",
   stone: "Quarries, mine supports, walls and the foundations of every guild.",
   hides:
-    "Produced by hunting grounds on land and Whales at sea. Used for harvest bags, mine hauling, ballista torsion, cavalry and leather-making.",
+    "Produced by forests, Steppe, Seal hunting grounds and Whales. Used for harvest bags, mine hauling, ballista torsion, cavalry and leather-making.",
   salt: "Food preservation, sea supplies, textile washing, tanning and chemicals.",
   coal: "Kilns, forges, tier-II guild construction and coal-fired work orders.",
   planks: "Ship hulls, artillery frames, advanced cities and mine supports.",

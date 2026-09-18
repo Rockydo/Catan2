@@ -3,11 +3,21 @@ import {
   TERRAIN,
   extensionName,
   processedFor,
+  type TerrainKey,
 } from "../game/content";
-import type { Good, Raw } from "../game/types";
+import {
+  BIOMES,
+  BIOME_INFO,
+  CLIMATES,
+  CLIMATE_INFO,
+  waterProbabilities,
+  type Biome,
+  type Climate,
+} from "../game/climate-content";
+import type { Good, Raw, Stock } from "../game/types";
 import { localize as tx, useLocale } from "../i18n";
 import { ResourceIcon } from "../ui/ResourceIcon";
-
+import { useState } from "react";
 const atlas = [
   "lumber",
   "brick",
@@ -20,26 +30,13 @@ const atlas = [
   "salt",
   "coal",
 ];
-type TileKind = Exclude<Raw, "oil"> | "whale" | "water";
-const tiles: TileKind[] = [
-  "lumber",
-  "brick",
-  "wool",
-  "grain",
-  "ore",
-  "stone",
-  "hides",
-  "salt",
-  "coal",
-  "gold",
-  "fish",
-  "whale",
-  "water",
-];
-
-export function TerrainImage({ tile }: { tile: TileKind }) {
-  const index = atlas.indexOf(tile);
-  const dedicated = tile === "gold" || tile === "fish" || tile === "whale";
+export function TerrainImage({ tile }: { tile: TerrainKey }) {
+  const art = BIOME_INFO[tile as Biome]?.art ?? tile;
+  const index = atlas.indexOf(art),
+    dedicated = index < 0;
+  const file = ["gold", "fish", "whale"].includes(art)
+    ? `terrain-${art}-${art === "fish" ? "v2" : "v1"}.png`
+    : `terrain-${art}-v1.webp`;
   return (
     <span
       className={`terrain-picture ${tile === "water" ? "empty-water" : ""}`}
@@ -49,7 +46,7 @@ export function TerrainImage({ tile }: { tile: TileKind }) {
         tile === "water"
           ? undefined
           : {
-              backgroundImage: `url(./assets/${dedicated ? `terrain-${tile}-${tile === "fish" ? "v2" : "v1"}.png` : "terrain-atlas-v2.png"})`,
+              backgroundImage: `url(./assets/${dedicated ? file : "terrain-atlas-v2.png"})`,
               backgroundSize: dedicated ? "cover" : "500% 200%",
               backgroundPosition: dedicated
                 ? "center"
@@ -59,31 +56,36 @@ export function TerrainImage({ tile }: { tile: TileKind }) {
     />
   );
 }
-
-function Outputs({ goods }: { goods: Good[] }) {
+function Outputs({
+  goods,
+  choice = false,
+}: {
+  goods: Stock;
+  choice?: boolean;
+}) {
+  const locale = useLocale();
   return (
     <span className="terrain-outputs">
-      {goods.map((g, i) => (
+      {Object.entries(goods).map(([g, n], i) => (
         <span key={g}>
-          {i > 0 && <b>+</b>}
-          <ResourceIcon good={g} size={26} />
-          {tx(GOOD_INFO[g].name)}
+          {i > 0 && <b>{choice ? (locale === "fr" ? "ou" : "or") : "+"}</b>}
+          <ResourceIcon good={g as Good} size={26} />
+          {n} {tx(GOOD_INFO[g as Good].name)}
         </span>
       ))}
     </span>
   );
 }
-
+function yields(tile: Biome): Stock {
+  return tile === "woods" ? { lumber: 1, hides: 1 } : BIOME_INFO[tile].yield;
+}
+function workshopGoods(tile: Biome): Raw[] {
+  return tile === "woods"
+    ? ["lumber", "hides"]
+    : (Object.keys(BIOME_INFO[tile].yield).slice(0, 1) as Raw[]);
+}
 export function GoodSources({ good }: { good: Good }) {
   const locale = useLocale();
-  const sources = tiles.filter(
-    (t) =>
-      t !== "water" &&
-      (t === "whale"
-        ? ["hides", "oil", "leather"].includes(good)
-        : t === good || processedFor(t as Raw) === good),
-  );
-  // Oil has no deposit or extension. Fuel from Oil is an Artisan contract.
   return (
     <div
       className="good-sources"
@@ -91,16 +93,19 @@ export function GoodSources({ good }: { good: Good }) {
         locale === "fr" ? "Terrains de production" : "Production terrain"
       }
     >
-      {sources.map((tile) => (
+      {BIOMES.filter(
+        (t) =>
+          good in yields(t) ||
+          workshopGoods(t).some((g) => processedFor(g) === good),
+      ).map((tile) => (
         <TerrainImage key={tile} tile={tile} />
       ))}
     </div>
   );
 }
-
 export function TerrainReference({ seaOnly = false }: { seaOnly?: boolean }) {
-  const locale = useLocale();
-  const l = (en: string, fr: string) => (locale === "fr" ? fr : en);
+  const locale = useLocale(),
+    l = (en: string, fr: string) => (locale === "fr" ? fr : en);
   return (
     <section
       className="terrain-reference"
@@ -109,74 +114,158 @@ export function TerrainReference({ seaOnly = false }: { seaOnly?: boolean }) {
       <h2>{l("Terrain and production", "Terrains et production")}</h2>
       <p className="reference-intro">
         {l(
-          "When an unblocked tile's number is rolled, each adjacent town receives its level in the raw goods shown. A linked workshop adds its tier in processed goods. It does not consume the raw output.",
-          "Lorsque le numéro d’une tuile non bloquée sort, chaque agglomération adjacente reçoit son niveau en ressources brutes indiquées. Un atelier lié ajoute son palier en produits transformés, sans consommer la production brute.",
+          "Output below is for one settlement. Multiply every raw output by town level, camp tier or collector tier. Workshops add their tier in processed goods and consume nothing.",
+          "Les quantités ci-dessous correspondent à une colonie. Multipliez chaque production brute par le niveau de l’agglomération, du camp ou du collecteur. Les ateliers ajoutent leur palier en produits transformés, sans rien consommer.",
         )}
       </p>
       <div className="terrain-reference-grid">
-        {tiles
-          .filter((t) => !seaOnly || ["fish", "whale", "water"].includes(t))
-          .map((tile) => {
-            const raw: Good[] =
-              tile === "water"
-                ? []
-                : tile === "whale"
-                  ? ["hides", "oil"]
-                  : [tile];
-            const linked = tile === "whale" ? "hides" : tile;
-            return (
-              <article className="terrain-row" key={tile} data-terrain={tile}>
-                <div className="terrain-caption">
-                  <TerrainImage tile={tile} />
-                  <h3>{tx(TERRAIN[tile].name)}</h3>
-                  <small>{tx(TERRAIN[tile].family)}</small>
-                </div>
-                <div className="terrain-yields">
-                  <span className="output-label">
-                    {l("Raw output", "Production brute")}
-                  </span>
-                  {raw.length ? (
-                    <Outputs goods={raw} />
-                  ) : (
-                    <p>
-                      {l("None. No dice number.", "Aucune. Pas de numéro.")}
-                    </p>
-                  )}
-                  {linked !== "water" && (
-                    <>
-                      <span className="output-label">
-                        {tx(extensionName(linked))}
-                      </span>
-                      <Outputs goods={[processedFor(linked)]} />
-                    </>
-                  )}
-                  {tile === "fish" && (
-                    <p>
-                      {l(
-                        "Fish replaces Grain 1:1 in recipes.",
-                        "Les Poissons remplacent le Blé à 1:1 dans les recettes.",
-                      )}
-                    </p>
-                  )}
-                  {tile === "whale" && (
-                    <p>
-                      {l(
-                        "Both goods are produced on the same roll. Oil replaces Coal 1:1. The workshop produces Leather only.",
-                        "Les deux ressources sont produites au même lancer. L’Huile remplace le Charbon à 1:1. L’atelier produit uniquement du Cuir.",
-                      )}
-                    </p>
-                  )}
-                </div>
-              </article>
-            );
-          })}
+        {BIOMES.filter(
+          (t) =>
+            !seaOnly || ["water", "fish", "cod", "whale", "ice"].includes(t),
+        ).map((tile) => {
+          const raw = yields(tile),
+            workshops = workshopGoods(tile);
+          return (
+            <article className="terrain-row" key={tile} data-terrain={tile}>
+              <div className="terrain-caption">
+                <TerrainImage tile={tile} />
+                <h3>{tx(BIOME_INFO[tile].name)}</h3>
+                <small>{tx(BIOME_INFO[tile].family)}</small>
+              </div>
+              <div className="terrain-yields">
+                <span className="output-label">
+                  {l("Raw output", "Production brute")}
+                </span>
+                {Object.keys(raw).length ? (
+                  <Outputs goods={raw} choice={tile === "woods"} />
+                ) : (
+                  <p>{l("No production.", "Aucune production.")}</p>
+                )}
+                {workshops.map((g) => (
+                  <div key={g}>
+                    <span className="output-label">{tx(extensionName(g))}</span>
+                    <Outputs goods={{ [processedFor(g)]: 1 }} />
+                  </div>
+                ))}
+                {tile === "woods" && (
+                  <p>
+                    {l(
+                      "Each faction chooses its own harvest. Choose Wood or Hides during your action phase. A workshop keeps the product chosen when built.",
+                      "Chaque faction choisit sa production : Bois ou Peaux, pendant sa phase d’actions. Un atelier conserve le produit choisi à sa construction.",
+                    )}
+                  </p>
+                )}
+                {tile === "ice" && (
+                  <p>
+                    {l(
+                      "Armies may cross. Ships cannot enter. No permanent structures without adjacent solid ground.",
+                      "Les armées peuvent traverser, pas les navires. Aucune construction permanente sans terre ferme adjacente.",
+                    )}
+                  </p>
+                )}
+              </div>
+            </article>
+          );
+        })}
       </div>
       <p className="reference-note">
         {l(
-          "Settlement: 1 raw per tile · City I: 2 · City II: 3 · City III: 4. Workshops I / II / III add 1 / 2 / 3 processed goods. Oil has no separate terrain or workshop; Artisans can convert it to Fuel.",
-          "Colonie : 1 ressource brute par tuile · Ville I : 2 · Ville II : 3 · Ville III : 4. Les ateliers I / II / III ajoutent 1 / 2 / 3 produits transformés. L’Huile n’a ni terrain ni atelier propre ; les Artisans peuvent la transformer en Combustible.",
+          "Town multipliers: Settlement ×1, City I ×2, City II ×3, City III ×4. Camps ×1 / ×2. Workshops +1 / +2 / +3. Fish replaces Grain; Oil replaces Coal. For tiles yielding two goods, the workshop uses the first listed good. Woods offer a choice when building.",
+          "Multiplicateurs : Colonie ×1, Ville I ×2, Ville II ×3, Ville III ×4. Camps ×1 / ×2. Ateliers +1 / +2 / +3. Les Poissons remplacent le Blé ; l’Huile remplace le Charbon. Sur une tuile à deux productions, l’atelier utilise la première ressource indiquée. Les Bois permettent un choix à la construction.",
         )}
       </p>
+    </section>
+  );
+}
+export function ClimateReference({
+  initial = "temperate",
+  readOnly = false,
+}: { initial?: Climate; readOnly?: boolean } = {}) {
+  const locale = useLocale(),
+    l = (en: string, fr: string) => (locale === "fr" ? fr : en);
+  const [climate, setClimate] = useState<Climate>(initial),
+    info = CLIMATE_INFO[climate];
+  const pct = (v: number) =>
+    `${Number((v * 100).toFixed(3)).toLocaleString(locale)}%`;
+  return (
+    <section
+      className="climate-reference"
+      aria-label={l("Climate probabilities", "Probabilités des climats")}
+    >
+      <h2>{l("Climates", "Climats")}</h2>
+      {!readOnly && (
+        <div
+          className="climate-tabs"
+          role="group"
+          aria-label={l("Choose climate", "Choisir le climat")}
+        >
+          {CLIMATES.map((c) => (
+            <button
+              key={c}
+              aria-pressed={c === climate}
+              onClick={() => setClimate(c)}
+            >
+              <i style={{ background: CLIMATE_INFO[c].color }} />
+              {tx(CLIMATE_INFO[c].name)}
+            </button>
+          ))}
+        </div>
+      )}
+      <h3>
+        {tx(info.name)} · {pct(info.land)} {l("land", "terre")} /{" "}
+        {pct(1 - info.land)} {l("water", "eau")}
+      </h3>
+      <p>
+        {l("Compatible neighbors: ", "Voisins compatibles : ")}
+        {info.compatible.map((c) => tx(CLIMATE_INFO[c].name)).join(", ")}
+      </p>
+      <div className="climate-columns">
+        <div>
+          <h4>{l("If land is rolled", "Si le tirage donne une terre")}</h4>
+          {info.terrain.map(([t, n]) => (
+            <div className="climate-terrain" key={t}>
+              <TerrainImage tile={t} />
+              <span>
+                {tx(BIOME_INFO[t].name)}
+                <small>
+                  <Outputs goods={yields(t)} choice={t === "woods"} />
+                </small>
+              </span>
+              <strong>{n}%</strong>
+            </div>
+          ))}
+        </div>
+        <div>
+          <h4>{l("If water is rolled", "Si le tirage donne de l’eau")}</h4>
+          <p>
+            {l(
+              "Checks run in this order on the remaining water only. The first success ends the sequence.",
+              "Les tirages suivants ne concernent que l’eau restante. Le premier résultat positif arrête la séquence.",
+            )}
+          </p>
+          {waterProbabilities(climate).map(([t, n]) => (
+            <div className="climate-terrain" key={t}>
+              <TerrainImage tile={t} />
+              <span>
+                {tx(BIOME_INFO[t].name)}
+                <small>
+                  {t === "water"
+                    ? l("Remaining water", "Eau restante")
+                    : `${pct(info.water.find(([b]) => b === t)![1])} ${l("check", "au tirage")}`}
+                </small>
+              </span>
+              <strong
+                title={l(
+                  "Effective share of water rolls",
+                  "Part effective des tirages d’eau",
+                )}
+              >
+                {pct(n)}
+              </strong>
+            </div>
+          ))}
+        </div>
+      </div>
     </section>
   );
 }

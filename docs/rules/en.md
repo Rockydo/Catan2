@@ -8,10 +8,10 @@ Generated from the interactive guide and game data. Launch the game and choose L
 Win by destroying every rival settlement and city. There are no victory points or turn limit. Empty land does not need to be occupied or explored. The last surviving faction wins immediately.
 A town means either a settlement or a city. Losing your last town eliminates your faction and removes its remaining pieces, goods and cards. During an unfinished game, eliminated factions may return through expeditions; eliminated AI factions may also return through rebellions.
 ### Setup
-Choose Classic (5 factions, 110 tiles) or Grand campaign (10 factions, 220 tiles).
+Choose Classic (5 factions, 125 tiles) or Grand campaign (10 factions, 250 tiles).
 - In player order, each faction places one settlement and one adjoining road or sea route.
 - Repeat in reverse player order. Each faction now has two settlements and two route pieces.
-- The second settlement receives one raw good from each adjacent productive tile. A Whale tile gives both 1 Hides and 1 Oil. Start with no troops or processed goods.
+- The second settlement receives the full printed yield of every adjacent productive tile. For example, Golden fields give 2 Grain and a Whale tile gives 1 Hides plus 1 Oil. Woods initially give Wood. Start with no troops or processed goods.
 Each settlement must touch at least one land tile. At least one empty intersection must separate any two settlements, regardless of owner.
 ### Turn sequence
 - Production: roll two independent six-sided dice. All factions collect production from tiles whose number matches the total. Seven produces normally. There is no robber, discard or stock limit.
@@ -19,16 +19,22 @@ Each settlement must touch at least one land tile. At least one empty intersecti
 - End turn: pass to the next surviving faction. A round is complete when every surviving faction has had a turn.
 Held research cards may also be played before rolling, if their conditions allow it. There is no separate military phase.
 ### Construction access
-Camps add raw production along routes. City I produces two raw goods per adjacent matching tile and unlocks workshops. A coastal town can build mobile ships; the available tier depends on its level. Research and guilds provide additional effects and resource exchanges. See the relevant chapters for costs and requirements.
+Camps add raw production along routes. City I doubles each adjacent tile’s printed raw yield and unlocks workshops. A coastal town can build mobile ships; the available tier depends on its level. Research and guilds provide additional effects and resource exchanges. See the relevant chapters for costs and requirements.
 ### Differences from Catan
-The original costs of roads, settlements, City I, sea-route pieces and tier-I development cards are unchanged. There is no robber, pirate, desert, Knight reward, Largest Army reward, Longest Road reward or victory-point card. Pieces, reserve stock and research supplies are unlimited.
+The original costs of roads, settlements, City I, sea-route pieces and tier-I development cards are unchanged. There is no robber, pirate, Knight reward, Largest Army reward, Longest Road reward or victory-point card. Pieces, reserve stock and research supplies are unlimited.
 Goods are stored in individual towns but spent from a common pool. Armies can raid and destroy towns. Workshops, guilds, research and expeditions add actions. Sea routes connect settlements; fleets are separate moving pieces.
 
 ## Map and dice
 
-### Map generation
-Each coordinate independently has a 50% chance of water and 50% chance of land. The nine ordinary land resources have equal weight; Gold has half that weight. No resource, continent, port or balanced starting position is guaranteed. Terrain is never rearranged to look natural. The initial footprint is compact, with random ordering on its outer ring.
-A coastal water tile touches at least one land tile. Fish appears on 15% of coastal water and 10% of offshore water. Then remaining water gets a Whale roll: 5% coastal, 10% offshore. Whales never replace Fish. Effective Whale chances before the Fish roll are therefore 4.25% coastal and 9% offshore. Fish and Whales remain water for movement and combat. Whales produce Hides and Oil together.
+### Climate generation
+The initial map contains 125 tiles in Classic or 250 in Grand campaign. Climate is assigned before terrain. Pick a random starting tile and one of seven climates with equal probability. Grow outward through neighbors. If all assigned immediate neighbors agree, retain that climate with 95% probability. On a switch, intersect the compatible climates of assigned tiles within two hexes. At mixed borders, prefer an existing adjacent compatible climate. If no candidate exists, copy an immediate neighbor.
+A repair pass leaves intermediate compatible climates as buffer zones. Adjacent climates are always compatible. Climate reservations include an unseen collar, so future expeditions cannot create incompatible seams. Revealed terrain never changes. The same seed and discovery sequence reproduce the same world. Different expedition sequences may extend climate zones differently.
+Choose land or water using that climate’s ratio, then use its terrain table below. Land percentages are conditional on rolling land. Water checks run in the listed order on remaining water only; the first success ends the sequence. No coastal/offshore distinction remains. Gold frequency varies by climate. No resource, climate, port, continent or balanced start is guaranteed.
+Temperate, Tropical and Desert use 50% land. Cold uses 55%, Steppe 70%, Arctic and Mediterranean 40%. Steppe and Desert are mutually compatible, as are all other listed borders. Oasis food means Grain.
+### Barren terrain and ice
+Snow plains and Desert produce nothing and have no workshop or camp. Armies can cross them and build normally beside them. Frozen sea is generated by the Arctic water roll. It produces nothing, admits land units and blocks ships. Permanent towns, towers and roads require adjacent solid ground; no route can be built on an edge bordered only by ice. An ice-water edge without land can hold a sea route. Frozen sea never melts.
+### Existing campaigns
+Old revealed tiles keep their original terrain and yields. They are classified Temperate for future climate borders. Newly explored tiles use the climate system. Start a new campaign to use the new terrain tables throughout the map.
 ### Tile numbers and dice
 Every productive tile receives a uniform random number from 2 through 12, including 7. Dice are two independent d6, so tile numbers are equally common in generation but not equally likely to activate. Dice, terrain, research and rebellion randomness are saved separately. Reloading does not reroll an offer or the map. Hidden coordinates cannot be inspected by players or AI.
 ### Ports
@@ -39,7 +45,7 @@ An extreme map may lack enough legal starting sites. The game rejects a seed wit
 ## Goods, storage and trade
 
 ### Production and storage
-There are twelve raw goods and ten processed goods. Towns receive their level in raw goods from each adjacent matching tile. Extensions add processed output without consuming or reducing the raw harvest. All players produce on every roll. New buildings and collectors can produce on the next matching roll.
+There are twelve raw goods and ten processed goods. Towns receive each adjacent matching tile’s printed output multiplied by town level. Golden fields give 2/4/6/8 Grain at town levels 1/2/3/4; Rice fields give 3/6/9/12. Both goods on a dual-output tile are multiplied. Extensions add processed output without consuming or reducing the raw harvest. All players produce on every roll. New buildings and collectors can produce on the next matching roll.
 ### Storage destinations
 Town output stays in that town. Camps and mobile collectors send goods to the nearest owned town, using hex distance to its adjacent land and oldest town ID to break ties. Future output changes destination when towns change; old stocks stay where they are. Trades and research rewards enter your home store, the oldest surviving town. Raids use the operating army's hex to find their destination.
 ### Paying costs
@@ -56,6 +62,9 @@ Default reserve rates: 4 identical raw → 1 different raw; 6 identical raw → 
 An enemy armed land unit blocks ordinary town, extension and camp output from its tile. It does not block its own or allied production. Enemy fleets block ordinary Fish and Whale production, including fishing ships harvesting that tile. Land merchants and merchant ships ignore production blockades on covered tiles. Land merchants cannot blockade, protect a town or attack.
 ### Construction under occupation
 Enemy occupation prevents new towns beside it and roads bordering it. Camps only need their linked side clear. Existing roads remain until destroyed. A besieged town cannot upgrade, recruit, build extensions or walls, operate guilds, launch fleets or expeditions, or use a port. Its goods stay spendable and its other unoccupied adjacent tiles still produce.
+### Woods harvest choice
+Each faction chooses Wood or Hides separately for each Woods tile it harvests. Default: Wood. Select the tile and change the choice during your action phase. The choice applies to all your towns, camps and collectors covering that tile, on subsequent rolls. It does not change opponents’ choices or stored goods. A workshop’s resource is fixed when built; later switches do not change its product or upgrade recipe. Steppe, Seal grounds and Oasis produce both listed goods automatically.
+
 
 ## Construction and upgrades
 
@@ -63,19 +72,19 @@ Enemy occupation prevents new towns beside it and roads bordering it. Camps only
 A new route must connect to your own road, sea route or town. Roads and sea routes connect directly without requiring a coastal town between them. Another faction's town or tower interrupts your junction; allied infrastructure is not yours to build from. A settlement must connect to your network after setup, touch land and obey the one-empty-intersection distance rule. Troops do not found remote settlements.
 Any edge touching revealed land is a road, including a coastline. Sea routes occupy edges touching water with no revealed land. Revealing land beside a sea route converts it to a road, preserving ownership and camps. A movable sea-route end has no town or other owned route at its open end. Move at most one such piece per owner turn to another legal connected sea edge, never one built this turn. Closed routes cannot move. Each edge holds only one route.
 ### Town levels
-Level 1 is a Settlement. Level 2 is City I, level 3 City II, level 4 City III. They produce 1/2/3/4 raw goods per matching adjacent tile. Maximum walls and recruitable unit tiers are 1/2/3/4. Cities have 1/2/3 guild slots and allow extension tiers 1/2/3. Upgrades preserve existing stocks, walls and extensions. Pay each upgrade's listed incremental cost.
+Level 1 is a Settlement. Level 2 is City I, level 3 City II, level 4 City III. They multiply each matching adjacent tile’s base yield by 1/2/3/4. Maximum walls and recruitable unit tiers are 1/2/3/4. Cities have 1/2/3 guild slots and allow extension tiers 1/2/3. Upgrades preserve existing stocks, walls and extensions. Pay each upgrade's listed incremental cost.
 Recruitment and shipbuilding use the town level at the start of your turn. A new town cannot recruit until your next turn; a town upgraded this turn unlocks its new unit tier next turn. Recruit as many eligible units or ships as you can afford. There is no military upkeep or quantity cap. New units defend and collectors produce immediately, but cannot act until the next owner turn.
 ### Extensions
 A city may build one extension for each adjacent productive tile, at most three. Each is permanently linked to that tile, even if two tiles provide the same raw good. Ordinary water has no slot; Fish supports a Smokehouse and Whales a Tannery. Neighbouring cities can each have an extension on their shared tile.
 Build tiers in order. Tier I/II/III yields 1/2/3 processed goods on that tile's number, without spending raw goods. City level limits the maximum tier to level minus one. A level-4 city with a tier-III Forge gains 4 Iron ore and 3 Steel on its ore tile's roll. Enemy occupation blocks both outputs.
 ### Resource camps
 Each owned road can hold one camp on each land side. Choose its linked tile when building. There is no camp limit per tile beyond its physical route sides. Sea routes can hold fisheries on Fish sides and whaling camps on Whale sides. A fishery survives conversion of its parent route into a road.
-Every tier-I camp costs one card of each of two raw types, never the good it produces. Tier II has its own equipment cost. Camps yield 1/2 raw goods per roll; whaling camps yield 1/2 each of Hides and Oil. No operating inputs, upkeep or processed output. Destroying a route destroys all attached camps. An isolated surviving route keeps its camps and production goes to the nearest owned town.
+Every tier-I camp costs one card of each of two raw types, never the good it produces. Tier II has its own equipment cost. Camps multiply the tile’s full base yield by 1/2. A Forest camp gives 2/4 Wood; a Steppe camp gives 1/2 Hides and 1/2 Wool. No operating inputs, upkeep or processed output. Destroying a route destroys all attached camps. An isolated surviving route keeps its camps and production goes to the nearest owned town.
 
 ## Armies and battles
 
 ### Units and movement
-Land combat units have 1/2/3/4 power and casualty points at tiers I/II/III/IV. Recruit a tier directly; units cannot upgrade. Heavy infantry moves 1 tile and doubles power on rugged terrain (Clay, Iron ore, Stone, Coal, Gold). Light infantry moves 2 and doubles in forests (Wood, Hides). Cavalry moves 3 and doubles on flat terrain (Wool, Grain, Salt). Artillery moves 1 and contributes its tier to siege power, without a field terrain bonus.
+Land combat units have 1/2/3/4 power and casualty points at tiers I/II/III/IV. Recruit a tier directly; units cannot upgrade. Heavy infantry moves 1 tile and doubles power on rugged terrain (mineral hills and mountains, Rough pasture). Light infantry moves 2 and doubles in forests (Woods, Forest, Hunting forest, Jungle, Tropical woods, Olive grove, Oasis). Cavalry moves 3 and doubles on flat terrain (fields, Pasture, Steppe, Salt, Snow plain, Seal grounds, Desert, Frozen sea). Artillery moves 1 and contributes its tier to siege power, without a field terrain bonus.
 Units occupy hexes and need no roads. Select any subset of a stack, including deselecting exhausted units or selecting half. A group moves at its slowest member's speed. Track points per unit: splitting or merging never restores them. Land units cannot enter water without transport; fleets cannot enter land. Unrevealed tiles are impassable.
 One movement point pays for one tile of movement, an adjacent battle, a siege/raid step or road/tower demolition. You may combine these while every participating unit can pay. A 4-point force can fight three adjacent battles then raid. Moving next to a town never raids it automatically. Enemy hexes block routes: go around or fight each blocking force. Allies allow passage and shared occupation.
 Town destruction, loading and unloading require fresh units and end their activation. Extra movement does not undo these operations. Newly recruited units and embarked troops cannot act. Defending on another player's turn does not spend your next turn's movement.
@@ -84,7 +93,7 @@ Use the defender's terrain for both sides. Every defending unit on the hex parti
 There are no battle dice. Only the loser loses combat units. The loss target is the difference in power, capped at the loser's total casualty points. Remove whole units with the smallest achievable total at least as large as that target. The loser chooses among equally small combinations. Terrain bonuses never increase a unit's casualty points. No wounds persist. With units worth 1 and 3 and a target of 2, lose the 3-point unit, not both.
 A defeated surviving defender retreats one legal adjacent hex, free of enemies; friendly stacks are allowed. A defeated attacker returns to its approach hex. If a defender has no legal retreat, it stays and the attacker does not occupy the tile. Equal power causes no combat casualties; the defender holds. Land merchants still die. When defenders leave or die, surviving attackers occupy their tile without another movement cost. Win, tie or loss spends the battle point; attackers can use remaining points.
 ### Collecting with land merchants
-Merchants have zero power and speed 1 at every tier. They collect their current tile plus up to their tier in selected neighbouring productive tiles, producing their tier per matching tile. They can cover Fish and Whales; Whales give both Hides and Oil. Coverage ignores enemy production blocking. Automatic coverage favours Gold, then dice probability, then coordinate order, and ignores unproductive water.
+Merchants have zero power and speed 1 at every tier. They collect their current tile plus up to their tier in selected neighbouring productive tiles, multiplying each matching tile’s base yield by their tier. They can cover Fish and Whales; Whales give both Hides and Oil. Coverage ignores enemy production blocking. Automatic coverage favours Gold, then dice probability, then coordinate order, and ignores unproductive water.
 Change selected neighbours during your action phase or restore automatic coverage. Moving or transport resets the selection; embarked merchants produce nothing. They cannot raid, siege, demolish or guard. All land merchants involved in a battle die even if their escort wins. Inspect a merchant to see and edit its coverage. All output goes to your nearest town.
 
 ## Sieges and defenses
@@ -113,7 +122,7 @@ Click a siege badge, town, tower or dashed link for defenses, progress, attackin
 A sea route is an edge piece that extends your settlement network. A mobile ship occupies a water hex, moves and fights. Neither substitutes for the other. Build mobile ships beside a coastal town, without needing a printed port, on a revealed water hex without enemies. Town level at the start of the turn gates ship tier. No limit on hulls per order, town, turn or fleet, provided you pay. Ships cannot upgrade.
 Transports are fast carriers; convoys carry more units but move more slowly. The ship tables list combat power, movement and capacity for every class. Each ship class has four tiers. Fleets move at the slowest participating ship's speed. Combat follows whole-piece losses and retreats, using each hull's listed power/casualty points. Passengers add no naval power. Surviving ships keep full power and berths.
 ### Fishing and merchant ships
-Fishing ships collect from their own tile and all six neighbours, only Fish and Whales. Merchant ships collect from all adjacent land tiles, including enemy-occupied or rival-used land, but never Fish or Whales. Each matching tile yields the ship's tier in raw goods; Whales yield that amount of both Hides and Oil. Output goes directly to the nearest owned town. Collectors can produce immediately after construction. There is no collector limit per tile or cargo capacity for goods.
+Fishing ships collect from their own tile and all six neighbours, only Fish, Cod and Whales. Merchant ships collect from all adjacent land tiles, including enemy-occupied or rival-used land, but never Fish or Whales. Each matching tile’s full base yield is multiplied by ship tier. Cod gives 2 Fish per tier; Whales give 1 Hides and 1 Oil per tier. Output goes directly to the nearest owned town. Collectors can produce immediately after construction. There is no collector limit per tile or cargo capacity for goods.
 Both economic ship types have 0/1/2/3 power at tiers I/II/III/IV and no passenger berths. Unarmed ships in a defeated fleet are lost automatically. Higher tiers follow normal whole-ship casualty calculations. Production coverage and economic ships are visible when inspecting fleets.
 ### Transport troops
 Load or unload across a shared land-water edge, with no port required. Every participating ship and passenger must be fresh. Loading and unloading end their activation. One berth holds one unit of any tier, including a merchant. Embarked troops cannot produce, guard or act separately. Land on a clear or allied beach, never directly assault an enemy-occupied tile. Unloaded troops can attack on a later owner turn.
@@ -158,7 +167,7 @@ Builders grant 2/3/6 free route segments this turn, with normal connections and 
 ### Launch an expedition
 At the map boundary, use your road or sea-route endpoint, town, established land unit (including merchants) or mobile ship. A unit needs no network connection and may launch after moving or acting, at no movement cost, without moving or consuming the unit. New recruits must wait; embarked troops cannot launch separately. Select an outward-facing frontier corner.
 A land launch needs adjoining revealed land; a sea launch needs adjoining water. It must touch unknown space, no hostile launch tile and no besieged town. Choose direction and preview coordinates, never hidden terrain. Expedition tiers reveal exactly 10/20/40 connected new tiles. Costs, not city tiers, gate access. One expedition per player per turn, including research grants.
-The footprint grows outward from the launch, skipping known coordinates. A trapped unknown pocket too small for the chosen tier is invalid and costs nothing. Reveal immediately and publicly; troops may move into reachable new tiles later this turn. Normal 50/50 generation applies whatever the launch mode. Reveals grant no town, routes, resources or ownership and never guarantee a missing good.
+The footprint grows outward from the launch, skipping known coordinates. A trapped unknown pocket too small for the chosen tier is invalid and costs nothing. Reveal immediately and publicly; troops may move into reachable new tiles later this turn. Climate-based generation applies whatever the launch mode. Previously revealed terrain and yields never change. Reveals grant no town, routes, resources or ownership and never guarantee a missing good.
 Only the strongest living AI faction is forbidden to fund or use research-funded expeditions, even if cornered. AI ranking excludes humans and breaks ties by faction ID. Every other AI may explore, particularly with useful frontier space, shortages or blocked expansion. Human players keep normal access.
 ### Return during exploration
 Whenever someone expands the map, each eliminated base faction has a 10% return chance. A returning faction receives one to three legal new settlements and one to three troops in the newly revealed area, subject to space. The new warehouses start empty. The game never forces an illegal placement or replaces occupied territory. Returns restore original faction identities, not new extra factions. They rejoin normal turn order without an immediate bonus turn.
@@ -197,6 +206,320 @@ Keyboard shortcuts: B Build, F Forces, T Trade, R Research, E Explore, Escape to
 ### Save, language and local play
 The game autosaves in this browser for this website address. Use Export save for a portable backup and Import save to continue elsewhere. Changing browser, host or port uses a different local store. Export before clearing browser data or replacing a campaign. The game supports single-player AI opponents and local hotseat, not online multiplayer.
 Choose English or Français in the main menu or campaign settings. Language changes only presentation, never your map, random streams or save rules. This guide has the same two languages. Use search for a term, the catalogue for exact prices and the examples to understand production and sieges. You can print the full guide or save it as PDF from the browser.
+Use Show climates in the map controls to color climate regions. Tile inspection shows climate, terrain family and full base yield.
+
+
+## Climate tables
+
+### Temperate: 50% land
+
+Compatible : Steppe, Mediterranean, Cold, Tropical
+
+| Land terrain | Conditional chance |
+
+|---|---|
+
+| Golden fields | 17% |
+
+| Pasture | 17% |
+
+| Woods | 17% |
+
+| Gold mountains | 5% |
+
+| Clay hills | 12% |
+
+| Stone quarry | 10% |
+
+| Iron mountains | 10% |
+
+| Coal hills | 10% |
+
+| Salt flats | 2% |
+
+| Water terrain | Sequential check | Effective water share |
+
+|---|---|---|
+
+| Fishing grounds | 15% | 15% |
+
+| Whale grounds | 5% | 4.25% |
+
+| Water |  | 80.75% |
+
+### Cold: 55% land
+
+Compatible : Temperate, Steppe, Arctic
+
+| Land terrain | Conditional chance |
+
+|---|---|
+
+| Forest | 30% |
+
+| Hunting forest | 10% |
+
+| Rough fields | 10% |
+
+| Rough pasture | 5% |
+
+| Gold mountains | 5% |
+
+| Coal hills | 10% |
+
+| Iron mountains | 10% |
+
+| Stone quarry | 10% |
+
+| Clay hills | 10% |
+
+| Water terrain | Sequential check | Effective water share |
+
+|---|---|---|
+
+| Fishing grounds | 20% | 20% |
+
+| Cod grounds | 10% | 8% |
+
+| Whale grounds | 10% | 7.2% |
+
+| Water |  | 64.8% |
+
+### Arctic: 40% land
+
+Compatible : Cold
+
+| Land terrain | Conditional chance |
+
+|---|---|
+
+| Snow plain | 40% |
+
+| Seal hunting grounds | 15% |
+
+| Arctic iron mountains | 20% |
+
+| Arctic stone ridge | 15% |
+
+| Arctic gold mountains | 10% |
+
+| Water terrain | Sequential check | Effective water share |
+
+|---|---|---|
+
+| Frozen sea | 30% | 30% |
+
+| Fishing grounds | 20% | 14% |
+
+| Cod grounds | 20% | 11.2% |
+
+| Whale grounds | 20% | 8.96% |
+
+| Water |  | 35.84% |
+
+### Steppe: 70% land
+
+Compatible : Cold, Temperate, Mediterranean, Desert
+
+| Land terrain | Conditional chance |
+
+|---|---|
+
+| Steppe plain | 55% |
+
+| Rough fields | 17% |
+
+| Stone quarry | 10% |
+
+| Iron mountains | 5% |
+
+| Coal hills | 5% |
+
+| Clay hills | 5% |
+
+| Gold mountains | 3% |
+
+| Water terrain | Sequential check | Effective water share |
+
+|---|---|---|
+
+| Fishing grounds | 15% | 15% |
+
+| Whale grounds | 5% | 4.25% |
+
+| Water |  | 80.75% |
+
+### Mediterranean: 40% land
+
+Compatible : Temperate, Steppe, Desert
+
+| Land terrain | Conditional chance |
+
+|---|---|
+
+| Golden fields | 5% |
+
+| Olive grove | 20% |
+
+| Escarpment | 20% |
+
+| Woods | 5% |
+
+| Rough pasture | 15% |
+
+| Salt flats | 5% |
+
+| Gold mountains | 7% |
+
+| Coal hills | 10% |
+
+| Iron mountains | 13% |
+
+| Water terrain | Sequential check | Effective water share |
+
+|---|---|---|
+
+| Fishing grounds | 15% | 15% |
+
+| Whale grounds | 5% | 4.25% |
+
+| Water |  | 80.75% |
+
+### Tropical: 50% land
+
+Compatible : Temperate, Desert
+
+| Land terrain | Conditional chance |
+
+|---|---|
+
+| Jungle | 25% |
+
+| Tropical woods | 10% |
+
+| Rice field | 25% |
+
+| Clay hills | 15% |
+
+| Gold mountains | 5% |
+
+| Stone quarry | 5% |
+
+| Coal hills | 5% |
+
+| Iron mountains | 5% |
+
+| Salt flats | 5% |
+
+| Water terrain | Sequential check | Effective water share |
+
+|---|---|---|
+
+| Fishing grounds | 10% | 10% |
+
+| Whale grounds | 5% | 4.5% |
+
+| Water |  | 85.5% |
+
+### Desert: 50% land
+
+Compatible : Tropical, Mediterranean, Steppe
+
+| Land terrain | Conditional chance |
+
+|---|---|
+
+| Desert | 30% |
+
+| Gold mountains | 10% |
+
+| Iron mountains | 12% |
+
+| Stone quarry | 12% |
+
+| Coal hills | 6% |
+
+| Oasis | 10% |
+
+| Salt flats | 20% |
+
+| Water terrain | Sequential check | Effective water share |
+
+|---|---|---|
+
+| Fishing grounds | 8% | 8% |
+
+| Whale grounds | 3% | 2.76% |
+
+| Water |  | 89.24% |
+
+## Terrain yields
+
+| Terrain | Base yield | Family |
+
+|---|---|---|
+
+| Woods | 1 Wood OR 1 Hides | forest |
+
+| Forest | 2 Wood | forest |
+
+| Hunting forest | 2 Hides | forest |
+
+| Golden fields | 2 Grain | flat |
+
+| Pasture | 2 Wool | flat |
+
+| Rough fields | 1 Grain | flat |
+
+| Rough pasture | 1 Wool | rugged |
+
+| Clay hills | 1 Clay | rugged |
+
+| Gold mountains | 1 Gold | rugged |
+
+| Iron mountains | 1 Iron ore | rugged |
+
+| Stone quarry | 1 Stone | rugged |
+
+| Coal hills | 1 Coal | rugged |
+
+| Salt flats | 1 Salt | flat |
+
+| Snow plain | 0 | flat |
+
+| Seal hunting grounds | 1 Hides + 1 Oil | flat |
+
+| Arctic iron mountains | 1 Iron ore | rugged |
+
+| Arctic stone ridge | 1 Stone | rugged |
+
+| Arctic gold mountains | 1 Gold | rugged |
+
+| Steppe plain | 1 Hides + 1 Wool | flat |
+
+| Olive grove | 1 Grain | forest |
+
+| Escarpment | 1 Stone | rugged |
+
+| Jungle | 1 Hides | forest |
+
+| Tropical woods | 1 Wood | forest |
+
+| Rice field | 3 Grain | flat |
+
+| Desert | 0 | flat |
+
+| Oasis | 1 Wood + 1 Grain | forest |
+
+| Water | 0 | water |
+
+| Fishing grounds | 1 Fish | water |
+
+| Cod grounds | 2 Fish | water |
+
+| Whale grounds | 1 Hides + 1 Oil | water |
+
+| Frozen sea | 0 | flat |
 
 ## All costs
 

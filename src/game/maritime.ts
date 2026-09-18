@@ -1,35 +1,45 @@
+import { BIOME_INFO } from "./climate-content";
+import { TERRAIN, type TerrainKey } from "./content";
 import { friendly } from "./relations";
 import type { Game, Hex, Piece, Raw, Watchtower } from "./types";
 import { neighbors, vertexNeighbors } from "./world";
 
-export const tileGood = (tile: Hex): Raw | undefined =>
-  tile.resource === "water"
-    ? tile.fish
-      ? "fish"
-      : tile.whale
-        ? "hides"
-        : undefined
-    : tile.resource;
-/** Primary good still identifies the tile's camp and city extension. */
-export const tileGoods = (tile: Hex): Raw[] => {
-  const primary = tileGood(tile);
-  return primary
-    ? tile.resource === "water" && tile.whale && !tile.fish
-      ? [primary, "oil"]
-      : [primary]
-    : [];
-};
-/** Visual terrain and harvested good differ for Whales (which produce Hides and Oil). */
-export const tileTerrain = (tile: Hex): Raw | "water" | "whale" =>
-  tile.resource === "water"
+/** Per-producer output: Woods choices belong to factions, never to the shared tile owner. */
+export function tileYield(
+  tile: Hex,
+  owner?: number,
+): Partial<Record<Raw, number>> {
+  if (tile.biome) {
+    if (tile.biome === "woods")
+      return { [tile.woodsChoices?.[owner ?? -1] ?? "lumber"]: 1 };
+    return { ...BIOME_INFO[tile.biome].yield };
+  }
+  if (tile.resource === "water")
+    return tile.fish ? { fish: 1 } : tile.whale ? { hides: 1, oil: 1 } : {};
+  return ["snow", "ice", "desert"].includes(tile.resource)
+    ? {}
+    : { [tile.resource]: 1 };
+}
+export const tileGoods = (tile: Hex, owner?: number): Raw[] =>
+  Object.keys(tileYield(tile, owner)) as Raw[];
+export const tileGood = (tile: Hex, owner?: number): Raw | undefined =>
+  tileGoods(tile, owner)[0];
+export const tileOptions = (tile: Hex): Raw[] =>
+  tile.biome === "woods" ? ["lumber", "hides"] : tileGoods(tile);
+export const tileTerrain = (tile: Hex): TerrainKey =>
+  tile.biome ??
+  (tile.resource === "water"
     ? tile.fish
       ? "fish"
       : tile.whale
         ? "whale"
         : "water"
-    : tile.resource;
+    : tile.resource);
+export const terrainFamily = (tile: Hex) => TERRAIN[tileTerrain(tile)].family;
+export const terrainName = (tile: Hex) => TERRAIN[tileTerrain(tile)].name;
 export const marineResource = (tile: Hex) =>
-  tile.resource === "water" && !!(tile.fish || tile.whale);
+  tile.resource === "water" &&
+  !!(tile.fish || tile.whale || tile.biome === "cod");
 export const collector = (u: Pick<Piece, "kind">) =>
   u.kind === "merchant" || u.kind === "fishing" || u.kind === "merchantship";
 export const productiveAtVertex = (s: Game, vertex: string) =>

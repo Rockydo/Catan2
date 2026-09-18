@@ -1,3 +1,4 @@
+import { climateTerrain } from "../src/game/climate";
 import { describe, it, expect } from "vitest";
 import {
   randomAt,
@@ -14,10 +15,10 @@ import { newGame, applyCommand } from "../src/game/engine";
 import { assertInvariants, serialize, deserialize } from "../src/game/save";
 import { chooseAIAction } from "../src/game/ai";
 describe("world and setup", () => {
-  it("creates exactly 110 unique independent hexes and consistent shared topology", () => {
+  it("creates exactly 125 unique climate hexes and consistent shared topology", () => {
     for (let seed = 0; seed < 30; seed++) {
       const s = newGame(`seed-${seed}`);
-      expect(Object.keys(s.tiles)).toHaveLength(110);
+      expect(Object.keys(s.tiles)).toHaveLength(125);
       assertInvariants(s);
       expect(
         Object.values(s.tiles).every((t) => t.number >= 2 && t.number <= 12),
@@ -71,7 +72,7 @@ describe("world and setup", () => {
       expect(ids).toHaveLength([0, 10, 20, 40][tier]);
       expect(new Set(ids).size).toBe(ids.length);
       addHexes(w, "expedition", ids);
-      expect(Object.keys(w.tiles)).toHaveLength(110 + ids.length);
+      expect(Object.keys(w.tiles)).toHaveLength(125 + ids.length);
       for (const [id, t] of Object.entries(JSON.parse(before)))
         expect(w.tiles[id]).toEqual(t);
     },
@@ -118,23 +119,13 @@ describe("world and setup", () => {
   });
 });
 
-it("uses 50% independent water probability for initial and expedition tiles without altering existing terrain", () => {
-  const seed = "ocean-threshold",
-    w = generateWorld(seed, 2000);
+it("uses climate probabilities for expeditions without altering revealed terrain", () => {
+  const seed = "climate-threshold",
+    w = generateWorld(seed, 250);
   const previous = structuredClone(w.tiles);
-  addHexes(w, seed, ["80,0", "81,0", "82,0", "83,0"]);
+  addHexes(w, seed, ["20,0", "21,0", "22,0", "23,0"]);
   for (const tile of Object.values(w.tiles)) {
-    expect(tile.resource === "water").toBe(
-      randomAt(seed, tile.id, "terrain") < 0.5,
-    );
+    expect(tile).toMatchObject(climateTerrain(seed, tile.id, tile.climate!));
     if (previous[tile.id]) expect(tile).toEqual(previous[tile.id]);
   }
-  const water =
-    Object.values(w.tiles).filter((t) => t.resource === "water").length /
-    Object.keys(w.tiles).length;
-  expect(water).toBeGreaterThan(0.47);
-  expect(water).toBeLessThan(0.53);
-  expect(discoveryProbability(10)).toBeCloseTo(1 - (1 - 0.5 / 9.5) ** 10, 12);
-  expect(discoveryProbability(20)).toBeCloseTo(1 - (1 - 0.5 / 9.5) ** 20, 12);
-  expect(discoveryProbability(40)).toBeCloseTo(1 - (1 - 0.5 / 9.5) ** 40, 12);
 });

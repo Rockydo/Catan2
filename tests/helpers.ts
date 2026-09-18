@@ -1,3 +1,4 @@
+import { generateWorld, generateHex, addHexes } from "../src/game/world";
 import { newGame, applyCommand, beginTurn } from "../src/game/engine";
 import { chooseAIAction } from "../src/game/ai";
 import {
@@ -14,8 +15,30 @@ export function run(s: Game, c: Command): Game {
   if (!r.ok) throw new Error(`${c.type}: ${r.error}`);
   return r.state;
 }
+// Existing scenario tests deliberately model pre-climate saves. Keep their
+// fixed geography/yields independent of the current new-campaign generator.
+export function legacyGame(...args: Parameters<typeof newGame>): Game {
+  const s = newGame(...args);
+  const world = generateWorld(
+    s.seed,
+    s.players.length >= 8 ? 220 : s.players.length === 4 ? 100 : 110,
+  );
+  world.tiles = Object.fromEntries(
+    Object.keys(world.tiles).map((id) => [
+      id,
+      { ...generateHex(s.seed, id), climate: "temperate" as const },
+    ]),
+  );
+  delete world.climatePlan;
+  for (const edge of Object.values(world.edges)) delete edge.harbor;
+  addHexes(world, s.seed, []);
+  Object.assign(s, world);
+  delete s.climatePlan;
+  s.generation = 4;
+  return s;
+}
 export function started(seed = "test-frontier"): Game {
-  let s = newGame(
+  let s = legacyGame(
     seed,
     ["Emberhold", "Tidewatch", "Violet Reach", "Golden Vale"].map(
       (name, id) => ({ name, control: id === 0 ? "human" : "standard" }),

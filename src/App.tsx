@@ -1,3 +1,4 @@
+import { terrainName } from "./game/maritime";
 import { LanguageSwitch } from "./ui/LanguageSwitch";
 import { localize as tx, useLocale, rulesUrl } from "./i18n";
 import { AllianceResponse } from "./ui/Alliances";
@@ -1102,6 +1103,7 @@ export default function App() {
                     ),
                   )}
                   <Board
+                    viewer={viewer}
                     game={game}
                     focus={alertFocus}
                     rolling={roll.rolling}
@@ -1166,6 +1168,7 @@ export default function App() {
                     <X size={20} />
                   </button>
                   <DetailHeader
+                    viewer={viewer}
                     game={game}
                     selection={selection}
                     unitIds={unitIds}
@@ -1698,9 +1701,9 @@ function NewGameForm({
             );
           }}
         >
-          <option value={5}>{tx("Classic · 5 factions · 110 tiles")}</option>
+          <option value={5}>{tx("Classic · 5 factions · 125 tiles")}</option>
           <option value={10}>
-            {tx("Grand campaign · 10 factions · 220 tiles")}
+            {tx("Grand campaign · 10 factions · 250 tiles")}
           </option>
         </select>
       </label>
@@ -1942,7 +1945,7 @@ function AttackPreview({
           ) : (
             <>
               {tx("Battle on ")}
-              <b>{tx(TERRAIN[s.tiles[to].resource].name)}</b>
+              <b>{tx(terrainName(s.tiles[to]))}</b>
               {tx(
                 ". Terrain bonuses are included. Walls do not affect field battles. Each approach tile costs 1 point, including the battle tile. Survivors may act again with remaining points.",
               )}

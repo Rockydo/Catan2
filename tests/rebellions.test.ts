@@ -1,9 +1,10 @@
+import { legacyGame } from "./helpers";
 import { chooseAIAction } from "../src/game/ai";
 import { REALM_NAMES } from "../src/game/content";
 import { describe, expect, it } from "vitest";
 import { run } from "./helpers";
 import { rebellionFixture } from "./rebellion-fixture";
-import { beginTurn, eliminate, newGame } from "../src/game/engine";
+import { beginTurn, eliminate } from "../src/game/engine";
 import { startRebellion, tryRebellions } from "../src/game/rebellions";
 import { strongestAI } from "../src/game/ai-expansion";
 import { ownTowns, ownPieces, inventory } from "../src/game/selectors";
@@ -112,7 +113,7 @@ describe("AI regional rebellions", () => {
     assertInvariants(s);
   });
   it("restores at most one faction per turn even with multiple eliminated seats", () => {
-    let s = newGame(
+    let s = legacyGame(
       "single-rebellion",
       REALM_NAMES.map((name) => ({ name, control: "standard" })),
     );

@@ -1371,3 +1371,79 @@ a svg {
     font-size: 10pt;
   }
 }
+.climate-reference {
+  margin: 28px 0;
+  padding: clamp(16px, 3vw, 30px);
+  background: #f3f1e7;
+  border: 1px solid #d8d8c6;
+  border-radius: 16px;
+}
+.climate-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 22px;
+}
+.climate-tabs button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 13px;
+  border: 1px solid #aebfb0;
+  border-radius: 8px;
+  background: #fffef6;
+  color: #284b42;
+  cursor: pointer;
+}
+.climate-tabs button[aria-pressed="true"] {
+  background: #254d43;
+  color: white;
+}
+.climate-tabs i {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+.climate-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+}
+.climate-terrain {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  min-height: 72px;
+  padding: 8px 0;
+  border-bottom: 1px solid #d9ddd0;
+}
+.climate-terrain .terrain-picture {
+  flex: 0 0 66px;
+  width: 66px;
+  height: 58px;
+}
+.climate-terrain > span:nth-child(2) {
+  flex: 1;
+}
+.climate-terrain small {
+  display: block;
+  font-size: 12px;
+}
+.climate-terrain .terrain-outputs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.climate-terrain strong {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.good-sources {
+  flex-wrap: wrap;
+}
+@media (max-width: 700px) {
+  .climate-columns {
+    grid-template-columns: 1fr;
+  }
+}

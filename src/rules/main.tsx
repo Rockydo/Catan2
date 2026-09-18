@@ -1,3 +1,4 @@
+import { CLIMATES } from "../game/climate-content";
 import { createRoot } from "react-dom/client";
 import { flushSync } from "react-dom";
 import { useEffect, useState, type ReactNode } from "react";
@@ -23,7 +24,11 @@ import {
   MousePointer2,
 } from "lucide-react";
 import chapters from "./chapters.json";
-import { TerrainReference, GoodSources } from "./TerrainReference";
+import {
+  TerrainReference,
+  GoodSources,
+  ClimateReference,
+} from "./TerrainReference";
 import { localize as tx, getLocale, setLocale, useLocale } from "../i18n";
 import { ResourceIcon } from "../ui/ResourceIcon";
 import { MilitaryPortrait } from "../ui/MilitaryArt";
@@ -768,7 +773,12 @@ function App() {
         </div>
         {c.id === "economy" && <TerrainReference />}
         {c.id === "sea" && <TerrainReference seaOnly />}
-        {c.id === "world" && <DiceOdds />}
+        {c.id === "world" && (
+          <>
+            <ClimateReference />
+            <DiceOdds />
+          </>
+        )}
         {c.id === "siege" && <SiegeDemo />}
         <Prose body={c.body[locale]} />
         {c.id === "economy" && <ProductionDemo />}
@@ -877,6 +887,14 @@ function App() {
                 <div className="chapter-heading">
                   <h1>{c.title[locale]}</h1>
                 </div>
+                {c.id === "world" &&
+                  CLIMATES.map((climate) => (
+                    <ClimateReference
+                      key={climate}
+                      initial={climate}
+                      readOnly
+                    />
+                  ))}
                 {c.id === "economy" && <TerrainReference />}
                 <Prose body={c.body[locale]} />
               </section>
@@ -1017,7 +1035,7 @@ function App() {
                   22 <small>{labels("goods", "ressources")}</small>
                 </span>
                 <span>
-                  110 / 220{" "}
+                  125 / 250{" "}
                   <small>{labels("starting tiles", "tuiles initiales")}</small>
                 </span>
               </div>

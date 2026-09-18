@@ -14,12 +14,12 @@ export function grandSetup() {
   while (s.phase.startsWith("setup")) s = run(s, chooseAIAction(s));
   return s;
 }
-it("generates 220 tiles with ten distinct factions and a full twenty-town snake draft", () => {
+it("generates 250 tiles with ten distinct factions and a full twenty-town snake draft", () => {
   let s = newGame(
     "grand-campaign-test",
     REALM_NAMES.map((name) => ({ name, control: "standard" })),
   );
-  expect(Object.keys(s.tiles)).toHaveLength(220);
+  expect(Object.keys(s.tiles)).toHaveLength(250);
   expect(s.players).toHaveLength(10);
   expect(new Set(s.players.map((p) => p.color)).size).toBe(10);
   expect(setupOrder(10)).toEqual([
@@ -36,7 +36,7 @@ it("generates 220 tiles with ten distinct factions and a full twenty-town snake 
     Array(10).fill(2),
   );
   expect(deserialize(serialize(s))).toEqual(s);
-  expect(Object.keys(newGame("classic-still-default").tiles)).toHaveLength(110);
+  expect(Object.keys(newGame("classic-still-default").tiles)).toHaveLength(125);
 });
 it("cycles through all ten turns, rolls production and saves upper-seat ownership", () => {
   let s = grandSetup();

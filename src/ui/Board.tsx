@@ -1,3 +1,12 @@
+import {
+  CLIMATES,
+  CLIMATE_INFO,
+  BIOMES,
+  BIOME_INFO,
+  type Biome,
+  type TerrainResource,
+} from "../game/climate-content";
+import type { TerrainKey } from "../game/content";
 import { localize as tx, useLocale } from "../i18n";
 import { friendly } from "../game/relations";
 import { GuildCrest } from "./Guilds";
@@ -8,6 +17,7 @@ import {
   marineResource,
   tileTerrain,
   tileGood,
+  tileYield,
   harvestTiles,
   towerSites,
   towerName,
@@ -62,6 +72,7 @@ export type BoardMode =
   | "tower";
 interface Props {
   game: Game;
+  viewer?: number;
   selection: Selection;
   onSelect: (v: Selection) => void;
   onInspectSiege: (town: string) => void;
@@ -95,16 +106,17 @@ const TerrainPatterns = memo(function TerrainPatterns() {
     <>
       {tx(
         [
-          ...TERRAIN_ORDER.filter((g) => g !== "unused"),
-          "gold",
-          "fish",
-          "whale",
+          ...new Set([
+            ...TERRAIN_ORDER.filter((g) => g !== "unused"),
+            "gold",
+            "fish",
+            "whale",
+            ...BIOMES.filter((b) => b !== "water"),
+          ]),
         ].map((resource) => {
-          const index = TERRAIN_ORDER.indexOf(resource),
-            dedicated =
-              resource === "gold" ||
-              resource === "fish" ||
-              resource === "whale";
+          const art = BIOME_INFO[resource as Biome]?.art ?? resource,
+            index = TERRAIN_ORDER.indexOf(art),
+            dedicated = index < 0;
           return (
             <pattern
               key={resource}
@@ -122,7 +134,9 @@ const TerrainPatterns = memo(function TerrainPatterns() {
               <image
                 href={
                   dedicated
-                    ? `./assets/terrain-${resource}-${resource === "fish" ? "v2" : "v1"}.png`
+                    ? ["gold", "fish", "whale"].includes(art)
+                      ? `./assets/terrain-${art}-${art === "fish" ? "v2" : "v1"}.png`
+                      : `./assets/terrain-${art}-v1.webp`
                     : "./assets/terrain-atlas-v2.png"
                 }
                 width={dedicated ? 100 : 500}
@@ -141,7 +155,7 @@ const TerrainArt = memo(function TerrainArt({
   y,
   seed,
 }: {
-  resource: Raw | "water" | "whale";
+  resource: TerrainKey;
   x: number;
   y: number;
   seed: number;
@@ -176,7 +190,9 @@ const TerrainLayer = memo(function TerrainLayer({
   shapes,
   compact,
   numbers,
+  climates,
   total,
+  viewer,
 }: {
   terrainRef: RefObject<SVGSVGElement | null>;
   oceanRef: RefObject<SVGRectElement | null>;
@@ -185,7 +201,9 @@ const TerrainLayer = memo(function TerrainLayer({
   shapes: Record<string, string>;
   compact: Record<string, Piece[]>;
   numbers: boolean;
+  climates: boolean;
   total: number | null;
+  viewer: number;
 }) {
   useLocale();
 
@@ -259,7 +277,7 @@ const TerrainLayer = memo(function TerrainLayer({
       {tx(
         tiles.map((tile) => {
           const { x, y } = hexCenter(tile),
-            good = tileGood(tile),
+            good = tileGood(tile, viewer),
             poly = shapes[tile.id],
             small = !!compact[tile.id]?.length;
           return (
@@ -279,6 +297,15 @@ const TerrainLayer = memo(function TerrainLayer({
                 y={y}
                 seed={hash(tile.id)}
               />
+              {climates && tile.climate && (
+                <polygon
+                  points={poly}
+                  fill={CLIMATE_INFO[tile.climate].color}
+                  fillOpacity=".4"
+                  stroke={CLIMATE_INFO[tile.climate].color}
+                  strokeWidth="3"
+                />
+              )}
               {tx(
                 good && (
                   <>
@@ -292,6 +319,9 @@ const TerrainLayer = memo(function TerrainLayer({
                     >
                       <ProductionToken
                         resource={good}
+                        output={
+                          tile.biome ? tileYield(tile, viewer) : undefined
+                        }
                         label={tile.whale ? "Whales" : undefined}
                         number={tile.number}
                         compact={small}
@@ -312,9 +342,10 @@ const TerrainLayer = memo(function TerrainLayer({
 
 interface MapHexProps {
   id: string;
-  resource: Raw | "water";
+  resource: TerrainResource;
   good: Raw | undefined;
-  terrain: Raw | "water" | "whale";
+  outputLabel?: string;
+  terrain: TerrainKey;
   number: number;
   x: number;
   y: number;
@@ -334,6 +365,7 @@ const MapHex = memo(function MapHex({
   id,
   resource,
   good,
+  outputLabel,
   terrain,
   number,
   x,
@@ -363,7 +395,7 @@ const MapHex = memo(function MapHex({
       role="button"
       tabIndex={0}
       aria-label={tx(
-        `${style.name}, ${good ? `${terrain === "whale" ? "Hides + Oil" : GOOD_INFO[good].name}, roll ${number}` : "water"}, hex ${id}${movable ? ", reachable" : ""}`,
+        `${style.name}, ${good ? `${outputLabel ?? (terrain === "whale" ? "Hides + Oil" : GOOD_INFO[good].name)}, roll ${number}` : resource === "water" ? "water" : "No resources"}, hex ${id}${movable ? ", reachable" : ""}`,
       )}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
@@ -430,6 +462,7 @@ const MapHex = memo(function MapHex({
 
 export function Board({
   game: s,
+  viewer = s.active,
   selection,
   onSelect,
   onInspectSiege,
@@ -446,6 +479,7 @@ export function Board({
 }: Props) {
   useLocale();
 
+  const [climates, setClimates] = useState(false);
   const [numbers, setNumbers] = useState(true);
   const lastAlertFocus = useRef<Props["focus"]>(null);
   const tiles = useMemo(() => Object.values(s.tiles), [s.tiles]),
@@ -582,6 +616,7 @@ export function Board({
     <div className={`board-frame mode-${mode}`}>
       <div ref={layer} className="map-camera-layer">
         <TerrainLayer
+          viewer={viewer}
           terrainRef={terrain}
           oceanRef={ocean}
           bounds={bounds}
@@ -589,6 +624,7 @@ export function Board({
           shapes={tileShapes}
           compact={groupUnits}
           numbers={numbers}
+          climates={climates}
           total={!rolling && s.dice ? s.dice[0] + s.dice[1] : null}
         />
         <svg
@@ -620,7 +656,14 @@ export function Board({
                   key={tile.id}
                   id={tile.id}
                   resource={tile.resource}
-                  good={tileGood(tile)}
+                  good={tileGood(tile, viewer)}
+                  outputLabel={
+                    tile.biome
+                      ? Object.entries(tileYield(tile, viewer))
+                          .map(([g, n]) => `${n} ${GOOD_INFO[g as Raw].name}`)
+                          .join(" + ")
+                      : undefined
+                  }
                   terrain={tileTerrain(tile)}
                   number={tile.number}
                   x={x}
@@ -1624,6 +1667,15 @@ export function Board({
         </button>
         <button
           className="icon-button"
+          aria-label={tx("Show climates")}
+          title={tx("Show climates")}
+          aria-pressed={climates}
+          onClick={() => setClimates((v) => !v)}
+        >
+          ◈
+        </button>
+        <button
+          className="icon-button"
           aria-label={tx(numbers ? "Hide dice numbers" : "Show dice numbers")}
           title={tx(numbers ? "Hide dice numbers" : "Show dice numbers")}
           onClick={() => setNumbers((v) => !v)}
@@ -1631,6 +1683,18 @@ export function Board({
           <MapIcon size={18} />
         </button>
       </div>
+      {climates && (
+        <div className="climate-map-legend" aria-label={tx("Climates")}>
+          {CLIMATES.filter((c) => tiles.some((t) => t.climate === c)).map(
+            (c) => (
+              <span key={c}>
+                <i style={{ background: CLIMATE_INFO[c].color }} />
+                {tx(CLIMATE_INFO[c].name)}
+              </span>
+            ),
+          )}
+        </div>
+      )}
       <div className="map-caption">
         <span className="north-arrow">{tx("N ↑")}</span>
         <span>

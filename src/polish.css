@@ -733,3 +733,82 @@ input[type="checkbox"] {
 .battle-powers span:not(.crossed-swords) {
   color: #384e31;
 }
+
+.climate-chip {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid;
+  border-radius: 999px;
+  padding: 3px 9px;
+  margin: 2px 0 7px;
+  font-size: 11px;
+  font-weight: 700;
+  background: #ffffff65;
+  color: #3e5549;
+}
+.woods-choice {
+  padding: 12px;
+  margin: 0 0 12px;
+  border: 1px solid #bdc9ac;
+  border-radius: 10px;
+  background: #edf1e5;
+}
+.woods-choice-buttons {
+  display: flex;
+  gap: 6px;
+  margin: 7px 0;
+}
+.woods-choice-buttons button {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 7px;
+  border: 1px solid #b7c0a8;
+  border-radius: 7px;
+  background: #fffdf5;
+  color: #334b3c;
+}
+.woods-choice-buttons button[aria-pressed="true"] {
+  background: #345f49;
+  color: #fff;
+  border-color: #345f49;
+}
+.woods-choice small {
+  display: block;
+  line-height: 1.5;
+  color: #526354;
+}
+.climate-map-legend {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  max-width: min(470px, calc(100% - 70px));
+  padding: 8px 12px;
+  background: #153b43ed;
+  color: #fff8df;
+  border-radius: 8px;
+  pointer-events: none;
+  font-size: 12px;
+}
+.climate-map-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.climate-map-legend i,
+.climate-tabs i {
+  display: inline-block;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 1px solid #ffffff60;
+}
+.map-controls button[aria-pressed="true"] {
+  background: #d2b66e;
+  color: #173b42;
+}

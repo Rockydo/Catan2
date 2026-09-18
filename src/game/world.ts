@@ -1,3 +1,5 @@
+import { planClimates, climateTerrain } from "./climate";
+import type { Climate } from "./climate-content";
 import generation from "./generation.json" with { type: "json" };
 import { RAW, type World, type Hex, type Vertex, type Edge } from "./types";
 export const WATER_PROBABILITY = generation.waterProbability;
@@ -101,7 +103,7 @@ export function waterResources(
     return { whale: true };
   return {};
 }
-export function generateHex(seed: string, id: string): Hex {
+export function generateHex(seed: string, id: string, climate?: Climate): Hex {
   const [q, r] = coord(id);
   const vertices = tileVertices(q, r);
   const water = randomAt(seed, id, "terrain") < WATER_PROBABILITY;
@@ -113,12 +115,13 @@ export function generateHex(seed: string, id: string): Hex {
     id,
     q,
     r,
-    ...(water ? waterResources(seed, id, coastal) : {}),
+    ...(!climate && water ? waterResources(seed, id, coastal) : {}),
     resource: water
       ? "water"
       : pick >= LAND_RESOURCES.length
         ? "gold"
         : LAND_RESOURCES[Math.floor(pick)],
+    ...(climate ? climateTerrain(seed, id, climate) : {}),
     number: 2 + Math.floor(randomAt(seed, id, "number") * 11),
     vertices,
     edges: vertices.map((a, i) => edgeKey(a, vertices[(i + 1) % 6])),
@@ -126,10 +129,12 @@ export function generateHex(seed: string, id: string): Hex {
 }
 export function addHexes(world: World, seed: string, ids: string[]) {
   restoreGoldPorts(world);
+  const requested = ids.filter((id) => !world.tiles[id]);
+  planClimates(world, seed, requested);
   const added = new Set<string>();
   for (const id of ids) {
     if (world.tiles[id]) continue;
-    const hex = generateHex(seed, id);
+    const hex = generateHex(seed, id, world.climatePlan?.[id]);
     added.add(id);
     world.tiles[id] = hex;
     for (const v of hex.vertices) {
@@ -158,7 +163,7 @@ export function addHexes(world: World, seed: string, ids: string[]) {
   // Never reroll already revealed tiles, including saves made before Whales existed.
   for (const id of added) {
     const tile = world.tiles[id];
-    if (tile.resource !== "water") continue;
+    if (tile.resource !== "water" || tile.biome) continue;
     const coastal = neighbors(id).some((n) =>
       world.tiles[n]
         ? world.tiles[n].resource !== "water"
@@ -196,7 +201,7 @@ export function addHexes(world: World, seed: string, ids: string[]) {
     e.vertices.forEach((v) => used.add(v));
   }
 }
-export function generateWorld(seed: string, count = 110): World {
+export function generateWorld(seed: string, count = 125): World {
   const world: World = { tiles: {}, vertices: {}, edges: {} };
   let radius = 0;
   while (1 + 3 * radius * (radius + 1) < count) radius++;
@@ -219,6 +224,9 @@ export const vertexNeighbors = (world: World, id: string) =>
 export const landAtVertex = (world: World, v: string) =>
   world.vertices[v]?.tiles.filter((t) => world.tiles[t].resource !== "water") ??
   [];
+/** Permanent structures need solid ground; frozen sea only carries armies. */
+export const solidAtVertex = (world: World, v: string) =>
+  landAtVertex(world, v).filter((t) => world.tiles[t].resource !== "ice");
 export const waterAtVertex = (world: World, v: string) =>
   world.vertices[v]?.tiles.filter((t) => world.tiles[t].resource === "water") ??
   [];

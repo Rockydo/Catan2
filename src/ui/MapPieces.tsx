@@ -1,3 +1,5 @@
+import type { Stock } from "../game/types";
+import { ResourceIcon } from "./ResourceIcon";
 import { localize as tx, useLocale } from "../i18n";
 import { MapLabel } from "./MapLabel";
 import { memo } from "react";
@@ -240,6 +242,7 @@ export const TownMiniature = memo(function TownMiniature({
 export const ProductionToken = memo(function ProductionToken({
   resource,
   label,
+  output,
   compact = false,
   number,
   showNumber,
@@ -247,6 +250,7 @@ export const ProductionToken = memo(function ProductionToken({
 }: {
   resource: Raw;
   label?: string;
+  output?: Stock;
   compact?: boolean;
   number: number;
   showNumber: boolean;
@@ -255,6 +259,9 @@ export const ProductionToken = memo(function ProductionToken({
   useLocale();
 
   const pips = 6 - Math.abs(7 - number);
+  const products = Object.entries(output ?? {}) as [Raw, number][];
+  const multiple = products.length > 1;
+  const quantity = output?.[resource] ?? 1;
   return (
     <g
       className={`production-token ${active ? "producing" : ""}`}
@@ -262,7 +269,11 @@ export const ProductionToken = memo(function ProductionToken({
       fontFamily="ui-sans-serif, system-ui, sans-serif"
     >
       <title>
-        {tx(GOOD_INFO[resource].name)}
+        {tx(
+          products.length
+            ? products.map(([g, n]) => `${n} ${GOOD_INFO[g].name}`).join(" + ")
+            : GOOD_INFO[resource].name,
+        )}
         {tx(": roll ")}
         {tx(number)}, {tx(pips)}
         {tx(" of 36 dice combinations")}
@@ -325,16 +336,42 @@ export const ProductionToken = memo(function ProductionToken({
           </>
         ),
       )}
-      <MapLabel
-        y={showNumber ? 23 : 16}
-        textAnchor="middle"
-        fontSize={compact ? 7.5 : 8.5}
-        fontWeight="750"
-        letterSpacing=".1"
-        fill="#30493f"
-      >
-        {tx(label ?? GOOD_INFO[resource].name)}
-      </MapLabel>
+      {multiple ? (
+        <g
+          aria-label={products
+            .map(([g, n]) => `${n} ${tx(GOOD_INFO[g].name)}`)
+            .join(" + ")}
+        >
+          {products.map(([good, n], i) => (
+            <g
+              key={good}
+              transform={`translate(${(i - (products.length - 1) / 2) * 23 - 9}, ${showNumber ? 14 : 7})`}
+            >
+              <ResourceIcon good={good} size={12} />
+              <MapLabel
+                x={16}
+                y={10}
+                fontSize={9}
+                textAnchor="middle"
+                fill="#30493f"
+              >
+                {n}
+              </MapLabel>
+            </g>
+          ))}
+        </g>
+      ) : (
+        <MapLabel
+          y={showNumber ? 23 : 16}
+          textAnchor="middle"
+          fontSize={compact ? 7.5 : 8.5}
+          fontWeight="750"
+          letterSpacing=".1"
+          fill="#30493f"
+        >
+          {`${quantity > 1 ? quantity + " " : ""}${tx(label ?? GOOD_INFO[resource].name)}`}
+        </MapLabel>
+      )}
     </g>
   );
 });

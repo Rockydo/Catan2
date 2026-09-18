@@ -23,6 +23,7 @@ function frontier() {
   const ids = expeditionFootprint(s, v, 3);
   addHexes(s, s.seed, ids);
   for (const id of ids) {
+    delete s.tiles[id].biome;
     s.tiles[id].resource = "grain";
     s.tiles[id].number = 7;
     delete s.tiles[id].fish;

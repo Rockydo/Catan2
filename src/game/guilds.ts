@@ -1,3 +1,4 @@
+import { tileOptions } from "./maritime";
 import { drawResearch } from "./research-draw";
 import { COSTS, GOOD_INFO, processedFor, ROMAN } from "./content";
 import {
@@ -188,8 +189,10 @@ export const extractionTiles = (
   town: Town,
   kind = town.guild?.kind ?? "prospectors",
 ) =>
-  s.vertices[town.vertex].tiles.filter((id) =>
-    extractionGoods(kind).includes(s.tiles[id].resource as Raw),
+  s.vertices[town.vertex].tiles.filter(
+    (id) =>
+      s.tiles[id].resource !== "water" &&
+      tileOptions(s.tiles[id]).some((g) => extractionGoods(kind).includes(g)),
   );
 export function guildPlacementError(
   s: Game,
@@ -273,14 +276,16 @@ export function guildOrderQuote(
     siege = 0;
   if (extractionGuild(g.kind)) {
     rule(
-      order.tile && extractionTiles(s, town).includes(order.tile),
+      order.tile && extractionTiles(s, town, g.kind).includes(order.tile),
       "Choose a matching adjacent land resource.",
     );
     rule(
       !blockAt(s, order.tile, town.owner),
       "Clear the enemy army from that deposit first.",
     );
-    const raw = s.tiles[order.tile].resource as Raw;
+    const raw = tileOptions(s.tiles[order.tile]).find((good) =>
+      extractionGoods(g.kind).includes(good),
+    )!;
     addStock(
       cost,
       g.kind === "farmers"

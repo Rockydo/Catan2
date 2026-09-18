@@ -74,7 +74,7 @@ test("Whales have ocean art, Hides and Oil production, camps, correct census and
   await expect(
     page.getByRole("heading", { name: "Whale grounds" }),
   ).toBeVisible();
-  await expect(page.locator(".panel-intro")).toContainText("Hides + Oil");
+  await expect(page.locator(".panel-intro")).toContainText("1 Hides + 1 Oil");
   await close(page);
   await oil.click();
   await expect(page.getByRole("dialog")).toContainText(

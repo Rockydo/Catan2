@@ -1,3 +1,4 @@
+import { terrainName } from "../game/maritime";
 import { localize as tx, useLocale } from "../i18n";
 import { friendly } from "../game/relations";
 import type { Game, Piece, UnitClass, ShipClass } from "../game/types";
@@ -175,7 +176,7 @@ export function ArmyComposition({
               <p className="formation-context">
                 {tx(base)}
                 {tx(" base · ")}
-                {tx(TERRAIN[s.tiles[first.tile].resource].name)}
+                {tx(terrainName(s.tiles[first.tile]))}
                 {tx(support > 0 ? ` · +${support} tower support` : "")}
                 {tx(
                   force.some((u) => u.guildSiege)

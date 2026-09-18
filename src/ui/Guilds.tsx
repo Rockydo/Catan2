@@ -1,3 +1,5 @@
+import { tileOptions } from "../game/maritime";
+import { extractionGoods } from "../game/guilds";
 import { localize as tx, useLocale } from "../i18n";
 import { useState } from "react";
 import {
@@ -505,9 +507,16 @@ function GuildWorkOrder({ game: s, town, interactive, onAction }: Props) {
               onChange={(e) => setMine(e.target.value)}
             >
               {tx(
-                extractionTiles(s, town).map((id) => (
+                extractionTiles(s, town, g.kind).map((id) => (
                   <option value={id} key={id}>
-                    {tx(GOOD_INFO[s.tiles[id].resource as Raw].name)} · {tx(id)}
+                    {tx(
+                      GOOD_INFO[
+                        tileOptions(s.tiles[id]).find((good) =>
+                          extractionGoods(g.kind).includes(good),
+                        )!
+                      ].name,
+                    )}{" "}
+                    · {tx(id)}
                   </option>
                 )),
               )}

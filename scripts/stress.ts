@@ -4,7 +4,7 @@ import { chooseAIAction } from "../src/game/ai";
 import { assertInvariants, serialize, deserialize } from "../src/game/save";
 import { ownTowns } from "../src/game/selectors";
 const results = [];
-for (const count of [100, 500, 1000, 2500]) {
+for (const count of [125, 500, 1000, 2500]) {
   let s = newGame("large-frontier");
   while (s.phase.startsWith("setup")) {
     const r = applyCommand(s, chooseAIAction(s));
@@ -28,7 +28,7 @@ for (const count of [100, 500, 1000, 2500]) {
   const text = serialize(n.state);
   deserialize(text);
   results.push({
-    tiles: count,
+    tiles: Object.keys(s.tiles).length,
     decisionMs: Math.round(decisionMs),
     saveBytes: Buffer.byteLength(text),
     action: action.type,

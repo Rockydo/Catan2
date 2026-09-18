@@ -1,3 +1,4 @@
+import { canChooseWoods } from "./selectors";
 import { allianceResponder, friendly } from "./relations";
 import { acceptsAlliance } from "./diplomacy";
 import { guildEconomyProjects, guildMilitaryOrder } from "./guild-ai";
@@ -6,6 +7,8 @@ import { RESEARCH_GOODS, RESEARCH_MARCH } from "./content";
 import {
   tileGood,
   tileGoods,
+  tileYield,
+  terrainFamily,
   productiveAtVertex,
   collector,
   harvestTiles,
@@ -616,7 +619,12 @@ export function economyProjects(s: Game): Project[] {
         (n, id) =>
           n +
           probability(s.tiles[id].number) *
-            tileGoods(s.tiles[id]).reduce((sum, good) => sum + values[good], 0),
+            tileGoods(s.tiles[id], s.active).reduce(
+              (sum, good) =>
+                sum +
+                values[good] * (tileYield(s.tiles[id], s.active)[good] ?? 0),
+              0,
+            ),
         0,
       ),
       near = townThreats(s, t).filter((u) => warTarget(s, u.owner)),
@@ -663,7 +671,7 @@ export function economyProjects(s: Game): Project[] {
     }
     for (const tileId of productiveAtVertex(s, t.vertex)) {
       const tile = s.tiles[tileId],
-        raw = tileGood(tile)!,
+        raw = t.extensionGoods?.[tileId] ?? tileGood(tile, s.active)!,
         next = (t.extensions[tileId] ?? 0) + 1;
       if (next < t.level && !blockAt(s, tileId)) {
         const cost = effectiveCost(s, extensionCost(raw, next), "industry"),
@@ -767,7 +775,8 @@ export function economyProjects(s: Game): Project[] {
               !free
             )
               continue;
-            const favored = UNIT_INFO[kind].family === TERRAIN[terrain].family;
+            const favored =
+              UNIT_INFO[kind].family === terrainFamily(s.tiles[tile]);
             const urgency = defendNow
               ? 35 + danger * 3
               : ourPower < minimumFieldPower(s)
@@ -982,8 +991,11 @@ export function economyProjects(s: Game): Project[] {
               (n, id) =>
                 n +
                 probability(s.tiles[id].number) *
-                  tileGoods(s.tiles[id]).reduce(
-                    (sum, good) => sum + values[good],
+                  tileGoods(s.tiles[id], s.active).reduce(
+                    (sum, good) =>
+                      sum +
+                      values[good] *
+                        (tileYield(s.tiles[id], s.active)[good] ?? 0),
                     0,
                   ) *
                   tier,
@@ -1029,13 +1041,16 @@ export function economyProjects(s: Game): Project[] {
         (r.camps[id] ?? 0) >= 2
       )
         continue;
-      const good = tileGood(tile)!;
+      const good = tileGood(tile, s.active)!;
       const cost = campCost(good, (r.camps[id] ?? 0) + 1),
         score =
           probability(tile.number) *
           25 *
-          tileGoods(tile).reduce(
-            (sum, raw) => sum + values[raw] / (1 + 6 * (inc[raw] ?? 0)),
+          tileGoods(tile, s.active).reduce(
+            (sum, raw) =>
+              sum +
+              (values[raw] * (tileYield(tile, s.active)[raw] ?? 0)) /
+                (1 + 6 * (inc[raw] ?? 0)),
             0,
           );
       add(
@@ -1056,8 +1071,11 @@ export function economyProjects(s: Game): Project[] {
         (n, id) =>
           n +
           probability(s.tiles[id].number) *
-            tileGoods(s.tiles[id]).reduce(
-              (sum, good) => sum + values[good] / (1 + 4 * (inc[good] ?? 0)),
+            tileGoods(s.tiles[id], s.active).reduce(
+              (sum, good) =>
+                sum +
+                (values[good] * (tileYield(s.tiles[id], s.active)[good] ?? 0)) /
+                  (1 + 4 * (inc[good] ?? 0)),
               0,
             ),
         0,
@@ -1781,8 +1799,10 @@ function collectorMove(s: Game): Command | null {
         (n, id) =>
           n +
           probability(s.tiles[id].number) *
-            tileGoods(s.tiles[id]).reduce(
-              (sum, good) => sum + values[good],
+            tileGoods(s.tiles[id], s.active).reduce(
+              (sum, good) =>
+                sum +
+                values[good] * (tileYield(s.tiles[id], s.active)[good] ?? 0),
               0,
             ) *
             u.tier,
@@ -1855,7 +1875,7 @@ function chooseMilitary(s: Game): Command {
         tile,
         (denial.get(tile) ?? 0) +
           probability(s.tiles[tile].number) *
-            (town.level * tileGoods(s.tiles[tile]).length +
+            (town.level * sumStock(tileYield(s.tiles[tile], town.owner)) +
               (town.extensions[tile] ?? 0)) *
             leaderPressure(s, town.owner),
       );
@@ -1868,7 +1888,7 @@ function chooseMilitary(s: Game): Command {
         (denial.get(tile) ?? 0) +
           probability(s.tiles[tile].number) *
             tier *
-            tileGoods(s.tiles[tile]).length *
+            sumStock(tileYield(s.tiles[tile], route.owner)) *
             leaderPressure(s, route.owner),
       );
   }
@@ -2616,9 +2636,12 @@ function chooseAction(s: Game): Command {
               return (
                 n +
                 probability(t.number) *
-                  tileGoods(t).reduce(
+                  tileGoods(t, s.active).reduce(
                     (sum, good) =>
-                      sum + values[good] / (1 + 5 * (inc[good] ?? 0)),
+                      sum +
+                      (values[good] *
+                        (tileYield(s.tiles[id], s.active)[good] ?? 0)) /
+                        (1 + 5 * (inc[good] ?? 0)),
                     0,
                   )
               );
@@ -2646,6 +2669,18 @@ function chooseAction(s: Game): Command {
   }
   if (s.phase === "roll") return { type: "roll" };
   if (s.phase === "economy") {
+    const woodsValues = marginalValues(s);
+    for (const tile of Object.values(s.tiles))
+      if (
+        tile.biome === "woods" &&
+        tile.woodsChosenOn?.[s.active] !== s.players[s.active].turns &&
+        canChooseWoods(s, tile.id)
+      ) {
+        const current = tile.woodsChoices?.[s.active] ?? "lumber",
+          alternate = current === "lumber" ? "hides" : "lumber";
+        if (woodsValues[alternate] > woodsValues[current] * 1.35)
+          return { type: "woods-choice", tile: tile.id, kind: alternate };
+      }
     for (const card of [...s.players[s.active].hand].sort(
       (a, b) => researchUtility(s, b.kind) - researchUtility(s, a.kind),
     )) {

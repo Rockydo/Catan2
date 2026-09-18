@@ -1,3 +1,4 @@
+import { legacyGame } from "./helpers";
 import { describe, expect, it } from "vitest";
 import {
   aiExpeditionAllowed,
@@ -5,7 +6,7 @@ import {
   strongestAI,
 } from "../src/game/ai-expansion";
 import { economyProjects, researchUtility } from "../src/game/ai";
-import { applyCommand, newGame } from "../src/game/engine";
+import { applyCommand } from "../src/game/engine";
 import { CARDS, REALM_NAMES, RESEARCH_EXPEDITIONS } from "../src/game/content";
 import {
   expeditionSites,
@@ -50,7 +51,7 @@ function sealNetwork(s: Game) {
 
 describe("expeditions for the strongest AI factions", () => {
   it("excludes humans and eliminated factions, resolves ties consistently, and restricts only the leading AI seat", () => {
-    const s = newGame(
+    const s = legacyGame(
       "rank-expedition",
       REALM_NAMES.map((name, id) => ({
         name,

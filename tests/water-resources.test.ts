@@ -59,7 +59,7 @@ describe("offshore Fish and Hides-and-Oil-producing Whales", () => {
       }
     }
   });
-  it("keeps new worlds identical across reveal orders and never rerolls existing tiles", () => {
+  it("keeps new worlds identical for the same discovery footprint and never rerolls existing tiles", () => {
     const seed = "marine-reveal",
       ids = Array.from(
         { length: 80 },
@@ -68,7 +68,7 @@ describe("offshore Fish and Hides-and-Oil-producing Whales", () => {
     const a: World = { tiles: {}, edges: {}, vertices: {} },
       b: World = { tiles: {}, edges: {}, vertices: {} };
     addHexes(a, seed, ids);
-    for (const id of [...ids].reverse()) addHexes(b, seed, [id]);
+    addHexes(b, seed, [...ids].reverse());
     expect(a.tiles).toEqual(b.tiles);
     const whale = Object.values(a.tiles).find((t) => t.whale)!;
     expect(whale).toBeDefined();

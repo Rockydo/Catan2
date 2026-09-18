@@ -1,3 +1,5 @@
+import { tileYield } from "./maritime";
+import { canChooseWoods } from "./selectors";
 import { allianceResponder } from "./relations";
 import { tryFrontierReturns } from "./frontier-returns";
 import {
@@ -124,14 +126,9 @@ export function newGame(
     "Use a seed between 1 and 120 characters.",
   );
   const s: Game = {
-    ...generateWorld(
-      seed,
-      config.length === 5 || config.length === 10
-        ? config.length * 22
-        : config.length * 25,
-    ),
+    ...generateWorld(seed, config.length * 25),
     version: 5,
-    generation: 4,
+    generation: 5,
     seed,
     rng: hash(seed + "dice"),
     deckRng: hash(seed + "deck"),
@@ -348,15 +345,17 @@ function commandResult(state: Game, c: Command, preview: boolean): Result {
   try {
     payload(c);
     const s: Game =
-      preview && c.type !== "expedition"
+      preview && !["expedition", "woods-choice"].includes(c.type)
         ? {
             ...structuredClone({
               ...state,
               tiles: undefined,
+              climatePlan: undefined,
               vertices: undefined,
               edges: undefined,
             }),
             tiles: state.tiles,
+            climatePlan: state.climatePlan,
             vertices: state.vertices,
             edges: state.edges,
           }
@@ -457,8 +456,7 @@ export function execute(s: Game, c: Command) {
     s.phase = "setup-route";
     if (s.setupIndex >= s.players.length)
       for (const id of productiveAtVertex(s, c.vertex))
-        for (const good of tileGoods(s.tiles[id]))
-          addStock(town.stock, { [good]: 1 });
+        addStock(town.stock, tileYield(s.tiles[id], s.active));
     return;
   }
   if (c.type === "setup-route") {
@@ -527,6 +525,16 @@ export function execute(s: Game, c: Command) {
     s.phase === "economy",
     "Roll first, then build, trade or command your forces.",
   );
+  if (c.type === "woods-choice") {
+    rule(
+      c.tile && canChooseWoods(s, c.tile),
+      "Choose Woods harvested by your faction.",
+    );
+    rule(c.kind === "lumber" || c.kind === "hides", "Choose Wood or Hides.");
+    (s.tiles[c.tile].woodsChoices ??= {})[s.active] = c.kind;
+    (s.tiles[c.tile].woodsChosenOn ??= {})[s.active] = p.turns;
+    return;
+  }
   if (diplomacyCommand(s, c)) return;
   if (militaryCommand(s, c)) return;
   if (guildCommand(s, c)) return;
@@ -649,9 +657,11 @@ export function execute(s: Game, c: Command) {
       next <= t.level - 1,
       "Upgrade the city to unlock this extension tier.",
     );
-    const raw = tileGood(s.tiles[c.tile])!;
+    const raw =
+      t.extensionGoods?.[c.tile] ?? tileGood(s.tiles[c.tile], s.active)!;
     pay(s, extensionCost(raw, next), "industry");
     t.extensions[c.tile] = next;
+    (t.extensionGoods ??= {})[c.tile] = raw;
     log(
       s,
       `${t.name} built ${extensionName(raw)} ${next}.`,
@@ -679,7 +689,11 @@ export function execute(s: Game, c: Command) {
     );
     const tier = (r.camps[c.tile] ?? 0) + 1;
     rule(tier <= 2, "This camp is already at tier II.");
-    pay(s, campCost(tileGood(s.tiles[c.tile])!, tier));
+    rule(
+      tileGood(s.tiles[c.tile], s.active),
+      "This terrain produces no resources.",
+    );
+    pay(s, campCost(tileGood(s.tiles[c.tile], s.active)!, tier));
     r.camps[c.tile] = tier;
     log(
       s,

@@ -8,10 +8,10 @@ Généré depuis le guide interactif et les données du jeu. Lancez le jeu et ch
 Détruisez toutes les colonies et villes adverses. Il n’y a ni points de victoire ni limite de tours. Il n’est pas nécessaire d’occuper ou d’explorer les terrains vides. La dernière faction en jeu gagne immédiatement.
 Le terme agglomération désigne une colonie ou une ville. Perdre votre dernière agglomération élimine votre faction et retire ses pièces, ressources et cartes restantes. Tant que la partie continue, les factions éliminées peuvent revenir par expédition ; les IA éliminées peuvent aussi revenir par rébellion.
 ### Mise en place
-Choisissez Classique (5 factions, 110 tuiles) ou Grande campagne (10 factions, 220 tuiles).
+Choisissez Classique (5 factions, 125 tuiles) ou Grande campagne (10 factions, 250 tuiles).
 - Dans l’ordre des joueurs, chaque faction place une colonie et une route ou liaison maritime adjacente.
 - Répétez dans l’ordre inverse. Chaque faction possède alors deux colonies et deux tronçons.
-- La seconde colonie reçoit une ressource brute de chaque tuile productive adjacente. Une tuile Baleines donne 1 Peau et 1 Huile. Aucune troupe ni aucun produit transformé au départ.
+- La seconde colonie reçoit la production indiquée de chaque tuile productive adjacente. Par exemple, les Champs dorés donnent 2 Blés et une tuile Baleines donne 1 Peau et 1 Huile. Les Bois donnent initialement du Bois. Aucune troupe ni aucun produit transformé au départ.
 Chaque colonie doit toucher au moins une terre. Au moins une intersection libre doit séparer deux colonies, quel que soit leur propriétaire.
 ### Déroulement d’un tour
 - Production : lancez deux dés indépendants à six faces. Toutes les factions produisent sur les tuiles dont le numéro correspond au total. Le sept produit normalement. Il n’y a ni voleur, ni défausse, ni limite de stock.
@@ -19,16 +19,22 @@ Chaque colonie doit toucher au moins une terre. Au moins une intersection libre 
 - Fin du tour : passez à la faction survivante suivante. Une manche se termine lorsque chaque faction survivante a joué un tour.
 Les cartes en main peuvent aussi être jouées avant les dés si leurs conditions le permettent. Il n’y a pas de phase militaire distincte.
 ### Accès aux constructions
-Les camps ajoutent une production brute le long des routes. Une Ville I produit deux ressources brutes par tuile adjacente activée et permet de construire des ateliers. Une agglomération côtière peut construire des navires mobiles ; leur palier dépend de son niveau. Cartes et guildes apportent d’autres effets et échanges de ressources. Les chapitres correspondants précisent les coûts et conditions.
+Les camps ajoutent une production brute le long des routes. Une Ville I double la production brute indiquée de chaque tuile adjacente activée et permet de construire des ateliers. Une agglomération côtière peut construire des navires mobiles ; leur palier dépend de son niveau. Cartes et guildes apportent d’autres effets et échanges de ressources. Les chapitres correspondants précisent les coûts et conditions.
 ### Différences avec Catan
-Les coûts d’origine des routes, colonies, Villes I, bateaux de liaison et cartes Développement de palier I sont conservés. Aucun voleur, pirate, désert, récompense de Chevalier, d’Armée la plus puissante, de Route la plus longue ou carte Point de victoire. Pièces, réserve et cartes sont illimitées.
+Les coûts d’origine des routes, colonies, Villes I, bateaux de liaison et cartes Développement de palier I sont conservés. Aucun voleur, pirate, récompense de Chevalier, d’Armée la plus puissante, de Route la plus longue ou carte Point de victoire. Pièces, réserve et cartes sont illimitées.
 Les ressources sont stockées par agglomération mais dépensées en commun. Les armées peuvent piller et détruire les agglomérations. Ateliers, guildes, cartes et expéditions ajoutent des actions. Les liaisons maritimes relient les colonies ; les flottes sont des pièces mobiles distinctes.
 
 ## Carte et dés
 
-### La génération
-Chaque coordonnée a indépendamment 50 % de chances d’être de l’eau et 50 % d’être une terre. Les neuf ressources terrestres ordinaires ont le même poids ; l’Or est deux fois plus rare. Aucune ressource, île, port ou position équilibrée n’est garantie. Le terrain n’est jamais réarrangé pour paraître naturel. La carte initiale est compacte, avec un ordre aléatoire sur son dernier anneau.
-Une eau côtière touche au moins une terre. Les Poissons apparaissent sur 15 % des eaux côtières et 10 % des eaux du large. Ensuite, l’eau restante peut recevoir des Baleines : 5 % sur la côte, 10 % au large. Elles ne remplacent jamais les Poissons. La probabilité totale de Baleines avant le tirage des Poissons vaut donc 4,25 % sur la côte et 9 % au large. Ces tuiles restent maritimes pour les déplacements et combats. Les Baleines produisent ensemble Peaux et Huile.
+### Génération des climats
+La carte initiale contient 125 tuiles en Classique ou 250 en Grande campagne. Le climat est défini avant le terrain. Une tuile de départ et l’un des sept climats sont tirés au hasard, avec la même probabilité. La génération progresse par les voisins. Si les voisins immédiats déjà définis ont le même climat, il est conservé avec 95 % de probabilité. Lors d’un changement, les climats compatibles sont l’intersection des possibilités des tuiles déjà définies à deux cases ou moins. À une frontière mixte, un climat voisin compatible est privilégié. Sans candidat, le climat d’un voisin immédiat est repris.
+Une passe de correction conserve des climats intermédiaires comme zones tampons. Deux climats adjacents sont toujours compatibles. Une réserve invisible autour de la carte évite les raccords impossibles lors des expéditions. Aucun terrain révélé ne change. Une même graine et une même séquence d’exploration reproduisent la même carte. Un ordre d’expéditions différent peut prolonger les zones autrement.
+Le ratio du climat détermine terre ou eau, puis sa table détermine le terrain. Les pourcentages terrestres s’appliquent après avoir tiré une terre. Les tirages aquatiques suivent l’ordre indiqué et ne concernent que l’eau restante ; le premier succès termine la séquence. La distinction entre côte et haute mer disparaît. La fréquence de l’Or varie selon le climat. Aucun climat, ressource, port, continent ou départ équilibré n’est garanti.
+Tempéré, Tropical et Désertique : 50 % de terre. Froid : 55 %. Steppe : 70 %. Arctique et Méditerranéen : 40 %. Les frontières Steppe/Désertique sont mutuellement compatibles, comme toutes les autres frontières autorisées. La nourriture des Oasis correspond au Blé.
+### Terrains stériles et banquise
+Plaines enneigées et Désert ne produisent rien et n’accueillent ni camp ni atelier. Les armées les traversent et les constructions voisines restent possibles. La Banquise résulte du tirage aquatique arctique. Elle ne produit rien, accueille les unités terrestres et bloque les navires. Colonies, tours et routes permanentes exigent une terre ferme adjacente ; aucune liaison n’est possible sur une arête bordée uniquement de banquise. Une arête banquise/eau sans terre ferme accueille une liaison maritime. La banquise ne fond pas.
+### Parties existantes
+Les anciennes tuiles conservent leurs terrains et productions. Elles sont classées Tempéré pour les futures frontières climatiques. Les nouvelles explorations utilisent le système climatique. Commencez une nouvelle partie pour appliquer les nouvelles tables à toute la carte.
 ### Numéros et dés
 Chaque tuile productive reçoit uniformément un numéro de 2 à 12, sept compris. La production utilise deux dés à six faces indépendants : les numéros ont la même fréquence de génération, mais pas la même probabilité d’activation. Dés, terrain, cartes et rébellions utilisent des tirages sauvegardés séparément. Recharger ne change ni les cartes proposées ni la carte du monde. Ni les joueurs ni l’IA ne peuvent consulter les coordonnées cachées.
 ### Ports
@@ -39,7 +45,7 @@ Une carte extrême peut manquer d’emplacements initiaux légaux. Le jeu signal
 ## Ressources, stocks et échanges
 
 ### Production et stockage
-Le jeu contient douze ressources brutes et dix produits transformés. Chaque agglomération reçoit autant de ressources brutes que son niveau pour chaque tuile adjacente activée. Les ateliers ajoutent des produits transformés sans consommer ni réduire cette récolte. Tous les joueurs produisent à chaque lancer. Une nouvelle construction ou unité de collecte peut produire dès le prochain lancer correspondant.
+Le jeu contient douze ressources brutes et dix produits transformés. Chaque agglomération multiplie la production brute de chaque tuile adjacente activée par son niveau. Les Champs dorés donnent 2/4/6/8 Blés aux niveaux 1/2/3/4 ; les Rizières donnent 3/6/9/12. Les deux productions d’une tuile mixte sont multipliées. Les ateliers ajoutent des produits transformés sans consommer ni réduire cette récolte. Tous les joueurs produisent à chaque lancer. Une nouvelle construction ou unité de collecte peut produire dès le prochain lancer correspondant.
 ### Destination des ressources
 La production d’une agglomération reste sur place. Camps et collecteurs mobiles envoient leur récolte à l’agglomération du propriétaire la plus proche, selon la distance hexagonale à ses terres adjacentes ; en cas d’égalité, la plus ancienne l’emporte. Les récoltes futures changent de destination si les villes changent, pas les stocks existants. Échanges et cartes alimentent votre entrepôt principal, dans votre plus ancienne agglomération survivante. Le pillage mesure la destination depuis la tuile de l’armée.
 ### Paiement des coûts
@@ -56,6 +62,9 @@ Taux ordinaires : 4 ressources brutes identiques → 1 autre brute ; 6 brutes id
 Une unité terrestre armée ennemie bloque la production ordinaire des agglomérations, ateliers et camps liés à sa tuile. Elle ne bloque ni son propriétaire ni ses alliés. Une flotte ennemie bloque la production ordinaire des Poissons et Baleines, y compris celle des navires de pêche couvrant cette tuile. Marchands terrestres et navires marchands ignorent les blocus de production. Les marchands terrestres ne peuvent ni bloquer, ni protéger une ville, ni attaquer.
 ### Construction sous occupation
 L’occupation ennemie interdit une nouvelle colonie adjacente et les routes bordant la tuile. Seul le côté exploité d’un camp doit être libre. Les routes existantes restent intactes jusqu’à destruction. Une agglomération assiégée ne peut ni évoluer, ni recruter, ni construire d’atelier ou de muraille, ni utiliser ses guildes, ni lancer de flotte ou d’expédition, ni bénéficier d’un port. Ses stocks restent utilisables et ses autres tuiles non occupées continuent à produire.
+### Choix de production des Bois
+Chaque faction choisit séparément Bois ou Peaux pour chaque tuile Bois qu’elle exploite. Par défaut : Bois. Sélectionnez la tuile pendant votre phase d’actions pour changer ce choix. Il s’applique aux prochains lancers à toutes vos agglomérations, camps et unités couvrant cette tuile. Les choix adverses et les stocks ne changent pas. La ressource d’un atelier est fixée à sa construction ; changer la récolte ne modifie ni son produit ni son coût d’amélioration. Steppe, Chasse aux phoques et Oasis donnent automatiquement leurs deux ressources.
+
 
 ## Constructions et améliorations
 
@@ -63,14 +72,14 @@ L’occupation ennemie interdit une nouvelle colonie adjacente et les routes bor
 Une nouvelle liaison doit toucher votre route, liaison maritime ou agglomération. Routes et liaisons maritimes se raccordent directement, sans ville côtière intermédiaire. Une agglomération ou tour d’une autre faction coupe la jonction ; les infrastructures alliées ne deviennent pas les vôtres. Après la mise en place, une colonie doit rejoindre votre réseau, toucher une terre et laisser une intersection libre entre agglomérations. Les troupes ne fondent pas de colonies isolées.
 Toute arête touchant une terre révélée est une route, côte comprise. Les liaisons maritimes occupent des arêtes bordant l’eau sans terre révélée. Révéler une terre transforme la liaison voisine en route, sans changer propriétaire ou camps. Une extrémité maritime libre ne touche ni ville ni autre liaison du propriétaire. Déplacez au plus une de ces pièces par tour vers une autre arête maritime légalement reliée, jamais une pièce construite ce tour. Les liaisons fermées restent fixes. Une seule liaison par arête.
 ### Niveaux des agglomérations
-Niveau 1 : Colonie ; niveau 2 : Ville I ; niveau 3 : Ville II ; niveau 4 : Ville III. Elles produisent 1/2/3/4 ressources brutes par tuile adjacente activée. Leurs paliers maximaux de murailles et de recrutement valent 1/2/3/4. Les villes ont 1/2/3 emplacements de guildes et autorisent les ateliers de palier 1/2/3. Les améliorations conservent stocks, murailles et ateliers. Chaque prix indiqué correspond à l’étape concernée.
+Niveau 1 : Colonie ; niveau 2 : Ville I ; niveau 3 : Ville II ; niveau 4 : Ville III. Elles multiplient la production de chaque tuile adjacente activée par 1/2/3/4. Leurs paliers maximaux de murailles et de recrutement valent 1/2/3/4. Les villes ont 1/2/3 emplacements de guildes et autorisent les ateliers de palier 1/2/3. Les améliorations conservent stocks, murailles et ateliers. Chaque prix indiqué correspond à l’étape concernée.
 Recrutement et construction navale utilisent le niveau de la ville au début du tour. Une nouvelle agglomération doit attendre votre prochain tour pour recruter ; un nouveau niveau débloque son palier d’unités au tour suivant. Recrutez autant d’unités ou navires autorisés que vos moyens le permettent. Aucun entretien militaire ni plafond de quantité. Les recrues défendent et les collecteurs produisent immédiatement, mais n’agissent qu’au prochain tour de leur propriétaire.
 ### Ateliers
 Une ville peut construire un atelier par tuile productive adjacente, soit trois au maximum. Le lien est permanent, même si deux tuiles fournissent la même ressource. L’eau ordinaire n’a pas d’emplacement ; les Poissons accueillent un fumoir et les Baleines une tannerie. Deux villes voisines peuvent chacune exploiter leur tuile commune.
 Construisez les paliers dans l’ordre. Un atelier I/II/III produit 1/2/3 produits transformés au numéro de sa tuile, sans dépenser de matières premières. Son maximum vaut le niveau de la ville moins un. Une Ville III avec une Forge III reçoit 4 Minerais et 3 Aciers sur le numéro de sa montagne. L’occupation ennemie bloque les deux productions.
 ### Camps de ressources
 Chaque route possédée accueille un camp sur chacun de ses côtés terrestres. Choisissez la tuile liée à la construction. Aucun plafond par tuile au-delà des côtés physiques des routes. Les liaisons maritimes accueillent des pêcheries côté Poissons et des camps baleiniers côté Baleines. Une pêcherie survit à la transformation de sa liaison en route.
-Chaque camp I coûte une carte de deux ressources brutes différentes, jamais celle qu’il produit. Le palier II possède son propre coût d’équipement. Un camp donne 1/2 ressources par lancer ; un camp baleinier donne 1/2 Peaux et autant d’Huile. Aucun intrant, entretien ou produit transformé. Détruire une liaison supprime tous ses camps. Une liaison isolée conserve ses camps ; leur production rejoint l’agglomération du propriétaire la plus proche.
+Chaque camp I coûte une carte de deux ressources brutes différentes, jamais celle qu’il produit. Le palier II possède son propre coût d’équipement. Un camp multiplie la production complète de sa tuile par 1/2. Un camp de Forêt donne 2/4 Bois ; un camp de Steppe donne 1/2 Peaux et 1/2 Laines. Aucun intrant, entretien ou produit transformé. Détruire une liaison supprime tous ses camps. Une liaison isolée conserve ses camps ; leur production rejoint l’agglomération du propriétaire la plus proche.
 
 ## Armées et combats
 
@@ -86,6 +95,8 @@ Un défenseur vaincu survivant recule d’une tuile légale sans ennemis ; les f
 ### Marchands terrestres
 Les marchands ont toujours zéro puissance et une vitesse de 1. Ils exploitent leur tuile plus un nombre de voisines productives au plus égal à leur palier, avec une production par tuile égale à ce palier. Ils peuvent couvrir Poissons et Baleines ; ces dernières donnent Peaux et Huile. Leur collecte ignore les blocus ennemis. Le choix automatique préfère l’Or, puis la probabilité du numéro, puis l’ordre des coordonnées, en ignorant l’eau improductive.
 Modifiez les voisines durant votre phase d’action ou rétablissez le choix automatique. Un déplacement ou transport réinitialise la sélection ; un marchand embarqué ne produit rien. Il ne peut ni piller, ni assiéger, ni démolir, ni garder une ville. Tous les marchands terrestres participant à une bataille meurent, même si leur escorte gagne. Cliquez sur un marchand pour voir et modifier sa couverture. Les récoltes rejoignent votre agglomération la plus proche.
+Le bonus dépend du terrain, pas de la ressource : Pâturage pauvre est accidenté ; Oliveraie et Oasis sont forestières ; Steppe, Chasse aux phoques, Plaine enneigée, Désert et Banquise sont des plaines.
+
 
 ## Sièges et défenses
 
@@ -113,7 +124,7 @@ Cliquez sur un indicateur de siège, une ville, une tour ou le lien pointillé p
 Une liaison maritime est une pièce d’arête qui étend votre réseau de colonies. Un navire mobile occupe une tuile d’eau, se déplace et combat. L’un ne remplace pas l’autre. Construisez les navires près d’une agglomération côtière, sans port imprimé, sur une eau révélée sans ennemis. Le niveau au début du tour limite leur palier. Aucun plafond par commande, ville, tour ou flotte si vous payez chaque navire. Ils ne peuvent pas évoluer.
 Les transports privilégient la vitesse ; les convois portent plus d’unités mais avancent moins vite. Les tables des navires indiquent puissance, mouvement et capacité pour chaque classe. Chaque classe possède quatre paliers. La flotte avance à la vitesse du plus lent de ses participants. Les combats utilisent pertes entières et retraites, selon la puissance et les points de pertes de chaque coque. Les passagers n’ajoutent aucune puissance navale. Les survivants conservent toute leur puissance et capacité.
 ### Navires de pêche et marchands
-Les navires de pêche couvrent leur tuile et les six voisines, seulement pour les Poissons et Baleines. Les navires marchands couvrent toutes les terres voisines, même occupées ou exploitées par un rival, jamais les Poissons ou Baleines. Chaque tuile activée donne autant de ressources que le palier du navire ; les Baleines donnent cette quantité de Peaux et d’Huile. Tout rejoint l’agglomération du propriétaire la plus proche. La collecte commence dès la construction. Aucun plafond de collecteurs par tuile ni capacité de cargaison pour les ressources.
+Les navires de pêche couvrent leur tuile et les six voisines, seulement pour les Poissons, la Morue et les Baleines. Les navires marchands couvrent toutes les terres voisines, même occupées ou exploitées par un rival, jamais les Poissons ou Baleines. Chaque production de base est multipliée par le palier du navire : la Morue donne 2 Poissons par palier ; les Baleines donnent 1 Peau et 1 Huile par palier. Tout rejoint l’agglomération du propriétaire la plus proche. La collecte commence dès la construction. Aucun plafond de collecteurs par tuile ni capacité de cargaison pour les ressources.
 Les deux classes économiques ont une puissance de 0/1/2/3 aux paliers I/II/III/IV et aucune place de passager. Les navires désarmés d’une flotte vaincue sont automatiquement perdus. Les autres suivent les calculs ordinaires de pertes entières. Couverture et navires économiques sont visibles dans l’inspecteur des flottes.
 ### Transporter les troupes
 Embarquez ou débarquez à travers une arête commune terre-eau, sans port requis. Chaque navire et passager participant doit être frais. Embarquement et débarquement terminent leur activation. Une place porte une unité de n’importe quel palier, marchand compris. Les passagers ne produisent pas, ne gardent pas et n’agissent pas séparément. Débarquez sur une plage libre ou alliée, jamais directement sur une tuile ennemie. Les troupes débarquées attaquent à un tour ultérieur.
@@ -197,6 +208,320 @@ Raccourcis : B Construction, F Forces, T Échanges, R Développement, E Explorat
 ### Sauvegarde, langue et jeu local
 Le jeu sauvegarde automatiquement dans ce navigateur pour cette adresse. Exportez une sauvegarde pour une copie portable et importez-la pour continuer ailleurs. Un autre navigateur, hôte ou port utilise un stockage différent. Exportez avant d’effacer les données du navigateur ou remplacer une partie. Le jeu propose des adversaires IA et le multijoueur local sur le même écran, pas de multijoueur en ligne.
 Choisissez English ou Français au menu principal ou dans les paramètres de campagne. La langue ne change que l’affichage, jamais carte, tirages ou règles de sauvegarde. Ce guide existe dans les deux langues. Cherchez un terme, consultez les coûts exacts du catalogue et manipulez les exemples de production et de siège. Vous pouvez imprimer le guide complet ou l’enregistrer en PDF depuis le navigateur.
+Afficher les climats, dans les commandes de carte, colore les zones climatiques. L’inspection d’une tuile indique son climat, sa famille de terrain et sa production complète.
+
+
+## Tables climatiques
+
+### Tempéré: 50% terre
+
+Compatible : Steppe, Méditerranéen, Froid, Tropical
+
+| Terrain terrestre | Probabilité conditionnelle |
+
+|---|---|
+
+| Champs | 17% |
+
+| Pré | 17% |
+
+| Bois clairsemés | 17% |
+
+| Montagnes d'or | 5% |
+
+| Collines d'argile | 12% |
+
+| Stone quarry | 10% |
+
+| Iron mountains | 10% |
+
+| Collines de charbon | 10% |
+
+| Salt flats | 2% |
+
+| Terrain aquatique | Tirage successif | Part effective de l’eau |
+
+|---|---|---|
+
+| Zone de pêche | 15% | 15% |
+
+| Zone de Baleines | 5% | 4.25% |
+
+| Mer |  | 80.75% |
+
+### Froid: 55% terre
+
+Compatible : Tempéré, Steppe, Arctique
+
+| Terrain terrestre | Probabilité conditionnelle |
+
+|---|---|
+
+| Forêt | 30% |
+
+| Forêt de chasse | 10% |
+
+| Champs pauvres | 10% |
+
+| Pâturage pauvre | 5% |
+
+| Montagnes d'or | 5% |
+
+| Collines de charbon | 10% |
+
+| Iron mountains | 10% |
+
+| Stone quarry | 10% |
+
+| Collines d'argile | 10% |
+
+| Terrain aquatique | Tirage successif | Part effective de l’eau |
+
+|---|---|---|
+
+| Zone de pêche | 20% | 20% |
+
+| Bancs de morue | 10% | 8% |
+
+| Zone de Baleines | 10% | 7.2% |
+
+| Mer |  | 64.8% |
+
+### Arctique: 40% terre
+
+Compatible : Froid
+
+| Terrain terrestre | Probabilité conditionnelle |
+
+|---|---|
+
+| Plaine enneigée | 40% |
+
+| Chasse aux phoques | 15% |
+
+| Montagnes de minerai arctiques | 20% |
+
+| Crête rocheuse arctique | 15% |
+
+| Montagnes aurifères arctiques | 10% |
+
+| Terrain aquatique | Tirage successif | Part effective de l’eau |
+
+|---|---|---|
+
+| Banquise | 30% | 30% |
+
+| Zone de pêche | 20% | 14% |
+
+| Bancs de morue | 20% | 11.2% |
+
+| Zone de Baleines | 20% | 8.96% |
+
+| Mer |  | 35.84% |
+
+### Steppe: 70% terre
+
+Compatible : Froid, Tempéré, Méditerranéen, Désert
+
+| Terrain terrestre | Probabilité conditionnelle |
+
+|---|---|
+
+| Plaine de steppe | 55% |
+
+| Champs pauvres | 17% |
+
+| Stone quarry | 10% |
+
+| Iron mountains | 5% |
+
+| Collines de charbon | 5% |
+
+| Collines d'argile | 5% |
+
+| Montagnes d'or | 3% |
+
+| Terrain aquatique | Tirage successif | Part effective de l’eau |
+
+|---|---|---|
+
+| Zone de pêche | 15% | 15% |
+
+| Zone de Baleines | 5% | 4.25% |
+
+| Mer |  | 80.75% |
+
+### Méditerranéen: 40% terre
+
+Compatible : Tempéré, Steppe, Désert
+
+| Terrain terrestre | Probabilité conditionnelle |
+
+|---|---|
+
+| Champs | 5% |
+
+| Oliveraie | 20% |
+
+| Escarpement | 20% |
+
+| Bois clairsemés | 5% |
+
+| Pâturage pauvre | 15% |
+
+| Salt flats | 5% |
+
+| Montagnes d'or | 7% |
+
+| Collines de charbon | 10% |
+
+| Iron mountains | 13% |
+
+| Terrain aquatique | Tirage successif | Part effective de l’eau |
+
+|---|---|---|
+
+| Zone de pêche | 15% | 15% |
+
+| Zone de Baleines | 5% | 4.25% |
+
+| Mer |  | 80.75% |
+
+### Tropical: 50% terre
+
+Compatible : Tempéré, Désert
+
+| Terrain terrestre | Probabilité conditionnelle |
+
+|---|---|
+
+| Jungle | 25% |
+
+| Bois tropicaux | 10% |
+
+| Rizière | 25% |
+
+| Collines d'argile | 15% |
+
+| Montagnes d'or | 5% |
+
+| Stone quarry | 5% |
+
+| Collines de charbon | 5% |
+
+| Iron mountains | 5% |
+
+| Salt flats | 5% |
+
+| Terrain aquatique | Tirage successif | Part effective de l’eau |
+
+|---|---|---|
+
+| Zone de pêche | 10% | 10% |
+
+| Zone de Baleines | 5% | 4.5% |
+
+| Mer |  | 85.5% |
+
+### Désert: 50% terre
+
+Compatible : Tropical, Méditerranéen, Steppe
+
+| Terrain terrestre | Probabilité conditionnelle |
+
+|---|---|
+
+| Désert | 30% |
+
+| Montagnes d'or | 10% |
+
+| Iron mountains | 12% |
+
+| Stone quarry | 12% |
+
+| Collines de charbon | 6% |
+
+| Oasis | 10% |
+
+| Salt flats | 20% |
+
+| Terrain aquatique | Tirage successif | Part effective de l’eau |
+
+|---|---|---|
+
+| Zone de pêche | 8% | 8% |
+
+| Zone de Baleines | 3% | 2.76% |
+
+| Mer |  | 89.24% |
+
+## Production des terrains
+
+| Terrain | Production de base | Famille |
+
+|---|---|---|
+
+| Bois clairsemés | 1 Bois OU 1 Peau | forêt |
+
+| Forêt | 2 Bois | forêt |
+
+| Forêt de chasse | 2 Peaux | forêt |
+
+| Champs | 2 Blé | plaine |
+
+| Pré | 2 Laine | plaine |
+
+| Champs pauvres | 1 Blé | plaine |
+
+| Pâturage pauvre | 1 Laine | terrain accidenté |
+
+| Collines d'argile | 1 Argile | terrain accidenté |
+
+| Montagnes d'or | 1 Or | terrain accidenté |
+
+| Iron mountains | 1 Minerai | terrain accidenté |
+
+| Stone quarry | 1 Pierre | terrain accidenté |
+
+| Collines de charbon | 1 Charbon | terrain accidenté |
+
+| Salt flats | 1 Sel | plaine |
+
+| Plaine enneigée | 0 | plaine |
+
+| Chasse aux phoques | 1 Peaux + 1 Huile | plaine |
+
+| Montagnes de minerai arctiques | 1 Minerai | terrain accidenté |
+
+| Crête rocheuse arctique | 1 Pierre | terrain accidenté |
+
+| Montagnes aurifères arctiques | 1 Or | terrain accidenté |
+
+| Plaine de steppe | 1 Peaux + 1 Laine | plaine |
+
+| Oliveraie | 1 Blé | forêt |
+
+| Escarpement | 1 Pierre | terrain accidenté |
+
+| Jungle | 1 Peaux | forêt |
+
+| Bois tropicaux | 1 Bois | forêt |
+
+| Rizière | 3 Blé | plaine |
+
+| Désert | 0 | plaine |
+
+| Oasis | 1 Bois + 1 Blé | forêt |
+
+| Mer | 0 | mer |
+
+| Zone de pêche | 1 Poissons | mer |
+
+| Bancs de morue | 2 Poissons | mer |
+
+| Zone de Baleines | 1 Peaux + 1 Huile | mer |
+
+| Banquise | 0 | plaine |
 
 ## Tous les coûts
 

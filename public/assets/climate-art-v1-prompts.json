@@ -1,0 +1,107 @@
+{
+  "tool": "Built-in image_gen",
+  "reference": "public/assets/terrain-atlas-v2.png",
+  "derivatives": "512px WebP, quality 85",
+  "images": [
+    {
+      "name": "woods",
+      "prompt": "Use case: stylized-concept. Create a finished square terrain texture for a polished medieval hex strategy board game, asset 'Woods'. A light mixed deciduous woodland with spaced oak and birch trees, warm green canopy, grassy clearings, a few cut logs and a small recognizable deer. Painted miniature landscape, elevated three-quarter overhead view, no horizon, soft daylight, broad clean readable forms with carefully painted details. Fill entire square edge to edge with continuous terrain, focal trees in upper two thirds and simpler grass at bottom, ready to clip to a point-top hex. Natural elegant greens, distinct from dense dark conifer forest. No text, numbers, icons, frame, hex outline, people, buildings or watermark. Match the supplied reference only for painterly board-game style, not its grid layout; output one single square Woods landscape.",
+      "asset": "public/assets/terrain-woods-v1.webp"
+    },
+    {
+      "name": "forest",
+      "prompt": "Use case: stylized-concept. Asset type: one finished square terrain texture for a polished medieval hex strategy board game. Forest: a very dense thick cold-climate pine and spruce forest, dark blue-green conifers, a few fresh cut logs, moss and a little frost, abundant timber. Match the reference's painterly miniature board-game style, elevated three-quarter overhead view, soft natural light, no horizon, broad readable forms at small sizes and refined painted detail. Fill the square edge to edge with a single continuous landscape, key features in the upper two-thirds and simpler ground at the bottom. The game clips the square to a point-top hex. Do not copy the reference grid: output exactly one landscape. No text, letters, numbers, UI, frame, hex outline, watermark, modern objects or people.",
+      "asset": "public/assets/terrain-forest-v1.webp"
+    },
+    {
+      "name": "hunting-forest",
+      "prompt": "Use case: stylized-concept. Asset type: one finished square terrain texture for a polished medieval hex strategy board game. Hunting forest: a cold northern mixed conifer forest, two clearly recognizable deer in an open clearing, sparse silver birch, moss and patches of frost, muted amber and cold green. Match the reference's painterly miniature board-game style, elevated three-quarter overhead view, soft natural light, no horizon, broad readable forms at small sizes and refined painted detail. Fill the square edge to edge with a single continuous landscape, key features in the upper two-thirds and simpler ground at the bottom. The game clips the square to a point-top hex. Do not copy the reference grid: output exactly one landscape. No text, letters, numbers, UI, frame, hex outline, watermark, modern objects or people.",
+      "asset": "public/assets/terrain-hunting-forest-v1.webp"
+    },
+    {
+      "name": "rough-fields",
+      "prompt": "Use case: stylized-concept. Asset type: one finished square terrain texture for a polished medieval hex strategy board game. Rough fields: poor thin grain crops on dry stony uneven soil, sparse wheat rows, exposed pebbles and low rocky ridges, muted straw and dusty green. Clearly less fertile than rich golden fields. Match the reference's painterly miniature board-game style, elevated three-quarter overhead view, soft natural light, no horizon, broad readable forms at small sizes and refined painted detail. Fill the square edge to edge with a single continuous landscape, key features in the upper two-thirds and simpler ground at the bottom. The game clips the square to a point-top hex. Do not copy the reference grid: output exactly one landscape. No text, letters, numbers, UI, frame, hex outline, watermark, modern objects or people.",
+      "asset": "public/assets/terrain-rough-fields-v1.webp"
+    },
+    {
+      "name": "rough-pasture",
+      "prompt": "Use case: stylized-concept. Asset type: one finished square terrain texture for a polished medieval hex strategy board game. Rough pasture: rocky scrubby grazing land, three fluffy white sheep, boulders, sparse grass, rugged grey-green slopes. Clearly poorer and stonier than lush pasture. Match the reference's painterly miniature board-game style, elevated three-quarter overhead view, soft natural light, no horizon, broad readable forms at small sizes and refined painted detail. Fill the square edge to edge with a single continuous landscape, key features in the upper two-thirds and simpler ground at the bottom. The game clips the square to a point-top hex. Do not copy the reference grid: output exactly one landscape. No text, letters, numbers, UI, frame, hex outline, watermark, modern objects or people.",
+      "asset": "public/assets/terrain-rough-pasture-v1.webp"
+    },
+    {
+      "name": "cod",
+      "prompt": "Use case: stylized-concept. Asset type: one finished square terrain texture for a polished medieval hex strategy board game. Cod grounds: teal ocean in the same understated #287f9c family as the game's ordinary sea, a plentiful shoal of recognizable grey cod visible just below the water, subtle small ripples and silver-blue highlights. Entire square is water, no shore, no boat, avoid bright cartoon blue or huge fish. Match the reference's painterly miniature board-game style, elevated three-quarter overhead view, soft natural light, no horizon, broad readable forms at small sizes and refined painted detail. Fill the square edge to edge with a single continuous landscape, key features in the upper two-thirds and simpler ground at the bottom. The game clips the square to a point-top hex. Do not copy the reference grid: output exactly one landscape. No text, letters, numbers, UI, frame, hex outline, watermark, modern objects or people.",
+      "asset": "public/assets/terrain-cod-v1.webp"
+    },
+    {
+      "name": "snow-plain",
+      "prompt": "Use case: stylized-concept. Asset type: one finished square terrain texture for a polished medieval hex strategy board game. Snow plain: a broad untouched arctic snowfield, subtle windblown drifts, pale blue shadows and scattered small cold rocks. Barren, peaceful, no vegetation, wildlife or resources. Match the reference's painterly miniature board-game style, elevated three-quarter overhead view, soft natural light, no horizon, broad readable forms at small sizes and refined painted detail. Fill the square edge to edge with a single continuous landscape, key features in the upper two-thirds and simpler ground at the bottom. The game clips the square to a point-top hex. Do not copy the reference grid: output exactly one landscape. No text, letters, numbers, UI, frame, hex outline, watermark, modern objects or people.",
+      "asset": "public/assets/terrain-snow-plain-v1.webp"
+    },
+    {
+      "name": "seal-grounds",
+      "prompt": "Use case: stylized-concept. Asset type: one finished square terrain texture for a polished medieval hex strategy board game. Seal hunting grounds: a snowy arctic rocky shoreline with three recognizable seals resting beside a small patch of icy blue water. Predominantly solid white and grey ground, subdued palette, no people or hunting violence. Match the reference's painterly miniature board-game style, elevated three-quarter overhead view, soft natural light, no horizon, broad readable forms at small sizes and refined painted detail. Fill the square edge to edge with a single continuous landscape, key features in the upper two-thirds and simpler ground at the bottom. The game clips the square to a point-top hex. Do not copy the reference grid: output exactly one landscape. No text, letters, numbers, UI, frame, hex outline, watermark, modern objects or people.",
+      "asset": "public/assets/terrain-seal-grounds-v1.webp"
+    },
+    {
+      "name": "arctic-iron",
+      "prompt": "Use case: stylized-concept. Asset type: one finished square terrain texture for a polished medieval hex strategy board game. Arctic iron mountains: snow-covered dark blue-grey mountain crags with exposed iron ore seams and a modest timber mine entrance, unmistakably polar with snowdrifts, no trees. Match the reference's painterly miniature board-game style, elevated three-quarter overhead view, soft natural light, no horizon, broad readable forms at small sizes and refined painted detail. Fill the square edge to edge with a single continuous landscape, key features in the upper two-thirds and simpler ground at the bottom. The game clips the square to a point-top hex. Do not copy the reference grid: output exactly one landscape. No text, letters, numbers, UI, frame, hex outline, watermark, modern objects or people.",
+      "asset": "public/assets/terrain-arctic-iron-v1.webp"
+    },
+    {
+      "name": "arctic-stone",
+      "prompt": "Use case: stylized-concept. Asset type: one finished square terrain texture for a polished medieval hex strategy board game. Arctic stone ridge: broad broken pale-grey polar rock outcrops and angular boulders embedded in snow, a small pile of stone blocks, low rounded windswept rocky relief. No warm sheer escarpment and no trees. Match the reference's painterly miniature board-game style, elevated three-quarter overhead view, soft natural light, no horizon, broad readable forms at small sizes and refined painted detail. Fill the square edge to edge with a single continuous landscape, key features in the upper two-thirds and simpler ground at the bottom. The game clips the square to a point-top hex. Do not copy the reference grid: output exactly one landscape. No text, letters, numbers, UI, frame, hex outline, watermark, modern objects or people.",
+      "asset": "public/assets/terrain-arctic-stone-v1.webp"
+    },
+    {
+      "name": "arctic-gold",
+      "prompt": "Use case: stylized-concept. Asset type: one finished square terrain texture for a polished medieval hex strategy board game. Arctic gold mountains: rugged dark stone peaks with snowdrifts and visible small warm golden ore veins, a modest old mine entrance and a few gold-bearing rocks. Polar, no trees, gold details clear but not oversized. Match the reference's painterly miniature board-game style, elevated three-quarter overhead view, soft natural light, no horizon, broad readable forms at small sizes and refined painted detail. Fill the square edge to edge with a single continuous landscape, key features in the upper two-thirds and simpler ground at the bottom. The game clips the square to a point-top hex. Do not copy the reference grid: output exactly one landscape. No text, letters, numbers, UI, frame, hex outline, watermark, modern objects or people.",
+      "asset": "public/assets/terrain-arctic-gold-v1.webp"
+    },
+    {
+      "name": "ice",
+      "prompt": "Use case: stylized-concept. Asset type: one finished square terrain texture for a polished medieval hex strategy board game. Frozen sea: a thick continuous walkable sheet of pale turquoise sea ice, fine pale-blue cracks, a few snow streaks, no large open water gaps. Overhead texture of solid frozen ocean, distinctive from soft white snow plain. Match the reference's painterly miniature board-game style, elevated three-quarter overhead view, soft natural light, no horizon, broad readable forms at small sizes and refined painted detail. Fill the square edge to edge with a single continuous landscape, key features in the upper two-thirds and simpler ground at the bottom. The game clips the square to a point-top hex. Do not copy the reference grid: output exactly one landscape. No text, letters, numbers, UI, frame, hex outline, watermark, modern objects or people.",
+      "asset": "public/assets/terrain-ice-v1.webp"
+    },
+    {
+      "name": "steppe-plain",
+      "prompt": "Use case: stylized-concept. Asset type: one finished square terrain texture for a polished medieval hex strategy board game. Steppe plain: open rolling dry golden-green grassland, a small group of fluffy sheep and two wild antelopes clearly visible, low sparse scrub and broad grassy ground. No dense trees, no crops. Both wool and hides visibly represented. Match the reference's painterly miniature board-game style, elevated three-quarter overhead view, soft natural light, no horizon, broad readable forms at small sizes and refined painted detail. Fill the square edge to edge with a single continuous landscape, key features in the upper two-thirds and simpler ground at the bottom. The game clips the square to a point-top hex. Do not copy the reference grid: output exactly one landscape. No text, letters, numbers, UI, frame, hex outline, watermark, modern objects or people.",
+      "asset": "public/assets/terrain-steppe-plain-v1.webp"
+    },
+    {
+      "name": "olive-grove",
+      "prompt": "Use case: stylized-concept. Asset type: one finished square terrain texture for a polished medieval hex strategy board game. Olive grove: sunlit Mediterranean grove with orderly widely spaced gnarled olive trees, soft silvery green foliage, ochre soil, a few low stone walls and small baskets of olives. Olive trees must look distinct from temperate trees. Match the reference's painterly miniature board-game style, elevated three-quarter overhead view, soft natural light, no horizon, broad readable forms at small sizes and refined painted detail. Fill the square edge to edge with a single continuous landscape, key features in the upper two-thirds and simpler ground at the bottom. The game clips the square to a point-top hex. Do not copy the reference grid: output exactly one landscape. No text, letters, numbers, UI, frame, hex outline, watermark, modern objects or people.",
+      "asset": "public/assets/terrain-olive-grove-v1.webp"
+    },
+    {
+      "name": "escarpment",
+      "prompt": "Use case: stylized-concept. Asset type: one finished square terrain texture for a polished medieval hex strategy board game. Escarpment: warm Mediterranean pale limestone escarpment with dramatic layered vertical rock faces, scattered angular blocks, sparse dry shrubs and ochre ground. A natural sheer rocky formation, distinctly different from snowy low Arctic stone ridge. Match the reference's painterly miniature board-game style, elevated three-quarter overhead view, soft natural light, no horizon, broad readable forms at small sizes and refined painted detail. Fill the square edge to edge with a single continuous landscape, key features in the upper two-thirds and simpler ground at the bottom. The game clips the square to a point-top hex. Do not copy the reference grid: output exactly one landscape. No text, letters, numbers, UI, frame, hex outline, watermark, modern objects or people.",
+      "asset": "public/assets/terrain-escarpment-v1.webp"
+    },
+    {
+      "name": "jungle",
+      "prompt": "Use case: stylized-concept. Asset type: one finished square terrain texture for a polished medieval hex strategy board game. Jungle: dense tropical emerald vegetation, broad leaves and intertwined tall trees, a clearly recognizable small wild boar and a tapir in a clearing to signify hides. Humid green palette with shadows, no buildings. Match the reference's painterly miniature board-game style, elevated three-quarter overhead view, soft natural light, no horizon, broad readable forms at small sizes and refined painted detail. Fill the square edge to edge with a single continuous landscape, key features in the upper two-thirds and simpler ground at the bottom. The game clips the square to a point-top hex. Do not copy the reference grid: output exactly one landscape. No text, letters, numbers, UI, frame, hex outline, watermark, modern objects or people.",
+      "asset": "public/assets/terrain-jungle-v1.webp"
+    },
+    {
+      "name": "tropical-woods",
+      "prompt": "Use case: stylized-concept. Asset type: one finished square terrain texture for a polished medieval hex strategy board game. Tropical woods: lighter tropical woodland of palms and broadleaf timber trees, a few cut tropical logs, sunlit grassy clearings, lush warm greens. More open than a jungle and clearly tropical rather than European woodland. Match the reference's painterly miniature board-game style, elevated three-quarter overhead view, soft natural light, no horizon, broad readable forms at small sizes and refined painted detail. Fill the square edge to edge with a single continuous landscape, key features in the upper two-thirds and simpler ground at the bottom. The game clips the square to a point-top hex. Do not copy the reference grid: output exactly one landscape. No text, letters, numbers, UI, frame, hex outline, watermark, modern objects or people.",
+      "asset": "public/assets/terrain-tropical-woods-v1.webp"
+    },
+    {
+      "name": "rice-field",
+      "prompt": "Use case: stylized-concept. Asset type: one finished square terrain texture for a polished medieval hex strategy board game. Rice field: vibrant productive irrigated rice paddies with three terraced green rows, shallow blue-green reflective water channels, abundant rice plants and a few harvested rice bundles. Highly fertile, unmistakably rice, no people. Match the reference's painterly miniature board-game style, elevated three-quarter overhead view, soft natural light, no horizon, broad readable forms at small sizes and refined painted detail. Fill the square edge to edge with a single continuous landscape, key features in the upper two-thirds and simpler ground at the bottom. The game clips the square to a point-top hex. Do not copy the reference grid: output exactly one landscape. No text, letters, numbers, UI, frame, hex outline, watermark, modern objects or people.",
+      "asset": "public/assets/terrain-rice-field-v1.webp"
+    },
+    {
+      "name": "desert",
+      "prompt": "Use case: stylized-concept. Asset type: one finished square terrain texture for a polished medieval hex strategy board game. Desert: broad warm golden sand dunes with crisp wind-sculpted ridges, soft ochre shadows and a few tiny rocks, barren terrain. No vegetation, buildings, bones or resources. Match the reference's painterly miniature board-game style, elevated three-quarter overhead view, soft natural light, no horizon, broad readable forms at small sizes and refined painted detail. Fill the square edge to edge with a single continuous landscape, key features in the upper two-thirds and simpler ground at the bottom. The game clips the square to a point-top hex. Do not copy the reference grid: output exactly one landscape. No text, letters, numbers, UI, frame, hex outline, watermark, modern objects or people.",
+      "asset": "public/assets/terrain-desert-v1.webp"
+    },
+    {
+      "name": "oasis",
+      "prompt": "Use case: stylized-concept. Asset type: one finished square terrain texture for a polished medieval hex strategy board game. Oasis: small cool turquoise freshwater pool in golden desert sand, a cluster of date palms with visible fruit, lush small cultivated green banks and a few cut palm logs. Clearly a source of both wood and food, predominantly land, no buildings. Match the reference's painterly miniature board-game style, elevated three-quarter overhead view, soft natural light, no horizon, broad readable forms at small sizes and refined painted detail. Fill the square edge to edge with a single continuous landscape, key features in the upper two-thirds and simpler ground at the bottom. The game clips the square to a point-top hex. Do not copy the reference grid: output exactly one landscape. No text, letters, numbers, UI, frame, hex outline, watermark, modern objects or people.",
+      "asset": "public/assets/terrain-oasis-v1.webp"
+    }
+  ]
+}

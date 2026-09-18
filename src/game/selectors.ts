@@ -1,6 +1,9 @@
+import { solidAtVertex } from "./world";
 import { friendly } from "./relations";
 import {
   tileGood,
+  tileYield,
+  terrainFamily,
   tileGoods,
   harvestTiles,
   towerPower,
@@ -132,7 +135,7 @@ function combatTowerPower(s: Game, owner: number, tile: string) {
     : towerPower(s, owner, tile);
 }
 export function power(s: Game, units: Piece[], tile: string) {
-  const family = TERRAIN[s.tiles[tile].resource].family;
+  const family = terrainFamily(s.tiles[tile]);
   return units.reduce(
     (n, u) =>
       n +
@@ -320,7 +323,7 @@ export function settlementSites(
 ): string[] {
   return Object.keys(s.vertices).filter(
     (v) =>
-      landAtVertex(s, v).length &&
+      solidAtVertex(s, v).length &&
       !townAt(s, v) &&
       (!s.towers?.[v] || s.towers[v].owner === p) &&
       !vertexNeighbors(s, v).some((n) => townAt(s, n)) &&
@@ -358,7 +361,9 @@ export function canCompleteSetup(s: Game, remaining: number): boolean {
 }
 /** Land on either side makes an edge a road, including the coastline. */
 export function routeKind(s: Game, edge: string): "road" | "route" {
-  return s.edges[edge].tiles.some((t) => s.tiles[t].resource !== "water")
+  return s.edges[edge].tiles.some(
+    (t) => !["water", "ice"].includes(s.tiles[t].resource),
+  )
     ? "road"
     : "route";
 }
@@ -375,7 +380,11 @@ export function canRoute(
 ): boolean {
   const e = s.edges[edge];
   if (!e || (s.routes[edge] && edge !== ignore)) return false;
-  if (routeKind(s, edge) !== kind) return false;
+  if (
+    routeKind(s, edge) !== kind ||
+    e.tiles.every((t) => s.tiles[t].resource === "ice")
+  )
+    return false;
   if (
     e.tiles.some((t) =>
       kind === "road"
@@ -461,15 +470,18 @@ export function productionSources(s: Game) {
       : blockAt(s, id, owner);
   for (const town of Object.values(s.towns))
     for (const id of s.vertices[town.vertex].tiles) {
-      const good = tileGood(s.tiles[id]);
+      const good =
+        town.extensionGoods?.[id] ?? tileGood(s.tiles[id], town.owner);
       if (!good || blocked(id, town.owner)) continue;
-      for (const raw of tileGoods(s.tiles[id]))
+      for (const [raw, amount] of Object.entries(
+        tileYield(s.tiles[id], town.owner),
+      ))
         out.push({
           owner: town.owner,
           town,
           tile: id,
-          good: raw,
-          amount: town.level,
+          good: raw as Raw,
+          amount: town.level * amount!,
         });
       if (town.extensions[id])
         out.push({
@@ -485,8 +497,16 @@ export function productionSources(s: Game) {
       const good = tileGood(s.tiles[id]),
         town = nearestTown(s, id, r.owner);
       if (good && town && !blocked(id, r.owner))
-        for (const raw of tileGoods(s.tiles[id]))
-          out.push({ owner: r.owner, town, tile: id, good: raw, amount: tier });
+        for (const [raw, amount] of Object.entries(
+          tileYield(s.tiles[id], r.owner),
+        ))
+          out.push({
+            owner: r.owner,
+            town,
+            tile: id,
+            good: raw as Raw,
+            amount: tier * amount!,
+          });
     }
   for (const u of Object.values(s.pieces)) {
     const tiles = harvestTiles(s, u);
@@ -496,13 +516,15 @@ export function productionSources(s: Game) {
     for (const id of tiles) {
       const good = tileGood(s.tiles[id]);
       if (good && (u.kind !== "fishing" || !blocked(id, u.owner)))
-        for (const raw of tileGoods(s.tiles[id]))
+        for (const [raw, amount] of Object.entries(
+          tileYield(s.tiles[id], u.owner),
+        ))
           out.push({
             owner: u.owner,
             town,
             tile: id,
-            good: raw,
-            amount: u.tier,
+            good: raw as Raw,
+            amount: u.tier * amount!,
           });
     }
   }
@@ -746,5 +768,18 @@ export function researchCount(s: Game, owner: number): number {
   return (
     s.players[owner].hand.length +
     (s.researchChoice && s.active === owner ? 1 : 0)
+  );
+}
+
+export function canChooseWoods(s: Game, tile: string, owner = s.active) {
+  return (
+    s.tiles[tile]?.biome === "woods" &&
+    (ownTowns(s, owner).some((t) =>
+      s.vertices[t.vertex].tiles.includes(tile),
+    ) ||
+      Object.values(s.routes).some(
+        (r) => r.owner === owner && !!r.camps[tile],
+      ) ||
+      ownPieces(s, owner).some((u) => harvestTiles(s, u).includes(tile)))
   );
 }

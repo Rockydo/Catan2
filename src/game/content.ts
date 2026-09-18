@@ -1,3 +1,4 @@
+import { BIOME_INFO, type Biome } from "./climate-content";
 import recipes from "./costs.json" with { type: "json" };
 import {
   RAW,
@@ -62,10 +63,27 @@ export const GOOD_INFO: Record<
     ["coke", "Fuel", "✦", "#7b8394"],
   ].map(([id, name, icon, color]) => [id, { name, icon, color }]),
 ) as Record<Good, { name: string; icon: string; color: string }>;
+export type TerrainKey =
+  Raw | "water" | "whale" | "snow" | "desert" | "ice" | Biome;
 export const TERRAIN: Record<
-  Raw | "water" | "whale",
+  TerrainKey,
   { name: string; family: Family; color: string; light: string }
 > = {
+  ...(Object.fromEntries(
+    Object.entries(BIOME_INFO).map(([id, b]) => [
+      id,
+      { name: b.name, family: b.family, color: b.color, light: b.color },
+    ]),
+  ) as Record<
+    Biome,
+    { name: string; family: Family; color: string; light: string }
+  >),
+  snow: {
+    name: "Snow plain",
+    family: "flat",
+    color: "#dbe9e8",
+    light: "#eff6f5",
+  },
   oil: {
     name: "Whale oil",
     family: "water",

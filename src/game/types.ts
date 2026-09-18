@@ -1,3 +1,4 @@
+import type { Climate, Biome, TerrainResource } from "./climate-content";
 export const RAW = [
   "lumber",
   "brick",
@@ -44,7 +45,11 @@ export interface Hex {
   id: string;
   q: number;
   r: number;
-  resource: Raw | "water";
+  resource: TerrainResource;
+  climate?: Climate;
+  biome?: Biome;
+  woodsChoices?: Record<number, "lumber" | "hides">;
+  woodsChosenOn?: Record<number, number>;
   fish?: boolean;
   whale?: boolean;
   number: number;
@@ -65,6 +70,7 @@ export interface Edge {
   harbor?: Raw | "generic";
 }
 export interface World {
+  climatePlan?: Record<string, Climate>;
   tiles: Record<string, Hex>;
   vertices: Record<string, Vertex>;
   edges: Record<string, Edge>;
@@ -109,6 +115,7 @@ export interface Town {
   wall: number;
   stock: Stock;
   extensions: Record<string, number>;
+  extensionGoods?: Record<string, Raw>;
   born: number;
   turnLevel: number;
   recruited: number;
@@ -272,7 +279,7 @@ export interface Event {
 export interface Game extends World {
   version: 5;
   seed: string;
-  generation: 4;
+  generation: 4 | 5;
   rng: number;
   deckRng: number;
   rebellionRng?: number;

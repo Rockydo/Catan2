@@ -7,6 +7,7 @@ import {
   defaultCoverage,
   tileGood,
   tileGoods,
+  tileYield,
   towerName,
   towerSites,
   collector,
@@ -170,8 +171,11 @@ export function HarvestPanel({
                   covered.map((id) => (
                     <span key={id}>
                       {tx(
-                        tileGoods(s.tiles[id])
-                          .map((good) => GOOD_INFO[good].name)
+                        tileGoods(s.tiles[id], u.owner)
+                          .map(
+                            (good) =>
+                              `${(tileYield(s.tiles[id], u.owner)[good] ?? 0) * u.tier} ${GOOD_INFO[good].name}`,
+                          )
                           .join(" + "),
                       )}
                       {tx(" ")}· {tx(id)}
@@ -215,8 +219,11 @@ export function HarvestPanel({
                               }
                             />
                             {tx(
-                              tileGoods(s.tiles[id])
-                                .map((good) => GOOD_INFO[good].name)
+                              tileGoods(s.tiles[id], u.owner)
+                                .map(
+                                  (good) =>
+                                    `${(tileYield(s.tiles[id], u.owner)[good] ?? 0) * u.tier} ${GOOD_INFO[good].name}`,
+                                )
                                 .join(" + "),
                             )}
                             {tx(" ")}· {tx(id)}

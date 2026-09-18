@@ -1,3 +1,10 @@
+import {
+  CLIMATES,
+  CLIMATE_INFO,
+  BIOMES,
+  BIOME_INFO,
+  waterProbabilities,
+} from "../src/game/climate-content";
 /** Export the same bilingual guide and live catalogue as portable Markdown. */
 import { mkdirSync, writeFileSync } from "node:fs";
 import chapters from "../src/rules/chapters.json";
@@ -32,6 +39,32 @@ for (const locale of ["en", "fr"] as const) {
     lines.push(
       `## ${c.title[locale]}`,
       c.body[locale].replace(/^## /gm, "### "),
+    );
+  lines.push(`## ${text("Climate tables", "Tables climatiques")}`);
+  for (const climate of CLIMATES) {
+    const c = CLIMATE_INFO[climate];
+    lines.push(
+      `### ${tx(c.name)}: ${Math.round(c.land * 100)}% ${text("land", "terre")}`,
+      `${text("Compatible", "Compatible")} : ${c.compatible.map((n) => tx(CLIMATE_INFO[n].name)).join(", ")}`,
+      `| ${text("Land terrain | Conditional chance", "Terrain terrestre | Probabilité conditionnelle")} |`,
+      "|---|---|",
+      ...c.terrain.map(([b, n]) => `| ${tx(BIOME_INFO[b].name)} | ${n}% |`),
+      `| ${text("Water terrain | Sequential check | Effective water share", "Terrain aquatique | Tirage successif | Part effective de l’eau")} |`,
+      "|---|---|---|",
+      ...waterProbabilities(climate).map(
+        ([b, n]) =>
+          `| ${tx(BIOME_INFO[b].name)} | ${b === "water" ? "" : Math.round(c.water.find(([t]) => t === b)![1] * 100) + "%"} | ${Number((n * 100).toFixed(3))}% |`,
+      ),
+    );
+  }
+  lines.push(
+    `## ${text("Terrain yields", "Production des terrains")}`,
+    `| ${text("Terrain | Base yield | Family", "Terrain | Production de base | Famille")} |`,
+    "|---|---|---|",
+  );
+  for (const b of BIOMES)
+    lines.push(
+      `| ${tx(BIOME_INFO[b].name)} | ${b === "woods" ? text("1 Wood OR 1 Hides", "1 Bois OU 1 Peau") : cost(BIOME_INFO[b].yield) || "0"} | ${tx(BIOME_INFO[b].family)} |`,
     );
   lines.push(
     `## ${text("All costs", "Tous les coûts")}`,

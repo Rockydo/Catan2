@@ -1,3 +1,5 @@
+import { CLIMATE_INFO } from "../game/climate-content";
+import { canChooseWoods } from "../game/selectors";
 import { localize as tx, useLocale } from "../i18n";
 import { friendly } from "../game/relations";
 import { TownDefense } from "./TownDefense";
@@ -15,6 +17,9 @@ import {
   tileTerrain,
   tileGood,
   tileGoods,
+  tileYield,
+  tileOptions,
+  terrainFamily,
   productiveAtVertex,
   towerDefense,
 } from "../game/maritime";
@@ -95,8 +100,6 @@ import {
   relocationSites,
 } from "../game/selectors";
 import {
-  WATER_PROBABILITY,
-  discoveryProbability,
   landAtVertex,
   waterAtVertex,
   neighbors,
@@ -136,8 +139,10 @@ export function DetailHeader({
   game: s,
   selection,
   unitIds,
+  viewer = s.active,
 }: {
   game: Game;
+  viewer?: number;
   selection: Selection;
   unitIds?: string[];
 }) {
@@ -179,15 +184,30 @@ export function DetailHeader({
       return (
         <div className="panel-intro">
           <span className="eyebrow">
-            {tx(TERRAIN[t.resource].family.toUpperCase())} · {tx(t.id)}
+            {tx(terrainFamily(t).toUpperCase())} · {tx(t.id)}
           </span>
           <h2>{tx(TERRAIN[tileTerrain(t)].name)}</h2>
+          <span
+            className="climate-chip"
+            style={{
+              borderColor: CLIMATE_INFO[t.climate ?? "temperate"].color,
+            }}
+          >
+            {tx(CLIMATE_INFO[t.climate ?? "temperate"].name)}
+          </span>
           <p>
             {tx(
               !tileGood(t)
-                ? "Fleet movement and transport"
-                : `${tileGoods(t)
-                    .map((good) => GOOD_INFO[good].name)
+                ? t.resource === "water"
+                  ? "Fleet movement and transport"
+                  : t.resource === "ice"
+                    ? "Walkable ice. No production. Ships cannot enter."
+                    : "No resources. Land units can cross."
+                : `${tileGoods(t, viewer)
+                    .map(
+                      (good) =>
+                        `${tileYield(t, viewer)[good]} ${GOOD_INFO[good].name}`,
+                    )
                     .join(
                       " + ",
                     )} · rolls on ${t.number} · ${(((6 - Math.abs(t.number - 7)) / 36) * 100).toFixed(1)}% chance`,
@@ -226,9 +246,44 @@ export function DetailHeader({
 export function Panels(props: Props) {
   useLocale();
 
-  const { tab } = props;
+  const { tab, game: s, viewer, selection, interactive, onAction } = props;
+  const woods =
+    selection?.type === "tile" && canChooseWoods(s, selection.id, viewer)
+      ? s.tiles[selection.id]
+      : undefined;
   return (
     <>
+      {woods && (
+        <section
+          className="woods-choice"
+          aria-label={tx("Woods harvest choice")}
+        >
+          <b>{tx("Your harvest")}</b>
+          <div className="woods-choice-buttons">
+            {(["lumber", "hides"] as const).map((good) => (
+              <button
+                key={good}
+                type="button"
+                aria-pressed={
+                  (woods.woodsChoices?.[viewer] ?? "lumber") === good
+                }
+                disabled={!interactive}
+                onClick={() =>
+                  onAction({ type: "woods-choice", tile: woods.id, kind: good })
+                }
+              >
+                <GoodIcon good={good} size={22} />
+                {tx(GOOD_INFO[good].name)}
+              </button>
+            ))}
+          </div>
+          <small>
+            {tx(
+              "Applies to your towns, camps and collectors on this tile. Other factions choose independently. Existing workshops keep their product.",
+            )}
+          </small>
+        </section>
+      )}
       {tx(
         tab === "build" ? (
           <BuildPanel {...props} />
@@ -367,12 +422,13 @@ function BuildPanel({
                 .filter(
                   (id) =>
                     route.camps[id] ||
-                    (route.kind === "road"
-                      ? s.tiles[id].resource !== "water"
-                      : marineResource(s.tiles[id])),
+                    (!!tileGood(s.tiles[id]) &&
+                      (route.kind === "road"
+                        ? s.tiles[id].resource !== "water"
+                        : marineResource(s.tiles[id]))),
                 )
                 .map((id) => {
-                  const raw = tileGood(s.tiles[id])!,
+                  const raw = tileGood(s.tiles[id], route.owner)!,
                     tier = route.camps[id] ?? 0;
                   return (
                     <div className="camp-side" key={id}>
@@ -395,10 +451,13 @@ function BuildPanel({
                             {tx(s.tiles[id].number)} ·{tx(" ")}
                             {tx(
                               tier
-                                ? `Tier ${ROMAN[tier]}: ${tileGoods(s.tiles[id])
+                                ? `Tier ${ROMAN[tier]}: ${tileGoods(
+                                    s.tiles[id],
+                                    route.owner,
+                                  )
                                     .map(
                                       (good) =>
-                                        `${tier} ${GOOD_INFO[good].name}`,
+                                        `${tier * (tileYield(s.tiles[id], route.owner)[good] ?? 0)} ${GOOD_INFO[good].name}`,
                                     )
                                     .join(" + ")} per roll`
                                 : "Not built",
@@ -571,7 +630,8 @@ function BuildPanel({
                   .filter((id) => town.owner === viewer || town.extensions[id])
                   .map((id) => {
                     const t = s.tiles[id],
-                      raw = tileGood(t)!,
+                      raw =
+                        town.extensionGoods?.[id] ?? tileGood(t, town.owner)!,
                       current = town.extensions[id] ?? 0,
                       next = current + 1;
                     return (
@@ -1639,13 +1699,8 @@ function ExplorePanel({
       <SectionTitle>{tx("Beyond the known world")}</SectionTitle>
       <p className="muted">
         {tx(
-          "Reveal new terrain from a frontier town, road, sea route, army or fleet. Every hex rolls independently: ",
+          "Reveal terrain from a frontier town, route, army or fleet. Climate determines the land, water and resource probabilities. No resource is guaranteed.",
         )}
-        {tx(WATER_PROBABILITY * 100)}
-        {tx("% water,")}
-        {tx(" ")}
-        {tx(Math.round((1 - WATER_PROBABILITY) * 100))}
-        {tx("% land. Discoveries are never guaranteed.")}
       </p>
       <div className="segmented">
         <button
@@ -1769,11 +1824,8 @@ function ExplorePanel({
         {tx("Launch expedition")}
       </ActionButton>
       <p className="notice">
-        {tx("Finding one particular resource:")}
-        {tx(" ")}
-        {tx((discoveryProbability([0, 10, 20, 40][tier]) * 100).toFixed(2))}
         {tx(
-          "% chance. Finding it does not automatically connect it to your economy.",
+          "Neighboring climates tend to continue into the frontier. Finding a resource does not connect it to your economy.",
         )}
       </p>
       <SectionTitle>{tx("World census")}</SectionTitle>
@@ -1785,8 +1837,9 @@ function ExplorePanel({
               {tx(GOOD_INFO[g].name)}
               <b>
                 {tx(
-                  Object.values(s.tiles).filter((t) => tileGoods(t).includes(g))
-                    .length,
+                  Object.values(s.tiles).filter((t) =>
+                    tileOptions(t).includes(g),
+                  ).length,
                 )}
               </b>
             </span>

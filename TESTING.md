@@ -1,5 +1,16 @@
 # Release verification
 
+## Climate generation and production: 2026-09-18
+
+- 662 tests pass across 48 files. Thirty new tests cover all seven probability tables over 140,000 terrain rolls, effective sequential water probabilities, compatible climate borders over 30 seeded worlds and 120 expansions, immutable revealed terrain and reservations, save validation, legacy migration, all new yields, Woods choices, fixed workshop products, secondary-resource guild contracts, collector multipliers, ice movement and construction, and AI harvest choices.
+- All 118 Chromium browser scenarios are verified. The initial full run passed 116; two assertions still expected the old terrain-pattern count and a Whale label without quantities. Both were corrected and passed in the targeted rerun. The targeted run passed 48 checks across Chromium, Firefox and mobile, including camera alignment, zoom sharpness, both languages, every terrain image, resource references and accessibility. A final 18-check climate/print run passed after adding all seven tables to the printed guide.
+- A bounded ten-faction AI campaign reached the round-25 checkpoint with 9,050 validated commands, 350 revealed tiles, 534 units, 59 raids and 197 battles. It used expeditions and continued harvesting under the new terrain yields. The longer run was stopped for runtime before its planned 30-round completion. This is a regression sample, not a completed balance study.
+- Large-map checks pass at 125, 500, 1,000 and 2,500 tiles, including an AI action, invariants and save/load at each size. These are sparse-force map checks, not late-game military benchmarks.
+- TypeScript/production build, formatting, diff checks and all 12 production HTTP checks pass. Screenshots of the climate overlay, Woods selector and bilingual climate guide were inspected. Browser tests use isolated profiles and do not replace the live player’s save.
+- Save envelope 8 preserves pre-climate terrain and yields. New campaigns use generation 5; expeditions extend existing climate reservations before rolling terrain. All 20 new images have production WebP files and recorded prompts in `public/assets/climate-art-v1-prompts.json`.
+
+Evidence: `test-artifacts/climate-*`, with rule, browser, campaign and HTTP logs copied into that directory.
+
 ## Offensive AI review: 2026-09-18
 
 - 632 unit and localization tests pass across 47 files. Nine new warfare scenarios cover minimal raid crews, keeping a siege while surplus troops move, distant defense distractions, exposed economic targets, larger transport budgets, conquest around a land choke, border expeditions, transport funding under overwhelming pressure and island recruitment.
