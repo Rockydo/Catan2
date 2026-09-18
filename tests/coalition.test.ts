@@ -191,14 +191,15 @@ it("will not let a favorable incoming offer drain a coalition donor", () => {
   expect(shouldAcceptTrade(s)).toBe(false);
 });
 
-it("routine exploration waits longer, while already funded expeditions remain usable immediately", () => {
+it("resource exploration is considered between old schedule dates, and free grants work immediately", () => {
   const s = coalitionFixture(10);
   const town = ownTowns(s)[0];
   town.vertex = Object.values(s.vertices).find((v) => v.tiles.length === 1)!.id;
   s.players[0].turns = 10;
   expect(
     economyProjects(s).filter((p) => p.action.type === "expedition"),
-  ).toHaveLength(0);
+  ).toHaveLength(3);
+  s.players[0].turns = 1;
   s.players[0].bonuses.expedition = true;
   s.players[0].bonuses.expeditionTier = 1;
   const free = economyProjects(s).find((p) => p.action.type === "expedition")!;

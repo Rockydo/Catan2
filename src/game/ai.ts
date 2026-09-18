@@ -3,6 +3,7 @@ import { allianceResponder, friendly } from "./relations";
 import { acceptsAlliance } from "./diplomacy";
 import { guildEconomyProjects, guildMilitaryOrder } from "./guild-ai";
 import { aiExpeditionAllowed, isCornered } from "./ai-expansion";
+import { expeditionProspects, expeditionApproach } from "./ai-exploration";
 import { RESEARCH_GOODS, RESEARCH_MARCH } from "./content";
 import {
   tileGood,
@@ -77,7 +78,6 @@ import {
   landAtVertex,
   waterAtVertex,
   vertexNeighbors,
-  expeditionFootprint,
   unknownAtVertex,
 } from "./world";
 import {
@@ -1108,7 +1108,8 @@ export function economyProjects(s: Game): Project[] {
         );
     }
   }
-  const missingRaw = RAW.filter((g) => !(inc[g] ?? 0)).length;
+  const prospects = expeditionProspects(s, inc);
+  const missingRaw = prospects.missing;
   const expansionRoom = projects.filter(
     (p) =>
       p.action.type === "settlement" ||
@@ -1128,17 +1129,21 @@ export function economyProjects(s: Game): Project[] {
   // Expeditions can create a new approach at a blocked border. Only public
   // geography and visible enemies are scored; unseen terrain is never assumed.
   const bypassSites = new Set<string>();
-  if (mayExplore && blockedFront && round >= 4) {
-    for (const unit of units.filter(
-      (u) => !u.carrier && !collector(u) && ready(s, u),
-    )) {
-      if (!unit.naval && hasLandObjective(s, unit.tile)) continue;
+  if (mayExplore && (blockedFront || resistance > 0.3) && round >= 3) {
+    const frontierForces = new Map(
+      units
+        .filter((u) => !u.carrier && !collector(u) && ready(s, u))
+        .map((u) => [`${u.naval}/${u.tile}`, u]),
+    );
+    for (const unit of frontierForces.values()) {
+      if (!unit.naval && !blockedFront && hasLandObjective(s, unit.tile))
+        continue;
       if (
         !enemyTowns.some(
           (t) =>
-            leaderPressure(s, t.owner) >= 1.5 &&
+            leaderPressure(s, t.owner) >= 1 &&
             s.vertices[t.vertex].tiles.some(
-              (tile) => distance(unit.tile, tile) <= 5,
+              (tile) => distance(unit.tile, tile) <= 7,
             ),
         )
       )
@@ -1148,13 +1153,18 @@ export function economyProjects(s: Game): Project[] {
     }
   }
   const warBypass = bypassSites.size > 0;
-  const explorationStart = needsEscape ? 3 : catchUp ? 4 : 6;
+  const explorationStart = needsEscape || catchUp ? 3 : 4;
   const explorationDue =
     round >= explorationStart &&
-    (needsEscape || (round + s.active) % (catchUp ? 3 : 6) === 0);
+    (needsEscape ||
+      catchUp ||
+      missingRaw >= 3 ||
+      expansionRoom < 3 ||
+      (round + s.active) % 2 === 0);
   if (
     mayExplore &&
     round >= explorationStart &&
+    !s.players[s.active].expeditionUsed &&
     !expeditionSites(s, "land").length &&
     !expeditionSites(s, "sea").length &&
     (missingRaw >= 3 || expansionRoom < 2 || blockedFront)
@@ -1166,7 +1176,11 @@ export function economyProjects(s: Game): Project[] {
           unknownAtVertex(s, v).length &&
           canRoute(s, r.first, r.kind),
       )
-      .sort((a, b) => a[1].cost - b[1].cost)[0];
+      .sort(
+        (a, b) =>
+          (20 + prospects.score(b[0])) / (1 + b[1].cost * 0.4) -
+          (20 + prospects.score(a[0])) / (1 + a[1].cost * 0.4),
+      )[0];
     if (frontier) {
       const r = frontier[1];
       add(
@@ -1176,8 +1190,9 @@ export function economyProjects(s: Game): Project[] {
           COSTS[r.kind === "road" ? "Road" : "Seafarers route ship"],
           r.kind,
         ),
-        (12 +
-          missingRaw +
+        (18 +
+          missingRaw * 2 +
+          prospects.score(frontier[0]) +
           (blockedFront ? 10 : 0) +
           (needsEscape ? 20 : catchUp ? 12 * strengthGap : 0)) /
           (1 + r.cost * 0.25),
@@ -1204,6 +1219,7 @@ export function economyProjects(s: Game): Project[] {
           vertex,
           score:
             unknownAtVertex(s, vertex).length * 2 +
+            prospects.score(vertex) +
             (bypassSites.has(vertex) ? 35 * (1 + resistance) : 0) +
             (Object.values(s.towns).some(
               (t) =>
@@ -1219,31 +1235,53 @@ export function economyProjects(s: Game): Project[] {
       for (const tier of bonus.expedition
         ? [bonus.expeditionTier ?? 2]
         : [1, 2, 3]) {
-        const site = rated.find(
-          (v) =>
-            expeditionFootprint(s, v.vertex, tier).length ===
-            [0, 10, 20, 40][tier],
-        );
+        const choices = rated
+          .slice(0, 3)
+          .flatMap((site) => {
+            const targets = bypassSites.has(site.vertex)
+              ? enemyTowns
+                  .flatMap((town) => s.vertices[town.vertex].tiles)
+                  .filter((tile) =>
+                    s.vertices[site.vertex].tiles.some(
+                      (id) => distance(id, tile) <= 7,
+                    ),
+                  )
+              : [];
+            const approach = expeditionApproach(s, site.vertex, tier, targets);
+            return approach
+              ? [{ ...site, ...approach, score: site.score + approach.score }]
+              : [];
+          })
+          .sort((a, b) => b.score - a.score);
+        const site = choices[0];
         if (!site) continue;
         const cost = bonus.expedition ? {} : expeditionCost(kind, tier);
         const value = bonus.expedition
-          ? 50
-          : ((12 +
-              missingRaw * 1.5 +
+          ? 65 + site.score
+          : ((20 +
+              missingRaw * 2 +
               (expansionRoom < 2 ? 12 : 0) +
               (blockedFront ? 9 : 0) +
-              (explorationDue ? 8 : 0) +
+              (explorationDue ? 12 : 0) +
               (bypassSites.has(site.vertex) ? 25 * (1 + resistance) : 0) +
               (needsEscape ? 18 : catchUp ? 12 * strengthGap : 0) +
               site.score) *
-              (1 + (tier - 1) * 0.25) *
-              (needsEscape ? 1.15 : catchUp ? 1.05 : 0.78)) /
+              (1 + (tier - 1) * 0.4) *
+              (needsEscape ? 1.2 : catchUp ? 1.15 : 1)) /
             (1 + stockValue(cost, values) / 16);
         add(
-          { type: "expedition", vertex: site.vertex, kind, tier },
+          {
+            type: "expedition",
+            vertex: site.vertex,
+            kind,
+            tier,
+            direction: site.direction,
+          },
           cost,
           value,
           "Explore for territory, resources and new approaches",
+          needsEscape ||
+            (bypassSites.has(site.vertex) && ourPower >= minimumFieldPower(s)),
         );
       }
     }
@@ -1483,6 +1521,17 @@ function chooseEconomy(s: Game): Command {
   );
   const optionalRecruit = projects.find((p) => p.action.type === "recruit");
   const logistics = projects.filter((p) => p.urgent);
+  // Once a basic field force exists, useful exploration may compete with more
+  // reserves. Immediate town defense still wins, as do critical naval logistics.
+  const exploration =
+    fieldPower >= minimumFieldPower(s)
+      ? projects.find(
+          (p) =>
+            p.action.type === "expedition" &&
+            p.score >= 30 &&
+            p.score >= (development?.score ?? 0) * 0.95,
+        )
+      : undefined;
   if (!endangered.length) {
     const aid = coalitionTrade(s, projects);
     if (aid && check(s, aid)) return aid;
@@ -1491,12 +1540,14 @@ function chooseEconomy(s: Game): Command {
     ? emergency
     : logistics.length
       ? logistics
-      : recruits.length
-        ? recruits
-        : development &&
-            (!optionalRecruit || development.score >= optionalRecruit.score)
-          ? [development]
-          : [];
+      : exploration
+        ? [exploration]
+        : recruits.length
+          ? recruits
+          : development &&
+              (!optionalRecruit || development.score >= optionalRecruit.score)
+            ? [development]
+            : [];
   const unlock = projects.find(
     (p) =>
       p.action.type === "city" &&

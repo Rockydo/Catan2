@@ -5,7 +5,11 @@ import {
   isCornered,
   strongestAI,
 } from "../src/game/ai-expansion";
-import { economyProjects, researchUtility } from "../src/game/ai";
+import {
+  economyProjects,
+  researchUtility,
+  chooseAIAction,
+} from "../src/game/ai";
 import { applyCommand } from "../src/game/engine";
 import { CARDS, REALM_NAMES, RESEARCH_EXPEDITIONS } from "../src/game/content";
 import {
@@ -50,6 +54,31 @@ function sealNetwork(s: Game) {
 }
 
 describe("expeditions for the strongest AI factions", () => {
+  it("funds resource exploration between the former scheduled turns and actually reveals land", () => {
+    let { s } = frontier();
+    // Give another AI the lead, away from our frontier so there is no emergency.
+    for (let i = 0; i < 30; i++) piece(s, "0,0", 1, "heavy", 4);
+    s.players[0].turns = 7;
+    expect(aiExpeditionAllowed(s)).toBe(true);
+    expect(economyProjects(s).some((p) => p.action.type === "expedition")).toBe(
+      true,
+    );
+    const before = Object.keys(s.tiles).length;
+    const actions: string[] = [];
+    for (let step = 0; step < 40; step++) {
+      const action = chooseAIAction(s);
+      actions.push(action.type);
+      if (action.type === "end-turn") break;
+      s = run(s, action);
+      if (action.type === "expedition") break;
+    }
+    expect(actions).toContain("expedition");
+    expect(Object.keys(s.tiles).length).toBeGreaterThan(before);
+    expect(s.players[0].expeditionUsed).toBe(true);
+    expect(economyProjects(s).some((p) => p.action.type === "expedition")).toBe(
+      false,
+    );
+  });
   it("excludes humans and eliminated factions, resolves ties consistently, and restricts only the leading AI seat", () => {
     const s = legacyGame(
       "rank-expedition",
