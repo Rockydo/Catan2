@@ -898,8 +898,8 @@ Poids des transitions : Tropical ×1, Subtropical ×2, Savane ×1, Andin ×1, Pr
 
 | Terrain terrestre    | Probabilité conditionnelle | Base annuelle           |
 | -------------------- | -------------------------- | ----------------------- |
-| Champs de maïs       | 18%                        | 2 Blé                   |
-| Jardins chinampas    | 8%                         | 3 Blé                   |
+| Champs de maïs       | 20%                        | 2 Blé                   |
+| Jardins chinampas    | 6%                         | 3 Blé                   |
 | Terrains à dindons   | 8%                         | 2 Viande                |
 | Forêt de nuages      | 16%                        | 1 Bois + 1 Peaux        |
 | Bois tropicaux       | 10%                        | 1 Bois                  |

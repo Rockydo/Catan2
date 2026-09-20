@@ -80,8 +80,8 @@ const expected = {
   mesoamerican: {
     land: 0.45,
     terrain: [
-      ["maize-field", 18],
-      ["chinampa-gardens", 8],
+      ["maize-field", 20],
+      ["chinampa-gardens", 6],
       ["turkey-grounds", 8],
       ["cloud-forest", 16],
       ["tropical-woods", 10],

@@ -897,8 +897,8 @@ Transition weights : Tropical ×1, Subtropical ×2, Savanna ×1, Andean ×1, Pra
 
 | Land terrain     | Conditional chance | Annual baseline       |
 | ---------------- | ------------------ | --------------------- |
-| Maize fields     | 18%                | 2 Grain               |
-| Chinampa gardens | 8%                 | 3 Grain               |
+| Maize fields     | 20%                | 2 Grain               |
+| Chinampa gardens | 6%                 | 3 Grain               |
 | Turkey grounds   | 8%                 | 2 Meat                |
 | Cloud forest     | 16%                | 1 Wood + 1 Hides      |
 | Tropical woods   | 10%                | 1 Wood                |

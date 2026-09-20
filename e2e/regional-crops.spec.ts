@@ -157,7 +157,7 @@ for (const locale of ["en", "fr"] as const) {
         locale === "fr" ? "Mésoaméricain" : "Mesoamerican",
         "45%",
         locale === "fr" ? "Jardins chinampas" : "Chinampa gardens",
-        "8%",
+        "6%",
       ],
     ] as const) {
       await climate.getByRole("button", { name, exact: true }).click();
