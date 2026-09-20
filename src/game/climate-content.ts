@@ -441,10 +441,10 @@ export const CLIMATE_INFO: Record<Climate, ClimateInfo> = {
     color: "#b9ad75",
     land: 0.65,
     terrain: [
-      ["steppe-plain", 34],
-      ["cattle-savanna", 6],
+      ["steppe-plain", 29],
+      ["cattle-savanna", 16],
       ["rough-fields", 5],
-      ["millet-fields", 10],
+      ["millet-fields", 5],
       ["pasture", 10],
       ["woods", 7],
       ["stone", 10],

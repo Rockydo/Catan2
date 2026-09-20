@@ -547,3 +547,10 @@ Validation: 489 engine tests passed; 39 browser scenarios passed across Firefox,
 - TypeScript, production build, formatting, diff checks and bilingual rule exports pass. The release preserves previously deployed asset hashes for already-open campaigns.
 
 Reproduce the engine audit with `npm test`, `npx tsx scripts/seasons-audit.ts`, and `npx tsx scripts/seasons-audit.ts --stress`. The browser suite is `npm run test:e2e`; an isolated preview can use `SEASONS_TEST_URL=http://127.0.0.1:4175 npx playwright test --config playwright.seasons-check.config.ts`. The camera comparison is `GAME_URL=http://127.0.0.1:4175 npx tsx scripts/season-map-performance.ts`, with `SEASON_ART=0` for the base-art comparison and `TILES=2500` for the larger scene. Evidence is retained locally under `test-artifacts/seasons-*` and `test-artifacts/season-*`.
+
+## Arctic hunting, Steppe mix and patchy sea ice
+
+- 930 automated tests pass across 64 files. The new hunting and sea-ice regressions cover both goods from animal tiles, all producer multipliers, strict freeze thresholds, deterministic forecasts, preserved annual marine yields, safe save-v10 migration, migration grace expiry and immutable command previews.
+- Seven Chromium production-build scenarios pass, including English/French calendars and rules, adjacent frozen/open autumn seas, Summer art previews and exact per-tile surface forecasts. Revised Arctic autumn art was inspected at final resolution; all six asset mappings and both manifests validate.
+- Steppe land weights remain 100%: Millet 5%, Cattle range 16%, Steppe plain 29%; other weights unchanged. Land/water remains 65%/35%.
+- TypeScript, formatting, production build and diff whitespace checks pass. Earlier save surfaces remain unchanged during the current season; neither reloading nor previews reroll ice.

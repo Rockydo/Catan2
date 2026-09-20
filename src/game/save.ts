@@ -1,6 +1,7 @@
 import { syncEmergencyCoalition } from "./emergency-coalition";
 import {
   SEASONS,
+  SHOULDER_ICE_CHANCE,
   frozenInSeason,
   seasonAt,
   syncSeasonSurfaces,
@@ -53,7 +54,8 @@ export function assertInvariants(s: Game) {
         s.calendar.startRound >= 1 &&
         s.calendar.startRound <= s.round + 1 &&
         (s.calendar.startSeason === undefined ||
-          SEASONS.includes(s.calendar.startSeason)),
+          SEASONS.includes(s.calendar.startSeason)) &&
+        (s.calendar.iceModel === undefined || s.calendar.iceModel === 1),
       "Invalid seasonal calendar.",
     );
   rule(
@@ -292,6 +294,24 @@ export function assertInvariants(s: Game) {
           compatibleClimate(t.climate, s.tiles[adjacent].climate!),
           "Incompatible neighboring climates.",
         );
+    if (t.freezeRoll !== undefined)
+      rule(
+        s.calendar?.iceModel === 1 &&
+          t.resource === "water" &&
+          typeof t.freezeRoll === "number" &&
+          Number.isFinite(t.freezeRoll) &&
+          t.freezeRoll >= 0 &&
+          t.freezeRoll < 1,
+        "Invalid local sea freezing roll.",
+      );
+    if (t.thawGrace !== undefined)
+      rule(
+        s.calendar?.iceModel === 1 &&
+          t.resource === "water" &&
+          (t.thawGrace === "spring" || t.thawGrace === "autumn") &&
+          t.thawGrace === seasonAt(s),
+        "Invalid sea thaw grace.",
+      );
     if (t.surface !== undefined)
       rule(
         !!s.calendar &&
@@ -986,7 +1006,7 @@ export function serialize(s: Game): string {
   const body = JSON.stringify(s);
   return JSON.stringify({
     format: "catane-frontiers",
-    version: 9,
+    version: 10,
     savedAt: new Date().toISOString(),
     checksum: hash(body).toString(16),
     game: s,
@@ -998,7 +1018,7 @@ export function deserialize(text: string): Game {
   rule(
     data &&
       data.format === "catane-frontiers" &&
-      [1, 2, 3, 4, 5, 6, 7, 8, 9].includes(data.version) &&
+      [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].includes(data.version) &&
       data.game,
     "This is not a supported Catane save.",
   );
@@ -1232,6 +1252,29 @@ export function deserialize(text: string): Game {
         : data.game.round + 1,
     };
     syncSeasonSurfaces(data.game);
+  }
+  if (data.version < 10 && data.game.calendar) {
+    const game = data.game as Game;
+    game.calendar!.iceModel = 1;
+    const current = seasonAt(game);
+    for (const tile of Object.values(game.tiles)) {
+      if (
+        tile.resource !== "water" ||
+        !tile.climate ||
+        !(tile.climate in SHOULDER_ICE_CHANCE)
+      )
+        continue;
+      tile.freezeRoll = randomAt(game.seed, tile.id, "season-freeze");
+      // Loading an older open sea cannot trap its ships halfway through a
+      // round. The new local ice pattern starts at the next season boundary.
+      if (
+        (current === "spring" || current === "autumn") &&
+        tile.surface !== "frozen" &&
+        frozenInSeason(tile, current)
+      )
+        tile.thawGrace = current;
+    }
+    syncSeasonSurfaces(game);
   }
   assertInvariants(data.game);
   // Never silently redirect an old standing order to a different good.

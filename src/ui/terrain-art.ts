@@ -1,5 +1,7 @@
 import seasonalManifest from "./season-art-manifest.json";
-import type { Season } from "../game/seasons";
+import { frozenInSeason, type Season } from "../game/seasons";
+import type { Hex } from "../game/types";
+import { tileTerrain } from "../game/maritime";
 import {
   BIOME_INFO,
   CLIMATES,
@@ -73,6 +75,14 @@ const regionalArt: Partial<Record<Climate, Record<string, string>>> = {
 export const REGIONAL_ART_KEYS = Object.values(regionalArt).flatMap(
   Object.values,
 );
+/** Use the tile's forecast, including patchy ice, for actual and preview art. */
+export function seasonalTerrainPattern(tile: Hex, season?: Season): string {
+  return terrainPatternKey(
+    frozenInSeason(tile, season) ? "ice" : tileTerrain(tile),
+    tile.climate,
+    season,
+  );
+}
 export function terrainPatternKey(
   terrain: TerrainKey,
   climate?: Climate,

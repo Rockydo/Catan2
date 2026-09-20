@@ -136,6 +136,7 @@ export function newGame(
     generation: 5,
     calendar: {
       startRound: 1,
+      iceModel: 1,
       // A separate seeded draw leaves map generation and dice streams intact.
       startSeason: SEASONS[Math.floor(randomAt(seed, "calendar", "start") * 4)],
     },

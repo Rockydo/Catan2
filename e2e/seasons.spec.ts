@@ -162,6 +162,72 @@ test("icebound fleets and friendly land forces remain distinct and clearly label
   expect(troop.seasonStatus).toBeUndefined();
 });
 
+test("patchy autumn ice matches tile forecasts and summer previews", async ({
+  page,
+}) => {
+  const { s } = maritimeFixture();
+  s.calendar = { startRound: s.round, startSeason: "autumn", iceModel: 1 };
+  for (const tile of Object.values(s.tiles)) tile.climate = "cold";
+  for (const [id, freezeRoll] of [
+    ["0,0", 0.2],
+    ["1,0", 0.9],
+  ] as const)
+    Object.assign(s.tiles[id], {
+      resource: "water",
+      biome: "fish",
+      climate: "arctic",
+      number: 7,
+      fish: true,
+      freezeRoll,
+    });
+  syncSeasonSurfaces(s);
+  await page.addInitScript(
+    ({ key, data }) => {
+      localStorage.setItem(key, data);
+      localStorage.setItem("catane-language", "en");
+    },
+    { key: SAVE_KEY, data: serialize(s) },
+  );
+  await page.goto("/");
+  await page.getByRole("button", { name: /Continue campaign/ }).click();
+  await page.getByTestId("hex-0,0").press("Enter");
+  const forecast = page.getByRole("region", { name: "Seasonal production" });
+  await expect(forecast.locator(".season-surface-label")).toHaveText([
+    "Frozen sea",
+    "Open water",
+    "Frozen sea",
+    "Frozen sea",
+  ]);
+  await expect(
+    forecast.locator(".tile-season-grid > div").nth(1),
+  ).toContainText("4");
+  await expect(
+    page.locator('image[href$="arctic-ice-autumn.webp"]'),
+  ).toHaveCount(1);
+  await expect(
+    page.locator('image[href$="arctic-fish-autumn.webp"]'),
+  ).toHaveCount(1);
+  await page.getByTestId("hex-1,0").press("Enter");
+  await expect(forecast.locator(".season-surface-label")).toHaveText([
+    "Open water",
+    "Open water",
+    "Open water",
+    "Frozen sea",
+  ]);
+  await page.getByRole("button", { name: /Autumn Year 1/ }).click();
+  await page.getByRole("button", { name: /Summer PREVIEW/ }).click();
+  await expect(
+    page.locator('image[href$="arctic-ice-autumn.webp"]'),
+  ).toHaveCount(0);
+  await expect(
+    page.locator('image[href$="arctic-fish-summer.webp"]'),
+  ).toHaveCount(2);
+  await page.getByRole("button", { name: "Return to current season" }).click();
+  await page.screenshot({
+    path: `test-artifacts/patchy-ice-${test.info().project.name}.png`,
+  });
+});
+
 for (const locale of ["en", "fr"] as const) {
   test(`${locale}: illustrated rulebook reads exact climate harvest profiles`, async ({
     page,
@@ -194,6 +260,28 @@ for (const locale of ["en", "fr"] as const) {
     await expect(rice.locator("td").nth(0)).toHaveText("0");
     await expect(rice.locator("td").nth(1)).toContainText("6");
     await expect(rice.locator("td").nth(2)).toContainText("6");
+    await reference
+      .getByRole("button", {
+        name: locale === "fr" ? "Arctique" : "Arctic",
+        exact: true,
+      })
+      .click();
+    for (const [biome, goods] of [
+      ["seal-grounds", locale === "fr" ? "1 Peaux 1 Huile" : "1 Hides 1 Oil"],
+      [
+        "reindeer-range",
+        locale === "fr" ? "1 Viande 1 Peaux" : "1 Meat 1 Hides",
+      ],
+    ]) {
+      const row = reference.locator(`[data-biome="${biome}"]`);
+      await expect(row.locator("td")).toHaveText(Array(4).fill(goods), {
+        useInnerText: true,
+      });
+    }
+    await reference.getByRole("combobox").selectOption("autumn");
+    await expect(
+      reference.locator('[data-biome="reindeer-range"] th'),
+    ).toContainText(locale === "fr" ? "Premières neiges" : "Early snow");
     await page
       .getByRole("heading", {
         name: locale === "fr" ? "Saisons et récoltes" : "Seasons and harvests",
@@ -212,7 +300,7 @@ test("a generated mixed-climate campaign renders crop and livestock seasons with
   page,
 }) => {
   let s = newGame("season-review-1");
-  s.calendar = { startRound: 1, startSeason: "spring" };
+  s.calendar = { ...s.calendar!, startSeason: "spring" };
   syncSeasonSurfaces(s);
   while (s.phase.startsWith("setup")) s = run(s, chooseAIAction(s));
   expect(

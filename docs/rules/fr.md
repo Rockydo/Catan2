@@ -34,7 +34,7 @@ Tempéré, Tropical et Désertique : 50 % de terre. Froid et Subtropical : 55 %.
 ### Vue des climats
 Le bouton Climats près du zoom affiche uniquement les couleurs climatiques. La légende compte les tuiles révélées de chaque climat. Déplacez la carte, zoomez et sélectionnez les tuiles normalement ; appuyez de nouveau sur Climats pour retrouver la carte normale.
 ### Terrains stériles, pics et banquise
-Plaines enneigées et Désert ne produisent rien et n’accueillent ni camp ni atelier. Les armées les traversent et les constructions voisines restent possibles. La Banquise résulte du tirage aquatique arctique. Elle ne produit rien, accueille les unités terrestres et bloque les navires. Colonies, tours et routes permanentes exigent une terre ferme adjacente ; aucune liaison n’est possible sur une arête bordée uniquement de banquise. Une arête banquise/eau sans terre ferme accueille une liaison maritime. La banquise fond en Été et regèle en Automne. Les autres eaux froides, alpines et arctiques gèlent en Hiver. Voir Saisons et récoltes pour les unités immobilisées, ports hivernaux et constructions.
+Plaines enneigées et Désert ne produisent rien et n’accueillent ni camp ni atelier. Les armées les traversent et les constructions voisines restent possibles. La Banquise résulte du tirage aquatique arctique. Elle ne produit rien, accueille les unités terrestres et bloque les navires. Colonies, tours et routes permanentes exigent une terre ferme adjacente ; aucune liaison n’est possible sur une arête bordée uniquement de banquise. Une arête banquise/eau sans terre ferme accueille une liaison maritime. La banquise fond en Été et regèle en Automne. Les autres eaux froides, alpines et arctiques gèlent en Hiver, avec des probabilités fixes par hexagone de geler aussi au Printemps et en Automne. Voir Saisons et récoltes pour les unités immobilisées, ports hivernaux et constructions.
 Les Pics rocheux ne produisent rien et sont infranchissables pour toutes les unités. Aucun déplacement, recrutement, repli ou débarquement ne peut y placer une unité. Les routes peuvent suivre leurs arêtes selon les règles de raccordement ordinaires, même entre deux pics. Une agglomération ou une tour de guet exige au moins une terre ferme praticable adjacente. Aucun camp ni atelier ne peut exploiter les Pics rocheux.
 ### Parties existantes
 Les tuiles révélées conservent leurs terrains, productions et climats attribués. Les sauvegardes antérieures au système climatique classent leurs anciennes tuiles en Tempéré pour les futures frontières. Les nouvelles explorations peuvent utiliser les onze climats. Commencez une nouvelle partie pour appliquer les nouvelles tables à toute la carte.
@@ -49,7 +49,7 @@ Une carte extrême peut manquer d’emplacements initiaux légaux. Le jeu signal
 
 ### Calendrier
 Une manche complète correspond à une saison. Chaque faction survivante joue avant le changement de saison. L’ordre est Printemps, Été, Automne, Hiver ; quatre manches forment une année. Une nouvelle campagne commence dans une saison tirée au hasard, avec 25 % de chances pour chacune. Une même graine de monde donne la même saison initiale. La saison ne change jamais en cours de manche.
-Le calendrier à côté du numéro de manche indique la saison et l’année. Ouvrez-le pour consulter la saison suivante et prévisualiser les paysages. Un aperçu ne modifie que les images : déplacements, production et actions légales suivent toujours la saison en cours. Sélectionnez une tuile pour consulter sa production sur les quatre saisons.
+Le calendrier à côté du numéro de manche indique la saison et l’année. Ouvrez-le pour consulter la saison suivante et prévisualiser les paysages. Un aperçu ne modifie que les images : déplacements, production et actions légales suivent toujours la saison en cours. Sélectionnez une tuile pour connaître son état exact, eau libre ou gelée, et sa production pour chacune des quatre saisons.
 ### Dés et périodes de récolte
 Une tuile produit uniquement lorsque son numéro sort pendant une saison productive. Chaque jet correspondant rapporte des ressources, même si la tuile a déjà produit pendant cette saison. Aucune limite annuelle de récoltes, récolte garantie, relance ou compensation. Hors saison, le même numéro ne rapporte rien. Les dés restent deux dés indépendants à six faces.
 Pour chaque ressource, la somme des quatre productions saisonnières vaut quatre fois le rendement annuel de base. À producteurs et nombre de jets identiques, la moyenne annuelle ne change pas. Le calendrier rend la production moins fiable : les Champs dorés donnent 8 Blés par colonie à chaque jet correspondant en Été et zéro aux autres saisons. Si leur numéro ne sort pas cet Été-là, la récolte est perdue.
@@ -64,21 +64,25 @@ Pour chaque ressource, la somme des quatre productions saisonnières vaut quatre
 - Oliveraies : 2 Blés en Automne et en Hiver. Nourriture des Oasis : 4 Blés en Automne ; le Bois des Oasis reste disponible toute l’année.
 Il s’agit de périodes de récolte, pas de livraisons automatiques au changement de saison. Toutes ces cultures produisent la même carte Blé. Les tables de génération et le calendrier illustré précisent la répartition de chaque climat.
 ### Élevage et Viande
-Le Pâturage bovin produit 1/1/4/2 Viandes au Printemps/Été/Automne/Hiver. Le Pâturage de chèvres produit 1/0/2/1 Viandes. Le Pâturage de rennes et l’Élevage de savane produisent Viande et Peaux ; chaque ressource suit son propre calendrier. Consultez les deux productions dans la table.
+Le Pâturage bovin produit 1/1/4/2 Viandes au Printemps/Été/Automne/Hiver. Le Pâturage de chèvres produit 1/0/2/1 Viandes. Le Pâturage de rennes produit 1 Viande et 1 Peaux à chaque saison, y compris en Été. L’Élevage de savane produit 1/0/2/1 Viandes et autant de Peaux du Printemps à l’Hiver.
 La Viande est une ressource brute. Les recettes indiquent toujours du Blé : dépensez d’abord le Blé, puis le Poisson et enfin la Viande à raison de 1 pour 1 pour couvrir le manque. L’Or couvre les ressources brutes encore manquantes. Un échange explicite porte sur les ressources nommées. Les ateliers de Viande et la production avancée des villes ou marchands ajoutent des Rations sans consommer la récolte brute.
 Les Pâturages continuent à produire de la Laine. Dans les climats tempérés et froids, la tonte a lieu au Printemps et en Été ; la Laine des climats Tropical, Subtropical, Savane et Désertique est répartie sur l’année. Aucun coût d’alimentation ou d’entretien du bétail. Les aliments et autres ressources stockés ne périment jamais.
 ### Autres productions saisonnières
 Bois, chasse, sel et argile varient selon le climat. Les Forêts froides conservent une petite production de Bois en Hiver. L’abattage tropical et l’extraction d’argile privilégient les saisons sèches. La production de Sel profite du temps sec. Peaux et Huile d’une même tuile animale peuvent suivre des calendriers différents ; les deux ressources sont récoltées.
 Les mines et carrières des climats doux restent régulières. En climats Froid, Alpin et Arctique, elles privilégient l’Été et s’arrêtent en Hiver ; le Charbon reste disponible toute l’année. Ces ressources régulières restent utiles lorsque les récoltes alimentaires sont incertaines.
-Poisson et Morue des climats Tempéré, Froid, Arctique, Océanique et Alpin produisent 1×/2×/1×/0× leur base du Printemps à l’Hiver. Le Poisson des climats chauds produit régulièrement toute l’année. Les Baleines des climats froids suivent 1×/2×/1×/0× ; les autres suivent 0×/1×/2×/1×. Appliquez le multiplicateur aux Peaux et à l’Huile. Les terrains de chasse aux Phoques produisent au Printemps, en Automne et en Hiver. La table illustrée donne toutes les quantités exactes.
+Avant l’ajustement lié au gel, Poisson et Morue des climats Tempéré, Froid, Arctique, Océanique et Alpin produisent 1×/2×/1×/0× leur base du Printemps à l’Hiver. Le Poisson des climats chauds produit régulièrement toute l’année. Les Baleines des climats froids suivent 1×/2×/1×/0× ; les autres suivent 0×/1×/2×/1×. Appliquez le multiplicateur aux Peaux et à l’Huile. Les terrains de chasse aux Phoques produisent 1 Peaux et 1 Huile à chaque saison, y compris en Été. La table marine générale indique le calendrier de base en eau libre. Les prévisions de la tuile sélectionnée donnent ses rendements exacts, après report en Été de la production supprimée par le gel du Printemps ou de l’Automne.
 ### Multiplicateurs de production
 Les agglomérations multiplient chaque production brute saisonnière par leur niveau : 1/2/3/4. Les camps la multiplient par leur palier : 1/2. Marchands, navires marchands et bateaux de pêche la multiplient par leur palier. Les règles habituelles de blocus et de couverture s’appliquent.
 Les agglomérations de niveaux 3 et 4 et les marchands de paliers III et IV ajoutent 1× et 2× chaque composante brute saisonnière sous forme transformée. Une agglomération de niveau 4 voisine de Champs dorés en Été produit 32 Blés et 16 Rations par jet correspondant. Une Boulangerie II ajoute 16 Rations supplémentaires. Aucun Blé n’est retiré de la récolte.
 Une extension multiplie le rendement saisonnier de sa ressource liée par son propre palier. Un atelier lié aux Bois conserve sa ressource choisie, même si la faction change la récolte ordinaire de la tuile. Aucune récolte saisonnière signifie aucune production transformée automatique.
 Les contrats de guilde sont des actions payantes distinctes. Leurs entrées et sorties indiquées ne changent pas avec la saison ; ils peuvent fournir des ressources entre les récoltes aux dés. Les Artisans peuvent toujours transformer les réserves. Les ressources initiales de la seconde colonie utilisent les rendements de base, quelle que soit la saison initiale.
+### Neige arctique
+Les terres arctiques conservent leur neige au Printemps, se couvrent à nouveau en Automne et sont profondément enneigées en Hiver. L’Été constitue le court dégel. La neige ne bloque pas la chasse aux Phoques ou aux rennes : les deux produisent sur les jets correspondants toute l’année. La neige terrestre et la glace de mer sont des conditions distinctes ; consultez les prévisions de surface marine pour les déplacements.
 ### Gel et dégel
-Toutes les eaux des climats Froid, Alpin et Arctique gèlent en Hiver. Les tuiles Banquise arctique restent aussi gelées au Printemps et en Automne et ne s’ouvrent qu’en Été. Les autres mers restent navigables. La prévision est déterministe, sans jet de gel caché.
-Les troupes terrestres peuvent entrer sur l’eau gelée ; les navires sur l’eau libre. Une mer gelée bloque le passage de la couverture de pêche et ne produit rien en Hiver. Un port gelé perd son taux amélioré jusqu’au retour des eaux libres ; les échanges ordinaires avec la réserve restent possibles. Construire un navire ou lancer une expédition maritime exige de l’eau libre.
+Chaque hexagone de mer ordinaire a les probabilités de gel suivantes au Printemps/en Automne : Arctique 70 %/50 %, Alpin 35 %/25 %, Froid 20 %/10 %. Toutes les mers ordinaires de ces trois climats gèlent en Hiver et s’ouvrent en Été. Le calendrier de chaque hexagone est fixé par la graine du monde et se répète chaque année, même après rechargement. Un hexagone gelé en Automne l’est toujours aussi au Printemps. Ces probabilités s’appliquent à chaque hexagone et ne garantissent pas une proportion régionale ; consultez les prévisions exactes avant de vous déplacer.
+Le terrain Banquise d’origine reste toujours gelé au Printemps, en Automne et en Hiver et ne s’ouvre qu’en Été. Les mers ordinaires des autres climats restent navigables.
+Une tuile de mer gelée ne produit aucune ressource marine. Pour chaque tuile et chaque ressource brute, le rendement du Printemps ou de l’Automne supprimé par le gel est ajouté à l’Été, sans modifier le total des quatre saisons. Par exemple, une tuile Poisson du nord dont le calendrier en eau libre est 1/2/1/0 produit 0/4/0/0 si elle gèle au Printemps et en Automne, ou 0/3/1/0 si elle ne gèle qu’au Printemps. Chaque récolte exige toujours un jet correspondant ; les jets manqués ne sont jamais compensés.
+Les troupes terrestres peuvent entrer sur l’eau gelée ; les navires sur l’eau libre. Une mer gelée bloque le passage de la couverture de pêche. Un port gelé perd son taux amélioré jusqu’au retour des eaux libres ; les échanges ordinaires avec la réserve restent possibles. Construire un navire ou lancer une expédition maritime exige de l’eau libre.
 La glace ne devient jamais une terre ferme pour construire. Les agglomérations et tours exigent une terre permanente ; les routes exigent un côté réellement terrestre. Les liaisons maritimes restent maritimes. Le gel et le dégel ne détruisent ni camps ni bâtiments existants. On peut construire un camp en Hiver selon les règles de connexion habituelles, mais il ne produit que pendant ses saisons productives.
 ### Unités surprises par le changement
 Un navire surpris par le gel reste pris dans les glaces. Il demeure sur place avec ses passagers et ne peut agir avant le dégel. Des troupes terrestres peuvent attaquer une flotte ennemie immobilisée sur cette glace selon les règles de combat ordinaires.
@@ -86,7 +90,7 @@ Des troupes terrestres surprises par le dégel restent sur une plaque de glace �
 Sortez vos navires des régions qui gèlent et ramenez vos troupes à terre avant le changement. Une force sans issue ni secours peut rester bloquée jusqu’à une saison favorable.
 ### IA et anciennes sauvegardes
 L’IA évalue la production durable selon sa moyenne annuelle ; les pics saisonniers ne modifient donc pas artificiellement la puissance stratégique. Les échanges tiennent compte des récoltes à venir et des stocks ; l’expansion considère les cultures complémentaires. L’IA prévoit aussi des abris hivernaux et le secours des troupes à la dérive.
-Les campagnes existantes conservent leur calendrier, terrains, numéros, unités et stocks. Les anciennes sauvegardes sans calendrier commencent au Printemps à la prochaine manche complète, sans modifier la manche en cours. Les nouvelles zones explorées peuvent contenir les nouvelles cultures et élevages. La production saisonnière s’applique ensuite aux anciennes et nouvelles tuiles.
+Les campagnes existantes conservent leur calendrier, terrains, numéros, unités et stocks. Les campagnes sauvegardées avant le gel partiel des mers conservent aussi leur surface marine actuelle jusqu’au prochain changement de saison. Ce délai reste valable après une nouvelle sauvegarde et un rechargement : charger la partie ne peut donc pas immobiliser soudainement une force. Les anciennes sauvegardes sans calendrier commencent au Printemps à la prochaine manche complète, sans modifier la manche en cours. Les nouvelles zones explorées peuvent contenir les nouvelles cultures et élevages. La production saisonnière s’applique ensuite aux anciennes et nouvelles tuiles.
 ### Aperçu des paysages
 Choisissez une saison dans le calendrier pour voir ses paysages, puis déplacez et inspectez la carte normalement. Le bandeau indique l’aperçu et la saison dont les règles restent appliquées. Revenez à la saison en cours ou appuyez sur Échap pour quitter l’aperçu. Toute action de jeu réussie rétablit aussi les paysages actuels. Les prévisions de production et les règles de déplacement ne changent jamais pendant l’aperçu.
 
@@ -272,7 +276,7 @@ Choisissez English ou Français au menu principal ou dans les paramètres de cam
 Afficher les climats, dans les commandes de carte, colore les zones climatiques. L’inspection d’une tuile indique son climat, sa famille de terrain et sa production complète.
 
 ### Calendrier des saisons
-Cliquez sur la saison à côté du numéro de manche pour consulter l’année et les aperçus de paysages. Sélectionnez une tuile pour voir ses quatre périodes de récolte. Les étiquettes de la carte montrent les quantités de la saison actuelle ; zéro signifie hors saison, pas une perte de ressource.
+Cliquez sur la saison à côté du numéro de manche pour consulter l’année et les aperçus de paysages. Sélectionnez une tuile pour voir ses rendements exacts et son état, eau libre ou gelée, pour les quatre saisons. Les étiquettes de la carte montrent les quantités de la saison actuelle ; zéro signifie hors saison, pas une perte de ressource.
 
 ## Tables climatiques
 
@@ -418,13 +422,13 @@ Poids des transitions : Froid ×1,5, Tempéré ×1, Méditerranéen ×1, Désert
 
 |---|---|
 
-| Plaine de steppe | 34% |
+| Plaine de steppe | 29% |
 
-| Élevage de savane | 6% |
+| Élevage de savane | 16% |
 
 | Champs pauvres | 5% |
 
-| Champs de millet | 10% |
+| Champs de millet | 5% |
 
 | Pré | 10% |
 
@@ -864,6 +868,8 @@ Pics rocheux : aucune production et aucune entrée d’unité, y compris par rec
 
 ## Tables complètes des récoltes saisonnières
 
+Les lignes marines indiquent le calendrier de base en eau libre. Les mers ordinaires ont des probabilités fixes de gel au Printemps/en Automne : Arctique 70 %/50 %, Alpin 35 %/25 %, Froid 20 %/10 % ; les mers ordinaires de ces trois climats gèlent toutes en Hiver et s’ouvrent en Été. Le terrain Banquise d’origine reste gelé hors Été. Pour chaque tuile et chaque ressource brute, le rendement supprimé par le gel du Printemps ou de l’Automne est reporté en Été sans modifier le total annuel. Sélectionnez une tuile dans le jeu pour connaître son état exact et ses rendements ajustés.
+
 ### Tempéré
 
 | Terrain | Printemps | Été | Automne | Hiver |
@@ -910,7 +916,7 @@ Pics rocheux : aucune production et aucune entrée d’unité, y compris par rec
 
 | Forêt de chasse | 2 Peaux | 0 | 2 Peaux | 4 Peaux |
 
-| Pâturage de rennes | 1 Viande + 1 Peaux | 0 | 2 Viande + 2 Peaux | 1 Viande + 1 Peaux |
+| Pâturage de rennes | 1 Viande + 1 Peaux | 1 Viande + 1 Peaux | 1 Viande + 1 Peaux | 1 Viande + 1 Peaux |
 
 | Champs pauvres | 0 | 0 | 4 Blé | 0 |
 
@@ -944,9 +950,9 @@ Pics rocheux : aucune production et aucune entrée d’unité, y compris par rec
 
 | Plaine enneigée | 0 | 0 | 0 | 0 |
 
-| Pâturage de rennes | 1 Viande + 1 Peaux | 0 | 2 Viande + 2 Peaux | 1 Viande + 1 Peaux |
+| Pâturage de rennes | 1 Viande + 1 Peaux | 1 Viande + 1 Peaux | 1 Viande + 1 Peaux | 1 Viande + 1 Peaux |
 
-| Chasse aux phoques | 2 Peaux + 2 Huile | 0 | 1 Peaux + 1 Huile | 1 Peaux + 1 Huile |
+| Chasse aux phoques | 1 Peaux + 1 Huile | 1 Peaux + 1 Huile | 1 Peaux + 1 Huile | 1 Peaux + 1 Huile |
 
 | Montagnes de minerai arctiques | 1 Minerai | 2 Minerai | 1 Minerai | 0 |
 

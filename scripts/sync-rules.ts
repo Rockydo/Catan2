@@ -83,6 +83,10 @@ for (const locale of ["en", "fr"] as const) {
   );
   lines.push(
     `## ${text("Complete seasonal harvest tables", "Tables complètes des récoltes saisonnières")}`,
+    text(
+      "Marine rows show the open-water baseline. Ordinary sea hexes have fixed Spring/Autumn freezing chances: Arctic 70%/50%, Alpine 35%/25%, Cold 20%/10%; ordinary seas in these three climates all freeze in Winter and open in Summer. The original Frozen sea terrain stays frozen outside Summer. For each tile and each raw resource, frozen Spring or Autumn yield moves into Summer without changing its annual total. Select a tile in the game for its exact surfaces and adjusted yields.",
+      "Les lignes marines indiquent le calendrier de base en eau libre. Les mers ordinaires ont des probabilités fixes de gel au Printemps/en Automne : Arctique 70 %/50 %, Alpin 35 %/25 %, Froid 20 %/10 % ; les mers ordinaires de ces trois climats gèlent toutes en Hiver et s’ouvrent en Été. Le terrain Banquise d’origine reste gelé hors Été. Pour chaque tuile et chaque ressource brute, le rendement supprimé par le gel du Printemps ou de l’Automne est reporté en Été sans modifier le total annuel. Sélectionnez une tuile dans le jeu pour connaître son état exact et ses rendements ajustés.",
+    ),
   );
   for (const climate of CLIMATES) {
     lines.push(

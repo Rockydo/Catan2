@@ -28,12 +28,28 @@ Sources:
 - `src/game/ai-market.ts`, `ai-exploration.ts`, `ai.ts`: aggregate food supply/needs over Grain + Fish + Meat, preserving exact named trade validation. Market prices should not value Meat as useless because recipes print Grain.
 - `src/game/world.ts`: `canOccupy`, `landAtVertex`, `solidAtVertex`, `waterAtVertex` currently infer movement and construction from the same `resource` field. Keep geological ground separate from seasonal movement. There are approximately 59 direct water/ice tests across the current game and UI; audit these rather than changing only one predicate.
 - `src/game/military.ts`: movement, embark/unload, retreat, bombardment, siege and transport passenger locations must remain valid through freezing/thawing. Pending combat must finish before any surface transition. Frozen seas cannot be colonized or develop new road/camp/tower foundation rights.
-- `src/game/save.ts`: envelope version 8, game version 5; validates unit occupancy and opposed stacks. New optional fields need strict validation, idempotent migration, serialization roundtrips, backup retention and legacy no-calendar behavior. Do not change tile dice numbers or stored resources when enabling seasons.
+- `src/game/save.ts`: save envelope version 10 adds partial sea freezing to the calendar introduced in version 9. Migration from versions 1–8 still activates Spring at the next full round. Existing version-9 campaigns keep their current sea surfaces until the next season boundary; `thawGrace` must survive version-10 roundtrips and expire only on a season change. Validate `calendar.iceModel`, `Hex.freezeRoll` and `Hex.thawGrace`, unit occupancy and opposed stacks. Migration must be idempotent and retain backups, warehouses, tile dice numbers and independent random streams.
 - `src/game/guilds.ts`: production guild contracts spend known inputs and produce chosen outputs outside dice production. Do not accidentally gate artisan refinement on harvest windows. Agriculture output must state whether it is seasonal or independent.
 - `src/ui/Board.tsx`: separate memoized terrain SVG and interaction SVG. Seasonal art must use keyed file references, not expensive per-frame filters. Only invalidate on season/preview, climate/terrain change or crop-choice change. Production tokens need actual seasonal output, fallow state and visible dice numbers.
 - `src/ui/Panels.tsx`, `Maritime.tsx`, `GoodGuide.tsx`: show base yield separately from current seasonal yield, all four windows, correct processed multipliers and links to selected collector coverage. Empty current output is fallow, not a broken tile.
 - `src/ui/terrain-art.ts`: regional art mapping plus legacy atlas. Manifest should cover every biome × allowed climate × season, including zero-output land, open water, mixed-resource terrain and seasonal sea surfaces. No silent fallback for promised unique crop/season combinations.
 - `src/ui/components.tsx`: cost sufficiency and substitution explanation assume one alternate. Resource bars, guide recipes, raw trade selectors and generated docs all require Meat.
+
+## Partial sea-freezing contract
+
+Ordinary sea tiles use one stable `freezeRoll = randomAt(seed, tile.id, "season-freeze")`, independent of dice and other random streams. `calendar.iceModel: 1` activates this model. The same local draw is tested against both thresholds in `SHOULDER_ICE_CHANCE`:
+
+| Climate | Spring | Summer | Autumn | Winter |
+|---|---:|---:|---:|---:|
+| Arctic | 70% | 0% | 50% | 100% |
+| Alpine | 35% | 0% | 25% | 100% |
+| Cold | 20% | 0% | 10% | 100% |
+
+These are per-hex probabilities, not fixed proportions of each map. Reusing the same draw guarantees that Autumn ice is a subset of Spring ice and that the pattern repeats each year and reload. Other climates do not freeze ordinary sea. Permanent `resource: ice` terrain remains frozen in Spring, Autumn and Winter and opens in Summer.
+
+`seasonalProfile` transfers any frozen Spring or Autumn allocation into Summer independently for every raw component. Fish, Cod and both Whale goods retain a four-season sum of four times their individual printed yields. Frozen sea produces no marine harvest. The changed schedule still requires matching dice rolls; it does not repay missed rolls. Collectors, advanced processing and forecasts must all use this adjusted schedule. Generic catalogue rows without a local frost draw show the open-water baseline; selected-tile forecasts show actual surfaces and yields.
+
+A version-9 save may contain a ship on ordinary water that the new pattern would freeze in the current Spring or Autumn. Migration records that season in `thawGrace` so the water stays open until the next boundary; repeat saves and loads must preserve this grace. The underlying frost draw is already stable, and the next season clears the old grace. Loading alone must not change the current surface or strand a force. Version-1–8 saves retain their existing Spring activation at the next full round.
 
 ## Surface-transition safety
 
@@ -43,12 +59,18 @@ A movement penalty greater than one is dangerous for 1-MP heavy infantry and art
 
 ## Required checks
 
-1. Four-season output sums for every biome and each Woods choice; output is finite nonnegative integer.
+1. Four-season output sums for every biome and each Woods choice; test every marine frost pattern and each raw component independently. Output is finite nonnegative integer, and frozen Spring/Autumn yield moves exactly into Summer.
 2. Identical multipliers across towns, camps, extensions, merchants, merchant ships and high-tier city processed goods, including mixed tiles.
 3. Matching roll off-season pays zero; wrong roll in-season pays zero; multiple matches in the harvest window all pay.
 4. Multiple food substitutes, partial stocks, explicit Meat costs, Gold fallback, AI trade equivalence and honest costs.
 5. Exactly one season transition per whole round, dead factions skipped correctly, all-player elimination/victory handling, setup resource baseline.
-6. Ice freeze/thaw with land units, naval units, loaded carriers, enemy stacks, no shore, and build legality.
-7. Legacy save activation, save roundtrips in every season and frozen state, no data loss.
-8. Asset manifest complete, no missing network requests; readable tokens in all climates; French localization; mobile calendar and tile forecast.
+6. Exact per-climate frost thresholds, stable seeded draws across years/reloads, Autumn ice as a subset of Spring ice, and the original Frozen sea exception. Exercise freeze/thaw with land units, naval units, loaded carriers, enemy stacks, no shore, and build legality.
+7. Version-1–8 Spring activation, version-9 migration with occupied open Spring/Autumn water, preserved version-10 grace on repeated reloads, grace expiry at the next boundary, and save roundtrips in every season and frozen state without data loss.
+8. Asset manifest complete, no missing network requests; readable tokens in all climates; French localization; mobile calendar and exact per-tile surface/yield forecasts. Generic marine tables must identify their open-water baseline.
 9. Large-map pan/zoom uses existing cached layers; no new continuous animation, per-tile filters or repeated whole-map climate scans each AI action.
+
+## Arctic hunting and snow correction
+
+Seal grounds and Reindeer range now produce both resources in every season: 1 of each per matching roll at settlement level. This redistributes their old Spring/Autumn peak into Summer, preserving four units per resource per year before dice odds. Cattle range retains its original seasonal schedule.
+
+Arctic snow cover spans Spring, Autumn and Winter in weather labels and landscape art. Spring retains melting snow; Autumn regains substantial early snow; Summer remains the short thaw. Snow coverage does not independently block production or movement. Land snow and partial sea freezing are separate rules; the marine forecast follows the per-hex contract above. This simplified land calendar follows the [NOAA Arctic Report Card](https://arctic.noaa.gov/report-card/report-card-2016/terrestrial-snow-cover-7/), which describes Arctic snow cover lasting up to nine months each year.

@@ -1,9 +1,17 @@
 import type { Game, Hex, Raw, Stock } from "./types";
 import { tileYield } from "./maritime";
+import { randomAt } from "./world";
 
 export const SEASONS = ["spring", "summer", "autumn", "winter"] as const;
 export type Season = (typeof SEASONS)[number];
 type Year = [number, number, number, number];
+
+/** A shared local roll keeps autumn's cold spots within spring's ice cover. */
+export const SHOULDER_ICE_CHANCE = {
+  arctic: { spring: 0.7, autumn: 0.5 },
+  alpine: { spring: 0.35, autumn: 0.25 },
+  cold: { spring: 0.2, autumn: 0.1 },
+} as const;
 
 export function seasonAt(
   s: Pick<Game, "calendar" | "round">,
@@ -31,8 +39,9 @@ function schedule(tile: Hex, raw: Raw, base: number): Year {
   // Woods let a faction switch products. Identical calendars prevent switching
   // between forestry and hunting from manufacturing extra annual output.
   if (biome === "woods") return times([1, 1, 2, 0]);
-  if (biome === "reindeer-range" || biome === "cattle-savanna")
-    return times([1, 0, 2, 1]);
+  if (biome === "reindeer-range" || biome === "seal-grounds")
+    return times([1, 1, 1, 1]);
+  if (biome === "cattle-savanna") return times([1, 0, 2, 1]);
   if (raw === "grain") {
     if (biome === "rice-field")
       return climate === "tropical" ? [4, 4, 4, 0] : [0, 6, 6, 0];
@@ -62,7 +71,6 @@ function schedule(tile: Hex, raw: Raw, base: number): Year {
     );
   if (biome === "whale" || (!biome && tile.whale))
     return times(frost ? [1, 2, 1, 0] : [0, 1, 2, 1]);
-  if (biome === "seal-grounds") return times([2, 0, 1, 1]);
   if (raw === "hides") return times(hot ? [1, 0, 2, 1] : [1, 0, 1, 2]);
   if (raw === "lumber") {
     if (hot) return times(climate === "desert" ? [1, 1, 1, 1] : [1, 0, 1, 2]);
@@ -95,6 +103,12 @@ export function seasonalProfile(
   };
   for (const [raw, base] of Object.entries(tileYield(tile, owner))) {
     const amounts = schedule(tile, raw as Raw, base!);
+    if (tile.resource === "water")
+      for (const i of [0, 2] as const)
+        if (frozenInSeason(tile, SEASONS[i])) {
+          amounts[1] += amounts[i];
+          amounts[i] = 0;
+        }
     SEASONS.forEach((season, i) => {
       if (amounts[i]) result[season][raw as Raw] = amounts[i];
     });
@@ -125,15 +139,32 @@ export function seasonalWorkshopBase(
 export function frozenInSeason(tile: Hex, season?: Season): boolean {
   if (!season) return tile.resource === "ice";
   if (tile.resource === "ice") return season !== "summer";
+  if (tile.resource !== "water") return false;
+  const climate = tile.climate ?? "temperate";
+  if (!(climate in SHOULDER_ICE_CHANCE)) return false;
+  if (season === "winter") return true;
+  if (season === "summer" || tile.thawGrace === season) return false;
   return (
-    tile.resource === "water" &&
-    season === "winter" &&
-    ["cold", "arctic", "alpine"].includes(tile.climate ?? "temperate")
+    tile.freezeRoll !== undefined &&
+    tile.freezeRoll <
+      SHOULDER_ICE_CHANCE[climate as keyof typeof SHOULDER_ICE_CHANCE][season]
   );
 }
 export function seasonWeather(tile: Hex, season: Season): string {
   if (frozenInSeason(tile, season)) return "Frozen sea";
   const climate = tile.climate ?? "temperate";
+  if (
+    climate === "arctic" &&
+    tile.resource !== "water" &&
+    tile.resource !== "ice"
+  )
+    return season === "spring"
+      ? "Lingering snow"
+      : season === "autumn"
+        ? "Early snow"
+        : season === "summer"
+          ? "Summer thaw"
+          : "Snow cover";
   if (["tropical", "subtropical", "savanna"].includes(climate))
     return season === "spring"
       ? "Early rains"
@@ -174,11 +205,21 @@ export function seasonWeather(tile: Hex, season: Season): string {
 export function syncSeasonSurfaces(s: Game): void {
   if (!s.calendar) return;
   const season = seasonAt(s);
-  if (!season) return;
   for (const tile of Object.values(s.tiles)) {
     if (tile.resource !== "water" && tile.resource !== "ice") continue;
+    if (
+      s.calendar.iceModel === 1 &&
+      tile.resource === "water" &&
+      tile.climate &&
+      tile.climate in SHOULDER_ICE_CHANCE
+    )
+      tile.freezeRoll ??= randomAt(s.seed, tile.id, "season-freeze");
+    if (!season) continue;
+    if (tile.thawGrace !== undefined && tile.thawGrace !== season)
+      delete tile.thawGrace;
     tile.surface = frozenInSeason(tile, season) ? "frozen" : "open";
   }
+  if (!season) return;
   for (const unit of Object.values(s.pieces)) {
     delete unit.seasonStatus;
     if (unit.carrier) continue;

@@ -52,6 +52,10 @@ export type Phase =
 export interface Hex {
   /** Seasonal sea surface; resource/biome remain the permanent geology. */
   surface?: "frozen" | "open";
+  /** Stable local cold spot, separate from dice and other random streams. */
+  freezeRoll?: number;
+  /** Old saves retain open water until their current shoulder season ends. */
+  thawGrace?: Season;
   id: string;
   q: number;
   r: number;
@@ -295,7 +299,7 @@ export interface Event {
 }
 export interface Game extends World {
   /** Seasons begin at this full-round boundary; older saves default to Spring. */
-  calendar?: { startRound: number; startSeason?: Season };
+  calendar?: { startRound: number; startSeason?: Season; iceModel?: 1 };
   version: 5;
   seed: string;
   generation: 4 | 5;

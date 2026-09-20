@@ -210,6 +210,13 @@
   gap: 4px;
   font-size: 9px;
 }
+.season-surface-label {
+  font-size: 9px;
+  font-weight: 650;
+  line-height: 1.25;
+  text-align: center;
+  color: #486571;
+}
 .season-goods {
   display: flex;
   flex-wrap: wrap;

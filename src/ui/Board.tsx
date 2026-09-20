@@ -7,7 +7,7 @@ import {
   type Biome,
   type TerrainResource,
 } from "../game/climate-content";
-import { terrainPatternKey, terrainArtFile } from "./terrain-art";
+import { seasonalTerrainPattern, terrainArtFile } from "./terrain-art";
 import type { TerrainKey } from "../game/content";
 import { localize as tx, useLocale } from "../i18n";
 import { friendly } from "../game/relations";
@@ -233,9 +233,7 @@ const TerrainLayer = memo(function TerrainLayer({
     () =>
       [
         ...new Set(
-          tiles.map((tile) =>
-            terrainPatternKey(tileTerrain(tile), tile.climate, artworkSeason),
-          ),
+          tiles.map((tile) => seasonalTerrainPattern(tile, artworkSeason)),
         ),
       ].filter((key) => key !== "water" && !key.startsWith("season-")),
     [tiles, artworkSeason],
@@ -343,11 +341,7 @@ const TerrainLayer = memo(function TerrainLayer({
                 filter="url(#tile-shadow)"
               />
               <TerrainArt
-                resource={terrainPatternKey(
-                  tileTerrain(tile),
-                  tile.climate,
-                  artworkSeason,
-                )}
+                resource={seasonalTerrainPattern(tile, artworkSeason)}
                 x={x}
                 y={y}
                 seed={hash(tile.id)}

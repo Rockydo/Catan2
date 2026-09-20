@@ -10,6 +10,7 @@ import {
   SEASONS,
   seasonalProfile,
   seasonWeather,
+  SHOULDER_ICE_CHANCE,
   type Season,
 } from "../game/seasons";
 import { GOOD_INFO } from "../game/content";
@@ -50,6 +51,8 @@ export function SeasonReference({
   const l = (en: string, fr: string) => (locale === "fr" ? fr : en);
   const [climate, setClimate] = useState<Climate>(initial);
   const [season, setSeason] = useState<Season>("summer");
+  const iceChances =
+    SHOULDER_ICE_CHANCE[climate as keyof typeof SHOULDER_ICE_CHANCE];
   const biomes = [
     ...new Set<Biome>([
       ...CLIMATE_INFO[climate].terrain.map(([biome]) => biome),
@@ -109,6 +112,14 @@ export function SeasonReference({
           </select>
         </label>
       </div>
+      {iceChances && (
+        <p className="season-note">
+          {l(
+            `Ordinary sea tiles freeze with a ${iceChances.spring * 100}% Spring chance and ${iceChances.autumn * 100}% Autumn chance. Each tile keeps its pattern. These sea rows show the open-water baseline; a frozen Spring or Autumn harvest moves into Summer. Select a map tile for its exact forecast.`,
+            `Les tuiles marines ordinaires ont ${iceChances.spring * 100} % de chances de geler au Printemps et ${iceChances.autumn * 100} % en Automne. Chaque tuile conserve ce rythme. Ces lignes marines indiquent la production sans gel printanier ou automnal ; une récolte bloquée par ce gel est reportée en Été. Sélectionnez une tuile de la carte pour ses prévisions exactes.`,
+          )}
+        </p>
+      )}
       <div className="season-reference-scroll">
         <table>
           <thead>

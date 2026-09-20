@@ -499,6 +499,15 @@ export function productionSources(
 ) {
   const season =
     mode === "current" ? seasonAt(s) : mode === "annual" ? undefined : mode;
+  // A migrated open sea has grace only through the actual current season.
+  // Future production previews must use the post-boundary local ice pattern.
+  let tiles = s.tiles;
+  if (season && mode !== "current" && season !== seasonAt(s))
+    for (const tile of Object.values(s.tiles)) {
+      if (!tile.thawGrace) continue;
+      if (tiles === s.tiles) tiles = { ...s.tiles };
+      tiles[tile.id] = { ...tile, thawGrace: undefined };
+    }
   const out: {
     owner: number;
     town: Town;
@@ -512,16 +521,15 @@ export function productionSources(
       : blockAt(s, id, owner);
   for (const town of Object.values(s.towns))
     for (const id of s.vertices[town.vertex].tiles) {
-      const good =
-        town.extensionGoods?.[id] ?? tileGood(s.tiles[id], town.owner);
+      const good = town.extensionGoods?.[id] ?? tileGood(tiles[id], town.owner);
       if (!good || blocked(id, town.owner)) continue;
       for (const [raw, amount] of Object.entries(
         harvestYield(
-          s.tiles[id],
+          tiles[id],
           town.owner,
           town.level,
           true,
-          seasonalYield(s.tiles[id], town.owner, season),
+          seasonalYield(tiles[id], town.owner, season),
         ),
       ))
         out.push({
@@ -538,21 +546,21 @@ export function productionSources(
           tile: id,
           good: processedFor(good),
           amount: workshopYield(
-            s.tiles[id],
+            tiles[id],
             town.owner,
             good,
             town.extensions[id],
-            seasonalWorkshopBase(s.tiles[id], town.owner, good, season),
+            seasonalWorkshopBase(tiles[id], town.owner, good, season),
           ),
         });
     }
   for (const r of Object.values(s.routes))
     for (const [id, tier] of Object.entries(r.camps)) {
-      const good = tileGood(s.tiles[id]),
+      const good = tileGood(tiles[id]),
         town = nearestTown(s, id, r.owner);
       if (good && town && !blocked(id, r.owner))
         for (const [raw, amount] of Object.entries(
-          seasonalYield(s.tiles[id], r.owner, season),
+          seasonalYield(tiles[id], r.owner, season),
         ))
           out.push({
             owner: r.owner,
@@ -566,7 +574,7 @@ export function productionSources(
     mode !== "current" && s.calendar
       ? Object.assign(Object.create(s), {
           tiles: Object.fromEntries(
-            Object.entries(s.tiles).map(([id, tile]) => [
+            Object.entries(tiles).map(([id, tile]) => [
               id,
               tile.resource === "water" || tile.resource === "ice"
                 ? {
@@ -581,20 +589,20 @@ export function productionSources(
         })
       : s;
   for (const u of Object.values(s.pieces)) {
-    const tiles = harvestTiles(harvestWorld, u);
-    if (!tiles.length) continue;
+    const covered = harvestTiles(harvestWorld, u);
+    if (!covered.length) continue;
     const town = nearestTown(s, u.tile, u.owner);
     if (!town) continue;
-    for (const id of tiles) {
-      const good = tileGood(s.tiles[id]);
+    for (const id of covered) {
+      const good = tileGood(tiles[id]);
       if (good && (u.kind !== "fishing" || !blocked(id, u.owner)))
         for (const [raw, amount] of Object.entries(
           harvestYield(
-            s.tiles[id],
+            tiles[id],
             u.owner,
             u.tier,
             u.kind !== "fishing",
-            seasonalYield(s.tiles[id], u.owner, season),
+            seasonalYield(tiles[id], u.owner, season),
           ),
         ))
           out.push({

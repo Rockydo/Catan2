@@ -16,6 +16,7 @@ import {
   seasonalProfile,
   seasonalYield,
   seasonWeather,
+  frozenInSeason,
   type Season,
 } from "../game/seasons";
 import type { Game, Good, Hex, Stock } from "../game/types";
@@ -214,8 +215,8 @@ export function SeasonCalendar({
                 next === "winter"
                   ? "Cold, Alpine and Arctic seas freeze. Move ships to warmer waters before the next round."
                   : next === "summer"
-                    ? "Arctic ice melts. Bring land units ashore or arrange transport before the next round."
-                    : "Arctic ice is frozen in Spring, Autumn and Winter. Other Cold and Alpine seas freeze in Winter.",
+                    ? "Seasonal sea ice melts. Bring land units ashore or arrange transport before the next round."
+                    : "Spring and Autumn sea ice is patchy in cold regions. Check each tile’s forecast before moving.",
               )}
             </p>
           </div>
@@ -252,8 +253,12 @@ export function TileSeasonForecast({
   useLocale();
   const current = seasonAt(game);
   if (!current) return null;
-  const profile = seasonalProfile(tile, owner);
+  const profile = seasonalProfile(
+    tile.thawGrace ? { ...tile, thawGrace: undefined } : tile,
+    owner,
+  );
   const output = seasonalYield(tile, owner, current);
+  if (tile.thawGrace === current) profile[current] = output;
   const anyYield = SEASONS.some((season) =>
     Object.values(profile[season]).some((n) => !!n),
   );
@@ -275,11 +280,13 @@ export function TileSeasonForecast({
         </span>
         {anyYield && <YieldGoods stock={output} />}
       </div>
-      {anyYield && (
+      {(anyYield || coldSea) && (
         <>
-          <small className="tile-season-unit">
-            {tx(`Per settlement, on roll ${tile.number}`)}
-          </small>
+          {anyYield && (
+            <small className="tile-season-unit">
+              {tx(`Per settlement, on roll ${tile.number}`)}
+            </small>
+          )}
           <div className="tile-season-grid">
             {SEASONS.map((season) => {
               const SeasonIcon = SEASON_ICONS[season];
@@ -292,16 +299,27 @@ export function TileSeasonForecast({
                     <SeasonIcon size={14} />
                     {tx(SEASON_LABELS[season])}
                   </span>
-                  <YieldGoods stock={profile[season]} empty="0" />
+                  {anyYield && <YieldGoods stock={profile[season]} empty="0" />}
+                  {coldSea && (
+                    <small className="season-surface-label">
+                      {tx(
+                        frozenInSeason(tile, season)
+                          ? "Frozen sea"
+                          : "Open water",
+                      )}
+                    </small>
+                  )}
                 </div>
               );
             })}
           </div>
-          <p className="season-note">
-            {tx(
-              "Cities and camps multiply these yields. Higher-tier cities and merchants also process every resource harvested.",
-            )}
-          </p>
+          {anyYield && (
+            <p className="season-note">
+              {tx(
+                "Cities and camps multiply these yields. Higher-tier cities and merchants also process every resource harvested.",
+              )}
+            </p>
+          )}
         </>
       )}
       {!!weather && (
@@ -316,6 +334,13 @@ export function TileSeasonForecast({
             tile.surface === "frozen"
               ? "Frozen sea: armies can cross; ships cannot move. No permanent construction on ice."
               : "Open sea: ships can cross; land units need transport. Check the calendar before the freeze.",
+          )}
+        </p>
+      )}
+      {tile.thawGrace === current && (
+        <p className="season-note">
+          {tx(
+            "This saved campaign keeps this sea tile open until the next season. Future seasons follow the forecast.",
           )}
         </p>
       )}

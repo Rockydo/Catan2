@@ -108,6 +108,7 @@ export function harvestTiles(
   if (u.kind === "merchantship")
     return around.filter((id) => s.tiles[id].resource !== "water");
   // A fishing radius follows connected water: nets do not cross land or ice.
+  if (!canOccupy(s.tiles[u.tile], true)) return [];
   const reached = new Set([u.tile]),
     queue = [{ id: u.tile, depth: 0 }];
   for (let i = 0; i < queue.length; i++) {
