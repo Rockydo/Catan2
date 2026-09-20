@@ -48,7 +48,7 @@ An extreme map may lack enough legal starting sites. The game rejects a seed wit
 ## Seasons and harvests
 
 ### Calendar
-One complete round is one season. Every surviving faction takes its turn before the next season begins. The sequence is Spring, Summer, Autumn, Winter; four rounds make one year. New campaigns start in Spring. Seasons never change halfway through a round.
+One complete round is one season. Every surviving faction takes its turn before the next season begins. The sequence is Spring, Summer, Autumn, Winter; four rounds make one year. New campaigns start in a random season, with a 25% chance for each. The same world seed gives the same starting season. Seasons never change halfway through a round.
 The calendar beside the round number shows the current season and year. Open it to review the next season and preview landscapes. A preview changes artwork only: movement, production and legal actions still use the current season. Select a tile for its four-season production table.
 ### Dice and harvest windows
 A tile produces only when its number is rolled during a productive season. Every matching roll pays, even if that tile has already produced in the same season. There is no once-per-year harvest limit, guaranteed harvest, replacement roll or compensation. Off-season matching rolls produce nothing. Dice remain two independent six-sided dice.
@@ -75,7 +75,7 @@ Fish and Cod in Temperate, Cold, Arctic, Oceanic and Alpine climates produce at 
 Towns multiply each seasonal raw output by their level: 1/2/3/4. Camps multiply it by camp tier: 1/2. Merchants, merchant ships and fishing ships multiply by unit tier. Normal blockades and harvest coverage still apply.
 Town levels 3 and 4 and merchant tiers III and IV also add 1× and 2× every seasonal raw component as its processed good. A level-4 town beside Summer Golden fields produces 32 Grain plus 16 Rations per matching roll. A tier-II Bakery adds another 16 Rations. Nothing is deducted from the Grain harvest.
 An extension multiplies its linked resource’s seasonal amount by its own tier. A Woods workshop keeps its chosen raw resource, even when the faction changes the tile’s ordinary harvest choice. No seasonal output means no automatic processed output.
-Guild contracts are separate paid actions. Their printed inputs and outputs do not change with the season; they can supply goods between dice harvests. Existing stored raw goods can still be refined through Artisans. Starting resources from the second setup settlement use baseline yields, so Spring setup is not penalized.
+Guild contracts are separate paid actions. Their printed inputs and outputs do not change with the season; they can supply goods between dice harvests. Existing stored raw goods can still be refined through Artisans. Starting resources from the second setup settlement use baseline yields, regardless of the starting season.
 ### Sea ice and thaw
 All water in Cold, Alpine and Arctic climates freezes in Winter. Arctic Frozen sea tiles also remain frozen in Spring and Autumn and open only in Summer. Other seas stay navigable. The forecast is deterministic, with no hidden freezing roll.
 Land units can enter frozen water. Ships can enter open water. Frozen water stops fishing coverage through that hex and gives no Winter marine harvest. A frozen port loses its improved trading rate until open water returns; ordinary reserve trading still works. Ship recruitment and sea expeditions require open water.
@@ -86,7 +86,7 @@ Land units caught by thaw stay on a drifting ice floe. They are not killed or te
 Move ships out of freezing regions and bring troops ashore before a surface change. A stranded force with no rescue route may remain trapped until the next suitable season.
 ### AI and existing saves
 AI values durable production by its annual mean, so seasonal spikes do not artificially change strategic strength. Trading uses upcoming harvests and stockpiles; expansion considers complementary crop seasons. The AI also plans winter berths and rescues stranded troops.
-Existing campaigns keep all terrain, dice numbers, units and stored goods. Their first Spring starts at the next complete round, preserving the current round. Newly explored land can contain the new crop and livestock types. Seasonal production then applies to old and new tiles alike.
+Existing campaigns keep their calendar, terrain, dice numbers, units and stored goods. Older saves without a calendar begin Spring at the next full round, preserving the current round. Newly explored land can contain the new crop and livestock types. Seasonal production then applies to old and new tiles alike.
 ### Artwork preview
 Select a season in the calendar to preview its landscape, then pan and inspect the map normally. The badge shows the preview and the season whose rules still apply. Return to current season or press Escape to leave the preview. Any successful game command also restores the current landscape. Production forecasts and movement rules never change during a preview.
 

@@ -1,5 +1,5 @@
 import { syncEmergencyCoalition } from "./emergency-coalition";
-import { seasonAt, seasonYear, syncSeasonSurfaces } from "./seasons";
+import { SEASONS, seasonAt, seasonYear, syncSeasonSurfaces } from "./seasons";
 import { tileYield } from "./maritime";
 import { canChooseWoods } from "./selectors";
 import { allianceResponder } from "./relations";
@@ -58,6 +58,7 @@ import {
   canOccupy,
   generateWorld,
   hash,
+  randomAt,
   nextRandom,
   landAtVertex,
   waterAtVertex,
@@ -133,7 +134,11 @@ export function newGame(
     ...generateWorld(seed, config.length * 25),
     version: 5,
     generation: 5,
-    calendar: { startRound: 1 },
+    calendar: {
+      startRound: 1,
+      // A separate seeded draw leaves map generation and dice streams intact.
+      startSeason: SEASONS[Math.floor(randomAt(seed, "calendar", "start") * 4)],
+    },
     seed,
     rng: hash(seed + "dice"),
     deckRng: hash(seed + "deck"),

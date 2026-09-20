@@ -21,7 +21,7 @@ Sources:
 
 ## Integration locations
 
-- `src/game/engine.ts`: `nextTurn` increments `round` once on index wrap; run global surface transitions there, not each player's `beginTurn`. Second setup-town starting resources currently call `tileYield`; keep baseline grants so spring setup cannot strand economies. Existing save activation must not advance game state or roll RNG.
+- `src/game/engine.ts`: `nextTurn` increments `round` once on index wrap; run global surface transitions there, not each player's `beginTurn`. Second setup-town starting resources currently call `tileYield`; keep baseline grants so the starting season cannot strand economies. Existing save activation must not advance game state or roll RNG.
 - `src/game/maritime.ts`: `tileYield`, `harvestYield`, `workshopYield`, `tileGood`, `tileOptions`, `marineResource`, `harvestTiles`. Current frozen ice is represented as geological `resource: ice`. Fishing BFS currently follows only `resource: water`.
 - `src/game/selectors.ts`: `productionSources` handles all production paths; `income` caches this inside one planning frame. Add explicit annual/seasonal separation. `canRoute`, town sites, tower sites and colony placement need permanent land, never winter ice. `recipePayment` assumes one substitute per base good.
 - `src/game/types.ts`: `RAW_SUBSTITUTES` currently maps Grain to one Fish alternative. Meat requires centralized multiple-alternative spending. Existing grain is spent first, then food substitutes, then Gold. Explicit requests for Meat must not be consumed twice as substitutes.

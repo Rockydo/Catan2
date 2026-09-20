@@ -212,6 +212,8 @@ test("a generated mixed-climate campaign renders crop and livestock seasons with
   page,
 }) => {
   let s = newGame("season-review-1");
+  s.calendar = { startRound: 1, startSeason: "spring" };
+  syncSeasonSurfaces(s);
   while (s.phase.startsWith("setup")) s = run(s, chooseAIAction(s));
   expect(
     new Set(Object.values(s.tiles).map((t) => t.climate)).size,

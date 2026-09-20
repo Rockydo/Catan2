@@ -1,12 +1,12 @@
 # Seasons design and acceptance criteria
 
-Seasons run in the order Spring, Summer, Autumn, Winter. One full round is one season. The round boundary, rather than an individual faction turn, changes the world. One year lasts four rounds. Dice stay independent and unchanged.
+New campaigns start in a uniformly random season: Spring, Summer, Autumn or Winter, with a 25% chance each. The world seed determines this choice reproducibly, independently of dice rolls. Seasons then run in the order Spring, Summer, Autumn, Winter. One full round is one season. The round boundary, rather than an individual faction turn, changes the world. One year lasts four rounds. Dice stay independent and unchanged.
 
 ## Production
 
 The printed tile yield remains its annual average per matching roll. Seasonal output tables use whole goods. Every good on every tile sums to four times its printed yield across the four seasons. All matching rolls during an active harvest window produce goods; there is no first-roll cap, guaranteed harvest or compensation for missed rolls. With an unchanged number of surviving factions and producers, annual expected output is unchanged.
 
-Cities, camps, merchants, ships, automatic advanced processing and workshops all multiply the actual seasonal raw yield. Woods workshop products remain fixed independently of the chosen raw good. Woods uses the same seasonal quantities for Wood and Hides, avoiding an extra-output exploit by changing products each season. Setup grants use the ordinary printed yield so starting supplies are not accidentally removed by Spring.
+Cities, camps, merchants, ships, automatic advanced processing and workshops all multiply the actual seasonal raw yield. Woods workshop products remain fixed independently of the chosen raw good. Woods uses the same seasonal quantities for Wood and Hides, avoiding an extra-output exploit by changing products each season. Setup grants use the ordinary printed yield so starting supplies do not depend on the starting season.
 
 Four crop additions diversify timing: barley, rye, millet and maize. Tropical rice has three windows (4 Grain each), subtropical rice two (6 each). Wheat, barley, rye, millet and maize have one window; Olive groves span Autumn and Winter. Exact tables are authoritative in `src/game/seasons.ts`. The game uses a common abstract calendar, not a simulation of hemispheres.
 
@@ -28,7 +28,7 @@ The compact calendar shows the season and year, exact timing and warnings. Seaso
 
 ## Compatibility, assets and validation
 
-Save envelope version 9 introduces the calendar. Versions 1–8 migrate without changing warehouses, dice RNG, map geology or ownership. Seasons begin at the next full round in ongoing saves. New campaigns start in Spring. Seasonal surfaces and stranded statuses must satisfy save invariants.
+Save envelope version 9 introduces the calendar. Versions 1–8 migrate without changing warehouses, dice RNG, map geology or ownership. Legacy saves without a calendar begin Spring at the next full round. Saves with a calendar keep their existing season and timing. Random starting seasons apply only to new campaigns. Seasonal surfaces and stranded statuses must satisfy save invariants.
 
 Artwork covers each supported climate/biome/season combination using generated painterly terrain, with clear crop stages, real snow cover and warm-climate wet/dry changes. Only map-used patterns load. No tint-only completion claim. Base assets for new biomes support the rulebook and historical views. A manifest and prompts record every generated/reused source.
 

@@ -12,7 +12,9 @@ import {
   seasonAt,
   seasonYear,
   syncSeasonSurfaces,
+  frozenInSeason,
 } from "../src/game/seasons";
+import { newGame } from "../src/game/engine";
 import { tileYield, harvestYield, terrainFamily } from "../src/game/maritime";
 import { production } from "../src/game/economy";
 import { canOccupy, hash, solidAtVertex } from "../src/game/world";
@@ -158,6 +160,53 @@ describe("seasonal production", () => {
 });
 
 describe("calendar, sea ice and save migration", () => {
+  it("draws all starting seasons reproducibly without advancing other random streams", () => {
+    const seen = new Set<string>();
+    for (let i = 0; i < 24; i++) {
+      const seed = `random-start-season-${i}`;
+      const s = newGame(seed);
+      seen.add(seasonAt(s)!);
+      expect(newGame(seed).calendar).toEqual(s.calendar);
+      expect(s.rng).toBe(hash(seed + "dice"));
+      expect(s.deckRng).toBe(hash(seed + "deck"));
+      for (const tile of Object.values(s.tiles))
+        if (tile.resource === "water")
+          expect(tile.surface).toBe(
+            frozenInSeason(tile, seasonAt(s)) ? "frozen" : "open",
+          );
+      expect(deserialize(serialize(s)).calendar).toEqual(s.calendar);
+    }
+    expect([...seen].sort()).toEqual([...SEASONS].sort());
+  });
+  it.each(SEASONS)(
+    "keeps the calendar and yearly cycle when starting in %s",
+    (startSeason) => {
+      const { s } = fixture();
+      s.calendar = { startRound: 1, startSeason };
+      for (let round = 1; round <= 9; round++) {
+        s.round = round;
+        expect(seasonAt(s)).toBe(
+          SEASONS[(SEASONS.indexOf(startSeason) + round - 1) % 4],
+        );
+        expect(seasonYear(s)).toBe(Math.floor((round - 1) / 4) + 1);
+        syncSeasonSurfaces(s);
+        const restored = deserialize(serialize(s));
+        expect(restored.calendar).toEqual(s.calendar);
+        expect(seasonAt(restored)).toBe(seasonAt(s));
+      }
+    },
+  );
+  it("preserves Spring-based seasonal saves and rejects invalid starting seasons", () => {
+    const { s } = fixture();
+    s.round = 3;
+    syncSeasonSurfaces(s);
+    expect(seasonAt(deserialize(serialize(s)))).toBe("autumn");
+    const invalid = structuredClone(s);
+    Object.assign(invalid.calendar!, { startSeason: "monsoon" });
+    expect(() => assertInvariants(invalid)).toThrow(
+      "Invalid seasonal calendar.",
+    );
+  });
   it("changes season only when the living player order wraps", () => {
     let { s } = fixture();
     expect(seasonAt(s)).toBe("spring");

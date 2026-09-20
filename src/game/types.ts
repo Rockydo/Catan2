@@ -1,4 +1,5 @@
 import type { Climate, Biome, TerrainResource } from "./climate-content";
+import type { Season } from "./seasons";
 export const RAW = [
   "lumber",
   "brick",
@@ -293,8 +294,8 @@ export interface Event {
   tile?: string;
 }
 export interface Game extends World {
-  /** The first Spring begins at this full-round boundary. */
-  calendar?: { startRound: number };
+  /** Seasons begin at this full-round boundary; older saves default to Spring. */
+  calendar?: { startRound: number; startSeason?: Season };
   version: 5;
   seed: string;
   generation: 4 | 5;

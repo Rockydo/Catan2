@@ -104,7 +104,7 @@ Towns, camps and collectors multiply the terrain’s base yield. Woods let each 
 
 ## Seasons and food
 
-One complete round of faction turns advances the season: Spring, Summer, Autumn, Winter. The calendar beside the turn controls shows current production and lets you preview seasonal artwork. Selecting a tile shows its exact yields in all four seasons. Previewing a season does not advance the game.
+New campaigns start in a random season, with a 25% chance each for Spring, Summer, Autumn and Winter. The world seed determines the starting season, so the same seed gives the same start. One complete round of faction turns advances to the next season in that cycle. The calendar beside the turn controls shows current production and lets you preview seasonal artwork. Selecting a tile shows its exact yields in all four seasons. Previewing a season does not advance the game.
 
 Crops only produce during their harvest seasons, and still need their dice number to roll. Wheat, rye, barley, maize and millet have one harvest window; olives and subtropical rice have two; tropical rice has three. A harvest window pays on every matching roll. For each tile and each resource, the four seasonal yields add up to four times its printed annual yield. Output is more variable, but its annual dice expectation is unchanged. Cities, camps, extensions and collectors apply their normal multipliers to those seasonal yields.
 
@@ -112,4 +112,4 @@ Cattle, goats and reindeer produce Meat. Recipes continue to show Grain: payment
 
 Cold, Arctic and Alpine seas freeze in Winter. Land units can cross frozen water; ships trapped there wait for thaw. The original Frozen sea terrain also thaws in Summer. Land units caught on thawed water can escape to adjacent land or board a transport. No unit is automatically destroyed by a season change. Frozen water never becomes a foundation for permanent buildings. Ports need adjacent open water to provide their trade rate.
 
-Existing campaigns keep their terrain, stores and dice numbers. When an older save first loads this update, seasons begin in Spring at the next full round, so the current round finishes under its existing production rules. New campaigns begin in Spring. Newly explored land can include the new crops and livestock.
+Existing campaigns keep their calendar, terrain, stores and dice numbers. In older saves without a seasonal calendar, seasons begin in Spring at the next full round, so the current round finishes under its existing production rules. Newly explored land can include the new crops and livestock.

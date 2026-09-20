@@ -9,7 +9,8 @@ export function seasonAt(
   s: Pick<Game, "calendar" | "round">,
 ): Season | undefined {
   if (!s.calendar || s.round < s.calendar.startRound) return undefined;
-  return SEASONS[(s.round - s.calendar.startRound) % 4];
+  const offset = SEASONS.indexOf(s.calendar.startSeason ?? "spring");
+  return SEASONS[(s.round - s.calendar.startRound + offset) % 4];
 }
 export function seasonYear(s: Pick<Game, "calendar" | "round">): number {
   return s.calendar

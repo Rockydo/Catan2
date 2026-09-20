@@ -1,5 +1,10 @@
 import { syncEmergencyCoalition } from "./emergency-coalition";
-import { frozenInSeason, seasonAt, syncSeasonSurfaces } from "./seasons";
+import {
+  SEASONS,
+  frozenInSeason,
+  seasonAt,
+  syncSeasonSurfaces,
+} from "./seasons";
 import {
   CLIMATES,
   CLIMATE_INFO,
@@ -46,7 +51,9 @@ export function assertInvariants(s: Game) {
     rule(
       Number.isSafeInteger(s.calendar.startRound) &&
         s.calendar.startRound >= 1 &&
-        s.calendar.startRound <= s.round + 1,
+        s.calendar.startRound <= s.round + 1 &&
+        (s.calendar.startSeason === undefined ||
+          SEASONS.includes(s.calendar.startSeason)),
       "Invalid seasonal calendar.",
     );
   rule(
