@@ -68,7 +68,7 @@ Cattle pasture produces 1/1/4/2 Meat in Spring/Summer/Autumn/Winter. Goat pastur
 Meat is a raw resource. Recipes still print Grain: pay Grain first, then Fish, then Meat at 1:1 to cover any shortfall. Gold covers any remaining missing raw goods. Explicit trades use the named goods. Meat workshops and advanced city or merchant production make Rations, without consuming the raw harvest.
 Pastures continue to produce Wool. In temperate and colder regions, shearing occurs in Spring and Summer; Tropical, Subtropical, Savanna and Desert wool is spread across all four seasons. Livestock has no feeding cost or upkeep. Food and other stored goods never spoil.
 ### Other seasonal industries
-Wood, hunting, salt production and clay work vary by climate. Cold forests retain a small Winter timber harvest. Tropical logging and clay extraction favor drier seasons. Salt production favors dry weather. Hides and Oil on the same animal tile can have different seasonal outputs; both are collected.
+Wood, hunting, salt production and clay work vary by climate. Cold forests retain a small Winter timber harvest. Warm-climate hunting and logging continue through Summer rains. Jungle and warm woodlands produce 1 each season; Savanna Wildlife grassland gives 2/1/3/2 Hides from Spring to Winter. Tropical Clay gives 1 each season; Subtropical Alluvial clay gives 2/1/2/3. Tropical, Subtropical and Savanna Salt flats give 1/0/1/2: evaporation stops during the wet Summer and peaks in the dry Winter. Desert Salt flats give 1 each season. Annual totals remain unchanged. Hides and Oil on the same animal tile can have different seasonal outputs; both are collected.
 Mild-climate mines and quarries remain steady. Cold, Alpine and Arctic mines and quarries favor Summer and stop in Winter; Coal stays available year-round. These reliable goods remain useful when food harvests are uncertain.
 Before adjusting for sea ice, Fish and Cod in Temperate, Cold, Arctic, Oceanic and Alpine climates produce at 1×/2×/1×/0× their baseline from Spring to Winter. Warmer-climate fish remains steady all year. Cold-climate Whales use 1×/2×/1×/0×; other Whales use 0×/1×/2×/1×. Multiply both Hides and Oil. Seal grounds produce 1 Hides and 1 Oil in every season, including Summer. The generic marine table shows the open-water baseline. A selected tile’s forecast shows its exact yields after sea ice shifts frozen Spring or Autumn output into Summer.
 ### Production multipliers
@@ -79,7 +79,7 @@ Guild contracts are separate paid actions. Their printed inputs and outputs do n
 ### Arctic snow cover
 Arctic land keeps snow in Spring, regains it in Autumn and has deep cover in Winter. Summer is the short thaw. Snow cover does not prevent seal or reindeer hunting: both remain productive on matching rolls all year. Snow on land and sea ice are separate conditions; use the sea surface forecast for movement.
 ### Sea ice and thaw
-Ordinary sea hexes have the following freezing chances in Spring/Autumn: Arctic 70%/50%, Alpine 35%/25%, Cold 20%/10%. All ordinary sea hexes in these three climates freeze in Winter and open in Summer. Each hex’s pattern is fixed by the world seed and repeats every year, including after reloads. An Autumn-frozen hex is always frozen in Spring too. These are per-hex chances, not guaranteed proportions of a region; inspect the exact forecast before moving.
+Ordinary sea hexes have the following freezing chances in Spring/Autumn: Arctic 70%/50%, Alpine 35%/25%, Cold 20%/10%. All ordinary sea hexes in these three climates freeze in Winter and open in Summer. This includes Fishing grounds, Cod grounds and Whale grounds; frozen resource tiles display ice and stop all marine production, including both Whale goods. Each hex’s pattern is fixed by the world seed and repeats every year, including after reloads. An Autumn-frozen hex is always frozen in Spring too. These are per-hex chances, not guaranteed proportions of a region; inspect the exact forecast before moving.
 The original Frozen sea terrain is always frozen in Spring, Autumn and Winter and opens only in Summer. Ordinary seas in other climates stay navigable.
 Frozen sea tiles produce no marine resources. For each tile and each raw resource, the Spring or Autumn yield removed by ice is added to Summer, preserving the four-season total. For example, a northern Fish tile with an open-water schedule of 1/2/1/0 produces 0/4/0/0 if it freezes in both Spring and Autumn, or 0/3/1/0 if it freezes only in Spring. Each payout still needs a matching dice roll; missed rolls are never reimbursed.
 Land units can enter frozen water. Ships can enter open water. Frozen water stops fishing coverage through that hex. A frozen port loses its improved trading rate until open water returns; ordinary reserve trading still works. Ship recruitment and sea expeditions require open water.
@@ -1040,13 +1040,13 @@ Marine rows show the open-water baseline. Ordinary sea hexes have fixed Spring/A
 
 |---|---|---|---|---|
 
-| Jungle | 1 Hides | 0 | 2 Hides | 1 Hides |
+| Jungle | 1 Hides | 1 Hides | 1 Hides | 1 Hides |
 
-| Tropical woods | 1 Wood | 0 | 1 Wood | 2 Wood |
+| Tropical woods | 1 Wood | 1 Wood | 1 Wood | 1 Wood |
 
 | Rice field | 4 Grain | 4 Grain | 4 Grain | 0 |
 
-| Clay hills | 1 Clay | 0 | 1 Clay | 2 Clay |
+| Clay hills | 1 Clay | 1 Clay | 1 Clay | 1 Clay |
 
 | Gold mountains | 1 Gold | 1 Gold | 1 Gold | 1 Gold |
 
@@ -1082,7 +1082,7 @@ Marine rows show the open-water baseline. Ordinary sea hexes have fixed Spring/A
 
 | Oasis | 1 Wood | 1 Wood | 1 Wood + 4 Grain | 1 Wood |
 
-| Salt flats | 1 Salt | 2 Salt | 1 Salt | 0 |
+| Salt flats | 1 Salt | 1 Salt | 1 Salt | 1 Salt |
 
 | Fishing grounds | 1 Fish | 1 Fish | 1 Fish | 1 Fish |
 
@@ -1168,17 +1168,17 @@ Marine rows show the open-water baseline. Ordinary sea hexes have fixed Spring/A
 
 |---|---|---|---|---|
 
-| Alluvial clay banks | 2 Clay | 0 | 2 Clay | 4 Clay |
+| Alluvial clay banks | 2 Clay | 1 Clay | 2 Clay | 3 Clay |
 
 | Rice field | 0 | 6 Grain | 6 Grain | 0 |
 
 | Maize fields | 0 | 0 | 8 Grain | 0 |
 
-| River woods | 1 Wood | 0 | 1 Wood | 2 Wood |
+| River woods | 1 Wood | 1 Wood | 1 Wood | 1 Wood |
 
 | Cattle pasture | 1 Meat | 1 Meat | 4 Meat | 2 Meat |
 
-| Jungle | 1 Hides | 0 | 2 Hides | 1 Hides |
+| Jungle | 1 Hides | 1 Hides | 1 Hides | 1 Hides |
 
 | Stone quarry | 1 Stone | 1 Stone | 1 Stone | 1 Stone |
 
@@ -1200,7 +1200,7 @@ Marine rows show the open-water baseline. Ordinary sea hexes have fixed Spring/A
 
 |---|---|---|---|---|
 
-| Wildlife grassland | 2 Hides | 0 | 4 Hides | 2 Hides |
+| Wildlife grassland | 2 Hides | 1 Hides | 3 Hides | 2 Hides |
 
 | Cattle range | 1 Meat + 1 Hides | 0 | 2 Meat + 2 Hides | 1 Meat + 1 Hides |
 
@@ -1208,7 +1208,7 @@ Marine rows show the open-water baseline. Ordinary sea hexes have fixed Spring/A
 
 | Millet fields | 0 | 0 | 4 Grain | 0 |
 
-| Dry woodland | 1 Wood | 0 | 1 Wood | 2 Wood |
+| Dry woodland | 1 Wood | 1 Wood | 1 Wood | 1 Wood |
 
 | Rough pasture | 1 Wool | 1 Wool | 1 Wool | 1 Wool |
 
@@ -1220,7 +1220,7 @@ Marine rows show the open-water baseline. Ordinary sea hexes have fixed Spring/A
 
 | Gold mountains | 1 Gold | 1 Gold | 1 Gold | 1 Gold |
 
-| Salt flats | 1 Salt | 2 Salt | 1 Salt | 0 |
+| Salt flats | 1 Salt | 0 | 1 Salt | 2 Salt |
 
 | Fishing grounds | 1 Fish | 1 Fish | 1 Fish | 1 Fish |
 

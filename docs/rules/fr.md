@@ -68,7 +68,7 @@ Le Pâturage bovin produit 1/1/4/2 Viandes au Printemps/Été/Automne/Hiver. Le 
 La Viande est une ressource brute. Les recettes indiquent toujours du Blé : dépensez d’abord le Blé, puis le Poisson et enfin la Viande à raison de 1 pour 1 pour couvrir le manque. L’Or couvre les ressources brutes encore manquantes. Un échange explicite porte sur les ressources nommées. Les ateliers de Viande et la production avancée des villes ou marchands ajoutent des Rations sans consommer la récolte brute.
 Les Pâturages continuent à produire de la Laine. Dans les climats tempérés et froids, la tonte a lieu au Printemps et en Été ; la Laine des climats Tropical, Subtropical, Savane et Désertique est répartie sur l’année. Aucun coût d’alimentation ou d’entretien du bétail. Les aliments et autres ressources stockés ne périment jamais.
 ### Autres productions saisonnières
-Bois, chasse, sel et argile varient selon le climat. Les Forêts froides conservent une petite production de Bois en Hiver. L’abattage tropical et l’extraction d’argile privilégient les saisons sèches. La production de Sel profite du temps sec. Peaux et Huile d’une même tuile animale peuvent suivre des calendriers différents ; les deux ressources sont récoltées.
+Bois, chasse, sel et argile varient selon le climat. Les Forêts froides conservent une petite production de Bois en Hiver. La chasse et l’abattage des climats chauds continuent durant les pluies d’Été. Jungle et boisements chauds produisent 1 à chaque saison ; la Prairie à gibier donne 2/1/3/2 Peaux du Printemps à l’Hiver. L’Argile tropicale donne 1 à chaque saison ; les Berges argileuses subtropicales donnent 2/1/2/3. Les Salines des climats Tropical, Subtropical et Savane donnent 1/0/1/2 : l’évaporation s’arrête durant l’Été humide et culmine en Hiver sec. Les Salines désertiques donnent 1 à chaque saison. Les totaux annuels restent inchangés. Peaux et Huile d’une même tuile animale peuvent suivre des calendriers différents ; les deux ressources sont récoltées.
 Les mines et carrières des climats doux restent régulières. En climats Froid, Alpin et Arctique, elles privilégient l’Été et s’arrêtent en Hiver ; le Charbon reste disponible toute l’année. Ces ressources régulières restent utiles lorsque les récoltes alimentaires sont incertaines.
 Avant l’ajustement lié au gel, Poisson et Morue des climats Tempéré, Froid, Arctique, Océanique et Alpin produisent 1×/2×/1×/0× leur base du Printemps à l’Hiver. Le Poisson des climats chauds produit régulièrement toute l’année. Les Baleines des climats froids suivent 1×/2×/1×/0× ; les autres suivent 0×/1×/2×/1×. Appliquez le multiplicateur aux Peaux et à l’Huile. Les terrains de chasse aux Phoques produisent 1 Peaux et 1 Huile à chaque saison, y compris en Été. La table marine générale indique le calendrier de base en eau libre. Les prévisions de la tuile sélectionnée donnent ses rendements exacts, après report en Été de la production supprimée par le gel du Printemps ou de l’Automne.
 ### Multiplicateurs de production
@@ -79,7 +79,7 @@ Les contrats de guilde sont des actions payantes distinctes. Leurs entrées et s
 ### Neige arctique
 Les terres arctiques conservent leur neige au Printemps, se couvrent à nouveau en Automne et sont profondément enneigées en Hiver. L’Été constitue le court dégel. La neige ne bloque pas la chasse aux Phoques ou aux rennes : les deux produisent sur les jets correspondants toute l’année. La neige terrestre et la glace de mer sont des conditions distinctes ; consultez les prévisions de surface marine pour les déplacements.
 ### Gel et dégel
-Chaque hexagone de mer ordinaire a les probabilités de gel suivantes au Printemps/en Automne : Arctique 70 %/50 %, Alpin 35 %/25 %, Froid 20 %/10 %. Toutes les mers ordinaires de ces trois climats gèlent en Hiver et s’ouvrent en Été. Le calendrier de chaque hexagone est fixé par la graine du monde et se répète chaque année, même après rechargement. Un hexagone gelé en Automne l’est toujours aussi au Printemps. Ces probabilités s’appliquent à chaque hexagone et ne garantissent pas une proportion régionale ; consultez les prévisions exactes avant de vous déplacer.
+Chaque hexagone de mer ordinaire a les probabilités de gel suivantes au Printemps/en Automne : Arctique 70 %/50 %, Alpin 35 %/25 %, Froid 20 %/10 %. Toutes les mers ordinaires de ces trois climats gèlent en Hiver et s’ouvrent en Été. Cela comprend les zones de Poissons, de Morues et de Baleines : elles affichent de la glace et cessent toute production marine, y compris les deux ressources des Baleines. Le calendrier de chaque hexagone est fixé par la graine du monde et se répète chaque année, même après rechargement. Un hexagone gelé en Automne l’est toujours aussi au Printemps. Ces probabilités s’appliquent à chaque hexagone et ne garantissent pas une proportion régionale ; consultez les prévisions exactes avant de vous déplacer.
 Le terrain Banquise d’origine reste toujours gelé au Printemps, en Automne et en Hiver et ne s’ouvre qu’en Été. Les mers ordinaires des autres climats restent navigables.
 Une tuile de mer gelée ne produit aucune ressource marine. Pour chaque tuile et chaque ressource brute, le rendement du Printemps ou de l’Automne supprimé par le gel est ajouté à l’Été, sans modifier le total des quatre saisons. Par exemple, une tuile Poisson du nord dont le calendrier en eau libre est 1/2/1/0 produit 0/4/0/0 si elle gèle au Printemps et en Automne, ou 0/3/1/0 si elle ne gèle qu’au Printemps. Chaque récolte exige toujours un jet correspondant ; les jets manqués ne sont jamais compensés.
 Les troupes terrestres peuvent entrer sur l’eau gelée ; les navires sur l’eau libre. Une mer gelée bloque le passage de la couverture de pêche. Un port gelé perd son taux amélioré jusqu’au retour des eaux libres ; les échanges ordinaires avec la réserve restent possibles. Construire un navire ou lancer une expédition maritime exige de l’eau libre.
@@ -1042,13 +1042,13 @@ Les lignes marines indiquent le calendrier de base en eau libre. Les mers ordina
 
 |---|---|---|---|---|
 
-| Jungle | 1 Peaux | 0 | 2 Peaux | 1 Peaux |
+| Jungle | 1 Peaux | 1 Peaux | 1 Peaux | 1 Peaux |
 
-| Bois tropicaux | 1 Bois | 0 | 1 Bois | 2 Bois |
+| Bois tropicaux | 1 Bois | 1 Bois | 1 Bois | 1 Bois |
 
 | Rizière | 4 Blé | 4 Blé | 4 Blé | 0 |
 
-| Collines d'argile | 1 Argile | 0 | 1 Argile | 2 Argile |
+| Collines d'argile | 1 Argile | 1 Argile | 1 Argile | 1 Argile |
 
 | Montagnes d'or | 1 Or | 1 Or | 1 Or | 1 Or |
 
@@ -1084,7 +1084,7 @@ Les lignes marines indiquent le calendrier de base en eau libre. Les mers ordina
 
 | Oasis | 1 Bois | 1 Bois | 1 Bois + 4 Blé | 1 Bois |
 
-| Salt flats | 1 Sel | 2 Sel | 1 Sel | 0 |
+| Salt flats | 1 Sel | 1 Sel | 1 Sel | 1 Sel |
 
 | Zone de pêche | 1 Poissons | 1 Poissons | 1 Poissons | 1 Poissons |
 
@@ -1170,17 +1170,17 @@ Les lignes marines indiquent le calendrier de base en eau libre. Les mers ordina
 
 |---|---|---|---|---|
 
-| Berges argileuses | 2 Argile | 0 | 2 Argile | 4 Argile |
+| Berges argileuses | 2 Argile | 1 Argile | 2 Argile | 3 Argile |
 
 | Rizière | 0 | 6 Blé | 6 Blé | 0 |
 
 | Champs de maïs | 0 | 0 | 8 Blé | 0 |
 
-| Bois riverains | 1 Bois | 0 | 1 Bois | 2 Bois |
+| Bois riverains | 1 Bois | 1 Bois | 1 Bois | 1 Bois |
 
 | Pâturage bovin | 1 Viande | 1 Viande | 4 Viande | 2 Viande |
 
-| Jungle | 1 Peaux | 0 | 2 Peaux | 1 Peaux |
+| Jungle | 1 Peaux | 1 Peaux | 1 Peaux | 1 Peaux |
 
 | Stone quarry | 1 Pierre | 1 Pierre | 1 Pierre | 1 Pierre |
 
@@ -1202,7 +1202,7 @@ Les lignes marines indiquent le calendrier de base en eau libre. Les mers ordina
 
 |---|---|---|---|---|
 
-| Prairie à gibier | 2 Peaux | 0 | 4 Peaux | 2 Peaux |
+| Prairie à gibier | 2 Peaux | 1 Peaux | 3 Peaux | 2 Peaux |
 
 | Élevage de savane | 1 Viande + 1 Peaux | 0 | 2 Viande + 2 Peaux | 1 Viande + 1 Peaux |
 
@@ -1210,7 +1210,7 @@ Les lignes marines indiquent le calendrier de base en eau libre. Les mers ordina
 
 | Champs de millet | 0 | 0 | 4 Blé | 0 |
 
-| Bois secs | 1 Bois | 0 | 1 Bois | 2 Bois |
+| Bois secs | 1 Bois | 1 Bois | 1 Bois | 1 Bois |
 
 | Pâturage pauvre | 1 Laine | 1 Laine | 1 Laine | 1 Laine |
 
@@ -1222,7 +1222,7 @@ Les lignes marines indiquent le calendrier de base en eau libre. Les mers ordina
 
 | Montagnes d'or | 1 Or | 1 Or | 1 Or | 1 Or |
 
-| Salt flats | 1 Sel | 2 Sel | 1 Sel | 0 |
+| Salt flats | 1 Sel | 0 | 1 Sel | 2 Sel |
 
 | Zone de pêche | 1 Poissons | 1 Poissons | 1 Poissons | 1 Poissons |
 

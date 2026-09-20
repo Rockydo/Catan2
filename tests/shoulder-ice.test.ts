@@ -21,6 +21,7 @@ import {
 } from "../src/game/world";
 import { productionSources } from "../src/game/selectors";
 import { assertInvariants, deserialize, serialize } from "../src/game/save";
+import { seasonalTerrainPattern, terrainArtFile } from "../src/ui/terrain-art";
 import { maritimeFixture } from "./maritime-fixture";
 import { piece } from "./helpers";
 
@@ -232,6 +233,58 @@ describe("stable shoulder-season sea ice", () => {
 });
 
 describe("marine harvests under shoulder ice", () => {
+  it.each(["fish", "cod", "whale"] as const)(
+    "renders frozen %s grounds as ice and restores their fishing harvest after thaw",
+    (biome) => {
+      for (const climate of coldClimates) {
+        const { s } = fixture();
+        const tile = s.tiles["0,0"];
+        Object.assign(tile, {
+          biome,
+          resource: "water",
+          climate,
+          freezeRoll: 0,
+          fish: biome !== "whale",
+          whale: biome === "whale",
+        });
+        const ship = piece(s, tile.id, 0, "fishing", 1);
+        for (const season of ["spring", "autumn", "winter"] as const) {
+          s.round = SEASONS.indexOf(season) + 1;
+          syncSeasonSurfaces(s);
+          expect(tile.surface).toBe("frozen");
+          expect(ship.seasonStatus).toBe("icebound");
+          expect(harvestTiles(s, ship)).toEqual([]);
+          expect(seasonalYield(tile, 0, season)).toEqual({});
+          expect(
+            productionSources(s).filter((row) => row.tile === tile.id),
+          ).toEqual([]);
+          expect(terrainArtFile(seasonalTerrainPattern(tile, season))).toBe(
+            `seasons/${climate}-ice-${season}.webp`,
+          );
+        }
+        s.round = 6;
+        syncSeasonSurfaces(s);
+        expect(tile.biome).toBe(biome);
+        expect(tile.resource).toBe("water");
+        expect(tile.surface).toBe("open");
+        expect(ship.seasonStatus).toBeUndefined();
+        expect(harvestTiles(s, ship)).toContain(tile.id);
+        expect(terrainArtFile(seasonalTerrainPattern(tile, "summer"))).toBe(
+          `seasons/${climate}-${biome}-summer.webp`,
+        );
+        for (const [raw, base] of Object.entries(tileYield(tile))) {
+          expect(seasonalYield(tile, 0, "summer")[raw as Raw]).toBe(4 * base!);
+          expect(
+            productionSources(s).some(
+              (row) =>
+                row.tile === tile.id && row.good === raw && row.amount > 0,
+            ),
+          ).toBe(true);
+        }
+      }
+    },
+  );
+
   it.each(["fish", "cod", "whale"] as const)(
     "moves each frozen %s harvest component into summer without changing annual raw output",
     (biome) => {

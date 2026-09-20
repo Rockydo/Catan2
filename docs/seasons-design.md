@@ -14,6 +14,8 @@ Meat substitutes 1:1 for Grain after Fish and before automatic Gold substitution
 
 Shearing peaks in Spring/Summer. Most livestock and hunting favor later-year output. Reindeer ranges provide 1 Meat and 1 Hides per matching roll in every season; Seal grounds provide 1 Hides and 1 Oil year-round. Their annual totals are unchanged. Logging, salt extraction, northern mining and fishing have their own schedules. Covered mines in mild climates and Coal retain steady production. Warm fisheries produce throughout the year. Guild contracts remain on-demand industry using their existing inputs and fixed outputs, offering a costly alternative to a missed natural harvest.
 
+Warm-climate hunting, logging and raw Clay extraction continue during the wet Summer. Base-one Jungle, timber and Clay production is steady at 1/1/1/1. Savanna Wildlife grassland provides 2/1/3/2 Hides and Subtropical Alluvial clay 2/1/2/3 Clay (Spring/Summer/Autumn/Winter). Tropical, Subtropical and Savanna Salt flats follow 1/0/1/2 because solar evaporation depends on dry weather. Desert Salt flats remain productive at 1/1/1/1. Cattle range and Whale schedules are separate and unchanged. All schedules preserve each resource’s annual total.
+
 ## Ice and movement
 
 Arctic land remains snowy in Spring and regains substantial early snow in Autumn, with deep Winter snow and a short Summer thaw. Snow alone does not prevent hunting or change land movement. Permanent terrain identity stays separate from seasonal surface.

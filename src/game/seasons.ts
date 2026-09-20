@@ -36,9 +36,12 @@ function schedule(tile: Hex, raw: Raw, base: number): Year {
     climate,
   );
   const times = (weights: Year): Year => weights.map((n) => n * base) as Year;
+  const wetSummer = Math.max(1, base - 1),
+    dryPeak = 2 * base - wetSummer;
+  const wetDry: Year = [base, wetSummer, base, dryPeak];
   // Woods let a faction switch products. Identical calendars prevent switching
   // between forestry and hunting from manufacturing extra annual output.
-  if (biome === "woods") return times([1, 1, 2, 0]);
+  if (biome === "woods") return times(hot ? [1, 1, 1, 1] : [1, 1, 2, 0]);
   if (biome === "reindeer-range" || biome === "seal-grounds")
     return times([1, 1, 1, 1]);
   if (biome === "cattle-savanna") return times([1, 0, 2, 1]);
@@ -71,23 +74,29 @@ function schedule(tile: Hex, raw: Raw, base: number): Year {
     );
   if (biome === "whale" || (!biome && tile.whale))
     return times(frost ? [1, 2, 1, 0] : [0, 1, 2, 1]);
-  if (raw === "hides") return times(hot ? [1, 0, 2, 1] : [1, 0, 1, 2]);
+  // Warm-climate hunting and logging continue through the rains. Whole-card
+  // base-one yields stay steady; richer terrain can retain a dry-season peak.
+  if (raw === "hides")
+    return hot ? [base, wetSummer, dryPeak, base] : times([1, 0, 1, 2]);
   if (raw === "lumber") {
-    if (hot) return times(climate === "desert" ? [1, 1, 1, 1] : [1, 0, 1, 2]);
+    if (hot) return climate === "desert" ? times([1, 1, 1, 1]) : wetDry;
     return base === 2 ? [2, 2, 3, 1] : [1, 1, 2, 0];
   }
-  if (raw === "salt")
+  if (raw === "salt") {
+    if (climate === "desert") return times([1, 1, 1, 1]);
+    // Solar evaporation pauses during the shared tropical wet season.
     return times(
-      ["tropical", "subtropical"].includes(climate)
+      ["tropical", "subtropical", "savanna"].includes(climate)
         ? [1, 0, 1, 2]
         : [1, 2, 1, 0],
     );
+  }
   if (raw === "coal" || raw === "oil") return times([1, 1, 1, 1]);
   if (frost) return times([1, 2, 1, 0]);
   // Covered mines and quarries in mild climates provide a stable alternative
-  // to risky agriculture. Tropical clay is worked in the drier half of the year.
+  // to risky agriculture. Clay extraction can continue during tropical rains.
   if (raw === "brick" && ["tropical", "subtropical"].includes(climate))
-    return times([1, 0, 1, 2]);
+    return wetDry;
   return times([1, 1, 1, 1]);
 }
 

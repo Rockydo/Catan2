@@ -254,12 +254,62 @@ for (const locale of ["en", "fr"] as const) {
       ),
       { useInnerText: true },
     );
+    for (const [biome, amounts, good] of [
+      ["jungle", [1, 1, 1, 1], locale === "fr" ? "Peaux" : "Hides"],
+      ["tropical-woods", [1, 1, 1, 1], locale === "fr" ? "Bois" : "Wood"],
+      ["salt-flats", [1, 0, 1, 2], locale === "fr" ? "Sel" : "Salt"],
+    ] as const) {
+      await expect(reference.locator(`[data-biome="${biome}"] td`)).toHaveText(
+        amounts.map((n) => (n ? `${n} ${good}` : "0")),
+        {
+          useInnerText: true,
+        },
+      );
+    }
     await reference
       .getByRole("button", { name: "Subtropical", exact: true })
       .click();
     await expect(rice.locator("td").nth(0)).toHaveText("0");
     await expect(rice.locator("td").nth(1)).toContainText("6");
     await expect(rice.locator("td").nth(2)).toContainText("6");
+    for (const [biome, amounts, good] of [
+      ["river-woods", [1, 1, 1, 1], locale === "fr" ? "Bois" : "Wood"],
+      ["alluvial-clay", [2, 1, 2, 3], locale === "fr" ? "Argile" : "Clay"],
+    ] as const) {
+      await expect(reference.locator(`[data-biome="${biome}"] td`)).toHaveText(
+        amounts.map((n) => `${n} ${good}`),
+        {
+          useInnerText: true,
+        },
+      );
+    }
+    await reference
+      .getByRole("button", {
+        name: locale === "fr" ? "Savane" : "Savanna",
+        exact: true,
+      })
+      .click();
+    await expect(
+      reference.locator('[data-biome="wildlife-grassland"] td'),
+    ).toHaveText(
+      [2, 1, 3, 2].map((n) => `${n} ${locale === "fr" ? "Peaux" : "Hides"}`),
+      { useInnerText: true },
+    );
+    await expect(
+      reference.locator('[data-biome="salt-flats"] td').nth(1),
+    ).toHaveText("0");
+    await reference
+      .getByRole("button", {
+        name: locale === "fr" ? "Désert" : "Desert",
+        exact: true,
+      })
+      .click();
+    await expect(reference.locator('[data-biome="salt-flats"] td')).toHaveText(
+      Array(4).fill(locale === "fr" ? "1 Sel" : "1 Salt"),
+      {
+        useInnerText: true,
+      },
+    );
     await reference
       .getByRole("button", {
         name: locale === "fr" ? "Arctique" : "Arctic",
