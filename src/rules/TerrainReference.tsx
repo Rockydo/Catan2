@@ -12,6 +12,8 @@ import {
   BIOME_INFO,
   CLIMATES,
   CLIMATE_INFO,
+  biomeYield,
+  climateInitialWeight,
   climateTransitionWeight,
   waterProbabilities,
   type Biome,
@@ -86,8 +88,24 @@ function Outputs({
     </span>
   );
 }
-function yields(tile: Biome): Stock {
-  return tile === "woods" ? { lumber: 1, hides: 1 } : BIOME_INFO[tile].yield;
+function yields(tile: Biome, climate?: Climate): Stock {
+  return tile === "woods" ? { lumber: 1, hides: 1 } : biomeYield(tile, climate);
+}
+function yieldVariants(tile: Biome) {
+  const groups = new Map<string, { climates: Climate[]; raw: Stock }>();
+  for (const climate of CLIMATES) {
+    const info = CLIMATE_INFO[climate];
+    if (![...info.terrain, ...info.water].some(([biome]) => biome === tile))
+      continue;
+    const raw = yields(tile, climate),
+      key = JSON.stringify(raw),
+      group = groups.get(key);
+    if (group) group.climates.push(climate);
+    else groups.set(key, { climates: [climate], raw });
+  }
+  return groups.size
+    ? [...groups.values()]
+    : [{ climates: [], raw: yields(tile) }];
 }
 function workshopGoods(tile: Biome): Raw[] {
   return tile === "woods"
@@ -124,8 +142,8 @@ export function TerrainReference({ seaOnly = false }: { seaOnly?: boolean }) {
       <h2>{l("Terrain and production", "Terrains et production")}</h2>
       <p className="reference-intro">
         {l(
-          "Output below is for one settlement. Multiply raw output by town level, camp tier or collector tier. Towns, land merchants and merchant ships at levels III/IV also add 1×/2× the base tile yield as processed goods. Workshops add their tier × the base yield of their linked resource separately; none of these bonuses consume raw goods.",
-          "Les quantités ci-dessous correspondent à une colonie. Multipliez chaque production brute par le niveau de l’agglomération, du camp ou du collecteur. Les agglomérations, marchands terrestres et navires marchands de niveau III/IV ajoutent aussi 1×/2× la production de base de la tuile en produits transformés. Les ateliers ajoutent séparément leur palier × la production de base de leur ressource liée ; ces bonus ne consomment aucune matière première.",
+          "Output below is the current climate-adjusted annual baseline for one settlement. Cereals with different regional yields list each case. Multiply raw output by town level, camp tier or collector tier. Towns, land merchants and merchant ships at levels III/IV also add 1×/2× the base tile yield as processed goods. Workshops add their tier × the linked resource's yield separately; none of these bonuses consume raw goods.",
+          "Les quantités ci-dessous sont les bases annuelles actuelles d’une colonie, ajustées au climat. Chaque rendement régional des céréales est indiqué. Multipliez la production brute par le niveau de l’agglomération, du camp ou du collecteur. Les agglomérations, marchands terrestres et navires marchands de niveau III/IV ajoutent aussi 1×/2× la base en produits transformés. Les ateliers ajoutent séparément leur palier × le rendement de la ressource liée ; ces bonus ne consomment aucune matière première.",
         )}
       </p>
       <div className="terrain-reference-grid">
@@ -133,7 +151,7 @@ export function TerrainReference({ seaOnly = false }: { seaOnly?: boolean }) {
           (t) =>
             !seaOnly || ["water", "fish", "cod", "whale", "ice"].includes(t),
         ).map((tile) => {
-          const raw = yields(tile),
+          const variants = yieldVariants(tile),
             workshops = workshopGoods(tile);
           return (
             <article className="terrain-row" key={tile} data-terrain={tile}>
@@ -149,15 +167,28 @@ export function TerrainReference({ seaOnly = false }: { seaOnly?: boolean }) {
                     "Moyenne annuelle par jet correspondant",
                   )}
                 </span>
-                {Object.keys(raw).length ? (
-                  <Outputs goods={raw} choice={tile === "woods"} />
-                ) : (
-                  <p>{l("No production.", "Aucune production.")}</p>
-                )}
-                {workshops.map((g) => (
-                  <div key={g}>
-                    <span className="output-label">{tx(extensionName(g))}</span>
-                    <Outputs goods={{ [processedFor(g)]: raw[g] }} />
+                {variants.map(({ climates, raw }, index) => (
+                  <div key={index} data-yield-climates={climates.join(" ")}>
+                    {variants.length > 1 && (
+                      <strong className="output-label">
+                        {climates
+                          .map((c) => tx(CLIMATE_INFO[c].name))
+                          .join(" / ")}
+                      </strong>
+                    )}
+                    {Object.keys(raw).length ? (
+                      <Outputs goods={raw} choice={tile === "woods"} />
+                    ) : (
+                      <p>{l("No production.", "Aucune production.")}</p>
+                    )}
+                    {workshops.map((g) => (
+                      <div key={g}>
+                        <span className="output-label">
+                          {tx(extensionName(g))}
+                        </span>
+                        <Outputs goods={{ [processedFor(g)]: raw[g] }} />
+                      </div>
+                    ))}
                   </div>
                 ))}
                 {tile === "woods" && (
@@ -171,8 +202,8 @@ export function TerrainReference({ seaOnly = false }: { seaOnly?: boolean }) {
                 {tile === "ice" && (
                   <p>
                     {l(
-                      "Frozen in Spring, Autumn and Winter; open in Summer. Armies cross while frozen, ships while open. Ice never counts as solid ground for construction.",
-                      "Gelée au printemps, en automne et en hiver ; libre en été. Les armées passent sur la glace, les navires sur l’eau libre. La banquise ne constitue jamais une terre ferme pour construire.",
+                      "Glacial Frozen sea stays frozen all year. Arctic Frozen sea opens only in Summer. Armies cross while frozen, ships while open. Ice never counts as solid ground for construction.",
+                      "La Banquise du climat Glacial reste gelée toute l’année. La Banquise arctique s’ouvre seulement en Été. Les armées passent sur la glace, les navires sur l’eau libre. La banquise ne constitue jamais une terre ferme pour construire.",
                     )}
                   </p>
                 )}
@@ -237,6 +268,14 @@ export function ClimateReference({
         {pct(1 - info.land)} {l("water", "eau")}
       </h3>
       <p>
+        {l("Initial climate weight: ", "Poids du climat initial : ")}
+        {climateInitialWeight(climate).toLocaleString(locale)}
+        {l(
+          ". The eleven established climates have weight 1 each; Glacial, Hyperarid and Monsoon have weight 0.35 each. Weights are normalized for the starting draw.",
+          ". Les onze climats établis ont chacun un poids de 1 ; Glacial, Hyperaride et Mousson ont chacun 0,35. Les poids sont normalisés pour le tirage initial.",
+        )}
+      </p>
+      <p>
         {l("Compatible neighbors: ", "Voisins compatibles : ")}
         {info.compatible.map((c) => tx(CLIMATE_INFO[c].name)).join(", ")}
       </p>
@@ -262,8 +301,11 @@ export function ClimateReference({
               <span>
                 {tx(BIOME_INFO[t].name)}
                 <small>
-                  {Object.keys(yields(t)).length ? (
-                    <Outputs goods={yields(t)} choice={t === "woods"} />
+                  {Object.keys(yields(t, climate)).length ? (
+                    <Outputs
+                      goods={yields(t, climate)}
+                      choice={t === "woods"}
+                    />
                   ) : t === "bare-peaks" ? (
                     l(
                       "No production. Impassable.",
@@ -302,7 +344,7 @@ export function ClimateReference({
           </p>
           {waterProbabilities(climate).map(([t, n]) => (
             <div className="climate-terrain" key={t}>
-              <TerrainImage tile={t} />
+              <TerrainImage tile={t} climate={climate} />
               <span>
                 {tx(BIOME_INFO[t].name)}
                 <small>

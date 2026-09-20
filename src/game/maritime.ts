@@ -1,4 +1,4 @@
-import { BIOME_INFO } from "./climate-content";
+import { biomeYield } from "./climate-content";
 import { TERRAIN, processedFor, type TerrainKey } from "./content";
 import { friendly } from "./relations";
 import type { Game, Hex, Piece, Raw, Stock, Watchtower } from "./types";
@@ -12,7 +12,7 @@ export function tileYield(
   if (tile.biome) {
     if (tile.biome === "woods")
       return { [tile.woodsChoices?.[owner ?? -1] ?? "lumber"]: 1 };
-    return { ...BIOME_INFO[tile.biome].yield };
+    return biomeYield(tile.biome, tile.climate);
   }
   if (tile.resource === "water")
     return tile.fish ? { fish: 1 } : tile.whale ? { hides: 1, oil: 1 } : {};

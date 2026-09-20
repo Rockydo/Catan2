@@ -1,4 +1,5 @@
 import { climateTerrain } from "../src/game/climate";
+import { CLIMATE_INFO } from "../src/game/climate-content";
 import { describe, it, expect } from "vitest";
 import {
   randomAt,
@@ -87,15 +88,18 @@ describe("world and setup", () => {
     expect(generateWorld("a")).toEqual(generateWorld("a"));
     expect(generateWorld("a")).not.toEqual(generateWorld("b"));
   });
-  it("assigns seven and water without reshuffling", () => {
-    const tiles = Object.values(generateWorld("probabilities", 1200).tiles);
+  it("assigns seven and climate-dependent water without reshuffling", () => {
+    const seed = "probabilities";
+    const tiles = Object.values(generateWorld(seed, 1200).tiles);
     expect(tiles.filter((t) => t.number === 7).length).toBeGreaterThan(60);
-    expect(tiles.filter((t) => t.resource === "water").length).toBeGreaterThan(
-      520,
-    );
-    expect(tiles.filter((t) => t.resource === "water").length).toBeLessThan(
-      680,
-    );
+    for (const tile of tiles) {
+      expect(tile.number).toBe(
+        2 + Math.floor(randomAt(seed, tile.id, "number") * 11),
+      );
+      expect(["water", "ice"].includes(tile.resource)).toBe(
+        randomAt(seed, tile.id, "terrain") >= CLIMATE_INFO[tile.climate!].land,
+      );
+    }
   });
   it.each([1, 2, 3])(
     "reveals exactly the expedition count at tier %s without changing old tiles",
@@ -160,7 +164,16 @@ it("uses climate probabilities for expeditions without altering revealed terrain
   const previous = structuredClone(w.tiles);
   addHexes(w, seed, ["20,0", "21,0", "22,0", "23,0"]);
   for (const tile of Object.values(w.tiles)) {
-    expect(tile).toMatchObject(climateTerrain(seed, tile.id, tile.climate!));
+    const openWater = neighbors(tile.id).every((id) => {
+      const nearby = w.tiles[id];
+      return nearby
+        ? ["water", "ice"].includes(nearby.resource)
+        : randomAt(seed, id, "terrain") >=
+            CLIMATE_INFO[w.climatePlan![id]].land;
+    });
+    expect(tile).toMatchObject(
+      climateTerrain(seed, tile.id, tile.climate!, openWater),
+    );
     if (previous[tile.id]) expect(tile).toEqual(previous[tile.id]);
   }
 });

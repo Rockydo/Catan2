@@ -170,7 +170,7 @@ function safeAfter(
 ) {
   const frozen = frozenInSeason(tile, season);
   const marine = tile.resource === "water" || tile.resource === "ice";
-  return naval ? marine && !frozen : !marine && canOccupy(tile, false);
+  return naval ? marine && !frozen : marine ? frozen : canOccupy(tile, false);
 }
 
 export function seasonalDestinationSafe(

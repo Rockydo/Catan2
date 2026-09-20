@@ -1,0 +1,153 @@
+{
+  "tool": "Built-in image_gen",
+  "version": 1,
+  "date": "2026-09-20",
+  "columns": [
+    "spring",
+    "summer",
+    "autumn",
+    "winter"
+  ],
+  "processing": "Exact equal-cell extraction with 2px safety inset, resampled to 384px WebP at quality88. No color filters or creative postprocessing.",
+  "notes": "Six atlases contain 96 unique seasonal sprites, covering eleven Hyperarid and thirteen Monsoon biomes. Monsoon water occupies the fourth marine-atlas row.",
+  "atlases": [
+    {
+      "id": "hyperarid-land",
+      "rows": [
+        {
+          "climate": "hyperarid",
+          "biome": "desert"
+        },
+        {
+          "climate": "hyperarid",
+          "biome": "bare-peaks"
+        },
+        {
+          "climate": "hyperarid",
+          "biome": "salt-flats"
+        },
+        {
+          "climate": "hyperarid",
+          "biome": "iron"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Create ONE production seasonal terrain SPRITE ATLAS for a richly illustrated medieval hex strategy board game. Square canvas, exactly FOUR COLUMNS and FOUR ROWS of equal square cells, no gutters, borders or drawn separators. Full-bleed finely painted miniature landscapes, realistic dense materials and crisp resource silhouettes, 60-degree overhead viewpoint, no sky or horizon. Every cell must be an ENTIRE SQUARE of landscape with illustrated scenery continuing fully into all four corners. Do not draw a shaped tile, a hexagon silhouette, a cutout, a floating platform or any background margin. Keep main resource identifiers in the central 60 percent. No text, labels, people, icons, numbers, watermarks, frames or hex outlines. Consistent miniature scale, beautiful readable hand-painted detail, softly modeled natural light. Each row shows the SAME terrain composition in four seasons. COLUMNS, left to right: SPRING, SUMMER, AUTUMN, WINTER. Exact equal grid, do not blend scenes across cells. Climate HYPERARID, harsher than ordinary desert. Bleached ochre and pale sandstone, near-total absence of vegetation away from the rare oasis. No snow, ice, lush grass or leafy scrub in any season. Spring warm dry soft light; Summer scorching bright gold light, extremely dry sand; Autumn dry mild cooler amber light; Winter cool dry pale daylight with blue-grey rock shadows. Seasonal shifts subtle but visible; recognizable resource remains visible all year. ROW 1 DESERT: empty rolling sand dunes with rippled fine sand, a few sunbleached low rocks, no resources or vegetation. ROW 2 BARE PEAKS: impenetrable central cluster of sharply vertical jagged sandstone-grey rocky spires, extremely steep faces and deep narrow ravines, barren dry rocks, no buildings or roads, clearly impassable. ROW 3 SALT FLATS: flat blinding white salt crust on ochre earth, polygonal crystallized plates, shallow turquoise brine pools and a prominent central pile of white salt in wicker baskets. Pools slightly reduced in scorching summer, still unfrozen winter. ROW 4 IRON MINE: central dark timber mine opening in sunbleached grey rock with clear rusty red iron veins and red-grey ore cart in central foreground; rock and sand barren all year.",
+      "source": "generated_images/01a0b50f-f303-7d33-bfca-f3aa61ed9b06/exec-89571001-51ba-4424-a67d-e8eb7aabb12a.png"
+    },
+    {
+      "id": "hyperarid-resources",
+      "rows": [
+        {
+          "climate": "hyperarid",
+          "biome": "stone"
+        },
+        {
+          "climate": "hyperarid",
+          "biome": "gold"
+        },
+        {
+          "climate": "hyperarid",
+          "biome": "oasis"
+        },
+        {
+          "climate": "hyperarid",
+          "biome": "coal"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Create ONE production seasonal terrain SPRITE ATLAS for a richly illustrated medieval hex strategy board game. Square canvas, exactly FOUR COLUMNS and FOUR ROWS of equal square cells, no gutters, borders or drawn separators. Full-bleed finely painted miniature landscapes, realistic dense materials and crisp resource silhouettes, 60-degree overhead viewpoint, no sky or horizon. Every cell must be an ENTIRE SQUARE of landscape with illustrated scenery continuing fully into all four corners. Do not draw a shaped tile, a hexagon silhouette, a cutout, a floating platform or any background margin. Keep main resource identifiers in the central 60 percent. No text, labels, people, icons, numbers, watermarks, frames or hex outlines. Consistent miniature scale, beautiful readable hand-painted detail, softly modeled natural light. Each row shows the SAME terrain composition in four seasons. COLUMNS, left to right: SPRING, SUMMER, AUTUMN, WINTER. Exact equal grid, do not blend scenes across cells. Climate HYPERARID, harsher than ordinary desert. Bleached ochre and pale sandstone, near-total absence of vegetation away from the rare oasis. No snow, ice, lush grass or leafy scrub in any season. Spring warm dry soft light; Summer scorching bright gold light, extremely dry sand; Autumn dry mild cooler amber light; Winter cool dry pale daylight with blue-grey rock shadows. Seasonal shifts subtle but visible; recognizable resource remains visible all year. ROW 1 STONE: barren pale beige-grey quarry, central stepped cut rock face, large square cut stone blocks and a modest wooden crane, clearly distinguishable from sand. ROW 2 GOLD: barren grey mineral rock with unmistakable bright yellow gold veins, a timber-supported mine entrance and a central cart of gold ore. ROW 3 OASIS: a tiny clear turquoise spring, small central ring of recognizable date palms and a very small irrigated cereal patch within otherwise enormous barren dunes. Spring grain is short green shoots and palm dates immature. Summer grain remains standing GREEN and unripe, water and green patch visibly restricted. Autumn grain patch becomes golden ripe and a few bound grain sheaves appear; palm date clusters ripe. Winter cropped short stubble with no ripe grain, palms remain green beside modest water. Do not imply a giant fertile forest. ROW 4 COAL: barren pale grey ridge containing a black coal seam, central timber-supported mine opening, small cart of clearly BLACK coal and exposed shiny black rocks. No grey stone blocks or gold in coal row.",
+      "source": "generated_images/01a0b50f-f303-7d33-bfca-f3aa61ed9b06/exec-ff6feff2-6d94-4b10-aa9b-a07e7e55abf5.png"
+    },
+    {
+      "id": "extreme-warm-marine",
+      "rows": [
+        {
+          "climate": "hyperarid",
+          "biome": "fish"
+        },
+        {
+          "climate": "hyperarid",
+          "biome": "whale"
+        },
+        {
+          "climate": "hyperarid",
+          "biome": "water"
+        },
+        {
+          "climate": "monsoon",
+          "biome": "water"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Create ONE production seasonal terrain SPRITE ATLAS for a richly illustrated medieval hex strategy board game. Square canvas, exactly FOUR COLUMNS and FOUR ROWS of equal square cells, no gutters, borders or drawn separators. Full-bleed finely painted miniature landscapes, realistic dense materials and crisp resource silhouettes, 60-degree overhead viewpoint, no sky or horizon. Every cell must be an ENTIRE SQUARE of landscape with illustrated scenery continuing fully into all four corners. Do not draw a shaped tile, a hexagon silhouette, a cutout, a floating platform or any background margin. Keep main resource identifiers in the central 60 percent. No text, labels, people, icons, numbers, watermarks, frames or hex outlines. Consistent miniature scale, beautiful readable hand-painted detail, softly modeled natural light. Each row shows the SAME terrain composition in four seasons. COLUMNS, left to right: SPRING, SUMMER, AUTUMN, WINTER. Exact equal grid, do not blend scenes across cells. Entirely ocean surface in EVERY CELL, no coast, no sand, no land, no boats. Existing hex board game oceans use understated medium teal/blue (#287f9c range), painterly water subtle small-scale waves and visible animals, not a photorealistic aerial photograph. ROW 1 HYPERARID FISH: warm blue sea with a clearly visible central shoal of small silver fish underwater; Spring gentle blue-green ripples, Summer sunlit brighter teal, Autumn deeper blue soft ripples, Winter slightly cooler medium blue and faint whitecaps. ROW 2 HYPERARID WHALES: same four sea seasons, two clearly recognizable grey whale backs centrally surfacing with tail, a subtle blow; resource creatures legible from above. ROW 3 HYPERARID ORDINARY WATER: same four seasonal color/light treatments and very subtle ripples, NO fish, whales or other animals. ROW 4 MONSOON ORDINARY WATER: Spring fresh medium teal with light ripples, Summer wet-season slate teal rougher small whitecaps and a few diffuse rainfall rings but no painted rain streaks, Autumn receding-storm blue-teal with gentle wave lines, Winter calm clear teal. Keep all water cells similar brightness to understated board-game sea, avoid dramatic dark black oceans or glowing tropical turquoise.",
+      "source": "generated_images/01a0b50f-f303-7d33-bfca-f3aa61ed9b06/exec-409c6b8c-4daa-4554-b03f-16c08c36e8f3.png"
+    },
+    {
+      "id": "monsoon-living",
+      "rows": [
+        {
+          "climate": "monsoon",
+          "biome": "jungle"
+        },
+        {
+          "climate": "monsoon",
+          "biome": "tropical-woods"
+        },
+        {
+          "climate": "monsoon",
+          "biome": "river-woods"
+        },
+        {
+          "climate": "monsoon",
+          "biome": "rice-field"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Create ONE production seasonal terrain SPRITE ATLAS for a richly illustrated medieval hex strategy board game. Square canvas, exactly FOUR COLUMNS and FOUR ROWS of equal square cells, no gutters, borders or drawn separators. Full-bleed finely painted miniature landscapes, realistic dense materials and crisp resource silhouettes, 60-degree overhead viewpoint, no sky or horizon. Every cell must be an ENTIRE SQUARE of landscape with illustrated scenery continuing fully into all four corners. Do not draw a shaped tile, a hexagon silhouette, a cutout, a floating platform or any background margin. Keep main resource identifiers in the central 60 percent. No text, labels, people, icons, numbers, watermarks, frames or hex outlines. Consistent miniature scale, beautiful readable hand-painted detail, softly modeled natural light. Each row shows the SAME terrain composition in four seasons. COLUMNS, left to right: SPRING, SUMMER, AUTUMN, WINTER. Exact equal grid, do not blend scenes across cells. Climate MONSOON, warm humid dense broadleaf jungle and palms, wet red-brown soils. Spring early rains and fresh bright growth; Summer intense wet monsoon, swollen brown river channels and wet dark emerald foliage, crops green and UNRIPE; Autumn receding floodwater and rich green foliage, rice ripe GOLDEN only in this column; Winter drier but still warm, olive-green plants and dry muddy margins, cut rice stubble. Absolutely NO snow, frost, ice, orange autumn tree canopy or temperate conifers. Do not obscure any subject with rain streaks or fog. Logging and hunting remain visibly productive in every season. ROW 1 JUNGLE: densely layered tropical rainforest canopy with a central small open glade containing clearly readable boar and tapir; hide-producing animals remain central and visible all four seasons. ROW 2 TROPICAL WOODS: dense palm and broadleaf timber forest, central pile of freshly cut brown logs and stumps clearly distinguishing logging from hunting; summer wet foliage. ROW 3 RIVER WOODS: humid lush broadleaf forest along a narrow river, central recognizable log pile on high ground and tree stumps; Spring stream fresh, Summer swollen muddy stream but logging clearing accessible, Autumn receding water, Winter narrow clear stream and dry muddy banks. ROW 4 RICE FIELD: irrigated flat-to-terraced paddy squares with earthy low embankments and modest palm margins. Spring shallow water with small bright green planted seedlings. Summer flooded paddies with dense standing GREEN UNRIPE rice, no golden crop or sheaves. Autumn ripe golden rice rows and a few harvested bound sheaves in central field. Winter CUT STUBBLE on drained muddy paddies, no golden grain and no standing ripe crop. Preserve identical paddy layout across seasons, clear crop-stage differentiation.",
+      "source": "generated_images/01a0b50f-f303-7d33-bfca-f3aa61ed9b06/exec-3138ed34-d5e7-44b2-a169-4109280e8c1e.png"
+    },
+    {
+      "id": "monsoon-earth",
+      "rows": [
+        {
+          "climate": "monsoon",
+          "biome": "alluvial-clay"
+        },
+        {
+          "climate": "monsoon",
+          "biome": "bare-peaks"
+        },
+        {
+          "climate": "monsoon",
+          "biome": "stone"
+        },
+        {
+          "climate": "monsoon",
+          "biome": "iron"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Create ONE production seasonal terrain SPRITE ATLAS for a richly illustrated medieval hex strategy board game. Square canvas, exactly FOUR COLUMNS and FOUR ROWS of equal square cells, no gutters, borders or drawn separators. Full-bleed finely painted miniature landscapes, realistic dense materials and crisp resource silhouettes, 60-degree overhead viewpoint, no sky or horizon. Every cell must be an ENTIRE SQUARE of landscape with illustrated scenery continuing fully into all four corners. Do not draw a shaped tile, a hexagon silhouette, a cutout, a floating platform or any background margin. Keep main resource identifiers in the central 60 percent. No text, labels, people, icons, numbers, watermarks, frames or hex outlines. Consistent miniature scale, beautiful readable hand-painted detail, softly modeled natural light. Each row shows the SAME terrain composition in four seasons. COLUMNS, left to right: SPRING, SUMMER, AUTUMN, WINTER. Exact equal grid, do not blend scenes across cells. Climate MONSOON, warm humid dense broadleaf jungle and palms, wet red-brown soils. Spring early rains and fresh bright growth; Summer intense wet monsoon, swollen brown river channels and wet dark emerald foliage, crops green and UNRIPE; Autumn receding floodwater and rich green foliage, rice ripe GOLDEN only in this column; Winter drier but still warm, olive-green plants and dry muddy margins, cut rice stubble. Absolutely NO snow, frost, ice, orange autumn tree canopy or temperate conifers. Do not obscure any subject with rain streaks or fog. Logging and hunting remain visibly productive in every season. ROW 1 ALLUVIAL CLAY: broad FLAT reddish-brown clay river terraces, exposed central red clay bank and clay piles with shallow muddy channels, green humid vegetation edging the tile. Summer clay wetter and muddy channels swollen but cut clay face and piles remain fully visible and accessible. Not mountainous. ROW 2 BARE PEAKS: central impenetrable cluster of towering steep jagged GREY rock spires and sheer narrow ravines, very sparse vegetation on faces; dense tropical jungle only around the low base, no traversable pass, no huts, buildings or paths. Unmistakably impassable bare rock, not a forest tile. ROW 3 STONE: pale grey tropical quarry, central stepped squared cut rock face, obvious central stone blocks and small timber crane, broadleaf green foliage in margins. ROW 4 IRON: grey mineral rock with clear rusty red iron seams, a central timber supported mine entrance and ore cart full of red-grey ore, humid tropical foliage around the margins. Keep recognizable grey stone versus red iron versus brown-red flat clay palettes, with seasonal plant/water changes around each.",
+      "source": "generated_images/01a0b50f-f303-7d33-bfca-f3aa61ed9b06/exec-39d179fb-bb78-4c94-8e32-b314271c8324.png"
+    },
+    {
+      "id": "monsoon-industry-sea",
+      "rows": [
+        {
+          "climate": "monsoon",
+          "biome": "coal"
+        },
+        {
+          "climate": "monsoon",
+          "biome": "gold"
+        },
+        {
+          "climate": "monsoon",
+          "biome": "fish"
+        },
+        {
+          "climate": "monsoon",
+          "biome": "whale"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Create ONE production seasonal terrain SPRITE ATLAS for a richly illustrated medieval hex strategy board game. Square canvas, exactly FOUR COLUMNS and FOUR ROWS of equal square cells, no gutters, borders or drawn separators. Full-bleed finely painted miniature landscapes, realistic dense materials and crisp resource silhouettes, 60-degree overhead viewpoint, no sky or horizon. Every cell must be an ENTIRE SQUARE of landscape with illustrated scenery continuing fully into all four corners. Do not draw a shaped tile, a hexagon silhouette, a cutout, a floating platform or any background margin. Keep main resource identifiers in the central 60 percent. No text, labels, people, icons, numbers, watermarks, frames or hex outlines. Consistent miniature scale, beautiful readable hand-painted detail, softly modeled natural light. Each row shows the SAME terrain composition in four seasons. COLUMNS, left to right: SPRING, SUMMER, AUTUMN, WINTER. Exact equal grid, do not blend scenes across cells. Climate MONSOON, warm humid dense broadleaf jungle and palms, wet red-brown soils. Spring early rains and fresh bright growth; Summer intense wet monsoon, swollen brown river channels and wet dark emerald foliage, crops green and UNRIPE; Autumn receding floodwater and rich green foliage, rice ripe GOLDEN only in this column; Winter drier but still warm, olive-green plants and dry muddy margins, cut rice stubble. Absolutely NO snow, frost, ice, orange autumn tree canopy or temperate conifers. Do not obscure any subject with rain streaks or fog. Logging and hunting remain visibly productive in every season. ROW 1 COAL: tropical mine in rocky near-black coal seam, central timber-supported opening, exposed black coal pile and small cart of BLACK coal, humid broadleaf plants around. Spring fresh green margins; Summer wet emerald foliage and damp black stone; Autumn green foliage and drier soil; Winter slightly olive-green margins and dry red earth. ROW 2 GOLD: tropical grey outcrop with bold unmistakable GOLD-YELLOW mineral veins and a central cart full of gold ore beside timber mine entrance; same seasonal foliage/water changes. ROW 3 FISH: entire tile is medium teal-blue ocean, no land, no coast, central shoal of small silver fish visible beneath water. Spring medium blue-teal ripples, Summer slightly slate teal and small wavelets, Autumn blue-teal calmer, Winter clearer calm medium teal. ROW 4 WHALES: same four entirely-water sea treatments, two clearly recognizable grey whale backs centrally surfacing with a tail and subtle blow. Never ice or snow, never black ocean. Marine cells should integrate into ordinary board-game water (#287f9c family), unobtrusive waves and clean legible animal silhouettes; no huge dramatic waves or rain streaks.",
+      "source": "generated_images/01a0b50f-f303-7d33-bfca-f3aa61ed9b06/exec-7c9d017b-9a46-45bf-b2d8-3bcaca4f5487.png"
+    }
+  ]
+}

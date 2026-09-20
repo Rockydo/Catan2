@@ -158,12 +158,14 @@ const TerrainPatterns = memo(function TerrainPatterns({
 const TerrainArt = memo(function TerrainArt({
   resource,
   openWater,
+  productiveWater,
   x,
   y,
   seed,
 }: {
   resource: string;
   openWater: boolean;
+  productiveWater: boolean;
   x: number;
   y: number;
   seed: number;
@@ -180,7 +182,7 @@ const TerrainArt = memo(function TerrainArt({
           href={`./assets/${terrainArtFile(resource)}`}
           // Blend sea texture into the muted water base without raster filters.
           // Production tokens are separate siblings and retain full contrast.
-          opacity={openWater ? 0.65 : undefined}
+          opacity={openWater ? (productiveWater ? 0.85 : 0.65) : undefined}
           x={-43}
           y={-43}
           width={86}
@@ -353,6 +355,7 @@ const TerrainLayer = memo(function TerrainLayer({
               <TerrainArt
                 resource={seasonalTerrainPattern(tile, artworkSeason)}
                 openWater={openWater}
+                productiveWater={sea && !!good}
                 x={x}
                 y={y}
                 seed={hash(tile.id)}
@@ -377,7 +380,7 @@ const TerrainLayer = memo(function TerrainLayer({
                               ? tileYield(tile, viewer)
                               : undefined
                         }
-                        label={tile.whale ? "Whales" : undefined}
+                        baseOutput={tileYield(tile, viewer)}
                         number={tile.number}
                         compact={small}
                         showNumber={numbers}
@@ -451,6 +454,9 @@ const MapHex = memo(function MapHex({
   useLocale();
 
   const style = TERRAIN[terrain];
+  const description = tx(
+    `${style.name}, ${good ? `${outputLabel ?? (terrain === "whale" ? "Hides + Oil" : GOOD_INFO[good].name)}, roll ${number}` : resource === "water" ? "water" : resource === "peaks" ? tx("Impassable") : "No resources"}, hex ${id}${movable ? ", reachable" : ""}`,
+  );
   return (
     <g
       key={id}
@@ -461,9 +467,7 @@ const MapHex = memo(function MapHex({
       data-map-y={y}
       role="button"
       tabIndex={0}
-      aria-label={tx(
-        `${style.name}, ${good ? `${outputLabel ?? (terrain === "whale" ? "Hides + Oil" : GOOD_INFO[good].name)}, roll ${number}` : resource === "water" ? "water" : resource === "peaks" ? tx("Impassable") : "No resources"}, hex ${id}${movable ? ", reachable" : ""}`,
-      )}
+      aria-label={description}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
@@ -472,6 +476,7 @@ const MapHex = memo(function MapHex({
       }}
       onClick={() => activate(id, movable)}
     >
+      <title>{description}</title>
       <polygon points={poly} fill="transparent" stroke="transparent" />
       {resource === "peaks" && (
         <g
@@ -786,7 +791,13 @@ export function Board({
                       !Object.values(
                         seasonalYield(tile, viewer, currentSeason),
                       ).some((n) => !!n)
-                        ? tx("No harvest this season")
+                        ? `${tx("No harvest this season")} · ${Object.keys(
+                            tileYield(tile, viewer),
+                          )
+                            .map(
+                              (good) => `0 ${tx(GOOD_INFO[good as Raw].name)}`,
+                            )
+                            .join(" + ")}`
                         : tile.biome || currentSeason
                           ? Object.entries(
                               seasonalYield(tile, viewer, currentSeason),

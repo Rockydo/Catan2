@@ -84,6 +84,7 @@ function migratedSpring() {
 describe("stable shoulder-season sea ice", () => {
   it("uses the exact climate-specific spring and autumn thresholds", () => {
     expect(SHOULDER_ICE_CHANCE).toEqual({
+      glacial: { spring: 1, autumn: 1 },
       arctic: { spring: 0.7, autumn: 0.5 },
       alpine: { spring: 0.35, autumn: 0.25 },
       cold: { spring: 0.2, autumn: 0.1 },
@@ -163,7 +164,7 @@ describe("stable shoulder-season sea ice", () => {
   });
 
   it("keeps seeded rolls and other random streams stable across years, saves and discovery", () => {
-    const s = newGame("stable-shoulder-ice-0");
+    const s = newGame("stable-shoulder-ice-5");
     expect(s.calendar?.iceModel).toBe(1);
     const streams = randomStreams(s);
     const water = Object.values(s.tiles).filter(

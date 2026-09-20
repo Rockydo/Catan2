@@ -4,6 +4,7 @@ import {
   BIOME_INFO,
   compatibleClimate,
   climateTransitionWeight,
+  climateInitialWeight,
   type Climate,
   type Biome,
 } from "./climate-content";
@@ -23,6 +24,15 @@ const climateDistances = CLIMATES.map((start) => {
 });
 function distanceTo(from: Climate, to: Climate) {
   return climateDistances[CLIMATES.indexOf(from)].get(to)!;
+}
+export function chooseInitialClimate(roll: number): Climate {
+  let remaining =
+    roll * CLIMATES.reduce((sum, c) => sum + climateInitialWeight(c), 0);
+  for (const candidate of CLIMATES) {
+    remaining -= climateInitialWeight(candidate);
+    if (remaining < 0) return candidate;
+  }
+  return CLIMATES[CLIMATES.length - 1];
 }
 /** Bias only the destination draw, after compatibility and continuity checks. */
 export function chooseClimateTransition(
@@ -56,7 +66,7 @@ function bounds(ids: string[]) {
 /** Starting from a valid map, move each new cell toward its proposed climate.
  * Every accepted recoloring remains compatible with its neighbors and strictly
  * reduces graph distance to its proposal. Cells that cannot advance form buffers.
- * At most six recolorings per cell; existing climate reservations never change. */
+ * Existing climate reservations never change. */
 export function bufferClimates(
   baseline: Record<string, Climate>,
   proposed: Record<string, Climate>,
@@ -118,11 +128,7 @@ export function planClimates(world: World, seed: string, revealed: string[]) {
   )[0];
   const initial = Object.keys(world.tiles).length
     ? "temperate"
-    : CLIMATES[
-        Math.floor(
-          randomAt(seed, seedTile, "climate-initial") * CLIMATES.length,
-        )
-      ];
+    : chooseInitialClimate(randomAt(seed, seedTile, "climate-initial"));
   const oldBounds = oldIds.length ? bounds(oldIds) : undefined;
   const baseline: Record<string, Climate> = { ...previous },
     assigned: Record<string, Climate> = { ...previous };

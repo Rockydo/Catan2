@@ -27,17 +27,23 @@ Goods are stored in individual towns but spent from a common pool. Armies can ra
 ## Map and dice
 
 ### Climate generation
-The initial map contains 125 tiles in Classic or 250 in Grand campaign. Climate is assigned before terrain. Pick a random starting tile and one of eleven climates with equal probability. Grow outward through neighbors. If all assigned immediate neighbors agree, retain that climate with 85% probability. On a switch, intersect the compatible climates of assigned immediate neighbors only. Destination weights start at 1. From the seven original climates, newly compatible Oceanic, Alpine, Subtropical and Savanna destinations have weight 0.5. Temperate and Steppe favor Cold at 1.5. Mediterranean gives Steppe and Desert weight 0.5. Tropical to Desert, Desert to Tropical and Cold to Arctic have weight 2. Oceanic favors Temperate at 2; Alpine favors Cold and Arctic at 2 each; Subtropical and Savanna favor Tropical at 2. Eligible weights are normalized for each draw. The 85% continuity chance is unchanged. At mixed borders, prefer an existing adjacent compatible climate. If no candidate exists, copy an immediate neighbor.
+The initial map contains 125 tiles in Classic or 250 in Grand campaign. Climate is assigned before terrain. Pick a random starting tile, then choose among fourteen climates using relative weights: 1 for each of the eleven established climates and 0.35 each for Glacial, Hyperarid and Monsoon. Normalize these weights for the initial draw. Grow outward through neighbors. If all assigned immediate neighbors agree, retain that climate with 85% probability. On a switch, intersect the compatible climates of assigned immediate neighbors only. Destination weights start at 1. From the seven original climates, newly compatible Oceanic, Alpine, Subtropical and Savanna destinations have weight 0.5. Temperate and Steppe favor Cold at 1.5. Mediterranean gives Steppe and Desert weight 0.5. Tropical to Desert, Desert to Tropical and Cold to Arctic have weight 2. Oceanic favors Temperate at 2; Alpine favors Cold and Arctic at 2 each; Subtropical and Savanna favor Tropical at 2. Entering a compatible extreme climate has weight 0.5. Glacial exits to Arctic at 2 or Alpine at 1; Hyperarid exits to Desert at 2; Monsoon exits to Tropical at 2, Subtropical or Savanna at 1. Eligible weights are normalized for each draw. The 85% continuity chance is unchanged. At mixed borders, prefer an existing adjacent compatible climate. If no candidate exists, copy an immediate neighbor.
 Before rolling terrain, a final repair pass leaves intermediate compatible climates as buffer zones where needed. Adjacent climates are always compatible. Climate reservations include an unseen collar, so future expeditions cannot create incompatible seams. The underlying terrain never changes. Its appearance, yield and sea surface follow the seasonal calendar. The same seed and discovery sequence reproduce the same world. Different expedition sequences may extend climate zones differently.
 Choose land or water using that climate’s ratio, then use its terrain table below. Land percentages are conditional on rolling land. Water checks run in the listed order on remaining water only; the first success ends the sequence. Water tiles with no adjacent land double their climate’s Whale check chance. Fish, Cod and Frozen sea checks stay unchanged and run first. Frozen sea does not count as land. Hidden neighbors use their reserved climates and land rolls; the map edge alone does not qualify as open water. Gold frequency varies by climate. No resource, climate, port, continent or balanced start is guaranteed.
-Temperate, Tropical and Desert use 50% land. Cold and Subtropical use 55%, Steppe 65%, Arctic and Mediterranean 40%, Oceanic 35%, Alpine 75% and Savanna 70%. Steppe and Desert are mutually compatible, as are all other listed borders. Oasis food means Grain.
+Temperate, Tropical and Desert use 50% land. Cold and Subtropical use 55%, Steppe 65%, Arctic and Mediterranean 40%, Oceanic 35%, Alpine 75%, Savanna 70%, Glacial 45%, Hyperarid 90% and Monsoon 30%. Steppe and Desert are mutually compatible, as are all other listed borders. Oasis food means Grain.
 ### Climate overview
 Use the Climates button beside the map zoom controls to show only climate colors. The legend counts revealed tiles in each climate. Pan, zoom and select tiles as usual; press Climates again to restore the normal map.
+### Extreme climates and fertile soils
+Glacial stays snowy in every season, with extensive barren snow, peaks and permanent pack ice. Mines and ordinary marine resource tiles produce only in Summer; Seal grounds produce all year. Glacial borders only Arctic and Alpine.
+Hyperarid has 90% land, much of it barren desert or peaks. Salt and minerals offer opportunities, but rare Oases and poor fisheries make food and Wood scarce. It borders only Desert. Monsoon has 30% land: water and peaks separate pockets of forest, clay and rainfed rice. Rice harvests once in Autumn; timber, hunting and clay remain productive through Summer rains. Monsoon borders Tropical, Subtropical and Savanna.
+Difficulty comes from geography, resource scarcity and predictable harvest windows. These climates add no upkeep, recurring disaster damage or special AI resources. Isolated colonies use normal transport, trade and construction rules.
+Black-soil wheat represents fertile Chernozem grassland and forest-steppe soil, not a separate climate. It occupies 2% of Temperate land and 4% of Steppe land, replacing two points of Golden fields and four points of Steppe plain respectively.
 ### Barren terrain, peaks and ice
-Snow plains and Desert produce nothing and have no workshop or camp. Armies can cross them and build normally beside them. Frozen sea is generated by the Arctic water roll. It produces nothing, admits land units and blocks ships. Permanent towns, towers and roads require adjacent solid ground; no route can be built on an edge bordered only by ice. An ice-water edge without land can hold a sea route. Frozen sea opens in Summer and refreezes in Autumn. Other Cold, Alpine and Arctic water freezes in Winter, with fixed per-hex chances of also freezing in Spring and Autumn. See Seasons and harvests for trapped units, winter ports and construction rules.
+Snow plains and Desert produce nothing and have no workshop or camp. Armies can cross them and build normally beside them. Frozen sea is generated by Arctic and Glacial water rolls. It produces nothing, admits land units and blocks ships. Permanent towns, towers and roads require adjacent solid ground; no route can be built on an edge bordered only by ice. An ice-water edge without land can hold a sea route. Glacial Frozen sea stays frozen all year. Arctic Frozen sea opens in Summer and refreezes in Autumn. Ordinary Glacial water freezes in Spring, Autumn and Winter and opens in Summer. Other Cold, Alpine and Arctic water freezes in Winter, with fixed per-hex chances of also freezing in Spring and Autumn. See Seasons and harvests for trapped units, winter ports and construction rules.
 Bare Peaks produce nothing and are impassable to every unit. Units cannot move through them, recruit onto them, retreat onto them or disembark onto them. Roads may follow their edges under the normal connection rules, including an edge between two peaks. Towns and watchtowers need at least one adjacent walkable solid land tile. No camp or workshop can use Bare Peaks.
 ### Existing campaigns
-Revealed tiles retain their terrain, yields and assigned climate. Saves made before climates existed classify those older tiles as Temperate for future climate borders. Newly explored tiles can use all eleven climates. Start a new campaign to use the new terrain tables throughout the map. Rough fields have been removed: existing tiles become Barley in Cold, Alpine and Oceanic climates, or Millet in Steppe and Savanna. Their numbers, camps, workshops and annual Grain output stay unchanged. Former Oceanic Rough fields now harvest in Summer, like other Oceanic Barley; Oceanic Golden fields still harvest in Autumn. The same shares in new map generation now produce these named cereals.
+Revealed tiles retain their terrain and assigned climate, apart from the named replacement of retired Rough fields. Dice numbers, camps, workshops, units and stored goods are preserved. Current climate-adjusted productivity applies when a campaign is loaded: Subtropical rice has baseline 2, Monsoon rice 1, Oceanic Barley 2, and Temperate/Oceanic Rye 2. Other cereal baselines follow the current tables.
+Saves made before climates existed classify their older tiles as Temperate for future borders. Newly explored tiles can use all fourteen climates. Start a new campaign to use the new terrain tables throughout the map. Rough fields become Barley in Cold, Alpine and Oceanic climates, or Millet in Steppe and Savanna. Former Oceanic Rough fields now give 8 Grain on matching Summer rolls, like other Oceanic Barley; Oceanic Golden fields retain their Autumn harvest. Stored harvests are not recalculated.
 ### Tile numbers and dice
 Every productive tile receives a uniform random number from 2 through 12, including 7. Dice are two independent d6, so tile numbers are equally common in generation but not equally likely to activate. Dice, terrain, research and rebellion randomness are saved separately. Reloading does not reroll an offer or the map. Hidden coordinates cannot be inspected by players or AI.
 ### Ports
@@ -52,34 +58,35 @@ One complete round is one season. Every surviving faction takes its turn before 
 The calendar beside the round number shows the current season and year. Open it to review the next season and preview landscapes. A preview changes artwork only: movement, production and legal actions still use the current season. Select a tile for its exact open-water or frozen surface and production in all four seasons.
 ### Dice and harvest windows
 A tile produces only when its number is rolled during a productive season. Every matching roll pays, even if that tile has already produced in the same season. There is no once-per-year harvest limit, guaranteed harvest, replacement roll or compensation. Off-season matching rolls produce nothing. Dice remain two independent six-sided dice.
-For each resource, the four seasonal amounts add up to four times its annual baseline. The average annual output is unchanged for the same producers and number of rolls. Timing is less reliable: Golden fields produce 8 Grain per settlement on each matching Summer roll, and zero in the other seasons. If their number never appears that Summer, the harvest is lost.
+For each resource, the four seasonal amounts add up to four times its current climate-adjusted annual baseline. This preserves that baseline’s annual dice expectation for the same producers and number of rolls; cereal balance updates can change the baseline itself. Timing is less reliable: Golden fields produce 8 Grain per settlement on each matching Summer roll, and zero in the other seasons. If their number never appears that Summer, the harvest is lost.
 ### Crop types
-- Golden fields: Summer harvest, 8 Grain. In Oceanic climate, the harvest is in Autumn instead.
-- Barley: Summer harvest, 4 Grain; Cold and Alpine barley harvest in Autumn.
-- Rye: Summer harvest, 4 Grain. It complements later crops in Cold and Alpine regions.
-- Millet: Autumn harvest, 4 Grain. Found in Steppe and Savanna.
-- Maize: Autumn harvest, 8 Grain. Found in Temperate and Subtropical regions.
-- Tropical rice: 4 Grain in Spring, Summer and Autumn; zero in Winter. Subtropical rice: 6 Grain in Summer and Autumn, zero otherwise.
+- Golden fields (wheat): Summer harvest, 8 Grain; Oceanic wheat harvests in Autumn instead.
+- Black-soil wheat: Summer harvest, 12 Grain. Rare fertile fields in Temperate and Steppe.
+- Barley: 8 Grain in Summer in Oceanic climate; 4 in Summer in Mediterranean climate; 4 in Autumn in Cold and Alpine climates.
+- Rye: 8 Grain in Summer in Temperate and Oceanic climates; 4 in Summer in Cold and Alpine climates.
+- Millet: Autumn harvest, 4 Grain in Steppe and Savanna.
+- Maize: Autumn harvest, 8 Grain in Temperate and Subtropical climates.
+- Tropical rice: 4 Grain in Spring, Summer and Autumn. Subtropical rice: 4 in Summer and Autumn. Monsoon rice: 4 in Autumn only. Other seasons produce zero.
 - Olive groves: 2 Grain in Autumn and Winter. Oasis food: 4 Grain in Autumn; Oasis Wood remains available year-round.
-These are harvest seasons, not an automatic delivery at the season boundary. All crop types produce the same Grain card. Generation tables and the illustrated calendar give each climate’s exact mix.
+These are matching-roll harvest windows, not automatic deliveries. All crops produce the same Grain card. Rice totals of 12/8/4 deliberately give three, two and one harvest windows distinct annual roles. They are a game simplification: fewer real crops can yield more per harvest. Climate, soil and farm management all affect real productivity.
 ### Livestock and Meat
 Cattle pasture produces 1/1/4/2 Meat in Spring/Summer/Autumn/Winter. Goat pasture produces 1/0/2/1 Meat. Reindeer range produces 1 Meat and 1 Hides in every season, including Summer. Cattle range produces 1/0/2/1 of both Meat and Hides from Spring to Winter.
 Meat is a raw resource. Recipes still print Grain: pay Grain first, then Fish, then Meat at 1:1 to cover any shortfall. Gold covers any remaining missing raw goods. Explicit trades use the named goods. Meat workshops and advanced city or merchant production make Rations, without consuming the raw harvest.
 Pastures continue to produce Wool. In temperate and colder regions, shearing occurs in Spring and Summer; Tropical, Subtropical, Savanna and Desert wool is spread across all four seasons. Livestock has no feeding cost or upkeep. Food and other stored goods never spoil.
 ### Other seasonal industries
-Wood, hunting, salt production and clay work vary by climate. Cold forests retain a small Winter timber harvest. Warm-climate hunting and logging continue through Summer rains. Jungle and warm woodlands produce 1 each season; Savanna Wildlife grassland gives 2/1/3/2 Hides from Spring to Winter. Tropical Clay gives 1 each season; Subtropical Alluvial clay gives 2/1/2/3. Tropical, Subtropical and Savanna Salt flats give 1/0/1/2: evaporation stops during the wet Summer and peaks in the dry Winter. Desert Salt flats give 1 each season. Annual totals remain unchanged. Hides and Oil on the same animal tile can have different seasonal outputs; both are collected.
-Mild-climate mines and quarries remain steady. Cold, Alpine and Arctic mines and quarries favor Summer and stop in Winter; Coal stays available year-round. These reliable goods remain useful when food harvests are uncertain.
-Before adjusting for sea ice, Fish and Cod in Temperate, Cold, Arctic, Oceanic and Alpine climates produce at 1×/2×/1×/0× their baseline from Spring to Winter. Warmer-climate fish remains steady all year. Cold-climate Whales use 1×/2×/1×/0×; other Whales use 0×/1×/2×/1×. Multiply both Hides and Oil. Seal grounds produce 1 Hides and 1 Oil in every season, including Summer. The generic marine table shows the open-water baseline. A selected tile’s forecast shows its exact yields after sea ice shifts frozen Spring or Autumn output into Summer.
+Wood, hunting, salt production and clay work vary by climate. Cold forests retain a small Winter timber harvest. Warm-climate hunting and logging continue through Summer rains. Jungle and warm woodlands produce 1 each season; Savanna Wildlife grassland gives 2/1/3/2 Hides from Spring to Winter. Tropical Clay gives 1 each season; Subtropical and Monsoon Alluvial clay gives 2/1/2/3. Tropical, Subtropical and Savanna Salt flats give 1/0/1/2: evaporation stops during the wet Summer and peaks in the dry Winter. Desert and Hyperarid Salt flats give 1 each season. Seasonal totals follow the current climate-adjusted baseline. Hides and Oil on the same animal tile can have different seasonal outputs; both are collected.
+Mild-climate mines and quarries remain steady. Cold, Alpine and Arctic mines and quarries favor Summer and stop in Winter; Glacial mines produce 4 times their baseline in Summer only. Coal in its listed climates stays available year-round. These reliable goods remain useful when food harvests are uncertain.
+Before adjusting for sea ice, Fish and Cod in Temperate, Cold, Arctic, Oceanic and Alpine climates produce at 1×/2×/1×/0× their baseline from Spring to Winter. Glacial Fish, Cod and both Whale goods produce 4 times their baseline in Summer only. Warmer-climate fish remains steady all year. Cold, Alpine and Arctic Whales use 1×/2×/1×/0×; warm-climate Whales use 0×/1×/2×/1×. Multiply both Hides and Oil. Seal grounds produce 1 Hides and 1 Oil in every season, including Summer. The generic marine table shows the open-water baseline. A selected tile’s forecast shows its exact yields after sea ice shifts frozen Spring or Autumn output into Summer.
 ### Production multipliers
 Towns multiply each seasonal raw output by their level: 1/2/3/4. Camps multiply it by camp tier: 1/2. Merchants, merchant ships and fishing ships multiply by unit tier. Normal blockades and harvest coverage still apply.
 Town levels 3 and 4 and merchant tiers III and IV also add 1× and 2× every seasonal raw component as its processed good. A level-4 town beside Summer Golden fields produces 32 Grain plus 16 Rations per matching roll. A tier-II Bakery adds another 16 Rations. Nothing is deducted from the Grain harvest.
 An extension multiplies its linked resource’s seasonal amount by its own tier. A Woods workshop keeps its chosen raw resource, even when the faction changes the tile’s ordinary harvest choice. No seasonal output means no automatic processed output.
 Guild contracts are separate paid actions. Their printed inputs and outputs do not change with the season; they can supply goods between dice harvests. Existing stored raw goods can still be refined through Artisans. Starting resources from the second setup settlement use baseline yields, regardless of the starting season.
-### Arctic snow cover
-Arctic land keeps snow in Spring, regains it in Autumn and has deep cover in Winter. Summer is the short thaw. Snow cover does not prevent seal or reindeer hunting: both remain productive on matching rolls all year. Snow on land and sea ice are separate conditions; use the sea surface forecast for movement.
+### Arctic and Glacial snow cover
+Arctic land keeps snow in Spring, regains it in Autumn and has deep cover in Winter. Summer is the short Arctic thaw. Glacial land stays snowy in every season. Snow cover does not prevent seal or reindeer hunting: both remain productive on matching rolls all year. Snow on land and sea ice are separate conditions; use the sea surface forecast for movement.
 ### Sea ice and thaw
-Ordinary sea hexes have the following freezing chances in Spring/Autumn: Arctic 70%/50%, Alpine 35%/25%, Cold 20%/10%. All ordinary sea hexes in these three climates freeze in Winter and open in Summer. This includes Fishing grounds, Cod grounds and Whale grounds; frozen resource tiles display ice and stop all marine production, including both Whale goods. Each hex’s pattern is fixed by the world seed and repeats every year, including after reloads. An Autumn-frozen hex is always frozen in Spring too. These are per-hex chances, not guaranteed proportions of a region; inspect the exact forecast before moving.
-The original Frozen sea terrain is always frozen in Spring, Autumn and Winter and opens only in Summer. Ordinary seas in other climates stay navigable.
+Ordinary sea hexes have the following freezing chances in Spring/Autumn: Glacial 100%/100%, Arctic 70%/50%, Alpine 35%/25%, Cold 20%/10%. All ordinary sea hexes in these four climates freeze in Winter and open in Summer. This includes Fishing grounds, Cod grounds and Whale grounds; frozen resource tiles display ice and stop all marine production, including both Whale goods. Each hex’s pattern is fixed by the world seed and repeats every year, including after reloads. An Autumn-frozen hex is always frozen in Spring too. These are per-hex chances, not guaranteed proportions of a region; inspect the exact forecast before moving.
+Arctic Frozen sea terrain freezes in Spring, Autumn and Winter and opens only in Summer. Glacial Frozen sea terrain is permanent pack ice and stays frozen in all four seasons. Ordinary seas in other climates stay navigable.
 Frozen sea tiles produce no marine resources. For each tile and each raw resource, the Spring or Autumn yield removed by ice is added to Summer, preserving the four-season total. For example, a northern Fish tile with an open-water schedule of 1/2/1/0 produces 0/4/0/0 if it freezes in both Spring and Autumn, or 0/3/1/0 if it freezes only in Spring. Each payout still needs a matching dice roll; missed rolls are never reimbursed.
 Land units can enter frozen water. Ships can enter open water. Frozen water stops fishing coverage through that hex. A frozen port loses its improved trading rate until open water returns; ordinary reserve trading still works. Ship recruitment and sea expeditions require open water.
 Ice never becomes solid land for construction. Towns and towers need permanent solid land; roads need a genuine land side. Existing sea routes remain sea routes. Existing camps and buildings are not destroyed by freezing or thawing. Camps may be built in Winter under their normal connection rules, but only produce in their harvest seasons.
@@ -89,7 +96,7 @@ Land units caught by thaw stay on a drifting ice floe. They are not killed or te
 Move ships out of freezing regions and bring troops ashore before a surface change. A stranded force with no rescue route may remain trapped until the next suitable season.
 ### AI and existing saves
 AI values durable production by its annual mean, so seasonal spikes do not artificially change strategic strength. Trading uses upcoming harvests and stockpiles; expansion considers complementary crop seasons. The AI also plans winter berths and rescues stranded troops.
-Existing campaigns keep their calendar, terrain, dice numbers, units and stored goods. Campaigns saved before partial sea freezing also keep their current sea surfaces until the next season boundary. This grace period survives saving and reloading again, so loading cannot suddenly strand a force. Older saves without a calendar begin Spring at the next full round, preserving the current round. Newly explored land can contain the new crop and livestock types. Seasonal production then applies to old and new tiles alike.
+Existing campaigns keep their calendar, terrain, dice numbers, units and stored goods. Current climate-adjusted cereal baselines apply to existing tiles when loaded; stored harvests are not recalculated. Campaigns saved before partial sea freezing also keep their current sea surfaces until the next season boundary. This grace period survives saving and reloading again, so loading cannot suddenly strand a force. Older saves without a calendar begin Spring at the next full round, preserving the current round. Newly explored land can contain the new crop and livestock types. Seasonal production then applies to old and new tiles alike.
 ### Artwork preview
 Select a season in the calendar to preview its landscape, then pan and inspect the map normally. The badge shows the preview and the season whose rules still apply. Return to current season or press Escape to leave the preview. Any successful game command also restores the current landscape. Production forecasts and movement rules never change during a preview.
 
@@ -281,35 +288,39 @@ Click the season beside the round number for the yearly calendar and read-only l
 
 Compatible : Steppe, Mediterranean, Cold, Tropical, Oceanic, Alpine, Subtropical
 
+Initial climate weight : 1
+
 Transition weights : Steppe ×1, Mediterranean ×1, Cold ×1.5, Tropical ×1, Oceanic ×0.5, Alpine ×0.5, Subtropical ×0.5
 
-| Land terrain | Conditional chance |
+| Land terrain | Conditional chance | Annual baseline |
 
-|---|---|
+|---|---|---|
 
-| Golden fields | 9% |
+| Golden fields | 7% | 2 Grain |
 
-| Maize fields | 4% |
+| Black-soil wheat | 2% | 3 Grain |
 
-| Rye fields | 4% |
+| Maize fields | 4% | 2 Grain |
 
-| Pasture | 9% |
+| Rye fields | 4% | 2 Grain |
 
-| Cattle pasture | 8% |
+| Pasture | 9% | 2 Wool |
 
-| Woods | 17% |
+| Cattle pasture | 8% | 2 Meat |
 
-| Gold mountains | 5% |
+| Woods | 17% | 1 Wood OR 1 Hides |
 
-| Clay hills | 12% |
+| Gold mountains | 5% | 1 Gold |
 
-| Stone quarry | 10% |
+| Clay hills | 12% | 1 Clay |
 
-| Iron mountains | 10% |
+| Stone quarry | 10% | 1 Stone |
 
-| Coal hills | 10% |
+| Iron mountains | 10% | 1 Iron ore |
 
-| Salt flats | 2% |
+| Coal hills | 10% | 1 Coal |
+
+| Salt flats | 2% | 1 Salt |
 
 | Water terrain | Sequential check | Effective water share |
 
@@ -327,33 +338,35 @@ Open water (no adjacent land): Whale check 10%; effective share 8.5%. Table abov
 
 Compatible : Temperate, Steppe, Arctic, Oceanic, Alpine
 
+Initial climate weight : 1
+
 Transition weights : Temperate ×1, Steppe ×1, Arctic ×2, Oceanic ×0.5, Alpine ×0.5
 
-| Land terrain | Conditional chance |
+| Land terrain | Conditional chance | Annual baseline |
 
-|---|---|
+|---|---|---|
 
-| Forest | 30% |
+| Forest | 30% | 2 Wood |
 
-| Hunting forest | 6% |
+| Hunting forest | 6% | 2 Hides |
 
-| Reindeer range | 4% |
+| Reindeer range | 4% | 1 Meat + 1 Hides |
 
-| Barley fields | 7% |
+| Barley fields | 7% | 1 Grain |
 
-| Rye fields | 3% |
+| Rye fields | 3% | 1 Grain |
 
-| Rough pasture | 5% |
+| Rough pasture | 5% | 1 Wool |
 
-| Gold mountains | 5% |
+| Gold mountains | 5% | 1 Gold |
 
-| Coal hills | 10% |
+| Coal hills | 10% | 1 Coal |
 
-| Iron mountains | 10% |
+| Iron mountains | 10% | 1 Iron ore |
 
-| Stone quarry | 10% |
+| Stone quarry | 10% | 1 Stone |
 
-| Clay hills | 10% |
+| Clay hills | 10% | 1 Clay |
 
 | Water terrain | Sequential check | Effective water share |
 
@@ -371,25 +384,27 @@ Open water (no adjacent land): Whale check 20%; effective share 14.4%. Table abo
 
 ### Arctic: 40% land / 60% water
 
-Compatible : Cold, Alpine
+Compatible : Cold, Alpine, Glacial
 
-Transition weights : Cold ×1, Alpine ×0.5
+Initial climate weight : 1
 
-| Land terrain | Conditional chance |
+Transition weights : Cold ×1, Alpine ×0.5, Glacial ×0.5
 
-|---|---|
+| Land terrain | Conditional chance | Annual baseline |
 
-| Snow plain | 35% |
+|---|---|---|
 
-| Reindeer range | 5% |
+| Snow plain | 35% | 0 |
 
-| Seal hunting grounds | 15% |
+| Reindeer range | 5% | 1 Meat + 1 Hides |
 
-| Arctic iron mountains | 20% |
+| Seal hunting grounds | 15% | 1 Hides + 1 Oil |
 
-| Arctic stone ridge | 15% |
+| Arctic iron mountains | 20% | 1 Iron ore |
 
-| Arctic gold mountains | 10% |
+| Arctic stone ridge | 15% | 1 Stone |
+
+| Arctic gold mountains | 10% | 1 Gold |
 
 | Water terrain | Sequential check | Effective water share |
 
@@ -411,31 +426,35 @@ Open water (no adjacent land): Whale check 40%; effective share 17.92%. Table ab
 
 Compatible : Cold, Temperate, Mediterranean, Desert, Alpine, Savanna
 
+Initial climate weight : 1
+
 Transition weights : Cold ×1.5, Temperate ×1, Mediterranean ×1, Desert ×1, Alpine ×0.5, Savanna ×0.5
 
-| Land terrain | Conditional chance |
+| Land terrain | Conditional chance | Annual baseline |
 
-|---|---|
+|---|---|---|
 
-| Steppe plain | 29% |
+| Steppe plain | 25% | 1 Hides + 1 Wool |
 
-| Cattle range | 16% |
+| Black-soil wheat | 4% | 3 Grain |
 
-| Millet fields | 10% |
+| Cattle range | 16% | 1 Meat + 1 Hides |
 
-| Pasture | 10% |
+| Millet fields | 10% | 1 Grain |
 
-| Woods | 7% |
+| Pasture | 10% | 2 Wool |
 
-| Stone quarry | 10% |
+| Woods | 7% | 1 Wood OR 1 Hides |
 
-| Iron mountains | 5% |
+| Stone quarry | 10% | 1 Stone |
 
-| Coal hills | 5% |
+| Iron mountains | 5% | 1 Iron ore |
 
-| Clay hills | 5% |
+| Coal hills | 5% | 1 Coal |
 
-| Gold mountains | 3% |
+| Clay hills | 5% | 1 Clay |
+
+| Gold mountains | 3% | 1 Gold |
 
 | Water terrain | Sequential check | Effective water share |
 
@@ -453,33 +472,35 @@ Open water (no adjacent land): Whale check 10%; effective share 8.5%. Table abov
 
 Compatible : Temperate, Steppe, Desert, Oceanic, Subtropical
 
+Initial climate weight : 1
+
 Transition weights : Temperate ×1, Steppe ×0.5, Desert ×0.5, Oceanic ×0.5, Subtropical ×0.5
 
-| Land terrain | Conditional chance |
+| Land terrain | Conditional chance | Annual baseline |
 
-|---|---|
+|---|---|---|
 
-| Golden fields | 3% |
+| Golden fields | 3% | 2 Grain |
 
-| Barley fields | 2% |
+| Barley fields | 2% | 1 Grain |
 
-| Olive grove | 20% |
+| Olive grove | 20% | 1 Grain |
 
-| Escarpment | 20% |
+| Escarpment | 20% | 1 Stone |
 
-| Woods | 5% |
+| Woods | 5% | 1 Wood OR 1 Hides |
 
-| Rough pasture | 10% |
+| Rough pasture | 10% | 1 Wool |
 
-| Goat pasture | 5% |
+| Goat pasture | 5% | 1 Meat |
 
-| Salt flats | 5% |
+| Salt flats | 5% | 1 Salt |
 
-| Gold mountains | 7% |
+| Gold mountains | 7% | 1 Gold |
 
-| Coal hills | 10% |
+| Coal hills | 10% | 1 Coal |
 
-| Iron mountains | 13% |
+| Iron mountains | 13% | 1 Iron ore |
 
 | Water terrain | Sequential check | Effective water share |
 
@@ -495,31 +516,33 @@ Open water (no adjacent land): Whale check 10%; effective share 8.5%. Table abov
 
 ### Tropical: 50% land / 50% water
 
-Compatible : Temperate, Desert, Subtropical, Savanna
+Compatible : Temperate, Desert, Subtropical, Savanna, Monsoon
 
-Transition weights : Temperate ×1, Desert ×2, Subtropical ×0.5, Savanna ×0.5
+Initial climate weight : 1
 
-| Land terrain | Conditional chance |
+Transition weights : Temperate ×1, Desert ×2, Subtropical ×0.5, Savanna ×0.5, Monsoon ×0.5
 
-|---|---|
+| Land terrain | Conditional chance | Annual baseline |
 
-| Jungle | 25% |
+|---|---|---|
 
-| Tropical woods | 10% |
+| Jungle | 25% | 1 Hides |
 
-| Rice field | 25% |
+| Tropical woods | 10% | 1 Wood |
 
-| Clay hills | 15% |
+| Rice field | 25% | 3 Grain |
 
-| Gold mountains | 5% |
+| Clay hills | 15% | 1 Clay |
 
-| Stone quarry | 5% |
+| Gold mountains | 5% | 1 Gold |
 
-| Coal hills | 5% |
+| Stone quarry | 5% | 1 Stone |
 
-| Iron mountains | 5% |
+| Coal hills | 5% | 1 Coal |
 
-| Salt flats | 5% |
+| Iron mountains | 5% | 1 Iron ore |
+
+| Salt flats | 5% | 1 Salt |
 
 | Water terrain | Sequential check | Effective water share |
 
@@ -535,29 +558,31 @@ Open water (no adjacent land): Whale check 10%; effective share 9%. Table above:
 
 ### Desert: 50% land / 50% water
 
-Compatible : Tropical, Mediterranean, Steppe, Savanna
+Compatible : Tropical, Mediterranean, Steppe, Savanna, Hyperarid
 
-Transition weights : Tropical ×2, Mediterranean ×1, Steppe ×1, Savanna ×0.5
+Initial climate weight : 1
 
-| Land terrain | Conditional chance |
+Transition weights : Tropical ×2, Mediterranean ×1, Steppe ×1, Savanna ×0.5, Hyperarid ×0.5
 
-|---|---|
+| Land terrain | Conditional chance | Annual baseline |
 
-| Desert | 25% |
+|---|---|---|
 
-| Goat pasture | 5% |
+| Desert | 25% | 0 |
 
-| Gold mountains | 10% |
+| Goat pasture | 5% | 1 Meat |
 
-| Iron mountains | 12% |
+| Gold mountains | 10% | 1 Gold |
 
-| Stone quarry | 12% |
+| Iron mountains | 12% | 1 Iron ore |
 
-| Coal hills | 6% |
+| Stone quarry | 12% | 1 Stone |
 
-| Oasis | 10% |
+| Coal hills | 6% | 1 Coal |
 
-| Salt flats | 20% |
+| Oasis | 10% | 1 Wood + 1 Grain |
+
+| Salt flats | 20% | 1 Salt |
 
 | Water terrain | Sequential check | Effective water share |
 
@@ -575,33 +600,35 @@ Open water (no adjacent land): Whale check 6%; effective share 5.52%. Table abov
 
 Compatible : Temperate, Cold, Mediterranean
 
+Initial climate weight : 1
+
 Transition weights : Temperate ×2, Cold ×1, Mediterranean ×1
 
-| Land terrain | Conditional chance |
+| Land terrain | Conditional chance | Annual baseline |
 
-|---|---|
+|---|---|---|
 
-| Coastal pasture | 17% |
+| Coastal pasture | 17% | 2 Wool |
 
-| Cattle pasture | 8% |
+| Cattle pasture | 8% | 2 Meat |
 
-| Woods | 20% |
+| Woods | 20% | 1 Wood OR 1 Hides |
 
-| Barley fields | 8% |
+| Barley fields | 8% | 2 Grain |
 
-| Rye fields | 2% |
+| Rye fields | 2% | 2 Grain |
 
-| Golden fields | 5% |
+| Golden fields | 5% | 2 Grain |
 
-| Clay hills | 10% |
+| Clay hills | 10% | 1 Clay |
 
-| Coastal cliffs | 15% |
+| Coastal cliffs | 15% | 1 Stone |
 
-| Coal hills | 8% |
+| Coal hills | 8% | 1 Coal |
 
-| Iron mountains | 5% |
+| Iron mountains | 5% | 1 Iron ore |
 
-| Gold mountains | 2% |
+| Gold mountains | 2% | 1 Gold |
 
 | Water terrain | Sequential check | Effective water share |
 
@@ -619,35 +646,37 @@ Open water (no adjacent land): Whale check 20%; effective share 14.4%. Table abo
 
 ### Alpine: 75% land / 25% water
 
-Compatible : Cold, Arctic, Temperate, Steppe
+Compatible : Cold, Arctic, Temperate, Steppe, Glacial
 
-Transition weights : Cold ×2, Arctic ×2, Temperate ×1, Steppe ×1
+Initial climate weight : 1
 
-| Land terrain | Conditional chance |
+Transition weights : Cold ×2, Arctic ×2, Temperate ×1, Steppe ×1, Glacial ×0.5
 
-|---|---|
+| Land terrain | Conditional chance | Annual baseline |
 
-| Mountain quarry | 20% |
+|---|---|---|
 
-| Iron mountains | 15% |
+| Mountain quarry | 20% | 2 Stone |
 
-| Coal hills | 10% |
+| Iron mountains | 15% | 1 Iron ore |
 
-| Alpine pasture | 10% |
+| Coal hills | 10% | 1 Coal |
 
-| Goat pasture | 5% |
+| Alpine pasture | 10% | 1 Wool |
 
-| Barley fields | 7% |
+| Goat pasture | 5% | 1 Meat |
 
-| Rye fields | 3% |
+| Barley fields | 7% | 1 Grain |
 
-| Forest | 10% |
+| Rye fields | 3% | 1 Grain |
 
-| Gold mountains | 5% |
+| Forest | 10% | 2 Wood |
 
-| Clay hills | 5% |
+| Gold mountains | 5% | 1 Gold |
 
-| Bare Peaks | 10% |
+| Clay hills | 5% | 1 Clay |
+
+| Bare Peaks | 10% | 0 |
 
 | Water terrain | Sequential check | Effective water share |
 
@@ -665,35 +694,37 @@ Open water (no adjacent land): Whale check 6%; effective share 4.86%. Table abov
 
 ### Subtropical: 55% land / 45% water
 
-Compatible : Tropical, Temperate, Mediterranean, Savanna
+Compatible : Tropical, Temperate, Mediterranean, Savanna, Monsoon
 
-Transition weights : Tropical ×2, Temperate ×1, Mediterranean ×1, Savanna ×1
+Initial climate weight : 1
 
-| Land terrain | Conditional chance |
+Transition weights : Tropical ×2, Temperate ×1, Mediterranean ×1, Savanna ×1, Monsoon ×0.5
 
-|---|---|
+| Land terrain | Conditional chance | Annual baseline |
 
-| Alluvial clay banks | 25% |
+|---|---|---|
 
-| Rice field | 15% |
+| Alluvial clay banks | 25% | 2 Clay |
 
-| Maize fields | 5% |
+| Rice field | 15% | 2 Grain |
 
-| River woods | 15% |
+| Maize fields | 5% | 2 Grain |
 
-| Cattle pasture | 5% |
+| River woods | 15% | 1 Wood |
 
-| Jungle | 10% |
+| Cattle pasture | 5% | 2 Meat |
 
-| Stone quarry | 10% |
+| Jungle | 10% | 1 Hides |
 
-| Coal hills | 5% |
+| Stone quarry | 10% | 1 Stone |
 
-| Iron mountains | 5% |
+| Coal hills | 5% | 1 Coal |
 
-| Salt flats | 3% |
+| Iron mountains | 5% | 1 Iron ore |
 
-| Gold mountains | 2% |
+| Salt flats | 3% | 1 Salt |
+
+| Gold mountains | 2% | 1 Gold |
 
 | Water terrain | Sequential check | Effective water share |
 
@@ -709,33 +740,35 @@ Open water (no adjacent land): Whale check 6%; effective share 5.1%. Table above
 
 ### Savanna: 70% land / 30% water
 
-Compatible : Tropical, Desert, Steppe, Subtropical
+Compatible : Tropical, Desert, Steppe, Subtropical, Monsoon
 
-Transition weights : Tropical ×2, Desert ×1, Steppe ×1, Subtropical ×1
+Initial climate weight : 1
 
-| Land terrain | Conditional chance |
+Transition weights : Tropical ×2, Desert ×1, Steppe ×1, Subtropical ×1, Monsoon ×0.5
 
-|---|---|
+| Land terrain | Conditional chance | Annual baseline |
 
-| Wildlife grassland | 30% |
+|---|---|---|
 
-| Cattle range | 5% |
+| Wildlife grassland | 30% | 2 Hides |
 
-| Millet fields | 20% |
+| Cattle range | 5% | 1 Meat + 1 Hides |
 
-| Dry woodland | 10% |
+| Millet fields | 20% | 1 Grain |
 
-| Rough pasture | 10% |
+| Dry woodland | 10% | 1 Wood |
 
-| Iron mountains | 10% |
+| Rough pasture | 10% | 1 Wool |
 
-| Clay hills | 5% |
+| Iron mountains | 10% | 1 Iron ore |
 
-| Stone quarry | 5% |
+| Clay hills | 5% | 1 Clay |
 
-| Gold mountains | 3% |
+| Stone quarry | 5% | 1 Stone |
 
-| Salt flats | 2% |
+| Gold mountains | 3% | 1 Gold |
+
+| Salt flats | 2% | 1 Salt |
 
 | Water terrain | Sequential check | Effective water share |
 
@@ -749,111 +782,247 @@ Transition weights : Tropical ×2, Desert ×1, Steppe ×1, Subtropical ×1
 
 Open water (no adjacent land): Whale check 6%; effective share 5.4%. Table above: coastal water.
 
-## Terrain yields
+### Glacial: 45% land / 55% water
 
-| Terrain | Base yield | Family |
+Compatible : Arctic, Alpine
+
+Initial climate weight : 0.35
+
+Transition weights : Arctic ×2, Alpine ×1
+
+| Land terrain | Conditional chance | Annual baseline |
 
 |---|---|---|
 
-| Woods | 1 Wood OR 1 Hides | forest |
+| Snow plain | 55% | 0 |
 
-| Forest | 2 Wood | forest |
+| Bare Peaks | 15% | 0 |
 
-| Hunting forest | 2 Hides | forest |
+| Seal hunting grounds | 8% | 1 Hides + 1 Oil |
 
-| Golden fields | 2 Grain | flat |
+| Arctic iron mountains | 10% | 1 Iron ore |
 
-| Pasture | 2 Wool | flat |
+| Arctic stone ridge | 8% | 1 Stone |
 
-| Rough pasture | 1 Wool | rugged |
+| Arctic gold mountains | 4% | 1 Gold |
 
-| Clay hills | 1 Clay | rugged |
+| Water terrain | Sequential check | Effective water share |
 
-| Gold mountains | 1 Gold | rugged |
+|---|---|---|
 
-| Iron mountains | 1 Iron ore | rugged |
+| Frozen sea | 55% | 55% |
 
-| Stone quarry | 1 Stone | rugged |
+| Fishing grounds | 10% | 4.5% |
 
-| Coal hills | 1 Coal | rugged |
+| Cod grounds | 15% | 6.075% |
 
-| Salt flats | 1 Salt | flat |
+| Whale grounds | 12% | 4.131% |
 
-| Snow plain | 0 | flat |
+| Water |  | 30.294% |
 
-| Seal hunting grounds | 1 Hides + 1 Oil | flat |
+Open water (no adjacent land): Whale check 24%; effective share 8.262%. Table above: coastal water.
 
-| Arctic iron mountains | 1 Iron ore | rugged |
+### Hyperarid: 90% land / 10% water
 
-| Arctic stone ridge | 1 Stone | rugged |
+Compatible : Desert
 
-| Arctic gold mountains | 1 Gold | rugged |
+Initial climate weight : 0.35
 
-| Steppe plain | 1 Hides + 1 Wool | flat |
+Transition weights : Desert ×2
 
-| Olive grove | 1 Grain | forest |
+| Land terrain | Conditional chance | Annual baseline |
 
-| Escarpment | 1 Stone | rugged |
+|---|---|---|
 
-| Jungle | 1 Hides | forest |
+| Desert | 55% | 0 |
 
-| Tropical woods | 1 Wood | forest |
+| Bare Peaks | 5% | 0 |
 
-| Rice field | 3 Grain | flat |
+| Salt flats | 12% | 1 Salt |
 
-| Desert | 0 | flat |
+| Iron mountains | 10% | 1 Iron ore |
 
-| Oasis | 1 Wood + 1 Grain | forest |
+| Stone quarry | 7% | 1 Stone |
 
-| Water | 0 | water |
+| Gold mountains | 6% | 1 Gold |
 
-| Fishing grounds | 1 Fish | water |
+| Oasis | 3% | 1 Wood + 1 Grain |
 
-| Cod grounds | 2 Fish | water |
+| Coal hills | 2% | 1 Coal |
 
-| Whale grounds | 1 Hides + 1 Oil | water |
+| Water terrain | Sequential check | Effective water share |
 
-| Frozen sea | 0 | flat |
+|---|---|---|
 
-| Coastal pasture | 2 Wool | flat |
+| Fishing grounds | 3% | 3% |
 
-| Coastal cliffs | 1 Stone | rugged |
+| Whale grounds | 1% | 0.97% |
 
-| Mountain quarry | 2 Stone | rugged |
+| Water |  | 96.03% |
 
-| Alpine pasture | 1 Wool | rugged |
+Open water (no adjacent land): Whale check 2%; effective share 1.94%. Table above: coastal water.
 
-| Bare Peaks | 0 | rugged |
+### Monsoon: 30% land / 70% water
 
-| Alluvial clay banks | 2 Clay | flat |
+Compatible : Tropical, Subtropical, Savanna
 
-| River woods | 1 Wood | forest |
+Initial climate weight : 0.35
 
-| Wildlife grassland | 2 Hides | flat |
+Transition weights : Tropical ×2, Subtropical ×1, Savanna ×1
 
-| Dry woodland | 1 Wood | forest |
+| Land terrain | Conditional chance | Annual baseline |
 
-| Barley fields | 1 Grain | flat |
+|---|---|---|
 
-| Rye fields | 1 Grain | flat |
+| Jungle | 20% | 1 Hides |
 
-| Millet fields | 1 Grain | flat |
+| Tropical woods | 15% | 1 Wood |
 
-| Maize fields | 2 Grain | flat |
+| River woods | 10% | 1 Wood |
 
-| Cattle pasture | 2 Meat | flat |
+| Rice field | 15% | 1 Grain |
 
-| Goat pasture | 1 Meat | rugged |
+| Alluvial clay banks | 15% | 2 Clay |
 
-| Reindeer range | 1 Meat + 1 Hides | flat |
+| Bare Peaks | 15% | 0 |
 
-| Cattle range | 1 Meat + 1 Hides | flat |
+| Stone quarry | 5% | 1 Stone |
+
+| Iron mountains | 2% | 1 Iron ore |
+
+| Coal hills | 1% | 1 Coal |
+
+| Gold mountains | 2% | 1 Gold |
+
+| Water terrain | Sequential check | Effective water share |
+
+|---|---|---|
+
+| Fishing grounds | 10% | 10% |
+
+| Whale grounds | 2% | 1.8% |
+
+| Water |  | 88.2% |
+
+Open water (no adjacent land): Whale check 4%; effective share 3.6%. Table above: coastal water.
+
+## Terrain yields
+
+Current annual baselines include climate-specific cereal productivity. Each seasonal calendar totals four times that baseline, not necessarily the value used by an earlier game version.
+
+| Terrain | Climates | Base yield | Family |
+
+|---|---|---|---|
+
+| Woods | Temperate / Steppe / Mediterranean / Oceanic | 1 Wood OR 1 Hides | forest |
+
+| Forest | Cold / Alpine | 2 Wood | forest |
+
+| Hunting forest | Cold | 2 Hides | forest |
+
+| Golden fields | Temperate / Mediterranean / Oceanic | 2 Grain | flat |
+
+| Black-soil wheat | Temperate / Steppe | 3 Grain | flat |
+
+| Pasture | Temperate / Steppe | 2 Wool | flat |
+
+| Rough pasture | Cold / Mediterranean / Savanna | 1 Wool | rugged |
+
+| Clay hills | Temperate / Cold / Steppe / Tropical / Oceanic / Alpine / Savanna | 1 Clay | rugged |
+
+| Gold mountains | Temperate / Cold / Steppe / Mediterranean / Tropical / Desert / Oceanic / Alpine / Subtropical / Savanna / Hyperarid / Monsoon | 1 Gold | rugged |
+
+| Iron mountains | Temperate / Cold / Steppe / Mediterranean / Tropical / Desert / Oceanic / Alpine / Subtropical / Savanna / Hyperarid / Monsoon | 1 Iron ore | rugged |
+
+| Stone quarry | Temperate / Cold / Steppe / Tropical / Desert / Subtropical / Savanna / Hyperarid / Monsoon | 1 Stone | rugged |
+
+| Coal hills | Temperate / Cold / Steppe / Mediterranean / Tropical / Desert / Oceanic / Alpine / Subtropical / Hyperarid / Monsoon | 1 Coal | rugged |
+
+| Salt flats | Temperate / Mediterranean / Tropical / Desert / Subtropical / Savanna / Hyperarid | 1 Salt | flat |
+
+| Snow plain | Arctic / Glacial | 0 | flat |
+
+| Seal hunting grounds | Arctic / Glacial | 1 Hides + 1 Oil | flat |
+
+| Arctic iron mountains | Arctic / Glacial | 1 Iron ore | rugged |
+
+| Arctic stone ridge | Arctic / Glacial | 1 Stone | rugged |
+
+| Arctic gold mountains | Arctic / Glacial | 1 Gold | rugged |
+
+| Steppe plain | Steppe | 1 Hides + 1 Wool | flat |
+
+| Olive grove | Mediterranean | 1 Grain | forest |
+
+| Escarpment | Mediterranean | 1 Stone | rugged |
+
+| Jungle | Tropical / Subtropical / Monsoon | 1 Hides | forest |
+
+| Tropical woods | Tropical / Monsoon | 1 Wood | forest |
+
+| Rice field | Tropical | 3 Grain | flat |
+
+| Rice field | Subtropical | 2 Grain | flat |
+
+| Rice field | Monsoon | 1 Grain | flat |
+
+| Desert | Desert / Hyperarid | 0 | flat |
+
+| Oasis | Desert / Hyperarid | 1 Wood + 1 Grain | forest |
+
+| Water | Temperate / Cold / Arctic / Steppe / Mediterranean / Tropical / Desert / Oceanic / Alpine / Subtropical / Savanna / Glacial / Hyperarid / Monsoon | 0 | water |
+
+| Fishing grounds | Temperate / Cold / Arctic / Steppe / Mediterranean / Tropical / Desert / Oceanic / Alpine / Subtropical / Savanna / Glacial / Hyperarid / Monsoon | 1 Fish | water |
+
+| Cod grounds | Cold / Arctic / Oceanic / Alpine / Glacial | 2 Fish | water |
+
+| Whale grounds | Temperate / Cold / Arctic / Steppe / Mediterranean / Tropical / Desert / Oceanic / Alpine / Subtropical / Savanna / Glacial / Hyperarid / Monsoon | 1 Hides + 1 Oil | water |
+
+| Frozen sea | Arctic / Glacial | 0 | flat |
+
+| Coastal pasture | Oceanic | 2 Wool | flat |
+
+| Coastal cliffs | Oceanic | 1 Stone | rugged |
+
+| Mountain quarry | Alpine | 2 Stone | rugged |
+
+| Alpine pasture | Alpine | 1 Wool | rugged |
+
+| Bare Peaks | Alpine / Glacial / Hyperarid / Monsoon | 0 | rugged |
+
+| Alluvial clay banks | Subtropical / Monsoon | 2 Clay | flat |
+
+| River woods | Subtropical / Monsoon | 1 Wood | forest |
+
+| Wildlife grassland | Savanna | 2 Hides | flat |
+
+| Dry woodland | Savanna | 1 Wood | forest |
+
+| Barley fields | Cold / Mediterranean / Alpine | 1 Grain | flat |
+
+| Barley fields | Oceanic | 2 Grain | flat |
+
+| Rye fields | Temperate / Oceanic | 2 Grain | flat |
+
+| Rye fields | Cold / Alpine | 1 Grain | flat |
+
+| Millet fields | Steppe / Savanna | 1 Grain | flat |
+
+| Maize fields | Temperate / Subtropical | 2 Grain | flat |
+
+| Cattle pasture | Temperate / Oceanic / Subtropical | 2 Meat | flat |
+
+| Goat pasture | Mediterranean / Desert / Alpine | 1 Meat | rugged |
+
+| Reindeer range | Cold / Arctic | 1 Meat + 1 Hides | flat |
+
+| Cattle range | Steppe / Savanna | 1 Meat + 1 Hides | flat |
 
 Bare Peaks: no production and no unit entry, including recruitment, retreat or disembarkation. Roads may follow their edges; towns need adjacent walkable solid land.
 
 ## Complete seasonal harvest tables
 
-Marine rows show the open-water baseline. Ordinary sea hexes have fixed Spring/Autumn freezing chances: Arctic 70%/50%, Alpine 35%/25%, Cold 20%/10%; ordinary seas in these three climates all freeze in Winter and open in Summer. The original Frozen sea terrain stays frozen outside Summer. For each tile and each raw resource, frozen Spring or Autumn yield moves into Summer without changing its annual total. Select a tile in the game for its exact surfaces and adjusted yields.
+Ordinary seas freeze in Spring/Autumn with fixed chances: Glacial 100%/100%, Arctic 70%/50%, Alpine 35%/25%, Cold 20%/10%. They all freeze in Winter and open in Summer. Glacial Frozen sea terrain stays frozen all year; Arctic Frozen sea opens in Summer. Glacial marine harvests occur only in Summer. Other marine rows show the open-water baseline: frozen Spring or Autumn yield moves into Summer without changing the current annual total. Select a tile for exact surfaces and yields.
 
 ### Temperate
 
@@ -863,9 +1032,11 @@ Marine rows show the open-water baseline. Ordinary sea hexes have fixed Spring/A
 
 | Golden fields | 0 | 8 Grain | 0 | 0 |
 
+| Black-soil wheat | 0 | 12 Grain | 0 | 0 |
+
 | Maize fields | 0 | 0 | 8 Grain | 0 |
 
-| Rye fields | 0 | 4 Grain | 0 | 0 |
+| Rye fields | 0 | 8 Grain | 0 | 0 |
 
 | Pasture | 4 Wool | 4 Wool | 0 | 0 |
 
@@ -958,6 +1129,8 @@ Marine rows show the open-water baseline. Ordinary sea hexes have fixed Spring/A
 |---|---|---|---|---|
 
 | Steppe plain | 1 Hides + 2 Wool | 2 Wool | 1 Hides | 2 Hides |
+
+| Black-soil wheat | 0 | 12 Grain | 0 | 0 |
 
 | Cattle range | 1 Meat + 1 Hides | 0 | 2 Meat + 2 Hides | 1 Meat + 1 Hides |
 
@@ -1085,9 +1258,9 @@ Marine rows show the open-water baseline. Ordinary sea hexes have fixed Spring/A
 
 | Woods (Hides) | 1 Hides | 1 Hides | 2 Hides | 0 |
 
-| Barley fields | 0 | 4 Grain | 0 | 0 |
+| Barley fields | 0 | 8 Grain | 0 | 0 |
 
-| Rye fields | 0 | 4 Grain | 0 | 0 |
+| Rye fields | 0 | 8 Grain | 0 | 0 |
 
 | Golden fields | 0 | 0 | 8 Grain | 0 |
 
@@ -1149,7 +1322,7 @@ Marine rows show the open-water baseline. Ordinary sea hexes have fixed Spring/A
 
 | Alluvial clay banks | 2 Clay | 1 Clay | 2 Clay | 3 Clay |
 
-| Rice field | 0 | 6 Grain | 6 Grain | 0 |
+| Rice field | 0 | 4 Grain | 4 Grain | 0 |
 
 | Maize fields | 0 | 0 | 8 Grain | 0 |
 
@@ -1198,6 +1371,88 @@ Marine rows show the open-water baseline. Ordinary sea hexes have fixed Spring/A
 | Gold mountains | 1 Gold | 1 Gold | 1 Gold | 1 Gold |
 
 | Salt flats | 1 Salt | 0 | 1 Salt | 2 Salt |
+
+| Fishing grounds | 1 Fish | 1 Fish | 1 Fish | 1 Fish |
+
+| Whale grounds | 0 | 1 Hides + 1 Oil | 2 Hides + 2 Oil | 1 Hides + 1 Oil |
+
+### Glacial
+
+| Terrain | Spring | Summer | Autumn | Winter |
+
+|---|---|---|---|---|
+
+| Snow plain | 0 | 0 | 0 | 0 |
+
+| Bare Peaks | 0 | 0 | 0 | 0 |
+
+| Seal hunting grounds | 1 Hides + 1 Oil | 1 Hides + 1 Oil | 1 Hides + 1 Oil | 1 Hides + 1 Oil |
+
+| Arctic iron mountains | 0 | 4 Iron ore | 0 | 0 |
+
+| Arctic stone ridge | 0 | 4 Stone | 0 | 0 |
+
+| Arctic gold mountains | 0 | 4 Gold | 0 | 0 |
+
+| Frozen sea | 0 | 0 | 0 | 0 |
+
+| Fishing grounds | 0 | 4 Fish | 0 | 0 |
+
+| Cod grounds | 0 | 8 Fish | 0 | 0 |
+
+| Whale grounds | 0 | 4 Hides + 4 Oil | 0 | 0 |
+
+### Hyperarid
+
+| Terrain | Spring | Summer | Autumn | Winter |
+
+|---|---|---|---|---|
+
+| Desert | 0 | 0 | 0 | 0 |
+
+| Bare Peaks | 0 | 0 | 0 | 0 |
+
+| Salt flats | 1 Salt | 1 Salt | 1 Salt | 1 Salt |
+
+| Iron mountains | 1 Iron ore | 1 Iron ore | 1 Iron ore | 1 Iron ore |
+
+| Stone quarry | 1 Stone | 1 Stone | 1 Stone | 1 Stone |
+
+| Gold mountains | 1 Gold | 1 Gold | 1 Gold | 1 Gold |
+
+| Oasis | 1 Wood | 1 Wood | 1 Wood + 4 Grain | 1 Wood |
+
+| Coal hills | 1 Coal | 1 Coal | 1 Coal | 1 Coal |
+
+| Fishing grounds | 1 Fish | 1 Fish | 1 Fish | 1 Fish |
+
+| Whale grounds | 0 | 1 Hides + 1 Oil | 2 Hides + 2 Oil | 1 Hides + 1 Oil |
+
+### Monsoon
+
+| Terrain | Spring | Summer | Autumn | Winter |
+
+|---|---|---|---|---|
+
+| Jungle | 1 Hides | 1 Hides | 1 Hides | 1 Hides |
+
+| Tropical woods | 1 Wood | 1 Wood | 1 Wood | 1 Wood |
+
+| River woods | 1 Wood | 1 Wood | 1 Wood | 1 Wood |
+
+| Rice field | 0 | 0 | 4 Grain | 0 |
+
+| Alluvial clay banks | 2 Clay | 1 Clay | 2 Clay | 3 Clay |
+
+| Bare Peaks | 0 | 0 | 0 | 0 |
+
+| Stone quarry | 1 Stone | 1 Stone | 1 Stone | 1 Stone |
+
+| Iron mountains | 1 Iron ore | 1 Iron ore | 1 Iron ore | 1 Iron ore |
+
+| Coal hills | 1 Coal | 1 Coal | 1 Coal | 1 Coal |
+
+| Gold mountains | 1 Gold | 1 Gold | 1 Gold | 1 Gold |
 
 | Fishing grounds | 1 Fish | 1 Fish | 1 Fish | 1 Fish |
 

@@ -270,8 +270,8 @@ for (const locale of ["en", "fr"] as const) {
       .getByRole("button", { name: "Subtropical", exact: true })
       .click();
     await expect(rice.locator("td").nth(0)).toHaveText("0");
-    await expect(rice.locator("td").nth(1)).toContainText("6");
-    await expect(rice.locator("td").nth(2)).toContainText("6");
+    await expect(rice.locator("td").nth(1)).toContainText("4");
+    await expect(rice.locator("td").nth(2)).toContainText("4");
     for (const [biome, amounts, good] of [
       ["river-woods", [1, 1, 1, 1], locale === "fr" ? "Bois" : "Wood"],
       ["alluvial-clay", [2, 1, 2, 3], locale === "fr" ? "Argile" : "Clay"],
@@ -349,7 +349,7 @@ for (const locale of ["en", "fr"] as const) {
 test("a generated mixed-climate campaign renders crop and livestock seasons without missing art", async ({
   page,
 }) => {
-  let s = newGame("season-review-1");
+  let s = newGame("season-review-7");
   s.calendar = { ...s.calendar!, startSeason: "spring" };
   syncSeasonSurfaces(s);
   while (s.phase.startsWith("setup")) s = run(s, chooseAIAction(s));
@@ -380,9 +380,9 @@ test("a generated mixed-climate campaign renders crop and livestock seasons with
   await expect(handoff).toBeVisible();
   await handoff.click();
   for (const [id, name, amount] of [
-    ["-3,2", "Barley fields", 0],
-    ["1,-4", "Maize fields", 0],
-    ["1,-6", "Cattle pasture", 1],
+    ["-2,0", "Barley fields", 8],
+    ["-5,2", "Maize fields", 0],
+    ["-1,0", "Cattle pasture", 1],
   ] as const) {
     await page.getByTestId(`hex-${id}`).press("Enter");
     const forecast = page.getByRole("region", { name: "Seasonal production" });

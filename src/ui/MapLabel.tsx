@@ -4,6 +4,8 @@ import font from "./map-font.json";
 import french from "../i18n/fr.json";
 import { GOOD_INFO } from "../game/content";
 import { RAW } from "../game/types";
+import type { Raw } from "../game/types";
+import { ResourceIcon } from "./ResourceIcon";
 
 type Glyph = { advance: number; commands: (string | number)[][] };
 const glyphs = font.glyphs as Record<string, Glyph>;
@@ -76,7 +78,31 @@ export const MapLabelDefinitions = memo(function MapLabelDefinitions() {
           />
         )),
       )}
+      {RAW.map((good) => (
+        <symbol key={good} id={`map-resource-${good}`} viewBox="0 0 25 25">
+          <ResourceIcon good={good} size={25} />
+        </symbol>
+      ))}
     </>
+  );
+});
+/** Resource artwork is shared once per map, just like the outlined numerals. */
+export const MapResourceIcon = memo(function MapResourceIcon({
+  good,
+  size = 12,
+}: {
+  good: Raw;
+  size?: number;
+}) {
+  return (
+    <use
+      className="map-resource-icon"
+      data-resource={good}
+      href={`#map-resource-${good}`}
+      width={size}
+      height={size}
+      aria-hidden="true"
+    />
   );
 });
 type Props = Omit<SVGProps<SVGTextElement>, "children" | "x" | "y"> & {

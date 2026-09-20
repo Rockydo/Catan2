@@ -8,6 +8,7 @@ type Year = [number, number, number, number];
 
 /** A shared local roll keeps autumn's cold spots within spring's ice cover. */
 export const SHOULDER_ICE_CHANCE = {
+  glacial: { spring: 1, autumn: 1 },
   arctic: { spring: 0.7, autumn: 0.5 },
   alpine: { spring: 0.35, autumn: 0.25 },
   cold: { spring: 0.2, autumn: 0.1 },
@@ -31,10 +32,12 @@ export function seasonYear(s: Pick<Game, "calendar" | "round">): number {
 function schedule(tile: Hex, raw: Raw, base: number): Year {
   const biome = tile.biome,
     climate = tile.climate ?? "temperate";
-  const frost = ["cold", "arctic", "alpine"].includes(climate);
-  const hot = ["tropical", "subtropical", "savanna", "desert"].includes(
+  const frost = ["cold", "arctic", "alpine", "glacial"].includes(climate);
+  const dry = ["desert", "hyperarid"].includes(climate);
+  const rainy = ["tropical", "subtropical", "savanna", "monsoon"].includes(
     climate,
   );
+  const hot = dry || rainy;
   const times = (weights: Year): Year => weights.map((n) => n * base) as Year;
   const wetSummer = Math.max(1, base - 1),
     dryPeak = 2 * base - wetSummer;
@@ -44,10 +47,25 @@ function schedule(tile: Hex, raw: Raw, base: number): Year {
   if (biome === "woods") return times(hot ? [1, 1, 1, 1] : [1, 1, 2, 0]);
   if (biome === "reindeer-range" || biome === "seal-grounds")
     return times([1, 1, 1, 1]);
+  if (
+    climate === "glacial" &&
+    (tile.resource === "water" ||
+      ["ore", "stone", "gold", "coal", "salt", "brick"].includes(raw))
+  )
+    return times([0, 4, 0, 0]);
   if (biome === "cattle-savanna") return times([1, 0, 2, 1]);
   if (raw === "grain") {
-    if (biome === "rice-field")
-      return climate === "tropical" ? [4, 4, 4, 0] : [0, 6, 6, 0];
+    if (biome === "rice-field") {
+      const harvests =
+        climate === "monsoon" ? 1 : climate === "tropical" ? 3 : 2;
+      const amount = (base * 4) / harvests;
+      return climate === "monsoon"
+        ? [0, 0, amount, 0]
+        : climate === "tropical"
+          ? [amount, amount, amount, 0]
+          : [0, amount, amount, 0];
+    }
+    if (biome === "chernozem-wheat") return times([0, 4, 0, 0]);
     if (biome === "olive-grove") return times([0, 0, 2, 2]);
     if (biome === "oasis") return times([0, 0, 4, 0]);
     if (biome === "golden-fields")
@@ -79,23 +97,22 @@ function schedule(tile: Hex, raw: Raw, base: number): Year {
   if (raw === "hides")
     return hot ? [base, wetSummer, dryPeak, base] : times([1, 0, 1, 2]);
   if (raw === "lumber") {
-    if (hot) return climate === "desert" ? times([1, 1, 1, 1]) : wetDry;
+    if (hot) return dry ? times([1, 1, 1, 1]) : wetDry;
     return base === 2 ? [2, 2, 3, 1] : [1, 1, 2, 0];
   }
   if (raw === "salt") {
-    if (climate === "desert") return times([1, 1, 1, 1]);
+    if (dry) return times([1, 1, 1, 1]);
     // Solar evaporation pauses during the shared tropical wet season.
-    return times(
-      ["tropical", "subtropical", "savanna"].includes(climate)
-        ? [1, 0, 1, 2]
-        : [1, 2, 1, 0],
-    );
+    return times(rainy ? [1, 0, 1, 2] : [1, 2, 1, 0]);
   }
   if (raw === "coal" || raw === "oil") return times([1, 1, 1, 1]);
   if (frost) return times([1, 2, 1, 0]);
   // Covered mines and quarries in mild climates provide a stable alternative
   // to risky agriculture. Clay extraction can continue during tropical rains.
-  if (raw === "brick" && ["tropical", "subtropical"].includes(climate))
+  if (
+    raw === "brick" &&
+    ["tropical", "subtropical", "monsoon"].includes(climate)
+  )
     return wetDry;
   return times([1, 1, 1, 1]);
 }
@@ -147,21 +164,36 @@ export function seasonalWorkshopBase(
 
 export function frozenInSeason(tile: Hex, season?: Season): boolean {
   if (!season) return tile.resource === "ice";
-  if (tile.resource === "ice") return season !== "summer";
+  if (tile.resource === "ice")
+    return tile.climate === "glacial" || season !== "summer";
   if (tile.resource !== "water") return false;
   const climate = tile.climate ?? "temperate";
   if (!(climate in SHOULDER_ICE_CHANCE)) return false;
   if (season === "winter") return true;
   if (season === "summer" || tile.thawGrace === season) return false;
+  const chance =
+    SHOULDER_ICE_CHANCE[climate as keyof typeof SHOULDER_ICE_CHANCE][season];
   return (
-    tile.freezeRoll !== undefined &&
-    tile.freezeRoll <
-      SHOULDER_ICE_CHANCE[climate as keyof typeof SHOULDER_ICE_CHANCE][season]
+    chance === 1 || (tile.freezeRoll !== undefined && tile.freezeRoll < chance)
   );
 }
 export function seasonWeather(tile: Hex, season: Season): string {
   if (frozenInSeason(tile, season)) return "Frozen sea";
   const climate = tile.climate ?? "temperate";
+  if (climate === "glacial")
+    return tile.resource === "water"
+      ? "Brief summer opening"
+      : "Permanent snow";
+  if (climate === "hyperarid")
+    return season === "summer" ? "Extreme drought" : "Persistent drought";
+  if (climate === "monsoon")
+    return season === "spring"
+      ? "Monsoon onset"
+      : season === "summer"
+        ? "Monsoon rains"
+        : season === "autumn"
+          ? "Retreating rains"
+          : "Dry season";
   if (
     climate === "arctic" &&
     tile.resource !== "water" &&

@@ -36,7 +36,7 @@ Choose **English** or **Français** on the main menu or in campaign settings. Th
 ## What to expect
 
 - Classic: 5 factions on 125 initial tiles. Grand campaign: 10 factions on 250 tiles.
-- Eleven climate zones determine terrain and water probabilities. Terrain numbers and shortages vary by seed. Expeditions extend the map without changing existing tiles.
+- Fourteen climate zones determine terrain and water probabilities. Terrain numbers and shortages vary by seed. Expeditions extend the map without changing existing tiles.
 - Thirteen raw resources and ten processed goods. Cities, camps, collectors and guilds provide different ways to grow.
 - Four seasons change harvests, landscapes and sea ice. Crop calendars and livestock provide different ways to manage food supply.
 - Four tiers of military units and ships, transport, raids, sieges, watchtowers and alliances.
@@ -66,7 +66,7 @@ npx playwright install chromium firefox
 npm run test:e2e         # Chromium, Firefox and mobile-browser checks
 npm run test:soak        # Seeded AI campaigns (5 factions by default)
 npm run test:stress      # Larger-map stress checks
-npx tsx scripts/seasons-audit.ts          # Two years over all eleven climates
+npx tsx scripts/seasons-audit.ts          # Two years over all fourteen climates
 npx tsx scripts/seasons-audit.ts --stress # All seasons on maps up to 2,500 tiles
 FACTIONS=10 SEEDS=1 ROUNDS=40 npm run test:soak  # Grand campaign audit
 npm run format:check
@@ -81,16 +81,16 @@ The interactive rules are built alongside the game. Their bilingual chapter sour
 
 ## Project layout
 
-| Folder | Contents |
-|---|---|
-| `src/game` | Rules engine, AI, generation, saves and content data |
-| `src/ui`, `src/App.tsx` | Game interface and map |
-| `src/i18n` | Language selection and French translations |
-| `src/rules` | Interactive bilingual rulebook |
-| `public/assets` | Bundled artwork and asset records |
-| `docs/rules` | Complete generated text references |
-| `tests`, `e2e` | Engine and browser tests |
-| `scripts` | Server, documentation, audits and packaging |
+| Folder                  | Contents                                             |
+| ----------------------- | ---------------------------------------------------- |
+| `src/game`              | Rules engine, AI, generation, saves and content data |
+| `src/ui`, `src/App.tsx` | Game interface and map                               |
+| `src/i18n`              | Language selection and French translations           |
+| `src/rules`             | Interactive bilingual rulebook                       |
+| `public/assets`         | Bundled artwork and asset records                    |
+| `docs/rules`            | Complete generated text references                   |
+| `tests`, `e2e`          | Engine and browser tests                             |
+| `scripts`               | Server, documentation, audits and packaging          |
 
 See [TESTING.md](TESTING.md) for test notes and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for dependency and font notices. [ART.md](ART.md) records artwork sources. Older design notes are historical; the in-game guide and current engine define the current rules.
 
@@ -98,19 +98,23 @@ This is an independent fan project, not an official Catan product or an endorsem
 
 ## Climate maps
 
-New campaigns use eleven climates and 48 terrain types. Select a tile for its climate and base production, or use **Show climates** in the map controls. The **Map and dice** rules chapter has interactive tables with all land and water probabilities.
+New campaigns use fourteen climates and 49 terrain types. Select a tile for its climate and base production, or use **Show climates** in the map controls. The **Map and dice** rules chapter has interactive tables with all land and water probabilities.
 
-Towns, camps and collectors multiply the terrain’s base yield. Woods let each faction choose Wood or Hides during its action phase. Frozen sea carries land units, blocks ships and cannot support permanent construction without solid ground. Bare Peaks are impassable to all units; roads can follow their edges, but towns need adjacent walkable solid land. Existing saves retain their revealed terrain and yields; newly explored tiles use climate generation.
+Towns, camps and collectors multiply the terrain’s base yield. Woods let each faction choose Wood or Hides during its action phase. Frozen sea carries land units, blocks ships and cannot support permanent construction without solid ground. Bare Peaks are impassable to all units; roads can follow their edges, but towns need adjacent walkable solid land. Existing saves retain their revealed terrain and stored goods, apart from the named replacement of retired Rough fields. Current climate-adjusted cereal yields apply on load; newly explored tiles use current climate generation.
+
+New regions include Glacial (45% land), Hyperarid (90%) and Monsoon (30%). Initial climate weights are 1 for each established climate and 0.35 for each extreme; compatible entries into extremes use weight 0.5. Their scarcity, ice and fragmented terrain create isolated colony opportunities without disaster damage or extra upkeep.
 
 ## Seasons and food
 
 New campaigns start in a random season, with a 25% chance each for Spring, Summer, Autumn and Winter. The world seed determines the starting season, so the same seed gives the same start. One complete round of faction turns advances to the next season in that cycle. The calendar beside the turn controls shows current production and lets you preview seasonal artwork. Selecting a tile shows its exact yields and open-water or frozen surface in all four seasons. Previewing a season does not advance the game.
 
-Crops only produce during their harvest seasons, and still need their dice number to roll. Wheat, rye, barley, maize and millet have one harvest window; olives and subtropical rice have two; tropical rice has three. A harvest window pays on every matching roll. For each tile and each resource, the four seasonal yields add up to four times its printed annual yield. Output is more variable, but its annual dice expectation is unchanged. Cities, camps, extensions and collectors apply their normal multipliers to those seasonal yields.
+Crops only produce during their harvest seasons, and still need their dice number to roll. Wheat, rye, barley, maize and millet have one harvest window; olives and subtropical rice have two; tropical rice has three. A harvest window pays on every matching roll. For each tile and each resource, the four seasonal yields add up to four times its current climate-adjusted annual baseline. The calendar preserves that baseline’s annual dice expectation; balance updates can revise the baseline itself. Cities, camps, extensions and collectors apply their normal multipliers to those seasonal yields.
+
+Rice pays 4 Grain in each active window: three windows in Tropical, two in Subtropical and one Autumn window in Monsoon. Oceanic Barley and Temperate/Oceanic Rye pay 8 in Summer; other Barley/Rye pay 4 in their existing season. Black-soil wheat pays 12 in Summer and is a rare Chernozem biome in Temperate (2% of land) and Steppe (4%). See [Cereal yields and game balance](docs/cereal-balance.md) for the complete table and research.
 
 Cattle, goats and reindeer produce Meat. Recipes continue to show Grain: payments use available Grain, then Fish, then Meat, with Gold covering any remaining shortage. Meat refines into Provisions. Nothing spoils, and seasons add no food upkeep.
 
-Ordinary sea hexes in Arctic, Alpine and Cold climates all freeze in Winter and open in Summer. In Spring/Autumn, each hex has a fixed freezing chance of 70%/50% in Arctic, 35%/25% in Alpine and 20%/10% in Cold climates. The world seed fixes the pattern: it repeats every year and survives reloads, and every hex that freezes in Autumn also freezes in Spring. These chances do not guarantee an exact frozen share of a region. The original Frozen sea terrain stays frozen in Spring, Autumn and Winter and opens in Summer. Other climates stay open.
+Ordinary sea hexes in Glacial, Arctic, Alpine and Cold climates all freeze in Winter and open in Summer. In Spring/Autumn, each hex has a fixed freezing chance of 100%/100% in Glacial, 70%/50% in Arctic, 35%/25% in Alpine and 20%/10% in Cold climates. The world seed fixes the pattern: it repeats every year and survives reloads, and every hex that freezes in Autumn also freezes in Spring. These chances do not guarantee an exact frozen share of a region. Arctic Frozen sea terrain stays frozen in Spring, Autumn and Winter and opens in Summer. Glacial Frozen sea is permanent pack ice; Glacial land stays snowy all year. Other climates stay open.
 
 Frozen sea hexes produce no marine resources. Any Spring or Autumn yield removed by ice is added to that hex’s Summer yield, separately for each resource, keeping its four-season total unchanged. Summer still needs a matching dice roll. Land units can cross frozen water; ships trapped there wait for thaw. Land units caught on thawed water can escape to adjacent land or board a transport. No unit is automatically destroyed by a season change. Frozen water never becomes a foundation for permanent buildings. Ports need adjacent open water to provide their trade rate.
 

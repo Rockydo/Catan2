@@ -228,7 +228,7 @@ for (const locale of ["en", "fr"] as const) {
     page.on("pageerror", (e) => errors.push(e.message));
     await page.goto(`/rules${locale === "fr" ? "-fr" : ""}.html#world`);
     const reference = page.locator(".climate-reference");
-    await expect(reference.locator(".climate-tabs button")).toHaveCount(11);
+    await expect(reference.locator(".climate-tabs button")).toHaveCount(14);
     await reference
       .getByRole("button", {
         name: locale === "fr" ? "Océanique" : "Oceanic",
@@ -259,7 +259,7 @@ for (const locale of ["en", "fr"] as const) {
       .locator(".climate-terrain")
       .filter({ hasText: locale === "fr" ? "Rizière" : "Rice field" });
     await expect(rice).toHaveCount(1);
-    await expect(rice).toContainText(locale === "fr" ? "3 Blé" : "3 Grain");
+    await expect(rice).toContainText(locale === "fr" ? "2 Blé" : "2 Grain");
     await expect(rice).toContainText("15%");
     await expect(
       rice.locator('[style*="terrain-rice-field-v1.webp"]'),
@@ -353,11 +353,11 @@ test("climate-only overview hides gameplay details and preserves the campaign", 
   expect(errors).toEqual([]);
 });
 
-test("printed guide includes all eleven climate tables", async ({ page }) => {
+test("printed guide includes all fourteen climate tables", async ({ page }) => {
   await page.goto("/rules.html#world");
   await page.evaluate(() => window.dispatchEvent(new Event("beforeprint")));
   await expect(page.locator(".print-content .climate-reference")).toHaveCount(
-    11,
+    14,
   );
   await expect(page.locator(".print-content")).toContainText("Rice field");
   await expect(page.locator(".print-content")).toContainText("Cod grounds");

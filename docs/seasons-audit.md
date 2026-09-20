@@ -4,17 +4,18 @@
 
 A season lasts one complete round. Spring, Summer, Autumn and Winter have the same number of faction turns for a stable set of survivors. Each season is a harvest window: every matching dice roll pays. There is no once-per-year payout cap and no compensation when a harvest window receives no matching roll.
 
-For each existing resource yield Y, its four seasonal payouts sum to 4Y. Expected annual production is therefore unchanged: 4 × living factions × dice probability × Y. This must hold independently for every component of mixed terrain, including whale Oil, seal Oil, Oasis food and wood, and Woods choices. A wheat tile on 7 can miss an entire five-faction harvest season with probability (5/6)^5, about 40%. A tile on 2 misses with probability (35/36)^5, about 87%.
+For each current climate-adjusted resource baseline Y, its four seasonal payouts sum to 4Y. Expected annual production for that baseline is therefore: 4 × living factions × dice probability × Y. This must hold independently for every component of mixed terrain, including whale Oil, seal Oil, Oasis food and wood, and Woods choices. A wheat tile on 7 can miss an entire five-faction harvest season with probability (5/6)^5, about 40%. A tile on 2 misses with probability (35/36)^5, about 87%.
 
-Keep `tileYield` as the annual mean / permanent terrain contract. Legal camps, extensions, harvest coverage, AI long-term evaluation and resource availability must not disappear during a fallow season. Add a separate seasonal production contract used consistently by towns, automatic city refining, camps, workshops, merchants and ships. Advanced processed production multiplies every seasonal raw component, including food substitutes and Oil, before mapping goods. Workshops still respect their selected Woods resource.
+Keep `tileYield`, backed by the shared climate-aware `biomeYield`, as the annual mean / permanent terrain contract. The cereal rebalance can revise this baseline without changing stored goods; catalogue rows, AI exploration, workshops and setup grants must use the revised value. Legal camps, extensions, harvest coverage, AI long-term evaluation and resource availability must not disappear during a fallow season. Add a separate seasonal production contract used consistently by towns, automatic city refining, camps, workshops, merchants and ships. Advanced processed production multiplies every seasonal raw component, including food substitutes and Oil, before mapping goods. Workshops still respect their selected Woods resource.
 
 AI should use annual income for durable town/army power evaluation, and a separate near-term forecast for shortages and trades. Using current harvest output directly as permanent power would trigger alliances and rebellions every season for no strategic reason.
 
 ## Crop grounding
 
-IRRI's long-running triple-cropping experiment distinguishes a dry-season, early-wet-season and late-wet-season rice crop. Triple crops require short-duration varieties, irrigation and careful scheduling. Tropical triple-crop rice is therefore an explicit game abstraction of intensively cultivated paddies, not a universal claim about all rice. Subtropical double cropping is a sensible contrast.
+IRRI's long-running triple-cropping experiment distinguishes a dry-season, early-wet-season and late-wet-season rice crop. Triple crops require short-duration varieties, irrigation and careful scheduling. Tropical triple-crop rice is therefore an explicit game abstraction of intensively cultivated paddies, not a universal claim about all rice. Subtropical double cropping is a useful game contrast. The chosen annual rice totals are 12 Tropical, 8 Subtropical and 4 Monsoon, with four Grain per active window. This is a balance choice, not proof that two real crops must produce less than three: cooler rice regions can have higher yields per harvest. See [Cereal yields and game balance](cereal-balance.md) for primary sources, paddy/milled-rice distinctions and the complete cereal table.
 
 Sources:
+
 - https://sites.google.com/irri.org/long-term-experiments/ltcce
 - https://ricetoday.irri.org/150th-harvest-from-worlds-longest-running-continuous-rice-experiment/
 - https://www.fao.org/4/Y4011E/y4011e0s.htm (Mediterranean wheat generally grows from late autumn sowing to early summer harvest.)
@@ -40,14 +41,15 @@ Sources:
 Ordinary sea tiles use one stable `freezeRoll = randomAt(seed, tile.id, "season-freeze")`, independent of dice and other random streams. `calendar.iceModel: 1` activates this model. The same local draw is tested against both thresholds in `SHOULDER_ICE_CHANCE`:
 
 | Climate | Spring | Summer | Autumn | Winter |
-|---|---:|---:|---:|---:|
-| Arctic | 70% | 0% | 50% | 100% |
-| Alpine | 35% | 0% | 25% | 100% |
-| Cold | 20% | 0% | 10% | 100% |
+| ------- | -----: | -----: | -----: | -----: |
+| Glacial |   100% |     0% |   100% |   100% |
+| Arctic  |    70% |     0% |    50% |   100% |
+| Alpine  |    35% |     0% |    25% |   100% |
+| Cold    |    20% |     0% |    10% |   100% |
 
-These are per-hex probabilities, not fixed proportions of each map. Reusing the same draw guarantees that Autumn ice is a subset of Spring ice and that the pattern repeats each year and reload. Other climates do not freeze ordinary sea. Permanent `resource: ice` terrain remains frozen in Spring, Autumn and Winter and opens in Summer.
+These are per-hex probabilities, not fixed proportions of each map. Reusing the same draw guarantees that Autumn ice is a subset of Spring ice and that the pattern repeats each year and reload. Other climates do not freeze ordinary sea. Glacial ordinary water freezes throughout Spring, Autumn and Winter, even in a reference fixture without a local roll, and opens in Summer. Arctic `resource: ice` terrain opens in Summer; Glacial `resource: ice` is permanent pack ice and never opens. It remains barren and never supplies construction ground.
 
-`seasonalProfile` transfers any frozen Spring or Autumn allocation into Summer independently for every raw component. Fish, Cod and both Whale goods retain a four-season sum of four times their individual printed yields. Frozen sea produces no marine harvest. The changed schedule still requires matching dice rolls; it does not repay missed rolls. Collectors, advanced processing and forecasts must all use this adjusted schedule. Generic catalogue rows without a local frost draw show the open-water baseline; selected-tile forecasts show actual surfaces and yields.
+`seasonalProfile` transfers any frozen Spring or Autumn allocation into Summer independently for every raw component. Fish, Cod and both Whale goods retain a four-season sum of four times their individual printed yields. Frozen sea produces no marine harvest. The changed schedule still requires matching dice rolls; it does not repay missed rolls. Collectors, advanced processing and forecasts must all use this adjusted schedule. Generic catalogue rows without a local frost draw show the open-water baseline, except Glacial marine output which is already Summer-only; selected-tile forecasts show actual surfaces and yields.
 
 A version-9 save may contain a ship on ordinary water that the new pattern would freeze in the current Spring or Autumn. Migration records that season in `thawGrace` so the water stays open until the next boundary; repeat saves and loads must preserve this grace. The underlying frost draw is already stable, and the next season clears the old grace. Loading alone must not change the current surface or strand a force. Version-1–8 saves retain their existing Spring activation at the next full round.
 
@@ -64,7 +66,7 @@ A movement penalty greater than one is dangerous for 1-MP heavy infantry and art
 3. Matching roll off-season pays zero; wrong roll in-season pays zero; multiple matches in the harvest window all pay.
 4. Multiple food substitutes, partial stocks, explicit Meat costs, Gold fallback, AI trade equivalence and honest costs.
 5. Exactly one season transition per whole round, dead factions skipped correctly, all-player elimination/victory handling, setup resource baseline.
-6. Exact per-climate frost thresholds, stable seeded draws across years/reloads, Autumn ice as a subset of Spring ice, and the original Frozen sea exception. Exercise freeze/thaw with land units, naval units, loaded carriers, enemy stacks, no shore, and build legality.
+6. Exact per-climate frost thresholds, stable seeded draws across years/reloads, Autumn ice as a subset of Spring ice, and the distinct Arctic seasonal ice and Glacial permanent ice exceptions. Exercise freeze/thaw with land units, naval units, loaded carriers, enemy stacks, no shore, and build legality.
 7. Version-1–8 Spring activation, version-9 migration with occupied open Spring/Autumn water, preserved version-10 grace on repeated reloads, grace expiry at the next boundary, and save roundtrips in every season and frozen state without data loss.
 8. Asset manifest complete, no missing network requests; readable tokens in all climates; French localization; mobile calendar and exact per-tile surface/yield forecasts. Generic marine tables must identify their open-water baseline.
 9. Large-map pan/zoom uses existing cached layers; no new continuous animation, per-tile filters or repeated whole-map climate scans each AI action.
@@ -81,12 +83,20 @@ Summer represents the warm climates’ wet season in this game. It does not impl
 
 Clay is the raw resource, not fired or sun-dried bricks. Extraction therefore remains productive in Summer; richer Alluvial clay has lower wet-season output rather than zero. With whole resources and annual sum 4, a base-one tile that produces every season necessarily pays 1/1/1/1. Wildlife grassland retains a smaller Summer harvest and a larger Autumn harvest: 2/1/3/2. Alluvial clay follows 2/1/2/3. Crops, livestock and Whales retain their separate schedules.
 
-Solar salt is different. [FAO salt-pond guidance](https://www.fao.org/4/w3732e/w3732e0q.htm) describes production stopping during the rainy season and depending on sustained evaporation exceeding precipitation. Tropical and Subtropical Salt therefore retain 1/0/1/2. Savanna Salt now follows that same wet/dry order, instead of peaking during its wet Summer. Desert Salt has no wet-season shutdown and produces 1/1/1/1. These changes preserve annual totals and apply to existing saves without a migration.
+Solar salt is different. [FAO salt-pond guidance](https://www.fao.org/4/w3732e/w3732e0q.htm) describes production stopping during the rainy season and depending on sustained evaporation exceeding precipitation. Tropical and Subtropical Salt therefore retain 1/0/1/2. Savanna Salt now follows that same wet/dry order, instead of peaking during its wet Summer. Desert and Hyperarid Salt have no wet-season shutdown and produces 1/1/1/1. These changes preserve annual totals and apply to existing saves without a migration.
 
 ## Rough fields removal
 
-Rough fields duplicated the baseline yield and harvest window of named cereals in Cold, Alpine, Steppe and Savanna climates. Its land-generation share now merges with the immediately following Barley or Millet interval. The sum remains 100% in every climate, each affected tile still yields 1 Grain as its annual mean, and every other terrain keeps its seeded roll interval.
+Rough fields duplicated the baseline yield and harvest window of named cereals in Cold, Alpine, Steppe and Savanna climates. Its land-generation share now merges with the immediately following Barley or Millet interval. The retirement itself preserves the affected draw intervals and the sum of 100% in each climate. The later cereal rebalance gives Oceanic Barley baseline 2; the other replacement crops keep baseline 1. Black-soil wheat separately replaces 2 percentage points of Temperate Golden fields and 4 of Steppe plain.
 
-Save envelope version 11 replaces the retired biome before catalogue-dependent migrations and invariant checks. Cold, Alpine and Oceanic Rough fields become Barley; Steppe and Savanna become Millet. Older non-climate worlds use Millet as the fallback for this retired biome, retaining its Autumn calendar. IDs, dice numbers, resource types, camps, workshops, stored goods, units and random streams are preserved. Oceanic conversions explicitly adopt Barley’s Summer harvest. No hidden legacy harvest rule is added. Generic pre-climate Grain tiles without a biome keep their existing rules and archived seasonal artwork.
+Save envelope version 11 replaces the retired biome before catalogue-dependent migrations and invariant checks. Cold, Alpine and Oceanic Rough fields become Barley; Steppe and Savanna become Millet. Older non-climate worlds use Millet as the fallback for this retired biome, retaining its Autumn calendar. IDs, dice numbers, resource types, camps, workshops, stored goods, units and random streams are preserved. Oceanic conversions explicitly adopt Barley’s Summer harvest and its current baseline of 2, paying 8 Grain per matching Summer roll. No hidden legacy harvest rule is added. Generic pre-climate Grain tiles without a biome keep their existing rules and archived seasonal artwork.
 
-Required regression coverage: all five generation shares and unchanged other draw intervals; legacy version-10 and older imports; live producers and saved references; identical annual Grain/Rations output; current save roundtrip; rejected invalid resources/climates; English/French names, forecasts and artwork after loading an old campaign. Archived art remains available to already-open clients but Rough fields are removed from the playable catalogue, new worlds and current saves.
+Required regression coverage: all five generation shares and unchanged other draw intervals; legacy version-10 and older imports; live producers and saved references; annual Grain/Rations output matching the current climate-adjusted baseline; current save roundtrip; rejected invalid resources/climates; English/French names, forecasts and artwork after loading an old campaign. Archived art remains available to already-open clients but Rough fields are removed from the playable catalogue, new worlds and current saves.
+
+## Extreme climate and cereal integration
+
+The initial draw contains fourteen climates with relative weights 1 for each established climate and 0.35 for each extreme. Entry weights of 0.5 do not change the 85% continuity rule. Verify reciprocal compatibility, the 2/1 Glacial, 2 Hyperarid and 2/1/1 Monsoon exit weights, and preservation of all existing reservations through expeditions and reloads.
+
+Glacial land remains snowy in all four seasons. Its mines and ordinary productive seas allocate four times their baseline to Summer; Seal grounds remain productive every season. Permanent Glacial ice is barren and never opens. Test movement, construction, fishing coverage and forecasts for this distinction. Hyperarid scarcity and Monsoon fragmentation need no new disasters or AI exceptions.
+
+`biomeYield` supplies Rice baselines 3/2/1 for Tropical/Subtropical/Monsoon, Oceanic Barley 2, Temperate/Oceanic Rye 2 and baseline 1 for other Barley/Rye. Wheat and Maize remain 2, Millet 1; Black-soil wheat is 3. Global and climate-specific catalogues must show these actual values, including workshop output. Existing stored goods and terrain stay intact; current productivity applies on load. Test annual conservation against revised baselines, not historical values.

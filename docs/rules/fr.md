@@ -27,17 +27,23 @@ Les ressources sont stockées par agglomération mais dépensées en commun. Les
 ## Carte et dés
 
 ### Génération des climats
-La carte initiale contient 125 tuiles en Classique ou 250 en Grande campagne. Le climat est défini avant le terrain. Une tuile de départ et l’un des onze climats sont tirés au hasard, avec la même probabilité. La génération progresse par les voisins. Si les voisins immédiats déjà définis ont le même climat, il est conservé avec 85 % de probabilité. Lors d’un changement, les climats compatibles sont l’intersection des possibilités des seules tuiles voisines immédiates déjà définies. Le poids de base de chaque destination est de 1. Depuis les sept climats d’origine, les nouvelles destinations compatibles Océanique, Alpin, Subtropical et Savane ont un poids de 0,5. Tempéré et Steppe favorisent Froid à 1,5. Méditerranéen donne un poids de 0,5 à Steppe et Désertique. Tropical vers Désertique, Désertique vers Tropical et Froid vers Arctique ont un poids de 2. Océanique favorise Tempéré à 2 ; Alpin favorise Froid et Arctique à 2 chacun ; Subtropical et Savane favorisent Tropical à 2. Les poids admissibles sont normalisés pour chaque tirage. La probabilité de continuité de 85 % reste inchangée. À une frontière mixte, un climat voisin compatible est privilégié. Sans candidat, le climat d’un voisin immédiat est repris.
+La carte initiale contient 125 tuiles en Classique ou 250 en Grande campagne. Le climat est défini avant le terrain. Une tuile de départ est choisie au hasard, puis un climat parmi quatorze selon des poids relatifs : 1 pour chacun des onze climats établis et 0,35 pour chacun des climats Glacial, Hyperaride et Mousson. Les poids sont normalisés pour ce tirage initial. La génération progresse par les voisins. Si les voisins immédiats déjà définis ont le même climat, il est conservé avec 85 % de probabilité. Lors d’un changement, les climats compatibles sont l’intersection des possibilités des seules tuiles voisines immédiates déjà définies. Le poids de base de chaque destination est de 1. Depuis les sept climats d’origine, les nouvelles destinations compatibles Océanique, Alpin, Subtropical et Savane ont un poids de 0,5. Tempéré et Steppe favorisent Froid à 1,5. Méditerranéen donne un poids de 0,5 à Steppe et Désertique. Tropical vers Désertique, Désertique vers Tropical et Froid vers Arctique ont un poids de 2. Océanique favorise Tempéré à 2 ; Alpin favorise Froid et Arctique à 2 chacun ; Subtropical et Savane favorisent Tropical à 2. Entrer dans un climat extrême compatible a un poids de 0,5. Glacial mène à Arctique avec 2 ou Alpin avec 1 ; Hyperaride mène à Désertique avec 2 ; Mousson mène à Tropical avec 2, Subtropical ou Savane avec 1. Les poids admissibles sont normalisés pour chaque tirage. La probabilité de continuité de 85 % reste inchangée. À une frontière mixte, un climat voisin compatible est privilégié. Sans candidat, le climat d’un voisin immédiat est repris.
 Avant de tirer les terrains, une passe finale de correction conserve des climats intermédiaires comme zones tampons si nécessaire. Deux climats adjacents sont toujours compatibles. Une réserve invisible autour de la carte évite les raccords impossibles lors des expéditions. Aucun terrain révélé ne change. Une même graine et une même séquence d’exploration reproduisent la même carte. Un ordre d’expéditions différent peut prolonger les zones autrement.
 Le ratio du climat détermine terre ou eau, puis sa table détermine le terrain. Les pourcentages terrestres s’appliquent après avoir tiré une terre. Les tirages aquatiques suivent l’ordre indiqué et ne concernent que l’eau restante ; le premier succès termine la séquence. Une tuile aquatique sans terre adjacente double la probabilité du tirage Baleines de son climat. Les tirages Poissons, Morues et Banquise restent inchangés et passent avant. La banquise ne compte pas comme terre. Les voisins cachés utilisent leurs climats réservés et leurs tirages terre/eau ; le bord de carte seul ne suffit pas à définir la haute mer. La fréquence de l’Or varie selon le climat. Aucun climat, ressource, port, continent ou départ équilibré n’est garanti.
-Tempéré, Tropical et Désertique : 50 % de terre. Froid et Subtropical : 55 %. Steppe : 65 %. Arctique et Méditerranéen : 40 %. Océanique : 35 %. Alpin : 75 %. Savane : 70 %. Les frontières Steppe/Désertique sont mutuellement compatibles, comme toutes les autres frontières autorisées. La nourriture des Oasis correspond au Blé.
+Tempéré, Tropical et Désertique : 50 % de terre. Froid et Subtropical : 55 %. Steppe : 65 %. Arctique et Méditerranéen : 40 %. Océanique : 35 %. Alpin : 75 %. Savane : 70 %. Glacial : 45 %. Hyperaride : 90 %. Mousson : 30 %. Les frontières Steppe/Désertique sont mutuellement compatibles, comme toutes les autres frontières autorisées. La nourriture des Oasis correspond au Blé.
 ### Vue des climats
 Le bouton Climats près du zoom affiche uniquement les couleurs climatiques. La légende compte les tuiles révélées de chaque climat. Déplacez la carte, zoomez et sélectionnez les tuiles normalement ; appuyez de nouveau sur Climats pour retrouver la carte normale.
+### Climats extrêmes et sols fertiles
+Glacial reste enneigé à chaque saison, avec de vastes plaines stériles, des pics et une banquise permanente. Ses mines et ressources marines ordinaires produisent seulement en Été ; les terrains de chasse aux Phoques produisent toute l’année. Il borde seulement Arctique et Alpin.
+Hyperaride compte 90 % de terre, dont beaucoup de désert stérile et de pics. Sel et minerais offrent des débouchés, mais les rares Oasis et les faibles pêcheries rendent nourriture et Bois difficiles à trouver. Il borde seulement Désertique. Mousson compte 30 % de terre : eaux et pics séparent des poches de forêt, d’argile et de riz pluvial. Le riz se récolte une fois en Automne ; Bois, chasse et argile restent productifs durant les pluies d’Été. Mousson borde Tropical, Subtropical et Savane.
+La difficulté vient de la géographie, de la rareté des ressources et des récoltes prévisibles. Aucun entretien, dégât de catastrophe récurrent ou ressource spéciale pour l’IA n’est ajouté. Les colonies isolées suivent les règles ordinaires de transport, d’échange et de construction.
+Le Blé sur terre noire représente les sols fertiles de type tchernoziom des prairies et steppes boisées, pas un climat distinct. Il occupe 2 % des terres tempérées et 4 % des terres de Steppe, en remplaçant respectivement deux points de Champs dorés et quatre points de Plaine steppique.
 ### Terrains stériles, pics et banquise
-Plaines enneigées et Désert ne produisent rien et n’accueillent ni camp ni atelier. Les armées les traversent et les constructions voisines restent possibles. La Banquise résulte du tirage aquatique arctique. Elle ne produit rien, accueille les unités terrestres et bloque les navires. Colonies, tours et routes permanentes exigent une terre ferme adjacente ; aucune liaison n’est possible sur une arête bordée uniquement de banquise. Une arête banquise/eau sans terre ferme accueille une liaison maritime. La banquise fond en Été et regèle en Automne. Les autres eaux froides, alpines et arctiques gèlent en Hiver, avec des probabilités fixes par hexagone de geler aussi au Printemps et en Automne. Voir Saisons et récoltes pour les unités immobilisées, ports hivernaux et constructions.
+Plaines enneigées et Désert ne produisent rien et n’accueillent ni camp ni atelier. Les armées les traversent et les constructions voisines restent possibles. La Banquise résulte des tirages aquatiques des climats Arctique et Glacial. Elle ne produit rien, accueille les unités terrestres et bloque les navires. Colonies, tours et routes permanentes exigent une terre ferme adjacente ; aucune liaison n’est possible sur une arête bordée uniquement de banquise. Une arête banquise/eau sans terre ferme accueille une liaison maritime. La Banquise du climat Glacial reste gelée toute l’année. La Banquise arctique fond en Été et regèle en Automne. Les eaux ordinaires du climat Glacial gèlent au Printemps, en Automne et en Hiver et s’ouvrent en Été. Les autres eaux froides, alpines et arctiques gèlent en Hiver, avec des probabilités fixes par hexagone de geler aussi au Printemps et en Automne. Voir Saisons et récoltes pour les unités immobilisées, ports hivernaux et constructions.
 Les Pics rocheux ne produisent rien et sont infranchissables pour toutes les unités. Aucun déplacement, recrutement, repli ou débarquement ne peut y placer une unité. Les routes peuvent suivre leurs arêtes selon les règles de raccordement ordinaires, même entre deux pics. Une agglomération ou une tour de guet exige au moins une terre ferme praticable adjacente. Aucun camp ni atelier ne peut exploiter les Pics rocheux.
 ### Parties existantes
-Les tuiles révélées conservent leurs terrains, productions et climats attribués. Les sauvegardes antérieures au système climatique classent leurs anciennes tuiles en Tempéré pour les futures frontières. Les nouvelles explorations peuvent utiliser les onze climats. Commencez une nouvelle partie pour appliquer les nouvelles tables à toute la carte. Les Champs pauvres ont été supprimés : les anciennes tuiles deviennent des Champs d’orge en climats Froid, Alpin et Océanique, ou des Champs de millet en Steppe et Savane. Leurs numéros, camps, ateliers et productions annuelles de Blé restent inchangés. Les anciens Champs pauvres océaniques se récoltent désormais en Été, comme les autres Champs d’orge océaniques ; les Champs dorés océaniques restent récoltés en Automne. Les mêmes proportions de génération produisent désormais ces céréales nommées.
+Les tuiles révélées conservent leur terrain et leur climat, sauf le remplacement nommé des anciens Champs pauvres. Numéros, camps, ateliers, unités et stocks sont conservés. La productivité actuelle ajustée au climat s’applique au chargement : base 2 pour le Riz subtropical, 1 pour le Riz de Mousson, 2 pour l’Orge océanique et 2 pour le Seigle tempéré ou océanique. Les autres céréales suivent les bases des tables actuelles.
+Les sauvegardes antérieures aux climats classent leurs anciennes tuiles en Tempéré pour les futures frontières. Les nouvelles explorations peuvent utiliser les quatorze climats. Commencez une nouvelle partie pour appliquer les nouvelles tables à toute la carte. Les Champs pauvres deviennent des Champs d’orge en climats Froid, Alpin et Océanique, ou des Champs de millet en Steppe et Savane. Les anciens Champs pauvres océaniques produisent désormais 8 Blés sur les jets correspondants en Été, comme les autres Champs d’orge océaniques ; les Champs dorés océaniques restent récoltés en Automne. Les récoltes stockées ne sont pas recalculées.
 ### Numéros et dés
 Chaque tuile productive reçoit uniformément un numéro de 2 à 12, sept compris. La production utilise deux dés à six faces indépendants : les numéros ont la même fréquence de génération, mais pas la même probabilité d’activation. Dés, terrain, cartes et rébellions utilisent des tirages sauvegardés séparément. Recharger ne change ni les cartes proposées ni la carte du monde. Ni les joueurs ni l’IA ne peuvent consulter les coordonnées cachées.
 ### Ports
@@ -52,34 +58,35 @@ Une manche complète correspond à une saison. Chaque faction survivante joue av
 Le calendrier à côté du numéro de manche indique la saison et l’année. Ouvrez-le pour consulter la saison suivante et prévisualiser les paysages. Un aperçu ne modifie que les images : déplacements, production et actions légales suivent toujours la saison en cours. Sélectionnez une tuile pour connaître son état exact, eau libre ou gelée, et sa production pour chacune des quatre saisons.
 ### Dés et périodes de récolte
 Une tuile produit uniquement lorsque son numéro sort pendant une saison productive. Chaque jet correspondant rapporte des ressources, même si la tuile a déjà produit pendant cette saison. Aucune limite annuelle de récoltes, récolte garantie, relance ou compensation. Hors saison, le même numéro ne rapporte rien. Les dés restent deux dés indépendants à six faces.
-Pour chaque ressource, la somme des quatre productions saisonnières vaut quatre fois le rendement annuel de base. À producteurs et nombre de jets identiques, la moyenne annuelle ne change pas. Le calendrier rend la production moins fiable : les Champs dorés donnent 8 Blés par colonie à chaque jet correspondant en Été et zéro aux autres saisons. Si leur numéro ne sort pas cet Été-là, la récolte est perdue.
+Pour chaque ressource, les quatre productions saisonnières totalisent quatre fois la base annuelle actuelle ajustée au climat. À producteurs et nombre de jets identiques, ce calendrier respecte l’espérance annuelle de cette base ; une mise à jour des céréales peut modifier la base elle-même. Le calendrier rend la production moins fiable : les Champs dorés donnent 8 Blés par colonie à chaque jet correspondant en Été et zéro aux autres saisons. Si leur numéro ne sort pas cet Été-là, la récolte est perdue.
 ### Types de cultures
-- Champs dorés : récolte estivale de 8 Blés. En climat Océanique, la récolte a lieu en Automne.
-- Orge : récolte estivale de 4 Blés ; en climats Froid et Alpin, récolte en Automne.
-- Seigle : récolte estivale de 4 Blés. Complète les cultures plus tardives des régions froides et alpines.
-- Millet : récolte automnale de 4 Blés. Présent dans la Steppe et la Savane.
-- Maïs : récolte automnale de 8 Blés. Présent dans les régions tempérées et subtropicales.
-- Riz tropical : 4 Blés au Printemps, en Été et en Automne ; zéro en Hiver. Riz subtropical : 6 Blés en Été et en Automne, zéro sinon.
-- Oliveraies : 2 Blés en Automne et en Hiver. Nourriture des Oasis : 4 Blés en Automne ; le Bois des Oasis reste disponible toute l’année.
-Il s’agit de périodes de récolte, pas de livraisons automatiques au changement de saison. Toutes ces cultures produisent la même carte Blé. Les tables de génération et le calendrier illustré précisent la répartition de chaque climat.
+- Champs dorés (blé) : 8 Blés en Été ; récolte en Automne dans le climat Océanique.
+- Blé sur terre noire : 12 Blés en Été. Champs fertiles rares en climats Tempéré et Steppe.
+- Orge : 8 Blés en Été en climat Océanique ; 4 en Été en Méditerranéen ; 4 en Automne en climats Froid et Alpin.
+- Seigle : 8 Blés en Été en climats Tempéré et Océanique ; 4 en Été en climats Froid et Alpin.
+- Millet : 4 Blés en Automne en Steppe et Savane.
+- Maïs : 8 Blés en Automne en climats Tempéré et Subtropical.
+- Riz tropical : 4 Blés au Printemps, en Été et en Automne. Riz subtropical : 4 en Été et en Automne. Riz de Mousson : 4 en Automne seulement. Les autres saisons ne produisent rien.
+- Oliveraies : 2 Blés en Automne et en Hiver. Nourriture des Oasis : 4 Blés en Automne ; leur Bois reste disponible toute l’année.
+Ces périodes exigent un jet correspondant, sans livraison automatique. Toutes les cultures produisent la même carte Blé. Les totaux de riz 12/8/4 donnent des rôles annuels distincts à trois, deux et une récolte. C’est une simplification de jeu : dans la réalité, moins de cultures peuvent produire davantage par récolte. Climat, sol et pratiques agricoles influencent tous la productivité.
 ### Élevage et Viande
 Le Pâturage bovin produit 1/1/4/2 Viandes au Printemps/Été/Automne/Hiver. Le Pâturage de chèvres produit 1/0/2/1 Viandes. Le Pâturage de rennes produit 1 Viande et 1 Peaux à chaque saison, y compris en Été. L’Élevage de savane produit 1/0/2/1 Viandes et autant de Peaux du Printemps à l’Hiver.
 La Viande est une ressource brute. Les recettes indiquent toujours du Blé : dépensez d’abord le Blé, puis le Poisson et enfin la Viande à raison de 1 pour 1 pour couvrir le manque. L’Or couvre les ressources brutes encore manquantes. Un échange explicite porte sur les ressources nommées. Les ateliers de Viande et la production avancée des villes ou marchands ajoutent des Rations sans consommer la récolte brute.
 Les Pâturages continuent à produire de la Laine. Dans les climats tempérés et froids, la tonte a lieu au Printemps et en Été ; la Laine des climats Tropical, Subtropical, Savane et Désertique est répartie sur l’année. Aucun coût d’alimentation ou d’entretien du bétail. Les aliments et autres ressources stockés ne périment jamais.
 ### Autres productions saisonnières
-Bois, chasse, sel et argile varient selon le climat. Les Forêts froides conservent une petite production de Bois en Hiver. La chasse et l’abattage des climats chauds continuent durant les pluies d’Été. Jungle et boisements chauds produisent 1 à chaque saison ; la Prairie à gibier donne 2/1/3/2 Peaux du Printemps à l’Hiver. L’Argile tropicale donne 1 à chaque saison ; les Berges argileuses subtropicales donnent 2/1/2/3. Les Salines des climats Tropical, Subtropical et Savane donnent 1/0/1/2 : l’évaporation s’arrête durant l’Été humide et culmine en Hiver sec. Les Salines désertiques donnent 1 à chaque saison. Les totaux annuels restent inchangés. Peaux et Huile d’une même tuile animale peuvent suivre des calendriers différents ; les deux ressources sont récoltées.
-Les mines et carrières des climats doux restent régulières. En climats Froid, Alpin et Arctique, elles privilégient l’Été et s’arrêtent en Hiver ; le Charbon reste disponible toute l’année. Ces ressources régulières restent utiles lorsque les récoltes alimentaires sont incertaines.
-Avant l’ajustement lié au gel, Poisson et Morue des climats Tempéré, Froid, Arctique, Océanique et Alpin produisent 1×/2×/1×/0× leur base du Printemps à l’Hiver. Le Poisson des climats chauds produit régulièrement toute l’année. Les Baleines des climats froids suivent 1×/2×/1×/0× ; les autres suivent 0×/1×/2×/1×. Appliquez le multiplicateur aux Peaux et à l’Huile. Les terrains de chasse aux Phoques produisent 1 Peaux et 1 Huile à chaque saison, y compris en Été. La table marine générale indique le calendrier de base en eau libre. Les prévisions de la tuile sélectionnée donnent ses rendements exacts, après report en Été de la production supprimée par le gel du Printemps ou de l’Automne.
+Bois, chasse, sel et argile varient selon le climat. Les Forêts froides conservent une petite production de Bois en Hiver. La chasse et l’abattage des climats chauds continuent durant les pluies d’Été. Jungle et boisements chauds produisent 1 à chaque saison ; la Prairie à gibier donne 2/1/3/2 Peaux du Printemps à l’Hiver. L’Argile tropicale donne 1 à chaque saison ; les Berges argileuses des climats Subtropical et Mousson donnent 2/1/2/3. Les Salines des climats Tropical, Subtropical et Savane donnent 1/0/1/2 : l’évaporation s’arrête durant l’Été humide et culmine en Hiver sec. Les Salines désertiques et hyperarides donnent 1 à chaque saison. Les totaux saisonniers suivent la base actuelle ajustée au climat. Peaux et Huile d’une même tuile animale peuvent suivre des calendriers différents ; les deux ressources sont récoltées.
+Les mines et carrières des climats doux restent régulières. En climats Froid, Alpin et Arctique, elles privilégient l’Été et s’arrêtent en Hiver ; les mines du climat Glacial donnent quatre fois leur base en Été seulement. Le Charbon reste disponible toute l’année dans ses climats de génération. Ces ressources régulières restent utiles lorsque les récoltes alimentaires sont incertaines.
+Avant l’ajustement lié au gel, Poisson et Morue des climats Tempéré, Froid, Arctique, Océanique et Alpin produisent 1×/2×/1×/0× leur base du Printemps à l’Hiver. Les Poissons, Morues et les deux ressources des Baleines du climat Glacial donnent quatre fois leur base en Été seulement. Le Poisson des climats chauds produit régulièrement toute l’année. Les Baleines des climats Froid, Alpin et Arctique suivent 1×/2×/1×/0× ; celles des climats chauds suivent 0×/1×/2×/1×. Appliquez le multiplicateur aux Peaux et à l’Huile. Les terrains de chasse aux Phoques produisent 1 Peaux et 1 Huile à chaque saison, y compris en Été. La table marine générale indique le calendrier de base en eau libre. Les prévisions de la tuile sélectionnée donnent ses rendements exacts, après report en Été de la production supprimée par le gel du Printemps ou de l’Automne.
 ### Multiplicateurs de production
 Les agglomérations multiplient chaque production brute saisonnière par leur niveau : 1/2/3/4. Les camps la multiplient par leur palier : 1/2. Marchands, navires marchands et bateaux de pêche la multiplient par leur palier. Les règles habituelles de blocus et de couverture s’appliquent.
 Les agglomérations de niveaux 3 et 4 et les marchands de paliers III et IV ajoutent 1× et 2× chaque composante brute saisonnière sous forme transformée. Une agglomération de niveau 4 voisine de Champs dorés en Été produit 32 Blés et 16 Rations par jet correspondant. Une Boulangerie II ajoute 16 Rations supplémentaires. Aucun Blé n’est retiré de la récolte.
 Une extension multiplie le rendement saisonnier de sa ressource liée par son propre palier. Un atelier lié aux Bois conserve sa ressource choisie, même si la faction change la récolte ordinaire de la tuile. Aucune récolte saisonnière signifie aucune production transformée automatique.
 Les contrats de guilde sont des actions payantes distinctes. Leurs entrées et sorties indiquées ne changent pas avec la saison ; ils peuvent fournir des ressources entre les récoltes aux dés. Les Artisans peuvent toujours transformer les réserves. Les ressources initiales de la seconde colonie utilisent les rendements de base, quelle que soit la saison initiale.
-### Neige arctique
-Les terres arctiques conservent leur neige au Printemps, se couvrent à nouveau en Automne et sont profondément enneigées en Hiver. L’Été constitue le court dégel. La neige ne bloque pas la chasse aux Phoques ou aux rennes : les deux produisent sur les jets correspondants toute l’année. La neige terrestre et la glace de mer sont des conditions distinctes ; consultez les prévisions de surface marine pour les déplacements.
+### Neige arctique et glaciale
+Les terres arctiques conservent leur neige au Printemps, se couvrent à nouveau en Automne et sont profondément enneigées en Hiver. L’Été constitue le court dégel arctique. Les terres du climat Glacial restent enneigées à chaque saison. La neige ne bloque pas la chasse aux Phoques ou aux rennes : les deux produisent sur les jets correspondants toute l’année. La neige terrestre et la glace de mer sont des conditions distinctes ; consultez les prévisions de surface marine pour les déplacements.
 ### Gel et dégel
-Chaque hexagone de mer ordinaire a les probabilités de gel suivantes au Printemps/en Automne : Arctique 70 %/50 %, Alpin 35 %/25 %, Froid 20 %/10 %. Toutes les mers ordinaires de ces trois climats gèlent en Hiver et s’ouvrent en Été. Cela comprend les zones de Poissons, de Morues et de Baleines : elles affichent de la glace et cessent toute production marine, y compris les deux ressources des Baleines. Le calendrier de chaque hexagone est fixé par la graine du monde et se répète chaque année, même après rechargement. Un hexagone gelé en Automne l’est toujours aussi au Printemps. Ces probabilités s’appliquent à chaque hexagone et ne garantissent pas une proportion régionale ; consultez les prévisions exactes avant de vous déplacer.
-Le terrain Banquise d’origine reste toujours gelé au Printemps, en Automne et en Hiver et ne s’ouvre qu’en Été. Les mers ordinaires des autres climats restent navigables.
+Chaque hexagone de mer ordinaire a les probabilités de gel suivantes au Printemps/en Automne : Glacial 100 %/100 %, Arctique 70 %/50 %, Alpin 35 %/25 %, Froid 20 %/10 %. Toutes les mers ordinaires de ces quatre climats gèlent en Hiver et s’ouvrent en Été. Cela comprend les zones de Poissons, de Morues et de Baleines : elles affichent de la glace et cessent toute production marine, y compris les deux ressources des Baleines. Le calendrier de chaque hexagone est fixé par la graine du monde et se répète chaque année, même après rechargement. Un hexagone gelé en Automne l’est toujours aussi au Printemps. Ces probabilités s’appliquent à chaque hexagone et ne garantissent pas une proportion régionale ; consultez les prévisions exactes avant de vous déplacer.
+La Banquise arctique reste gelée au Printemps, en Automne et en Hiver et s’ouvre en Été. La Banquise du climat Glacial est permanente et reste gelée aux quatre saisons. Les mers ordinaires des autres climats restent navigables.
 Une tuile de mer gelée ne produit aucune ressource marine. Pour chaque tuile et chaque ressource brute, le rendement du Printemps ou de l’Automne supprimé par le gel est ajouté à l’Été, sans modifier le total des quatre saisons. Par exemple, une tuile Poisson du nord dont le calendrier en eau libre est 1/2/1/0 produit 0/4/0/0 si elle gèle au Printemps et en Automne, ou 0/3/1/0 si elle ne gèle qu’au Printemps. Chaque récolte exige toujours un jet correspondant ; les jets manqués ne sont jamais compensés.
 Les troupes terrestres peuvent entrer sur l’eau gelée ; les navires sur l’eau libre. Une mer gelée bloque le passage de la couverture de pêche. Un port gelé perd son taux amélioré jusqu’au retour des eaux libres ; les échanges ordinaires avec la réserve restent possibles. Construire un navire ou lancer une expédition maritime exige de l’eau libre.
 La glace ne devient jamais une terre ferme pour construire. Les agglomérations et tours exigent une terre permanente ; les routes exigent un côté réellement terrestre. Les liaisons maritimes restent maritimes. Le gel et le dégel ne détruisent ni camps ni bâtiments existants. On peut construire un camp en Hiver selon les règles de connexion habituelles, mais il ne produit que pendant ses saisons productives.
@@ -89,7 +96,7 @@ Des troupes terrestres surprises par le dégel restent sur une plaque de glace �
 Sortez vos navires des régions qui gèlent et ramenez vos troupes à terre avant le changement. Une force sans issue ni secours peut rester bloquée jusqu’à une saison favorable.
 ### IA et anciennes sauvegardes
 L’IA évalue la production durable selon sa moyenne annuelle ; les pics saisonniers ne modifient donc pas artificiellement la puissance stratégique. Les échanges tiennent compte des récoltes à venir et des stocks ; l’expansion considère les cultures complémentaires. L’IA prévoit aussi des abris hivernaux et le secours des troupes à la dérive.
-Les campagnes existantes conservent leur calendrier, terrains, numéros, unités et stocks. Les campagnes sauvegardées avant le gel partiel des mers conservent aussi leur surface marine actuelle jusqu’au prochain changement de saison. Ce délai reste valable après une nouvelle sauvegarde et un rechargement : charger la partie ne peut donc pas immobiliser soudainement une force. Les anciennes sauvegardes sans calendrier commencent au Printemps à la prochaine manche complète, sans modifier la manche en cours. Les nouvelles zones explorées peuvent contenir les nouvelles cultures et élevages. La production saisonnière s’applique ensuite aux anciennes et nouvelles tuiles.
+Les campagnes existantes conservent leur calendrier, terrains, numéros, unités et stocks. Les bases céréalières actuelles ajustées au climat s’appliquent aux tuiles existantes au chargement ; les récoltes stockées ne sont pas recalculées. Les campagnes sauvegardées avant le gel partiel des mers conservent aussi leur surface marine actuelle jusqu’au prochain changement de saison. Ce délai reste valable après une nouvelle sauvegarde et un rechargement : charger la partie ne peut donc pas immobiliser soudainement une force. Les anciennes sauvegardes sans calendrier commencent au Printemps à la prochaine manche complète, sans modifier la manche en cours. Les nouvelles zones explorées peuvent contenir les nouvelles cultures et élevages. La production saisonnière s’applique ensuite aux anciennes et nouvelles tuiles.
 ### Aperçu des paysages
 Choisissez une saison dans le calendrier pour voir ses paysages, puis déplacez et inspectez la carte normalement. Le bandeau indique l’aperçu et la saison dont les règles restent appliquées. Revenez à la saison en cours ou appuyez sur Échap pour quitter l’aperçu. Toute action de jeu réussie rétablit aussi les paysages actuels. Les prévisions de production et les règles de déplacement ne changent jamais pendant l’aperçu.
 
@@ -283,35 +290,39 @@ Cliquez sur la saison à côté du numéro de manche pour consulter l’année e
 
 Compatible : Steppe, Méditerranéen, Froid, Tropical, Océanique, Alpin, Subtropical
 
+Poids du climat initial : 1
+
 Poids des transitions : Steppe ×1, Méditerranéen ×1, Froid ×1,5, Tropical ×1, Océanique ×0,5, Alpin ×0,5, Subtropical ×0,5
 
-| Terrain terrestre | Probabilité conditionnelle |
+| Terrain terrestre | Probabilité conditionnelle | Base annuelle |
 
-|---|---|
+|---|---|---|
 
-| Champs | 9% |
+| Champs | 7% | 2 Blé |
 
-| Champs de maïs | 4% |
+| Blé sur terre noire | 2% | 3 Blé |
 
-| Champs de seigle | 4% |
+| Champs de maïs | 4% | 2 Blé |
 
-| Pré | 9% |
+| Champs de seigle | 4% | 2 Blé |
 
-| Pâturage bovin | 8% |
+| Pré | 9% | 2 Laine |
 
-| Bois clairsemés | 17% |
+| Pâturage bovin | 8% | 2 Viande |
 
-| Montagnes d'or | 5% |
+| Bois clairsemés | 17% | 1 Bois OU 1 Peau |
 
-| Collines d'argile | 12% |
+| Montagnes d'or | 5% | 1 Or |
 
-| Stone quarry | 10% |
+| Collines d'argile | 12% | 1 Argile |
 
-| Iron mountains | 10% |
+| Stone quarry | 10% | 1 Pierre |
 
-| Collines de charbon | 10% |
+| Iron mountains | 10% | 1 Minerai |
 
-| Salt flats | 2% |
+| Collines de charbon | 10% | 1 Charbon |
+
+| Salt flats | 2% | 1 Sel |
 
 | Terrain aquatique | Tirage successif | Part effective de l’eau |
 
@@ -329,33 +340,35 @@ Haute mer (sans terre adjacente) : tirage Baleines 10 % ; part effective 8.5 %. 
 
 Compatible : Tempéré, Steppe, Arctique, Océanique, Alpin
 
+Poids du climat initial : 1
+
 Poids des transitions : Tempéré ×1, Steppe ×1, Arctique ×2, Océanique ×0,5, Alpin ×0,5
 
-| Terrain terrestre | Probabilité conditionnelle |
+| Terrain terrestre | Probabilité conditionnelle | Base annuelle |
 
-|---|---|
+|---|---|---|
 
-| Forêt | 30% |
+| Forêt | 30% | 2 Bois |
 
-| Forêt de chasse | 6% |
+| Forêt de chasse | 6% | 2 Peaux |
 
-| Pâturage de rennes | 4% |
+| Pâturage de rennes | 4% | 1 Viande + 1 Peaux |
 
-| Champs d’orge | 7% |
+| Champs d’orge | 7% | 1 Blé |
 
-| Champs de seigle | 3% |
+| Champs de seigle | 3% | 1 Blé |
 
-| Pâturage pauvre | 5% |
+| Pâturage pauvre | 5% | 1 Laine |
 
-| Montagnes d'or | 5% |
+| Montagnes d'or | 5% | 1 Or |
 
-| Collines de charbon | 10% |
+| Collines de charbon | 10% | 1 Charbon |
 
-| Iron mountains | 10% |
+| Iron mountains | 10% | 1 Minerai |
 
-| Stone quarry | 10% |
+| Stone quarry | 10% | 1 Pierre |
 
-| Collines d'argile | 10% |
+| Collines d'argile | 10% | 1 Argile |
 
 | Terrain aquatique | Tirage successif | Part effective de l’eau |
 
@@ -373,25 +386,27 @@ Haute mer (sans terre adjacente) : tirage Baleines 20 % ; part effective 14.4 %.
 
 ### Arctique: 40% terre / 60% eau
 
-Compatible : Froid, Alpin
+Compatible : Froid, Alpin, Glacial
 
-Poids des transitions : Froid ×1, Alpin ×0,5
+Poids du climat initial : 1
 
-| Terrain terrestre | Probabilité conditionnelle |
+Poids des transitions : Froid ×1, Alpin ×0,5, Glacial ×0,5
 
-|---|---|
+| Terrain terrestre | Probabilité conditionnelle | Base annuelle |
 
-| Plaine enneigée | 35% |
+|---|---|---|
 
-| Pâturage de rennes | 5% |
+| Plaine enneigée | 35% | 0 |
 
-| Chasse aux phoques | 15% |
+| Pâturage de rennes | 5% | 1 Viande + 1 Peaux |
 
-| Montagnes de minerai arctiques | 20% |
+| Chasse aux phoques | 15% | 1 Peaux + 1 Huile |
 
-| Crête rocheuse arctique | 15% |
+| Montagnes de minerai arctiques | 20% | 1 Minerai |
 
-| Montagnes aurifères arctiques | 10% |
+| Crête rocheuse arctique | 15% | 1 Pierre |
+
+| Montagnes aurifères arctiques | 10% | 1 Or |
 
 | Terrain aquatique | Tirage successif | Part effective de l’eau |
 
@@ -413,31 +428,35 @@ Haute mer (sans terre adjacente) : tirage Baleines 40 % ; part effective 17.92 %
 
 Compatible : Froid, Tempéré, Méditerranéen, Désert, Alpin, Savane
 
+Poids du climat initial : 1
+
 Poids des transitions : Froid ×1,5, Tempéré ×1, Méditerranéen ×1, Désert ×1, Alpin ×0,5, Savane ×0,5
 
-| Terrain terrestre | Probabilité conditionnelle |
+| Terrain terrestre | Probabilité conditionnelle | Base annuelle |
 
-|---|---|
+|---|---|---|
 
-| Plaine de steppe | 29% |
+| Plaine de steppe | 25% | 1 Peaux + 1 Laine |
 
-| Élevage de savane | 16% |
+| Blé sur terre noire | 4% | 3 Blé |
 
-| Champs de millet | 10% |
+| Élevage de savane | 16% | 1 Viande + 1 Peaux |
 
-| Pré | 10% |
+| Champs de millet | 10% | 1 Blé |
 
-| Bois clairsemés | 7% |
+| Pré | 10% | 2 Laine |
 
-| Stone quarry | 10% |
+| Bois clairsemés | 7% | 1 Bois OU 1 Peau |
 
-| Iron mountains | 5% |
+| Stone quarry | 10% | 1 Pierre |
 
-| Collines de charbon | 5% |
+| Iron mountains | 5% | 1 Minerai |
 
-| Collines d'argile | 5% |
+| Collines de charbon | 5% | 1 Charbon |
 
-| Montagnes d'or | 3% |
+| Collines d'argile | 5% | 1 Argile |
+
+| Montagnes d'or | 3% | 1 Or |
 
 | Terrain aquatique | Tirage successif | Part effective de l’eau |
 
@@ -455,33 +474,35 @@ Haute mer (sans terre adjacente) : tirage Baleines 10 % ; part effective 8.5 %. 
 
 Compatible : Tempéré, Steppe, Désert, Océanique, Subtropical
 
+Poids du climat initial : 1
+
 Poids des transitions : Tempéré ×1, Steppe ×0,5, Désert ×0,5, Océanique ×0,5, Subtropical ×0,5
 
-| Terrain terrestre | Probabilité conditionnelle |
+| Terrain terrestre | Probabilité conditionnelle | Base annuelle |
 
-|---|---|
+|---|---|---|
 
-| Champs | 3% |
+| Champs | 3% | 2 Blé |
 
-| Champs d’orge | 2% |
+| Champs d’orge | 2% | 1 Blé |
 
-| Oliveraie | 20% |
+| Oliveraie | 20% | 1 Blé |
 
-| Escarpement | 20% |
+| Escarpement | 20% | 1 Pierre |
 
-| Bois clairsemés | 5% |
+| Bois clairsemés | 5% | 1 Bois OU 1 Peau |
 
-| Pâturage pauvre | 10% |
+| Pâturage pauvre | 10% | 1 Laine |
 
-| Pâturage de chèvres | 5% |
+| Pâturage de chèvres | 5% | 1 Viande |
 
-| Salt flats | 5% |
+| Salt flats | 5% | 1 Sel |
 
-| Montagnes d'or | 7% |
+| Montagnes d'or | 7% | 1 Or |
 
-| Collines de charbon | 10% |
+| Collines de charbon | 10% | 1 Charbon |
 
-| Iron mountains | 13% |
+| Iron mountains | 13% | 1 Minerai |
 
 | Terrain aquatique | Tirage successif | Part effective de l’eau |
 
@@ -497,31 +518,33 @@ Haute mer (sans terre adjacente) : tirage Baleines 10 % ; part effective 8.5 %. 
 
 ### Tropical: 50% terre / 50% eau
 
-Compatible : Tempéré, Désert, Subtropical, Savane
+Compatible : Tempéré, Désert, Subtropical, Savane, Mousson
 
-Poids des transitions : Tempéré ×1, Désert ×2, Subtropical ×0,5, Savane ×0,5
+Poids du climat initial : 1
 
-| Terrain terrestre | Probabilité conditionnelle |
+Poids des transitions : Tempéré ×1, Désert ×2, Subtropical ×0,5, Savane ×0,5, Mousson ×0,5
 
-|---|---|
+| Terrain terrestre | Probabilité conditionnelle | Base annuelle |
 
-| Jungle | 25% |
+|---|---|---|
 
-| Bois tropicaux | 10% |
+| Jungle | 25% | 1 Peaux |
 
-| Rizière | 25% |
+| Bois tropicaux | 10% | 1 Bois |
 
-| Collines d'argile | 15% |
+| Rizière | 25% | 3 Blé |
 
-| Montagnes d'or | 5% |
+| Collines d'argile | 15% | 1 Argile |
 
-| Stone quarry | 5% |
+| Montagnes d'or | 5% | 1 Or |
 
-| Collines de charbon | 5% |
+| Stone quarry | 5% | 1 Pierre |
 
-| Iron mountains | 5% |
+| Collines de charbon | 5% | 1 Charbon |
 
-| Salt flats | 5% |
+| Iron mountains | 5% | 1 Minerai |
+
+| Salt flats | 5% | 1 Sel |
 
 | Terrain aquatique | Tirage successif | Part effective de l’eau |
 
@@ -537,29 +560,31 @@ Haute mer (sans terre adjacente) : tirage Baleines 10 % ; part effective 9 %. Ta
 
 ### Désert: 50% terre / 50% eau
 
-Compatible : Tropical, Méditerranéen, Steppe, Savane
+Compatible : Tropical, Méditerranéen, Steppe, Savane, Hyperaride
 
-Poids des transitions : Tropical ×2, Méditerranéen ×1, Steppe ×1, Savane ×0,5
+Poids du climat initial : 1
 
-| Terrain terrestre | Probabilité conditionnelle |
+Poids des transitions : Tropical ×2, Méditerranéen ×1, Steppe ×1, Savane ×0,5, Hyperaride ×0,5
 
-|---|---|
+| Terrain terrestre | Probabilité conditionnelle | Base annuelle |
 
-| Désert | 25% |
+|---|---|---|
 
-| Pâturage de chèvres | 5% |
+| Désert | 25% | 0 |
 
-| Montagnes d'or | 10% |
+| Pâturage de chèvres | 5% | 1 Viande |
 
-| Iron mountains | 12% |
+| Montagnes d'or | 10% | 1 Or |
 
-| Stone quarry | 12% |
+| Iron mountains | 12% | 1 Minerai |
 
-| Collines de charbon | 6% |
+| Stone quarry | 12% | 1 Pierre |
 
-| Oasis | 10% |
+| Collines de charbon | 6% | 1 Charbon |
 
-| Salt flats | 20% |
+| Oasis | 10% | 1 Bois + 1 Blé |
+
+| Salt flats | 20% | 1 Sel |
 
 | Terrain aquatique | Tirage successif | Part effective de l’eau |
 
@@ -577,33 +602,35 @@ Haute mer (sans terre adjacente) : tirage Baleines 6 % ; part effective 5.52 %. 
 
 Compatible : Tempéré, Froid, Méditerranéen
 
+Poids du climat initial : 1
+
 Poids des transitions : Tempéré ×2, Froid ×1, Méditerranéen ×1
 
-| Terrain terrestre | Probabilité conditionnelle |
+| Terrain terrestre | Probabilité conditionnelle | Base annuelle |
 
-|---|---|
+|---|---|---|
 
-| Pâturage côtier | 17% |
+| Pâturage côtier | 17% | 2 Laine |
 
-| Pâturage bovin | 8% |
+| Pâturage bovin | 8% | 2 Viande |
 
-| Bois clairsemés | 20% |
+| Bois clairsemés | 20% | 1 Bois OU 1 Peau |
 
-| Champs d’orge | 8% |
+| Champs d’orge | 8% | 2 Blé |
 
-| Champs de seigle | 2% |
+| Champs de seigle | 2% | 2 Blé |
 
-| Champs | 5% |
+| Champs | 5% | 2 Blé |
 
-| Collines d'argile | 10% |
+| Collines d'argile | 10% | 1 Argile |
 
-| Falaises côtières | 15% |
+| Falaises côtières | 15% | 1 Pierre |
 
-| Collines de charbon | 8% |
+| Collines de charbon | 8% | 1 Charbon |
 
-| Iron mountains | 5% |
+| Iron mountains | 5% | 1 Minerai |
 
-| Montagnes d'or | 2% |
+| Montagnes d'or | 2% | 1 Or |
 
 | Terrain aquatique | Tirage successif | Part effective de l’eau |
 
@@ -621,35 +648,37 @@ Haute mer (sans terre adjacente) : tirage Baleines 20 % ; part effective 14.4 %.
 
 ### Alpin: 75% terre / 25% eau
 
-Compatible : Froid, Arctique, Tempéré, Steppe
+Compatible : Froid, Arctique, Tempéré, Steppe, Glacial
 
-Poids des transitions : Froid ×2, Arctique ×2, Tempéré ×1, Steppe ×1
+Poids du climat initial : 1
 
-| Terrain terrestre | Probabilité conditionnelle |
+Poids des transitions : Froid ×2, Arctique ×2, Tempéré ×1, Steppe ×1, Glacial ×0,5
 
-|---|---|
+| Terrain terrestre | Probabilité conditionnelle | Base annuelle |
 
-| Carrière de montagne | 20% |
+|---|---|---|
 
-| Iron mountains | 15% |
+| Carrière de montagne | 20% | 2 Pierre |
 
-| Collines de charbon | 10% |
+| Iron mountains | 15% | 1 Minerai |
 
-| Pâturage alpin | 10% |
+| Collines de charbon | 10% | 1 Charbon |
 
-| Pâturage de chèvres | 5% |
+| Pâturage alpin | 10% | 1 Laine |
 
-| Champs d’orge | 7% |
+| Pâturage de chèvres | 5% | 1 Viande |
 
-| Champs de seigle | 3% |
+| Champs d’orge | 7% | 1 Blé |
 
-| Forêt | 10% |
+| Champs de seigle | 3% | 1 Blé |
 
-| Montagnes d'or | 5% |
+| Forêt | 10% | 2 Bois |
 
-| Collines d'argile | 5% |
+| Montagnes d'or | 5% | 1 Or |
 
-| Pics rocheux | 10% |
+| Collines d'argile | 5% | 1 Argile |
+
+| Pics rocheux | 10% | 0 |
 
 | Terrain aquatique | Tirage successif | Part effective de l’eau |
 
@@ -667,35 +696,37 @@ Haute mer (sans terre adjacente) : tirage Baleines 6 % ; part effective 4.86 %. 
 
 ### Subtropical: 55% terre / 45% eau
 
-Compatible : Tropical, Tempéré, Méditerranéen, Savane
+Compatible : Tropical, Tempéré, Méditerranéen, Savane, Mousson
 
-Poids des transitions : Tropical ×2, Tempéré ×1, Méditerranéen ×1, Savane ×1
+Poids du climat initial : 1
 
-| Terrain terrestre | Probabilité conditionnelle |
+Poids des transitions : Tropical ×2, Tempéré ×1, Méditerranéen ×1, Savane ×1, Mousson ×0,5
 
-|---|---|
+| Terrain terrestre | Probabilité conditionnelle | Base annuelle |
 
-| Berges argileuses | 25% |
+|---|---|---|
 
-| Rizière | 15% |
+| Berges argileuses | 25% | 2 Argile |
 
-| Champs de maïs | 5% |
+| Rizière | 15% | 2 Blé |
 
-| Bois riverains | 15% |
+| Champs de maïs | 5% | 2 Blé |
 
-| Pâturage bovin | 5% |
+| Bois riverains | 15% | 1 Bois |
 
-| Jungle | 10% |
+| Pâturage bovin | 5% | 2 Viande |
 
-| Stone quarry | 10% |
+| Jungle | 10% | 1 Peaux |
 
-| Collines de charbon | 5% |
+| Stone quarry | 10% | 1 Pierre |
 
-| Iron mountains | 5% |
+| Collines de charbon | 5% | 1 Charbon |
 
-| Salt flats | 3% |
+| Iron mountains | 5% | 1 Minerai |
 
-| Montagnes d'or | 2% |
+| Salt flats | 3% | 1 Sel |
+
+| Montagnes d'or | 2% | 1 Or |
 
 | Terrain aquatique | Tirage successif | Part effective de l’eau |
 
@@ -711,33 +742,35 @@ Haute mer (sans terre adjacente) : tirage Baleines 6 % ; part effective 5.1 %. T
 
 ### Savane: 70% terre / 30% eau
 
-Compatible : Tropical, Désert, Steppe, Subtropical
+Compatible : Tropical, Désert, Steppe, Subtropical, Mousson
 
-Poids des transitions : Tropical ×2, Désert ×1, Steppe ×1, Subtropical ×1
+Poids du climat initial : 1
 
-| Terrain terrestre | Probabilité conditionnelle |
+Poids des transitions : Tropical ×2, Désert ×1, Steppe ×1, Subtropical ×1, Mousson ×0,5
 
-|---|---|
+| Terrain terrestre | Probabilité conditionnelle | Base annuelle |
 
-| Prairie à gibier | 30% |
+|---|---|---|
 
-| Élevage de savane | 5% |
+| Prairie à gibier | 30% | 2 Peaux |
 
-| Champs de millet | 20% |
+| Élevage de savane | 5% | 1 Viande + 1 Peaux |
 
-| Bois secs | 10% |
+| Champs de millet | 20% | 1 Blé |
 
-| Pâturage pauvre | 10% |
+| Bois secs | 10% | 1 Bois |
 
-| Iron mountains | 10% |
+| Pâturage pauvre | 10% | 1 Laine |
 
-| Collines d'argile | 5% |
+| Iron mountains | 10% | 1 Minerai |
 
-| Stone quarry | 5% |
+| Collines d'argile | 5% | 1 Argile |
 
-| Montagnes d'or | 3% |
+| Stone quarry | 5% | 1 Pierre |
 
-| Salt flats | 2% |
+| Montagnes d'or | 3% | 1 Or |
+
+| Salt flats | 2% | 1 Sel |
 
 | Terrain aquatique | Tirage successif | Part effective de l’eau |
 
@@ -751,111 +784,247 @@ Poids des transitions : Tropical ×2, Désert ×1, Steppe ×1, Subtropical ×1
 
 Haute mer (sans terre adjacente) : tirage Baleines 6 % ; part effective 5.4 %. Tableau ci-dessus : eau côtière.
 
-## Production des terrains
+### Glacial: 45% terre / 55% eau
 
-| Terrain | Production de base | Famille |
+Compatible : Arctique, Alpin
+
+Poids du climat initial : 0,35
+
+Poids des transitions : Arctique ×2, Alpin ×1
+
+| Terrain terrestre | Probabilité conditionnelle | Base annuelle |
 
 |---|---|---|
 
-| Bois clairsemés | 1 Bois OU 1 Peau | forêt |
+| Plaine enneigée | 55% | 0 |
 
-| Forêt | 2 Bois | forêt |
+| Pics rocheux | 15% | 0 |
 
-| Forêt de chasse | 2 Peaux | forêt |
+| Chasse aux phoques | 8% | 1 Peaux + 1 Huile |
 
-| Champs | 2 Blé | plaine |
+| Montagnes de minerai arctiques | 10% | 1 Minerai |
 
-| Pré | 2 Laine | plaine |
+| Crête rocheuse arctique | 8% | 1 Pierre |
 
-| Pâturage pauvre | 1 Laine | terrain accidenté |
+| Montagnes aurifères arctiques | 4% | 1 Or |
 
-| Collines d'argile | 1 Argile | terrain accidenté |
+| Terrain aquatique | Tirage successif | Part effective de l’eau |
 
-| Montagnes d'or | 1 Or | terrain accidenté |
+|---|---|---|
 
-| Iron mountains | 1 Minerai | terrain accidenté |
+| Banquise | 55% | 55% |
 
-| Stone quarry | 1 Pierre | terrain accidenté |
+| Zone de pêche | 10% | 4.5% |
 
-| Collines de charbon | 1 Charbon | terrain accidenté |
+| Bancs de morue | 15% | 6.075% |
 
-| Salt flats | 1 Sel | plaine |
+| Zone de Baleines | 12% | 4.131% |
 
-| Plaine enneigée | 0 | plaine |
+| Mer |  | 30.294% |
 
-| Chasse aux phoques | 1 Peaux + 1 Huile | plaine |
+Haute mer (sans terre adjacente) : tirage Baleines 24 % ; part effective 8.262 %. Tableau ci-dessus : eau côtière.
 
-| Montagnes de minerai arctiques | 1 Minerai | terrain accidenté |
+### Hyperaride: 90% terre / 10% eau
 
-| Crête rocheuse arctique | 1 Pierre | terrain accidenté |
+Compatible : Désert
 
-| Montagnes aurifères arctiques | 1 Or | terrain accidenté |
+Poids du climat initial : 0,35
 
-| Plaine de steppe | 1 Peaux + 1 Laine | plaine |
+Poids des transitions : Désert ×2
 
-| Oliveraie | 1 Blé | forêt |
+| Terrain terrestre | Probabilité conditionnelle | Base annuelle |
 
-| Escarpement | 1 Pierre | terrain accidenté |
+|---|---|---|
 
-| Jungle | 1 Peaux | forêt |
+| Désert | 55% | 0 |
 
-| Bois tropicaux | 1 Bois | forêt |
+| Pics rocheux | 5% | 0 |
 
-| Rizière | 3 Blé | plaine |
+| Salt flats | 12% | 1 Sel |
 
-| Désert | 0 | plaine |
+| Iron mountains | 10% | 1 Minerai |
 
-| Oasis | 1 Bois + 1 Blé | forêt |
+| Stone quarry | 7% | 1 Pierre |
 
-| Mer | 0 | mer |
+| Montagnes d'or | 6% | 1 Or |
 
-| Zone de pêche | 1 Poissons | mer |
+| Oasis | 3% | 1 Bois + 1 Blé |
 
-| Bancs de morue | 2 Poissons | mer |
+| Collines de charbon | 2% | 1 Charbon |
 
-| Zone de Baleines | 1 Peaux + 1 Huile | mer |
+| Terrain aquatique | Tirage successif | Part effective de l’eau |
 
-| Banquise | 0 | plaine |
+|---|---|---|
 
-| Pâturage côtier | 2 Laine | plaine |
+| Zone de pêche | 3% | 3% |
 
-| Falaises côtières | 1 Pierre | terrain accidenté |
+| Zone de Baleines | 1% | 0.97% |
 
-| Carrière de montagne | 2 Pierre | terrain accidenté |
+| Mer |  | 96.03% |
 
-| Pâturage alpin | 1 Laine | terrain accidenté |
+Haute mer (sans terre adjacente) : tirage Baleines 2 % ; part effective 1.94 %. Tableau ci-dessus : eau côtière.
 
-| Pics rocheux | 0 | terrain accidenté |
+### Mousson: 30% terre / 70% eau
 
-| Berges argileuses | 2 Argile | plaine |
+Compatible : Tropical, Subtropical, Savane
 
-| Bois riverains | 1 Bois | forêt |
+Poids du climat initial : 0,35
 
-| Prairie à gibier | 2 Peaux | plaine |
+Poids des transitions : Tropical ×2, Subtropical ×1, Savane ×1
 
-| Bois secs | 1 Bois | forêt |
+| Terrain terrestre | Probabilité conditionnelle | Base annuelle |
 
-| Champs d’orge | 1 Blé | plaine |
+|---|---|---|
 
-| Champs de seigle | 1 Blé | plaine |
+| Jungle | 20% | 1 Peaux |
 
-| Champs de millet | 1 Blé | plaine |
+| Bois tropicaux | 15% | 1 Bois |
 
-| Champs de maïs | 2 Blé | plaine |
+| Bois riverains | 10% | 1 Bois |
 
-| Pâturage bovin | 2 Viande | plaine |
+| Rizière | 15% | 1 Blé |
 
-| Pâturage de chèvres | 1 Viande | terrain accidenté |
+| Berges argileuses | 15% | 2 Argile |
 
-| Pâturage de rennes | 1 Viande + 1 Peaux | plaine |
+| Pics rocheux | 15% | 0 |
 
-| Élevage de savane | 1 Viande + 1 Peaux | plaine |
+| Stone quarry | 5% | 1 Pierre |
+
+| Iron mountains | 2% | 1 Minerai |
+
+| Collines de charbon | 1% | 1 Charbon |
+
+| Montagnes d'or | 2% | 1 Or |
+
+| Terrain aquatique | Tirage successif | Part effective de l’eau |
+
+|---|---|---|
+
+| Zone de pêche | 10% | 10% |
+
+| Zone de Baleines | 2% | 1.8% |
+
+| Mer |  | 88.2% |
+
+Haute mer (sans terre adjacente) : tirage Baleines 4 % ; part effective 3.6 %. Tableau ci-dessus : eau côtière.
+
+## Production des terrains
+
+Les bases annuelles actuelles incluent la productivité des céréales propre au climat. Chaque calendrier totalise quatre fois cette base, qui peut différer de celle d’une ancienne version du jeu.
+
+| Terrain | Climats | Production de base | Famille |
+
+|---|---|---|---|
+
+| Bois clairsemés | Tempéré / Steppe / Méditerranéen / Océanique | 1 Bois OU 1 Peau | forêt |
+
+| Forêt | Froid / Alpin | 2 Bois | forêt |
+
+| Forêt de chasse | Froid | 2 Peaux | forêt |
+
+| Champs | Tempéré / Méditerranéen / Océanique | 2 Blé | plaine |
+
+| Blé sur terre noire | Tempéré / Steppe | 3 Blé | plaine |
+
+| Pré | Tempéré / Steppe | 2 Laine | plaine |
+
+| Pâturage pauvre | Froid / Méditerranéen / Savane | 1 Laine | terrain accidenté |
+
+| Collines d'argile | Tempéré / Froid / Steppe / Tropical / Océanique / Alpin / Savane | 1 Argile | terrain accidenté |
+
+| Montagnes d'or | Tempéré / Froid / Steppe / Méditerranéen / Tropical / Désert / Océanique / Alpin / Subtropical / Savane / Hyperaride / Mousson | 1 Or | terrain accidenté |
+
+| Iron mountains | Tempéré / Froid / Steppe / Méditerranéen / Tropical / Désert / Océanique / Alpin / Subtropical / Savane / Hyperaride / Mousson | 1 Minerai | terrain accidenté |
+
+| Stone quarry | Tempéré / Froid / Steppe / Tropical / Désert / Subtropical / Savane / Hyperaride / Mousson | 1 Pierre | terrain accidenté |
+
+| Collines de charbon | Tempéré / Froid / Steppe / Méditerranéen / Tropical / Désert / Océanique / Alpin / Subtropical / Hyperaride / Mousson | 1 Charbon | terrain accidenté |
+
+| Salt flats | Tempéré / Méditerranéen / Tropical / Désert / Subtropical / Savane / Hyperaride | 1 Sel | plaine |
+
+| Plaine enneigée | Arctique / Glacial | 0 | plaine |
+
+| Chasse aux phoques | Arctique / Glacial | 1 Peaux + 1 Huile | plaine |
+
+| Montagnes de minerai arctiques | Arctique / Glacial | 1 Minerai | terrain accidenté |
+
+| Crête rocheuse arctique | Arctique / Glacial | 1 Pierre | terrain accidenté |
+
+| Montagnes aurifères arctiques | Arctique / Glacial | 1 Or | terrain accidenté |
+
+| Plaine de steppe | Steppe | 1 Peaux + 1 Laine | plaine |
+
+| Oliveraie | Méditerranéen | 1 Blé | forêt |
+
+| Escarpement | Méditerranéen | 1 Pierre | terrain accidenté |
+
+| Jungle | Tropical / Subtropical / Mousson | 1 Peaux | forêt |
+
+| Bois tropicaux | Tropical / Mousson | 1 Bois | forêt |
+
+| Rizière | Tropical | 3 Blé | plaine |
+
+| Rizière | Subtropical | 2 Blé | plaine |
+
+| Rizière | Mousson | 1 Blé | plaine |
+
+| Désert | Désert / Hyperaride | 0 | plaine |
+
+| Oasis | Désert / Hyperaride | 1 Bois + 1 Blé | forêt |
+
+| Mer | Tempéré / Froid / Arctique / Steppe / Méditerranéen / Tropical / Désert / Océanique / Alpin / Subtropical / Savane / Glacial / Hyperaride / Mousson | 0 | mer |
+
+| Zone de pêche | Tempéré / Froid / Arctique / Steppe / Méditerranéen / Tropical / Désert / Océanique / Alpin / Subtropical / Savane / Glacial / Hyperaride / Mousson | 1 Poissons | mer |
+
+| Bancs de morue | Froid / Arctique / Océanique / Alpin / Glacial | 2 Poissons | mer |
+
+| Zone de Baleines | Tempéré / Froid / Arctique / Steppe / Méditerranéen / Tropical / Désert / Océanique / Alpin / Subtropical / Savane / Glacial / Hyperaride / Mousson | 1 Peaux + 1 Huile | mer |
+
+| Banquise | Arctique / Glacial | 0 | plaine |
+
+| Pâturage côtier | Océanique | 2 Laine | plaine |
+
+| Falaises côtières | Océanique | 1 Pierre | terrain accidenté |
+
+| Carrière de montagne | Alpin | 2 Pierre | terrain accidenté |
+
+| Pâturage alpin | Alpin | 1 Laine | terrain accidenté |
+
+| Pics rocheux | Alpin / Glacial / Hyperaride / Mousson | 0 | terrain accidenté |
+
+| Berges argileuses | Subtropical / Mousson | 2 Argile | plaine |
+
+| Bois riverains | Subtropical / Mousson | 1 Bois | forêt |
+
+| Prairie à gibier | Savane | 2 Peaux | plaine |
+
+| Bois secs | Savane | 1 Bois | forêt |
+
+| Champs d’orge | Froid / Méditerranéen / Alpin | 1 Blé | plaine |
+
+| Champs d’orge | Océanique | 2 Blé | plaine |
+
+| Champs de seigle | Tempéré / Océanique | 2 Blé | plaine |
+
+| Champs de seigle | Froid / Alpin | 1 Blé | plaine |
+
+| Champs de millet | Steppe / Savane | 1 Blé | plaine |
+
+| Champs de maïs | Tempéré / Subtropical | 2 Blé | plaine |
+
+| Pâturage bovin | Tempéré / Océanique / Subtropical | 2 Viande | plaine |
+
+| Pâturage de chèvres | Méditerranéen / Désert / Alpin | 1 Viande | terrain accidenté |
+
+| Pâturage de rennes | Froid / Arctique | 1 Viande + 1 Peaux | plaine |
+
+| Élevage de savane | Steppe / Savane | 1 Viande + 1 Peaux | plaine |
 
 Pics rocheux : aucune production et aucune entrée d’unité, y compris par recrutement, repli ou débarquement. Les routes peuvent suivre leurs arêtes ; une agglomération exige une terre ferme praticable adjacente.
 
 ## Tables complètes des récoltes saisonnières
 
-Les lignes marines indiquent le calendrier de base en eau libre. Les mers ordinaires ont des probabilités fixes de gel au Printemps/en Automne : Arctique 70 %/50 %, Alpin 35 %/25 %, Froid 20 %/10 % ; les mers ordinaires de ces trois climats gèlent toutes en Hiver et s’ouvrent en Été. Le terrain Banquise d’origine reste gelé hors Été. Pour chaque tuile et chaque ressource brute, le rendement supprimé par le gel du Printemps ou de l’Automne est reporté en Été sans modifier le total annuel. Sélectionnez une tuile dans le jeu pour connaître son état exact et ses rendements ajustés.
+Les mers ordinaires gèlent au Printemps/en Automne selon des probabilités fixes : Glacial 100 %/100 %, Arctique 70 %/50 %, Alpin 35 %/25 %, Froid 20 %/10 %. Elles gèlent toutes en Hiver et s’ouvrent en Été. La Banquise du climat Glacial reste gelée toute l’année ; la Banquise arctique s’ouvre en Été. Les récoltes marines du climat Glacial ont lieu seulement en Été. Les autres lignes marines indiquent la base en eau libre : le rendement bloqué par le gel printanier ou automnal est reporté en Été sans changer le total annuel actuel. Sélectionnez une tuile pour connaître ses états et rendements exacts.
 
 ### Tempéré
 
@@ -865,9 +1034,11 @@ Les lignes marines indiquent le calendrier de base en eau libre. Les mers ordina
 
 | Champs | 0 | 8 Blé | 0 | 0 |
 
+| Blé sur terre noire | 0 | 12 Blé | 0 | 0 |
+
 | Champs de maïs | 0 | 0 | 8 Blé | 0 |
 
-| Champs de seigle | 0 | 4 Blé | 0 | 0 |
+| Champs de seigle | 0 | 8 Blé | 0 | 0 |
 
 | Pré | 4 Laine | 4 Laine | 0 | 0 |
 
@@ -960,6 +1131,8 @@ Les lignes marines indiquent le calendrier de base en eau libre. Les mers ordina
 |---|---|---|---|---|
 
 | Plaine de steppe | 1 Peaux + 2 Laine | 2 Laine | 1 Peaux | 2 Peaux |
+
+| Blé sur terre noire | 0 | 12 Blé | 0 | 0 |
 
 | Élevage de savane | 1 Viande + 1 Peaux | 0 | 2 Viande + 2 Peaux | 1 Viande + 1 Peaux |
 
@@ -1087,9 +1260,9 @@ Les lignes marines indiquent le calendrier de base en eau libre. Les mers ordina
 
 | Bois clairsemés (Peaux) | 1 Peaux | 1 Peaux | 2 Peaux | 0 |
 
-| Champs d’orge | 0 | 4 Blé | 0 | 0 |
+| Champs d’orge | 0 | 8 Blé | 0 | 0 |
 
-| Champs de seigle | 0 | 4 Blé | 0 | 0 |
+| Champs de seigle | 0 | 8 Blé | 0 | 0 |
 
 | Champs | 0 | 0 | 8 Blé | 0 |
 
@@ -1151,7 +1324,7 @@ Les lignes marines indiquent le calendrier de base en eau libre. Les mers ordina
 
 | Berges argileuses | 2 Argile | 1 Argile | 2 Argile | 3 Argile |
 
-| Rizière | 0 | 6 Blé | 6 Blé | 0 |
+| Rizière | 0 | 4 Blé | 4 Blé | 0 |
 
 | Champs de maïs | 0 | 0 | 8 Blé | 0 |
 
@@ -1200,6 +1373,88 @@ Les lignes marines indiquent le calendrier de base en eau libre. Les mers ordina
 | Montagnes d'or | 1 Or | 1 Or | 1 Or | 1 Or |
 
 | Salt flats | 1 Sel | 0 | 1 Sel | 2 Sel |
+
+| Zone de pêche | 1 Poissons | 1 Poissons | 1 Poissons | 1 Poissons |
+
+| Zone de Baleines | 0 | 1 Peaux + 1 Huile | 2 Peaux + 2 Huile | 1 Peaux + 1 Huile |
+
+### Glacial
+
+| Terrain | Printemps | Été | Automne | Hiver |
+
+|---|---|---|---|---|
+
+| Plaine enneigée | 0 | 0 | 0 | 0 |
+
+| Pics rocheux | 0 | 0 | 0 | 0 |
+
+| Chasse aux phoques | 1 Peaux + 1 Huile | 1 Peaux + 1 Huile | 1 Peaux + 1 Huile | 1 Peaux + 1 Huile |
+
+| Montagnes de minerai arctiques | 0 | 4 Minerai | 0 | 0 |
+
+| Crête rocheuse arctique | 0 | 4 Pierre | 0 | 0 |
+
+| Montagnes aurifères arctiques | 0 | 4 Or | 0 | 0 |
+
+| Banquise | 0 | 0 | 0 | 0 |
+
+| Zone de pêche | 0 | 4 Poissons | 0 | 0 |
+
+| Bancs de morue | 0 | 8 Poissons | 0 | 0 |
+
+| Zone de Baleines | 0 | 4 Peaux + 4 Huile | 0 | 0 |
+
+### Hyperaride
+
+| Terrain | Printemps | Été | Automne | Hiver |
+
+|---|---|---|---|---|
+
+| Désert | 0 | 0 | 0 | 0 |
+
+| Pics rocheux | 0 | 0 | 0 | 0 |
+
+| Salt flats | 1 Sel | 1 Sel | 1 Sel | 1 Sel |
+
+| Iron mountains | 1 Minerai | 1 Minerai | 1 Minerai | 1 Minerai |
+
+| Stone quarry | 1 Pierre | 1 Pierre | 1 Pierre | 1 Pierre |
+
+| Montagnes d'or | 1 Or | 1 Or | 1 Or | 1 Or |
+
+| Oasis | 1 Bois | 1 Bois | 1 Bois + 4 Blé | 1 Bois |
+
+| Collines de charbon | 1 Charbon | 1 Charbon | 1 Charbon | 1 Charbon |
+
+| Zone de pêche | 1 Poissons | 1 Poissons | 1 Poissons | 1 Poissons |
+
+| Zone de Baleines | 0 | 1 Peaux + 1 Huile | 2 Peaux + 2 Huile | 1 Peaux + 1 Huile |
+
+### Mousson
+
+| Terrain | Printemps | Été | Automne | Hiver |
+
+|---|---|---|---|---|
+
+| Jungle | 1 Peaux | 1 Peaux | 1 Peaux | 1 Peaux |
+
+| Bois tropicaux | 1 Bois | 1 Bois | 1 Bois | 1 Bois |
+
+| Bois riverains | 1 Bois | 1 Bois | 1 Bois | 1 Bois |
+
+| Rizière | 0 | 0 | 4 Blé | 0 |
+
+| Berges argileuses | 2 Argile | 1 Argile | 2 Argile | 3 Argile |
+
+| Pics rocheux | 0 | 0 | 0 | 0 |
+
+| Stone quarry | 1 Pierre | 1 Pierre | 1 Pierre | 1 Pierre |
+
+| Iron mountains | 1 Minerai | 1 Minerai | 1 Minerai | 1 Minerai |
+
+| Collines de charbon | 1 Charbon | 1 Charbon | 1 Charbon | 1 Charbon |
+
+| Montagnes d'or | 1 Or | 1 Or | 1 Or | 1 Or |
 
 | Zone de pêche | 1 Poissons | 1 Poissons | 1 Poissons | 1 Poissons |
 

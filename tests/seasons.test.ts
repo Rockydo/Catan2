@@ -139,7 +139,7 @@ describe("seasonal production", () => {
     tile.climate = "subtropical";
     expect(
       SEASONS.map((season) => seasonalYield(tile, 0, season).grain ?? 0),
-    ).toEqual([0, 6, 6, 0]);
+    ).toEqual([0, 4, 4, 0]);
     tile.biome = "olive-grove";
     expect(seasonalYield(tile, 0, "winter").grain).toBe(2);
   });

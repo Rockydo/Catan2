@@ -1,7 +1,6 @@
 import type { Stock } from "../game/types";
-import { ResourceIcon } from "./ResourceIcon";
 import { localize as tx, useLocale } from "../i18n";
-import { MapLabel } from "./MapLabel";
+import { MapLabel, MapResourceIcon } from "./MapLabel";
 import { memo } from "react";
 import type { Town, Raw } from "../game/types";
 import { GOOD_INFO } from "../game/content";
@@ -241,8 +240,8 @@ export const TownMiniature = memo(function TownMiniature({
 
 export const ProductionToken = memo(function ProductionToken({
   resource,
-  label,
   output,
+  baseOutput,
   compact = false,
   number,
   showNumber,
@@ -250,8 +249,8 @@ export const ProductionToken = memo(function ProductionToken({
   dormant = false,
 }: {
   resource: Raw;
-  label?: string;
   output?: Stock;
+  baseOutput?: Stock;
   compact?: boolean;
   number: number;
   showNumber: boolean;
@@ -261,35 +260,38 @@ export const ProductionToken = memo(function ProductionToken({
   useLocale();
 
   const pips = 6 - Math.abs(7 - number);
-  const products = Object.entries(output ?? {}) as [Raw, number][];
-  const multiple = products.length > 1;
-  const displayedResource = products.length === 1 ? products[0][0] : resource;
-  const quantity = output?.[displayedResource] ?? 1;
+  const baseline = baseOutput ?? { [resource]: 1 };
+  const products = Object.entries(
+    dormant ? baseline : (output ?? baseline),
+  ).map(([good, quantity]) => [good, dormant ? 0 : quantity] as [Raw, number]);
+  if (!products.length) products.push([resource, dormant ? 0 : 1]);
+  const productLabel = products
+    .map(([good, quantity]) => `${quantity} ${tx(GOOD_INFO[good].name)}`)
+    .join(" + ");
+  const iconSize = compact ? 11 : 12,
+    numberSize = compact ? 8 : 9,
+    iconGap = compact ? 1 : 2,
+    productGap = compact ? 2 : 3;
+  const widths = products.map(
+    ([, quantity]) =>
+      iconSize + iconGap + String(quantity).length * numberSize * 0.6,
+  );
+  const rowWidth =
+    widths.reduce((sum, width) => sum + width, 0) +
+    (products.length - 1) * productGap;
+  const pillWidth = Math.max(compact ? 40 : 48, rowWidth + 5);
+  const tooltip = `${dormant ? `${tx("No harvest this season")} · ` : ""}${productLabel}${tx(": roll ")}${number}, ${pips}${tx(" of 36 dice combinations")}${tx(active ? "; matches the current roll" : "")}`;
   return (
     <g
       className={`production-token ${active ? "producing" : ""} ${dormant ? "dormant" : ""}`}
       pointerEvents="none"
       fontFamily="ui-sans-serif, system-ui, sans-serif"
     >
-      <title>
-        {tx(
-          dormant
-            ? "No harvest this season"
-            : products.length
-              ? products
-                  .map(([g, n]) => `${n} ${GOOD_INFO[g].name}`)
-                  .join(" + ")
-              : GOOD_INFO[resource].name,
-        )}
-        {tx(": roll ")}
-        {tx(number)}, {tx(pips)}
-        {tx(" of 36 dice combinations")}
-        {tx(active ? "; matches the current roll" : "")}
-      </title>
+      <title>{tooltip}</title>
       <rect
-        x={compact ? -20 : -24}
+        x={-pillWidth / 2}
         y={showNumber ? 14 : 7}
-        width={compact ? 40 : 48}
+        width={pillWidth}
         height="13"
         rx="5"
         fill={dormant ? "#e4e7df" : "url(#token-paper)"}
@@ -343,44 +345,27 @@ export const ProductionToken = memo(function ProductionToken({
           </>
         ),
       )}
-      {multiple ? (
-        <g
-          aria-label={products
-            .map(([g, n]) => `${n} ${tx(GOOD_INFO[g].name)}`)
-            .join(" + ")}
-        >
-          {products.map(([good, n], i) => (
-            <g
-              key={good}
-              transform={`translate(${(i - (products.length - 1) / 2) * 23 - 9}, ${showNumber ? 14 : 7})`}
+      <g className="production-resources" aria-label={productLabel} role="img">
+        {products.map(([good, quantity], i) => (
+          <g
+            key={good}
+            data-resource={good}
+            data-quantity={quantity}
+            transform={`translate(${-rowWidth / 2 + widths.slice(0, i).reduce((sum, width) => sum + width, 0) + i * productGap}, ${(showNumber ? 14 : 7) + (13 - iconSize) / 2})`}
+          >
+            <MapResourceIcon good={good} size={iconSize} />
+            <MapLabel
+              x={(widths[i] + iconSize + iconGap) / 2}
+              y={iconSize / 2 + numberSize * 0.36}
+              fontSize={numberSize}
+              textAnchor="middle"
+              fill="#30493f"
             >
-              <ResourceIcon good={good} size={12} />
-              <MapLabel
-                x={16}
-                y={10}
-                fontSize={9}
-                textAnchor="middle"
-                fill="#30493f"
-              >
-                {n}
-              </MapLabel>
-            </g>
-          ))}
-        </g>
-      ) : (
-        <MapLabel
-          y={showNumber ? 23 : 16}
-          textAnchor="middle"
-          fontSize={compact ? 7.5 : 8.5}
-          fontWeight="750"
-          letterSpacing=".1"
-          fill="#30493f"
-        >
-          {dormant
-            ? `0 ${tx(label ?? GOOD_INFO[resource].name)}`
-            : `${quantity > 1 ? quantity + " " : ""}${tx(label ?? GOOD_INFO[displayedResource].name)}`}
-        </MapLabel>
-      )}
+              {quantity}
+            </MapLabel>
+          </g>
+        ))}
+      </g>
     </g>
   );
 });

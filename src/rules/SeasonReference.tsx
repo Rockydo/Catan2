@@ -73,8 +73,8 @@ export function SeasonReference({
       </h2>
       <p>
         {l(
-          "Each cell is one settlement’s output on a matching dice roll. Zero means no production in that season. Multiply raw yields by town, camp or collector tier; apply advanced processing to the same seasonal quantities.",
-          "Chaque case indique la production d’une colonie sur un jet correspondant. Zéro signifie aucune production pendant cette saison. Multipliez ces quantités par le niveau de l’agglomération, du camp ou du collecteur ; la transformation avancée utilise ces mêmes quantités saisonnières.",
+          "Each cell is one settlement’s output on a matching dice roll. Zero means no production in that season. The four seasons sum to four times the current climate-adjusted baseline. Multiply raw yields by town, camp or collector tier; apply advanced processing to the same seasonal quantities.",
+          "Chaque case indique la production d’une colonie sur un jet correspondant. Zéro signifie aucune production pendant cette saison. Les quatre saisons totalisent quatre fois la base actuelle ajustée au climat. Multipliez ces quantités par le niveau de l’agglomération, du camp ou du collecteur ; la transformation avancée utilise ces mêmes quantités saisonnières.",
         )}
       </p>
       {!readOnly && (
@@ -114,10 +114,15 @@ export function SeasonReference({
       </div>
       {iceChances && (
         <p className="season-note">
-          {l(
-            `Ordinary sea tiles freeze with a ${iceChances.spring * 100}% Spring chance and ${iceChances.autumn * 100}% Autumn chance. Each tile keeps its pattern. These sea rows show the open-water baseline; a frozen Spring or Autumn harvest moves into Summer. Select a map tile for its exact forecast.`,
-            `Les tuiles marines ordinaires ont ${iceChances.spring * 100} % de chances de geler au Printemps et ${iceChances.autumn * 100} % en Automne. Chaque tuile conserve ce rythme. Ces lignes marines indiquent la production sans gel printanier ou automnal ; une récolte bloquée par ce gel est reportée en Été. Sélectionnez une tuile de la carte pour ses prévisions exactes.`,
-          )}
+          {climate === "glacial"
+            ? l(
+                "Ordinary Glacial sea freezes in Spring, Autumn and Winter and opens in Summer. Its Fish, Cod and Whale harvests occur only in Summer. Glacial Frozen sea terrain stays frozen all year and produces nothing. Land stays snowy in every season.",
+                "La mer ordinaire du climat Glacial gèle au Printemps, en Automne et en Hiver et s’ouvre en Été. Poissons, Morues et Baleines produisent seulement en Été. Le terrain Banquise du climat Glacial reste gelé toute l’année et ne produit rien. Les terres restent enneigées à chaque saison.",
+              )
+            : l(
+                `Ordinary sea tiles freeze with a ${iceChances.spring * 100}% Spring chance and ${iceChances.autumn * 100}% Autumn chance. Each tile keeps its pattern. These sea rows show the open-water baseline; a frozen Spring or Autumn harvest moves into Summer. Select a map tile for its exact forecast.`,
+                `Les tuiles marines ordinaires ont ${iceChances.spring * 100} % de chances de geler au Printemps et ${iceChances.autumn * 100} % en Automne. Chaque tuile conserve ce rythme. Ces lignes marines indiquent la production sans gel printanier ou automnal ; une récolte bloquée par ce gel est reportée en Été. Sélectionnez une tuile de la carte pour ses prévisions exactes.`,
+              )}
         </p>
       )}
       <div className="season-reference-scroll">

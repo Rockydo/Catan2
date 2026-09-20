@@ -6,6 +6,7 @@ import {
   BIOME_INFO,
   CLIMATES,
   CLIMATE_INFO,
+  EXTREME_CLIMATES,
   type Biome,
   type Climate,
 } from "../game/climate-content";
@@ -102,6 +103,13 @@ export function terrainPatternKey(
   const biome =
     terrain === "grain" ? "rough-fields" : (aliases[terrain] ?? terrain);
   const region = climate ?? "temperate";
+  // The reference catalog should show the climate's actual landscape too.
+  // Summer opens Glacial seas; autumn shows the warm extremes' crop harvests.
+  if (!season && EXTREME_CLIMATES.includes(region)) {
+    const representative = region === "glacial" ? "summer" : "autumn";
+    const key = `${region}/${biome}/${representative}`;
+    if (seasonalTiles[key]) return `season-${key.replaceAll("/", "-")}`;
+  }
   const seasonalKey = `${region}/${biome}/${season}`;
   if (season && seasonalTiles[seasonalKey])
     return `season-${seasonalKey.replaceAll("/", "-")}`;

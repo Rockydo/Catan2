@@ -1,5 +1,5 @@
 import {
-  BIOME_INFO,
+  biomeYield,
   CLIMATES,
   CLIMATE_INFO,
   waterProbabilities,
@@ -36,7 +36,7 @@ const climateOutput = Object.fromEntries(
       const yields =
         biome === "woods"
           ? { lumber: 0.5, hides: 0.5 }
-          : BIOME_INFO[biome].yield;
+          : biomeYield(biome, climate);
       for (const [raw, count] of Object.entries(yields)) {
         const good = equivalent(raw as Raw);
         output[good] = (output[good] ?? 0) + count! * chance;

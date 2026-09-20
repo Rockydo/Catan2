@@ -3,6 +3,7 @@ import { processedFor } from "../src/game/content";
 import { expect, it } from "vitest";
 import {
   CLIMATES,
+  EXTREME_CLIMATES,
   CLIMATE_INFO,
   BIOMES,
   BIOME_INFO,
@@ -97,8 +98,12 @@ it.each([
     expect(counts).toEqual(expected);
   },
 );
-it("adds four climates without changing any original transition bias", () => {
-  expect(CLIMATES).toEqual([...originalClimates, ...newClimates]);
+it("retains the previous climates and their transition biases", () => {
+  expect(CLIMATES).toEqual([
+    ...originalClimates,
+    ...newClimates,
+    ...EXTREME_CLIMATES,
+  ]);
   for (const from of originalClimates)
     for (const to of CLIMATE_INFO[from].compatible.filter((c) =>
       newClimates.includes(c),
@@ -113,10 +118,9 @@ it("adds four climates without changing any original transition bias", () => {
   for (const from of newClimates)
     expect(
       Object.fromEntries(
-        CLIMATE_INFO[from].compatible.map((to) => [
-          to,
-          climateTransitionWeight(from, to),
-        ]),
+        CLIMATE_INFO[from].compatible
+          .filter((to) => !EXTREME_CLIMATES.includes(to))
+          .map((to) => [to, climateTransitionWeight(from, to)]),
       ),
     ).toEqual(expected[from as keyof typeof expected]);
 });

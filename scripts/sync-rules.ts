@@ -5,6 +5,8 @@ import {
   CLIMATE_INFO,
   BIOMES,
   BIOME_INFO,
+  biomeYield,
+  climateInitialWeight,
   climateTransitionWeight,
   waterProbabilities,
 } from "../src/game/climate-content";
@@ -50,10 +52,14 @@ for (const locale of ["en", "fr"] as const) {
     lines.push(
       `### ${tx(c.name)}: ${Math.round(c.land * 100)}% ${text("land", "terre")} / ${Math.round((1 - c.land) * 100)}% ${text("water", "eau")}`,
       `${text("Compatible", "Compatible")} : ${c.compatible.map((n) => tx(CLIMATE_INFO[n].name)).join(", ")}`,
+      `${text("Initial climate weight", "Poids du climat initial")} : ${climateInitialWeight(climate).toLocaleString(locale)}`,
       `${text("Transition weights", "Poids des transitions")} : ${c.compatible.map((n) => `${tx(CLIMATE_INFO[n].name)} ×${climateTransitionWeight(climate, n).toLocaleString(locale)}`).join(", ")}`,
-      `| ${text("Land terrain | Conditional chance", "Terrain terrestre | Probabilité conditionnelle")} |`,
-      "|---|---|",
-      ...c.terrain.map(([b, n]) => `| ${tx(BIOME_INFO[b].name)} | ${n}% |`),
+      `| ${text("Land terrain | Conditional chance | Annual baseline", "Terrain terrestre | Probabilité conditionnelle | Base annuelle")} |`,
+      "|---|---|---|",
+      ...c.terrain.map(
+        ([b, n]) =>
+          `| ${tx(BIOME_INFO[b].name)} | ${n}% | ${b === "woods" ? text("1 Wood OR 1 Hides", "1 Bois OU 1 Peau") : cost(biomeYield(b, climate)) || "0"} |`,
+      ),
       `| ${text("Water terrain | Sequential check | Effective water share", "Terrain aquatique | Tirage successif | Part effective de l’eau")} |`,
       "|---|---|---|",
       ...waterProbabilities(climate).map(
@@ -68,13 +74,36 @@ for (const locale of ["en", "fr"] as const) {
   }
   lines.push(
     `## ${text("Terrain yields", "Production des terrains")}`,
-    `| ${text("Terrain | Base yield | Family", "Terrain | Production de base | Famille")} |`,
-    "|---|---|---|",
+    text(
+      "Current annual baselines include climate-specific cereal productivity. Each seasonal calendar totals four times that baseline, not necessarily the value used by an earlier game version.",
+      "Les bases annuelles actuelles incluent la productivité des céréales propre au climat. Chaque calendrier totalise quatre fois cette base, qui peut différer de celle d’une ancienne version du jeu.",
+    ),
+    `| ${text("Terrain | Climates | Base yield | Family", "Terrain | Climats | Production de base | Famille")} |`,
+    "|---|---|---|---|",
   );
-  for (const b of BIOMES)
-    lines.push(
-      `| ${tx(BIOME_INFO[b].name)} | ${b === "woods" ? text("1 Wood OR 1 Hides", "1 Bois OU 1 Peau") : cost(BIOME_INFO[b].yield) || "0"} | ${tx(BIOME_INFO[b].family)} |`,
-    );
+  for (const b of BIOMES) {
+    const variants = new Map<string, string[]>();
+    for (const climate of CLIMATES) {
+      const info = CLIMATE_INFO[climate];
+      if (
+        b !== "water" &&
+        ![...info.terrain, ...info.water].some(([biome]) => biome === b)
+      )
+        continue;
+      const yieldText =
+        b === "woods"
+          ? text("1 Wood OR 1 Hides", "1 Bois OU 1 Peau")
+          : cost(biomeYield(b, climate)) || "0";
+      variants.set(yieldText, [
+        ...(variants.get(yieldText) ?? []),
+        tx(info.name),
+      ]);
+    }
+    for (const [yieldText, climates] of variants)
+      lines.push(
+        `| ${tx(BIOME_INFO[b].name)} | ${climates.join(" / ")} | ${yieldText} | ${tx(BIOME_INFO[b].family)} |`,
+      );
+  }
   lines.push(
     text(
       "Bare Peaks: no production and no unit entry, including recruitment, retreat or disembarkation. Roads may follow their edges; towns need adjacent walkable solid land.",
@@ -84,8 +113,8 @@ for (const locale of ["en", "fr"] as const) {
   lines.push(
     `## ${text("Complete seasonal harvest tables", "Tables complètes des récoltes saisonnières")}`,
     text(
-      "Marine rows show the open-water baseline. Ordinary sea hexes have fixed Spring/Autumn freezing chances: Arctic 70%/50%, Alpine 35%/25%, Cold 20%/10%; ordinary seas in these three climates all freeze in Winter and open in Summer. The original Frozen sea terrain stays frozen outside Summer. For each tile and each raw resource, frozen Spring or Autumn yield moves into Summer without changing its annual total. Select a tile in the game for its exact surfaces and adjusted yields.",
-      "Les lignes marines indiquent le calendrier de base en eau libre. Les mers ordinaires ont des probabilités fixes de gel au Printemps/en Automne : Arctique 70 %/50 %, Alpin 35 %/25 %, Froid 20 %/10 % ; les mers ordinaires de ces trois climats gèlent toutes en Hiver et s’ouvrent en Été. Le terrain Banquise d’origine reste gelé hors Été. Pour chaque tuile et chaque ressource brute, le rendement supprimé par le gel du Printemps ou de l’Automne est reporté en Été sans modifier le total annuel. Sélectionnez une tuile dans le jeu pour connaître son état exact et ses rendements ajustés.",
+      "Ordinary seas freeze in Spring/Autumn with fixed chances: Glacial 100%/100%, Arctic 70%/50%, Alpine 35%/25%, Cold 20%/10%. They all freeze in Winter and open in Summer. Glacial Frozen sea terrain stays frozen all year; Arctic Frozen sea opens in Summer. Glacial marine harvests occur only in Summer. Other marine rows show the open-water baseline: frozen Spring or Autumn yield moves into Summer without changing the current annual total. Select a tile for exact surfaces and yields.",
+      "Les mers ordinaires gèlent au Printemps/en Automne selon des probabilités fixes : Glacial 100 %/100 %, Arctique 70 %/50 %, Alpin 35 %/25 %, Froid 20 %/10 %. Elles gèlent toutes en Hiver et s’ouvrent en Été. La Banquise du climat Glacial reste gelée toute l’année ; la Banquise arctique s’ouvre en Été. Les récoltes marines du climat Glacial ont lieu seulement en Été. Les autres lignes marines indiquent la base en eau libre : le rendement bloqué par le gel printanier ou automnal est reporté en Été sans changer le total annuel actuel. Sélectionnez une tuile pour connaître ses états et rendements exacts.",
     ),
   );
   for (const climate of CLIMATES) {

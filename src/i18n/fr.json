@@ -1840,5 +1840,21 @@
   "Frozen port: improved rates resume after the thaw. Ordinary reserve trading remains available.": "Port gelé : les taux améliorés reviendront au dégel. Les échanges ordinaires avec la réserve restent possibles.",
   "Next round": "Prochaine manche",
   "Rules still use {0}": "Règles appliquées : {0}",
-  "Each roll produces for every faction from active seasonal tiles, including seven. A season lasts one full round. Check each tile's four-season forecast, then build, trade and command in any order. Cities, camps and workshops multiply the current harvest.": "Chaque jet, même sept, fait produire les tuiles actives de toutes les factions. Une saison dure une manche complète. Consultez le calendrier de chaque tuile, puis construisez, échangez et commandez dans l’ordre souhaité. Villes, camps et ateliers multiplient la récolte de la saison."
+  "Each roll produces for every faction from active seasonal tiles, including seven. A season lasts one full round. Check each tile's four-season forecast, then build, trade and command in any order. Cities, camps and workshops multiply the current harvest.": "Chaque jet, même sept, fait produire les tuiles actives de toutes les factions. Une saison dure une manche complète. Consultez le calendrier de chaque tuile, puis construisez, échangez et commandez dans l’ordre souhaité. Villes, camps et ateliers multiplient la récolte de la saison.",
+  "Glacial": "Glacial",
+  "Hyperarid": "Hyperaride",
+  "Monsoon": "Mousson",
+  "Black-soil wheat": "Blé sur terre noire",
+  "Brief summer opening": "Courte ouverture estivale",
+  "Permanent snow": "Neige permanente",
+  "Extreme drought": "Sécheresse extrême",
+  "Persistent drought": "Sécheresse persistante",
+  "Monsoon onset": "Début de mousson",
+  "Monsoon rains": "Pluies de mousson",
+  "Retreating rains": "Retrait des pluies",
+  "Four seasonal yields total four times the current climate-adjusted baseline. Diversify crops and keep food in reserve.": "Les quatre rendements saisonniers totalisent quatre fois la base actuelle ajustée au climat. Diversifiez vos cultures et gardez des réserves de nourriture.",
+  "Cold, Alpine, Arctic and Glacial seas freeze. Move ships to warmer waters before the next round.": "Les mers des climats Froid, Alpin, Arctique et Glacial gèlent. Déplacez les navires vers des eaux plus chaudes avant la prochaine manche.",
+  "Seasonal sea ice melts; Glacial pack ice stays frozen. Bring land units ashore or arrange transport before the next round.": "La glace saisonnière fond ; la Banquise du climat Glacial reste gelée. Ramenez les troupes sur terre ou prévoyez un transport avant la prochaine manche.",
+  "Glacial seas freeze in Spring and Autumn; ice is patchy in other cold regions. Check each tile’s forecast before moving.": "Les mers du climat Glacial gèlent au Printemps et en Automne ; le gel est partiel dans les autres régions froides. Consultez les prévisions de chaque tuile avant de vous déplacer.",
+  "Permanent Glacial pack ice: armies can cross; ships cannot enter in any season. No permanent construction on ice.": "Banquise permanente du climat Glacial : les armées peuvent passer ; les navires ne peuvent jamais entrer. Aucune construction permanente sur la glace."
 }

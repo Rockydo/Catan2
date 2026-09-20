@@ -51,7 +51,7 @@ for (const locale of ["en", "fr"] as const) {
         locale === "fr" ? "Champs d’orge" : "Barley fields",
         "oceanic",
         "barley-fields",
-        [0, 4, 0, 0],
+        [0, 8, 0, 0],
       ],
       [
         "2,0",

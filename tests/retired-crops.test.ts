@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   BIOMES,
-  BIOME_INFO,
+  biomeYield,
   CLIMATE_INFO,
   type Climate,
 } from "../src/game/climate-content";
@@ -17,8 +17,8 @@ import { piece } from "./helpers";
 const replacements = [
   ["cold", "barley-fields", 7, 40, 42, "autumn", 10],
   ["alpine", "barley-fields", 7, 60, 62, "autumn", 10],
-  ["oceanic", "barley-fields", 8, 45, 49, "summer", 20],
-  ["steppe", "millet-fields", 10, 45, 50, "autumn", 10],
+  ["oceanic", "barley-fields", 8, 45, 49, "summer", 30],
+  ["steppe", "millet-fields", 10, 45, 50, "autumn", 22],
   ["savanna", "millet-fields", 20, 35, 40, "autumn", 20],
 ] as const;
 
@@ -50,7 +50,7 @@ function cropWorld(climate: Climate) {
 
 describe("retired generic crop", () => {
   it.each(replacements)(
-    "merges %s Rough fields into %s without changing Grain availability",
+    "retains the merged %s cereal weights and regional Grain output",
     (climate, biome, weight, oldStart, oldEnd, harvest, baseline) => {
       expect(BIOMES).not.toContain("rough-fields");
       const terrain = CLIMATE_INFO[climate].terrain;
@@ -61,7 +61,7 @@ describe("retired generic crop", () => {
       expect(
         terrain.reduce(
           (sum, [candidate, chance]) =>
-            sum + chance * (BIOME_INFO[candidate].yield.grain ?? 0),
+            sum + chance * (biomeYield(candidate, climate).grain ?? 0),
           0,
         ),
       ).toBe(baseline);
@@ -91,10 +91,11 @@ describe("retired generic crop", () => {
       const tile = cropWorld(climate).tiles["0,0"];
       tile.biome = biome;
       const profile = seasonalProfile(tile);
-      expect(profile[harvest]).toEqual({ grain: 4 });
+      const annual = 4 * biomeYield(biome, climate).grain!;
+      expect(profile[harvest]).toEqual({ grain: annual });
       expect(
         SEASONS.reduce((sum, season) => sum + (profile[season].grain ?? 0), 0),
-      ).toBe(4);
+      ).toBe(annual);
     },
   );
 

@@ -12,6 +12,9 @@ export const CLIMATES = [
   "alpine",
   "subtropical",
   "savanna",
+  "glacial",
+  "hyperarid",
+  "monsoon",
 ] as const;
 export type Climate = (typeof CLIMATES)[number];
 export const BIOMES = [
@@ -19,6 +22,7 @@ export const BIOMES = [
   "forest",
   "hunting-forest",
   "golden-fields",
+  "chernozem-wheat",
   "pasture",
   "rough-pasture",
   "clay",
@@ -83,6 +87,14 @@ const b = (
   color: string,
 ): BiomeInfo => ({ name, resource, yield: yield_, family, art, color });
 export const BIOME_INFO: Record<Biome, BiomeInfo> = {
+  "chernozem-wheat": b(
+    "Black-soil wheat",
+    "grain",
+    { grain: 3 },
+    "flat",
+    "chernozem-wheat",
+    "#a28c45",
+  ),
   "barley-fields": b(
     "Barley fields",
     "grain",
@@ -341,6 +353,23 @@ export const BIOME_INFO: Record<Biome, BiomeInfo> = {
     "#8c9253",
   ),
 };
+/** Printed annual baseline, including the growing conditions of this region. */
+export function biomeYield(
+  biome: Biome,
+  climate?: Climate,
+): BiomeInfo["yield"] {
+  const output = { ...BIOME_INFO[biome].yield };
+  if (biome === "rice-field")
+    output.grain =
+      climate === "monsoon" ? 1 : climate === "subtropical" ? 2 : 3;
+  if (biome === "barley-fields" && climate === "oceanic") output.grain = 2;
+  if (
+    biome === "rye-fields" &&
+    (climate === "temperate" || climate === "oceanic")
+  )
+    output.grain = 2;
+  return output;
+}
 export interface ClimateInfo {
   name: string;
   color: string;
@@ -355,7 +384,8 @@ export const CLIMATE_INFO: Record<Climate, ClimateInfo> = {
     color: "#84a66b",
     land: 0.5,
     terrain: [
-      ["golden-fields", 9],
+      ["golden-fields", 7],
+      ["chernozem-wheat", 2],
       ["maize-field", 4],
       ["rye-fields", 4],
       ["pasture", 9],
@@ -424,14 +454,15 @@ export const CLIMATE_INFO: Record<Climate, ClimateInfo> = {
       ["cod", 0.2],
       ["whale", 0.2],
     ],
-    compatible: ["cold", "alpine"],
+    compatible: ["cold", "alpine", "glacial"],
   },
   steppe: {
     name: "Steppe",
     color: "#b9ad75",
     land: 0.65,
     terrain: [
-      ["steppe-plain", 29],
+      ["steppe-plain", 25],
+      ["chernozem-wheat", 4],
       ["cattle-savanna", 16],
       ["millet-fields", 10],
       ["pasture", 10],
@@ -497,7 +528,7 @@ export const CLIMATE_INFO: Record<Climate, ClimateInfo> = {
       ["fish", 0.1],
       ["whale", 0.05],
     ],
-    compatible: ["temperate", "desert", "subtropical", "savanna"],
+    compatible: ["temperate", "desert", "subtropical", "savanna", "monsoon"],
   },
   desert: {
     name: "Desert",
@@ -517,7 +548,7 @@ export const CLIMATE_INFO: Record<Climate, ClimateInfo> = {
       ["fish", 0.08],
       ["whale", 0.03],
     ],
-    compatible: ["tropical", "mediterranean", "steppe", "savanna"],
+    compatible: ["tropical", "mediterranean", "steppe", "savanna", "hyperarid"],
   },
   oceanic: {
     name: "Oceanic",
@@ -565,7 +596,7 @@ export const CLIMATE_INFO: Record<Climate, ClimateInfo> = {
       ["cod", 0.1],
       ["whale", 0.03],
     ],
-    compatible: ["cold", "arctic", "temperate", "steppe"],
+    compatible: ["cold", "arctic", "temperate", "steppe", "glacial"],
   },
   subtropical: {
     name: "Subtropical",
@@ -588,7 +619,13 @@ export const CLIMATE_INFO: Record<Climate, ClimateInfo> = {
       ["fish", 0.15],
       ["whale", 0.03],
     ],
-    compatible: ["tropical", "temperate", "mediterranean", "savanna"],
+    compatible: [
+      "tropical",
+      "temperate",
+      "mediterranean",
+      "savanna",
+      "monsoon",
+    ],
   },
   savanna: {
     name: "Savanna",
@@ -610,11 +647,82 @@ export const CLIMATE_INFO: Record<Climate, ClimateInfo> = {
       ["fish", 0.1],
       ["whale", 0.03],
     ],
-    compatible: ["tropical", "desert", "steppe", "subtropical"],
+    compatible: ["tropical", "desert", "steppe", "subtropical", "monsoon"],
+  },
+  glacial: {
+    name: "Glacial",
+    color: "#a8cbdc",
+    land: 0.45,
+    terrain: [
+      ["snow-plain", 55],
+      ["bare-peaks", 15],
+      ["seal-grounds", 8],
+      ["arctic-iron", 10],
+      ["arctic-stone", 8],
+      ["arctic-gold", 4],
+    ],
+    water: [
+      ["ice", 0.55],
+      ["fish", 0.1],
+      ["cod", 0.15],
+      ["whale", 0.12],
+    ],
+    compatible: ["arctic", "alpine"],
+  },
+  hyperarid: {
+    name: "Hyperarid",
+    color: "#bd8050",
+    land: 0.9,
+    terrain: [
+      ["desert", 55],
+      ["bare-peaks", 5],
+      ["salt-flats", 12],
+      ["iron", 10],
+      ["stone", 7],
+      ["gold", 6],
+      ["oasis", 3],
+      ["coal", 2],
+    ],
+    water: [
+      ["fish", 0.03],
+      ["whale", 0.01],
+    ],
+    compatible: ["desert"],
+  },
+  monsoon: {
+    name: "Monsoon",
+    color: "#357d73",
+    land: 0.3,
+    terrain: [
+      ["jungle", 20],
+      ["tropical-woods", 15],
+      ["river-woods", 10],
+      ["rice-field", 15],
+      ["alluvial-clay", 15],
+      ["bare-peaks", 15],
+      ["stone", 5],
+      ["iron", 2],
+      ["coal", 1],
+      ["gold", 2],
+    ],
+    water: [
+      ["fish", 0.1],
+      ["whale", 0.02],
+    ],
+    compatible: ["tropical", "subtropical", "savanna"],
   },
 };
 
 const NEW_CLIMATES: Climate[] = ["oceanic", "alpine", "subtropical", "savanna"];
+export const EXTREME_CLIMATES: readonly Climate[] = [
+  "glacial",
+  "hyperarid",
+  "monsoon",
+];
+/** Extremes remain possible starting regions, with lower relative frequency. */
+export function climateInitialWeight(climate: Climate): number {
+  return EXTREME_CLIMATES.includes(climate) ? 0.35 : 1;
+}
 const TRANSITION_WEIGHTS: Partial<
   Record<Climate, Partial<Record<Climate, number>>>
 > = {
@@ -628,12 +736,20 @@ const TRANSITION_WEIGHTS: Partial<
   alpine: { cold: 2, arctic: 2 },
   subtropical: { tropical: 2 },
   savanna: { tropical: 2 },
+  glacial: { arctic: 2, alpine: 1 },
+  hyperarid: { desert: 2 },
+  monsoon: { tropical: 2, subtropical: 1, savanna: 1 },
 };
 /** Relative destination weights, after checking immediate-neighbor compatibility. */
 export function climateTransitionWeight(from: Climate, to: Climate): number {
+  if (from === to) return 1;
   return (
     TRANSITION_WEIGHTS[from]?.[to] ??
-    (!NEW_CLIMATES.includes(from) && NEW_CLIMATES.includes(to) ? 0.5 : 1)
+    (EXTREME_CLIMATES.includes(to)
+      ? 0.5
+      : !NEW_CLIMATES.includes(from) && NEW_CLIMATES.includes(to)
+        ? 0.5
+        : 1)
   );
 }
 export function compatibleClimate(a: Climate, b: Climate) {

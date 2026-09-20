@@ -204,7 +204,7 @@ export function SeasonCalendar({
             </p>
             <p>
               {tx(
-                "Larger harvests preserve average annual output. Diversify crops and keep food in reserve.",
+                "Four seasonal yields total four times the current climate-adjusted baseline. Diversify crops and keep food in reserve.",
               )}
             </p>
           </div>
@@ -213,10 +213,10 @@ export function SeasonCalendar({
             <p>
               {tx(
                 next === "winter"
-                  ? "Cold, Alpine and Arctic seas freeze. Move ships to warmer waters before the next round."
+                  ? "Cold, Alpine, Arctic and Glacial seas freeze. Move ships to warmer waters before the next round."
                   : next === "summer"
-                    ? "Seasonal sea ice melts. Bring land units ashore or arrange transport before the next round."
-                    : "Spring and Autumn sea ice is patchy in cold regions. Check each tile’s forecast before moving.",
+                    ? "Seasonal sea ice melts; Glacial pack ice stays frozen. Bring land units ashore or arrange transport before the next round."
+                    : "Glacial seas freeze in Spring and Autumn; ice is patchy in other cold regions. Check each tile’s forecast before moving.",
               )}
             </p>
           </div>
@@ -264,7 +264,7 @@ export function TileSeasonForecast({
   );
   const weather = seasonWeather(tile, current);
   const coldSea =
-    ["cold", "alpine", "arctic"].includes(tile.climate ?? "") &&
+    ["cold", "alpine", "arctic", "glacial"].includes(tile.climate ?? "") &&
     ["water", "ice"].includes(tile.resource);
   const currentIcon = SEASON_ICONS[current];
   const Icon = currentIcon;
@@ -331,9 +331,11 @@ export function TileSeasonForecast({
       {coldSea && (
         <p className="season-note">
           {tx(
-            tile.surface === "frozen"
-              ? "Frozen sea: armies can cross; ships cannot move. No permanent construction on ice."
-              : "Open sea: ships can cross; land units need transport. Check the calendar before the freeze.",
+            tile.climate === "glacial" && tile.resource === "ice"
+              ? "Permanent Glacial pack ice: armies can cross; ships cannot enter in any season. No permanent construction on ice."
+              : tile.surface === "frozen"
+                ? "Frozen sea: armies can cross; ships cannot move. No permanent construction on ice."
+                : "Open sea: ships can cross; land units need transport. Check the calendar before the freeze.",
           )}
         </p>
       )}
