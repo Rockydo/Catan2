@@ -43,7 +43,11 @@ import {
 } from "./selectors";
 import { planningPath } from "./ai-paths";
 import { warTarget } from "./ai-strategy";
-import { neighbors, landAtVertex } from "./world";
+import {
+  neighbors,
+  walkableAtVertex as landAtVertex,
+  canOccupy,
+} from "./world";
 import { collector } from "./maritime";
 const stockValue = (stock: Stock, values: Record<Good, number>) =>
   Object.entries(stock).reduce(
@@ -151,7 +155,7 @@ function suppliedFormation(s: Game, town: Town, planningConstruction = false) {
           .map((u) => u.tile),
         ...enemies
           .flatMap((t) => landAtVertex(s, t.vertex).flatMap(neighbors))
-          .filter((id) => s.tiles[id]?.resource === "water"),
+          .filter((id) => canOccupy(s.tiles[id], true)),
       ]
     : enemies.flatMap((t) => landAtVertex(s, t.vertex));
   let best: { ids: string[]; value: number } | undefined;

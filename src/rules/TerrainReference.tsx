@@ -1,3 +1,4 @@
+import type { Season } from "../game/seasons";
 import { terrainPatternKey, terrainArtFile } from "../ui/terrain-art";
 import {
   GOOD_INFO,
@@ -35,11 +36,13 @@ const atlas = [
 export function TerrainImage({
   tile,
   climate,
+  season,
 }: {
   tile: TerrainKey;
   climate?: Climate;
+  season?: Season;
 }) {
-  const pattern = terrainPatternKey(tile, climate);
+  const pattern = terrainPatternKey(tile, climate, season);
   const art = BIOME_INFO[pattern as Biome]?.art ?? pattern;
   const index = atlas.indexOf(art),
     dedicated = index < 0;
@@ -50,7 +53,7 @@ export function TerrainImage({
       role="img"
       aria-label={tx(TERRAIN[tile].name)}
       style={
-        tile === "water"
+        tile === "water" && pattern === "water"
           ? undefined
           : {
               backgroundImage: `url(./assets/${dedicated ? file : "terrain-atlas-v2.png"})`,
@@ -141,7 +144,10 @@ export function TerrainReference({ seaOnly = false }: { seaOnly?: boolean }) {
               </div>
               <div className="terrain-yields">
                 <span className="output-label">
-                  {l("Raw output", "Production brute")}
+                  {l(
+                    "Annual average per matching roll",
+                    "Moyenne annuelle par jet correspondant",
+                  )}
                 </span>
                 {Object.keys(raw).length ? (
                   <Outputs goods={raw} choice={tile === "woods"} />
@@ -165,8 +171,8 @@ export function TerrainReference({ seaOnly = false }: { seaOnly?: boolean }) {
                 {tile === "ice" && (
                   <p>
                     {l(
-                      "Armies may cross. Ships cannot enter. No permanent structures without adjacent solid ground.",
-                      "Les armées peuvent traverser, pas les navires. Aucune construction permanente sans terre ferme adjacente.",
+                      "Frozen in Spring, Autumn and Winter; open in Summer. Armies cross while frozen, ships while open. Ice never counts as solid ground for construction.",
+                      "Gelée au printemps, en automne et en hiver ; libre en été. Les armées passent sur la glace, les navires sur l’eau libre. La banquise ne constitue jamais une terre ferme pour construire.",
                     )}
                   </p>
                 )}
@@ -185,8 +191,8 @@ export function TerrainReference({ seaOnly = false }: { seaOnly?: boolean }) {
       </div>
       <p className="reference-note">
         {l(
-          "Town multipliers: Settlement ×1, City I ×2, City II ×3, City III ×4. Camps ×1 / ×2. Workshops +1 / +2 / +3. Fish replaces Grain; Oil replaces Coal. For tiles yielding two goods, the workshop uses the first listed good. Woods offer a choice when building.",
-          "Multiplicateurs : Colonie ×1, Ville I ×2, Ville II ×3, Ville III ×4. Camps ×1 / ×2. Ateliers +1 / +2 / +3. Les Poissons remplacent le Blé ; l’Huile remplace le Charbon. Sur une tuile à deux productions, l’atelier utilise la première ressource indiquée. Les Bois permettent un choix à la construction.",
+          "Town multipliers: Settlement ×1, City I ×2, City II ×3, City III ×4. Camps ×1 / ×2. Workshops +1 / +2 / +3. Fish and Meat replace Grain; Oil replaces Coal. Multipliers apply to the current seasonal yield. For tiles yielding two goods, the workshop uses the first listed good. Woods offer a choice when building.",
+          "Multiplicateurs : Colonie ×1, Ville I ×2, Ville II ×3, Ville III ×4. Camps ×1 / ×2. Ateliers +1 / +2 / +3. Le Poisson et la Viande remplacent le Blé ; l’Huile remplace le Charbon. Les multiplicateurs s’appliquent au rendement de la saison en cours. Sur une tuile à deux productions, l’atelier utilise la première ressource indiquée. Les Bois permettent un choix à la construction.",
         )}
       </p>
     </section>

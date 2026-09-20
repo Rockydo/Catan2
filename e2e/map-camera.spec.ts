@@ -169,7 +169,17 @@ test("camera drag, anchored wheel zoom, fit, resize and keyboard selection stay 
   await hex.press("Enter");
   await expect(hex).toHaveClass(/selected/);
   await closePanel(page);
-  await expect(page.locator(".board-frame pattern")).toHaveCount(86);
+  // Load only artwork used by this map, with no missing SVG references.
+  const patterns = await page
+    .locator(".board-frame pattern[id^='terrain-']")
+    .evaluateAll((nodes) => nodes.map((n) => n.id));
+  const references = await page
+    .locator(".terrain-map [fill^='url(#terrain-']")
+    .evaluateAll((nodes) => [
+      ...new Set(nodes.map((n) => n.getAttribute("fill")!.slice(5, -1))),
+    ]);
+  expect(patterns.sort()).toEqual(references.sort());
+  expect(patterns.length).toBeLessThan(40);
   await page.getByRole("button", { name: "Hide dice numbers" }).click();
   await expect(
     page.locator(".terrain-map .production-token circle"),

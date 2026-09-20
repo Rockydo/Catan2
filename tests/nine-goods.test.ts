@@ -8,12 +8,14 @@ import { oldGoodsFixture, wrapOldGame } from "./nine-goods-fixture";
 
 describe("nine resources and affordable camps", () => {
   it("keeps paired legacy goods and adds weighted Gold, water-only Fish and Whale Oil", () => {
-    expect(RAW).toHaveLength(12);
+    expect(RAW).toHaveLength(13);
     expect(PROCESSED).toHaveLength(10);
     expect(EXTENSIONS).toHaveLength(11);
-    expect(GOODS).toHaveLength(22);
+    expect(GOODS).toHaveLength(23);
     expect(
-      RAW.filter((g) => g !== "fish" && g !== "oil").map(processedFor),
+      RAW.filter((g) => g !== "fish" && g !== "meat" && g !== "oil").map(
+        processedFor,
+      ),
     ).toEqual(PROCESSED);
     const w = generateWorld("nine-goods", 2000);
     for (const t of Object.values(w.tiles)) {

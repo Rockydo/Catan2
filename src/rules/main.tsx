@@ -1,3 +1,5 @@
+import { SeasonReference } from "./SeasonReference";
+import { CalendarDays } from "lucide-react";
 import { CLIMATES } from "../game/climate-content";
 import { createRoot } from "react-dom/client";
 import { flushSync } from "react-dom";
@@ -58,6 +60,7 @@ setLocale(location.pathname.endsWith("rules-fr.html") ? "fr" : "en");
 const icons = [
   Compass,
   Map,
+  CalendarDays,
   Sprout,
   Pickaxe,
   Sword,
@@ -572,7 +575,7 @@ function Catalogue({ initial = "goods" }: { initial?: CatalogSection }) {
                               `−${tier} tours de siège`,
                             )
                           : labels(
-                              `Current tile + ${tier} neighbours · ×${tier} raw output${tier >= 3 ? ` + ×${tier - 2} base yield as processed goods` : ""}`,
+                              `Current tile + ${tier} neighbours · ×${tier} raw output${tier >= 3 ? ` + ×${tier - 2} seasonal yield as processed goods` : ""}`,
                               `Tuile actuelle + ${tier} voisines · production brute ×${tier}${tier >= 3 ? ` + ×${tier - 2} production de base en produits transformés` : ""}`,
                             )}
                   </p>
@@ -633,7 +636,7 @@ function Catalogue({ initial = "goods" }: { initial?: CatalogSection }) {
                   {k === "merchantship" && (
                     <p>
                       {labels(
-                        `Adjacent land · ×${tier} raw output${tier >= 3 ? ` + ×${tier - 2} base yield as processed goods` : ""}`,
+                        `Adjacent land · ×${tier} raw output${tier >= 3 ? ` + ×${tier - 2} seasonal yield as processed goods` : ""}`,
                         `Terres voisines · production brute ×${tier}${tier >= 3 ? ` + ×${tier - 2} production de base en produits transformés` : ""}`,
                       )}
                     </p>
@@ -809,6 +812,7 @@ function App() {
           <h1>{c.title[locale]}</h1>
           <p>{c.summary[locale]}</p>
         </div>
+        {c.id === "seasons" && <SeasonReference />}
         {c.id === "economy" && <TerrainReference />}
         {c.id === "sea" && <TerrainReference seaOnly />}
         {c.id === "world" && (
@@ -932,6 +936,10 @@ function App() {
                       initial={climate}
                       readOnly
                     />
+                  ))}
+                {c.id === "seasons" &&
+                  CLIMATES.map((climate) => (
+                    <SeasonReference key={climate} initial={climate} readOnly />
                   ))}
                 {c.id === "economy" && <TerrainReference />}
                 <Prose body={c.body[locale]} />
@@ -1070,7 +1078,7 @@ function App() {
                   5 / 10 <small>{labels("factions", "factions")}</small>
                 </span>
                 <span>
-                  22 <small>{labels("goods", "ressources")}</small>
+                  23 <small>{labels("goods", "ressources")}</small>
                 </span>
                 <span>
                   125 / 250{" "}
@@ -1107,8 +1115,8 @@ function App() {
                   <h3>{labels("2. Production", "2. Production")}</h3>
                   <p>
                     {labels(
-                      "Roll two dice. Every faction collects from tiles matching the total, including 7.",
-                      "Lancez deux dés. Toutes les factions produisent sur les tuiles portant le total obtenu, y compris 7.",
+                      "Roll two dice. Every faction collects the current seasonal yield from matching tiles, including 7. Out of season, a tile produces nothing.",
+                      "Lancez deux dés. Toutes les factions récoltent la production saisonnière des tuiles portant le total, y compris 7. Hors saison, une tuile ne produit rien.",
                     )}
                   </p>
                   <ArrowRight />

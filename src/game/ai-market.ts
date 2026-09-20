@@ -8,7 +8,8 @@ import {
   type Stock,
 } from "./types";
 import { COSTS } from "./content";
-import { income, inventory } from "./selectors";
+import { inventory } from "./selectors";
+import { projectedIncome, projectedIncomes } from "./ai-seasonal";
 
 const coverage = Object.fromEntries(
   GOODS.map((g) => [
@@ -19,15 +20,15 @@ const coverage = Object.fromEntries(
 
 /** Observable stocks plus six expected dice rolls of output. No hidden draws. */
 export function marketValues(s: Game): Record<Good, number> {
+  const forecast = projectedIncomes(s);
   const supply = Object.fromEntries(GOODS.map((g) => [g, 0])) as Record<
     Good,
     number
   >;
   for (const p of s.players.filter((p) => p.alive)) {
     const stock = inventory(s, p.id),
-      production = income(s, p.id);
-    for (const g of GOODS)
-      supply[g] += (stock[g] ?? 0) + 6 * (production[g] ?? 0);
+      production = forecast[p.id];
+    for (const g of GOODS) supply[g] += (stock[g] ?? 0) + (production[g] ?? 0);
   }
   const values = {} as Record<Good, number>;
   for (const group of [RAW, PROCESSED]) {
@@ -37,8 +38,10 @@ export function marketValues(s: Game): Record<Good, number> {
       group.reduce((n, g) => n + coverage[g], 0) / group.length;
     const base = group === RAW ? 1 : 2.5;
     for (const g of group) {
-      const alternate = RAW_SUBSTITUTES[g];
-      const available = supply[g] + (alternate ? supply[alternate] : 0);
+      const available = (RAW_SUBSTITUTES[g] ?? []).reduce(
+        (n, alternate) => n + supply[alternate],
+        supply[g],
+      );
       const scarcity = Math.max(
         0.55,
         Math.min(2.2, Math.sqrt((averageSupply + 12) / (available + 12))),
@@ -51,6 +54,7 @@ export function marketValues(s: Game): Record<Good, number> {
     }
   }
   values.fish = values.grain;
+  values.meat = values.grain;
   values.oil = values.coal;
   const rawBest = Math.max(
     ...RAW.filter((g) => g !== "gold").map((g) => values[g]),
@@ -75,11 +79,11 @@ export function tradeValuation(
   prices = marketValues(s),
 ) {
   const stock = inventory(s, player),
-    production = income(s, player);
+    production = projectedIncome(s, player);
   return (receive: Stock, give: Stock) => {
     let gain = 0,
       loss = 0;
-    // Validate exact traded cards, then combine Grain/Fish and Coal/Oil reserves.
+    // Trades name exact cards; recipe reserves combine Grain/Fish/Meat and Coal/Oil.
     if (
       GOODS.some(
         (g) =>
@@ -90,15 +94,18 @@ export function tradeValuation(
       )
     )
       return { gain: 0, loss: Infinity };
-    for (const g of GOODS.filter((g) => g !== "fish" && g !== "oil")) {
-      const alternate = RAW_SUBSTITUTES[g],
-        held = (stock[g] ?? 0) + (alternate ? (stock[alternate] ?? 0) : 0),
-        paid = (give[g] ?? 0) + (alternate ? (give[alternate] ?? 0) : 0),
-        taken = (receive[g] ?? 0) + (alternate ? (receive[alternate] ?? 0) : 0),
-        need = (needs[g] ?? 0) + (alternate ? (needs[alternate] ?? 0) : 0),
-        output =
-          (production[g] ?? 0) + (alternate ? (production[alternate] ?? 0) : 0);
-      const replacement = 1 + 0.6 / (1 + 6 * output);
+    for (const g of GOODS.filter(
+      (g) => g !== "fish" && g !== "meat" && g !== "oil",
+    )) {
+      const alternates = RAW_SUBSTITUTES[g] ?? [],
+        total = (cards: Stock) =>
+          alternates.reduce((n, raw) => n + (cards[raw] ?? 0), cards[g] ?? 0),
+        held = total(stock),
+        paid = total(give),
+        taken = total(receive),
+        need = total(needs),
+        output = total(production);
+      const replacement = 1 + 0.6 / (1 + output);
       const utility = (n: number) =>
         prices[g] *
         (replacement * 12 * Math.log1p(n / 12) + 0.85 * Math.min(n, need));

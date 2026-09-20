@@ -28,7 +28,7 @@ import {
 import {
   CARDS,
   GOOD_INFO,
-  SHIP_INFO,
+  shipStats,
   RESEARCH_NAMES,
   COSTS,
   UNIT_INFO,
@@ -74,13 +74,22 @@ export function BattleDialog({
       (id) => s.pieces[id],
     );
   const [ids, setIds] = useState(() => casualtySelection(losers, b.required));
+  const remaining = losers.filter((u) => !ids.includes(u.id) && points(u) > 0);
   const options =
     b.loser === b.defender
-      ? retreatOptions(s, b.target, b.loser, b.naval, b.origin).filter((tile) =>
-          losers.every((u) => !hostileAt(s, tile, u.owner, b.naval)),
-        )
+      ? retreatOptions(
+          s,
+          b.target,
+          b.loser,
+          b.naval,
+          b.origin,
+          remaining,
+        ).filter((tile) => remaining.every((u) => !hostileAt(s, tile, u.owner)))
       : [];
-  const [retreat, setRetreat] = useState(options[0] ?? "");
+  const [selectedRetreat, setRetreat] = useState(options[0] ?? "");
+  const retreat = options.includes(selectedRetreat)
+    ? selectedRetreat
+    : (options[0] ?? "");
   const lost = ids.reduce((n, id) => n + points(s.pieces[id]), 0),
     survives = ids.length < losers.length;
   return (
@@ -539,12 +548,12 @@ export function ResearchPlayDialog({
                 Object.entries(groups)
                   .map(([tile, units]) => ({
                     tile,
-                    units: units.filter((u) => fresh(s, u)),
+                    units: units.filter((u) => !u.naval && fresh(s, u)),
                   }))
                   .filter(
                     ({ tile, units }) =>
                       units.length > 0 &&
-                      s.tiles[tile].resource !== "water" &&
+                      canOccupy(s.tiles[tile], false) &&
                       s.vertices[s.towns[town].vertex].tiles.includes(tile),
                   )
                   .map(({ tile, units }) => (
@@ -612,7 +621,7 @@ export function TransportDialog({
   );
   const [ships, setShips] = useState(
     carriers
-      .filter((u) => SHIP_INFO[u.kind as ShipClass].capacity > 0)
+      .filter((u) => shipStats(u.kind as ShipClass, u.tier).capacity > 0)
       .map((u) => u.id),
   );
   const troops = Object.values(s.pieces).filter(
@@ -630,7 +639,7 @@ export function TransportDialog({
     .reduce(
       (n, u) =>
         n +
-        SHIP_INFO[u.kind as ShipClass].capacity -
+        shipStats(u.kind as ShipClass, u.tier).capacity -
         Object.values(s.pieces).filter((p) => p.carrier === u.id).length,
       0,
     );
@@ -661,7 +670,8 @@ export function TransportDialog({
             />
             <UnitPortrait unit={u} />
             <span>
-              {tx(unitName(u))} · {tx(SHIP_INFO[u.kind as ShipClass].capacity)}
+              {tx(unitName(u))} ·{" "}
+              {tx(shipStats(u.kind as ShipClass, u.tier).capacity)}
               {tx(" berths")}
             </span>
           </label>

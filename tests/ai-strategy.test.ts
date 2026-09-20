@@ -135,8 +135,11 @@ describe("proactive and selfish AI strategy", () => {
   });
   it("requires a better offer from a runaway leader, but still accepts a worthwhile deal", () => {
     const s = strategyFixture();
-    // This offer tests Grain demand without an interchangeable Fish surplus.
-    for (const town of Object.values(s.towns)) delete town.stock.fish;
+    // Test Grain demand without interchangeable Fish or Meat reserves.
+    for (const town of Object.values(s.towns)) {
+      delete town.stock.fish;
+      delete town.stock.meat;
+    }
     for (const t of ownTowns(s, 1)) {
       t.level = 4;
       for (const id of landAtVertex(s, t.vertex)) t.extensions[id] = 3;

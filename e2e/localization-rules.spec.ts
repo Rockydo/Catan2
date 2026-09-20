@@ -119,7 +119,7 @@ test("catalogue exposes every tier of cards, ships and guilds in French", async 
   page,
 }) => {
   await page.goto("/rules-fr.html#catalog");
-  await expect(page.locator(".good-card")).toHaveCount(22);
+  await expect(page.locator(".good-card")).toHaveCount(23);
   await page.getByRole("tab", { name: "Développement", exact: true }).click();
   for (const roman of ["I", "II", "III", "IV"]) {
     await page
@@ -219,7 +219,7 @@ test("illustrated terrain reference pairs artwork with raw and workshop outputs"
 }) => {
   for (const locale of ["en", "fr"]) {
     await page.goto(`/rules${locale === "fr" ? "-fr" : ""}.html#economy`);
-    await expect(page.locator(".terrain-row")).toHaveCount(40);
+    await expect(page.locator(".terrain-row")).toHaveCount(48);
     const whale = page.locator('[data-terrain="whale"]');
     for (const name of locale === "fr"
       ? ["Peaux", "Huile", "Cuir"]
@@ -259,7 +259,7 @@ test("illustrated terrain reference pairs artwork with raw and workshop outputs"
           ),
         );
       });
-    expect(art).toHaveLength(33);
+    expect(art).toHaveLength(41);
     expect(art.every(Boolean)).toBe(true);
     expect(
       await page.evaluate(
@@ -280,7 +280,7 @@ test("illustrated terrain reference pairs artwork with raw and workshop outputs"
     fullPage: true,
   });
   await page.goto("/rules-fr.html#catalog");
-  await expect(page.locator(".good-card")).toHaveCount(22);
+  await expect(page.locator(".good-card")).toHaveCount(23);
   await expect(
     page
       .locator(".good-card")

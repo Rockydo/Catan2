@@ -11,6 +11,7 @@ import {
 import { inventory, ownTowns, income } from "../game/selectors";
 import { GoodIcon, Modal, Cost } from "./components";
 const USES: Record<Good, string> = {
+  meat: "Livestock produces Meat during its harvest seasons. Meat replaces Grain one-for-one in recipes, after Grain and Fish. It can be processed into Rations. Trades transfer the exact named goods.",
   oil: "Whales and Seal hunting grounds produce Oil alongside Hides. Oil replaces Coal one-for-one in recipes: Coal is spent first, then Oil covers a shortfall automatically. Artisans can refine Oil into Fuel. Trades transfer the exact named goods.",
   fish: "Replaces Grain one-for-one in any building or recruitment recipe. Grain is spent first; Fish covers a shortfall automatically. Smokehouses add Rations without consuming your Fish.",
   gold: "Exchange 1 Gold for any raw good, or 2 Gold for any processed good. Gold occurs at different rates in each climate.",
@@ -65,7 +66,9 @@ export function GoodGuide({
     rate = income(game, viewer)[good] ?? 0;
   const recipes = Object.entries(COSTS).filter(
     ([, c]) =>
-      c[good] || (good === "fish" && c.grain) || (good === "oil" && c.coal),
+      c[good] ||
+      ((good === "fish" || good === "meat") && c.grain) ||
+      (good === "oil" && c.coal),
   );
   return (
     <Modal title={tx(GOOD_INFO[good].name)} onClose={onClose} wide>
@@ -80,7 +83,7 @@ export function GoodGuide({
             {tx(holdings[good] ?? 0)}
             {tx(" stored · ")}
             {tx(rate.toFixed(2))}
-            {tx(" expected per dice roll")}
+            {tx(" expected per dice roll, annual average")}
           </b>
         </div>
       </div>
@@ -96,8 +99,8 @@ export function GoodGuide({
       <p className="muted">
         {tx(
           isRaw
-            ? "Towns and camps collect this resource when their linked tile rolls."
-            : "A city extension produces this good when its linked raw-resource tile rolls. It consumes no stored raw goods.",
+            ? "Towns and camps collect this resource when their linked tile rolls during an active season."
+            : "A city extension produces this good when its linked raw-resource tile rolls during an active season. It consumes no stored raw goods.",
         )}
         {tx(" ")}
         {tx("Enemy occupation blocks that tile’s production.")}

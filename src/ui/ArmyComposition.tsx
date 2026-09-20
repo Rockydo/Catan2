@@ -1,3 +1,4 @@
+import { Snowflake, Waves } from "lucide-react";
 import { terrainName } from "../game/maritime";
 import { localize as tx, useLocale } from "../i18n";
 import { friendly } from "../game/relations";
@@ -45,11 +46,15 @@ function grouped(units: Piece[]) {
 const canAct = (s: Game, u: Piece) =>
   ready(s, u) && speed(u) + u.bonus - u.moved > 0;
 /** Automatic selection must not trap mobile troops beside exhausted units. */
-export const selectReadyForce = (s: Game, units: Piece[]): string[] =>
-  units.filter((u) => canAct(s, u)).map((u) => u.id);
+export const selectReadyForce = (s: Game, units: Piece[]): string[] => {
+  const eligible = units.filter((u) => canAct(s, u));
+  const naval = eligible[0]?.naval;
+  return eligible.filter((u) => u.naval === naval).map((u) => u.id);
+};
 /** Split by class and tier first, then balance odd remainders by base power. */
 export function selectHalfForce(s: Game, units: Piece[]): string[] {
-  const eligible = units.filter((u) => canAct(s, u));
+  const readyIds = new Set(selectReadyForce(s, units));
+  const eligible = units.filter((u) => readyIds.has(u.id));
   const wanted = Math.ceil(eligible.length / 2);
   const chosen: Piece[] = [],
     remainders: Piece[] = [];
@@ -91,9 +96,17 @@ export function ArmyComposition({
   useLocale();
 
   const selected = new Set(selectedIds);
-  const owners = [...new Set(units.map((u) => u.owner))].sort(
-    (a, b) => Number(b === viewer) - Number(a === viewer) || a - b,
-  );
+  const formations = [...new Set(units.map((u) => `${u.owner}:${u.naval}`))]
+    .map((key) => {
+      const [owner, naval] = key.split(":");
+      return { owner: Number(owner), naval: naval === "true", key };
+    })
+    .sort(
+      (a, b) =>
+        Number(b.owner === viewer) - Number(a.owner === viewer) ||
+        a.owner - b.owner ||
+        Number(a.naval) - Number(b.naval),
+    );
   const carriers = new Set(units.map((u) => u.id));
   const passengers = Object.values(s.pieces).filter(
     (u) => !!u.carrier && carriers.has(u.carrier),
@@ -105,10 +118,11 @@ export function ArmyComposition({
       data-testid="army-overview"
     >
       {tx(
-        owners.map((owner) => {
-          const force = units.filter((u) => u.owner === owner),
-            first = force[0],
-            naval = first.naval;
+        formations.map(({ owner, naval, key }) => {
+          const force = units.filter(
+              (u) => u.owner === owner && u.naval === naval,
+            ),
+            first = force[0];
           const cargo = passengers.filter((u) => u.owner === owner);
           const base = force.reduce((n, u) => n + points(u), 0),
             actual = power(s, force, first.tile);
@@ -125,7 +139,7 @@ export function ArmyComposition({
           return (
             <div
               className="formation-faction"
-              key={owner}
+              key={key}
               data-testid={`formation-owner-${owner}`}
             >
               <div className="formation-heading">
@@ -186,6 +200,28 @@ export function ArmyComposition({
                     : "",
                 )}
               </p>
+              {force.some((u) => u.seasonStatus === "icebound") && (
+                <p className="season-force-warning">
+                  <Snowflake size={16} />
+                  <span>
+                    <b>{tx("Icebound")}</b>
+                    {tx(
+                      " · These ships cannot act until the sea thaws. Their passengers remain aboard.",
+                    )}
+                  </span>
+                </p>
+              )}
+              {force.some((u) => u.seasonStatus === "adrift") && (
+                <p className="season-force-warning">
+                  <Waves size={16} />
+                  <span>
+                    <b>{tx("On a drifting ice floe")}</b>
+                    {tx(
+                      " · Move onto adjacent land or ice, or board a friendly transport. Units are not lost to the thaw.",
+                    )}
+                  </span>
+                </p>
+              )}
               <div className="formation-groups">
                 {tx(
                   grouped(force).map((group) => {
@@ -265,7 +301,9 @@ export function ArmyComposition({
                               ? selectedIds.filter((id) => !ids.includes(id))
                               : [
                                   ...selectedIds.filter(
-                                    (id) => !ids.includes(id),
+                                    (id) =>
+                                      !ids.includes(id) &&
+                                      s.pieces[id]?.naval === naval,
                                   ),
                                   ...eligible,
                                 ],

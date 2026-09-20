@@ -11,12 +11,12 @@ Le terme agglomération désigne une colonie ou une ville. Perdre votre dernièr
 Choisissez Classique (5 factions, 125 tuiles) ou Grande campagne (10 factions, 250 tuiles).
 - Dans l’ordre des joueurs, chaque faction place une colonie et une route ou liaison maritime adjacente.
 - Répétez dans l’ordre inverse. Chaque faction possède alors deux colonies et deux tronçons.
-- La seconde colonie reçoit la production indiquée de chaque tuile productive adjacente. Par exemple, les Champs dorés donnent 2 Blés et une tuile Baleines donne 1 Peau et 1 Huile. Les Bois donnent initialement du Bois. Aucune troupe ni aucun produit transformé au départ.
+- La seconde colonie reçoit la production de base, sans tenir compte de la saison initiale, de chaque tuile productive adjacente. Par exemple, les Champs dorés donnent 2 Blés et une tuile Baleines donne 1 Peau et 1 Huile. Les Bois donnent initialement du Bois. Aucune troupe ni aucun produit transformé au départ.
 Chaque colonie doit toucher au moins une terre ferme praticable. Les Pics rocheux et la Banquise ne conviennent pas. Au moins une intersection libre doit séparer deux colonies, quel que soit leur propriétaire.
 ### Déroulement d’un tour
-- Production : lancez deux dés indépendants à six faces. Toutes les factions produisent sur les tuiles dont le numéro correspond au total. Le sept produit normalement. Il n’y a ni voleur, ni défausse, ni limite de stock.
+- Production : lancez deux dés indépendants à six faces. Toutes les factions reçoivent la production de la saison en cours sur les tuiles dont le numéro correspond au total. Le sept produit normalement. Il n’y a ni voleur, ni défausse, ni limite de stock.
 - Actions : construisez, échangez, recrutez, déplacez, combattez, pillez, explorez, achetez et jouez des cartes dans l’ordre souhaité. Les ressources pillées sont immédiatement utilisables.
-- Fin du tour : passez à la faction survivante suivante. Une manche se termine lorsque chaque faction survivante a joué un tour.
+- Fin du tour : passez à la faction survivante suivante. Une manche se termine lorsque chaque faction survivante a joué un tour. La saison avance alors.
 Les cartes en main peuvent aussi être jouées avant les dés si leurs conditions le permettent. Il n’y a pas de phase militaire distincte.
 ### Accès aux constructions
 Les camps ajoutent une production brute le long des routes. Une Ville I double la production brute indiquée de chaque tuile adjacente activée et permet de construire des ateliers. Une agglomération côtière peut construire des navires mobiles ; leur palier dépend de son niveau. Cartes et guildes apportent d’autres effets et échanges de ressources. Les chapitres correspondants précisent les coûts et conditions.
@@ -34,7 +34,7 @@ Tempéré, Tropical et Désertique : 50 % de terre. Froid et Subtropical : 55 %.
 ### Vue des climats
 Le bouton Climats près du zoom affiche uniquement les couleurs climatiques. La légende compte les tuiles révélées de chaque climat. Déplacez la carte, zoomez et sélectionnez les tuiles normalement ; appuyez de nouveau sur Climats pour retrouver la carte normale.
 ### Terrains stériles, pics et banquise
-Plaines enneigées et Désert ne produisent rien et n’accueillent ni camp ni atelier. Les armées les traversent et les constructions voisines restent possibles. La Banquise résulte du tirage aquatique arctique. Elle ne produit rien, accueille les unités terrestres et bloque les navires. Colonies, tours et routes permanentes exigent une terre ferme adjacente ; aucune liaison n’est possible sur une arête bordée uniquement de banquise. Une arête banquise/eau sans terre ferme accueille une liaison maritime. La banquise ne fond pas.
+Plaines enneigées et Désert ne produisent rien et n’accueillent ni camp ni atelier. Les armées les traversent et les constructions voisines restent possibles. La Banquise résulte du tirage aquatique arctique. Elle ne produit rien, accueille les unités terrestres et bloque les navires. Colonies, tours et routes permanentes exigent une terre ferme adjacente ; aucune liaison n’est possible sur une arête bordée uniquement de banquise. Une arête banquise/eau sans terre ferme accueille une liaison maritime. La banquise fond en Été et regèle en Automne. Les autres eaux froides, alpines et arctiques gèlent en Hiver. Voir Saisons et récoltes pour les unités immobilisées, ports hivernaux et constructions.
 Les Pics rocheux ne produisent rien et sont infranchissables pour toutes les unités. Aucun déplacement, recrutement, repli ou débarquement ne peut y placer une unité. Les routes peuvent suivre leurs arêtes selon les règles de raccordement ordinaires, même entre deux pics. Une agglomération ou une tour de guet exige au moins une terre ferme praticable adjacente. Aucun camp ni atelier ne peut exploiter les Pics rocheux.
 ### Parties existantes
 Les tuiles révélées conservent leurs terrains, productions et climats attribués. Les sauvegardes antérieures au système climatique classent leurs anciennes tuiles en Tempéré pour les futures frontières. Les nouvelles explorations peuvent utiliser les onze climats. Commencez une nouvelle partie pour appliquer les nouvelles tables à toute la carte.
@@ -45,20 +45,66 @@ Une arête côtière entièrement révélée a 10 % de chances de devenir candid
 ### Restrictions de mise en place
 Une carte extrême peut manquer d’emplacements initiaux légaux. Le jeu signale alors une graine impossible à jouer sans la corriger en secret. Durant la mise en place, un choix ne peut pas empêcher les autres de placer leurs deux colonies. L’absence d’une ressource n’invalide pas une carte : les échanges avec la réserve permettent de l’obtenir.
 
+## Saisons et récoltes
+
+### Calendrier
+Une manche complète correspond à une saison. Chaque faction survivante joue avant le changement de saison. L’ordre est Printemps, Été, Automne, Hiver ; quatre manches forment une année. Une nouvelle campagne commence au Printemps. La saison ne change jamais en cours de manche.
+Le calendrier à côté du numéro de manche indique la saison et l’année. Ouvrez-le pour consulter la saison suivante et prévisualiser les paysages. Un aperçu ne modifie que les images : déplacements, production et actions légales suivent toujours la saison en cours. Sélectionnez une tuile pour consulter sa production sur les quatre saisons.
+### Dés et périodes de récolte
+Une tuile produit uniquement lorsque son numéro sort pendant une saison productive. Chaque jet correspondant rapporte des ressources, même si la tuile a déjà produit pendant cette saison. Aucune limite annuelle de récoltes, récolte garantie, relance ou compensation. Hors saison, le même numéro ne rapporte rien. Les dés restent deux dés indépendants à six faces.
+Pour chaque ressource, la somme des quatre productions saisonnières vaut quatre fois le rendement annuel de base. À producteurs et nombre de jets identiques, la moyenne annuelle ne change pas. Le calendrier rend la production moins fiable : les Champs dorés donnent 8 Blés par colonie à chaque jet correspondant en Été et zéro aux autres saisons. Si leur numéro ne sort pas cet Été-là, la récolte est perdue.
+### Types de cultures
+- Champs dorés : récolte estivale de 8 Blés. En climat Océanique, la récolte a lieu en Automne.
+- Champs pauvres : récolte automnale de 4 Blés.
+- Orge : récolte estivale de 4 Blés ; en climats Froid et Alpin, récolte en Automne.
+- Seigle : récolte estivale de 4 Blés. Complète les cultures plus tardives des régions froides et alpines.
+- Millet : récolte automnale de 4 Blés. Présent dans la Steppe et la Savane.
+- Maïs : récolte automnale de 8 Blés. Présent dans les régions tempérées et subtropicales.
+- Riz tropical : 4 Blés au Printemps, en Été et en Automne ; zéro en Hiver. Riz subtropical : 6 Blés en Été et en Automne, zéro sinon.
+- Oliveraies : 2 Blés en Automne et en Hiver. Nourriture des Oasis : 4 Blés en Automne ; le Bois des Oasis reste disponible toute l’année.
+Il s’agit de périodes de récolte, pas de livraisons automatiques au changement de saison. Toutes ces cultures produisent la même carte Blé. Les tables de génération et le calendrier illustré précisent la répartition de chaque climat.
+### Élevage et Viande
+Le Pâturage bovin produit 1/1/4/2 Viandes au Printemps/Été/Automne/Hiver. Le Pâturage de chèvres produit 1/0/2/1 Viandes. Le Pâturage de rennes et l’Élevage de savane produisent Viande et Peaux ; chaque ressource suit son propre calendrier. Consultez les deux productions dans la table.
+La Viande est une ressource brute. Les recettes indiquent toujours du Blé : dépensez d’abord le Blé, puis le Poisson et enfin la Viande à raison de 1 pour 1 pour couvrir le manque. L’Or couvre les ressources brutes encore manquantes. Un échange explicite porte sur les ressources nommées. Les ateliers de Viande et la production avancée des villes ou marchands ajoutent des Rations sans consommer la récolte brute.
+Les Pâturages continuent à produire de la Laine. Dans les climats tempérés et froids, la tonte a lieu au Printemps et en Été ; la Laine des climats Tropical, Subtropical, Savane et Désertique est répartie sur l’année. Aucun coût d’alimentation ou d’entretien du bétail. Les aliments et autres ressources stockés ne périment jamais.
+### Autres productions saisonnières
+Bois, chasse, sel et argile varient selon le climat. Les Forêts froides conservent une petite production de Bois en Hiver. L’abattage tropical et l’extraction d’argile privilégient les saisons sèches. La production de Sel profite du temps sec. Peaux et Huile d’une même tuile animale peuvent suivre des calendriers différents ; les deux ressources sont récoltées.
+Les mines et carrières des climats doux restent régulières. En climats Froid, Alpin et Arctique, elles privilégient l’Été et s’arrêtent en Hiver ; le Charbon reste disponible toute l’année. Ces ressources régulières restent utiles lorsque les récoltes alimentaires sont incertaines.
+Poisson et Morue des climats Tempéré, Froid, Arctique, Océanique et Alpin produisent 1×/2×/1×/0× leur base du Printemps à l’Hiver. Le Poisson des climats chauds produit régulièrement toute l’année. Les Baleines des climats froids suivent 1×/2×/1×/0× ; les autres suivent 0×/1×/2×/1×. Appliquez le multiplicateur aux Peaux et à l’Huile. Les terrains de chasse aux Phoques produisent au Printemps, en Automne et en Hiver. La table illustrée donne toutes les quantités exactes.
+### Multiplicateurs de production
+Les agglomérations multiplient chaque production brute saisonnière par leur niveau : 1/2/3/4. Les camps la multiplient par leur palier : 1/2. Marchands, navires marchands et bateaux de pêche la multiplient par leur palier. Les règles habituelles de blocus et de couverture s’appliquent.
+Les agglomérations de niveaux 3 et 4 et les marchands de paliers III et IV ajoutent 1× et 2× chaque composante brute saisonnière sous forme transformée. Une agglomération de niveau 4 voisine de Champs dorés en Été produit 32 Blés et 16 Rations par jet correspondant. Une Boulangerie II ajoute 16 Rations supplémentaires. Aucun Blé n’est retiré de la récolte.
+Une extension multiplie le rendement saisonnier de sa ressource liée par son propre palier. Un atelier lié aux Bois conserve sa ressource choisie, même si la faction change la récolte ordinaire de la tuile. Aucune récolte saisonnière signifie aucune production transformée automatique.
+Les contrats de guilde sont des actions payantes distinctes. Leurs entrées et sorties indiquées ne changent pas avec la saison ; ils peuvent fournir des ressources entre les récoltes aux dés. Les Artisans peuvent toujours transformer les réserves. Les ressources initiales de la seconde colonie utilisent les rendements de base pour ne pas pénaliser la mise en place au Printemps.
+### Gel et dégel
+Toutes les eaux des climats Froid, Alpin et Arctique gèlent en Hiver. Les tuiles Banquise arctique restent aussi gelées au Printemps et en Automne et ne s’ouvrent qu’en Été. Les autres mers restent navigables. La prévision est déterministe, sans jet de gel caché.
+Les troupes terrestres peuvent entrer sur l’eau gelée ; les navires sur l’eau libre. Une mer gelée bloque le passage de la couverture de pêche et ne produit rien en Hiver. Un port gelé perd son taux amélioré jusqu’au retour des eaux libres ; les échanges ordinaires avec la réserve restent possibles. Construire un navire ou lancer une expédition maritime exige de l’eau libre.
+La glace ne devient jamais une terre ferme pour construire. Les agglomérations et tours exigent une terre permanente ; les routes exigent un côté réellement terrestre. Les liaisons maritimes restent maritimes. Le gel et le dégel ne détruisent ni camps ni bâtiments existants. On peut construire un camp en Hiver selon les règles de connexion habituelles, mais il ne produit que pendant ses saisons productives.
+### Unités surprises par le changement
+Un navire surpris par le gel reste pris dans les glaces. Il demeure sur place avec ses passagers et ne peut agir avant le dégel. Des troupes terrestres peuvent attaquer une flotte ennemie immobilisée sur cette glace selon les règles de combat ordinaires.
+Des troupes terrestres surprises par le dégel restent sur une plaque de glace à la dérive. Elles ne meurent pas et ne sont pas téléportées. Elles peuvent rejoindre une terre ou glace adjacente, ou embarquer dans un transport ami situé sur la même tuile ou une tuile adjacente, selon les capacités et règles d’activation habituelles. Elles ne peuvent pas marcher sur l’eau libre. Une flotte ennemie peut les attaquer normalement. Le repli n’est possible que vers un terrain légal pour le type d’unité.
+Sortez vos navires des régions qui gèlent et ramenez vos troupes à terre avant le changement. Une force sans issue ni secours peut rester bloquée jusqu’à une saison favorable.
+### IA et anciennes sauvegardes
+L’IA évalue la production durable selon sa moyenne annuelle ; les pics saisonniers ne modifient donc pas artificiellement la puissance stratégique. Les échanges tiennent compte des récoltes à venir et des stocks ; l’expansion considère les cultures complémentaires. L’IA prévoit aussi des abris hivernaux et le secours des troupes à la dérive.
+Les campagnes existantes conservent terrains, numéros, unités et stocks. Leur premier Printemps commence à la prochaine manche complète, sans modifier la manche en cours. Les nouvelles zones explorées peuvent contenir les nouvelles cultures et élevages. La production saisonnière s’applique ensuite aux anciennes et nouvelles tuiles.
+### Aperçu des paysages
+Choisissez une saison dans le calendrier pour voir ses paysages, puis déplacez et inspectez la carte normalement. Le bandeau indique l’aperçu et la saison dont les règles restent appliquées. Revenez à la saison en cours ou appuyez sur Échap pour quitter l’aperçu. Toute action de jeu réussie rétablit aussi les paysages actuels. Les prévisions de production et les règles de déplacement ne changent jamais pendant l’aperçu.
+
+
 ## Ressources, stocks et échanges
 
 ### Production et stockage
-Le jeu contient douze ressources brutes et dix produits transformés. Chaque agglomération multiplie la production brute de chaque tuile adjacente activée par son niveau. Les Champs dorés donnent 2/4/6/8 Blés aux niveaux 1/2/3/4 ; les Rizières donnent 3/6/9/12. Les deux productions d’une tuile mixte sont multipliées. Les agglomérations de niveaux 3 et 4 (Ville II et Ville III) ajoutent aussi 1× et 2× la production de base de la tuile en produits transformés sur chaque tuile activée, sans atelier requis. Ce bonus est fixe, quel que soit le rendement brut du terrain. Une ville de niveau 4 reçoit 8 Blés + 2 Rations des Champs dorés ; sur une Steppe, elle reçoit 4 Peaux + 4 Laines + 2 Cuirs + 2 Tissus. Les ateliers ajoutent des produits transformés sans consommer ni réduire cette récolte. Tous les joueurs produisent à chaque lancer. Une nouvelle construction ou unité de collecte peut produire dès le prochain lancer correspondant.
+Il existe treize ressources brutes et dix produits transformés. Sur un jet correspondant, les agglomérations reçoivent la production saisonnière actuelle de chaque tuile adjacente multipliée par leur niveau. Toutes les composantes d’une tuile mixte sont multipliées. Hors saison, le rendement est nul. Les niveaux 3 et 4 ajoutent 1× et 2× chaque composante brute saisonnière sous forme transformée, sans extension. En Été, une agglomération de niveau 4 voisine de Champs dorés reçoit 32 Blés et 16 Rations. Ce bonus suit le rendement de la tuile. Les extensions ajoutent leur propre production transformée sans consommer la récolte brute. Toutes les factions produisent sur chaque jet. Les nouveaux bâtiments et collecteurs peuvent produire dès le prochain jet correspondant. Le chapitre Saisons et récoltes donne le calendrier complet.
 ### Destination des ressources
 La production d’une agglomération reste sur place. Camps et collecteurs mobiles envoient leur récolte à l’agglomération du propriétaire la plus proche, selon la distance hexagonale à ses terres adjacentes ; en cas d’égalité, la plus ancienne l’emporte. Les récoltes futures changent de destination si les villes changent, pas les stocks existants. Échanges et cartes alimentent votre entrepôt principal, dans votre plus ancienne agglomération survivante. Le pillage mesure la destination depuis la tuile de l’armée.
 ### Paiement des coûts
 Les entrepôts forment une réserve de dépenses commune, même sous siège. Chaque ressource est prélevée proportionnellement, en cartes entières selon les plus grands restes, avec priorité à l’identifiant le plus ancien en cas d’égalité. Des stocks de 8 et 2 Blés paient un coût de cinq en donnant 4 et 1. Aucun transfert gratuit, choix d’un seul entrepôt payeur ou déplacement volontaire de l’entrepôt principal.
-### Poissons, Huile et Or
-Les recettes affichent Blé et Charbon. Le jeu dépense d’abord le Blé, puis remplace le manque par des Poissons à 1:1 ; de même, l’Huile remplace le Charbon manquant à 1:1. Après ces substitutions, chaque ressource brute manquante est payée avec 1 Or et chaque produit transformé manquant avec 1 Lingot d’or. Les ressources indiquées sont dépensées en priorité ; l’Or et les Lingots explicitement requis sont réservés avant de couvrir les manques. Cela vaut aussi pour les recettes réduites, les constructions de guildes et leurs commandes hors échanges. L’Or ne remplace pas automatiquement les produits transformés, ni les Lingots les ressources brutes ; utilisez la réserve pour ces conversions. Les échanges explicites entre joueurs, avec la réserve, les contrats marchands et les échanges des cartes consomment exactement les ressources proposées, sans substitution automatique.
+### Aliments de substitution, Huile et Or
+Les recettes indiquent Blé et Charbon. Dépensez d’abord le Blé, puis le Poisson, puis la Viande pour couvrir le manque à 1 pour 1. Dépensez le Charbon avant l’Huile. Ensuite, 1 Or couvre chaque ressource brute manquante et 1 Lingot d’or chaque produit transformé manquant. Les ressources explicitement requises, dont Or et Lingots, sont réservées avant ces substitutions. Cela s’applique aussi aux réductions, constructions de guildes et contrats non commerciaux. L’Or ne remplace pas automatiquement un produit transformé, ni un Lingot une ressource brute : utilisez un échange avec la réserve. Les échanges explicites dépensent exactement les ressources proposées.
 ### Taux d’échange de l’Or
-L’Or a ses propres taux : 1 Or achète 1 ressource brute ; 2 Or achètent 1 produit transformé. Un Lingot d’or achète 2 ressources brutes d’un seul type ou 1 produit transformé. Aucun port nécessaire. Les orfèvreries produisent des Lingots. Blé et Poissons donnent des Rations ; Charbon et Huile donnent du Combustible chez les Artisans. Les ateliers liés aux Baleines produisent du Cuir.
+L’Or dispose de ses propres taux : 1 Or achète 1 ressource brute ; 2 Ors achètent 1 produit transformé. Un Lingot achète 2 ressources brutes identiques ou 1 produit transformé, sans port. Les Orfèvres produisent les Lingots. Blé, Poisson et Viande donnent des Rations ; Charbon et Huile donnent du Combustible. L’atelier d’une tuile Baleines produit du Cuir. La transformation automatique des villes avancées produit aussi du Combustible à partir de chaque Huile récoltée.
 ### Échanges
-Tout échange doit impliquer le joueur actif. Les 22 ressources peuvent être proposées en quantités précises. Aucun don, échange d’une ressource contre elle-même, échange de bâtiments ou de cartes Développement. Les offres de l’IA apparaissent dans une fenêtre facile à fermer. Stocks publics, production, rareté et projets de l’IA influencent leur valeur estimée ; les taux de la réserve restent fixes.
+Tout échange doit impliquer le joueur actif. Les 23 ressources peuvent être proposées en quantités précises. Aucun don, échange d’une ressource contre elle-même, échange de bâtiments ou de cartes Développement. Les offres de l’IA apparaissent dans une fenêtre facile à fermer. Stocks publics, production, rareté et projets de l’IA influencent leur valeur estimée ; les taux de la réserve restent fixes.
 ### Taux de la réserve et des ports
 Taux ordinaires : 4 ressources brutes identiques → 1 autre brute ; 6 brutes identiques → 1 produit transformé ; 4 produits identiques → 1 autre produit ; 2 produits identiques → 1 brute. Un port générique améliore seulement l’échange brute contre brute à 3:1. Un port spécifique correspondant le réduit à 2:1. Les taux de l’Or sont prioritaires. Toute ressource peut être importée, même absente de la carte. Aucune transformation gratuite des matières premières.
 ### Occupation et blocus
@@ -131,7 +177,7 @@ Cliquez sur un indicateur de siège, une ville, une tour ou le lien pointillé p
 Une liaison maritime est une pièce d’arête qui étend votre réseau de colonies. Un navire mobile occupe une tuile d’eau, se déplace et combat. L’un ne remplace pas l’autre. Construisez les navires près d’une agglomération côtière, sans port imprimé, sur une eau révélée sans ennemis. Le niveau au début du tour limite leur palier. Aucun plafond par commande, ville, tour ou flotte si vous payez chaque navire. Ils ne peuvent pas évoluer.
 Les transports privilégient la vitesse ; les convois portent plus d’unités mais avancent moins vite. Les tables des navires indiquent puissance, mouvement et capacité pour chaque classe. Chaque classe possède quatre paliers. La flotte avance à la vitesse du plus lent de ses participants. Les combats utilisent pertes entières et retraites, selon la puissance et les points de pertes de chaque coque. Les passagers n’ajoutent aucune puissance navale. Les survivants conservent toute leur puissance et capacité.
 ### Navires de pêche et marchands
-Les navires de pêche couvrent les Poissons, la Morue et les Baleines sur leur tuile et les eaux reliées à une distance de 1/2/3/4 aux paliers I/II/III/IV. Comptez le plus court trajet par l’eau, pas la distance à vol d’oiseau : terre et glace interrompent la couverture, et les tuiles non révélées sont exclues. Les navires marchands couvrent toutes les terres voisines, même occupées ou exploitées par un rival, jamais les Poissons ou Baleines. Chaque production de base est multipliée par le palier du navire : la Morue donne 2 Poissons par palier ; les Baleines donnent 1 Peau et 1 Huile par palier. Les navires marchands III/IV ajoutent aussi 1×/2× la production de base de la tuile en produits transformés sur chaque tuile couverte activée, sans consommer la récolte brute. Les navires de pêche ne produisent aucun bien transformé. Tout rejoint l’agglomération du propriétaire la plus proche. La collecte commence dès la construction. Aucun plafond de collecteurs par tuile ni capacité de cargaison pour les ressources.
+Les navires de pêche couvrent les Poissons, la Morue et les Baleines sur leur tuile et les eaux reliées à une distance de 1/2/3/4 aux paliers I/II/III/IV. Comptez le plus court trajet par l’eau, pas la distance à vol d’oiseau : terre et glace interrompent la couverture, et les tuiles non révélées sont exclues. Les navires marchands couvrent toutes les terres voisines, même occupées ou exploitées par un rival, jamais les Poissons ou Baleines. Chaque production saisonnière est multipliée par le palier du navire : la Morue donne 2 Poissons par palier ; les Baleines donnent 1 Peau et 1 Huile par palier. Les navires marchands III/IV ajoutent aussi 1×/2× la production saisonnière de la tuile en produits transformés sur chaque tuile couverte activée, sans consommer la récolte brute. Les navires de pêche ne produisent aucun bien transformé. Tout rejoint l’agglomération du propriétaire la plus proche. La collecte commence dès la construction. Aucun plafond de collecteurs par tuile ni capacité de cargaison pour les ressources.
 Les deux classes économiques ont une puissance de 0/1/2/3 aux paliers I/II/III/IV et aucune place de passager. Les navires désarmés d’une flotte vaincue sont automatiquement perdus. Les autres suivent les calculs ordinaires de pertes entières. Couverture et navires économiques sont visibles dans l’inspecteur des flottes.
 ### Transporter les troupes
 Embarquez ou débarquez à travers une arête commune terre-eau, sans port requis. Chaque navire et passager participant doit être frais. Embarquement et débarquement terminent leur activation. Une place porte une unité de n’importe quel palier, marchand compris. Les passagers ne produisent pas, ne gardent pas et n’agissent pas séparément. Débarquez sur une plage libre ou alliée, jamais directement sur une tuile ennemie. Les troupes débarquées attaquent à un tour ultérieur.
@@ -210,7 +256,7 @@ Les alliés ne peuvent ni s’attaquer, ni se bombarder, ni assiéger, piller ou
 Les défenseurs alliés sur la même tuile additionnent leur puissance ajustée au terrain. Les tours de chaque propriétaire représenté s’ajoutent une fois. Seules les unités sélectionnées du joueur actif attaquent. Les défenseurs communs subissent les pertes entières ordinaires ; un humain choisit s’il est présent, sinon le défenseur au plus petit identifiant. Les survivants reculent ensemble vers une tuile sûre pour tous. Les armées alliées voisines ne participent pas automatiquement.
 Quitter sur une tuile partagée ne téléporte ni ne tue personne. Les anciens alliés sont immédiatement hostiles et peuvent se retirer ou combattre sur place pour 1 PM. Cela n’autorise pas à traverser de nouvelles forces ennemies. Le panneau des factions montre membres, puissance combinée, engagement restant et action de départ.
 ### Priorités de l’IA
-L’IA cherche à gagner seule, selon puissance publique, revenus, portée militaire et terrain. Elle protège les villes exposées, cherche les ressources utiles, développe ses industries, finance les outils pertinents et vise les combats gagnables ou pillages. Elle classe les cibles selon les stocks exposés, la production, la durée du siège et la puissance du propriétaire. Elle laisse de petits détachements aux sièges ou blocus et poursuit l’attaque avec les troupes restantes. Les forces proches renforcent les villes défendables ; face à un meneur impossible à contenir, une garnison peut laisser une garde de retardement et envoyer des pillards. L’investissement offensif augmente au milieu et en fin de partie. Les collecteurs avancés sont des cibles de raids navals importantes. Sans assaut terrestre viable, une armée peut quitter un blocus pour rejoindre des transports ou une frontière exploitable. Les transports permettent de contourner les voies terrestres bloquées ; les factions autorisées peuvent financer des expéditions en bordure pour chercher une autre approche. Une IA autorisée envisage les expéditions dès son troisième ou quatrième tour, puis à chaque tour si des productions manquantes, un encerclement ou un retard de puissance le justifient. Elle évalue les frontières selon les climats visibles et leur potentiel de ressources manquantes ; les Poissons comptent comme Blé et l’Huile comme Charbon. Elle compare les directions de révélation pour approcher les ennemis proches, peut construire vers une frontière utile et financer l’exploration avant de renforcer ses réserves dès qu’elle possède une armée de base. La défense urgente des villes reste prioritaire. Elle ne consulte ni les terrains cachés ni les climats réservés. L’IA la plus puissante reste interdite d’expédition. L’artillerie peut attaquer les flottes. Facile, Standard et Difficile modifient l’étendue de la planification, pas les coûts, dés ou ressources gratuites.
+L’IA cherche à gagner seule, selon puissance publique, revenus, portée militaire et terrain. Elle protège les villes exposées, cherche les ressources utiles, développe ses industries, finance les outils pertinents et vise les combats gagnables ou pillages. Elle classe les cibles selon les stocks exposés, la production, la durée du siège et la puissance du propriétaire. Elle laisse de petits détachements aux sièges ou blocus et poursuit l’attaque avec les troupes restantes. Les forces proches renforcent les villes défendables ; face à un meneur impossible à contenir, une garnison peut laisser une garde de retardement et envoyer des pillards. L’investissement offensif augmente au milieu et en fin de partie. Les collecteurs avancés sont des cibles de raids navals importantes. Sans assaut terrestre viable, une armée peut quitter un blocus pour rejoindre des transports ou une frontière exploitable. Les transports permettent de contourner les voies terrestres bloquées ; les factions autorisées peuvent financer des expéditions en bordure pour chercher une autre approche. Une IA autorisée envisage les expéditions dès son troisième ou quatrième tour, puis à chaque tour si des productions manquantes, un encerclement ou un retard de puissance le justifient. Elle évalue les frontières selon les climats visibles et leur potentiel de ressources manquantes ; les Poissons et la Viande comptent comme Blé et l’Huile comme Charbon. Elle compare les directions de révélation pour approcher les ennemis proches, peut construire vers une frontière utile et financer l’exploration avant de renforcer ses réserves dès qu’elle possède une armée de base. La défense urgente des villes reste prioritaire. Elle ne consulte ni les terrains cachés ni les climats réservés. L’IA la plus puissante reste interdite d’expédition. L’artillerie peut attaquer les flottes. Facile, Standard et Difficile modifient l’étendue de la planification, pas les coûts, dés ou ressources gratuites.
 La pression contre le premier commence au-delà de 25 % ou six points d’avance, selon le plus grand seuil, puis monte fortement jusqu’au maximum à 1,8 fois le deuxième. Cela vise autant humains qu’IA. Les petites factions privilégient les revenus et villes exposés du premier, aident les voisins utiles par des échanges favorables et réduisent les attaques contre les autres petites factions. Elles évitent les assauts perdus d’avance puisque le gagnant ne subit pas de pertes militaires. Les priorités changent avec les puissances, sous réserve des engagements.
 ### Puissance publique et difficulté
 La puissance publique estime la capacité économique et militaire ; ce n’est ni un score de victoire ni la force exacte d’une armée. Le panneau des factions en détaille les composantes. La vitesse de l’IA change le délai entre actions, pas la difficulté ni les règles.
@@ -225,6 +271,8 @@ Le jeu sauvegarde automatiquement dans ce navigateur pour cette adresse. Exporte
 Choisissez English ou Français au menu principal ou dans les paramètres de campagne. La langue ne change que l’affichage, jamais carte, tirages ou règles de sauvegarde. Ce guide existe dans les deux langues. Cherchez un terme, consultez les coûts exacts du catalogue et manipulez les exemples de production et de siège. Vous pouvez imprimer le guide complet ou l’enregistrer en PDF depuis le navigateur.
 Afficher les climats, dans les commandes de carte, colore les zones climatiques. L’inspection d’une tuile indique son climat, sa famille de terrain et sa production complète.
 
+### Calendrier des saisons
+Cliquez sur la saison à côté du numéro de manche pour consulter l’année et les aperçus de paysages. Sélectionnez une tuile pour voir ses quatre périodes de récolte. Les étiquettes de la carte montrent les quantités de la saison actuelle ; zéro signifie hors saison, pas une perte de ressource.
 
 ## Tables climatiques
 
@@ -238,9 +286,15 @@ Poids des transitions : Steppe ×1, Méditerranéen ×1, Froid ×1,5, Tropical �
 
 |---|---|
 
-| Champs | 17% |
+| Champs | 9% |
 
-| Pré | 17% |
+| Champs de maïs | 4% |
+
+| Champs de seigle | 4% |
+
+| Pré | 9% |
+
+| Pâturage bovin | 8% |
 
 | Bois clairsemés | 17% |
 
@@ -280,9 +334,15 @@ Poids des transitions : Tempéré ×1, Steppe ×1, Arctique ×2, Océanique ×0,
 
 | Forêt | 30% |
 
-| Forêt de chasse | 10% |
+| Forêt de chasse | 6% |
 
-| Champs pauvres | 10% |
+| Pâturage de rennes | 4% |
+
+| Champs pauvres | 2% |
+
+| Champs d’orge | 5% |
+
+| Champs de seigle | 3% |
 
 | Pâturage pauvre | 5% |
 
@@ -320,7 +380,9 @@ Poids des transitions : Froid ×1, Alpin ×0,5
 
 |---|---|
 
-| Plaine enneigée | 40% |
+| Plaine enneigée | 35% |
+
+| Pâturage de rennes | 5% |
 
 | Chasse aux phoques | 15% |
 
@@ -356,9 +418,13 @@ Poids des transitions : Froid ×1,5, Tempéré ×1, Méditerranéen ×1, Désert
 
 |---|---|
 
-| Plaine de steppe | 40% |
+| Plaine de steppe | 34% |
 
-| Champs pauvres | 15% |
+| Élevage de savane | 6% |
+
+| Champs pauvres | 5% |
+
+| Champs de millet | 10% |
 
 | Pré | 10% |
 
@@ -396,7 +462,9 @@ Poids des transitions : Tempéré ×1, Steppe ×0,5, Désert ×0,5, Océanique �
 
 |---|---|
 
-| Champs | 5% |
+| Champs | 3% |
+
+| Champs d’orge | 2% |
 
 | Oliveraie | 20% |
 
@@ -404,7 +472,9 @@ Poids des transitions : Tempéré ×1, Steppe ×0,5, Désert ×0,5, Océanique �
 
 | Bois clairsemés | 5% |
 
-| Pâturage pauvre | 15% |
+| Pâturage pauvre | 10% |
+
+| Pâturage de chèvres | 5% |
 
 | Salt flats | 5% |
 
@@ -476,7 +546,9 @@ Poids des transitions : Tropical ×2, Méditerranéen ×1, Steppe ×1, Savane ×
 
 |---|---|
 
-| Désert | 30% |
+| Désert | 25% |
+
+| Pâturage de chèvres | 5% |
 
 | Montagnes d'or | 10% |
 
@@ -512,11 +584,17 @@ Poids des transitions : Tempéré ×2, Froid ×1, Méditerranéen ×1
 
 |---|---|
 
-| Pâturage côtier | 25% |
+| Pâturage côtier | 17% |
+
+| Pâturage bovin | 8% |
 
 | Bois clairsemés | 20% |
 
-| Champs pauvres | 10% |
+| Champs pauvres | 4% |
+
+| Champs d’orge | 4% |
+
+| Champs de seigle | 2% |
 
 | Champs | 5% |
 
@@ -560,9 +638,15 @@ Poids des transitions : Froid ×2, Arctique ×2, Tempéré ×1, Steppe ×1
 
 | Collines de charbon | 10% |
 
-| Pâturage alpin | 15% |
+| Pâturage alpin | 10% |
 
-| Champs pauvres | 10% |
+| Pâturage de chèvres | 5% |
+
+| Champs pauvres | 2% |
+
+| Champs d’orge | 5% |
+
+| Champs de seigle | 3% |
 
 | Forêt | 10% |
 
@@ -598,9 +682,13 @@ Poids des transitions : Tropical ×2, Tempéré ×1, Méditerranéen ×1, Savane
 
 | Berges argileuses | 25% |
 
-| Rizière | 20% |
+| Rizière | 15% |
 
-| Bois riverains | 20% |
+| Champs de maïs | 5% |
+
+| Bois riverains | 15% |
+
+| Pâturage bovin | 5% |
 
 | Jungle | 10% |
 
@@ -636,9 +724,13 @@ Poids des transitions : Tropical ×2, Désert ×1, Steppe ×1, Subtropical ×1
 
 |---|---|
 
-| Prairie à gibier | 35% |
+| Prairie à gibier | 30% |
 
-| Champs pauvres | 20% |
+| Élevage de savane | 5% |
+
+| Champs pauvres | 5% |
+
+| Champs de millet | 15% |
 
 | Bois secs | 10% |
 
@@ -752,7 +844,383 @@ Haute mer (sans terre adjacente) : tirage Baleines 6 % ; part effective 5.4 %. T
 
 | Bois secs | 1 Bois | forêt |
 
+| Champs d’orge | 1 Blé | plaine |
+
+| Champs de seigle | 1 Blé | plaine |
+
+| Champs de millet | 1 Blé | plaine |
+
+| Champs de maïs | 2 Blé | plaine |
+
+| Pâturage bovin | 2 Viande | plaine |
+
+| Pâturage de chèvres | 1 Viande | terrain accidenté |
+
+| Pâturage de rennes | 1 Viande + 1 Peaux | plaine |
+
+| Élevage de savane | 1 Viande + 1 Peaux | plaine |
+
 Pics rocheux : aucune production et aucune entrée d’unité, y compris par recrutement, repli ou débarquement. Les routes peuvent suivre leurs arêtes ; une agglomération exige une terre ferme praticable adjacente.
+
+## Tables complètes des récoltes saisonnières
+
+### Tempéré
+
+| Terrain | Printemps | Été | Automne | Hiver |
+
+|---|---|---|---|---|
+
+| Champs | 0 | 8 Blé | 0 | 0 |
+
+| Champs de maïs | 0 | 0 | 8 Blé | 0 |
+
+| Champs de seigle | 0 | 4 Blé | 0 | 0 |
+
+| Pré | 4 Laine | 4 Laine | 0 | 0 |
+
+| Pâturage bovin | 1 Viande | 1 Viande | 4 Viande | 2 Viande |
+
+| Bois clairsemés (Bois) | 1 Bois | 1 Bois | 2 Bois | 0 |
+
+| Bois clairsemés (Peaux) | 1 Peaux | 1 Peaux | 2 Peaux | 0 |
+
+| Montagnes d'or | 1 Or | 1 Or | 1 Or | 1 Or |
+
+| Collines d'argile | 1 Argile | 1 Argile | 1 Argile | 1 Argile |
+
+| Stone quarry | 1 Pierre | 1 Pierre | 1 Pierre | 1 Pierre |
+
+| Iron mountains | 1 Minerai | 1 Minerai | 1 Minerai | 1 Minerai |
+
+| Collines de charbon | 1 Charbon | 1 Charbon | 1 Charbon | 1 Charbon |
+
+| Salt flats | 1 Sel | 2 Sel | 1 Sel | 0 |
+
+| Zone de pêche | 1 Poissons | 2 Poissons | 1 Poissons | 0 |
+
+| Zone de Baleines | 0 | 1 Peaux + 1 Huile | 2 Peaux + 2 Huile | 1 Peaux + 1 Huile |
+
+### Froid
+
+| Terrain | Printemps | Été | Automne | Hiver |
+
+|---|---|---|---|---|
+
+| Forêt | 2 Bois | 2 Bois | 3 Bois | 1 Bois |
+
+| Forêt de chasse | 2 Peaux | 0 | 2 Peaux | 4 Peaux |
+
+| Pâturage de rennes | 1 Viande + 1 Peaux | 0 | 2 Viande + 2 Peaux | 1 Viande + 1 Peaux |
+
+| Champs pauvres | 0 | 0 | 4 Blé | 0 |
+
+| Champs d’orge | 0 | 0 | 4 Blé | 0 |
+
+| Champs de seigle | 0 | 4 Blé | 0 | 0 |
+
+| Pâturage pauvre | 2 Laine | 2 Laine | 0 | 0 |
+
+| Montagnes d'or | 1 Or | 2 Or | 1 Or | 0 |
+
+| Collines de charbon | 1 Charbon | 1 Charbon | 1 Charbon | 1 Charbon |
+
+| Iron mountains | 1 Minerai | 2 Minerai | 1 Minerai | 0 |
+
+| Stone quarry | 1 Pierre | 2 Pierre | 1 Pierre | 0 |
+
+| Collines d'argile | 1 Argile | 2 Argile | 1 Argile | 0 |
+
+| Zone de pêche | 1 Poissons | 2 Poissons | 1 Poissons | 0 |
+
+| Bancs de morue | 2 Poissons | 4 Poissons | 2 Poissons | 0 |
+
+| Zone de Baleines | 1 Peaux + 1 Huile | 2 Peaux + 2 Huile | 1 Peaux + 1 Huile | 0 |
+
+### Arctique
+
+| Terrain | Printemps | Été | Automne | Hiver |
+
+|---|---|---|---|---|
+
+| Plaine enneigée | 0 | 0 | 0 | 0 |
+
+| Pâturage de rennes | 1 Viande + 1 Peaux | 0 | 2 Viande + 2 Peaux | 1 Viande + 1 Peaux |
+
+| Chasse aux phoques | 2 Peaux + 2 Huile | 0 | 1 Peaux + 1 Huile | 1 Peaux + 1 Huile |
+
+| Montagnes de minerai arctiques | 1 Minerai | 2 Minerai | 1 Minerai | 0 |
+
+| Crête rocheuse arctique | 1 Pierre | 2 Pierre | 1 Pierre | 0 |
+
+| Montagnes aurifères arctiques | 1 Or | 2 Or | 1 Or | 0 |
+
+| Banquise | 0 | 0 | 0 | 0 |
+
+| Zone de pêche | 1 Poissons | 2 Poissons | 1 Poissons | 0 |
+
+| Bancs de morue | 2 Poissons | 4 Poissons | 2 Poissons | 0 |
+
+| Zone de Baleines | 1 Peaux + 1 Huile | 2 Peaux + 2 Huile | 1 Peaux + 1 Huile | 0 |
+
+### Steppe
+
+| Terrain | Printemps | Été | Automne | Hiver |
+
+|---|---|---|---|---|
+
+| Plaine de steppe | 1 Peaux + 2 Laine | 2 Laine | 1 Peaux | 2 Peaux |
+
+| Élevage de savane | 1 Viande + 1 Peaux | 0 | 2 Viande + 2 Peaux | 1 Viande + 1 Peaux |
+
+| Champs pauvres | 0 | 0 | 4 Blé | 0 |
+
+| Champs de millet | 0 | 0 | 4 Blé | 0 |
+
+| Pré | 4 Laine | 4 Laine | 0 | 0 |
+
+| Bois clairsemés (Bois) | 1 Bois | 1 Bois | 2 Bois | 0 |
+
+| Bois clairsemés (Peaux) | 1 Peaux | 1 Peaux | 2 Peaux | 0 |
+
+| Stone quarry | 1 Pierre | 1 Pierre | 1 Pierre | 1 Pierre |
+
+| Iron mountains | 1 Minerai | 1 Minerai | 1 Minerai | 1 Minerai |
+
+| Collines de charbon | 1 Charbon | 1 Charbon | 1 Charbon | 1 Charbon |
+
+| Collines d'argile | 1 Argile | 1 Argile | 1 Argile | 1 Argile |
+
+| Montagnes d'or | 1 Or | 1 Or | 1 Or | 1 Or |
+
+| Zone de pêche | 1 Poissons | 2 Poissons | 1 Poissons | 0 |
+
+| Zone de Baleines | 0 | 1 Peaux + 1 Huile | 2 Peaux + 2 Huile | 1 Peaux + 1 Huile |
+
+### Méditerranéen
+
+| Terrain | Printemps | Été | Automne | Hiver |
+
+|---|---|---|---|---|
+
+| Champs | 0 | 8 Blé | 0 | 0 |
+
+| Champs d’orge | 0 | 4 Blé | 0 | 0 |
+
+| Oliveraie | 0 | 0 | 2 Blé | 2 Blé |
+
+| Escarpement | 1 Pierre | 1 Pierre | 1 Pierre | 1 Pierre |
+
+| Bois clairsemés (Bois) | 1 Bois | 1 Bois | 2 Bois | 0 |
+
+| Bois clairsemés (Peaux) | 1 Peaux | 1 Peaux | 2 Peaux | 0 |
+
+| Pâturage pauvre | 2 Laine | 2 Laine | 0 | 0 |
+
+| Pâturage de chèvres | 1 Viande | 0 | 2 Viande | 1 Viande |
+
+| Salt flats | 1 Sel | 2 Sel | 1 Sel | 0 |
+
+| Montagnes d'or | 1 Or | 1 Or | 1 Or | 1 Or |
+
+| Collines de charbon | 1 Charbon | 1 Charbon | 1 Charbon | 1 Charbon |
+
+| Iron mountains | 1 Minerai | 1 Minerai | 1 Minerai | 1 Minerai |
+
+| Zone de pêche | 1 Poissons | 1 Poissons | 1 Poissons | 1 Poissons |
+
+| Zone de Baleines | 0 | 1 Peaux + 1 Huile | 2 Peaux + 2 Huile | 1 Peaux + 1 Huile |
+
+### Tropical
+
+| Terrain | Printemps | Été | Automne | Hiver |
+
+|---|---|---|---|---|
+
+| Jungle | 1 Peaux | 0 | 2 Peaux | 1 Peaux |
+
+| Bois tropicaux | 1 Bois | 0 | 1 Bois | 2 Bois |
+
+| Rizière | 4 Blé | 4 Blé | 4 Blé | 0 |
+
+| Collines d'argile | 1 Argile | 0 | 1 Argile | 2 Argile |
+
+| Montagnes d'or | 1 Or | 1 Or | 1 Or | 1 Or |
+
+| Stone quarry | 1 Pierre | 1 Pierre | 1 Pierre | 1 Pierre |
+
+| Collines de charbon | 1 Charbon | 1 Charbon | 1 Charbon | 1 Charbon |
+
+| Iron mountains | 1 Minerai | 1 Minerai | 1 Minerai | 1 Minerai |
+
+| Salt flats | 1 Sel | 0 | 1 Sel | 2 Sel |
+
+| Zone de pêche | 1 Poissons | 1 Poissons | 1 Poissons | 1 Poissons |
+
+| Zone de Baleines | 0 | 1 Peaux + 1 Huile | 2 Peaux + 2 Huile | 1 Peaux + 1 Huile |
+
+### Désert
+
+| Terrain | Printemps | Été | Automne | Hiver |
+
+|---|---|---|---|---|
+
+| Désert | 0 | 0 | 0 | 0 |
+
+| Pâturage de chèvres | 1 Viande | 0 | 2 Viande | 1 Viande |
+
+| Montagnes d'or | 1 Or | 1 Or | 1 Or | 1 Or |
+
+| Iron mountains | 1 Minerai | 1 Minerai | 1 Minerai | 1 Minerai |
+
+| Stone quarry | 1 Pierre | 1 Pierre | 1 Pierre | 1 Pierre |
+
+| Collines de charbon | 1 Charbon | 1 Charbon | 1 Charbon | 1 Charbon |
+
+| Oasis | 1 Bois | 1 Bois | 1 Bois + 4 Blé | 1 Bois |
+
+| Salt flats | 1 Sel | 2 Sel | 1 Sel | 0 |
+
+| Zone de pêche | 1 Poissons | 1 Poissons | 1 Poissons | 1 Poissons |
+
+| Zone de Baleines | 0 | 1 Peaux + 1 Huile | 2 Peaux + 2 Huile | 1 Peaux + 1 Huile |
+
+### Océanique
+
+| Terrain | Printemps | Été | Automne | Hiver |
+
+|---|---|---|---|---|
+
+| Pâturage côtier | 4 Laine | 4 Laine | 0 | 0 |
+
+| Pâturage bovin | 1 Viande | 1 Viande | 4 Viande | 2 Viande |
+
+| Bois clairsemés (Bois) | 1 Bois | 1 Bois | 2 Bois | 0 |
+
+| Bois clairsemés (Peaux) | 1 Peaux | 1 Peaux | 2 Peaux | 0 |
+
+| Champs pauvres | 0 | 0 | 4 Blé | 0 |
+
+| Champs d’orge | 0 | 4 Blé | 0 | 0 |
+
+| Champs de seigle | 0 | 4 Blé | 0 | 0 |
+
+| Champs | 0 | 0 | 8 Blé | 0 |
+
+| Collines d'argile | 1 Argile | 1 Argile | 1 Argile | 1 Argile |
+
+| Falaises côtières | 1 Pierre | 1 Pierre | 1 Pierre | 1 Pierre |
+
+| Collines de charbon | 1 Charbon | 1 Charbon | 1 Charbon | 1 Charbon |
+
+| Iron mountains | 1 Minerai | 1 Minerai | 1 Minerai | 1 Minerai |
+
+| Montagnes d'or | 1 Or | 1 Or | 1 Or | 1 Or |
+
+| Zone de pêche | 1 Poissons | 2 Poissons | 1 Poissons | 0 |
+
+| Bancs de morue | 2 Poissons | 4 Poissons | 2 Poissons | 0 |
+
+| Zone de Baleines | 0 | 1 Peaux + 1 Huile | 2 Peaux + 2 Huile | 1 Peaux + 1 Huile |
+
+### Alpin
+
+| Terrain | Printemps | Été | Automne | Hiver |
+
+|---|---|---|---|---|
+
+| Carrière de montagne | 2 Pierre | 4 Pierre | 2 Pierre | 0 |
+
+| Iron mountains | 1 Minerai | 2 Minerai | 1 Minerai | 0 |
+
+| Collines de charbon | 1 Charbon | 1 Charbon | 1 Charbon | 1 Charbon |
+
+| Pâturage alpin | 2 Laine | 2 Laine | 0 | 0 |
+
+| Pâturage de chèvres | 1 Viande | 0 | 2 Viande | 1 Viande |
+
+| Champs pauvres | 0 | 0 | 4 Blé | 0 |
+
+| Champs d’orge | 0 | 0 | 4 Blé | 0 |
+
+| Champs de seigle | 0 | 4 Blé | 0 | 0 |
+
+| Forêt | 2 Bois | 2 Bois | 3 Bois | 1 Bois |
+
+| Montagnes d'or | 1 Or | 2 Or | 1 Or | 0 |
+
+| Collines d'argile | 1 Argile | 2 Argile | 1 Argile | 0 |
+
+| Pics rocheux | 0 | 0 | 0 | 0 |
+
+| Zone de pêche | 1 Poissons | 2 Poissons | 1 Poissons | 0 |
+
+| Bancs de morue | 2 Poissons | 4 Poissons | 2 Poissons | 0 |
+
+| Zone de Baleines | 1 Peaux + 1 Huile | 2 Peaux + 2 Huile | 1 Peaux + 1 Huile | 0 |
+
+### Subtropical
+
+| Terrain | Printemps | Été | Automne | Hiver |
+
+|---|---|---|---|---|
+
+| Berges argileuses | 2 Argile | 0 | 2 Argile | 4 Argile |
+
+| Rizière | 0 | 6 Blé | 6 Blé | 0 |
+
+| Champs de maïs | 0 | 0 | 8 Blé | 0 |
+
+| Bois riverains | 1 Bois | 0 | 1 Bois | 2 Bois |
+
+| Pâturage bovin | 1 Viande | 1 Viande | 4 Viande | 2 Viande |
+
+| Jungle | 1 Peaux | 0 | 2 Peaux | 1 Peaux |
+
+| Stone quarry | 1 Pierre | 1 Pierre | 1 Pierre | 1 Pierre |
+
+| Collines de charbon | 1 Charbon | 1 Charbon | 1 Charbon | 1 Charbon |
+
+| Iron mountains | 1 Minerai | 1 Minerai | 1 Minerai | 1 Minerai |
+
+| Salt flats | 1 Sel | 0 | 1 Sel | 2 Sel |
+
+| Montagnes d'or | 1 Or | 1 Or | 1 Or | 1 Or |
+
+| Zone de pêche | 1 Poissons | 1 Poissons | 1 Poissons | 1 Poissons |
+
+| Zone de Baleines | 0 | 1 Peaux + 1 Huile | 2 Peaux + 2 Huile | 1 Peaux + 1 Huile |
+
+### Savane
+
+| Terrain | Printemps | Été | Automne | Hiver |
+
+|---|---|---|---|---|
+
+| Prairie à gibier | 2 Peaux | 0 | 4 Peaux | 2 Peaux |
+
+| Élevage de savane | 1 Viande + 1 Peaux | 0 | 2 Viande + 2 Peaux | 1 Viande + 1 Peaux |
+
+| Champs pauvres | 0 | 0 | 4 Blé | 0 |
+
+| Champs de millet | 0 | 0 | 4 Blé | 0 |
+
+| Bois secs | 1 Bois | 0 | 1 Bois | 2 Bois |
+
+| Pâturage pauvre | 1 Laine | 1 Laine | 1 Laine | 1 Laine |
+
+| Iron mountains | 1 Minerai | 1 Minerai | 1 Minerai | 1 Minerai |
+
+| Collines d'argile | 1 Argile | 1 Argile | 1 Argile | 1 Argile |
+
+| Stone quarry | 1 Pierre | 1 Pierre | 1 Pierre | 1 Pierre |
+
+| Montagnes d'or | 1 Or | 1 Or | 1 Or | 1 Or |
+
+| Salt flats | 1 Sel | 2 Sel | 1 Sel | 0 |
+
+| Zone de pêche | 1 Poissons | 1 Poissons | 1 Poissons | 1 Poissons |
+
+| Zone de Baleines | 0 | 1 Peaux + 1 Huile | 2 Peaux + 2 Huile | 1 Peaux + 1 Huile |
 
 ## Tous les coûts
 
@@ -925,6 +1393,10 @@ Les coûts concernent chaque construction ou étape. La Tour de guet I propose d
 | Pêcherie | 1 Laine + 1 Sel |
 
 | Pêcherie II | 2 Tissu + 1 Planches |
+
+| Élevage | 1 Pierre + 1 Minerai |
+
+| Élevage II | 1 Planches + 1 Acier |
 
 | Orfèvrerie I | 2 Minerai + 1 Charbon + 1 Pierre |
 

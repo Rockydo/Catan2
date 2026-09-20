@@ -1,3 +1,10 @@
+import {
+  seasonAt,
+  seasonalYield,
+  seasonalWorkshopBase,
+  frozenInSeason,
+  type Season,
+} from "./seasons";
 import { solidAtVertex, canOccupy } from "./world";
 import { friendly } from "./relations";
 import {
@@ -39,6 +46,7 @@ import {
   distance,
   vertexNeighbors,
   landAtVertex,
+  walkableAtVertex,
   waterAtVertex,
   unknownAtVertex,
 } from "./world";
@@ -101,7 +109,12 @@ export const hostileAt = (
   tile: string,
   p = s.active,
   naval?: boolean,
-) => piecesAt(s, tile, naval).some((u) => !friendly(s, u.owner, p));
+) => combatantsAt(s, tile, naval).some((u) => !friendly(s, u.owner, p));
+/** A stranded force can be engaged from the tile's current movement surface. */
+export const combatantsAt = (s: Game, tile: string, naval?: boolean) =>
+  piecesAt(s, tile).filter(
+    (u) => naval === undefined || u.naval === naval || !!u.seasonStatus,
+  );
 export const navalBlockAt = (s: Game, tile: string, p = s.active) =>
   piecesAt(s, tile, true).some(
     (u) => !friendly(s, u.owner, p) && !isSettler(u.kind),
@@ -119,7 +132,10 @@ export const protects = (s: Game, t: Town) =>
     ),
   );
 export const ready = (s: Game, u: Piece) =>
-  u.born < s.players[u.owner].turns && !u.acted && !u.carrier;
+  u.born < s.players[u.owner].turns &&
+  !u.acted &&
+  !u.carrier &&
+  u.seasonStatus !== "icebound";
 export const fresh = (s: Game, u: Piece) => ready(s, u) && u.moved === 0;
 export const points = (u: Piece) =>
   u.naval
@@ -167,6 +183,7 @@ export function bombardmentTargets(s: Game, ids: string[]): string[] {
   const units = ids.map((id) => s.pieces[id]);
   if (
     !units.length ||
+    !canOccupy(s.tiles[units[0]?.tile], false) ||
     units.some(
       (u) =>
         !u ||
@@ -181,7 +198,8 @@ export function bombardmentTargets(s: Game, ids: string[]): string[] {
     return [];
   return neighbors(units[0].tile).filter(
     (tile) =>
-      s.tiles[tile]?.resource === "water" && hostileAt(s, tile, s.active, true),
+      ["water", "ice"].includes(s.tiles[tile]?.resource) &&
+      piecesAt(s, tile, true).some((u) => !friendly(s, u.owner, s.active)),
   );
 }
 export function minCasualties(units: Piece[], loss: number): number {
@@ -304,12 +322,18 @@ export function retreatOptions(
   owner: number,
   naval: boolean,
   origin?: string,
+  units?: Piece[],
 ) {
   return neighbors(tile).filter(
     (n) =>
       n !== origin &&
-      canOccupy(s.tiles[n], naval) &&
-      !hostileAt(s, n, owner, naval),
+      (units?.length
+        ? units.every(
+            (u) =>
+              canOccupy(s.tiles[n], u.naval) &&
+              !hostileAt(s, n, u.owner, u.naval),
+          )
+        : canOccupy(s.tiles[n], naval) && !hostileAt(s, n, owner, naval)),
   );
 }
 export function settlementSites(
@@ -402,7 +426,7 @@ export function canRoute(
     e.tiles.some((t) =>
       kind === "road"
         ? blockAt(s, t, p)
-        : hostileAt(s, t, p, s.tiles[t].resource === "water"),
+        : hostileAt(s, t, p, canOccupy(s.tiles[t], true)),
     )
   )
     return false;
@@ -469,7 +493,12 @@ export function nearestTown(
   cache?.set(key, best);
   return best;
 }
-export function productionSources(s: Game) {
+export function productionSources(
+  s: Game,
+  mode: "current" | "annual" | Season = "current",
+) {
+  const season =
+    mode === "current" ? seasonAt(s) : mode === "annual" ? undefined : mode;
   const out: {
     owner: number;
     town: Town;
@@ -487,7 +516,13 @@ export function productionSources(s: Game) {
         town.extensionGoods?.[id] ?? tileGood(s.tiles[id], town.owner);
       if (!good || blocked(id, town.owner)) continue;
       for (const [raw, amount] of Object.entries(
-        harvestYield(s.tiles[id], town.owner, town.level, true),
+        harvestYield(
+          s.tiles[id],
+          town.owner,
+          town.level,
+          true,
+          seasonalYield(s.tiles[id], town.owner, season),
+        ),
       ))
         out.push({
           owner: town.owner,
@@ -507,6 +542,7 @@ export function productionSources(s: Game) {
             town.owner,
             good,
             town.extensions[id],
+            seasonalWorkshopBase(s.tiles[id], town.owner, good, season),
           ),
         });
     }
@@ -516,7 +552,7 @@ export function productionSources(s: Game) {
         town = nearestTown(s, id, r.owner);
       if (good && town && !blocked(id, r.owner))
         for (const [raw, amount] of Object.entries(
-          tileYield(s.tiles[id], r.owner),
+          seasonalYield(s.tiles[id], r.owner, season),
         ))
           out.push({
             owner: r.owner,
@@ -526,8 +562,26 @@ export function productionSources(s: Game) {
             amount: tier * amount!,
           });
     }
+  const harvestWorld =
+    mode !== "current" && s.calendar
+      ? Object.assign(Object.create(s), {
+          tiles: Object.fromEntries(
+            Object.entries(s.tiles).map(([id, tile]) => [
+              id,
+              tile.resource === "water" || tile.resource === "ice"
+                ? {
+                    ...tile,
+                    surface: frozenInSeason(tile, season)
+                      ? ("frozen" as const)
+                      : ("open" as const),
+                  }
+                : tile,
+            ]),
+          ),
+        })
+      : s;
   for (const u of Object.values(s.pieces)) {
-    const tiles = harvestTiles(s, u);
+    const tiles = harvestTiles(harvestWorld, u);
     if (!tiles.length) continue;
     const town = nearestTown(s, u.tile, u.owner);
     if (!town) continue;
@@ -535,7 +589,13 @@ export function productionSources(s: Game) {
       const good = tileGood(s.tiles[id]);
       if (good && (u.kind !== "fishing" || !blocked(id, u.owner)))
         for (const [raw, amount] of Object.entries(
-          harvestYield(s.tiles[id], u.owner, u.tier, u.kind !== "fishing"),
+          harvestYield(
+            s.tiles[id],
+            u.owner,
+            u.tier,
+            u.kind !== "fishing",
+            seasonalYield(s.tiles[id], u.owner, season),
+          ),
         ))
           out.push({
             owner: u.owner,
@@ -546,7 +606,7 @@ export function productionSources(s: Game) {
           });
     }
   }
-  return out;
+  return out.filter((source) => source.amount > 0);
 }
 // AI evaluations repeatedly inspect the same immutable state and player views.
 // Cache only inside one decision, so UI reads and mutable test fixtures stay fresh.
@@ -603,7 +663,7 @@ export function income(s: Game, p = s.active): Stock {
       number,
       Stock
     >;
-    for (const source of productionSources(s)) {
+    for (const source of productionSources(s, "annual")) {
       const out = all[source.owner];
       out[source.good] =
         (out[source.good] ?? 0) +
@@ -617,17 +677,19 @@ export function income(s: Game, p = s.active): Stock {
 export function recipePayment(s: Game, cost: Stock, p = s.active): Stock {
   const stock = inventory(s, p),
     out = { ...cost };
-  for (const [base, alternate] of Object.entries(RAW_SUBSTITUTES) as [
+  for (const [base, alternates] of Object.entries(RAW_SUBSTITUTES) as [
     Good,
-    Raw,
+    readonly Raw[],
   ][]) {
-    const used = Math.min(
-      Math.max(0, (stock[alternate] ?? 0) - (cost[alternate] ?? 0)),
-      Math.max(0, (cost[base] ?? 0) - (stock[base] ?? 0)),
-    );
-    if (used) {
-      out[base] = (out[base] ?? 0) - used;
-      out[alternate] = (out[alternate] ?? 0) + used;
+    for (const alternate of alternates) {
+      const used = Math.min(
+        Math.max(0, (stock[alternate] ?? 0) - (out[alternate] ?? 0)),
+        Math.max(0, (out[base] ?? 0) - (stock[base] ?? 0)),
+      );
+      if (used) {
+        out[base] = (out[base] ?? 0) - used;
+        out[alternate] = (out[alternate] ?? 0) + used;
+      }
     }
   }
   // Reserve any explicitly requested currency before covering other shortages.
@@ -671,6 +733,7 @@ export function bankRate(
       const e = s.edges[id];
       if (
         !e.harbor ||
+        !e.tiles.some((t) => canOccupy(s.tiles[t], true)) ||
         e.tiles.some(
           (t) => s.tiles[t].resource === "water" && navalBlockAt(s, t, p),
         )
@@ -700,7 +763,8 @@ export function expeditionSites(
   );
   return Object.keys(s.vertices).filter((v) => {
     if (!unknownAtVertex(s, v).length) return false;
-    const tileIds = kind === "land" ? landAtVertex(s, v) : waterAtVertex(s, v);
+    const tileIds =
+      kind === "land" ? walkableAtVertex(s, v) : waterAtVertex(s, v);
     if (
       !tileIds.length ||
       tileIds.some((t) => hostileAt(s, t, p, kind === "sea"))

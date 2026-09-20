@@ -1,4 +1,11 @@
 import { colonistAction, colonistProjects } from "./ai-colonization";
+import {
+  seasonalDestinationSafe,
+  seasonalDiversityBonus,
+  seasonalEvacuation,
+  seasonalRescueWaiting,
+  withSeasonalPlanning,
+} from "./ai-seasonal";
 import { isSettler } from "./content";
 import { canChooseWoods } from "./selectors";
 import { allianceResponder, friendly, emergencyTarget } from "./relations";
@@ -99,6 +106,7 @@ import {
   affordable,
   effectiveCost,
   piecesAt,
+  combatantsAt,
   hostileAt,
   blockAt,
   points,
@@ -137,13 +145,20 @@ export function marginalValues(s: Game, p = s.active): Record<Good, number> {
     const raw = RAW.includes(g as Raw),
       base = raw ? 1 : 3.5,
       need = ["lumber", "brick", "grain", "ore", "wool"].includes(g) ? 1.5 : 1,
-      alternate = RAW_SUBSTITUTES[g],
-      production = (inc[g] ?? 0) + (alternate ? (inc[alternate] ?? 0) : 0),
-      held = (stock[g] ?? 0) + (alternate ? (stock[alternate] ?? 0) : 0);
+      alternates = RAW_SUBSTITUTES[g] ?? [],
+      production = alternates.reduce(
+        (n, raw) => n + (inc[raw] ?? 0),
+        inc[g] ?? 0,
+      ),
+      held = alternates.reduce(
+        (n, raw) => n + (stock[raw] ?? 0),
+        stock[g] ?? 0,
+      );
     values[g] =
       (base * need * (1 + 1 / (1 + 7 * production))) / (1 + held / 18);
   }
   values.fish = values.grain;
+  values.meat = values.grain;
   values.oil = values.coal;
   const rawBest = Math.max(
     ...RAW.filter((g) => g !== "gold").map((g) => values[g]),
@@ -213,6 +228,13 @@ export function shouldAcceptTrade(s: Game): boolean {
 }
 
 function check(s: Game, c: Command) {
+  if (
+    c.type === "move" &&
+    c.to &&
+    c.ids?.length &&
+    !seasonalDestinationSafe(s, c.to, s.pieces[c.ids[0]]?.naval ?? false)
+  )
+    return false;
   return canApplyCommand(s, c);
 }
 function armyGroups(
@@ -227,6 +249,7 @@ function armyGroups(
       (collector(u) &&
         !(emergencyTarget(s, p) !== undefined && u.naval && points(u) > 0)) ||
       isSettler(u.kind) ||
+      seasonalRescueWaiting(s, u) ||
       (mobileOnly && speed(u) + u.bonus - u.moved < 1) ||
       (freshOnly ? !fresh(s, u) : !ready(s, u))
     )
@@ -525,7 +548,7 @@ export function expansionPaths(
             s,
             t,
             s.active,
-            cur.kind === "route" && s.tiles[t].resource === "water",
+            cur.kind === "route" && canOccupy(s.tiles[t], true),
           ),
         )
       )
@@ -584,7 +607,13 @@ export function economyProjects(s: Game): Project[] {
     enemyFleets = [
       ...new Set(
         Object.values(s.pieces)
-          .filter((u) => u.naval && warTarget(s, u.owner))
+          .filter(
+            (u) =>
+              (u.naval || !!u.seasonStatus) &&
+              !u.carrier &&
+              warTarget(s, u.owner) &&
+              canOccupy(s.tiles[u.tile], true),
+          )
           .map((u) => u.tile),
       ),
     ],
@@ -764,7 +793,7 @@ export function economyProjects(s: Game): Project[] {
           .reduce((n, u) => n + u.tier * 2, 0) <=
           power(
             s,
-            piecesAt(s, water, true).filter(
+            combatantsAt(s, water, true).filter(
               (u) => !friendly(s, u.owner, s.active),
             ),
             water,
@@ -920,7 +949,7 @@ export function economyProjects(s: Game): Project[] {
                 ...commerceTargets.map((water) =>
                   power(
                     s,
-                    piecesAt(s, water, true).filter(
+                    combatantsAt(s, water, true).filter(
                       (u) => !friendly(s, u.owner, s.active),
                     ),
                     water,
@@ -1115,9 +1144,7 @@ export function economyProjects(s: Game): Project[] {
       if (
         !tileGood(tile) ||
         (tile.resource === "water" && r.kind !== "route") ||
-        (tile.resource === "water"
-          ? hostileAt(s, id, s.active, true)
-          : blockAt(s, id)) ||
+        hostileAt(s, id, s.active, canOccupy(tile, true)) ||
         (r.camps[id] ?? 0) >= 2
       )
         continue;
@@ -1164,7 +1191,10 @@ export function economyProjects(s: Game): Project[] {
         enemies.some((u) => distance(u.tile, id) < 3),
       );
       const score =
-        ((yieldScore * 50) / (1 + route.cost * 0.45) +
+        ((yieldScore *
+          (1 + seasonalDiversityBonus(s, s.vertices[v].tiles)) *
+          50) /
+          (1 + route.cost * 0.45) +
           10 / (1 + towns.length * 0.12)) *
           drive -
         (nearEnemy ? 8 / drive : 0);
@@ -1885,7 +1915,7 @@ function invasionCoasts(s: Game, excludeLand?: string): string[] {
   const result = Object.values(s.tiles)
     .filter(
       (t) =>
-        t.resource === "water" &&
+        canOccupy(t, true) &&
         neighbors(t.id).some(
           (id) =>
             region.has(id) &&
@@ -2086,7 +2116,11 @@ function collectorMove(s: Game): Command | null {
     const current = score(u.tile),
       targets = moveTargets(s, [u.id]);
     const best = Object.keys(targets)
-      .filter((id) => !hostileAt(s, id, u.owner, u.naval))
+      .filter(
+        (id) =>
+          !hostileAt(s, id, u.owner, u.naval) &&
+          seasonalDestinationSafe(s, id, u.naval),
+      )
       .map((tile) => ({
         tile,
         score: score(tile) - targets[tile].length * 0.08,
@@ -2123,6 +2157,8 @@ function continueTowerSiege(s: Game): Command | null {
   return null;
 }
 function chooseMilitary(s: Game): Command {
+  const evacuation = seasonalEvacuation(s);
+  if (evacuation) return evacuation;
   const emergency = emergencyTarget(s) !== undefined;
   const colony = emergency ? undefined : colonistAction(s);
   if (colony) return colony;
@@ -2180,7 +2216,7 @@ function chooseMilitary(s: Game): Command {
   }
   // An allied blockade already denies the same production; spread out instead.
   const denialAt = (tile: string, moving: Piece[]) =>
-    piecesAt(s, tile, s.tiles[tile].resource === "water").some(
+    combatantsAt(s, tile, canOccupy(s.tiles[tile], true)).some(
       (u) =>
         !moving.some((v) => v.id === u.id) &&
         !warTarget(s, u.owner) &&
@@ -2239,8 +2275,8 @@ function chooseMilitary(s: Game): Command {
       tile = units[0].tile;
     if (!units[0].naval) {
       // Embark only when a reachable overseas objective has no land path.
-      for (const sea of neighbors(tile).filter(
-        (id) => s.tiles[id]?.resource === "water",
+      for (const sea of neighbors(tile).filter((id) =>
+        canOccupy(s.tiles[id], true),
       )) {
         const ships = piecesAt(s, sea, true).filter(
           (u) => u.owner === s.active && fresh(s, u),
@@ -2459,7 +2495,13 @@ function chooseMilitary(s: Game): Command {
               ),
             )
           : Object.values(s.pieces)
-              .filter((u) => u.naval && warTarget(s, u.owner))
+              .filter(
+                (u) =>
+                  (u.naval || !!u.seasonStatus) &&
+                  !u.carrier &&
+                  warTarget(s, u.owner) &&
+                  canOccupy(s.tiles[u.tile], true),
+              )
               .map((u) => u.tile);
         if (
           !passengers.length &&
@@ -2477,7 +2519,7 @@ function chooseMilitary(s: Game): Command {
             .flatMap((u) =>
               neighbors(u.tile).filter(
                 (w) =>
-                  s.tiles[w]?.resource === "water" &&
+                  canOccupy(s.tiles[w], true) &&
                   pathTo(s, origin, w, true, s.active) !== null,
               ),
             );
@@ -2530,7 +2572,13 @@ function chooseMilitary(s: Game): Command {
           ...[
             ...new Set(
               Object.values(s.pieces)
-                .filter((u) => !u.naval && !u.carrier && warTarget(s, u.owner))
+                .filter(
+                  (u) =>
+                    (!u.naval || !!u.seasonStatus) &&
+                    !u.carrier &&
+                    warTarget(s, u.owner) &&
+                    canOccupy(s.tiles[u.tile], false),
+                )
                 .map((u) => u.tile),
             ),
           ].filter(
@@ -2538,7 +2586,7 @@ function chooseMilitary(s: Game): Command {
               power(s, group, tile) >
               power(
                 s,
-                piecesAt(s, tile, false).filter(
+                combatantsAt(s, tile, false).filter(
                   (v) => !friendly(s, v.owner, s.active),
                 ),
                 tile,
@@ -2583,7 +2631,7 @@ function chooseMilitary(s: Game): Command {
         ]),
       ].filter((target) => {
         if (target === origin) return false;
-        const foes = piecesAt(s, target, naval).filter(
+        const foes = combatantsAt(s, target, naval).filter(
           (u) => !friendly(s, u.owner, s.active),
         );
         return (
@@ -2630,7 +2678,7 @@ function chooseMilitary(s: Game): Command {
                 Object.keys(r.camps).some((id) => near.includes(id)),
             )
             .map((r) => leaderPressure(s, r.owner)),
-          ...piecesAt(s, target, naval)
+          ...combatantsAt(s, target, naval)
             .filter((u) => warTarget(s, u.owner) && collector(u))
             .map(
               (u) =>
@@ -2783,7 +2831,7 @@ function chooseMilitary(s: Game): Command {
         }
       }
       for (const [to, path] of Object.entries(targets)) {
-        const foes = piecesAt(s, to, naval).filter(
+        const foes = combatantsAt(s, to, naval).filter(
           (u) => !friendly(s, u.owner, s.active),
         );
         const winning =
@@ -2977,7 +3025,9 @@ function chooseMilitary(s: Game): Command {
 }
 
 export function chooseAIAction(s: Game): Command {
-  return withPlanningFrame(s, () => chooseAction(s));
+  return withSeasonalPlanning(() =>
+    withPlanningFrame(s, () => chooseAction(s)),
+  );
 }
 function chooseAction(s: Game): Command {
   if (s.battle) {
@@ -3003,6 +3053,7 @@ function chooseAction(s: Game): Command {
       b.loser,
       b.naval,
       b.origin,
+      losers.filter((u) => !ids.includes(u.id)),
     ).sort(
       (a, b) =>
         power(
@@ -3063,7 +3114,8 @@ function chooseAction(s: Game): Command {
                     0,
                   )
               );
-            }, 0) +
+            }, 0) *
+              (1 + seasonalDiversityBonus(s, s.vertices[v].tiles)) +
             new Set(landAtVertex(s, v).map((id) => s.tiles[id].resource)).size *
               0.055,
         }))

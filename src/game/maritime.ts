@@ -2,7 +2,7 @@ import { BIOME_INFO } from "./climate-content";
 import { TERRAIN, processedFor, type TerrainKey } from "./content";
 import { friendly } from "./relations";
 import type { Game, Hex, Piece, Raw, Stock, Watchtower } from "./types";
-import { neighbors, vertexNeighbors, solidAtVertex } from "./world";
+import { neighbors, vertexNeighbors, solidAtVertex, canOccupy } from "./world";
 
 /** Per-producer output: Woods choices belong to factions, never to the shared tile owner. */
 export function tileYield(
@@ -28,9 +28,10 @@ export function harvestYield(
   owner: number,
   tier: number,
   refines = false,
+  yield_: Stock = tileYield(tile, owner),
 ): Stock {
   const output: Stock = {};
-  for (const [raw, amount] of Object.entries(tileYield(tile, owner))) {
+  for (const [raw, amount] of Object.entries(yield_)) {
     output[raw as Raw] = amount! * tier;
     if (refines && tier >= 3) {
       const processed = processedFor(raw as Raw);
@@ -45,12 +46,13 @@ export function workshopYield(
   owner: number,
   raw: Raw,
   tier: number,
+  seasonalBase?: number,
 ): number {
   const base =
     tile.biome === "woods" && (raw === "lumber" || raw === "hides")
       ? 1
       : (tileYield(tile, owner)[raw] ?? 0);
-  return base * tier;
+  return (seasonalBase ?? base) * tier;
 }
 export const tileGood = (tile: Hex, owner?: number): Raw | undefined =>
   tileGoods(tile, owner)[0];
@@ -65,7 +67,12 @@ export const tileTerrain = (tile: Hex): TerrainKey =>
         ? "whale"
         : "water"
     : tile.resource);
-export const terrainFamily = (tile: Hex) => TERRAIN[tileTerrain(tile)].family;
+export const terrainFamily = (tile: Hex) =>
+  tile.surface === "frozen"
+    ? "flat"
+    : tile.surface === "open"
+      ? "water"
+      : TERRAIN[tileTerrain(tile)].family;
 export const terrainName = (tile: Hex) => TERRAIN[tileTerrain(tile)].name;
 export const marineResource = (tile: Hex) =>
   tile.resource === "water" &&
@@ -107,7 +114,7 @@ export function harvestTiles(
     const { id, depth } = queue[i];
     if (depth >= u.tier) continue;
     for (const next of neighbors(id)) {
-      if (reached.has(next) || s.tiles[next]?.resource !== "water") continue;
+      if (reached.has(next) || !canOccupy(s.tiles[next], true)) continue;
       reached.add(next);
       queue.push({ id: next, depth: depth + 1 });
     }

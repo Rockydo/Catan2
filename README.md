@@ -37,7 +37,8 @@ Choose **English** or **Français** on the main menu or in campaign settings. Th
 
 - Classic: 5 factions on 125 initial tiles. Grand campaign: 10 factions on 250 tiles.
 - Eleven climate zones determine terrain and water probabilities. Terrain numbers and shortages vary by seed. Expeditions extend the map without changing existing tiles.
-- Twelve raw resources and ten processed goods. Cities, camps, collectors and guilds provide different ways to grow.
+- Thirteen raw resources and ten processed goods. Cities, camps, collectors and guilds provide different ways to grow.
+- Four seasons change harvests, landscapes and sea ice. Crop calendars and livestock provide different ways to manage food supply.
 - Four tiers of military units and ships, transport, raids, sieges, watchtowers and alliances.
 - Single-tier Settlers and Settler ships found towns without a connected road. Their price includes the settlement; select the unit and use **Found settlement**.
 - Four research tiers, with eight cards each. Buy a choice of two random cards and keep one.
@@ -65,6 +66,8 @@ npx playwright install chromium firefox
 npm run test:e2e         # Chromium, Firefox and mobile-browser checks
 npm run test:soak        # Seeded AI campaigns (5 factions by default)
 npm run test:stress      # Larger-map stress checks
+npx tsx scripts/seasons-audit.ts          # Two years over all eleven climates
+npx tsx scripts/seasons-audit.ts --stress # All seasons on maps up to 2,500 tiles
 FACTIONS=10 SEEDS=1 ROUNDS=40 npm run test:soak  # Grand campaign audit
 npm run format:check
 npm run docs            # Refresh both Markdown rule references
@@ -95,6 +98,18 @@ This is an independent fan project, not an official Catan product or an endorsem
 
 ## Climate maps
 
-New campaigns use eleven climates and 40 terrain types. Select a tile for its climate and base production, or use **Show climates** in the map controls. The **Map and dice** rules chapter has interactive tables with all land and water probabilities.
+New campaigns use eleven climates and 48 terrain types. Select a tile for its climate and base production, or use **Show climates** in the map controls. The **Map and dice** rules chapter has interactive tables with all land and water probabilities.
 
 Towns, camps and collectors multiply the terrain’s base yield. Woods let each faction choose Wood or Hides during its action phase. Frozen sea carries land units, blocks ships and cannot support permanent construction without solid ground. Bare Peaks are impassable to all units; roads can follow their edges, but towns need adjacent walkable solid land. Existing saves retain their revealed terrain and yields; newly explored tiles use climate generation.
+
+## Seasons and food
+
+One complete round of faction turns advances the season: Spring, Summer, Autumn, Winter. The calendar beside the turn controls shows current production and lets you preview seasonal artwork. Selecting a tile shows its exact yields in all four seasons. Previewing a season does not advance the game.
+
+Crops only produce during their harvest seasons, and still need their dice number to roll. Wheat, rye, barley, maize and millet have one harvest window; olives and subtropical rice have two; tropical rice has three. A harvest window pays on every matching roll. For each tile and each resource, the four seasonal yields add up to four times its printed annual yield. Output is more variable, but its annual dice expectation is unchanged. Cities, camps, extensions and collectors apply their normal multipliers to those seasonal yields.
+
+Cattle, goats and reindeer produce Meat. Recipes continue to show Grain: payments use available Grain, then Fish, then Meat, with Gold covering any remaining shortage. Meat refines into Provisions. Nothing spoils, and seasons add no food upkeep.
+
+Cold, Arctic and Alpine seas freeze in Winter. Land units can cross frozen water; ships trapped there wait for thaw. The original Frozen sea terrain also thaws in Summer. Land units caught on thawed water can escape to adjacent land or board a transport. No unit is automatically destroyed by a season change. Frozen water never becomes a foundation for permanent buildings. Ports need adjacent open water to provide their trade rate.
+
+Existing campaigns keep their terrain, stores and dice numbers. When an older save first loads this update, seasons begin in Spring at the next full round, so the current round finishes under its existing production rules. New campaigns begin in Spring. Newly explored land can include the new crops and livestock.

@@ -146,7 +146,7 @@ describe("second edition economy", () => {
       }
     }
     for (const g of GOODS.filter(
-      (g) => !["fish", "oil", "gold", "goldbars"].includes(g),
+      (g) => !["fish", "meat", "oil", "gold", "goldbars"].includes(g),
     ))
       expect(recipes.filter(([, c]) => c[g]).length).toBeGreaterThanOrEqual(3);
   });

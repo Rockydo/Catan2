@@ -12,6 +12,7 @@ import { neighbors, canOccupy } from "./world";
 import { rule, log, addStock } from "./economy";
 import {
   piecesAt,
+  combatantsAt,
   ready,
   fresh,
   speed,
@@ -61,6 +62,7 @@ export function selected(
   return units;
 }
 export function setTile(s: Game, u: Piece, tile: string) {
+  if (tile !== u.tile) delete u.seasonStatus;
   if (u.tile !== tile) delete u.coverage;
   u.tile = tile;
   if (u.naval)
@@ -170,9 +172,15 @@ export function resolveBattle(s: Game, c: Command) {
   const remaining = losers.filter((u) => !ids.includes(u.id));
   const options =
     b.loser === b.defender
-      ? retreatOptions(s, b.target, b.defender, b.naval, b.origin).filter(
-          (tile) =>
-            remaining.every((u) => !hostileAt(s, tile, u.owner, b.naval)),
+      ? retreatOptions(
+          s,
+          b.target,
+          b.defender,
+          b.naval,
+          b.origin,
+          remaining,
+        ).filter((tile) =>
+          remaining.every((u) => !hostileAt(s, tile, u.owner, b.naval)),
         )
       : [];
   if (remaining.length && b.loser === b.defender && options.length)
@@ -306,7 +314,7 @@ export function militaryCommand(s: Game, c: Command): boolean {
     );
     const target = c.to,
       origin = path.length > 1 ? path[path.length - 2] : units[0].tile,
-      defenders = piecesAt(s, target, units[0].naval).filter(
+      defenders = combatantsAt(s, target, units[0].naval).filter(
         (u) => !friendly(s, u.owner, s.active),
       );
     defenders.sort(
@@ -590,7 +598,9 @@ export function militaryCommand(s: Game, c: Command): boolean {
     const units = selected(s, c.ids, true, false),
       ships = selected(s, c.ships, true, true);
     rule(
-      neighbors(units[0].tile).includes(ships[0].tile),
+      neighbors(units[0].tile).includes(ships[0].tile) ||
+        (units[0].tile === ships[0].tile &&
+          units.every((u) => u.seasonStatus === "adrift")),
       "Carriers must be on adjacent water.",
     );
     const berths = ships.reduce(
@@ -611,6 +621,7 @@ export function militaryCommand(s: Game, c: Command): boolean {
           shipStats(v.kind as ShipClass, v.tier).capacity,
       )!;
       u.carrier = ship.id;
+      delete u.seasonStatus;
       delete u.coverage;
       u.tile = ship.tile;
       u.acted = true;

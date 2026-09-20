@@ -26,7 +26,6 @@ import {
   points,
   recipePayment,
 } from "./selectors";
-import { waterAtVertex } from "./world";
 
 export const GUILD_KINDS: GuildKind[] = [
   "prospectors",
@@ -201,7 +200,13 @@ export function guildPlacementError(
   kind: GuildKind,
 ): string | undefined {
   if (town.level < 2) return "Upgrade to City I to establish a guild.";
-  if (kind === "navigators" && !waterAtVertex(s, town.vertex).length)
+  // A permanent coastal guild remains valid when its harbor freezes.
+  if (
+    kind === "navigators" &&
+    !s.vertices[town.vertex].tiles.some((id) =>
+      ["water", "ice"].includes(s.tiles[id].resource),
+    )
+  )
     return "Navigators need a coastal city.";
   if (extractionGuild(kind) && !extractionTiles(s, town, kind).length)
     return `${GUILDS[kind].name} needs adjacent ${extractionGoods(kind)

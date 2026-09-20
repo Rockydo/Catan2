@@ -1,4 +1,5 @@
 import { syncEmergencyCoalition } from "./emergency-coalition";
+import { frozenInSeason, seasonAt, syncSeasonSurfaces } from "./seasons";
 import {
   CLIMATES,
   CLIMATE_INFO,
@@ -41,6 +42,13 @@ import {
 export const SAVE_KEY = "catane-frontiers-save-v1";
 export const BACKUP_KEY = "catane-frontiers-backup-v1";
 export function assertInvariants(s: Game) {
+  if (s.calendar)
+    rule(
+      Number.isSafeInteger(s.calendar.startRound) &&
+        s.calendar.startRound >= 1 &&
+        s.calendar.startRound <= s.round + 1,
+      "Invalid seasonal calendar.",
+    );
   rule(
     s && s.version === 5 && [4, 5].includes(s.generation),
     "This save version is unsupported.",
@@ -277,6 +285,13 @@ export function assertInvariants(s: Game) {
           compatibleClimate(t.climate, s.tiles[adjacent].climate!),
           "Incompatible neighboring climates.",
         );
+    if (t.surface !== undefined)
+      rule(
+        !!s.calendar &&
+          ["water", "ice"].includes(t.resource) &&
+          t.surface === (frozenInSeason(t, seasonAt(s)) ? "frozen" : "open"),
+        "Invalid seasonal sea surface.",
+      );
     int(t.number, 2, 12);
     rule(t.resource !== "fish", "Fish must remain water terrain.");
     rule(
@@ -611,6 +626,18 @@ export function assertInvariants(s: Game) {
       rule(!!s.tiles[u.campaign.target], "Invalid campaign destination.");
     }
     bool(u.acted);
+    if (u.seasonStatus !== undefined)
+      rule(
+        !!s.calendar &&
+          !u.carrier &&
+          (u.seasonStatus === "icebound"
+            ? u.naval && s.tiles[u.tile].surface === "frozen"
+            : u.seasonStatus === "adrift" &&
+              !u.naval &&
+              s.tiles[u.tile].surface === "open" &&
+              ["water", "ice"].includes(s.tiles[u.tile].resource)),
+        "Invalid stranded unit state.",
+      );
     if (u.guildSupplied !== undefined) bool(u.guildSupplied);
     if (u.guildSiege !== undefined) {
       int(u.guildSiege, 2, 6);
@@ -632,7 +659,7 @@ export function assertInvariants(s: Game) {
       );
     } else {
       rule(
-        canOccupy(s.tiles[u.tile], u.naval),
+        canOccupy(s.tiles[u.tile], u.naval) || !!u.seasonStatus,
         "A unit is on impassable terrain.",
       );
       rule(
@@ -907,8 +934,8 @@ export function assertInvariants(s: Game) {
     if (b.bombardment)
       rule(
         b.naval &&
-          s.tiles[b.origin].resource !== "water" &&
-          s.tiles[b.target].resource === "water" &&
+          canOccupy(s.tiles[b.origin], false) &&
+          ["water", "ice"].includes(s.tiles[b.target].resource) &&
           neighbors(b.origin).includes(b.target) &&
           b.attackers.length > 0 &&
           b.defenders.length > 0 &&
@@ -952,7 +979,7 @@ export function serialize(s: Game): string {
   const body = JSON.stringify(s);
   return JSON.stringify({
     format: "catane-frontiers",
-    version: 8,
+    version: 9,
     savedAt: new Date().toISOString(),
     checksum: hash(body).toString(16),
     game: s,
@@ -964,7 +991,7 @@ export function deserialize(text: string): Game {
   rule(
     data &&
       data.format === "catane-frontiers" &&
-      [1, 2, 3, 4, 5, 6, 7, 8].includes(data.version) &&
+      [1, 2, 3, 4, 5, 6, 7, 8, 9].includes(data.version) &&
       data.game,
     "This is not a supported Catane save.",
   );
@@ -1191,6 +1218,14 @@ export function deserialize(text: string): Game {
     for (const tile of Object.values((data.game as Game).tiles))
       tile.climate ??= "temperate";
   if (data.game.phase === "military") data.game.phase = "economy";
+  if (data.version < 9) {
+    data.game.calendar = {
+      startRound: data.game.phase.startsWith("setup")
+        ? data.game.round
+        : data.game.round + 1,
+    };
+    syncSeasonSurfaces(data.game);
+  }
   assertInvariants(data.game);
   // Never silently redirect an old standing order to a different good.
   for (const town of Object.values((data.game as Game).towns))

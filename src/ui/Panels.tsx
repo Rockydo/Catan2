@@ -1,3 +1,5 @@
+import { seasonAt, seasonalYield, seasonalWorkshopBase } from "../game/seasons";
+import { TileSeasonForecast } from "./SeasonCalendar";
 import { CLIMATE_INFO } from "../game/climate-content";
 import { canChooseWoods } from "../game/selectors";
 import { localize as tx, useLocale } from "../i18n";
@@ -106,6 +108,7 @@ import {
   waterAtVertex,
   neighbors,
   expeditionFootprint,
+  canOccupy,
 } from "../game/world";
 import {
   Cost,
@@ -214,7 +217,10 @@ export function DetailHeader({
                     : t.resource === "ice"
                       ? "Walkable ice. No production. Ships cannot enter."
                       : "No resources. Land units can cross."
-                : `${tileGoods(t, viewer)
+                : `${seasonAt(s) ? "Annual average: " : ""}${tileGoods(
+                    t,
+                    viewer,
+                  )
                     .map(
                       (good) =>
                         `${tileYield(t, viewer)[good]} ${GOOD_INFO[good].name}`,
@@ -224,6 +230,7 @@ export function DetailHeader({
                     )} · rolls on ${t.number} · ${(((6 - Math.abs(t.number - 7)) / 36) * 100).toFixed(1)}% chance`,
             )}
           </p>
+          <TileSeasonForecast game={s} tile={t} owner={viewer} />
         </div>
       );
   }
@@ -233,6 +240,16 @@ export function DetailHeader({
       <span className="eyebrow">
         {tx(harbor ? "COASTAL TRADE" : "ROUTE INFRASTRUCTURE")}
       </span>
+      {harbor &&
+        !s.edges[selection.id].tiles.some((id) =>
+          canOccupy(s.tiles[id], true),
+        ) && (
+          <p className="season-force-warning">
+            {tx(
+              "Frozen port: improved rates resume after the thaw. Ordinary reserve trading remains available.",
+            )}
+          </p>
+        )}
       <h2>
         {tx(
           harbor
@@ -468,7 +485,7 @@ function BuildPanel({
                                   )
                                     .map(
                                       (good) =>
-                                        `${tier * (tileYield(s.tiles[id], route.owner)[good] ?? 0)} ${GOOD_INFO[good].name}`,
+                                        `${tier * (seasonalYield(s.tiles[id], route.owner, seasonAt(s))[good] ?? 0)} ${GOOD_INFO[good].name}`,
                                     )
                                     .join(" + ")} per roll`
                                 : "Not built",
@@ -669,7 +686,7 @@ function BuildPanel({
                               {tx(GOOD_INFO[processedFor(raw)].name)} ·{tx(" ")}
                               {tx(
                                 current
-                                  ? `Tier ${ROMAN[current]} · +${workshopYield(t, town.owner, raw, current)} per roll`
+                                  ? `Tier ${ROMAN[current]} · +${workshopYield(t, town.owner, raw, current, seasonalWorkshopBase(t, town.owner, raw, seasonAt(s)))} per roll`
                                   : "Not built",
                               )}
                             </small>
@@ -786,6 +803,11 @@ function ForcesPanel({
     units = tile ? piecesAt(s, tile) : [],
     mine = units.filter((u) => u.owner === viewer),
     selected = unitIds.map((id) => s.pieces[id]).filter(Boolean),
+    actingNaval =
+      selected[0]?.naval ??
+      mine.find((u) => ready(s, u))?.naval ??
+      units[0]?.naval ??
+      false,
     ids = selected.filter((u) => u.owner === s.active).map((u) => u.id),
     adjTowns = tile
       ? Object.values(s.towns).filter((t) =>
@@ -832,7 +854,7 @@ function ForcesPanel({
         tile && units.length > 0 ? (
           <>
             <SectionTitle>
-              {tx(units[0].naval ? "Fleet" : "Army")}
+              {tx(actingNaval ? "Fleet" : "Army")}
               {tx(" at ")}
               {tx(tile)}
             </SectionTitle>
@@ -1047,7 +1069,7 @@ function ForcesPanel({
                   {tx(
                     adjTowns
                       .filter(
-                        (t) => !friendly(s, t.owner, viewer) && !units[0].naval,
+                        (t) => !friendly(s, t.owner, viewer) && !actingNaval,
                       )
                       .map((t) => {
                         const siege = s.sieges[`${viewer}:${t.id}`],
@@ -1140,13 +1162,25 @@ function ForcesPanel({
                       }),
                   )}
                   {tx(
-                    !units[0].naval &&
-                      neighbors(tile)
+                    !actingNaval &&
+                      [
+                        ...(mine.some(
+                          (u) => !u.naval && u.seasonStatus === "adrift",
+                        )
+                          ? [tile]
+                          : []),
+                        ...neighbors(tile),
+                      ]
                         .filter(
                           (w) =>
-                            s.tiles[w]?.resource === "water" &&
+                            canOccupy(s.tiles[w], true) &&
                             piecesAt(s, w, true).some(
-                              (u) => u.owner === viewer,
+                              (u) =>
+                                u.owner === viewer &&
+                                ready(s, u) &&
+                                u.moved === 0 &&
+                                shipStats(u.kind as ShipClass, u.tier)
+                                  .capacity > 0,
                             ),
                         )
                         .map((w) => (
@@ -1170,7 +1204,7 @@ function ForcesPanel({
                         )),
                   )}
                   {tx(
-                    units[0].naval && (
+                    actingNaval && (
                       <>
                         <button
                           className="secondary full"
@@ -1213,7 +1247,7 @@ function ForcesPanel({
                       .filter(
                         (r) =>
                           s.edges[r.edge].tiles.includes(tile) &&
-                          (r.kind === "route") === units[0].naval,
+                          (r.kind === "route") === actingNaval,
                       )
                       .map((r) => (
                         <ActionButton
@@ -1263,7 +1297,12 @@ function ForcesPanel({
                         onChange={(e) =>
                           setUnitIds(
                             e.target.checked
-                              ? [...unitIds, u.id]
+                              ? [
+                                  ...unitIds.filter(
+                                    (id) => s.pieces[id]?.naval === u.naval,
+                                  ),
+                                  u.id,
+                                ]
                               : unitIds.filter((id) => id !== u.id),
                           )
                         }
@@ -1275,15 +1314,19 @@ function ForcesPanel({
                           {s.players[u.owner].name} · {tx(points(u))}
                           {tx(" power")}
                           {tx(
-                            u.carrier
-                              ? " · aboard"
-                              : u.born >= s.players[u.owner].turns
-                                ? " · new"
-                                : u.acted
-                                  ? " · spent"
-                                  : u.moved
-                                    ? ` · moved ${u.moved}`
-                                    : " · ready",
+                            u.seasonStatus === "icebound"
+                              ? " · icebound"
+                              : u.seasonStatus === "adrift"
+                                ? " · adrift"
+                                : u.carrier
+                                  ? " · aboard"
+                                  : u.born >= s.players[u.owner].turns
+                                    ? " · new"
+                                    : u.acted
+                                      ? " · spent"
+                                      : u.moved
+                                        ? ` · moved ${u.moved}`
+                                        : " · ready",
                           )}
                         </small>
                       </span>
@@ -1727,7 +1770,7 @@ function ExplorePanel({
   useLocale();
 
   const [kind, setKind] = useState<"land" | "sea">(
-      selection?.type === "tile" && s.tiles[selection.id]?.resource === "water"
+      selection?.type === "tile" && canOccupy(s.tiles[selection.id], true)
         ? "sea"
         : "land",
     ),

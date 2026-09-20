@@ -11,12 +11,12 @@ A town means either a settlement or a city. Losing your last town eliminates you
 Choose Classic (5 factions, 125 tiles) or Grand campaign (10 factions, 250 tiles).
 - In player order, each faction places one settlement and one adjoining road or sea route.
 - Repeat in reverse player order. Each faction now has two settlements and two route pieces.
-- The second settlement receives the full printed yield of every adjacent productive tile. For example, Golden fields give 2 Grain and a Whale tile gives 1 Hides plus 1 Oil. Woods initially give Wood. Start with no troops or processed goods.
+- The second settlement receives the full baseline yield of every adjacent productive tile. For example, Golden fields give 2 Grain and a Whale tile gives 1 Hides plus 1 Oil. Woods initially give Wood. Ignore the starting season for these setup resources. Start with no troops or processed goods.
 Each settlement must touch at least one walkable solid land tile. Bare Peaks and Frozen sea do not qualify. At least one empty intersection must separate any two settlements, regardless of owner.
 ### Turn sequence
-- Production: roll two independent six-sided dice. All factions collect production from tiles whose number matches the total. Seven produces normally. There is no robber, discard or stock limit.
+- Production: roll two independent six-sided dice. All factions collect the current seasonal production from tiles whose number matches the total. Seven produces normally. There is no robber, discard or stock limit.
 - Actions: build, trade, recruit, move, fight, raid, explore, buy research and play cards in any order. Raided goods are immediately available to spend.
-- End turn: pass to the next surviving faction. A round is complete when every surviving faction has had a turn.
+- End turn: pass to the next surviving faction. A round is complete when every surviving faction has had a turn. The season then advances.
 Held research cards may also be played before rolling, if their conditions allow it. There is no separate military phase.
 ### Construction access
 Camps add raw production along routes. City I doubles each adjacent tile’s printed raw yield and unlocks workshops. A coastal town can build mobile ships; the available tier depends on its level. Research and guilds provide additional effects and resource exchanges. See the relevant chapters for costs and requirements.
@@ -28,13 +28,13 @@ Goods are stored in individual towns but spent from a common pool. Armies can ra
 
 ### Climate generation
 The initial map contains 125 tiles in Classic or 250 in Grand campaign. Climate is assigned before terrain. Pick a random starting tile and one of eleven climates with equal probability. Grow outward through neighbors. If all assigned immediate neighbors agree, retain that climate with 85% probability. On a switch, intersect the compatible climates of assigned immediate neighbors only. Destination weights start at 1. From the seven original climates, newly compatible Oceanic, Alpine, Subtropical and Savanna destinations have weight 0.5. Temperate and Steppe favor Cold at 1.5. Mediterranean gives Steppe and Desert weight 0.5. Tropical to Desert, Desert to Tropical and Cold to Arctic have weight 2. Oceanic favors Temperate at 2; Alpine favors Cold and Arctic at 2 each; Subtropical and Savanna favor Tropical at 2. Eligible weights are normalized for each draw. The 85% continuity chance is unchanged. At mixed borders, prefer an existing adjacent compatible climate. If no candidate exists, copy an immediate neighbor.
-Before rolling terrain, a final repair pass leaves intermediate compatible climates as buffer zones where needed. Adjacent climates are always compatible. Climate reservations include an unseen collar, so future expeditions cannot create incompatible seams. Revealed terrain never changes. The same seed and discovery sequence reproduce the same world. Different expedition sequences may extend climate zones differently.
+Before rolling terrain, a final repair pass leaves intermediate compatible climates as buffer zones where needed. Adjacent climates are always compatible. Climate reservations include an unseen collar, so future expeditions cannot create incompatible seams. The underlying terrain never changes. Its appearance, yield and sea surface follow the seasonal calendar. The same seed and discovery sequence reproduce the same world. Different expedition sequences may extend climate zones differently.
 Choose land or water using that climate’s ratio, then use its terrain table below. Land percentages are conditional on rolling land. Water checks run in the listed order on remaining water only; the first success ends the sequence. Water tiles with no adjacent land double their climate’s Whale check chance. Fish, Cod and Frozen sea checks stay unchanged and run first. Frozen sea does not count as land. Hidden neighbors use their reserved climates and land rolls; the map edge alone does not qualify as open water. Gold frequency varies by climate. No resource, climate, port, continent or balanced start is guaranteed.
 Temperate, Tropical and Desert use 50% land. Cold and Subtropical use 55%, Steppe 65%, Arctic and Mediterranean 40%, Oceanic 35%, Alpine 75% and Savanna 70%. Steppe and Desert are mutually compatible, as are all other listed borders. Oasis food means Grain.
 ### Climate overview
 Use the Climates button beside the map zoom controls to show only climate colors. The legend counts revealed tiles in each climate. Pan, zoom and select tiles as usual; press Climates again to restore the normal map.
 ### Barren terrain, peaks and ice
-Snow plains and Desert produce nothing and have no workshop or camp. Armies can cross them and build normally beside them. Frozen sea is generated by the Arctic water roll. It produces nothing, admits land units and blocks ships. Permanent towns, towers and roads require adjacent solid ground; no route can be built on an edge bordered only by ice. An ice-water edge without land can hold a sea route. Frozen sea never melts.
+Snow plains and Desert produce nothing and have no workshop or camp. Armies can cross them and build normally beside them. Frozen sea is generated by the Arctic water roll. It produces nothing, admits land units and blocks ships. Permanent towns, towers and roads require adjacent solid ground; no route can be built on an edge bordered only by ice. An ice-water edge without land can hold a sea route. Frozen sea opens in Summer and refreezes in Autumn. Other Cold, Alpine and Arctic water freezes in Winter. See Seasons and harvests for trapped units, winter ports and construction rules.
 Bare Peaks produce nothing and are impassable to every unit. Units cannot move through them, recruit onto them, retreat onto them or disembark onto them. Roads may follow their edges under the normal connection rules, including an edge between two peaks. Towns and watchtowers need at least one adjacent walkable solid land tile. No camp or workshop can use Bare Peaks.
 ### Existing campaigns
 Revealed tiles retain their terrain, yields and assigned climate. Saves made before climates existed classify those older tiles as Temperate for future climate borders. Newly explored tiles can use all eleven climates. Start a new campaign to use the new terrain tables throughout the map.
@@ -45,20 +45,66 @@ Eligible fully revealed coastal edges have a 10% port-candidate chance. Ports re
 ### Setup restrictions
 An extreme map may lack enough legal starting sites. The game rejects a seed with insufficient legal starting sites. During setup a placement cannot make it impossible to finish everyone's two settlements. A missing resource alone does not invalidate a map: the reserve can supply it through trade.
 
+## Seasons and harvests
+
+### Calendar
+One complete round is one season. Every surviving faction takes its turn before the next season begins. The sequence is Spring, Summer, Autumn, Winter; four rounds make one year. New campaigns start in Spring. Seasons never change halfway through a round.
+The calendar beside the round number shows the current season and year. Open it to review the next season and preview landscapes. A preview changes artwork only: movement, production and legal actions still use the current season. Select a tile for its four-season production table.
+### Dice and harvest windows
+A tile produces only when its number is rolled during a productive season. Every matching roll pays, even if that tile has already produced in the same season. There is no once-per-year harvest limit, guaranteed harvest, replacement roll or compensation. Off-season matching rolls produce nothing. Dice remain two independent six-sided dice.
+For each resource, the four seasonal amounts add up to four times its annual baseline. The average annual output is unchanged for the same producers and number of rolls. Timing is less reliable: Golden fields produce 8 Grain per settlement on each matching Summer roll, and zero in the other seasons. If their number never appears that Summer, the harvest is lost.
+### Crop types
+- Golden fields: Summer harvest, 8 Grain. In Oceanic climate, the harvest is in Autumn instead.
+- Rough fields: Autumn harvest, 4 Grain.
+- Barley: Summer harvest, 4 Grain; Cold and Alpine barley harvest in Autumn.
+- Rye: Summer harvest, 4 Grain. It complements later crops in Cold and Alpine regions.
+- Millet: Autumn harvest, 4 Grain. Found in Steppe and Savanna.
+- Maize: Autumn harvest, 8 Grain. Found in Temperate and Subtropical regions.
+- Tropical rice: 4 Grain in Spring, Summer and Autumn; zero in Winter. Subtropical rice: 6 Grain in Summer and Autumn, zero otherwise.
+- Olive groves: 2 Grain in Autumn and Winter. Oasis food: 4 Grain in Autumn; Oasis Wood remains available year-round.
+These are harvest seasons, not an automatic delivery at the season boundary. All crop types produce the same Grain card. Generation tables and the illustrated calendar give each climate’s exact mix.
+### Livestock and Meat
+Cattle pasture produces 1/1/4/2 Meat in Spring/Summer/Autumn/Winter. Goat pasture produces 1/0/2/1 Meat. Reindeer range and Cattle range produce both Meat and Hides; each resource has its own seasonal schedule. Consult the calendar for both outputs.
+Meat is a raw resource. Recipes still print Grain: pay Grain first, then Fish, then Meat at 1:1 to cover any shortfall. Gold covers any remaining missing raw goods. Explicit trades use the named goods. Meat workshops and advanced city or merchant production make Rations, without consuming the raw harvest.
+Pastures continue to produce Wool. In temperate and colder regions, shearing occurs in Spring and Summer; Tropical, Subtropical, Savanna and Desert wool is spread across all four seasons. Livestock has no feeding cost or upkeep. Food and other stored goods never spoil.
+### Other seasonal industries
+Wood, hunting, salt production and clay work vary by climate. Cold forests retain a small Winter timber harvest. Tropical logging and clay extraction favor drier seasons. Salt production favors dry weather. Hides and Oil on the same animal tile can have different seasonal outputs; both are collected.
+Mild-climate mines and quarries remain steady. Cold, Alpine and Arctic mines and quarries favor Summer and stop in Winter; Coal stays available year-round. These reliable goods remain useful when food harvests are uncertain.
+Fish and Cod in Temperate, Cold, Arctic, Oceanic and Alpine climates produce at 1×/2×/1×/0× their baseline from Spring to Winter. Warmer-climate fish remains steady all year. Cold-climate Whales use 1×/2×/1×/0×; other Whales use 0×/1×/2×/1×. Multiply both Hides and Oil. Seal grounds produce in Spring, Autumn and Winter. The illustrated table shows every exact quantity.
+### Production multipliers
+Towns multiply each seasonal raw output by their level: 1/2/3/4. Camps multiply it by camp tier: 1/2. Merchants, merchant ships and fishing ships multiply by unit tier. Normal blockades and harvest coverage still apply.
+Town levels 3 and 4 and merchant tiers III and IV also add 1× and 2× every seasonal raw component as its processed good. A level-4 town beside Summer Golden fields produces 32 Grain plus 16 Rations per matching roll. A tier-II Bakery adds another 16 Rations. Nothing is deducted from the Grain harvest.
+An extension multiplies its linked resource’s seasonal amount by its own tier. A Woods workshop keeps its chosen raw resource, even when the faction changes the tile’s ordinary harvest choice. No seasonal output means no automatic processed output.
+Guild contracts are separate paid actions. Their printed inputs and outputs do not change with the season; they can supply goods between dice harvests. Existing stored raw goods can still be refined through Artisans. Starting resources from the second setup settlement use baseline yields, so Spring setup is not penalized.
+### Sea ice and thaw
+All water in Cold, Alpine and Arctic climates freezes in Winter. Arctic Frozen sea tiles also remain frozen in Spring and Autumn and open only in Summer. Other seas stay navigable. The forecast is deterministic, with no hidden freezing roll.
+Land units can enter frozen water. Ships can enter open water. Frozen water stops fishing coverage through that hex and gives no Winter marine harvest. A frozen port loses its improved trading rate until open water returns; ordinary reserve trading still works. Ship recruitment and sea expeditions require open water.
+Ice never becomes solid land for construction. Towns and towers need permanent solid land; roads need a genuine land side. Existing sea routes remain sea routes. Existing camps and buildings are not destroyed by freezing or thawing. Camps may be built in Winter under their normal connection rules, but only produce in their harvest seasons.
+### Units caught by a surface change
+A ship caught by freezing becomes icebound. It stays in place with its passengers and cannot act until thaw. Land units may attack an enemy icebound fleet on that frozen hex using normal combat.
+Land units caught by thaw stay on a drifting ice floe. They are not killed or teleported. They may step onto adjacent land or frozen water, or board a friendly transport on the same or an adjacent hex, subject to normal capacity and activation rules. They cannot walk across open water. Enemy fleets may attack them normally. A trapped unit can retreat only to terrain its unit type can legally occupy.
+Move ships out of freezing regions and bring troops ashore before a surface change. A stranded force with no rescue route may remain trapped until the next suitable season.
+### AI and existing saves
+AI values durable production by its annual mean, so seasonal spikes do not artificially change strategic strength. Trading uses upcoming harvests and stockpiles; expansion considers complementary crop seasons. The AI also plans winter berths and rescues stranded troops.
+Existing campaigns keep all terrain, dice numbers, units and stored goods. Their first Spring starts at the next complete round, preserving the current round. Newly explored land can contain the new crop and livestock types. Seasonal production then applies to old and new tiles alike.
+### Artwork preview
+Select a season in the calendar to preview its landscape, then pan and inspect the map normally. The badge shows the preview and the season whose rules still apply. Return to current season or press Escape to leave the preview. Any successful game command also restores the current landscape. Production forecasts and movement rules never change during a preview.
+
+
 ## Goods, storage and trade
 
 ### Production and storage
-There are twelve raw goods and ten processed goods. Towns receive each adjacent matching tile’s printed output multiplied by town level. Golden fields give 2/4/6/8 Grain at town levels 1/2/3/4; Rice fields give 3/6/9/12. Both goods on a dual-output tile are multiplied. Town levels 3 and 4 (City II and City III) also add 1× and 2× the base tile yield as processed goods on each matching tile, without an extension. This bonus is flat, regardless of the tile’s raw yield. A level-4 town beside Golden fields receives 8 Grain + 2 Rations; beside Steppe plain it receives 4 Hides + 4 Wool + 2 Leather + 2 Cloth. Extensions add processed output without consuming or reducing the raw harvest. All players produce on every roll. New buildings and collectors can produce on the next matching roll.
+There are thirteen raw goods and ten processed goods. On a matching roll, towns receive each adjacent tile’s current seasonal output multiplied by town level. All goods of a multi-resource tile are multiplied. Off-season output is zero. Town levels 3 and 4 also add 1× and 2× every seasonal raw component as its processed good, without an extension. In Summer, a level-4 town beside Golden fields receives 32 Grain plus 16 Rations. The bonus scales with the tile’s yield. Extensions add their own processed output without consuming or reducing the raw harvest. All factions produce on every roll. New buildings and collectors can produce on the next matching roll. See Seasons and harvests for the full calendar.
 ### Storage destinations
 Town output stays in that town. Camps and mobile collectors send goods to the nearest owned town, using hex distance to its adjacent land and oldest town ID to break ties. Future output changes destination when towns change; old stocks stay where they are. Trades and research rewards enter your home store, the oldest surviving town. Raids use the operating army's hex to find their destination.
 ### Paying costs
 All warehouses form one spending pool, even during a siege. Each good is debited proportionally across towns, using whole-card largest remainders and town ID for ties. Stores with 8 and 2 Grain pay a five-Grain cost as 4 and 1. You cannot freely relocate a warehouse, choose a sole paying town or change your home store.
-### Fish, Oil and Gold
-Recipes show Grain and Coal. Pay Grain first, then substitute missing Grain with Fish at 1:1. Pay Coal first, then substitute missing Coal with Oil at 1:1. After these substitutions, each missing raw resource is paid with 1 Gold and each missing processed good with 1 Gold bar. Resources named in the recipe are spent first; Gold and bars explicitly required by a recipe are reserved before covering shortages. This also applies to discounted recipes, guild construction and non-trade guild orders. Gold does not automatically cover processed goods, and bars do not automatically cover raw goods; use reserve trades for those conversions. Explicit player trades, reserve trades, merchant contracts and research exchanges spend exactly the offered goods, without automatic substitution.
+### Food substitutes, Oil and Gold
+Recipes show Grain and Coal. Pay Grain first, then Fish, then Meat to cover missing Grain at 1:1. Pay Coal first, then substitute missing Coal with Oil at 1:1. After these substitutions, each missing raw resource is paid with 1 Gold and each missing processed good with 1 Gold bar. Resources named in the recipe are spent first; Gold and bars explicitly required by a recipe are reserved before covering shortages. This also applies to discounted recipes, guild construction and non-trade guild orders. Gold does not automatically cover processed goods, and bars do not automatically cover raw goods; use reserve trades for those conversions. Explicit player trades, reserve trades, merchant contracts and research exchanges spend exactly the offered goods, without automatic substitution.
 ### Gold exchange rates
-Gold has its own reserve rates: 1 Gold buys 1 raw good; 2 Gold buy 1 processed good. One Gold bar buys 2 raw goods of one type or 1 processed good. These rates need no port. Goldsmiths produce Gold bars. Grain and Fish both make Rations; Coal and Oil both make Fuel through Artisans. Whale-linked extensions make Leather, not Oil or Fuel.
+Gold has its own reserve rates: 1 Gold buys 1 raw good; 2 Gold buy 1 processed good. One Gold bar buys 2 raw goods of one type or 1 processed good. These rates need no port. Goldsmiths produce Gold bars. Grain, Fish and Meat all make Rations; Coal and Oil both make Fuel through Artisans. Whale-linked extensions make Leather. Automatic advanced city production also makes Fuel from every harvested Oil.
 ### Trading
-Only trades involving the active player are allowed. All 22 goods can be offered in explicit quantities. No gifts, same-good wash trades, buildings or research cards can be traded. AI offers appear as dismissible prompts. Public stockpiles, production, scarcity and each AI's planned needs affect its valuation; bank prices do not fluctuate.
+Only trades involving the active player are allowed. All 23 goods can be offered in explicit quantities. No gifts, same-good wash trades, buildings or research cards can be traded. AI offers appear as dismissible prompts. Public stockpiles, upcoming seasonal production, scarcity and each AI's planned needs affect its valuation; bank prices do not fluctuate.
 ### Reserve and port rates
 Default reserve rates: 4 identical raw → 1 different raw; 6 identical raw → 1 processed; 4 identical processed → 1 different processed; 2 identical processed → 1 raw. A generic port improves only raw-to-raw exchange to 3:1. A matching specific port improves it to 2:1. Gold rates take precedence. Any good can be imported even if absent from the map. There is no free raw-to-processed crafting action.
 ### Occupation and blockades
@@ -129,7 +175,7 @@ Click a siege badge, town, tower or dashed link for defenses, progress, attackin
 A sea route is an edge piece that extends your settlement network. A mobile ship occupies a water hex, moves and fights. Neither substitutes for the other. Build mobile ships beside a coastal town, without needing a printed port, on a revealed water hex without enemies. Town level at the start of the turn gates ship tier. No limit on hulls per order, town, turn or fleet, provided you pay. Ships cannot upgrade.
 Transports are fast carriers; convoys carry more units but move more slowly. The ship tables list combat power, movement and capacity for every class. Each ship class has four tiers. Fleets move at the slowest participating ship's speed. Combat follows whole-piece losses and retreats, using each hull's listed power/casualty points. Passengers add no naval power. Surviving ships keep full power and berths.
 ### Fishing and merchant ships
-Fishing ships collect Fish, Cod and Whales from their own tile and connected water within 1/2/3/4 steps at tiers I/II/III/IV. Count the shortest water route, not straight-line distance: land and ice cannot be crossed, and unrevealed tiles are outside coverage. Merchant ships collect from all adjacent land tiles, including enemy-occupied or rival-used land, but never Fish or Whales. Each matching tile’s full base yield is multiplied by ship tier. Cod gives 2 Fish per tier; Whales give 1 Hides and 1 Oil per tier. Tier-III/IV merchant ships also add 1×/2× the base tile yield as processed goods on each matching covered tile, without consuming raw output. Fishing ships do not produce processed goods. Output goes directly to the nearest owned town. Collectors can produce immediately after construction. There is no collector limit per tile or cargo capacity for goods.
+Fishing ships collect Fish, Cod and Whales from their own tile and connected water within 1/2/3/4 steps at tiers I/II/III/IV. Count the shortest water route, not straight-line distance: land and ice cannot be crossed, and unrevealed tiles are outside coverage. Merchant ships collect from all adjacent land tiles, including enemy-occupied or rival-used land, but never Fish or Whales. Each matching tile’s current seasonal yield is multiplied by ship tier. The seasonal calendar applies separately to each raw good, including both Whale Hides and Oil. Tier-III/IV merchant ships also add 1×/2× the seasonal tile yield as processed goods on each matching covered tile, without consuming raw output. Fishing ships do not produce processed goods. Output goes directly to the nearest owned town. Collectors can produce immediately after construction. There is no collector limit per tile or cargo capacity for goods.
 Both economic ship types have 0/1/2/3 power at tiers I/II/III/IV and no passenger berths. Unarmed ships in a defeated fleet are lost automatically. Higher tiers follow normal whole-ship casualty calculations. Production coverage and economic ships are visible when inspecting fleets.
 ### Transport troops
 Load or unload across a shared land-water edge, with no port required. Every participating ship and passenger must be fresh. Loading and unloading end their activation. One berth holds one unit of any tier, including a merchant. Embarked troops cannot produce, guard or act separately. Land on a clear or allied beach, never directly assault an enemy-occupied tile. Unloaded troops can attack on a later owner turn.
@@ -208,7 +254,7 @@ Allies cannot attack, bombard, siege, raid or destroy one another's property. Th
 Co-located allied defenders combine terrain-adjusted power. Each represented owner's towers add once. Only the active player's selected units attack. Combined defenders take normal whole-unit losses; a human defender chooses if present, otherwise the lowest-ID defender. Survivors retreat together to a tile safe for all. Neighbouring allied armies do not join automatically.
 Leaving while sharing a tile neither teleports nor kills anyone. Former allies become hostile immediately and may withdraw or fight in place for 1 movement point. It does not allow crossing new hostile stacks. The faction view shows members, combined public power, lock time and the leave action.
 ### AI priorities
-The AI pursues sole victory, using public power, income, military reach and terrain. It protects exposed towns, expands toward useful resources, builds industry, buys tools when useful and seeks winning battles or raids. It ranks raid targets by exposed stocks, production, siege delay and the owner’s strength. It leaves small siege or blockade detachments while surplus troops continue attacking. Nearby forces reinforce defensible towns; a garrison that cannot match an overwhelming leader may keep a delaying guard and send counter-raiders. Offensive investment increases through the middle and late game. Advanced collectors are valuable naval raid targets. Armies with no viable land assault can leave a blockade to reach transports or a usable frontier. Transports can bypass blocked land routes, and eligible factions can fund border expeditions to seek new approaches. Eligible AI considers expeditions from its third or fourth turn, checking every turn when production gaps, confinement or a large power deficit justify them. It values frontiers by visible climates and expected missing-resource yields, with Fish counted as Grain and Oil as Coal. It compares reveal directions to approach nearby enemies, can build toward a useful frontier, and may fund exploration before adding more reserve troops once it has a basic field army. Immediate town defense retains priority. It does not inspect hidden terrain or reserved climates. The strongest AI remains barred from expeditions. Artillery can attack fleets. Easy, Standard and Hard change planning breadth, not costs, dice or free resources.
+The AI pursues sole victory, using public power, income, military reach and terrain. It protects exposed towns, expands toward useful resources, builds industry, buys tools when useful and seeks winning battles or raids. It ranks raid targets by exposed stocks, production, siege delay and the owner’s strength. It leaves small siege or blockade detachments while surplus troops continue attacking. Nearby forces reinforce defensible towns; a garrison that cannot match an overwhelming leader may keep a delaying guard and send counter-raiders. Offensive investment increases through the middle and late game. Advanced collectors are valuable naval raid targets. Armies with no viable land assault can leave a blockade to reach transports or a usable frontier. Transports can bypass blocked land routes, and eligible factions can fund border expeditions to seek new approaches. Eligible AI considers expeditions from its third or fourth turn, checking every turn when production gaps, confinement or a large power deficit justify them. It values frontiers by visible climates and expected missing-resource yields, with Fish and Meat counted as Grain and Oil as Coal. It compares reveal directions to approach nearby enemies, can build toward a useful frontier, and may fund exploration before adding more reserve troops once it has a basic field army. Immediate town defense retains priority. It does not inspect hidden terrain or reserved climates. The strongest AI remains barred from expeditions. Artillery can attack fleets. Easy, Standard and Hard change planning breadth, not costs, dice or free resources.
 Pressure against a leader begins beyond a 25% or six-point lead, whichever is larger, and rises sharply toward maximum at 1.8 times the runner-up. This applies equally to human and AI leaders. Smaller factions favour the leader's exposed income and towns, support useful neighbours with favourable trades and reduce attacks on other small factions. They avoid hopeless frontal attacks because winners suffer no military losses. Priorities shift as power changes, subject to alliance locks.
 ### Public power and difficulty
 Public power is an estimate of economic and military capacity, not a victory score or direct army strength. Inspect the faction panel for its components. Speed settings change the delay between AI actions; they do not change difficulty or rules.
@@ -223,6 +269,8 @@ The game autosaves in this browser for this website address. Use Export save for
 Choose English or Français in the main menu or campaign settings. Language changes only presentation, never your map, random streams or save rules. This guide has the same two languages. Use search for a term, the catalogue for exact prices and the examples to understand production and sieges. You can print the full guide or save it as PDF from the browser.
 Use Show climates in the map controls to color climate regions. Tile inspection shows climate, terrain family and full base yield.
 
+### Seasonal calendar
+Click the season beside the round number for the yearly calendar and read-only landscape previews. Select a tile to see all four harvest windows. The map’s resource labels show current seasonal quantities; zero means the tile is out of season, not that it has lost its resource.
 
 ## Climate tables
 
@@ -236,9 +284,15 @@ Transition weights : Steppe ×1, Mediterranean ×1, Cold ×1.5, Tropical ×1, Oc
 
 |---|---|
 
-| Golden fields | 17% |
+| Golden fields | 9% |
 
-| Pasture | 17% |
+| Maize fields | 4% |
+
+| Rye fields | 4% |
+
+| Pasture | 9% |
+
+| Cattle pasture | 8% |
 
 | Woods | 17% |
 
@@ -278,9 +332,15 @@ Transition weights : Temperate ×1, Steppe ×1, Arctic ×2, Oceanic ×0.5, Alpin
 
 | Forest | 30% |
 
-| Hunting forest | 10% |
+| Hunting forest | 6% |
 
-| Rough fields | 10% |
+| Reindeer range | 4% |
+
+| Rough fields | 2% |
+
+| Barley fields | 5% |
+
+| Rye fields | 3% |
 
 | Rough pasture | 5% |
 
@@ -318,7 +378,9 @@ Transition weights : Cold ×1, Alpine ×0.5
 
 |---|---|
 
-| Snow plain | 40% |
+| Snow plain | 35% |
+
+| Reindeer range | 5% |
 
 | Seal hunting grounds | 15% |
 
@@ -354,9 +416,13 @@ Transition weights : Cold ×1.5, Temperate ×1, Mediterranean ×1, Desert ×1, A
 
 |---|---|
 
-| Steppe plain | 40% |
+| Steppe plain | 34% |
 
-| Rough fields | 15% |
+| Cattle range | 6% |
+
+| Rough fields | 5% |
+
+| Millet fields | 10% |
 
 | Pasture | 10% |
 
@@ -394,7 +460,9 @@ Transition weights : Temperate ×1, Steppe ×0.5, Desert ×0.5, Oceanic ×0.5, S
 
 |---|---|
 
-| Golden fields | 5% |
+| Golden fields | 3% |
+
+| Barley fields | 2% |
 
 | Olive grove | 20% |
 
@@ -402,7 +470,9 @@ Transition weights : Temperate ×1, Steppe ×0.5, Desert ×0.5, Oceanic ×0.5, S
 
 | Woods | 5% |
 
-| Rough pasture | 15% |
+| Rough pasture | 10% |
+
+| Goat pasture | 5% |
 
 | Salt flats | 5% |
 
@@ -474,7 +544,9 @@ Transition weights : Tropical ×2, Mediterranean ×1, Steppe ×1, Savanna ×0.5
 
 |---|---|
 
-| Desert | 30% |
+| Desert | 25% |
+
+| Goat pasture | 5% |
 
 | Gold mountains | 10% |
 
@@ -510,11 +582,17 @@ Transition weights : Temperate ×2, Cold ×1, Mediterranean ×1
 
 |---|---|
 
-| Coastal pasture | 25% |
+| Coastal pasture | 17% |
+
+| Cattle pasture | 8% |
 
 | Woods | 20% |
 
-| Rough fields | 10% |
+| Rough fields | 4% |
+
+| Barley fields | 4% |
+
+| Rye fields | 2% |
 
 | Golden fields | 5% |
 
@@ -558,9 +636,15 @@ Transition weights : Cold ×2, Arctic ×2, Temperate ×1, Steppe ×1
 
 | Coal hills | 10% |
 
-| Alpine pasture | 15% |
+| Alpine pasture | 10% |
 
-| Rough fields | 10% |
+| Goat pasture | 5% |
+
+| Rough fields | 2% |
+
+| Barley fields | 5% |
+
+| Rye fields | 3% |
 
 | Forest | 10% |
 
@@ -596,9 +680,13 @@ Transition weights : Tropical ×2, Temperate ×1, Mediterranean ×1, Savanna ×1
 
 | Alluvial clay banks | 25% |
 
-| Rice field | 20% |
+| Rice field | 15% |
 
-| River woods | 20% |
+| Maize fields | 5% |
+
+| River woods | 15% |
+
+| Cattle pasture | 5% |
 
 | Jungle | 10% |
 
@@ -634,9 +722,13 @@ Transition weights : Tropical ×2, Desert ×1, Steppe ×1, Subtropical ×1
 
 |---|---|
 
-| Wildlife grassland | 35% |
+| Wildlife grassland | 30% |
 
-| Rough fields | 20% |
+| Cattle range | 5% |
+
+| Rough fields | 5% |
+
+| Millet fields | 15% |
 
 | Dry woodland | 10% |
 
@@ -750,7 +842,383 @@ Open water (no adjacent land): Whale check 6%; effective share 5.4%. Table above
 
 | Dry woodland | 1 Wood | forest |
 
+| Barley fields | 1 Grain | flat |
+
+| Rye fields | 1 Grain | flat |
+
+| Millet fields | 1 Grain | flat |
+
+| Maize fields | 2 Grain | flat |
+
+| Cattle pasture | 2 Meat | flat |
+
+| Goat pasture | 1 Meat | rugged |
+
+| Reindeer range | 1 Meat + 1 Hides | flat |
+
+| Cattle range | 1 Meat + 1 Hides | flat |
+
 Bare Peaks: no production and no unit entry, including recruitment, retreat or disembarkation. Roads may follow their edges; towns need adjacent walkable solid land.
+
+## Complete seasonal harvest tables
+
+### Temperate
+
+| Terrain | Spring | Summer | Autumn | Winter |
+
+|---|---|---|---|---|
+
+| Golden fields | 0 | 8 Grain | 0 | 0 |
+
+| Maize fields | 0 | 0 | 8 Grain | 0 |
+
+| Rye fields | 0 | 4 Grain | 0 | 0 |
+
+| Pasture | 4 Wool | 4 Wool | 0 | 0 |
+
+| Cattle pasture | 1 Meat | 1 Meat | 4 Meat | 2 Meat |
+
+| Woods (Wood) | 1 Wood | 1 Wood | 2 Wood | 0 |
+
+| Woods (Hides) | 1 Hides | 1 Hides | 2 Hides | 0 |
+
+| Gold mountains | 1 Gold | 1 Gold | 1 Gold | 1 Gold |
+
+| Clay hills | 1 Clay | 1 Clay | 1 Clay | 1 Clay |
+
+| Stone quarry | 1 Stone | 1 Stone | 1 Stone | 1 Stone |
+
+| Iron mountains | 1 Iron ore | 1 Iron ore | 1 Iron ore | 1 Iron ore |
+
+| Coal hills | 1 Coal | 1 Coal | 1 Coal | 1 Coal |
+
+| Salt flats | 1 Salt | 2 Salt | 1 Salt | 0 |
+
+| Fishing grounds | 1 Fish | 2 Fish | 1 Fish | 0 |
+
+| Whale grounds | 0 | 1 Hides + 1 Oil | 2 Hides + 2 Oil | 1 Hides + 1 Oil |
+
+### Cold
+
+| Terrain | Spring | Summer | Autumn | Winter |
+
+|---|---|---|---|---|
+
+| Forest | 2 Wood | 2 Wood | 3 Wood | 1 Wood |
+
+| Hunting forest | 2 Hides | 0 | 2 Hides | 4 Hides |
+
+| Reindeer range | 1 Meat + 1 Hides | 0 | 2 Meat + 2 Hides | 1 Meat + 1 Hides |
+
+| Rough fields | 0 | 0 | 4 Grain | 0 |
+
+| Barley fields | 0 | 0 | 4 Grain | 0 |
+
+| Rye fields | 0 | 4 Grain | 0 | 0 |
+
+| Rough pasture | 2 Wool | 2 Wool | 0 | 0 |
+
+| Gold mountains | 1 Gold | 2 Gold | 1 Gold | 0 |
+
+| Coal hills | 1 Coal | 1 Coal | 1 Coal | 1 Coal |
+
+| Iron mountains | 1 Iron ore | 2 Iron ore | 1 Iron ore | 0 |
+
+| Stone quarry | 1 Stone | 2 Stone | 1 Stone | 0 |
+
+| Clay hills | 1 Clay | 2 Clay | 1 Clay | 0 |
+
+| Fishing grounds | 1 Fish | 2 Fish | 1 Fish | 0 |
+
+| Cod grounds | 2 Fish | 4 Fish | 2 Fish | 0 |
+
+| Whale grounds | 1 Hides + 1 Oil | 2 Hides + 2 Oil | 1 Hides + 1 Oil | 0 |
+
+### Arctic
+
+| Terrain | Spring | Summer | Autumn | Winter |
+
+|---|---|---|---|---|
+
+| Snow plain | 0 | 0 | 0 | 0 |
+
+| Reindeer range | 1 Meat + 1 Hides | 0 | 2 Meat + 2 Hides | 1 Meat + 1 Hides |
+
+| Seal hunting grounds | 2 Hides + 2 Oil | 0 | 1 Hides + 1 Oil | 1 Hides + 1 Oil |
+
+| Arctic iron mountains | 1 Iron ore | 2 Iron ore | 1 Iron ore | 0 |
+
+| Arctic stone ridge | 1 Stone | 2 Stone | 1 Stone | 0 |
+
+| Arctic gold mountains | 1 Gold | 2 Gold | 1 Gold | 0 |
+
+| Frozen sea | 0 | 0 | 0 | 0 |
+
+| Fishing grounds | 1 Fish | 2 Fish | 1 Fish | 0 |
+
+| Cod grounds | 2 Fish | 4 Fish | 2 Fish | 0 |
+
+| Whale grounds | 1 Hides + 1 Oil | 2 Hides + 2 Oil | 1 Hides + 1 Oil | 0 |
+
+### Steppe
+
+| Terrain | Spring | Summer | Autumn | Winter |
+
+|---|---|---|---|---|
+
+| Steppe plain | 1 Hides + 2 Wool | 2 Wool | 1 Hides | 2 Hides |
+
+| Cattle range | 1 Meat + 1 Hides | 0 | 2 Meat + 2 Hides | 1 Meat + 1 Hides |
+
+| Rough fields | 0 | 0 | 4 Grain | 0 |
+
+| Millet fields | 0 | 0 | 4 Grain | 0 |
+
+| Pasture | 4 Wool | 4 Wool | 0 | 0 |
+
+| Woods (Wood) | 1 Wood | 1 Wood | 2 Wood | 0 |
+
+| Woods (Hides) | 1 Hides | 1 Hides | 2 Hides | 0 |
+
+| Stone quarry | 1 Stone | 1 Stone | 1 Stone | 1 Stone |
+
+| Iron mountains | 1 Iron ore | 1 Iron ore | 1 Iron ore | 1 Iron ore |
+
+| Coal hills | 1 Coal | 1 Coal | 1 Coal | 1 Coal |
+
+| Clay hills | 1 Clay | 1 Clay | 1 Clay | 1 Clay |
+
+| Gold mountains | 1 Gold | 1 Gold | 1 Gold | 1 Gold |
+
+| Fishing grounds | 1 Fish | 2 Fish | 1 Fish | 0 |
+
+| Whale grounds | 0 | 1 Hides + 1 Oil | 2 Hides + 2 Oil | 1 Hides + 1 Oil |
+
+### Mediterranean
+
+| Terrain | Spring | Summer | Autumn | Winter |
+
+|---|---|---|---|---|
+
+| Golden fields | 0 | 8 Grain | 0 | 0 |
+
+| Barley fields | 0 | 4 Grain | 0 | 0 |
+
+| Olive grove | 0 | 0 | 2 Grain | 2 Grain |
+
+| Escarpment | 1 Stone | 1 Stone | 1 Stone | 1 Stone |
+
+| Woods (Wood) | 1 Wood | 1 Wood | 2 Wood | 0 |
+
+| Woods (Hides) | 1 Hides | 1 Hides | 2 Hides | 0 |
+
+| Rough pasture | 2 Wool | 2 Wool | 0 | 0 |
+
+| Goat pasture | 1 Meat | 0 | 2 Meat | 1 Meat |
+
+| Salt flats | 1 Salt | 2 Salt | 1 Salt | 0 |
+
+| Gold mountains | 1 Gold | 1 Gold | 1 Gold | 1 Gold |
+
+| Coal hills | 1 Coal | 1 Coal | 1 Coal | 1 Coal |
+
+| Iron mountains | 1 Iron ore | 1 Iron ore | 1 Iron ore | 1 Iron ore |
+
+| Fishing grounds | 1 Fish | 1 Fish | 1 Fish | 1 Fish |
+
+| Whale grounds | 0 | 1 Hides + 1 Oil | 2 Hides + 2 Oil | 1 Hides + 1 Oil |
+
+### Tropical
+
+| Terrain | Spring | Summer | Autumn | Winter |
+
+|---|---|---|---|---|
+
+| Jungle | 1 Hides | 0 | 2 Hides | 1 Hides |
+
+| Tropical woods | 1 Wood | 0 | 1 Wood | 2 Wood |
+
+| Rice field | 4 Grain | 4 Grain | 4 Grain | 0 |
+
+| Clay hills | 1 Clay | 0 | 1 Clay | 2 Clay |
+
+| Gold mountains | 1 Gold | 1 Gold | 1 Gold | 1 Gold |
+
+| Stone quarry | 1 Stone | 1 Stone | 1 Stone | 1 Stone |
+
+| Coal hills | 1 Coal | 1 Coal | 1 Coal | 1 Coal |
+
+| Iron mountains | 1 Iron ore | 1 Iron ore | 1 Iron ore | 1 Iron ore |
+
+| Salt flats | 1 Salt | 0 | 1 Salt | 2 Salt |
+
+| Fishing grounds | 1 Fish | 1 Fish | 1 Fish | 1 Fish |
+
+| Whale grounds | 0 | 1 Hides + 1 Oil | 2 Hides + 2 Oil | 1 Hides + 1 Oil |
+
+### Desert
+
+| Terrain | Spring | Summer | Autumn | Winter |
+
+|---|---|---|---|---|
+
+| Desert | 0 | 0 | 0 | 0 |
+
+| Goat pasture | 1 Meat | 0 | 2 Meat | 1 Meat |
+
+| Gold mountains | 1 Gold | 1 Gold | 1 Gold | 1 Gold |
+
+| Iron mountains | 1 Iron ore | 1 Iron ore | 1 Iron ore | 1 Iron ore |
+
+| Stone quarry | 1 Stone | 1 Stone | 1 Stone | 1 Stone |
+
+| Coal hills | 1 Coal | 1 Coal | 1 Coal | 1 Coal |
+
+| Oasis | 1 Wood | 1 Wood | 1 Wood + 4 Grain | 1 Wood |
+
+| Salt flats | 1 Salt | 2 Salt | 1 Salt | 0 |
+
+| Fishing grounds | 1 Fish | 1 Fish | 1 Fish | 1 Fish |
+
+| Whale grounds | 0 | 1 Hides + 1 Oil | 2 Hides + 2 Oil | 1 Hides + 1 Oil |
+
+### Oceanic
+
+| Terrain | Spring | Summer | Autumn | Winter |
+
+|---|---|---|---|---|
+
+| Coastal pasture | 4 Wool | 4 Wool | 0 | 0 |
+
+| Cattle pasture | 1 Meat | 1 Meat | 4 Meat | 2 Meat |
+
+| Woods (Wood) | 1 Wood | 1 Wood | 2 Wood | 0 |
+
+| Woods (Hides) | 1 Hides | 1 Hides | 2 Hides | 0 |
+
+| Rough fields | 0 | 0 | 4 Grain | 0 |
+
+| Barley fields | 0 | 4 Grain | 0 | 0 |
+
+| Rye fields | 0 | 4 Grain | 0 | 0 |
+
+| Golden fields | 0 | 0 | 8 Grain | 0 |
+
+| Clay hills | 1 Clay | 1 Clay | 1 Clay | 1 Clay |
+
+| Coastal cliffs | 1 Stone | 1 Stone | 1 Stone | 1 Stone |
+
+| Coal hills | 1 Coal | 1 Coal | 1 Coal | 1 Coal |
+
+| Iron mountains | 1 Iron ore | 1 Iron ore | 1 Iron ore | 1 Iron ore |
+
+| Gold mountains | 1 Gold | 1 Gold | 1 Gold | 1 Gold |
+
+| Fishing grounds | 1 Fish | 2 Fish | 1 Fish | 0 |
+
+| Cod grounds | 2 Fish | 4 Fish | 2 Fish | 0 |
+
+| Whale grounds | 0 | 1 Hides + 1 Oil | 2 Hides + 2 Oil | 1 Hides + 1 Oil |
+
+### Alpine
+
+| Terrain | Spring | Summer | Autumn | Winter |
+
+|---|---|---|---|---|
+
+| Mountain quarry | 2 Stone | 4 Stone | 2 Stone | 0 |
+
+| Iron mountains | 1 Iron ore | 2 Iron ore | 1 Iron ore | 0 |
+
+| Coal hills | 1 Coal | 1 Coal | 1 Coal | 1 Coal |
+
+| Alpine pasture | 2 Wool | 2 Wool | 0 | 0 |
+
+| Goat pasture | 1 Meat | 0 | 2 Meat | 1 Meat |
+
+| Rough fields | 0 | 0 | 4 Grain | 0 |
+
+| Barley fields | 0 | 0 | 4 Grain | 0 |
+
+| Rye fields | 0 | 4 Grain | 0 | 0 |
+
+| Forest | 2 Wood | 2 Wood | 3 Wood | 1 Wood |
+
+| Gold mountains | 1 Gold | 2 Gold | 1 Gold | 0 |
+
+| Clay hills | 1 Clay | 2 Clay | 1 Clay | 0 |
+
+| Bare Peaks | 0 | 0 | 0 | 0 |
+
+| Fishing grounds | 1 Fish | 2 Fish | 1 Fish | 0 |
+
+| Cod grounds | 2 Fish | 4 Fish | 2 Fish | 0 |
+
+| Whale grounds | 1 Hides + 1 Oil | 2 Hides + 2 Oil | 1 Hides + 1 Oil | 0 |
+
+### Subtropical
+
+| Terrain | Spring | Summer | Autumn | Winter |
+
+|---|---|---|---|---|
+
+| Alluvial clay banks | 2 Clay | 0 | 2 Clay | 4 Clay |
+
+| Rice field | 0 | 6 Grain | 6 Grain | 0 |
+
+| Maize fields | 0 | 0 | 8 Grain | 0 |
+
+| River woods | 1 Wood | 0 | 1 Wood | 2 Wood |
+
+| Cattle pasture | 1 Meat | 1 Meat | 4 Meat | 2 Meat |
+
+| Jungle | 1 Hides | 0 | 2 Hides | 1 Hides |
+
+| Stone quarry | 1 Stone | 1 Stone | 1 Stone | 1 Stone |
+
+| Coal hills | 1 Coal | 1 Coal | 1 Coal | 1 Coal |
+
+| Iron mountains | 1 Iron ore | 1 Iron ore | 1 Iron ore | 1 Iron ore |
+
+| Salt flats | 1 Salt | 0 | 1 Salt | 2 Salt |
+
+| Gold mountains | 1 Gold | 1 Gold | 1 Gold | 1 Gold |
+
+| Fishing grounds | 1 Fish | 1 Fish | 1 Fish | 1 Fish |
+
+| Whale grounds | 0 | 1 Hides + 1 Oil | 2 Hides + 2 Oil | 1 Hides + 1 Oil |
+
+### Savanna
+
+| Terrain | Spring | Summer | Autumn | Winter |
+
+|---|---|---|---|---|
+
+| Wildlife grassland | 2 Hides | 0 | 4 Hides | 2 Hides |
+
+| Cattle range | 1 Meat + 1 Hides | 0 | 2 Meat + 2 Hides | 1 Meat + 1 Hides |
+
+| Rough fields | 0 | 0 | 4 Grain | 0 |
+
+| Millet fields | 0 | 0 | 4 Grain | 0 |
+
+| Dry woodland | 1 Wood | 0 | 1 Wood | 2 Wood |
+
+| Rough pasture | 1 Wool | 1 Wool | 1 Wool | 1 Wool |
+
+| Iron mountains | 1 Iron ore | 1 Iron ore | 1 Iron ore | 1 Iron ore |
+
+| Clay hills | 1 Clay | 1 Clay | 1 Clay | 1 Clay |
+
+| Stone quarry | 1 Stone | 1 Stone | 1 Stone | 1 Stone |
+
+| Gold mountains | 1 Gold | 1 Gold | 1 Gold | 1 Gold |
+
+| Salt flats | 1 Salt | 2 Salt | 1 Salt | 0 |
+
+| Fishing grounds | 1 Fish | 1 Fish | 1 Fish | 1 Fish |
+
+| Whale grounds | 0 | 1 Hides + 1 Oil | 2 Hides + 2 Oil | 1 Hides + 1 Oil |
 
 ## All costs
 
@@ -923,6 +1391,10 @@ Prices are paid per construction or upgrade step. Watchtower I offers two altern
 | Fish camp | 1 Wool + 1 Salt |
 
 | Fish camp II | 2 Cloth + 1 Planks |
+
+| Meat camp | 1 Stone + 1 Iron ore |
+
+| Meat camp II | 1 Planks + 1 Steel |
 
 | Goldsmith I | 2 Iron ore + 1 Coal + 1 Stone |
 

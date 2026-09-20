@@ -4,6 +4,7 @@ import { friendly } from "./relations";
 import { canOccupy, neighbors } from "./world";
 import { tileYield } from "./maritime";
 import { marketValues } from "./ai-market";
+import { seasonalDestinationSafe, seasonalDiversityBonus } from "./ai-seasonal";
 import {
   besieged,
   colonizationSites,
@@ -41,19 +42,21 @@ function planner(s: Game) {
   );
   const candidates = sites.map((vertex) => ({
     vertex,
-    value: s.vertices[vertex].tiles.reduce(
-      (sum, t) =>
-        sum +
-        probability(s.tiles[t].number) *
-          Object.entries(tileYield(s.tiles[t], s.active)).reduce(
-            (n, [g, amount]) =>
-              n +
-              (amount! * (values[g as keyof typeof values] ?? 1)) /
-                (1 + 4 * (inc[g as keyof Stock] ?? 0)),
-            0,
-          ),
-      0,
-    ),
+    value:
+      (1 + seasonalDiversityBonus(s, s.vertices[vertex].tiles)) *
+      s.vertices[vertex].tiles.reduce(
+        (sum, t) =>
+          sum +
+          probability(s.tiles[t].number) *
+            Object.entries(tileYield(s.tiles[t], s.active)).reduce(
+              (n, [g, amount]) =>
+                n +
+                (amount! * (values[g as keyof typeof values] ?? 1)) /
+                  (1 + 4 * (inc[g as keyof Stock] ?? 0)),
+              0,
+            ),
+        0,
+      ),
   }));
   return (origin: string, naval: boolean, recruiting = false) => {
     const blocked = danger[naval ? 1 : 0];
@@ -107,8 +110,9 @@ export function colonistAction(s: Game): Command | null {
       target.path.length,
       speed(unit) + unit.bonus - unit.moved,
     );
-    if (steps > 0)
-      return { type: "move", ids: [unit.id], to: target.path[steps - 1] };
+    for (let step = steps - 1; step >= 0; step--)
+      if (seasonalDestinationSafe(s, target.path[step], unit.naval))
+        return { type: "move", ids: [unit.id], to: target.path[step] };
   }
   return null;
 }

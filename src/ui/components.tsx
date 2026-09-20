@@ -65,13 +65,15 @@ export function Cost({
               (payment
                 ? (available[g] ?? 0) < (payment[g] ?? 0)
                 : (available[g] ?? 0) +
-                    (RAW_SUBSTITUTES[g]
-                      ? Math.max(
+                    (RAW_SUBSTITUTES[g] ?? []).reduce(
+                      (n, alternate) =>
+                        n +
+                        Math.max(
                           0,
-                          (available[RAW_SUBSTITUTES[g]!] ?? 0) -
-                            (cost[RAW_SUBSTITUTES[g]!] ?? 0),
-                        )
-                      : 0) <
+                          (available[alternate] ?? 0) - (cost[alternate] ?? 0),
+                        ),
+                      0,
+                    ) <
                   cost[g]!)
                 ? "cost-shortage"
                 : undefined
@@ -232,18 +234,20 @@ export function ActionButton({
       {tx(
         payment &&
           cost &&
-          Object.entries(RAW_SUBSTITUTES).map(([base, alternate]) => {
-            const used = (payment[alternate] ?? 0) - (cost[alternate] ?? 0);
-            return used > 0 ? (
-              <small className="fish-payment" key={base}>
-                {tx("Uses ")}
-                {tx(used)} {tx(GOOD_INFO[alternate].name)}
-                {tx(" instead of")}
-                {tx(" ")}
-                {tx(GOOD_INFO[base as Good].name)}
-              </small>
-            ) : null;
-          }),
+          Object.entries(RAW_SUBSTITUTES).flatMap(([base, alternates]) =>
+            alternates.map((alternate) => {
+              const used = (payment[alternate] ?? 0) - (cost[alternate] ?? 0);
+              return used > 0 ? (
+                <small className="fish-payment" key={`${base}/${alternate}`}>
+                  {tx("Uses ")}
+                  {tx(used)} {tx(GOOD_INFO[alternate].name)}
+                  {tx(" instead of")}
+                  {tx(" ")}
+                  {tx(GOOD_INFO[base as Good].name)}
+                </small>
+              ) : null;
+            }),
+          ),
       )}
       {payment && cost && <GoldPaymentNotice cost={cost} payment={payment} />}
     </button>

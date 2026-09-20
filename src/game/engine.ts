@@ -1,4 +1,5 @@
 import { syncEmergencyCoalition } from "./emergency-coalition";
+import { seasonAt, seasonYear, syncSeasonSurfaces } from "./seasons";
 import { tileYield } from "./maritime";
 import { canChooseWoods } from "./selectors";
 import { allianceResponder } from "./relations";
@@ -132,6 +133,7 @@ export function newGame(
     ...generateWorld(seed, config.length * 25),
     version: 5,
     generation: 5,
+    calendar: { startRound: 1 },
     seed,
     rng: hash(seed + "dice"),
     deckRng: hash(seed + "deck"),
@@ -166,6 +168,7 @@ export function newGame(
     winner: null,
     actions: 0,
   };
+  syncSeasonSurfaces(s);
   rule(
     canCompleteSetup(s, config.length * 2),
     `Unstartable seed “${seed}”: this exact map cannot support ${config.length * 2} legal starting settlements. Choose another seed explicitly.`,
@@ -219,7 +222,17 @@ function nextTurn(s: Game) {
   do {
     s.active = (s.active + 1) % s.players.length;
   } while (!s.players[s.active].alive);
-  if (s.active <= old) s.round++;
+  if (s.active <= old) {
+    s.round++;
+    syncSeasonSurfaces(s);
+    const season = seasonAt(s);
+    if (season)
+      log(
+        s,
+        `Year ${seasonYear(s)}: ${season[0].toUpperCase() + season.slice(1)} begins.`,
+        "info",
+      );
+  }
   beginTurn(s);
 }
 export function eliminate(s: Game) {
@@ -336,7 +349,8 @@ export function applyCommand(state: Game, c: Command): Result {
   return commandResult(state, c, false);
 }
 /** Full rule validation for AI previews, without copying read-only map geometry.
- * Expeditions alone modify geometry, so they retain a fully isolated world copy.
+ * Expeditions and Woods changes retain a fully isolated world copy. End-turn
+ * and surrender previews also isolate sea tiles at possible season boundaries.
  * All mutable campaign data still gets cloned; this never publishes the preview.
  */
 export function canApplyCommand(state: Game, c: Command): boolean {
@@ -358,7 +372,17 @@ function commandResult(state: Game, c: Command, preview: boolean): Result {
               vertices: undefined,
               edges: undefined,
             }),
-            tiles: state.tiles,
+            tiles:
+              ["end-turn", "surrender"].includes(c.type) && state.calendar
+                ? Object.fromEntries(
+                    Object.entries(state.tiles).map(([id, tile]) => [
+                      id,
+                      tile.resource === "water" || tile.resource === "ice"
+                        ? { ...tile }
+                        : tile,
+                    ]),
+                  )
+                : state.tiles,
             climatePlan: state.climatePlan,
             vertices: state.vertices,
             edges: state.edges,
@@ -701,7 +725,7 @@ export function execute(s: Game, c: Command) {
       "Choose a land side of a road or Fish or Whales beside a shipping route.",
     );
     rule(
-      !hostileAt(s, c.tile, s.active, r.kind === "route"),
+      !hostileAt(s, c.tile, s.active, canOccupy(s.tiles[c.tile], true)),
       "Clear enemy occupation before building a camp.",
     );
     const tier = (r.camps[c.tile] ?? 0) + 1;
@@ -913,6 +937,7 @@ export function execute(s: Game, c: Command) {
     );
     pay(s, expeditionCost(c.kind, c.tier), `expedition${c.tier}`);
     addHexes(s, s.seed, footprint);
+    syncSeasonSurfaces(s);
     restoreCoastalRoads(s);
     p.expeditionUsed = true;
     log(

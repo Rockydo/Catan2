@@ -247,6 +247,7 @@ export const ProductionToken = memo(function ProductionToken({
   number,
   showNumber,
   active,
+  dormant = false,
 }: {
   resource: Raw;
   label?: string;
@@ -255,24 +256,30 @@ export const ProductionToken = memo(function ProductionToken({
   number: number;
   showNumber: boolean;
   active: boolean;
+  dormant?: boolean;
 }) {
   useLocale();
 
   const pips = 6 - Math.abs(7 - number);
   const products = Object.entries(output ?? {}) as [Raw, number][];
   const multiple = products.length > 1;
-  const quantity = output?.[resource] ?? 1;
+  const displayedResource = products.length === 1 ? products[0][0] : resource;
+  const quantity = output?.[displayedResource] ?? 1;
   return (
     <g
-      className={`production-token ${active ? "producing" : ""}`}
+      className={`production-token ${active ? "producing" : ""} ${dormant ? "dormant" : ""}`}
       pointerEvents="none"
       fontFamily="ui-sans-serif, system-ui, sans-serif"
     >
       <title>
         {tx(
-          products.length
-            ? products.map(([g, n]) => `${n} ${GOOD_INFO[g].name}`).join(" + ")
-            : GOOD_INFO[resource].name,
+          dormant
+            ? "No harvest this season"
+            : products.length
+              ? products
+                  .map(([g, n]) => `${n} ${GOOD_INFO[g].name}`)
+                  .join(" + ")
+              : GOOD_INFO[resource].name,
         )}
         {tx(": roll ")}
         {tx(number)}, {tx(pips)}
@@ -285,7 +292,7 @@ export const ProductionToken = memo(function ProductionToken({
         width={compact ? 40 : 48}
         height="13"
         rx="5"
-        fill="url(#token-paper)"
+        fill={dormant ? "#e4e7df" : "url(#token-paper)"}
         stroke={active ? "#c89c42" : "#8a795b"}
         strokeWidth=".6"
       />
@@ -369,7 +376,9 @@ export const ProductionToken = memo(function ProductionToken({
           letterSpacing=".1"
           fill="#30493f"
         >
-          {`${quantity > 1 ? quantity + " " : ""}${tx(label ?? GOOD_INFO[resource].name)}`}
+          {dormant
+            ? `0 ${tx(label ?? GOOD_INFO[resource].name)}`
+            : `${quantity > 1 ? quantity + " " : ""}${tx(label ?? GOOD_INFO[displayedResource].name)}`}
         </MapLabel>
       )}
     </g>

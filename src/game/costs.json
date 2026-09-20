@@ -387,6 +387,14 @@
     "cloth": 2,
     "planks": 1
   },
+  "Meat camp": {
+    "stone": 1,
+    "ore": 1
+  },
+  "Meat camp II": {
+    "planks": 1,
+    "steel": 1
+  },
   "Goldsmith I": {
     "ore": 2,
     "coal": 1,

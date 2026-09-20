@@ -1447,3 +1447,128 @@ a svg {
     grid-template-columns: 1fr;
   }
 }
+
+/* Seasonal reference shares the exact production profiles used by the engine. */
+.season-reference {
+  margin: 24px 0 38px;
+}
+.season-reference > p {
+  max-width: 76ch;
+  line-height: 1.7;
+  color: #566b60;
+}
+.season-reference-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 22px 0 12px;
+}
+.season-reference-heading h3 {
+  margin: 0;
+}
+.season-reference-heading label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #587064;
+}
+.season-reference-heading select {
+  padding: 7px 10px;
+  border: 1px solid #bbcbb7;
+  border-radius: 5px;
+  color: #365446;
+  background: #fffdf6;
+  font: inherit;
+}
+.season-reference-scroll {
+  overflow-x: auto;
+  border: 1px solid #d7dfd0;
+  border-radius: 10px;
+}
+.season-reference table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 570px;
+  font-size: 12px;
+}
+.season-reference th,
+.season-reference td {
+  padding: 10px;
+  border-bottom: 1px solid #e0e7d8;
+  text-align: center;
+}
+.season-reference thead th {
+  background: #f1f4e9;
+  padding: 14px 10px;
+  font-weight: 750;
+}
+.season-reference thead th:first-child {
+  text-align: left;
+}
+.season-reference tbody th {
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 650;
+  min-height: 87px;
+}
+.season-reference tbody th small {
+  display: block;
+  font-size: 10px;
+  font-weight: 400;
+  margin-top: 5px;
+  color: #6c7e72;
+}
+.season-reference .terrain-picture {
+  width: 68px;
+  height: 68px;
+  flex: none;
+}
+.season-reference tr:last-child th,
+.season-reference tr:last-child td {
+  border-bottom: 0;
+}
+.season-reference .preview-season {
+  background: #f2f6e9;
+}
+.season-reference-output {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.season-reference-output > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+.season-zero {
+  color: #889387;
+}
+@media (max-width: 650px) {
+  .season-reference table {
+    min-width: 440px;
+    font-size: 10px;
+  }
+  .season-reference th,
+  .season-reference td {
+    padding: 7px 5px;
+  }
+  .season-reference tbody th {
+    gap: 6px;
+    min-height: 65px;
+  }
+  .season-reference .terrain-picture {
+    width: 43px;
+    height: 43px;
+  }
+  .season-reference-output .resource-icon {
+    width: 19px;
+    height: 19px;
+  }
+}

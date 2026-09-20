@@ -26,6 +26,7 @@ import {
 } from "./selectors";
 import { gain, spend, rawOnly, processedOnly, rule, log } from "./economy";
 import { siegeArmy } from "./military";
+import { canOccupy } from "./world";
 const ALL_CLASSES: UnitClass[] = [
   "heavy",
   "light",
@@ -88,8 +89,7 @@ export function playResearch(s: Game, c: Command) {
           !besieged(s, t.id) &&
           s.vertices[t.vertex].tiles.some(
             (id) =>
-              s.tiles[id].resource === "water" &&
-              !hostileAt(s, id, s.active, true),
+              canOccupy(s.tiles[id], true) && !hostileAt(s, id, s.active, true),
           ),
       ),
       "An eligible coastal town is required.",
@@ -180,7 +180,8 @@ export function playResearch(s: Game, c: Command) {
           t.turnLevel >= tier &&
           !besieged(s, t.id) &&
           s.vertices[t.vertex].tiles.some(
-            (v) => s.tiles[v].resource === "water",
+            (v) =>
+              canOccupy(s.tiles[v], true) && !hostileAt(s, v, s.active, true),
           ),
       ),
       "An eligible coastal town is required.",

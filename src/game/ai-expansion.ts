@@ -1,6 +1,7 @@
 import { emergencyTarget } from "./relations";
 import type { Game } from "./types";
 import { factionStrengths } from "./ai-strategy";
+import { canOccupy } from "./world";
 import {
   blockAt,
   hostileAt,
@@ -54,7 +55,7 @@ export function isCornered(s: Game, player = s.active): boolean {
         edge.tiles.some((tile) =>
           kind === "road"
             ? blockAt(s, tile, player)
-            : hostileAt(s, tile, player, s.tiles[tile].resource === "water"),
+            : hostileAt(s, tile, player, canOccupy(s.tiles[tile], true)),
         )
       )
         continue;

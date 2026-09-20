@@ -1,16 +1,13 @@
+import { seasonAt, seasonalYield, type Season } from "../game/seasons";
+import { SEASON_LABELS, SEASON_ICONS } from "./SeasonCalendar";
 import {
   CLIMATES,
   CLIMATE_INFO,
-  BIOMES,
   BIOME_INFO,
   type Biome,
   type TerrainResource,
 } from "../game/climate-content";
-import {
-  REGIONAL_ART_KEYS,
-  terrainPatternKey,
-  terrainArtFile,
-} from "./terrain-art";
+import { terrainPatternKey, terrainArtFile } from "./terrain-art";
 import type { TerrainKey } from "../game/content";
 import { localize as tx, useLocale } from "../i18n";
 import { friendly } from "../game/relations";
@@ -53,6 +50,7 @@ import {
   edgeMidpoint,
   hash,
   coord,
+  canOccupy,
 } from "../game/world";
 import {
   settlementSites,
@@ -79,6 +77,8 @@ export type BoardMode =
   | "tower";
 interface Props {
   game: Game;
+  seasonPreview?: Season;
+  onSeasonPreviewChange?: (season?: Season) => void;
   viewer?: number;
   selection: Selection;
   onSelect: (v: Selection) => void;
@@ -106,22 +106,17 @@ const TERRAIN_ORDER = [
   "salt",
   "coal",
 ];
-const TerrainPatterns = memo(function TerrainPatterns() {
+const TerrainPatterns = memo(function TerrainPatterns({
+  resources,
+}: {
+  resources: string[];
+}) {
   useLocale();
 
   return (
     <>
       {tx(
-        [
-          ...new Set([
-            ...TERRAIN_ORDER.filter((g) => g !== "unused"),
-            "gold",
-            "fish",
-            "whale",
-            ...REGIONAL_ART_KEYS,
-            ...BIOMES.filter((b) => b !== "water"),
-          ]),
-        ].map((resource) => {
+        resources.map((resource) => {
           const art = BIOME_INFO[resource as Biome]?.art ?? resource,
             index = TERRAIN_ORDER.indexOf(art),
             dedicated = index < 0;
@@ -168,6 +163,23 @@ const TerrainArt = memo(function TerrainArt({
 }) {
   useLocale();
 
+  // Direct images share a single hex clip. Pattern fills force expensive
+  // texture resampling when Chromium scales a large seasonal scene.
+  if (resource.startsWith("season-"))
+    return (
+      <g transform={`translate(${x} ${y})`} pointerEvents="none">
+        <image
+          className="terrain-texture"
+          href={`./assets/${terrainArtFile(resource)}`}
+          x={-43}
+          y={-43}
+          width={86}
+          height={86}
+          preserveAspectRatio="xMidYMid slice"
+          clipPath="url(#season-terrain-hex)"
+        />
+      </g>
+    );
   if (resource === "water")
     return seed % 3 === 0 ? (
       <path
@@ -181,6 +193,7 @@ const TerrainArt = memo(function TerrainArt({
     ) : null;
   return (
     <polygon
+      className="terrain-texture"
       pointerEvents="none"
       points={`${x},${y - 43} ${x + 37.2},${y - 21.5} ${x + 37.2},${y + 21.5} ${x},${y + 43} ${x - 37.2},${y + 21.5} ${x - 37.2},${y - 21.5}`}
       fill={`url(#terrain-${resource})`}
@@ -199,6 +212,8 @@ const TerrainLayer = memo(function TerrainLayer({
   climates,
   total,
   viewer,
+  season,
+  artworkSeason,
 }: {
   terrainRef: RefObject<SVGSVGElement | null>;
   oceanRef: RefObject<SVGRectElement | null>;
@@ -210,9 +225,21 @@ const TerrainLayer = memo(function TerrainLayer({
   climates: boolean;
   total: number | null;
   viewer: number;
+  season?: Season;
+  artworkSeason?: Season;
 }) {
   useLocale();
-
+  const artKeys = useMemo(
+    () =>
+      [
+        ...new Set(
+          tiles.map((tile) =>
+            terrainPatternKey(tileTerrain(tile), tile.climate, artworkSeason),
+          ),
+        ),
+      ].filter((key) => key !== "water" && !key.startsWith("season-")),
+    [tiles, artworkSeason],
+  );
   return (
     <svg
       ref={terrainRef}
@@ -221,7 +248,10 @@ const TerrainLayer = memo(function TerrainLayer({
       aria-hidden="true"
     >
       <defs>
-        <TerrainPatterns />
+        <TerrainPatterns resources={artKeys} />
+        <clipPath id="season-terrain-hex" clipPathUnits="userSpaceOnUse">
+          <polygon points="0,-43 37.2,-21.5 37.2,21.5 0,43 -37.2,21.5 -37.2,-21.5" />
+        </clipPath>
         <MapLabelDefinitions />
         <linearGradient id="water-tile" x2="0" y2="1">
           <stop stopColor="#378e9e" />
@@ -313,7 +343,11 @@ const TerrainLayer = memo(function TerrainLayer({
                 filter="url(#tile-shadow)"
               />
               <TerrainArt
-                resource={terrainPatternKey(tileTerrain(tile), tile.climate)}
+                resource={terrainPatternKey(
+                  tileTerrain(tile),
+                  tile.climate,
+                  artworkSeason,
+                )}
                 x={x}
                 y={y}
                 seed={hash(tile.id)}
@@ -332,13 +366,28 @@ const TerrainLayer = memo(function TerrainLayer({
                       <ProductionToken
                         resource={good}
                         output={
-                          tile.biome ? tileYield(tile, viewer) : undefined
+                          season
+                            ? seasonalYield(tile, viewer, season)
+                            : tile.biome
+                              ? tileYield(tile, viewer)
+                              : undefined
                         }
                         label={tile.whale ? "Whales" : undefined}
                         number={tile.number}
                         compact={small}
                         showNumber={numbers}
-                        active={total === tile.number}
+                        active={
+                          total === tile.number &&
+                          Object.values(
+                            seasonalYield(tile, viewer, season),
+                          ).some((n) => !!n)
+                        }
+                        dormant={
+                          !!season &&
+                          !Object.values(
+                            seasonalYield(tile, viewer, season),
+                          ).some((n) => !!n)
+                        }
                       />
                     </g>
                   </>
@@ -504,9 +553,13 @@ export function Board({
   rolling = false,
   productionTiles = [],
   focus,
+  seasonPreview,
+  onSeasonPreviewChange,
 }: Props) {
   useLocale();
 
+  const currentSeason = seasonAt(s);
+  const PreviewIcon = seasonPreview ? SEASON_ICONS[seasonPreview] : null;
   const [climates, setClimates] = useState(false);
   const [numbers, setNumbers] = useState(true);
   const lastAlertFocus = useRef<Props["focus"]>(null);
@@ -657,6 +710,8 @@ export function Board({
           compact={groupUnits}
           numbers={numbers}
           climates={climates}
+          season={currentSeason}
+          artworkSeason={seasonPreview ?? currentSeason}
           total={!rolling && s.dice ? s.dice[0] + s.dice[1] : null}
         />
         <svg
@@ -722,11 +777,20 @@ export function Board({
                     resource={tile.resource}
                     good={tileGood(tile, viewer)}
                     outputLabel={
-                      tile.biome
-                        ? Object.entries(tileYield(tile, viewer))
-                            .map(([g, n]) => `${n} ${GOOD_INFO[g as Raw].name}`)
-                            .join(" + ")
-                        : undefined
+                      currentSeason &&
+                      !Object.values(
+                        seasonalYield(tile, viewer, currentSeason),
+                      ).some((n) => !!n)
+                        ? tx("No harvest this season")
+                        : tile.biome || currentSeason
+                          ? Object.entries(
+                              seasonalYield(tile, viewer, currentSeason),
+                            )
+                              .map(
+                                ([g, n]) => `${n} ${GOOD_INFO[g as Raw].name}`,
+                              )
+                              .join(" + ")
+                          : undefined
                     }
                     terrain={tileTerrain(tile)}
                     number={tile.number}
@@ -848,6 +912,9 @@ export function Board({
                     len = Math.hypot(dx, dy),
                     x = mid.x + (dx / len) * 18,
                     y = mid.y + (dy / len) * 18;
+                  const frozen = !e.tiles.some((id) =>
+                    canOccupy(s.tiles[id], true),
+                  );
                   const label =
                     e.harbor === "generic"
                       ? "Any raw resource, 3:1"
@@ -855,12 +922,16 @@ export function Board({
                   return (
                     <g
                       key={`harbor${e.id}`}
-                      className="map-harbor"
+                      className={`map-harbor${frozen ? " frozen-port" : ""}`}
+                      opacity={frozen ? 0.55 : 1}
+                      data-frozen={frozen || undefined}
                       data-map-x={x}
                       data-map-y={y}
                       role="button"
                       tabIndex={0}
-                      aria-label={tx(`Harbor: ${label}`)}
+                      aria-label={tx(
+                        frozen ? `Frozen harbor: ${label}` : `Harbor: ${label}`,
+                      )}
                       onClick={(ev) => {
                         ev.stopPropagation();
                         clicked(() => onSelect({ type: "edge", id: e.id }));
@@ -874,6 +945,8 @@ export function Board({
                     >
                       <title>
                         {tx(label)}
+                        {frozen &&
+                          tx(" · Frozen: port rates unavailable until thaw.")}
                         {tx(
                           ". Build a town at either end of the coastal edge to use this harbor.",
                         )}
@@ -927,7 +1000,9 @@ export function Board({
                         fontWeight="750"
                         pointerEvents="none"
                       >
-                        {tx(e.harbor === "generic" ? "3:1" : "2:1")}
+                        {frozen
+                          ? "×"
+                          : tx(e.harbor === "generic" ? "3:1" : "2:1")}
                       </MapLabel>
                     </g>
                   );
@@ -1763,6 +1838,24 @@ export function Board({
           <MapIcon size={18} />
         </button>
       </div>
+      {seasonPreview && seasonAt(s) && PreviewIcon && !climates && (
+        <div className="season-map-preview" aria-live="polite">
+          <PreviewIcon size={15} />
+          <span>
+            <b>{tx(`${SEASON_LABELS[seasonPreview]} artwork preview`)}</b>
+            <small>
+              {tx(`Rules still use ${SEASON_LABELS[seasonAt(s)!]}`)}
+            </small>
+          </span>
+          <button
+            type="button"
+            className="secondary"
+            onClick={() => onSeasonPreviewChange?.(undefined)}
+          >
+            {tx("Return to current season")}
+          </button>
+        </div>
+      )}
       {climates && (
         <div className="climate-map-legend" aria-label={tx("Climates")}>
           <strong>{tx("Climate overview")}</strong>

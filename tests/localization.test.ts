@@ -62,8 +62,8 @@ describe("French presentation", () => {
     }
   });
   it("has matching complete bilingual chapters and accented vector glyphs", () => {
-    expect(chapters).toHaveLength(12);
-    expect(new Set(chapters.map((c) => c.id)).size).toBe(12);
+    expect(chapters).toHaveLength(13);
+    expect(new Set(chapters.map((c) => c.id)).size).toBe(13);
     for (const c of chapters) {
       expect(c.body.en.length).toBeGreaterThan(500);
       expect(c.body.fr.length).toBeGreaterThan(500);

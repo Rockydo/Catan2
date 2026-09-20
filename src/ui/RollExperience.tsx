@@ -1,3 +1,4 @@
+import { SEASON_LABELS } from "./SeasonCalendar";
 import { localize as tx, useLocale } from "../i18n";
 import {
   useCallback,
@@ -182,7 +183,7 @@ export function RollExperience({
         <div>
           <span className="eyebrow">
             {tx("ROUND ")}
-            {tx(r.round)} ·{" "}
+            {tx(r.round)} · {r.season && <>{tx(SEASON_LABELS[r.season])} · </>}
             {tx(rolling ? "CASTING THE DICE" : "HARVEST REPORT")}
           </span>
           <h2>

@@ -6,7 +6,7 @@ import { SAVE_KEY, serialize } from "../src/game/save";
 import { inventory, sumStock, ownTowns } from "../src/game/selectors";
 import { landAtVertex } from "../src/game/world";
 
-test("old goods migrate into twenty-two clear resource controls and preserved industry", async ({
+test("old goods migrate into twenty-three clear resource controls and preserved industry", async ({
   page,
 }) => {
   const { old, town, tile } = oldGoodsFixture();
@@ -19,7 +19,7 @@ test("old goods migrate into twenty-two clear resource controls and preserved in
   );
   await page.goto("/");
   await page.getByRole("button", { name: /Continue campaign/ }).click();
-  await expect(page.locator(".resource-chip")).toHaveCount(22);
+  await expect(page.locator(".resource-chip")).toHaveCount(23);
   await expect(page.locator(".resource-bar")).not.toContainText(/Flax|Rope/);
   await expect(
     page.getByRole("button", { name: "Military phase", exact: true }),
@@ -53,7 +53,7 @@ test("old goods migrate into twenty-two clear resource controls and preserved in
   });
   await page.reload();
   await page.getByRole("button", { name: /Continue campaign/ }).click();
-  await expect(page.locator(".resource-chip")).toHaveCount(22);
+  await expect(page.locator(".resource-chip")).toHaveCount(23);
 });
 
 test("a basic camp spends exactly one of each of two raw goods", async ({

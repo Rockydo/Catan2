@@ -35,6 +35,7 @@ export function legacyGame(...args: Parameters<typeof newGame>): Game {
   Object.assign(s, world);
   delete s.climatePlan;
   s.generation = 4;
+  delete s.calendar;
   return s;
 }
 export function started(seed = "test-frontier"): Game {

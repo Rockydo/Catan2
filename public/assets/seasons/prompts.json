@@ -1,0 +1,922 @@
+{
+  "tool": "Built-in image_gen",
+  "version": 1,
+  "date": "2026-09-20",
+  "columns": [
+    "spring",
+    "summer",
+    "autumn",
+    "winter"
+  ],
+  "processing": "Exact equal-cell extraction with 2px safety inset, resampled to 384px WebP at quality88. No color filters or creative postprocessing.",
+  "reuseReason": "Cold and Arctic aquatic biomes freeze in winter. Their animals are hidden beneath continuous solid blue-white ice, so those eight winter entries intentionally share one generated frozen-water surface. Alpine frozen water has its own painted cells.",
+  "aliases": {
+    "cold/water/winter": "cold/ice/winter",
+    "cold/fish/winter": "cold/ice/winter",
+    "cold/cod/winter": "cold/ice/winter",
+    "cold/whale/winter": "cold/ice/winter",
+    "arctic/water/winter": "cold/ice/winter",
+    "arctic/fish/winter": "cold/ice/winter",
+    "arctic/cod/winter": "cold/ice/winter",
+    "arctic/whale/winter": "cold/ice/winter"
+  },
+  "atlases": [
+    {
+      "id": "cold-living",
+      "source": "generated_images/01a0bbf0-caf1-7ab1-a6cc-c47bddd647a4/exec-13f5531f-0f86-444e-b993-e5d16d788e08.png",
+      "rows": [
+        {
+          "climate": "cold",
+          "biome": "forest"
+        },
+        {
+          "climate": "cold",
+          "biome": "hunting-forest"
+        },
+        {
+          "climate": "cold",
+          "biome": "rough-fields"
+        },
+        {
+          "climate": "cold",
+          "biome": "rough-pasture"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Create one production seasonal terrain SPRITE ATLAS for a premium illustrated medieval board game. SQUARE 2048x2048 or higher, EXACTLY FOUR COLUMNS and FOUR ROWS of equal square cells, no gutters, no borders. This is a texture atlas, not a presentation. Full-bleed richly painted miniature terrain in every cell, 60-degree overhead camera, no sky, no horizon, realistic dense materials, exceptionally crisp at small size. Each cell is cropped into a hexagon; all identifying objects must sit inside central 60%. Match the reference images' rich detailed painterly style. No text, labels, people, icons, numbers, frames, hex outlines. COLUMNS represent SPRING, SUMMER, AUTUMN, WINTER, in that exact order left to right. ROW ONE: COLD PINE FOREST, dense emerald conifers with a central small brown log pile. Spring fresh green tips, damp moss; summer rich deep green thick canopy; autumn evergreen pine with golden undergrowth, no orange pine foliage; winter heavy fresh snow across ground and pine boughs, still recognizable dense dark pines. ROW TWO: COLD HUNTING FOREST, lush mixed pine and deciduous forest with three very clearly visible deer in a central glade. Spring budding light green and wildflowers; summer layered lush canopy; autumn glowing russet and gold deciduous trees among dark conifers; winter bare deciduous branches and snowy pines, brown deer clearly visible on snowy central ground. ROW THREE: COLD ROUGH CEREAL FIELDS, small poor stony barley plots among pines and grey rocks. Spring dark freshly sown furrows and tiny green shoots; summer short dense golden ripe barley rows; autumn harvested short stubble and a few central bound sheaves; winter dormant fields completely snow-covered with dark furrows barely visible and a small snow-covered straw stack. ROW FOUR: COLD ROUGH SHEEP PASTURE, rocky grassy slopes with a small central flock of cream sheep. Spring grass green with tiny lambs and modest flowers; summer rich green grazing; autumn ochre grasses and healthy sheep; winter snow-covered rocky slope with sheep gathered around a visible hay pile. All sixteen cells are independent consistent scale scenes. The resource silhouette must remain recognizable in every season. Do not blend neighboring cells. Keep exact equal grid."
+    },
+    {
+      "id": "cold-minerals",
+      "source": "generated_images/01a0bbf0-caf1-7ab1-a6cc-c47bddd647a4/exec-b9de651e-afba-46f4-884a-8d6ea360cc3f.png",
+      "rows": [
+        {
+          "climate": "cold",
+          "biome": "stone"
+        },
+        {
+          "climate": "cold",
+          "biome": "clay"
+        },
+        {
+          "climate": "cold",
+          "biome": "gold"
+        },
+        {
+          "climate": "cold",
+          "biome": "coal"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Asset: ONE square production seasonal terrain sprite atlas for Catan Frontiers, exactly FOUR COLUMNS and FOUR ROWS of equal square images, NO gutters, frames or drawn separators. Full-bleed detailed hand-painted miniature/isometric terrain, 60 degree overhead camera, no sky, no horizon, rich natural materials, crisp readable silhouettes. Each cell will be center-cropped to a hexagon, keep identifiers in its central 60 percent. Match input references' beautiful painterly medieval board game style. No people, letters, labels, UI, numerals, icons, modern machinery or hex borders. Columns always SPRING, SUMMER, AUTUMN, WINTER left to right. Four independent scene rows as specified. Avoid blending cells; exact square grid. Climate COLD. Spring damp thawed moss and sparse fresh grass, summer rich green grasses and dark pines, autumn amber undergrowth around evergreen pines, winter thick white snow and icy edges, evergreens still recognizable. ROW1 STONE QUARRY: broad central grey rock terraces and cut stone blocks, modest wooden crane, moss and pines. ROW2 CLAY HILLS: muted cool brown-red exposed clay-cut terraces, broken grey rock, sparse pines, absolutely no vivid orange. ROW3 GOLD MINE: massive grey rock face with prominent gold veins and golden ore cart around central timber mine entrance; sparse pines. ROW4 COAL MINE: central near-black shiny coal seam, timber mine entrance, cart and dark black coal pile; sparse pines and grey rock. In winter snow on ground and structures but exposed rock face and each identifying resource remain clearly visible. Spring thaw visually distinct from lush summer and snowy winter."
+    },
+    {
+      "id": "arctic-living",
+      "source": "generated_images/01a0bbf0-caf1-7ab1-a6cc-c47bddd647a4/exec-13be0897-4b3a-4e6e-8e96-97a21d573fc7.png",
+      "rows": [
+        {
+          "climate": "arctic",
+          "biome": "snow-plain"
+        },
+        {
+          "climate": "arctic",
+          "biome": "seal-grounds"
+        },
+        {
+          "climate": "arctic",
+          "biome": "arctic-iron"
+        },
+        {
+          "climate": "arctic",
+          "biome": "arctic-stone"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Asset: ONE square production seasonal terrain sprite atlas for Catan Frontiers, exactly FOUR COLUMNS and FOUR ROWS of equal square images, NO gutters, frames or drawn separators. Full-bleed detailed hand-painted miniature/isometric terrain, 60 degree overhead camera, no sky, no horizon, rich natural materials, crisp readable silhouettes. Each cell will be center-cropped to a hexagon, keep identifiers in its central 60 percent. Match input references' beautiful painterly medieval board game style. No people, letters, labels, UI, numerals, icons, modern machinery or hex borders. Columns always SPRING, SUMMER, AUTUMN, WINTER left to right. Four independent scene rows as specified. Avoid blending cells; exact square grid. Climate ARCTIC with treeless tundra. Four season columns: SPRING melting patchy snow, meltwater and dark exposed rocks; SUMMER treeless pale lichen tundra, low green moss, very little snow except on high slopes; AUTUMN rust-red low tundra moss and first frost; WINTER thick snow and blue ice, cold soft daylight. ROW1 SNOW PLAIN: a flat windswept empty landscape, subtle undulations, no resources, no trees or buildings. ROW2 SEAL HUNTING GROUNDS: a rocky marine shore centrally occupied by several recognizable grey seals, small turquoise inlet and low offshore ice floes, central seals prominent. Spring and summer seals haul out on exposed rocks, autumn cold mist, winter snowy rock and frozen sea margins. ROW3 ARCTIC IRON MOUNTAIN: central grey rocky ore face with distinct rust-red iron seams and timber mine entrance, ore cart; no trees. ROW4 ARCTIC STONE RIDGE: central grey-white exposed rock terraces, cut grey blocks and small timber crane, cold treeless ridge. In winter keep ore face and stone blocks exposed enough to identify. Realistic natural seasonal changes, no fanciful colors."
+    },
+    {
+      "id": "cold-crops",
+      "rows": [
+        {
+          "climate": "cold",
+          "biome": "rough-fields"
+        },
+        {
+          "climate": "cold",
+          "biome": "barley-fields"
+        },
+        {
+          "climate": "cold",
+          "biome": "rye-fields"
+        },
+        {
+          "climate": "cold",
+          "biome": "reindeer-range"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Asset: ONE square production seasonal terrain sprite atlas for Catan Frontiers, exactly FOUR COLUMNS and FOUR ROWS of equal square images, NO gutters, frames or drawn separators. Full-bleed detailed hand-painted miniature/isometric terrain, 60 degree overhead camera, no sky, no horizon, rich natural materials, crisp readable silhouettes. Each cell will be center-cropped to a hexagon, keep identifiers in its central 60 percent. Match input references' beautiful painterly medieval board game style. No people, letters, labels, UI, numerals, icons, modern machinery or hex borders. Columns always SPRING, SUMMER, AUTUMN, WINTER left to right. Four independent scene rows as specified. Avoid blending cells; exact square grid. Climate COLD pine foothills with dark emerald pines and grey stone. SPRING thaw and fresh growth; SUMMER lush green; AUTUMN golden undergrowth; WINTER snowy. ROW1 ROUGH CEREAL FIELDS: poor stony small wheat plots, spring freshly tilled furrows and small shoots, summer upright immature green cereal rows, autumn ripe golden wheat and a few sheaves, winter empty snow-covered furrows. ROW2 BARLEY FIELDS: productive rectangular plots of distinctive long-awn barley, spring short vivid-green sprouts, summer mature but still green barley stalks, autumn dense golden long-whiskered barley heads and sheaves, winter bare snow-covered dormant plots. ROW3 WINTER RYE FIELDS: slender tall bluish-green rye, spring upright lush blue-green stalks, summer ripe tall pale-gold rye ready for harvest and sheaves, autumn short green recently sown rows, winter low green shoots peeking through thin snow. ROW4 REINDEER RANGE: several clearly readable brown and cream reindeer with branched antlers grouped centrally on rocky moss ground with sparse pine trees. Spring patchy snow and bright moss, summer rich green moss and grasses, autumn ochre-red low foliage, winter deep white snow with reindeer bodies dark and visible. Crop types visibly distinct through stalk height, head shape and field colors, no humans.",
+      "source": "generated_images/01a0bbf0-caf1-7ab1-a6cc-c47bddd647a4/exec-57c43aff-33be-45bd-9c8f-9ee34b15a73e.png"
+    },
+    {
+      "id": "arctic-extra",
+      "rows": [
+        {
+          "climate": "arctic",
+          "biome": "arctic-gold"
+        },
+        {
+          "climate": "arctic",
+          "biome": "reindeer-range"
+        },
+        {
+          "climate": "arctic",
+          "biome": "ice"
+        },
+        {
+          "climate": "cold",
+          "biome": "iron"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Asset: ONE square production seasonal terrain sprite atlas for Catan Frontiers, exactly FOUR COLUMNS and FOUR ROWS of equal square images, NO gutters, frames or drawn separators. Full-bleed detailed hand-painted miniature/isometric terrain, 60 degree overhead camera, no sky, no horizon, rich natural materials, crisp readable silhouettes. Each cell will be center-cropped to a hexagon, keep identifiers in its central 60 percent. Match input references' beautiful painterly medieval board game style. No people, letters, labels, UI, numerals, icons, modern machinery or hex borders. Columns always SPRING, SUMMER, AUTUMN, WINTER left to right. Four independent scene rows as specified. Avoid blending cells; exact square grid. Four seasonal columns spring/summer/autumn/winter. ROW1 ARCTIC GOLD MINE: central grey rock face with unmistakable gold veins, timber entrance and ore cart, no trees, spring patchy snow and lichen, summer mossy grey bare tundra, autumn rust-red tundra, winter snow-covered ground with gold face and cart still exposed. ROW2 ARCTIC REINDEER RANGE: treeless tundra with five clearly visible reindeer and branched antlers centrally, spring patchy snow and emerging moss, summer lush low lichen and tiny flowers, autumn ochre-red tundra with large-antlered deer, winter snowy white with dark reindeer. ROW3 FROZEN SEA: spring thick solid blue-white sea ice with narrow meltwater cracks but traversable continuous surface, summer fully thawed cold blue ocean waves with very small isolated floes near edges and NO solid central ice, autumn newly refrozen continuous polygonal pale-blue ice with frosty seams, winter thick white solid sea ice and snow drifts. No coast, boats or buildings, pure water or ice texture across entire cell. ROW4 COLD IRON MINE: central timber adit in dark grey rock with rusty-red iron seams and iron ore cart, pines and moss. Spring fresh grass and damp rock, summer rich green foliage, autumn golden undergrowth among dark pines, winter snow-covered ground with exposed iron mine entrance and ore.",
+      "source": "generated_images/01a0bbf0-caf1-7ab1-a6cc-c47bddd647a4/exec-da5dab46-5f6b-41f7-b0b8-de0d120bebbb.png"
+    },
+    {
+      "id": "cold-water",
+      "rows": [
+        {
+          "climate": "cold",
+          "biome": "water"
+        },
+        {
+          "climate": "cold",
+          "biome": "fish"
+        },
+        {
+          "climate": "cold",
+          "biome": "cod"
+        },
+        {
+          "climate": "cold",
+          "biome": "whale"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Asset: ONE square production seasonal terrain sprite atlas for Catan Frontiers, exactly FOUR COLUMNS and FOUR ROWS of equal square images, NO gutters, frames or drawn separators. Full-bleed detailed hand-painted miniature/isometric terrain, 60 degree overhead camera, no sky, no horizon, rich natural materials, crisp readable silhouettes. Each cell will be center-cropped to a hexagon, keep identifiers in its central 60 percent. Match input references' beautiful painterly medieval board game style. No people, letters, labels, UI, numerals, icons, modern machinery or hex borders. Columns always SPRING, SUMMER, AUTUMN, WINTER left to right. Four independent scene rows as specified. Avoid blending cells; exact square grid. Cold northern sea, open navigable water in ALL seasons, no land, no coast, no ships, no sky. Similar blue palette across rows, subtle waves. Season columns spring cool blue green, summer calmer medium blue, autumn steel blue with small whitecaps, winter deeper blue with sparse tiny ice pieces near corners, NEVER a solid sheet of ice. ROW1 EMPTY WATER: entirely ocean surface with softly detailed low waves, no animal. ROW2 FISH GROUNDS: a compact clearly visible central shoal of small SILVER HERRING just beneath blue water, characteristic narrow bodies. ROW3 COD GROUNDS: three large brown-olive spotted COD with broad heads and three dorsal fins clearly visible just below water, different in color and silhouette from tiny silver herring, water medium northern blue, not tropical turquoise or overly dark. ROW4 WHALE GROUNDS: two clear large slate-blue humpback whales and a small white spout centrally, backs and tails visible at the surface. Low waves and water detail consistent between adjacent cells. No decorative border or giant animals cropped by cell edges.",
+      "source": "generated_images/01a0bbf0-caf1-7ab1-a6cc-c47bddd647a4/exec-900ce0a3-4c24-49f6-b603-eb8a91206386.png"
+    },
+    {
+      "id": "arctic-water",
+      "rows": [
+        {
+          "climate": "arctic",
+          "biome": "water"
+        },
+        {
+          "climate": "arctic",
+          "biome": "fish"
+        },
+        {
+          "climate": "arctic",
+          "biome": "cod"
+        },
+        {
+          "climate": "arctic",
+          "biome": "whale"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Asset: ONE square production seasonal terrain sprite atlas for Catan Frontiers, exactly FOUR COLUMNS and FOUR ROWS of equal square images, NO gutters, frames or drawn separators. Full-bleed detailed hand-painted miniature/isometric terrain, 60 degree overhead camera, no sky, no horizon, rich natural materials, crisp readable silhouettes. Each cell will be center-cropped to a hexagon, keep identifiers in its central 60 percent. Match input references' beautiful painterly medieval board game style. No people, letters, labels, UI, numerals, icons, modern machinery or hex borders. Columns always SPRING, SUMMER, AUTUMN, WINTER left to right. Four independent scene rows as specified. Avoid blending cells; exact square grid. ARCTIC OPEN SEA, still navigable water even winter. No land, coast, ships, sky or buildings. Spring broken isolated white ice floes around edges, center cold clear blue open water; summer cold blue open water and tiny distant ice fragments; autumn darker blue with first thin floating ice shards at corners; winter icy blue open water between scattered white floes, open center occupies at least 65 percent, never solid frozen sheet. ROW1 EMPTY ARCTIC WATER, only natural sea and scattered ice pieces. ROW2 ARCTIC FISH GROUNDS, compact central shoal of small slender SILVER HERRING just below clear blue surface. ROW3 ARCTIC COD GROUNDS, three clearly visible large spotted OLIVE-BROWN COD with broad heads and three dorsal fins beneath cold blue surface, distinct from herring in scale and shape. ROW4 ARCTIC WHALE GROUNDS, two clearly visible dark grey-blue whales breaking central open water, a white spout and flukes, small surrounding floes. Main subjects fully inside central60percent for hex crop. Avoid whitewashed full ice background except isolated floes, this is OPEN navigable water.",
+      "source": "generated_images/01a0bbf0-caf1-7ab1-a6cc-c47bddd647a4/exec-1240d30e-e950-47bf-988e-afe06145ae26.png"
+    },
+    {
+      "id": "temperate-living",
+      "rows": [
+        {
+          "climate": "temperate",
+          "biome": "woods"
+        },
+        {
+          "climate": "temperate",
+          "biome": "pasture"
+        },
+        {
+          "climate": "temperate",
+          "biome": "cattle-pasture"
+        },
+        {
+          "climate": "temperate",
+          "biome": "maize-field"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Asset: ONE square production seasonal terrain sprite atlas for Catan Frontiers, exactly FOUR COLUMNS and FOUR ROWS of equal square images, NO gutters, frames or drawn separators. Full-bleed detailed hand-painted miniature/isometric terrain, 60 degree overhead camera, no sky, no horizon, rich natural materials, crisp readable silhouettes. Each cell will be center-cropped to a hexagon, keep identifiers in its central 60 percent. Match input references' beautiful painterly medieval board game style. No people, letters, labels, UI, numerals, icons, modern machinery or hex borders. Columns always SPRING, SUMMER, AUTUMN, WINTER left to right. Four independent scene rows as specified. Avoid blending cells; exact square grid. TEMPERATE climate, gently rolling countryside. SPRING fresh bright green buds and flowers; SUMMER rich green lush; AUTUMN russet gold and ochre; WINTER light but clear continuous snow, bare deciduous trees. ROW1 WOODS: light mixed oak and birch forest with central log pile and a small deer, seasonal foliage spring pale green, summer dense green, autumn redgold leaves, winter bare branches and snowy evergreen hints. ROW2 SHEEP PASTURE: central cream sheep flock on soft green grass, spring tiny lambs, summer short-shorn sheep with a modest wool basket, autumn full fleece sheep and ochregrass, winter sheep gathered at hay on snowy pasture. ROW3 CATTLE PASTURE: several broad healthy brown-white cattle centered, rustic low wooden fence, spring cows with calves and freshgrass, summer green grazing, autumn large cattle golden grass and haystacks, winter cattle around central hay pile on light snow, NO sheep. ROW4 MAIZE FIELD: distinctive tall broad-leaf CORN PLANTS in orderly rows, spring fresh tilled soil with small sprouts; summer tall lush green maize and tassels but no golden harvest; autumn ripe yellow ears in maize and bundled stalks centrally; winter bare cut stalk stubble with light snow, one bundled stalk pile. Essential identifiers remain within central60%.",
+      "source": "generated_images/01a0bbf0-caf1-7ab1-a6cc-c47bddd647a4/exec-e49c49d3-3819-428b-9011-5efeb191593a.png"
+    },
+    {
+      "id": "temperate-crops-minerals",
+      "rows": [
+        {
+          "climate": "temperate",
+          "biome": "golden-fields"
+        },
+        {
+          "climate": "temperate",
+          "biome": "rye-fields"
+        },
+        {
+          "climate": "temperate",
+          "biome": "stone"
+        },
+        {
+          "climate": "temperate",
+          "biome": "clay"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Asset: ONE square production seasonal terrain sprite atlas for Catan Frontiers, exactly FOUR COLUMNS and FOUR ROWS of equal square images, NO gutters, frames or drawn separators. Full-bleed detailed hand-painted miniature/isometric terrain, 60 degree overhead camera, no sky, no horizon, rich natural materials, crisp readable silhouettes. Each cell will be center-cropped to a hexagon, keep identifiers in its central 60 percent. Match input references' beautiful painterly medieval board game style. No people, letters, labels, UI, numerals, icons, modern machinery or hex borders. Columns always SPRING, SUMMER, AUTUMN, WINTER left to right. Four independent scene rows as specified. Avoid blending cells; exact square grid. TEMPERATE gentle countryside. Four columns spring summer autumn winter. ROW1 GOLDEN WHEAT FIELDS: spring vigorous immature green wheat rows; summer dense ripe golden wheat and a few sheaves centrally; autumn bare harvested stubble and newly tilled soil; winter dormant furrows and a haystack dusted with snow, hedgerow bare. ROW2 RYE FIELDS: slender tall bluegreen rye, spring green headingstalks; summer ripe palegold rye and harvestsheaves; autumn freshly sown rows with tiny greenshoots; winter low greenshoots in snow-dusted furrows. ROW3 STONE QUARRY: central broad palegrey rockcut terraces, cutblocks and small wooden crane, surrounding leafy trees; spring palegreen shoots and moss, summer richgreen, autumn golden foliage and leaflitter, winter snowy ground with exposed resource rock. ROW4 CLAY HILLS: exposed rusty-red earthy claycut terraces and central clay piles with green grassy edges; spring freshgreen grass, summer fullgreen trees, autumn golden scrub, winter redclay face remains visible against snowy grass and bare shrubs. Differentiate geology clearly, no people, no large buildings.",
+      "source": "generated_images/01a0bbf0-caf1-7ab1-a6cc-c47bddd647a4/exec-9c9ae467-ba92-4d26-bfc9-b87f4d5e691d.png"
+    },
+    {
+      "id": "temperate-mines",
+      "rows": [
+        {
+          "climate": "temperate",
+          "biome": "gold"
+        },
+        {
+          "climate": "temperate",
+          "biome": "iron"
+        },
+        {
+          "climate": "temperate",
+          "biome": "coal"
+        },
+        {
+          "climate": "temperate",
+          "biome": "salt-flats"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Asset: ONE square production seasonal terrain sprite atlas for Catan Frontiers, exactly FOUR COLUMNS and FOUR ROWS of equal square images, NO gutters, frames or drawn separators. Full-bleed detailed hand-painted miniature/isometric terrain, 60 degree overhead camera, no sky, no horizon, rich natural materials, crisp readable silhouettes. Each cell will be center-cropped to a hexagon, keep identifiers in its central 60 percent. Match input references' beautiful painterly medieval board game style. No people, letters, labels, UI, numerals, icons, modern machinery or hex borders. Columns always SPRING, SUMMER, AUTUMN, WINTER left to right. Four independent scene rows as specified. Avoid blending cells; exact square grid. TEMPERATE climate spring green buds and tinyflowers, summer lushgreen, autumn russetgold leaves, winter white snow and baretrees. ROW1 GOLD MINE: prominent central goldyellow veins in rugged grey rock with small timber adit and cart full of golden ore, leafy trees atedges. ROW2 IRON MINE: rust-red iron veins through bluegrey rock and central timber adit, ore cart of grey-red iron. ROW3 COAL MINE: near-black shiny coal seam, central timber adit and coal cart. ROW4 SALT FLATS: shallow pale blue evaporation pools separated by low pale earthen walls, bright white salt crystal mounds central, spring damp pools and freshgreen marshgrass, summer drier crystallized salt and shimmering pale pools, autumn wet pools and brown marsh reeds, winter small iceedges and snow yet bright salt mounds readable. No huge minebuilding, onlysmallhistorictools. Main resource exposed inwinter. Four exactequalrowsandcolumns.",
+      "source": "generated_images/01a0bbf0-caf1-7ab1-a6cc-c47bddd647a4/exec-bcd3e3af-5d28-43ca-a074-e49e4ef277f3.png"
+    },
+    {
+      "id": "temperate-water-mediterranean-goats",
+      "rows": [
+        {
+          "climate": "temperate",
+          "biome": "water"
+        },
+        {
+          "climate": "temperate",
+          "biome": "fish"
+        },
+        {
+          "climate": "temperate",
+          "biome": "whale"
+        },
+        {
+          "climate": "mediterranean",
+          "biome": "goat-pasture"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Asset: ONE square production seasonal terrain sprite atlas for Catan Frontiers, exactly FOUR COLUMNS and FOUR ROWS of equal square images, NO gutters, frames or drawn separators. Full-bleed detailed hand-painted miniature/isometric terrain, 60 degree overhead camera, no sky, no horizon, rich natural materials, crisp readable silhouettes. Each cell will be center-cropped to a hexagon, keep identifiers in its central 60 percent. Match input references' beautiful painterly medieval board game style. No people, letters, labels, UI, numerals, icons, modern machinery or hex borders. Columns always SPRING, SUMMER, AUTUMN, WINTER left to right. Four independent scene rows as specified. Avoid blending cells; exact square grid. TOP THREE ROWS TEMPERATE OCEAN, no land or coastline, all seasons open navigable water: spring fresh green-blue smallwaves; summer clear warmblue softlycalm; autumn mediumblue wavelets whitecaps; winter bluegrey lowwaves NO ICE, no snow onwater. ROW1 EMPTY OCEAN onlysmallwaves. ROW2 FISH GROUNDS central compact shoal of small silver herring just beneath surface, identical general water colors to emptyrow, few large enough fish identifiable centrally. ROW3 WHALE GROUNDS two recognizable large bluegrey humpback whales at central surface and white spout, retain continuouswater fullbleed, whalesfitinsidecentral60percent. ROW4 MEDITERRANEAN GOAT PASTURE: central small herd brownandcream goats withcurvedhorns on rocky pale limestone terrain, sparse olive trees and small hardy shrubs. Spring modest green grass and smallwildflowers; summer very dry strawgrass anddusty ground; autumn dryochre ground with light first fresh grass; winter green winterrain regrowth and moist greyrocks, absolutely NO SNOW. Consistentpaintedgame terrainstyle allrows.",
+      "source": "generated_images/01a0bbf0-caf1-7ab1-a6cc-c47bddd647a4/exec-61104e2c-825a-4a2b-8205-9fbb36a60f86.png"
+    },
+    {
+      "id": "steppe-living",
+      "rows": [
+        {
+          "climate": "steppe",
+          "biome": "steppe-plain"
+        },
+        {
+          "climate": "steppe",
+          "biome": "cattle-savanna"
+        },
+        {
+          "climate": "steppe",
+          "biome": "pasture"
+        },
+        {
+          "climate": "steppe",
+          "biome": "woods"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Asset: ONE square production seasonal terrain sprite atlas for Catan Frontiers, exactly FOUR COLUMNS and FOUR ROWS of equal square images, NO gutters, frames or drawn separators. Full-bleed detailed hand-painted miniature/isometric terrain, 60 degree overhead camera, no sky, no horizon, rich natural materials, crisp readable silhouettes. Each cell will be center-cropped to a hexagon, keep identifiers in its central 60 percent. Match input references' beautiful painterly medieval board game style. No people, letters, labels, UI, numerals, icons, modern machinery or hex borders. Columns always SPRING, SUMMER, AUTUMN, WINTER left to right. Four independent scene rows as specified. Avoid blending cells; exact square grid. STEPPE continentalgrassland. Spring vivid shortgreen grass andflowerpatches; summer sunbleached pale golden tan drygrasses; autumn russet ochre drygrass; winter windswept snow across opengrass andbaretrees. ROW1 STEPPE PLAIN: central herd of mixed wild brown antelopes and shaggy cream sheep on broad open grassyground, no cattle, dispersedgreyrocks, two distinctanimaltypes visible. ROW2 STEPPE CATTLE RANGE: central large rustic brown cattle with curved horns and shaggycoats, low roughfence andhay, spring calves in green grass, summer goldgrass, autumn healthyheavycattle withhay, winter snowand centralhaypile. ROW3 SHEEP PASTURE: central cream sheepflock onsoftgrass among greyrock, spring smalllambs, summer shortshornsheep, autumn thickfleece, winter sheeparoundhay. ROW4 STEPPE WOODS: scattered broadleaf oak/birchgrove acrossgrassland with central timberlogpile andsmall deer; spring freshbuds andgreen, summer olivegreen andgold drygrass, autumn orangegoldleaves, winter barebranchesandlight snow. Woods lessdense thanborealpineforest. Allanimalidentifiers centralforhexcrop.",
+      "source": "generated_images/01a0bbf0-caf1-7ab1-a6cc-c47bddd647a4/exec-e0558a62-7546-4d1b-a79b-a073e8f3558c.png"
+    },
+    {
+      "id": "steppe-crops-minerals",
+      "rows": [
+        {
+          "climate": "steppe",
+          "biome": "rough-fields"
+        },
+        {
+          "climate": "steppe",
+          "biome": "millet-fields"
+        },
+        {
+          "climate": "steppe",
+          "biome": "stone"
+        },
+        {
+          "climate": "steppe",
+          "biome": "clay"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Asset: ONE square production seasonal terrain sprite atlas for Catan Frontiers, exactly FOUR COLUMNS and FOUR ROWS of equal square images, NO gutters, frames or drawn separators. Full-bleed detailed hand-painted miniature/isometric terrain, 60 degree overhead camera, no sky, no horizon, rich natural materials, crisp readable silhouettes. Each cell will be center-cropped to a hexagon, keep identifiers in its central 60 percent. Match input references' beautiful painterly medieval board game style. No people, letters, labels, UI, numerals, icons, modern machinery or hex borders. Columns always SPRING, SUMMER, AUTUMN, WINTER left to right. Four independent scene rows as specified. Avoid blending cells; exact square grid. STEPPE climate, open dry continentalgrassland. Spring shortfreshgreen, summer drygolden grass, autumn ochre vegetation, winterlight windblown snow. ROW1 ROUGH FIELDS: poorstonysparse cerealplots, spring sownfurrowswithsprouts, summer greenimmaturecereal in sparse rows, autumngoldripewheat inpatchy smallplots, winter emptydarkfurrows undersnow. ROW2 MILLET FIELDS: distinctive milletwithlarge drooping bronze bushy seedpanicles on tall broadleaved stalks, spring tinygreenshoots inbrownearth; summer tallgreenleafyplants withimmatureseedheads; autumn large ripe bronze andgoldseedpanicles andcentral bundles, full distinct milletheads; wintercutdormantstalks onsnowyearth. ROW3 STONE QUARRY: palegreyrockterracesand centralcutstoneblocks, smalltimbercrane, openshortgrassandscatteredboulders, noseaside; seasonalgrasschanges, winter snowy groundbutexposedrock. ROW4 CLAY HILLS: dusty ochre yellowbrown claycutterraces withfewredlayers, centralearthmounds, drygrass andveryfew shrubs, steppeclay drier/paleryellowthanorangeredtemperateclay; wintersnow butyellowclayfacevisible. Noforestdominatinganyscene.",
+      "source": "generated_images/01a0bbf0-caf1-7ab1-a6cc-c47bddd647a4/exec-3b13b746-6974-4e6f-8b92-7c6aca0b9491.png"
+    },
+    {
+      "id": "steppe-mines-mediterranean-olive",
+      "rows": [
+        {
+          "climate": "steppe",
+          "biome": "gold"
+        },
+        {
+          "climate": "steppe",
+          "biome": "iron"
+        },
+        {
+          "climate": "steppe",
+          "biome": "coal"
+        },
+        {
+          "climate": "mediterranean",
+          "biome": "olive-grove"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Asset: ONE square production seasonal terrain sprite atlas for Catan Frontiers, exactly FOUR COLUMNS and FOUR ROWS of equal square images, NO gutters, frames or drawn separators. Full-bleed detailed hand-painted miniature/isometric terrain, 60 degree overhead camera, no sky, no horizon, rich natural materials, crisp readable silhouettes. Each cell will be center-cropped to a hexagon, keep identifiers in its central 60 percent. Match input references' beautiful painterly medieval board game style. No people, letters, labels, UI, numerals, icons, modern machinery or hex borders. Columns always SPRING, SUMMER, AUTUMN, WINTER left to right. Four independent scene rows as specified. Avoid blending cells; exact square grid. FIRST THREE ROWS STEPPE mines, open continental grassland with sparse shrubs, no forests. Seasons: spring fresh short green grasses, summer dry yellow strawgrass, autumn ochre grasses, winter snow. ROW1 GOLD MINE: grey rocky hill with large central gold veins and timber adit, ore cart with gold. ROW2 IRON MINE: grey rocky hill with rusty-red iron veins and central timber adit and grey-red ore cart. ROW3 COAL MINE: black coal seam and dark coal cart by central timber adit. Mines stay identifiable in winter, snow only surrounding slopes. ROW4 MEDITERRANEAN OLIVE GROVE, evergreen gnarled olive trees on pale stony soil, no snow in any column. Spring trees with tiny pale flowers and green grassy understory; summer dusty straw ground and green unripe olives; autumn heavy dark purple olives, central filled olive baskets on harvest cloth; winter more dark ripe olives with harvest baskets, wet ground and fresh green winter grass. These olive trees retain silver-green leaves ALL seasons, no red autumn foliage.",
+      "source": "generated_images/01a0bbf0-caf1-7ab1-a6cc-c47bddd647a4/exec-72d92d33-21d4-41e8-b1e6-3c6b08c027b8.png"
+    },
+    {
+      "id": "steppe-water-mediterranean-barley",
+      "rows": [
+        {
+          "climate": "steppe",
+          "biome": "water"
+        },
+        {
+          "climate": "steppe",
+          "biome": "fish"
+        },
+        {
+          "climate": "steppe",
+          "biome": "whale"
+        },
+        {
+          "climate": "mediterranean",
+          "biome": "barley-fields"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Asset: ONE square production seasonal terrain sprite atlas for Catan Frontiers, exactly FOUR COLUMNS and FOUR ROWS of equal square images, NO gutters, frames or drawn separators. Full-bleed detailed hand-painted miniature/isometric terrain, 60 degree overhead camera, no sky, no horizon, rich natural materials, crisp readable silhouettes. Each cell will be center-cropped to a hexagon, keep identifiers in its central 60 percent. Match input references' beautiful painterly medieval board game style. No people, letters, labels, UI, numerals, icons, modern machinery or hex borders. Columns always SPRING, SUMMER, AUTUMN, WINTER left to right. Four independent scene rows as specified. Avoid blending cells; exact square grid. FIRST THREE ROWS STEPPE SEA open water, no land, no buildings, no boats. Spring muted turquoise-blue ripples, summer clear medium blue gentle waves, autumn bluegrey with small whitecaps, winter cold slateblue lightly rough open water but no solid ice. ROW1 EMPTY WATER, pure wave texture. ROW2 FISH, compact central shoal of silver herring beneath surface, same water palette as empty row. ROW3 WHALES, two large greyblue whales centrally visible at surface with white spout, fit whole animal inside center. ROW4 MEDITERRANEAN BARLEY FIELDS: limestone edges, distant small olive shrubs, low rectangular plots of long-awn barley. Spring lush immature green barley; summer RIPE GOLDEN barley with long whiskered heads and central harvest sheaves; autumn harvested stubble and newly sown earth after rain; winter fresh green short growing rows in moist soil, mild climate NEVER SNOW. Summer dry straw surroundings, winter green regrowth. No words or frames.",
+      "source": "generated_images/01a0bbf0-caf1-7ab1-a6cc-c47bddd647a4/exec-07c598f6-0e31-4d39-be04-24694e729bac.png"
+    },
+    {
+      "id": "mediterranean-living",
+      "rows": [
+        {
+          "climate": "mediterranean",
+          "biome": "golden-fields"
+        },
+        {
+          "climate": "mediterranean",
+          "biome": "woods"
+        },
+        {
+          "climate": "mediterranean",
+          "biome": "rough-pasture"
+        },
+        {
+          "climate": "mediterranean",
+          "biome": "escarpment"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Asset: ONE square production seasonal terrain sprite atlas for Catan Frontiers, exactly FOUR COLUMNS and FOUR ROWS of equal square images, NO gutters, frames or drawn separators. Full-bleed detailed hand-painted miniature/isometric terrain, 60 degree overhead camera, no sky, no horizon, rich natural materials, crisp readable silhouettes. Each cell will be center-cropped to a hexagon, keep identifiers in its central 60 percent. Match input references' beautiful painterly medieval board game style. No people, letters, labels, UI, numerals, icons, modern machinery or hex borders. Columns always SPRING, SUMMER, AUTUMN, WINTER left to right. Four independent scene rows as specified. Avoid blending cells; exact square grid. MEDITERRANEAN climate, pale limestone and drought-adapted evergreen trees. Four seasonal columns spring/summer/autumn/winter, NO SNOW ANYWHERE. Spring fresh green grasses and small flowers, summer dusty dry straw vegetation, autumn ochre ground with early rainy shoots, winter moister fresh green low plants and softly grey light. ROW1 GOLDEN WHEAT FIELDS: spring vigorous green wheat plots, summer ripe golden wheat with central sheaves, autumn harvested stubble and bare brown furrows, winter new short green wheat rows after winter rain. ROW2 WOODS: light scattered evergreen oak and umbrella pine, central log pile and small deer, foliage always olive-green, spring lush undergrowth, summer dry golden grass below, autumn browner leaf litter, winter fresh green wet undergrowth, no dramatic deciduous red canopy. ROW3 ROUGH SHEEP PASTURE: central cream sheep on pale rocky limestone grazing slopes, spring flowers and lambs, summer shorn sheep and dry grass, autumn mature thick fleece and dry grass, winter lush low green regrowth and sheep, no snow. ROW4 ESCARPMENT: rugged pale cream-grey limestone cliffs, central exposed cut face and squared pale blocks with small wooden crane, scrubby olive bushes; seasonal grasses only, resource central and strongly legible.",
+      "source": "generated_images/01a0bbf0-caf1-7ab1-a6cc-c47bddd647a4/exec-4c42b4a5-6202-4adf-8e6f-4c0a7c2f9dd0.png"
+    },
+    {
+      "id": "mediterranean-minerals",
+      "rows": [
+        {
+          "climate": "mediterranean",
+          "biome": "gold"
+        },
+        {
+          "climate": "mediterranean",
+          "biome": "iron"
+        },
+        {
+          "climate": "mediterranean",
+          "biome": "coal"
+        },
+        {
+          "climate": "mediterranean",
+          "biome": "salt-flats"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Asset: ONE square production seasonal terrain sprite atlas for Catan Frontiers, exactly FOUR COLUMNS and FOUR ROWS of equal square images, NO gutters, frames or drawn separators. Full-bleed detailed hand-painted miniature/isometric terrain, 60 degree overhead camera, no sky, no horizon, rich natural materials, crisp readable silhouettes. Each cell will be center-cropped to a hexagon, keep identifiers in its central 60 percent. Match input references' beautiful painterly medieval board game style. No people, letters, labels, UI, numerals, icons, modern machinery or hex borders. Columns always SPRING, SUMMER, AUTUMN, WINTER left to right. Four independent scene rows as specified. Avoid blending cells; exact square grid. MEDITERRANEAN dry rocky limestone country, no snow ever. Spring bright green sparse grasses and smallflowers, summer parched straw ground, autumn tawny ground andleaflitter, winter damp limestone andfresh green rain-fed grasses; evergreen olive shrubs keep silvergreenleaves. ROW1 GOLD MINE: exposed grey limestone rock with prominent golden veins and central timber adit, cart ofgold. ROW2 IRON MINE: grey limestone rockface with rusty-red mineral veins and small timber mineentrance and ore cart. ROW3 COAL MINE: nearblack coal seam in limestone hill, central timberadit andblack coal pile. ROW4 SALT FLATS: central brightwhite saltmounds, shallow lightblue evaporation basins and sandy lowpartitions, few small green shrubs atedges. Spring pools mostlyfull, summer pools crystallizedwith thickwhite saltcrust, autumn partiallyrefilled, winter fullpools andmoist edges. Identicalrich painterly miniaturestyle but unique materials for eachresource. Never orange-gold ore for iron; keep iron rustyred andgold genuinelyyellow.",
+      "source": "generated_images/01a0bbf0-caf1-7ab1-a6cc-c47bddd647a4/exec-4906a26e-10f7-4d01-a800-8a496754caa8.png"
+    },
+    {
+      "id": "mediterranean-water-desert-goats",
+      "rows": [
+        {
+          "climate": "mediterranean",
+          "biome": "water"
+        },
+        {
+          "climate": "mediterranean",
+          "biome": "fish"
+        },
+        {
+          "climate": "mediterranean",
+          "biome": "whale"
+        },
+        {
+          "climate": "desert",
+          "biome": "goat-pasture"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Asset: ONE square production seasonal terrain sprite atlas for Catan Frontiers, exactly FOUR COLUMNS and FOUR ROWS of equal square images, NO gutters, frames or drawn separators. Full-bleed detailed hand-painted miniature/isometric terrain, 60 degree overhead camera, no sky, no horizon, rich natural materials, crisp readable silhouettes. Each cell will be center-cropped to a hexagon, keep identifiers in its central 60 percent. Match input references' beautiful painterly medieval board game style. No people, letters, labels, UI, numerals, icons, modern machinery or hex borders. Columns always SPRING, SUMMER, AUTUMN, WINTER left to right. Four independent scene rows as specified. Avoid blending cells; exact square grid. FIRST THREE ROWS MEDITERRANEAN SEA, bright but realistic azure blue, open water full bleed with no coast or land, no ships. Spring medium azure with tiny ripples, summer clear deep azure gentle water, autumn bluer with some whitecaps, winter muted blue with more small waves; NO ice ever. ROW1 EMPTY WATER small wave texture, no animals. ROW2 FISH a compact central shoal of slender silver fish just beneath surface, blue palette matches emptywater. ROW3 WHALES two slateblue large humpbacks centrally at surface with smallwhite spout, bodies fit inside central60%. ROW4 DESERT GOAT PASTURE: several hardy lean tanandcream goats with curvedhorns on very barren rocky ochreandtan desert, sparse tinythornscrub, notlushpasture. Spring a few sparse green shoot patches only, summer almost bare hot dusty ground, autumn sandygroundanddry scrub, winter slightlydamp groundwithsparse hardy smallgreen shoots, NEVER snow. No grass blanket, no oasispool, no palms in goatpasture. Main goatshapes central andclear.",
+      "source": "generated_images/01a0bbf0-caf1-7ab1-a6cc-c47bddd647a4/exec-0f8ba471-0d8c-4691-8e1f-3b5540336eca.png"
+    },
+    {
+      "id": "desert-living-minerals",
+      "rows": [
+        {
+          "climate": "desert",
+          "biome": "desert"
+        },
+        {
+          "climate": "desert",
+          "biome": "oasis"
+        },
+        {
+          "climate": "desert",
+          "biome": "salt-flats"
+        },
+        {
+          "climate": "desert",
+          "biome": "gold"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Asset: ONE square production seasonal terrain sprite atlas for Catan Frontiers, exactly FOUR COLUMNS and FOUR ROWS of equal square images, NO gutters, frames or drawn separators. Full-bleed detailed hand-painted miniature/isometric terrain, 60 degree overhead camera, no sky, no horizon, rich natural materials, crisp readable silhouettes. Each cell will be center-cropped to a hexagon, keep identifiers in its central 60 percent. Match input references' beautiful painterly medieval board game style. No people, letters, labels, UI, numerals, icons, modern machinery or hex borders. Columns always SPRING, SUMMER, AUTUMN, WINTER left to right. Four independent scene rows as specified. Avoid blending cells; exact square grid. DESERT climate, clearly sandy arid natural desert in all four seasons, NO snow, no temperate grasslands. Spring warm palebeige sand with tiny rare wildflowers; summer pale hotgolden sand, sparse dried scrub; autumn deeper ochre sand and small hardy shrubs; winter cooler beige rocky sand with a few green scrub shoots after rain. ROW1 EMPTY DESERT: broad rippled sanddunes and barren sandstone pieces, no buildings or resources, subtle seasonal windripple changes. ROW2 OASIS: small central bluegreen pool and dense cluster of recognizable datepalms, centralsmallbrown timberlogs representwood, spring fresh palm growth; summer lushgreen fronds with unripe small dates; autumn hanging clusters of ripe amber dates and visible centraldate baskets; winter palmsgreen andgrounddamp, no harvested dates. Desert sand fillsedges, oasisdistinctfromwoodland. ROW3 SALT FLATS: white mineralcrust pan in barren sandybasin, polygonalcrust and smallcentralsaltmounds, spring shallowbluepool, summer largelydrysalt, autumn tiny pools, winter more moist shallowpools, no greenforest. ROW4 GOLD MINE: rugged sunbleached sandstone with brightgold veins and smallcentral timberadit andgoldorecart, aridsandandsparse thornscrub atedges. Goldneverlookslikeclay.",
+      "source": "generated_images/01a0bbf0-caf1-7ab1-a6cc-c47bddd647a4/exec-b9366c0c-e105-418f-83f7-cff035124821.png"
+    },
+    {
+      "id": "desert-mines-water",
+      "rows": [
+        {
+          "climate": "desert",
+          "biome": "iron"
+        },
+        {
+          "climate": "desert",
+          "biome": "stone"
+        },
+        {
+          "climate": "desert",
+          "biome": "coal"
+        },
+        {
+          "climate": "desert",
+          "biome": "water"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Asset: ONE square production seasonal terrain sprite atlas for Catan Frontiers, exactly FOUR COLUMNS and FOUR ROWS of equal square images, NO gutters, frames or drawn separators. Full-bleed detailed hand-painted miniature/isometric terrain, 60 degree overhead camera, no sky, no horizon, rich natural materials, crisp readable silhouettes. Each cell will be center-cropped to a hexagon, keep identifiers in its central 60 percent. Match input references' beautiful painterly medieval board game style. No people, letters, labels, UI, numerals, icons, modern machinery or hex borders. Columns always SPRING, SUMMER, AUTUMN, WINTER left to right. Four independent scene rows as specified. Avoid blending cells; exact square grid. DESERT. Top three rows barren arid ochre and beige rocky sand, spring tiny rare wildflowers, summer parchedgold sand andthornscrub, autumn deeper ochresand, winter coolerbeige sandandvery few hardy green shoots, no snow ever. ROW1 IRON MINE: central tan sandstone rocky hill with rustyred iron veins and smalltimberadit, ore cart withrustred iron, noshinygold. ROW2 STONE QUARRY: sunbleached beige sandstone cutrock terraces and central pale squared blocks, smallwoodencrane, barren desertedges. ROW3 COAL MINE: strikingblack coal seam in ochre sandstone, central timberadit andblack ore cart, barren rocky desert. ROW4 OPEN DESERT OCEAN: FULLBLEED water only no land, spring clear bluegreen, summer deepbrightblue smallgentlewaves, autumn mediumblue faintwhitecaps, winter slightlymuted bluegreen smallripples. No boats, animals or shore in waterrow, NO ICE.",
+      "source": "generated_images/01a0bbf0-caf1-7ab1-a6cc-c47bddd647a4/exec-a62d0c26-924a-4d2b-a7aa-d1b32a44d4d9.png"
+    },
+    {
+      "id": "desert-water-frozen-surfaces",
+      "rows": [
+        {
+          "climate": "desert",
+          "biome": "fish"
+        },
+        {
+          "climate": "desert",
+          "biome": "whale"
+        },
+        {
+          "climate": "cold",
+          "biome": "ice"
+        },
+        {
+          "climate": "alpine",
+          "biome": "ice"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Asset: ONE square production seasonal terrain sprite atlas for Catan Frontiers, exactly FOUR COLUMNS and FOUR ROWS of equal square images, NO gutters, frames or drawn separators. Full-bleed detailed hand-painted miniature/isometric terrain, 60 degree overhead camera, no sky, no horizon, rich natural materials, crisp readable silhouettes. Each cell will be center-cropped to a hexagon, keep identifiers in its central 60 percent. Match input references' beautiful painterly medieval board game style. No people, letters, labels, UI, numerals, icons, modern machinery or hex borders. Columns always SPRING, SUMMER, AUTUMN, WINTER left to right. Four independent scene rows as specified. Avoid blending cells; exact square grid. FOUR SEASON COLUMNS spring summer autumn winter. ROW1 DESERT FISH GROUNDS: fullbleed blue ocean, compact centralshoal of smallsilverfish below surface, spring bluegreen, summerbrightblue, autumn mediumblue, wintermutedblue, wateropen noiceever, no land. ROW2 DESERT WHALE GROUNDS: samewatercolors withtwo prominentcentral slatebluewhales andsmallwhite spout, no land noiceever. ROW3 COLD FROZEN SEA: spring solidpale blue seaice with tiny surface meltpools, summer fullythawed bluewavewater no ice sheet, autumn new solidblue ice with fine polygonalfrost seams, WINTER continuous blue-white HARD ICE with clear crystalline plates andwhite frostcracks, light scattered snow butmostsurface visiblyBLUEICE; no fish animals holes boats orland anywhere. ROW4 ALPINE FROZEN WATER: spring continuous paleaquamarine icewiththinmeltrivulets, summer fullythawed coolclearbluewater, autumn smoothblue newlysolidice withhairlinewhite seams, winter solid TURQUOISE-BLUE ICE SHEET with thickwhite branchingfrostveins and somepowderysnow, clearlydistinctfromsnowyland and very obviously solid traversable ice, NO openwater gaps. No coast orsky in any row.",
+      "source": "generated_images/01a0bbf0-caf1-7ab1-a6cc-c47bddd647a4/exec-0cbd3b57-1776-43ab-9dcc-ed32e64e03c2.png"
+    },
+    {
+      "id": "tropical-living",
+      "rows": [
+        {
+          "climate": "tropical",
+          "biome": "jungle"
+        },
+        {
+          "climate": "tropical",
+          "biome": "tropical-woods"
+        },
+        {
+          "climate": "tropical",
+          "biome": "rice-field"
+        },
+        {
+          "climate": "tropical",
+          "biome": "clay"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Asset: ONE square production seasonal terrain sprite atlas for Catan Frontiers, exactly FOUR COLUMNS and FOUR ROWS of equal square images, NO gutters, frames or drawn separators. Full-bleed detailed hand-painted miniature/isometric terrain, 60 degree overhead camera, no sky, no horizon, rich natural materials, crisp readable silhouettes. Each cell will be center-cropped to a hexagon, keep identifiers in its central 60 percent. Match input references' beautiful painterly medieval board game style. No people, letters, labels, UI, numerals, icons, modern machinery or hex borders. Columns always SPRING, SUMMER, AUTUMN, WINTER left to right. Four independent scene rows as specified. Avoid blending cells; exact square grid. TROPICAL seasonal humid rainforest, never snow, never temperate red autumn. Spring fresh limegreen leaf flush and subtle flowering; summer rainyseason rich darkemerald foliage, wetground and puddles; autumn lushgreen mature plants and golden ochre groundpatches; winter drier lighter olivegreen leaves anddrierbrown ground, still tropical. ROW1 JUNGLE HUNTING: VERY DENSE layered broadleaf tropical canopy, central smallglade with brown deer and a wildboar clearly visible, ferns andpalms, rich biodiversity, no logpile. ROW2 TROPICAL WOODS: lighter broadleaf tropical woodland with palmsandcentral recognizable cuttimberlogpile, vegetation lessdense thanjungle, no animals. ROW3 TROPICAL RICE FIELD: curved floodedpaddyterraces. Spring ripe golden rice readyforFIRST harvest with centralricesheaves plusadjacentnewgreen seedlings; summer ripegolden rice SECOND harvest amongwetpaddies andsmallgreen regrowth strips; autumn ripegolden rice THIRD harvest andcentralharvestbundles; winter drained emptybrown paddieswithshortcut stubble, embankmentsdry, absolutely no ripecrop. Rice obviouspaddywater notdrywheatfield, goldenheads finelydrooping. ROW4 TROPICAL CLAY HILLS: exposed terraced rusty red claycuts andclaypile centrally, palms anddense broadleaffoliage frameedges, summerwetredmud, winter drierclayandolivefoliage. Keepforestsrichbutnotneon.",
+      "source": "generated_images/01a0bbf0-caf1-7ab1-a6cc-c47bddd647a4/exec-bdd13b09-205d-4ef5-a330-a6d11c0b71e5.png"
+    },
+    {
+      "id": "tropical-minerals",
+      "rows": [
+        {
+          "climate": "tropical",
+          "biome": "gold"
+        },
+        {
+          "climate": "tropical",
+          "biome": "iron"
+        },
+        {
+          "climate": "tropical",
+          "biome": "stone"
+        },
+        {
+          "climate": "tropical",
+          "biome": "coal"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Asset: ONE square production seasonal terrain sprite atlas for Catan Frontiers, exactly FOUR COLUMNS and FOUR ROWS of equal square images, NO gutters, frames or drawn separators. Full-bleed detailed hand-painted miniature/isometric terrain, 60 degree overhead camera, no sky, no horizon, rich natural materials, crisp readable silhouettes. Each cell will be center-cropped to a hexagon, keep identifiers in its central 60 percent. Match input references' beautiful painterly medieval board game style. No people, letters, labels, UI, numerals, icons, modern machinery or hex borders. Columns always SPRING, SUMMER, AUTUMN, WINTER left to right. Four independent scene rows as specified. Avoid blending cells; exact square grid. TROPICAL regional extraction landscapes with lush broadleaf leaves, ferns, restrained palms, redbrown earth, never snow, never redtemperateautumn. Spring fresh brightgreen leafgrowthand tinyflowers; summer darklush wetgreen growth andwetearth; autumn matureforest mediumgreen andfewgoldenleafpatches; winter slightlydrier olivegreen foliage, drierearth, remainsgreen rainforest. ROW1 GOLD MINE: central grey rockface with largegoldyellow seams, smalltimberadit andcart fullgold, tropical greenery insidecentralarea so remainsvisibleafterhexcrop. ROW2 IRON MINE: central greyrock withrustredoreveins, timberadit andironorecart, foliage. ROW3 STONE QUARRY: central lightgrey massivecutrock terraces, neatstoneblocks andsmalltimbercrane, tropicalbroadleaf plants aroundandbetweencuts. ROW4 COAL MINE: central nearblack exposedcoalseam andtimberadit withblackcoalcart andpile, rich tropicalfoliage. Resourceshighcontrastlegibleinsmallhex, highqualitydetailedhandpainting, natural mutedcolors.",
+      "source": "generated_images/01a0bbf0-caf1-7ab1-a6cc-c47bddd647a4/exec-21fd0719-68b3-417a-a4a6-caa21496c339.png"
+    },
+    {
+      "id": "tropical-water-salt",
+      "rows": [
+        {
+          "climate": "tropical",
+          "biome": "salt-flats"
+        },
+        {
+          "climate": "tropical",
+          "biome": "water"
+        },
+        {
+          "climate": "tropical",
+          "biome": "fish"
+        },
+        {
+          "climate": "tropical",
+          "biome": "whale"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Asset: ONE square production seasonal terrain sprite atlas for Catan Frontiers, exactly FOUR COLUMNS and FOUR ROWS of equal square images, NO gutters, frames or drawn separators. Full-bleed detailed hand-painted miniature/isometric terrain, 60 degree overhead camera, no sky, no horizon, rich natural materials, crisp readable silhouettes. Each cell will be center-cropped to a hexagon, keep identifiers in its central 60 percent. Match input references' beautiful painterly medieval board game style. No people, letters, labels, UI, numerals, icons, modern machinery or hex borders. Columns always SPRING, SUMMER, AUTUMN, WINTER left to right. Four independent scene rows as specified. Avoid blending cells; exact square grid. TROPICAL, never snow or solidice. ROW1 TROPICAL SALT FLATS: central white sparkling saltmounds and pale turquoise evaporationpools with earthen lowpartitions. Several modest central palms andbroadleafplants included wellinsidecenter60% sohex croppingstillshows tropicalidentity. Spring freshlightgreen leaves andpools; summer lushdarkgreen andwetpools; autumn golden saltcrust edges andmaturegreen palms; winter drierlightolivegreen andwideexposedwhite saltcrust. ROW2 EMPTY TROPICAL SEA: fullbleed blue-turquoise ocean with lightwave texture, spring clear mediumturquoise, summer wetseason deeperbluewithsmallwhitecaps, autumn mediumbluegreen calmer, winter clearblue with tinyripples, NO land or shallowcoral dominating. ROW3 TROPICAL FISH GROUNDS: samefullbleedsea colors withcompactcentral shoal of silverfish beneathsurface, NOT multicolored ornamentalreef fish. ROW4 TROPICAL WHALE GROUNDS: samewatercolors andtwo large greyblue whales centrally atsurfacewithsmallwhite spout. Keepwatertilescoherent andnotexcessivelybright comparedtoexistingpaintedboard.",
+      "source": "generated_images/01a0bbf0-caf1-7ab1-a6cc-c47bddd647a4/exec-54f6e6ff-b7f1-484d-a75d-c9893881e85e.png"
+    },
+    {
+      "id": "subtropical-living",
+      "rows": [
+        {
+          "climate": "subtropical",
+          "biome": "river-woods"
+        },
+        {
+          "climate": "subtropical",
+          "biome": "cattle-pasture"
+        },
+        {
+          "climate": "subtropical",
+          "biome": "rice-field"
+        },
+        {
+          "climate": "subtropical",
+          "biome": "maize-field"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Asset: ONE square production seasonal terrain sprite atlas for Catan Frontiers, exactly FOUR COLUMNS and FOUR ROWS of equal square images, NO gutters, frames or drawn separators. Full-bleed detailed hand-painted miniature/isometric terrain, 60 degree overhead camera, no sky, no horizon, rich natural materials, crisp readable silhouettes. Each cell will be center-cropped to a hexagon, keep identifiers in its central 60 percent. Match input references' beautiful painterly medieval board game style. No people, letters, labels, UI, numerals, icons, modern machinery or hex borders. Columns always SPRING, SUMMER, AUTUMN, WINTER left to right. Four independent scene rows as specified. Avoid blending cells; exact square grid. SUBTROPICAL humid warm landscape with broadleaf trees, restrainedpalms, redbrown moistsoil. Spring palegreen newgrowth; summer lushdarkgreen monsoon growthandwetsoil; autumn warmgoldenundergrowth buttreesstillgreen; winter mild dryolivegreen andbrownsoil, no snow ever. ROW1 RIVER WOODS: densebroadleafcanopies, narrowbrownstream windingthrough center, central cutbrown logpileandsmallstumps, someferns. ROW2 CATTLE PASTURE: central broad brownandwhite cattle with calvesinspring, richgreen grassin springandsummer, autumn largehealthy cattle andhay inochregrass, winter slightlydriergrass withhay, lowwoodfence andsmallbroadleaf trees, no snow. ROW3 RICE PADDIES: spring newlyplanted vividgreenshoots inflooded terraces, SUMMER golden RIPErice firstharvest withcentralrice bundles andsomegreenregrowth, AUTUMN goldenRIPErice secondharvest inwetpaddies, WINTER drained barebrown terraceswithshortcutstubble; nosnow. ROW4 MAIZE: spring tinyfreshsprouts inredbrown soilrows, summer verytall lushgreen broadleafcornplantswithtassels, autumn golden ripeyellow corn ears andcentral stalkbundles, wintercutbrownstubble andemptybrownplots. Keepcleardifferences maize broadleaves versus rice thinbladesandwater.",
+      "source": "generated_images/01a0bbf0-caf1-7ab1-a6cc-c47bddd647a4/exec-671b7174-ea35-4cb7-9a7f-8edbe7c63b57.png"
+    },
+    {
+      "id": "subtropical-minerals",
+      "rows": [
+        {
+          "climate": "subtropical",
+          "biome": "alluvial-clay"
+        },
+        {
+          "climate": "subtropical",
+          "biome": "stone"
+        },
+        {
+          "climate": "subtropical",
+          "biome": "coal"
+        },
+        {
+          "climate": "subtropical",
+          "biome": "iron"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Asset: ONE square production seasonal terrain sprite atlas for Catan Frontiers, exactly FOUR COLUMNS and FOUR ROWS of equal square images, NO gutters, frames or drawn separators. Full-bleed detailed hand-painted miniature/isometric terrain, 60 degree overhead camera, no sky, no horizon, rich natural materials, crisp readable silhouettes. Each cell will be center-cropped to a hexagon, keep identifiers in its central 60 percent. Match input references' beautiful painterly medieval board game style. No people, letters, labels, UI, numerals, icons, modern machinery or hex borders. Columns always SPRING, SUMMER, AUTUMN, WINTER left to right. Four independent scene rows as specified. Avoid blending cells; exact square grid. SUBTROPICAL regional terrain, humid broadleaf greenery, small restrainedpalms, reddishsoil, no snow. Spring freshpalegreen shootsandlightflowers; summer lushdarkgreen growthandwetground; autumn warmgoldenlowfoliageandmediumgreen trees; winter drierolivegreen treesandbrownsoil. ROW1 ALLUVIAL CLAY BANKS: broad nearly FLAT clayfloodplain, low terraced redbrown claybanksand muddyshallowchannels, exposed central claypiles, no mountainmine andno highrockcliffs. ROW2 STONE QUARRY: prominentcentral palegrey rockcutledges, largecutblocksandsmallwoodencrane, moistureandmoss, foliagewithsmallpalms wellinsidehex. ROW3 COAL MINE: central nearblack coalface and timberadit, cartofblackcoal, broadleafvegetationandredsoil. ROW4 IRON MINE: central bluegrey rock withrustred ironveins, smalltimberadit andcartofironore, broadleafplants anddampredsoil. Resourcesdifferentandcentral, detailedpainterlyminiatures, no people orbuildings beyondsmallmedievalextractiontools.",
+      "source": "generated_images/01a0bbf0-caf1-7ab1-a6cc-c47bddd647a4/exec-2f3221df-6b9b-4907-85d4-3fa9665144ca.png"
+    },
+    {
+      "id": "subtropical-gold-salt-jungle-water",
+      "rows": [
+        {
+          "climate": "subtropical",
+          "biome": "gold"
+        },
+        {
+          "climate": "subtropical",
+          "biome": "salt-flats"
+        },
+        {
+          "climate": "subtropical",
+          "biome": "jungle"
+        },
+        {
+          "climate": "subtropical",
+          "biome": "water"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Asset: ONE square production seasonal terrain sprite atlas for Catan Frontiers, exactly FOUR COLUMNS and FOUR ROWS of equal square images, NO gutters, frames or drawn separators. Full-bleed detailed hand-painted miniature/isometric terrain, 60 degree overhead camera, no sky, no horizon, rich natural materials, crisp readable silhouettes. Each cell will be center-cropped to a hexagon, keep identifiers in its central 60 percent. Match input references' beautiful painterly medieval board game style. No people, letters, labels, UI, numerals, icons, modern machinery or hex borders. Columns always SPRING, SUMMER, AUTUMN, WINTER left to right. Four independent scene rows as specified. Avoid blending cells; exact square grid. SUBTROPICAL climate, spring freshgreen, summer lush wetdarkgreen, autumn warmolivegold undergrowth but greenbroadleafcanopies, winter drierolivegreen mildseason, NO snowever. ROW1 GOLD MINE: prominentcentral goldenveins in greyrock, timberaditandgoldorecart, humid broadleaffoliagewithsmallpalms andredbrownsoil. ROW2 SALT FLATS: brightwhite saltmounds central with paleaquamarine divided shallowevaporationpools, smallcentralpalmsandbroadleafplants remainvisibleafterhex crop; spring fullpools, summer wetbasins, autumn morecrystallinewhitesalt, winter somewhatdrywhitesaltpans. ROW3 SUBTROPICAL JUNGLE: dense tallbroadleafcanopiesandferns, central gladeholdingclearlyvisible brown deerandwildboar, nosawnlogs, richdensetexture; seasonal leafandgroundchanges modestbutvisible. ROW4 EMPTY OPEN WATER: fullbleed bluegreen seaonly, no coastline, no fish oranimals, spring freshbluegreen smallripples, summer darkerbluewetseason waves, autumnmediumblue calmer, wintersoftblueturquoise smallripples, NEVER ice.",
+      "source": "generated_images/01a0bbf0-caf1-7ab1-a6cc-c47bddd647a4/exec-7e955c4b-a8c3-4476-ae7f-abeb9f46adac.png"
+    },
+    {
+      "id": "subtropical-water-savanna-herds",
+      "rows": [
+        {
+          "climate": "subtropical",
+          "biome": "fish"
+        },
+        {
+          "climate": "subtropical",
+          "biome": "whale"
+        },
+        {
+          "climate": "savanna",
+          "biome": "wildlife-grassland"
+        },
+        {
+          "climate": "savanna",
+          "biome": "cattle-savanna"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Asset: ONE square production seasonal terrain sprite atlas for Catan Frontiers, exactly FOUR COLUMNS and FOUR ROWS of equal square images, NO gutters, frames or drawn separators. Full-bleed detailed hand-painted miniature/isometric terrain, 60 degree overhead camera, no sky, no horizon, rich natural materials, crisp readable silhouettes. Each cell will be center-cropped to a hexagon, keep identifiers in its central 60 percent. Match input references' beautiful painterly medieval board game style. No people, letters, labels, UI, numerals, icons, modern machinery or hex borders. Columns always SPRING, SUMMER, AUTUMN, WINTER left to right. Four independent scene rows as specified. Avoid blending cells; exact square grid. Columns spring summer autumn winter. ROW1 SUBTROPICAL FISH GROUNDS, fullbleed open bluegreen water, compact centralshoal smallsilverfish beneathsurface. Spring freshmediumturquoise, summer deeperblue withsmallrainseasonwhitecaps, autumnmediumblue calmer, winter softbluegreen gentlyrippling, NO iceever. ROW2 SUBTROPICAL WHALES, samewaterpalettes two large bluegreywhales withspout prominentlycentered, no coastline. ROW3 SAVANNA WILDLIFE GRASSLAND: several centralbrown antelopewithcurvedhorns and smallwildboars, a modest centralwaterhole, sparse flat-toppedacaciaandgrass, no sheep/cows. Spring beginningofrains greenergrass withtinyflowers; summer wetseason richgrass andfullwaterhole; autumn drying golden grassandlowerpool; winter dryparched yellowbrown grassandtinywaterhole, no snow. ROW4 SAVANNA CATTLE RANGE: central sturdy lean tan-white zebu cattlewithslighthumpsandhorns, simplelowtimberenclosure, acaciagrassland; spring calvesandfreshgreenshoots, summerlushrain-fed grass, autumn heftyhealthy cattle andgoldenhay, winter drygrassandcentral hayfeeder, never snow. Wildlifevsdomesticatedcattle silhouettesclearlydifferent.",
+      "source": "generated_images/01a0bbf0-caf1-7ab1-a6cc-c47bddd647a4/exec-a363044f-6e81-4a40-bb5c-e266a52e3f9a.png"
+    },
+    {
+      "id": "savanna-living",
+      "rows": [
+        {
+          "climate": "savanna",
+          "biome": "rough-fields"
+        },
+        {
+          "climate": "savanna",
+          "biome": "millet-fields"
+        },
+        {
+          "climate": "savanna",
+          "biome": "dry-woodland"
+        },
+        {
+          "climate": "savanna",
+          "biome": "rough-pasture"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Asset: ONE square production seasonal terrain sprite atlas for Catan Frontiers, exactly FOUR COLUMNS and FOUR ROWS of equal square images, NO gutters, frames or drawn separators. Full-bleed detailed hand-painted miniature/isometric terrain, 60 degree overhead camera, no sky, no horizon, rich natural materials, crisp readable silhouettes. Each cell will be center-cropped to a hexagon, keep identifiers in its central 60 percent. Match input references' beautiful painterly medieval board game style. No people, letters, labels, UI, numerals, icons, modern machinery or hex borders. Columns always SPRING, SUMMER, AUTUMN, WINTER left to right. Four independent scene rows as specified. Avoid blending cells; exact square grid. SAVANNA, warm open grassland with flat-topped acacia, ochreearth, never snow. Spring rainsstart green shootsandmodest flowers, SUMMER rainylushgrass, AUTUMN drygoldengrass, WINTER parchedtan grass anddustysoil. ROW1 ROUGH CEREAL FIELDS: small poorstony grainplots, spring smallsprouts inbrownfurrows, summer greenimmature cerealrows, autumn ripegolden sparsegrain andcentral harvestsheaves, winter barebrownstubble dormantplots. ROW2 MILLET FIELDS: spring tinygreenshoots, summer tallgreen broadleaf milletwithgreen pendulouspanicles, autumn distinctive largebronze roundedbushy grainheads andcentral milletbundles, winter shortcutbarestalksanddustysoil. ROW3 DRY WOODLAND: scattered flat-topped acacias anddrybroadleaf trees, central largecutbrownlogpile, spring fresh lightgreenleaves, summerrichgreen leafy canopy, autumn thinningolivegoldleaves, winter sparse drycanopyanddroppedleaves, no densejungle. ROW4 ROUGH SHEEP PASTURE: central cream sheep onrocky acacia grazingland, spring lambsandsmallgreenshoots, summer shornsheep onlushgrass, autumn thickfleeceandgoldengrass, winter sheepbrowsingdrygrassandhay, NOsnow. Every centralresource instantlyreadable.",
+      "source": "generated_images/01a0bbf0-caf1-7ab1-a6cc-c47bddd647a4/exec-71fabccd-5008-4567-b4b4-9626252adb77.png"
+    },
+    {
+      "id": "savanna-minerals",
+      "rows": [
+        {
+          "climate": "savanna",
+          "biome": "iron"
+        },
+        {
+          "climate": "savanna",
+          "biome": "clay"
+        },
+        {
+          "climate": "savanna",
+          "biome": "stone"
+        },
+        {
+          "climate": "savanna",
+          "biome": "gold"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Asset: ONE square production seasonal terrain sprite atlas for Catan Frontiers, exactly FOUR COLUMNS and FOUR ROWS of equal square images, NO gutters, frames or drawn separators. Full-bleed detailed hand-painted miniature/isometric terrain, 60 degree overhead camera, no sky, no horizon, rich natural materials, crisp readable silhouettes. Each cell will be center-cropped to a hexagon, keep identifiers in its central 60 percent. Match input references' beautiful painterly medieval board game style. No people, letters, labels, UI, numerals, icons, modern machinery or hex borders. Columns always SPRING, SUMMER, AUTUMN, WINTER left to right. Four independent scene rows as specified. Avoid blending cells; exact square grid. SAVANNA seasonal landscape, ochre soil, sparse flat-topped acacias and open grasses, no dense forest, no snow ever. Spring beginning rains and fresh green shoots, summer wetseason rich vividgreen grass, autumn dry golden ochregrass, winter almost bare dusty ochre tanearth andthin drygrass with sparsebareacacias. ROW1 IRON MINE: largegreyrock with central rustyred oreveins, smallwoodenadit and orecartholdingdarkrediron. ROW2 CLAY HILLS: terraced exposed ochre-red claycuts centralwithclaypiles, lowdustyrocky hills andsparseacacia. ROW3 STONE QUARRY: central palegrey cutrockterraces, neatlycutstoneblocks andsmallwoodencrane, openacaciascrub. ROW4 GOLD MINE: prominentgoldyellow mineralveins across centralgreyrock, smalltimberadit andgoldorecart. Allresourcefeatures withincentral60percent, resourcefacesnotcoveredbyfoliage, samebalancednaturalcolorgrading acrossrows.",
+      "source": "generated_images/01a0bbf0-caf1-7ab1-a6cc-c47bddd647a4/exec-dd62d669-07ca-451e-8dd4-d77ecb994b74.png"
+    },
+    {
+      "id": "savanna-water-salt",
+      "rows": [
+        {
+          "climate": "savanna",
+          "biome": "salt-flats"
+        },
+        {
+          "climate": "savanna",
+          "biome": "water"
+        },
+        {
+          "climate": "savanna",
+          "biome": "fish"
+        },
+        {
+          "climate": "savanna",
+          "biome": "whale"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Asset: ONE square production seasonal terrain sprite atlas for Catan Frontiers, exactly FOUR COLUMNS and FOUR ROWS of equal square images, NO gutters, frames or drawn separators. Full-bleed detailed hand-painted miniature/isometric terrain, 60 degree overhead camera, no sky, no horizon, rich natural materials, crisp readable silhouettes. Each cell will be center-cropped to a hexagon, keep identifiers in its central 60 percent. Match input references' beautiful painterly medieval board game style. No people, letters, labels, UI, numerals, icons, modern machinery or hex borders. Columns always SPRING, SUMMER, AUTUMN, WINTER left to right. Four independent scene rows as specified. Avoid blending cells; exact square grid. SAVANNA fourseasons spring newrains, summer lushwet, autumn dryinggolden, winter dryparched, no snoworice. ROW1 SALT FLATS: broad centralwhite saltencrusted basin andcentralcrystallinewhitemounds with shallowpalebluewater pools, ochreearthenedges andfewflat-topped acacias. Spring some shallow water andsmallgreenshoots, summer fuller pools andgreen grass atedges, autumn mostlydrierwhitesaltcrust withgoldengrass, winter almost entirelydrysalt pan polygonalcrust andtinywaterpatches, dustyedges. ROW2 EMPTY WATER: pure blue oceanfullbleed no coastline, springclearbluegreen ripples, summer deepbluewith wetseasonwhitecaps, autumnmediumbluecalm, winter softblue-green gentleripples, no animals. ROW3 FISH GROUNDS: samewatercolors andcompactcentralshoal ofslender silverfish justbelowsurface, NO decorative multicoloredreef fish. ROW4 WHALE GROUNDS: two centralslateblue whales surfacingandwhite spout on samewatercolors, fullbodies withincentral60%, no land, no ships. Detailed painterly realism, clear readable animals.",
+      "source": "generated_images/01a0bbf0-caf1-7ab1-a6cc-c47bddd647a4/exec-e944855b-2c0b-4032-8997-fa4eb8f9bf9a.png"
+    },
+    {
+      "id": "oceanic-living",
+      "rows": [
+        {
+          "climate": "oceanic",
+          "biome": "coastal-pasture"
+        },
+        {
+          "climate": "oceanic",
+          "biome": "cattle-pasture"
+        },
+        {
+          "climate": "oceanic",
+          "biome": "woods"
+        },
+        {
+          "climate": "oceanic",
+          "biome": "rough-fields"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Asset: ONE square production seasonal terrain sprite atlas for Catan Frontiers, exactly FOUR COLUMNS and FOUR ROWS of equal square images, NO gutters, frames or drawn separators. Full-bleed detailed hand-painted miniature/isometric terrain, 60 degree overhead camera, no sky, no horizon, rich natural materials, crisp readable silhouettes. Each cell will be center-cropped to a hexagon, keep identifiers in its central 60 percent. Match input references' beautiful painterly medieval board game style. No people, letters, labels, UI, numerals, icons, modern machinery or hex borders. Columns always SPRING, SUMMER, AUTUMN, WINTER left to right. Four independent scene rows as specified. Avoid blending cells; exact square grid. OCEANIC mild maritime climate, damp lush green land and slate-grey stone, windswept vegetation, soft cool light, winter mild NO HEAVY SNOW andneverice. Spring fresh green andsmallflowers; summer lush emeraldgrass; autumn green-brown mossand russetleaflitter; winter damp mutedgreen grass, puddles, bare deciduous branchesandlight frost onrocks only. ROW1 COASTAL SHEEP PASTURE: central cream sheep withspringlambs, rolling green turf andgreyboulders, summer shornsheep, autumn fullfleece, winter sheep aroundhayonstillgreen grass, onlytinysliversea atfarcorner. ROW2 MARITIME CATTLE PASTURE: central broad brownwhite cattle andspringcalves inlowstonewall pasture, seasons asabove, autumnhaystacksandheftycows, winterhayandsmallpuddles. ROW3 OCEANIC WOODS: mixed broadleaf andsmallpines bentbywind, centrallogpile andsmalldeer, spring palegreenbuds,summerfullgreen,autumnorangegold leaves,winter mostlybare broadleaf withmossgreenforestfloor, no deep snow. ROW4 ROUGH FIELDS: small stonycerealplots, spring newshoots, summer immaturegreenstalks, autumn ripegoldenwheat andsheaves, winter wetbrown harvestedstubble andemptysownrows, no snow.",
+      "source": "generated_images/01a0bbf0-caf1-7ab1-a6cc-c47bddd647a4/exec-e37179ee-69a5-40e0-a3fd-cf9f621facfc.png"
+    },
+    {
+      "id": "oceanic-crops-clay",
+      "rows": [
+        {
+          "climate": "oceanic",
+          "biome": "barley-fields"
+        },
+        {
+          "climate": "oceanic",
+          "biome": "rye-fields"
+        },
+        {
+          "climate": "oceanic",
+          "biome": "golden-fields"
+        },
+        {
+          "climate": "oceanic",
+          "biome": "clay"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Asset: ONE square production seasonal terrain sprite atlas for Catan Frontiers, exactly FOUR COLUMNS and FOUR ROWS of equal square images, NO gutters, frames or drawn separators. Full-bleed detailed hand-painted miniature/isometric terrain, 60 degree overhead camera, no sky, no horizon, rich natural materials, crisp readable silhouettes. Each cell will be center-cropped to a hexagon, keep identifiers in its central 60 percent. Match input references' beautiful painterly medieval board game style. No people, letters, labels, UI, numerals, icons, modern machinery or hex borders. Columns always SPRING, SUMMER, AUTUMN, WINTER left to right. Four independent scene rows as specified. Avoid blending cells; exact square grid. OCEANIC mild maritime fields, richgreenhedgesandgrey stonewalls, coolsoftlight, no heavy snow. ROW1 BARLEY FIELDS: spring vigorouslygrowing green long-awn barley; SUMMER ripegoldenbarley withwhiskeredheads andcentral sheaves; autumn harvestedstubble andemptymoistfurrows; winter wetdormantbrownsoil andtinyfreshsownshoots, green surroundinggrass. ROW2 RYE FIELDS: spring tallbluishgreen rye; SUMMER verytall ripepaleyellow rye andsheaves; autumn newlysown tinygreenrows; winter shortwinter-green ryeplantsin dampsoilwithtinyfrosttips butno heavysnow. ROW3 GOLDEN WHEAT FIELDS: spring smallgreenfreshseedlings; SUMMER immature lushgreen tallwheat; AUTUMN huge rich GOLDEN RIPE wheatplot andcentral goldenharvestsheaves; winter harvestedbrownstubble andwettilledfurrows. ROW4 MARITIME CLAY HILLS: central exposed mutedredbrown claycutbank andclaymounds, damp greystoneandgreen grasses. Springfreshgreen, summerrichgreen, autumn ochrerusset hedges, winter wetmoistclayandbarebushes butstillgreenmarshgrass. Crop heads clearlydifferentiated, central identifiers survivehex crop.",
+      "source": "generated_images/01a0bbf0-caf1-7ab1-a6cc-c47bddd647a4/exec-eab72d8a-c1f7-4fc4-9612-264e937e9421.png"
+    },
+    {
+      "id": "oceanic-minerals",
+      "rows": [
+        {
+          "climate": "oceanic",
+          "biome": "coastal-cliffs"
+        },
+        {
+          "climate": "oceanic",
+          "biome": "coal"
+        },
+        {
+          "climate": "oceanic",
+          "biome": "iron"
+        },
+        {
+          "climate": "oceanic",
+          "biome": "gold"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Asset: ONE square production seasonal terrain sprite atlas for Catan Frontiers, exactly FOUR COLUMNS and FOUR ROWS of equal square images, NO gutters, frames or drawn separators. Full-bleed detailed hand-painted miniature/isometric terrain, 60 degree overhead camera, no sky, no horizon, rich natural materials, crisp readable silhouettes. Each cell will be center-cropped to a hexagon, keep identifiers in its central 60 percent. Match input references' beautiful painterly medieval board game style. No people, letters, labels, UI, numerals, icons, modern machinery or hex borders. Columns always SPRING, SUMMER, AUTUMN, WINTER left to right. Four independent scene rows as specified. Avoid blending cells; exact square grid. OCEANIC mild maritime climate, lush damp green turf andgreyrock, softcool light, springfreshgreenandflowers,summerlushgreen, autumnrusset leaflitterandbrown grasses, wintermutedgreen mosswetground andbare shrubswithsmallfrostpatches but NO heavy snow. ROW1 COASTAL CLIFFS: central stepped verticalGREY stone cliffs and exposedcutstoneblocks, modest timberliftingcrane, smalledgeglimpse of blueocean andwhitefoam, maincentre allstone. ROW2 COAL MINE: central darkblack coalseam, timberadit andblackcoalcart, wetgreyrocks andwindswept green vegetation. ROW3 IRON MINE: central grey-rock facewithprominent rustyred ironveins, timberadit andgreyred ore cart, greenground andsmalltrees. ROW4 GOLD MINE: centralgreyrock withgoldyellowveins, timberadit andgoldorecart, lushgreenturf andwind-bent shrubs. Autumncolorsmodest, wintergreengrassstillvisible, no frozen ocean.",
+      "source": "generated_images/01a0bbf0-caf1-7ab1-a6cc-c47bddd647a4/exec-6800f7bf-9e5e-4a4f-beb9-e0ec48613d99.png"
+    },
+    {
+      "id": "oceanic-water",
+      "rows": [
+        {
+          "climate": "oceanic",
+          "biome": "water"
+        },
+        {
+          "climate": "oceanic",
+          "biome": "fish"
+        },
+        {
+          "climate": "oceanic",
+          "biome": "cod"
+        },
+        {
+          "climate": "oceanic",
+          "biome": "whale"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Asset: ONE square production seasonal terrain sprite atlas for Catan Frontiers, exactly FOUR COLUMNS and FOUR ROWS of equal square images, NO gutters, frames or drawn separators. Full-bleed detailed hand-painted miniature/isometric terrain, 60 degree overhead camera, no sky, no horizon, rich natural materials, crisp readable silhouettes. Each cell will be center-cropped to a hexagon, keep identifiers in its central 60 percent. Match input references' beautiful painterly medieval board game style. No people, letters, labels, UI, numerals, icons, modern machinery or hex borders. Columns always SPRING, SUMMER, AUTUMN, WINTER left to right. Four independent scene rows as specified. Avoid blending cells; exact square grid. OCEANIC OPEN OCEAN, no coast/land, ships or sky; continuous waterytexture withbalanced mediumcoolblue, no tropical neon. SPRING coolbluegreen lowrollingwavelets, SUMMER clearmediumblue gentleripples, AUTUMN steelblue waterwithsmallwhitecaps, WINTER stormierbluegrey withmorewhitecaps but NO ice atall. ROW1 EMPTY SEA, only waves. ROW2 FISH GROUNDS, centralcompactshoal of silverherring beneathsurface, elongatedsmallfish, samewatercolorasotherrows. ROW3 COD GROUNDS, three clearlyvisible large OLIVE-BROWN SPOTTED COD withbroadheadsandthreedorsalfins beneathsurface, distinguishfromsmallfish bysizecolorbodyshape, nottropicalreef fish, maintainmoderatebrightness. ROW4 WHALE GROUNDS, two largegreybluewhales clearlyvisiblecentrally withsmallspout, somewhitewake. Allanimalsfitinsidecentral60percent, no above-water sideviewfish, premium paintedboardgame style.",
+      "source": "generated_images/01a0bbf0-caf1-7ab1-a6cc-c47bddd647a4/exec-44db159b-5572-45ec-b468-d651a0f7ca18.png"
+    },
+    {
+      "id": "alpine-living",
+      "rows": [
+        {
+          "climate": "alpine",
+          "biome": "forest"
+        },
+        {
+          "climate": "alpine",
+          "biome": "alpine-pasture"
+        },
+        {
+          "climate": "alpine",
+          "biome": "goat-pasture"
+        },
+        {
+          "climate": "alpine",
+          "biome": "bare-peaks"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Asset: ONE square production seasonal terrain sprite atlas for Catan Frontiers, exactly FOUR COLUMNS and FOUR ROWS of equal square images, NO gutters, frames or drawn separators. Full-bleed detailed hand-painted miniature/isometric terrain, 60 degree overhead camera, no sky, no horizon, rich natural materials, crisp readable silhouettes. Each cell will be center-cropped to a hexagon, keep identifiers in its central 60 percent. Match input references' beautiful painterly medieval board game style. No people, letters, labels, UI, numerals, icons, modern machinery or hex borders. Columns always SPRING, SUMMER, AUTUMN, WINTER left to right. Four independent scene rows as specified. Avoid blending cells; exact square grid. ALPINE mountainous terrain, dramatic greyrockcrags, lushdark pines, coldclear softlight. Spring patchymelting snowandfreshshortgrass; summer richgreenmountainmeadow anddarkgreenpines snowonlyinsmallhighcrevices; autumn amberundergrowthandredlowfoliage; winter heavy white snow acrossgroundandboughs. ROW1 ALPINE FOREST: extremely dense darkemerald pines onsteepgreyrockslopes, central brownlogpile withgreyboulders, resource timber legible. ROW2 ALPINE SHEEP PASTURE: narrowrocky grass terraces withcentral cream sheep flock, spring tinylambs, summer shortfleeces ongreen grass, autumn thickwool andgoldengrass, winter sheeparoundcentralhaypileon snow. ROW3 ALPINE GOAT PASTURE: steepgreyrock ledges withcentral herd ofbrown-andcream goats withclearlycurvedhorns, spring kidsandfreshgrass, summergreen meadow, autumn goldrussetplantsandgoats, winter darkgoats onsnow withcentralhaypatch. ROW4 BARE PEAKS: dominant veryjagged impassable solidmass ofsharp serratedgreyrock spires filling wholecell, NO paths, roads, mines, buildings, animals, cutlogs orquarry. Spring high snowcrevices andgreyrock, summer mostlybare jaggedrockwithsnowonlyhighestcrevices, autumn darkgreyrockandlightfrost, winter thick snowandice onsharppeaks. Resource-lesspeakssilhouette mustreadimpassable.",
+      "source": "generated_images/01a0bbf0-caf1-7ab1-a6cc-c47bddd647a4/exec-c4fb6e59-8d49-41ea-9b9e-f59e5e994586.png"
+    },
+    {
+      "id": "alpine-crops-clay",
+      "rows": [
+        {
+          "climate": "alpine",
+          "biome": "rough-fields"
+        },
+        {
+          "climate": "alpine",
+          "biome": "barley-fields"
+        },
+        {
+          "climate": "alpine",
+          "biome": "rye-fields"
+        },
+        {
+          "climate": "alpine",
+          "biome": "clay"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Asset: ONE square production seasonal terrain sprite atlas for Catan Frontiers, exactly FOUR COLUMNS and FOUR ROWS of equal square images, NO gutters, frames or drawn separators. Full-bleed detailed hand-painted miniature/isometric terrain, 60 degree overhead camera, no sky, no horizon, rich natural materials, crisp readable silhouettes. Each cell will be center-cropped to a hexagon, keep identifiers in its central 60 percent. Match input references' beautiful painterly medieval board game style. No people, letters, labels, UI, numerals, icons, modern machinery or hex borders. Columns always SPRING, SUMMER, AUTUMN, WINTER left to right. Four independent scene rows as specified. Avoid blending cells; exact square grid. ALPINE greyrockmountains, stonyterraces, fewdarkgreenpines. Spring thawpatchesandfreshgreen, summerlushmeadowgreen, autumnochrerussetundergrowth, winterdeepsnow. ROW1 ROUGH CEREAL FIELDS: smallpatchypoorcereal plots onstone terraces, spring tilledrows andtinyshoots, summer immaturegreencereal, autumnripegoldenwheat sparseplotsandcentral sheaves, wintersnowcoveredemptydormant furrows. ROW2 BARLEY FIELDS: clearlongwhiskeredbarleyheads incompactmountainplots, spring shortgreensprouts, summer tallgreenimmatureawnheads, AUTUMN richripegoldenlong-awnbarleyandcentral sheaves, winterbarecutstalks underdeepsnow. ROW3 WINTER RYE FIELDS: spring tallbluegreen growingrye, SUMMER ripepaleyellow tallryeandcentral harvestsheaves, autumn recentlysowngreenrows, wintershortwintergreenshoots peekingfromsnow. ROW4 ALPINE CLAY HILLS: mutedbrown claycut terraces andclaymounds amidbrokenGREY mountainrocksandsparsepines, notbrightorange; springwetclayandnewgrass, summergreenedges, autumnochreunderbrush, winter white snow coversground butcentralbrownclayface remainsvisible. Neatlyseparatedrows,identifierscentered.",
+      "source": "generated_images/01a0bbf0-caf1-7ab1-a6cc-c47bddd647a4/exec-61a45b80-5af2-4dd1-bae6-76809a516c32.png"
+    },
+    {
+      "id": "alpine-minerals",
+      "rows": [
+        {
+          "climate": "alpine",
+          "biome": "mountain-quarry"
+        },
+        {
+          "climate": "alpine",
+          "biome": "iron"
+        },
+        {
+          "climate": "alpine",
+          "biome": "coal"
+        },
+        {
+          "climate": "alpine",
+          "biome": "gold"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Asset: ONE square production seasonal terrain sprite atlas for Catan Frontiers, exactly FOUR COLUMNS and FOUR ROWS of equal square images, NO gutters, frames or drawn separators. Full-bleed detailed hand-painted miniature/isometric terrain, 60 degree overhead camera, no sky, no horizon, rich natural materials, crisp readable silhouettes. Each cell will be center-cropped to a hexagon, keep identifiers in its central 60 percent. Match input references' beautiful painterly medieval board game style. No people, letters, labels, UI, numerals, icons, modern machinery or hex borders. Columns always SPRING, SUMMER, AUTUMN, WINTER left to right. Four independent scene rows as specified. Avoid blending cells; exact square grid. ALPINE ruggedgrey mountains andsteepcrags, sparse darkgreenpines. Spring patchysnowmelt mossandnewgrasses; summer clearbaregreyrock andrichgreen meadowedges; autumn goldenrusset alpineunderbrush; winterdeepsnow coveringgroundandledges, butcentral exposedresourceface identifiable. ROW1 MOUNTAIN QUARRY: exceptionallyrich huge centralgrey stonecut terraces, abundantneatly stacked large squaredstoneblocks andsmalltimbercrane, distinctlymore massiveproductionthanregularquarry, mountaincrags framing. ROW2 ALPINE IRON MINE: largecentralsteepgreyrockface withstrong rustyredironveins, timberadit andcartfullredgreyore. ROW3 ALPINE COAL MINE: largecentralblackcoal seam and timberadit withblackcoalcart, craggygreyrocksandsmallpines. ROW4 ALPINE GOLD MINE: largebrightgoldveins incentralsteepgreyrock, timberadit andorecartwithgoldnuggets, greycragsandfewpines. Resourcescentral andstronglylegible, no sky, no tinybackgroundfocus, detailednaturalpainterlygame art.",
+      "source": "generated_images/01a0bbf0-caf1-7ab1-a6cc-c47bddd647a4/exec-c4ea4ded-641d-48a8-9f22-dc496910bfc6.png"
+    },
+    {
+      "id": "alpine-water",
+      "rows": [
+        {
+          "climate": "alpine",
+          "biome": "water"
+        },
+        {
+          "climate": "alpine",
+          "biome": "fish"
+        },
+        {
+          "climate": "alpine",
+          "biome": "cod"
+        },
+        {
+          "climate": "alpine",
+          "biome": "whale"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Asset: ONE square production seasonal terrain sprite atlas for Catan Frontiers, exactly FOUR COLUMNS and FOUR ROWS of equal square images, NO gutters, frames or drawn separators. Full-bleed detailed hand-painted miniature/isometric terrain, 60 degree overhead camera, no sky, no horizon, rich natural materials, crisp readable silhouettes. Each cell will be center-cropped to a hexagon, keep identifiers in its central 60 percent. Match input references' beautiful painterly medieval board game style. No people, letters, labels, UI, numerals, icons, modern machinery or hex borders. Columns always SPRING, SUMMER, AUTUMN, WINTER left to right. Four independent scene rows as specified. Avoid blending cells; exact square grid. ALPINE blue mountain-water tile textures, FULLBLEED water withNOshore, land, mountains,sky or boats. Fourcolumns SPRING,SUMMER,AUTUMN,WINTER. Spring cold aquamarinewater with tinyisolated icefragments atfar corners butcenteropen; summer clearcoolblue ripples; autumn steelybluewaterandgentlewhitecaps; WINTER everyrow continuous SOLID BLUE-WHITE FROZEN ICE withwhite branchingfrostcracks andscatteredsnow, absolutely no openwater,no fishorwhales visible inWINTER. ROW1 EMPTY WATER wavelets in spring summer autumn, solidblueice winter. ROW2 FISH GROUNDS compactcentralshoal smallsilverherring beneathspring/summer/autumn water, butwinterentirecell solidicehidingfish. ROW3 COD GROUNDS three largeolivebrown SPOTTED COD beneathspring/summer/autumn surface, clearlydifferentfromsilverschool inrow2, winterentirecellsolidblueicehidingfish. ROW4 WHALE GROUNDS two clearlyvisiblecentralgreyblue whales withsmallwhite spout spring/summer/autumn, winterentirecellsolidblueicewithnoanimalvisible. All wintercells bluefrozenflatice, notwaves. No textlabels or frames, exactgrid.",
+      "source": "generated_images/01a0bbf0-caf1-7ab1-a6cc-c47bddd647a4/exec-fab56b97-3584-4b4a-8588-3c9b2d3c4118.png"
+    }
+  ]
+}

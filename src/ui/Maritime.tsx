@@ -1,3 +1,4 @@
+import { seasonAt, seasonalYield } from "../game/seasons";
 import { localize as tx, useLocale } from "../i18n";
 import { towerSiegeStatuses } from "../game/siege-status";
 import type { Game, Piece, Good } from "../game/types";
@@ -142,7 +143,7 @@ export function HarvestPanel({
               </b>
               <p>
                 {tx(
-                  "Harvests the listed goods on each matching roll. Stored in",
+                  "Harvests the listed seasonal goods on each matching roll. Stored in",
                 )}
                 {tx(" ")}
                 {tx(
@@ -191,13 +192,14 @@ export function HarvestPanel({
                             u.owner,
                             u.tier,
                             u.kind !== "fishing",
+                            seasonalYield(s.tiles[id], u.owner, seasonAt(s)),
                           ),
                         )
                           .map(
                             ([good, amount]) =>
                               `${amount} ${GOOD_INFO[good as Good].name}`,
                           )
-                          .join(" + "),
+                          .join(" + ") || "No harvest this season",
                       )}
                       {tx(" ")}· {tx(id)}
                       {tx(" · roll ")}
@@ -243,7 +245,7 @@ export function HarvestPanel({
                               tileGoods(s.tiles[id], u.owner)
                                 .map(
                                   (good) =>
-                                    `${(tileYield(s.tiles[id], u.owner)[good] ?? 0) * u.tier} ${GOOD_INFO[good].name}`,
+                                    `${(seasonalYield(s.tiles[id], u.owner, seasonAt(s))[good] ?? 0) * u.tier} ${GOOD_INFO[good].name}`,
                                 )
                                 .join(" + "),
                             )}

@@ -11,6 +11,7 @@ export const RAW = [
   "coal",
   "gold",
   "fish",
+  "meat",
   "oil",
 ] as const;
 export const PROCESSED = [
@@ -29,10 +30,10 @@ export const GOODS = [...RAW, ...PROCESSED] as const;
 export type Raw = (typeof RAW)[number];
 export type Good = (typeof GOODS)[number];
 export type Stock = Partial<Record<Good, number>>;
-/** Printed base goods can be paid with these raw substitutes when needed. */
-export const RAW_SUBSTITUTES: Partial<Record<Good, Raw>> = {
-  grain: "fish",
-  coal: "oil",
+/** Ordered substitutes for printed recipe goods. Spend the printed good first. */
+export const RAW_SUBSTITUTES: Partial<Record<Good, readonly Raw[]>> = {
+  grain: ["fish", "meat"],
+  coal: ["oil"],
 };
 export type Family = "forest" | "rugged" | "flat" | "water";
 export type UnitClass =
@@ -48,6 +49,8 @@ export type ShipClass =
 export type Phase =
   "setup-town" | "setup-route" | "roll" | "economy" | "military" | "finished";
 export interface Hex {
+  /** Seasonal sea surface; resource/biome remain the permanent geology. */
+  surface?: "frozen" | "open";
   id: string;
   q: number;
   r: number;
@@ -142,6 +145,7 @@ export interface Watchtower {
   tier: number;
 }
 export interface Piece {
+  seasonStatus?: "icebound" | "adrift";
   /** Persistent AI deployment, retained across moves and saved campaigns. */
   campaign?: { enemy: number; target: string };
   guildSupplied?: boolean;
@@ -289,6 +293,8 @@ export interface Event {
   tile?: string;
 }
 export interface Game extends World {
+  /** The first Spring begins at this full-round boundary. */
+  calendar?: { startRound: number };
   version: 5;
   seed: string;
   generation: 4 | 5;

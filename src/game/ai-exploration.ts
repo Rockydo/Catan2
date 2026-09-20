@@ -11,9 +11,9 @@ import { ownTowns, ownPieces } from "./selectors";
 import { collector, harvestTiles } from "./maritime";
 import { distance, expeditionFootprint } from "./world";
 
-const goods = RAW.filter((g) => g !== "fish" && g !== "oil");
+const goods = RAW.filter((g) => g !== "fish" && g !== "meat" && g !== "oil");
 const equivalent = (g: Raw): Raw =>
-  g === "fish" ? "grain" : g === "oil" ? "coal" : g;
+  g === "fish" || g === "meat" ? "grain" : g === "oil" ? "coal" : g;
 // Expected output, not a prediction of the hidden seed or reserved climate plan.
 const climateOutput = Object.fromEntries(
   CLIMATES.map((climate) => {
@@ -62,8 +62,10 @@ export function expeditionProspects(s: Game, income: Stock) {
     [...controlled].map((id) => s.tiles[id].climate ?? "temperate"),
   );
   const production = (g: Raw) =>
-    (income[g] ?? 0) +
-    (RAW_SUBSTITUTES[g] ? (income[RAW_SUBSTITUTES[g]!] ?? 0) : 0);
+    (RAW_SUBSTITUTES[g] ?? []).reduce(
+      (n, raw) => n + (income[raw] ?? 0),
+      income[g] ?? 0,
+    );
   const missing = goods.filter((g) => production(g) < 0.04).length;
   const scores = new Map<Climate, number>();
   for (const climate of CLIMATES) {

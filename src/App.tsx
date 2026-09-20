@@ -85,6 +85,8 @@ import {
   SAVE_KEY,
 } from "./game/save";
 import { Board, type Selection, type BoardMode } from "./ui/Board";
+import { SeasonCalendar } from "./ui/SeasonCalendar";
+import type { Season } from "./game/seasons";
 import {
   Panels,
   DetailHeader,
@@ -162,6 +164,7 @@ export default function App() {
     [mobilePanel, setMobilePanel] = useState(false),
     [realmsOpen, setRealmsOpen] = useState(false),
     [sound, setSound] = useState(false);
+  const [seasonPreview, setSeasonPreview] = useState<Season>();
   const roll = useRollPresentation(initial.current.game);
   const townAlerts = useTownAlerts();
   const [alertFocus, setAlertFocus] = useState<{
@@ -190,6 +193,7 @@ export default function App() {
         setToast(result.error ?? "That action is unavailable.");
         return false;
       }
+      setSeasonPreview(undefined);
       townAlerts.capture(current, result.state);
       if (command.type === "roll") roll.begin(result.state);
       else roll.close();
@@ -540,7 +544,7 @@ export default function App() {
   function move(to: string) {
     if (!game || !interactive || !unitIds.length) return;
     const units = unitIds.map((id) => game.pieces[id]),
-      defenders = piecesAt(game, to, units[0].naval).filter(
+      defenders = piecesAt(game, to).filter(
         (u) => !friendly(game, u.owner, viewer),
       );
     if (defenders.length) {
@@ -739,6 +743,11 @@ export default function App() {
                     {tx(game.seed)}
                   </span>
                 </div>
+                <SeasonCalendar
+                  game={game}
+                  preview={seasonPreview}
+                  onPreview={setSeasonPreview}
+                />
                 <div className="turn-banner">
                   <div className="turn-identity">
                     <span
@@ -1114,6 +1123,8 @@ export default function App() {
                   <Board
                     viewer={viewer}
                     game={game}
+                    seasonPreview={seasonPreview}
+                    onSeasonPreviewChange={setSeasonPreview}
                     focus={alertFocus}
                     rolling={roll.rolling}
                     productionTiles={
@@ -1799,7 +1810,7 @@ function HelpDialog({ onClose }: { onClose: () => void }) {
           <h3>{tx("2. Build an economy")}</h3>
           <p>
             {tx(
-              "Everyone produces on every roll, even seven. Build, trade and command armies in any order after rolling. Cities produce more raw goods; extensions add processed goods from their linked tile.",
+              "Each roll produces for every faction from active seasonal tiles, including seven. A season lasts one full round. Check each tile's four-season forecast, then build, trade and command in any order. Cities, camps and workshops multiply the current harvest.",
             )}
           </p>
         </article>
@@ -1934,7 +1945,7 @@ function AttackPreview({
   useLocale();
 
   const units = ids.map((id) => s.pieces[id]),
-    defenders = piecesAt(s, to, bombardment || units[0].naval).filter(
+    defenders = piecesAt(s, to, bombardment ? true : undefined).filter(
       (u) => !friendly(s, u.owner, s.active),
     ),
     a = bombardment ? bombardmentPower(s, units) : power(s, units, to),

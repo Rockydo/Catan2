@@ -40,6 +40,7 @@ export const GOOD_INFO: Record<
 > = Object.fromEntries(
   [
     ["fish", "Fish", "◁", "#59b8c7"],
+    ["meat", "Meat", "◖", "#b96157"],
     ["oil", "Oil", "◕", "#986a32"],
     ["gold", "Gold", "◆", "#e5b43b"],
     ["goldbars", "Gold bars", "▰", "#f3c94d"],
@@ -95,6 +96,12 @@ export const TERRAIN: Record<
     family: "water",
     color: "#986a32",
     light: "#e8bc65",
+  },
+  meat: {
+    name: "Livestock pasture",
+    family: "flat",
+    color: "#869158",
+    light: "#b8bb79",
   },
   gold: {
     name: "Gold mountains",
@@ -516,13 +523,15 @@ export const RESEARCH_MARCH: Record<
   campaign: { groups: 4, movement: 5 },
 };
 export const processedFor = (raw: Raw) =>
-  raw === "fish"
+  raw === "fish" || raw === "meat"
     ? "provisions"
     : raw === "oil"
       ? "coke"
       : PROCESSED[RAW.indexOf(raw)];
 export const extensionName = (raw: Raw) =>
-  EXTENSIONS[RAW.indexOf(raw === "oil" ? "coal" : raw)];
+  EXTENSIONS[
+    RAW.indexOf(raw === "oil" ? "coal" : raw === "meat" ? "fish" : raw)
+  ];
 export const extensionCost = (raw: Raw, tier: number) =>
   COSTS[`${extensionName(raw)} ${ROMAN[tier]}`];
 export const unitCost = (kind: UnitClass, tier: number) =>

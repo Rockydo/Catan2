@@ -1,5 +1,21 @@
-import { BIOME_INFO, type Biome, type Climate } from "../game/climate-content";
+import seasonalManifest from "./season-art-manifest.json";
+import type { Season } from "../game/seasons";
+import {
+  BIOME_INFO,
+  CLIMATES,
+  CLIMATE_INFO,
+  type Biome,
+  type Climate,
+} from "../game/climate-content";
 import type { TerrainKey } from "../game/content";
+
+const seasonalTiles = seasonalManifest.tiles as Record<string, string>;
+const seasonalFiles = Object.fromEntries(
+  Object.entries(seasonalTiles).map(([key, file]) => [
+    `season-${key.replaceAll("/", "-")}`,
+    `seasons/${file}`,
+  ]),
+);
 
 // Cosmetic variants only: terrain rules and saved biome IDs stay unchanged.
 const regionalArt: Partial<Record<Climate, Record<string, string>>> = {
@@ -60,7 +76,48 @@ export const REGIONAL_ART_KEYS = Object.values(regionalArt).flatMap(
 export function terrainPatternKey(
   terrain: TerrainKey,
   climate?: Climate,
+  season?: Season,
 ): string {
+  const aliases: Partial<Record<TerrainKey, Biome>> = {
+    lumber: "woods",
+    brick: "clay",
+    wool: "pasture",
+    grain: "rough-fields",
+    ore: "iron",
+    hides: "hunting-forest",
+    salt: "salt-flats",
+    snow: "snow-plain",
+    peaks: "bare-peaks",
+    meat: "cattle-pasture",
+    oil: "whale",
+  };
+  const biome = aliases[terrain] ?? terrain;
+  const region = climate ?? "temperate";
+  const seasonalKey = `${region}/${biome}/${season}`;
+  if (season && seasonalTiles[seasonalKey])
+    return `season-${seasonalKey.replaceAll("/", "-")}`;
+  // Older campaigns may contain a terrain outside its modern climate table.
+  // Reuse a complete seasonal family, not a static image. Rough fields match
+  // legacy Grain's one autumn harvest without shifting the visible calendar.
+  const listed =
+    biome === "water" ||
+    CLIMATE_INFO[region].terrain.some(([b]) => b === biome) ||
+    CLIMATE_INFO[region].water.some(([b]) => b === biome);
+  if (season && (aliases[terrain] || !listed)) {
+    const preferred: Partial<Record<string, Climate>> = {
+      "hunting-forest": "cold",
+      "rough-fields": "cold",
+      woods: "temperate",
+      "snow-plain": "arctic",
+      "bare-peaks": "alpine",
+      ice: "arctic",
+    };
+    for (const fallback of [...new Set([preferred[biome], ...CLIMATES])]) {
+      if (!fallback) continue;
+      const key = `${fallback}/${biome}/${season}`;
+      if (seasonalTiles[key]) return `season-${key.replaceAll("/", "-")}`;
+    }
+  }
   const art = BIOME_INFO[terrain as Biome]?.art ?? terrain;
   return (
     (climate && regionalArt[climate]?.[art]) ||
@@ -68,6 +125,7 @@ export function terrainPatternKey(
   );
 }
 export function terrainArtFile(art: string): string {
+  if (seasonalFiles[art]) return seasonalFiles[art];
   if (["gold", "fish", "whale"].includes(art))
     return `terrain-${art}-${art === "fish" ? "v2" : "v1"}.png`;
   const revision =

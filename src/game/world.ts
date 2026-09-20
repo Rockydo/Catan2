@@ -17,7 +17,7 @@ export function restoreGoldPorts(world: World) {
   }
 }
 export const LAND_RESOURCES = RAW.filter(
-  (g) => g !== "fish" && g !== "oil" && g !== "gold",
+  (g) => g !== "fish" && g !== "meat" && g !== "oil" && g !== "gold",
 );
 export const RAW_TILE_PROBABILITY =
   (1 - WATER_PROBABILITY) / (LAND_RESOURCES.length + 0.5);
@@ -252,15 +252,19 @@ export const landAtVertex = (world: World, v: string) =>
   [];
 /** Unit occupancy is separate from edge construction: roads can skirt peaks. */
 export const canOccupy = (tile: Hex | undefined, naval = false): boolean =>
-  !!tile && tile.resource !== "peaks" && (tile.resource === "water") === naval;
+  !!tile &&
+  tile.resource !== "peaks" &&
+  (tile.surface ? tile.surface === "open" : tile.resource === "water") ===
+    naval;
 export const walkableAtVertex = (world: World, v: string) =>
-  landAtVertex(world, v).filter((id) => canOccupy(world.tiles[id]));
+  world.vertices[v]?.tiles.filter((id) => canOccupy(world.tiles[id])) ?? [];
 /** Towns and towers need habitable ground; roads may still follow peak edges. */
 export const solidAtVertex = (world: World, v: string) =>
-  walkableAtVertex(world, v).filter((t) => world.tiles[t].resource !== "ice");
+  landAtVertex(world, v).filter(
+    (t) => !["ice", "peaks"].includes(world.tiles[t].resource),
+  );
 export const waterAtVertex = (world: World, v: string) =>
-  world.vertices[v]?.tiles.filter((t) => world.tiles[t].resource === "water") ??
-  [];
+  world.vertices[v]?.tiles.filter((t) => canOccupy(world.tiles[t], true)) ?? [];
 const vertexHexCache = new Map<string, Set<string>>();
 export function unknownAtVertex(world: World, v: string): string[] {
   const vertex = world.vertices[v];

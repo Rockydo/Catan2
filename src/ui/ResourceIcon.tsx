@@ -2,6 +2,34 @@ import { localize as tx, useLocale } from "../i18n";
 import type { Good } from "../game/types";
 import type { ReactNode } from "react";
 const ART: Record<Good, ReactNode> = {
+  meat: (
+    <>
+      <path
+        d="m15 15 4 4c0 3 4 3 4 0 3-1 1-4-1-4l-4-3Z"
+        fill="#f5e6ce"
+        stroke="#9a7d64"
+        strokeWidth="1.1"
+      />
+      <path
+        d="M4 3c5-3 13 0 15 6 2 5-1 9-7 10C5 20 1 16 1 11 1 7 2 5 4 3Z"
+        fill="#a54c42"
+        stroke="#74372f"
+        strokeWidth="1.2"
+      />
+      <path
+        d="M5 5c4-2 10 0 12 4 2 4-1 7-5 8-5 1-9-2-9-6 0-3 1-5 2-6Z"
+        fill="#dc8470"
+      />
+      <path d="m6 7 3 2 4-1 2 3-2 3-5-1-3-3Z" fill="#b5554d" />
+      <path
+        d="m5 6 3 3m6-1-2 2m-4 4 3-2"
+        fill="none"
+        stroke="#f3c3a9"
+        strokeWidth="1.2"
+        strokeLinecap="round"
+      />
+    </>
+  ),
   oil: (
     <>
       <path

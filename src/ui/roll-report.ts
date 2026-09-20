@@ -1,9 +1,11 @@
+import { seasonAt, type Season } from "../game/seasons";
 import type { Game, Stock } from "../game/types";
 import { productionSources, sumStock } from "../game/selectors";
 
 export interface RollReport {
   id: string;
   round: number;
+  season?: Season;
   actor: number;
   dice: [number, number];
   players: {
@@ -37,6 +39,7 @@ export function rollReport(s: Game, live = false): RollReport | null {
   return {
     id: `${s.seed}:${s.actions}`,
     round: s.round,
+    season: seasonAt(s),
     actor: s.active,
     dice: [...s.dice],
     players,

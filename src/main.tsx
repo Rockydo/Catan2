@@ -7,6 +7,7 @@ import "./polish.css";
 import "./roll.css";
 import "./military.css";
 import "./workspace.css";
+import "./seasons.css";
 class ErrorBoundary extends React.Component<
   { children: React.ReactNode },
   { error: string | null }

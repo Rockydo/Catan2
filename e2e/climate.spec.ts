@@ -260,7 +260,7 @@ for (const locale of ["en", "fr"] as const) {
       .filter({ hasText: locale === "fr" ? "Rizière" : "Rice field" });
     await expect(rice).toHaveCount(1);
     await expect(rice).toContainText(locale === "fr" ? "3 Blé" : "3 Grain");
-    await expect(rice).toContainText("20%");
+    await expect(rice).toContainText("15%");
     await expect(
       rice.locator('[style*="terrain-rice-field-v1.webp"]'),
     ).toHaveCount(1);
@@ -276,7 +276,7 @@ for (const locale of ["en", "fr"] as const) {
     await expect(wildlife).toContainText(
       locale === "fr" ? "2 Peaux" : "2 Hides",
     );
-    await expect(wildlife).toContainText("35%");
+    await expect(wildlife).toContainText("30%");
     expect(
       await page.evaluate(
         () => document.documentElement.scrollWidth <= innerWidth + 1,
@@ -310,9 +310,7 @@ test("climate-only overview hides gameplay details and preserves the campaign", 
     Object.keys(s.tiles).length,
   );
   await expect(page.locator(".game-map-contents")).not.toBeVisible();
-  await expect(
-    page.locator(".terrain-map polygon[fill^='url(#terrain-']"),
-  ).toHaveCount(0);
+  await expect(page.locator(".terrain-map .terrain-texture")).toHaveCount(0);
   await expect(
     page.getByRole("button", { name: "Hide dice numbers", exact: true }),
   ).toBeDisabled();
@@ -350,7 +348,7 @@ test("climate-only overview hides gameplay details and preserves the campaign", 
   await expect(page.locator(".climate-map-tile")).toHaveCount(0);
   await expect(page.locator(".game-map-contents")).toBeVisible();
   await expect(
-    page.locator(".terrain-map polygon[fill^='url(#terrain-']").first(),
+    page.locator(".terrain-map .terrain-texture").first(),
   ).toBeVisible();
   expect(errors).toEqual([]);
 });

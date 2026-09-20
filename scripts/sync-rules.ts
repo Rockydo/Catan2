@@ -1,3 +1,5 @@
+import { SEASONS, seasonalProfile } from "../src/game/seasons";
+import type { Hex } from "../src/game/types";
 import {
   CLIMATES,
   CLIMATE_INFO,
@@ -79,6 +81,43 @@ for (const locale of ["en", "fr"] as const) {
       "Pics rocheux : aucune production et aucune entrée d’unité, y compris par recrutement, repli ou débarquement. Les routes peuvent suivre leurs arêtes ; une agglomération exige une terre ferme praticable adjacente.",
     ),
   );
+  lines.push(
+    `## ${text("Complete seasonal harvest tables", "Tables complètes des récoltes saisonnières")}`,
+  );
+  for (const climate of CLIMATES) {
+    lines.push(
+      `### ${tx(CLIMATE_INFO[climate].name)}`,
+      `| ${text("Terrain | Spring | Summer | Autumn | Winter", "Terrain | Printemps | Été | Automne | Hiver")} |`,
+      "|---|---|---|---|---|",
+    );
+    const biomes = [
+      ...new Set([
+        ...CLIMATE_INFO[climate].terrain.map(([b]) => b),
+        ...CLIMATE_INFO[climate].water.map(([b]) => b),
+      ]),
+    ];
+    for (const biome of biomes)
+      for (const choice of biome === "woods"
+        ? (["lumber", "hides"] as const)
+        : [undefined]) {
+        const tile: Hex = {
+          id: "0,0",
+          q: 0,
+          r: 0,
+          number: 7,
+          climate,
+          biome,
+          resource: BIOME_INFO[biome].resource,
+          vertices: [],
+          edges: [],
+          ...(choice ? { woodsChoices: { 0: choice } } : {}),
+        };
+        const profile = seasonalProfile(tile, 0);
+        lines.push(
+          `| ${tx(BIOME_INFO[biome].name)}${choice ? ` (${tx(GOOD_INFO[choice].name)})` : ""} | ${SEASONS.map((season) => cost(profile[season]) || "0").join(" | ")} |`,
+        );
+      }
+  }
   lines.push(
     `## ${text("All costs", "Tous les coûts")}`,
     text(
