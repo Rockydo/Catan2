@@ -1,4 +1,9 @@
-import { seasonAt, seasonalYield, type Season } from "../game/seasons";
+import {
+  frozenInSeason,
+  seasonAt,
+  seasonalYield,
+  type Season,
+} from "../game/seasons";
 import { SEASON_LABELS, SEASON_ICONS } from "./SeasonCalendar";
 import {
   CLIMATES,
@@ -152,11 +157,13 @@ const TerrainPatterns = memo(function TerrainPatterns({
 });
 const TerrainArt = memo(function TerrainArt({
   resource,
+  openWater,
   x,
   y,
   seed,
 }: {
   resource: string;
+  openWater: boolean;
   x: number;
   y: number;
   seed: number;
@@ -171,6 +178,9 @@ const TerrainArt = memo(function TerrainArt({
         <image
           className="terrain-texture"
           href={`./assets/${terrainArtFile(resource)}`}
+          // Blend sea texture into the muted water base without raster filters.
+          // Production tokens are separate siblings and retain full contrast.
+          opacity={openWater ? 0.65 : undefined}
           x={-43}
           y={-43}
           width={86}
@@ -252,8 +262,8 @@ const TerrainLayer = memo(function TerrainLayer({
         </clipPath>
         <MapLabelDefinitions />
         <linearGradient id="water-tile" x2="0" y2="1">
-          <stop stopColor="#378e9e" />
-          <stop offset="1" stopColor="#2d7b90" />
+          <stop stopColor="#729298" />
+          <stop offset="1" stopColor="#61858e" />
         </linearGradient>
         <linearGradient id="token-paper" x2="0" y2="1">
           <stop stopColor="#fffbee" />
@@ -313,7 +323,9 @@ const TerrainLayer = memo(function TerrainLayer({
           const { x, y } = hexCenter(tile),
             good = tileGood(tile, viewer),
             poly = shapes[tile.id],
-            small = !!compact[tile.id]?.length;
+            small = !!compact[tile.id]?.length,
+            sea = tile.resource === "water" || tile.resource === "ice",
+            openWater = sea && !frozenInSeason(tile, artworkSeason);
           if (climates) {
             const climate = tile.climate ?? "temperate";
             return (
@@ -333,15 +345,14 @@ const TerrainLayer = memo(function TerrainLayer({
             <g key={tile.id} data-map-x={x} data-map-y={y}>
               <polygon
                 points={poly}
-                fill={
-                  tile.resource === "water" ? "url(#water-tile)" : "#c9b98c"
-                }
-                stroke={tile.resource === "water" ? "#95bcb155" : "#e2d4ad"}
-                strokeWidth={tile.resource === "water" ? 0.7 : 1}
+                fill={sea ? "url(#water-tile)" : "#c9b98c"}
+                stroke={sea ? "#95bcb155" : "#e2d4ad"}
+                strokeWidth={sea ? 0.7 : 1}
                 filter="url(#tile-shadow)"
               />
               <TerrainArt
                 resource={seasonalTerrainPattern(tile, artworkSeason)}
+                openWater={openWater}
                 x={x}
                 y={y}
                 seed={hash(tile.id)}

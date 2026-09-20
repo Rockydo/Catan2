@@ -16,6 +16,8 @@ Shearing peaks in Spring/Summer. Most livestock and hunting favor later-year out
 
 Warm-climate hunting, logging and raw Clay extraction continue during the wet Summer. Base-one Jungle, timber and Clay production is steady at 1/1/1/1. Savanna Wildlife grassland provides 2/1/3/2 Hides and Subtropical Alluvial clay 2/1/2/3 Clay (Spring/Summer/Autumn/Winter). Tropical, Subtropical and Savanna Salt flats follow 1/0/1/2 because solar evaporation depends on dry weather. Desert Salt flats remain productive at 1/1/1/1. Cattle range and Whale schedules are separate and unchanged. All schedules preserve each resource’s annual total.
 
+Rough fields are removed from the catalogue and generation. Their weight merges into Barley in Cold (7%), Alpine (7%) and Oceanic (8%), and into Millet in Steppe (10%) and Savanna (20%). These percentages are conditional on land. Each merged interval occupies the same random-draw range as the old adjacent entries, so other terrain rolls, land/water ratios and total Grain frequency remain unchanged. Save version 11 converts existing Rough fields to the same named cereal without changing tile IDs, dice numbers, camps, workshops or stocks. Oceanic Rough fields move from an Autumn harvest to Barley’s Summer harvest; annual Grain remains 4 per settlement before dice probability. Oceanic Golden fields retain their Autumn harvest.
+
 ## Ice and movement
 
 Arctic land remains snowy in Spring and regains substantial early snow in Autumn, with deep Winter snow and a short Summer thaw. Snow alone does not prevent hunting or change land movement. Permanent terrain identity stays separate from seasonal surface.

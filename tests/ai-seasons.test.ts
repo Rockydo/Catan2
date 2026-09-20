@@ -118,7 +118,7 @@ describe("seasonal AI planning", () => {
     const { s, crop } = seasonalFixture();
     const autumn = s.tiles["3,2"];
     autumn.resource = "grain";
-    autumn.biome = "rough-fields";
+    autumn.biome = "millet-fields";
     autumn.climate = "steppe";
     const [same, complementary] = withSeasonalPlanning(() => [
       seasonalDiversityBonus(s, [crop.id]),

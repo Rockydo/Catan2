@@ -39,7 +39,7 @@ test("regional terrain art loads in the climate guide", async ({ page }) => {
       [
         "oceanic-pasture",
         "oceanic-woods",
-        "oceanic-rough-fields",
+        "barley-fields",
         "oceanic-grain",
         "oceanic-clay",
         "oceanic-stone",
@@ -55,7 +55,7 @@ test("regional terrain art loads in the climate guide", async ({ page }) => {
         "alpine-iron",
         "alpine-coal",
         "alpine-pasture",
-        "alpine-rough-fields",
+        "barley-fields",
         "alpine-forest",
         "alpine-gold",
         "alpine-clay",
@@ -79,7 +79,7 @@ test("regional terrain art loads in the climate guide", async ({ page }) => {
       [
         "wildlife-grassland",
         "dry-woodland",
-        "savanna-rough-fields",
+        "millet-fields",
         "savanna-pasture",
         "savanna-iron",
         "savanna-clay",
@@ -103,7 +103,7 @@ test("regional terrain art loads in the climate guide", async ({ page }) => {
           await image.decode();
           return image.naturalWidth;
         }),
-      ).toBe(512);
+      ).toBe(["barley-fields", "millet-fields"].includes(asset) ? 384 : 512);
     }
     await reference.screenshot({
       path: `test-artifacts/regional-${climate}-${test.info().project.name}.png`,

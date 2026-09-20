@@ -40,7 +40,6 @@ const regionalArt: Partial<Record<Climate, Record<string, string>>> = {
   steppe: { brick: "steppe-clay" },
   oceanic: {
     woods: "oceanic-woods",
-    "rough-fields": "oceanic-rough-fields",
     grain: "oceanic-grain",
     brick: "oceanic-clay",
     coal: "oceanic-coal",
@@ -50,7 +49,6 @@ const regionalArt: Partial<Record<Climate, Record<string, string>>> = {
   alpine: {
     ore: "alpine-iron",
     coal: "alpine-coal",
-    "rough-fields": "alpine-rough-fields",
     forest: "alpine-forest",
     gold: "alpine-gold",
     brick: "alpine-clay",
@@ -63,7 +61,6 @@ const regionalArt: Partial<Record<Climate, Record<string, string>>> = {
     gold: "subtropical-gold",
   },
   savanna: {
-    "rough-fields": "savanna-rough-fields",
     "rough-pasture": "savanna-pasture",
     ore: "savanna-iron",
     brick: "savanna-clay",
@@ -92,7 +89,6 @@ export function terrainPatternKey(
     lumber: "woods",
     brick: "clay",
     wool: "pasture",
-    grain: "rough-fields",
     ore: "iron",
     hides: "hunting-forest",
     salt: "salt-flats",
@@ -101,19 +97,22 @@ export function terrainPatternKey(
     meat: "cattle-pasture",
     oil: "whale",
   };
-  const biome = aliases[terrain] ?? terrain;
+  // Pre-climate Grain keeps its original autumn-harvest artwork. This is an
+  // archived art key only; Rough fields are no longer a playable biome.
+  const biome =
+    terrain === "grain" ? "rough-fields" : (aliases[terrain] ?? terrain);
   const region = climate ?? "temperate";
   const seasonalKey = `${region}/${biome}/${season}`;
   if (season && seasonalTiles[seasonalKey])
     return `season-${seasonalKey.replaceAll("/", "-")}`;
   // Older campaigns may contain a terrain outside its modern climate table.
-  // Reuse a complete seasonal family, not a static image. Rough fields match
+  // Reuse a complete seasonal family, not a static image. Archived fields match
   // legacy Grain's one autumn harvest without shifting the visible calendar.
   const listed =
     biome === "water" ||
     CLIMATE_INFO[region].terrain.some(([b]) => b === biome) ||
     CLIMATE_INFO[region].water.some(([b]) => b === biome);
-  if (season && (aliases[terrain] || !listed)) {
+  if (season && (terrain === "grain" || aliases[terrain] || !listed)) {
     const preferred: Partial<Record<string, Climate>> = {
       "hunting-forest": "cold",
       "rough-fields": "cold",

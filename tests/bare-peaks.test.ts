@@ -152,7 +152,7 @@ describe("Bare Peaks", () => {
     Object.assign(s.tiles[id], { resource: "water", biome: "water" });
     expect(towerSites(s)).not.toContain(vertex);
     expect(applyCommand(s, { type: "tower", vertex }).ok).toBe(false);
-    Object.assign(s.tiles[id], { resource: "grain", biome: "rough-fields" });
+    Object.assign(s.tiles[id], { resource: "grain", biome: "millet-fields" });
     expect(towerSites(s)).toContain(vertex);
     expect(applyCommand(s, { type: "tower", vertex }).ok).toBe(true);
   });

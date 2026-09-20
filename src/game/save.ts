@@ -1006,7 +1006,7 @@ export function serialize(s: Game): string {
   const body = JSON.stringify(s);
   return JSON.stringify({
     format: "catane-frontiers",
-    version: 10,
+    version: 11,
     savedAt: new Date().toISOString(),
     checksum: hash(body).toString(16),
     game: s,
@@ -1018,7 +1018,7 @@ export function deserialize(text: string): Game {
   rule(
     data &&
       data.format === "catane-frontiers" &&
-      [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].includes(data.version) &&
+      [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].includes(data.version) &&
       data.game,
     "This is not a supported Catane save.",
   );
@@ -1026,6 +1026,26 @@ export function deserialize(text: string): Game {
     hash(JSON.stringify(data.game)).toString(16) === data.checksum,
     "This save is damaged: its integrity check failed.",
   );
+  if (data.version < 11) {
+    // Retire the generic crop before older migrations inspect terrain yields.
+    // Only its biome changes: Grain quantities, tile IDs and linked producers stay.
+    for (const tile of Object.values(data.game.tiles) as any[]) {
+      if (tile?.biome !== "rough-fields") continue;
+      rule(tile.resource === "grain", "Invalid legacy crop resource.");
+      if (data.game.generation === 5)
+        rule(
+          ["cold", "alpine", "oceanic", "steppe", "savanna"].includes(
+            tile.climate,
+          ),
+          "Legacy crop does not belong to its climate.",
+        );
+      // Legacy worlds without climate terrain keep their Autumn harvest by
+      // default. Oceanic fields now share Barley's regular Summer harvest.
+      tile.biome = ["cold", "alpine", "oceanic"].includes(tile.climate)
+        ? "barley-fields"
+        : "millet-fields";
+    }
+  }
   if (data.version < 4) {
     // Convert before older migrations: cargo validation and terrain combat use
     // the current catalogue. Salt is flat, preserving cavalry's terrain bonus.

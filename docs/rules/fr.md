@@ -37,7 +37,7 @@ Le bouton Climats près du zoom affiche uniquement les couleurs climatiques. La 
 Plaines enneigées et Désert ne produisent rien et n’accueillent ni camp ni atelier. Les armées les traversent et les constructions voisines restent possibles. La Banquise résulte du tirage aquatique arctique. Elle ne produit rien, accueille les unités terrestres et bloque les navires. Colonies, tours et routes permanentes exigent une terre ferme adjacente ; aucune liaison n’est possible sur une arête bordée uniquement de banquise. Une arête banquise/eau sans terre ferme accueille une liaison maritime. La banquise fond en Été et regèle en Automne. Les autres eaux froides, alpines et arctiques gèlent en Hiver, avec des probabilités fixes par hexagone de geler aussi au Printemps et en Automne. Voir Saisons et récoltes pour les unités immobilisées, ports hivernaux et constructions.
 Les Pics rocheux ne produisent rien et sont infranchissables pour toutes les unités. Aucun déplacement, recrutement, repli ou débarquement ne peut y placer une unité. Les routes peuvent suivre leurs arêtes selon les règles de raccordement ordinaires, même entre deux pics. Une agglomération ou une tour de guet exige au moins une terre ferme praticable adjacente. Aucun camp ni atelier ne peut exploiter les Pics rocheux.
 ### Parties existantes
-Les tuiles révélées conservent leurs terrains, productions et climats attribués. Les sauvegardes antérieures au système climatique classent leurs anciennes tuiles en Tempéré pour les futures frontières. Les nouvelles explorations peuvent utiliser les onze climats. Commencez une nouvelle partie pour appliquer les nouvelles tables à toute la carte.
+Les tuiles révélées conservent leurs terrains, productions et climats attribués. Les sauvegardes antérieures au système climatique classent leurs anciennes tuiles en Tempéré pour les futures frontières. Les nouvelles explorations peuvent utiliser les onze climats. Commencez une nouvelle partie pour appliquer les nouvelles tables à toute la carte. Les Champs pauvres ont été supprimés : les anciennes tuiles deviennent des Champs d’orge en climats Froid, Alpin et Océanique, ou des Champs de millet en Steppe et Savane. Leurs numéros, camps, ateliers et productions annuelles de Blé restent inchangés. Les anciens Champs pauvres océaniques se récoltent désormais en Été, comme les autres Champs d’orge océaniques ; les Champs dorés océaniques restent récoltés en Automne. Les mêmes proportions de génération produisent désormais ces céréales nommées.
 ### Numéros et dés
 Chaque tuile productive reçoit uniformément un numéro de 2 à 12, sept compris. La production utilise deux dés à six faces indépendants : les numéros ont la même fréquence de génération, mais pas la même probabilité d’activation. Dés, terrain, cartes et rébellions utilisent des tirages sauvegardés séparément. Recharger ne change ni les cartes proposées ni la carte du monde. Ni les joueurs ni l’IA ne peuvent consulter les coordonnées cachées.
 ### Ports
@@ -55,7 +55,6 @@ Une tuile produit uniquement lorsque son numéro sort pendant une saison product
 Pour chaque ressource, la somme des quatre productions saisonnières vaut quatre fois le rendement annuel de base. À producteurs et nombre de jets identiques, la moyenne annuelle ne change pas. Le calendrier rend la production moins fiable : les Champs dorés donnent 8 Blés par colonie à chaque jet correspondant en Été et zéro aux autres saisons. Si leur numéro ne sort pas cet Été-là, la récolte est perdue.
 ### Types de cultures
 - Champs dorés : récolte estivale de 8 Blés. En climat Océanique, la récolte a lieu en Automne.
-- Champs pauvres : récolte automnale de 4 Blés.
 - Orge : récolte estivale de 4 Blés ; en climats Froid et Alpin, récolte en Automne.
 - Seigle : récolte estivale de 4 Blés. Complète les cultures plus tardives des régions froides et alpines.
 - Millet : récolte automnale de 4 Blés. Présent dans la Steppe et la Savane.
@@ -342,9 +341,7 @@ Poids des transitions : Tempéré ×1, Steppe ×1, Arctique ×2, Océanique ×0,
 
 | Pâturage de rennes | 4% |
 
-| Champs pauvres | 2% |
-
-| Champs d’orge | 5% |
+| Champs d’orge | 7% |
 
 | Champs de seigle | 3% |
 
@@ -426,9 +423,7 @@ Poids des transitions : Froid ×1,5, Tempéré ×1, Méditerranéen ×1, Désert
 
 | Élevage de savane | 16% |
 
-| Champs pauvres | 5% |
-
-| Champs de millet | 5% |
+| Champs de millet | 10% |
 
 | Pré | 10% |
 
@@ -594,9 +589,7 @@ Poids des transitions : Tempéré ×2, Froid ×1, Méditerranéen ×1
 
 | Bois clairsemés | 20% |
 
-| Champs pauvres | 4% |
-
-| Champs d’orge | 4% |
+| Champs d’orge | 8% |
 
 | Champs de seigle | 2% |
 
@@ -646,9 +639,7 @@ Poids des transitions : Froid ×2, Arctique ×2, Tempéré ×1, Steppe ×1
 
 | Pâturage de chèvres | 5% |
 
-| Champs pauvres | 2% |
-
-| Champs d’orge | 5% |
+| Champs d’orge | 7% |
 
 | Champs de seigle | 3% |
 
@@ -732,9 +723,7 @@ Poids des transitions : Tropical ×2, Désert ×1, Steppe ×1, Subtropical ×1
 
 | Élevage de savane | 5% |
 
-| Champs pauvres | 5% |
-
-| Champs de millet | 15% |
+| Champs de millet | 20% |
 
 | Bois secs | 10% |
 
@@ -777,8 +766,6 @@ Haute mer (sans terre adjacente) : tirage Baleines 6 % ; part effective 5.4 %. T
 | Champs | 2 Blé | plaine |
 
 | Pré | 2 Laine | plaine |
-
-| Champs pauvres | 1 Blé | plaine |
 
 | Pâturage pauvre | 1 Laine | terrain accidenté |
 
@@ -918,8 +905,6 @@ Les lignes marines indiquent le calendrier de base en eau libre. Les mers ordina
 
 | Pâturage de rennes | 1 Viande + 1 Peaux | 1 Viande + 1 Peaux | 1 Viande + 1 Peaux | 1 Viande + 1 Peaux |
 
-| Champs pauvres | 0 | 0 | 4 Blé | 0 |
-
 | Champs d’orge | 0 | 0 | 4 Blé | 0 |
 
 | Champs de seigle | 0 | 4 Blé | 0 | 0 |
@@ -977,8 +962,6 @@ Les lignes marines indiquent le calendrier de base en eau libre. Les mers ordina
 | Plaine de steppe | 1 Peaux + 2 Laine | 2 Laine | 1 Peaux | 2 Peaux |
 
 | Élevage de savane | 1 Viande + 1 Peaux | 0 | 2 Viande + 2 Peaux | 1 Viande + 1 Peaux |
-
-| Champs pauvres | 0 | 0 | 4 Blé | 0 |
 
 | Champs de millet | 0 | 0 | 4 Blé | 0 |
 
@@ -1104,8 +1087,6 @@ Les lignes marines indiquent le calendrier de base en eau libre. Les mers ordina
 
 | Bois clairsemés (Peaux) | 1 Peaux | 1 Peaux | 2 Peaux | 0 |
 
-| Champs pauvres | 0 | 0 | 4 Blé | 0 |
-
 | Champs d’orge | 0 | 4 Blé | 0 | 0 |
 
 | Champs de seigle | 0 | 4 Blé | 0 | 0 |
@@ -1143,8 +1124,6 @@ Les lignes marines indiquent le calendrier de base en eau libre. Les mers ordina
 | Pâturage alpin | 2 Laine | 2 Laine | 0 | 0 |
 
 | Pâturage de chèvres | 1 Viande | 0 | 2 Viande | 1 Viande |
-
-| Champs pauvres | 0 | 0 | 4 Blé | 0 |
 
 | Champs d’orge | 0 | 0 | 4 Blé | 0 |
 
@@ -1205,8 +1184,6 @@ Les lignes marines indiquent le calendrier de base en eau libre. Les mers ordina
 | Prairie à gibier | 2 Peaux | 1 Peaux | 3 Peaux | 2 Peaux |
 
 | Élevage de savane | 1 Viande + 1 Peaux | 0 | 2 Viande + 2 Peaux | 1 Viande + 1 Peaux |
-
-| Champs pauvres | 0 | 0 | 4 Blé | 0 |
 
 | Champs de millet | 0 | 0 | 4 Blé | 0 |
 
