@@ -261,6 +261,8 @@ export function assertInvariants(s: Game) {
       const info = CLIMATE_INFO[t.climate!];
       rule(
         t.biome === "water" ||
+          // Revealed Andean snow plains survive the generation-table change.
+          (t.climate === "andean" && t.biome === "snow-plain") ||
           [...info.terrain, ...info.water].some(([b]) => b === t.biome),
         "Terrain does not belong to its climate.",
       );
@@ -973,6 +975,10 @@ export function assertInvariants(s: Game) {
   if (s.battle) {
     const b = s.battle;
     rule(
+      b.thawRetreat === undefined || b.thawRetreat === true,
+      "Invalid thaw retreat battle.",
+    );
+    rule(
       b.bombardment === undefined || typeof b.bombardment === "boolean",
       "Invalid bombardment flag.",
     );
@@ -991,6 +997,32 @@ export function assertInvariants(s: Game) {
         ),
       "Invalid pending battle.",
     );
+    if (b.thawRetreat)
+      rule(
+        !!s.thawRetreats &&
+          s.phase === "roll" &&
+          !b.bombardment &&
+          !b.naval &&
+          s.tiles[b.origin].surface === "open" &&
+          !["water", "ice"].includes(s.tiles[b.target].resource) &&
+          canOccupy(s.tiles[b.target], false) &&
+          b.attackers.length > 0 &&
+          b.defenders.length > 0 &&
+          b.attackers.every(
+            (id) =>
+              !s.pieces[id].naval &&
+              !s.pieces[id].carrier &&
+              s.pieces[id].tile === b.origin &&
+              s.pieces[id].seasonStatus === "adrift",
+          ) &&
+          b.defenders.every(
+            (id) =>
+              !s.pieces[id].naval &&
+              !s.pieces[id].carrier &&
+              s.pieces[id].tile === b.target,
+          ),
+        "Invalid thaw retreat battle.",
+      );
     if (b.bombardment)
       rule(
         b.naval &&
@@ -1012,6 +1044,49 @@ export function assertInvariants(s: Game) {
           ),
         "Invalid shore bombardment battle.",
       );
+  }
+  if (s.thawRetreats !== undefined) {
+    const r = s.thawRetreats;
+    object(r);
+    rule(
+      r.round === s.round &&
+        s.phase === "roll" &&
+        s.battle?.thawRetreat === true &&
+        Array.isArray(r.ice) &&
+        new Set(r.ice).size === r.ice.length &&
+        r.ice.every(
+          (id) =>
+            s.tiles[id] && ["water", "ice"].includes(s.tiles[id].resource),
+        ) &&
+        Array.isArray(r.pending),
+      "Invalid thaw retreat queue.",
+    );
+    const seen = new Set(s.battle?.attackers ?? []);
+    for (const group of r.pending) {
+      object(group);
+      int(group.owner, 0, s.players.length - 1);
+      rule(
+        s.players[group.owner].alive &&
+          s.tiles[group.origin]?.surface === "open" &&
+          Array.isArray(group.ids) &&
+          group.ids.length > 0,
+        "Invalid thaw retreat queue.",
+      );
+      for (const id of group.ids) {
+        const u = s.pieces[id];
+        rule(
+          !seen.has(id) &&
+            u &&
+            u.owner === group.owner &&
+            u.tile === group.origin &&
+            !u.naval &&
+            !u.carrier &&
+            u.seasonStatus === "adrift",
+          "Invalid thaw retreat queue.",
+        );
+        seen.add(id);
+      }
+    }
   }
   if (s.trade) {
     const t = s.trade;
@@ -1041,7 +1116,7 @@ export function serialize(s: Game): string {
   const body = JSON.stringify(s);
   return JSON.stringify({
     format: "catane-frontiers",
-    version: 13,
+    version: 14,
     savedAt: new Date().toISOString(),
     checksum: hash(body).toString(16),
     game: s,
@@ -1053,7 +1128,7 @@ export function deserialize(text: string): Game {
   rule(
     data &&
       data.format === "catane-frontiers" &&
-      [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13].includes(data.version) &&
+      [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14].includes(data.version) &&
       data.game,
     "This is not a supported Catane save.",
   );

@@ -207,6 +207,82 @@ export function resolveBattle(s: Game, c: Command) {
   delete s.battle;
   breakSieges(s);
 }
+/** Shared combat rules for normal movement and forced landings after thaw. */
+export function engageBattle(
+  s: Game,
+  units: Piece[],
+  defenders: Piece[],
+  origin: string,
+  target: string,
+  thawRetreat = false,
+): void {
+  const attacker = units[0].owner;
+  // A human chooses losses for an allied defense that includes their troops.
+  defenders = [...defenders].sort(
+    (a, b) =>
+      Number(s.players[a.owner].control !== "human") -
+      Number(s.players[b.owner].control !== "human"),
+  );
+  // Exposed merchants and colonists are lost when combat begins, including ties.
+  const civilians = [...units, ...defenders].filter(
+    (u) => u.kind === "merchant" || isSettler(u.kind),
+  );
+  removePieces(
+    s,
+    civilians.map((u) => u.id),
+  );
+  if (civilians.length)
+    log(
+      s,
+      `${civilians.length} civilian unit(s) were destroyed in battle.`,
+      "battle",
+      undefined,
+      target,
+    );
+  const fighting = units.filter((u) => s.pieces[u.id]),
+    defending = defenders.filter((u) => s.pieces[u.id]);
+  const a = power(s, fighting, target),
+    d = power(s, defending, target);
+  if (!fighting.length || !defending.length) {
+    if (!defending.length) fighting.forEach((u) => setTile(s, u, target));
+    breakSieges(s);
+    return;
+  }
+  if (a === d) {
+    log(
+      s,
+      `Battle tied ${a}–${d}; the defender held.`,
+      "battle",
+      attacker,
+      target,
+    );
+  } else {
+    const loser = a < d ? attacker : defending[0].owner,
+      losers = a < d ? fighting : defending;
+    const loss = Math.min(
+      Math.abs(a - d),
+      losers.reduce((n, u) => n + points(u), 0),
+    );
+    s.battle = {
+      ...(thawRetreat ? { thawRetreat: true as const } : {}),
+      attacker,
+      defender: defending[0].owner,
+      attackers: fighting.map((u) => u.id),
+      defenders: defending.map((u) => u.id),
+      origin,
+      target,
+      naval: units[0].naval,
+      attackerPower: a,
+      defenderPower: d,
+      loser,
+      loss,
+      required: minCasualties(losers, loss),
+    };
+    if (losers.every((u) => points(u) === 0))
+      resolveBattle(s, { type: "resolve-battle", actor: loser, ids: [] });
+  }
+}
+
 export function siegeArmy(s: Game, c: Command) {
   const units = selected(s, c.ids, c.type !== "siege", false);
   if (c.type === "siege")
@@ -338,65 +414,7 @@ export function militaryCommand(s: Game, c: Command): boolean {
       setTile(s, u, defenders.length ? origin : target);
     });
     if (defenders.length) {
-      // Entering the hostile hex costs one point, just like an empty hex.
-      // Survivors keep any remaining movement after combat (including ties).
-      // Exposed merchants and colonists are lost when combat begins, including ties.
-      const civilians = [...units, ...defenders].filter(
-        (u) => u.kind === "merchant" || isSettler(u.kind),
-      );
-      removePieces(
-        s,
-        civilians.map((u) => u.id),
-      );
-      if (civilians.length)
-        log(
-          s,
-          `${civilians.length} civilian unit(s) were destroyed in battle.`,
-          "battle",
-          undefined,
-          target,
-        );
-      const fighting = units.filter((u) => s.pieces[u.id]),
-        defending = defenders.filter((u) => s.pieces[u.id]);
-      const a = power(s, fighting, target),
-        d = power(s, defending, target);
-      if (!fighting.length || !defending.length) {
-        if (!defending.length) fighting.forEach((u) => setTile(s, u, target));
-        breakSieges(s);
-        return true;
-      }
-      if (a === d) {
-        log(
-          s,
-          `Battle tied ${a}–${d}; the defender held.`,
-          "battle",
-          s.active,
-          target,
-        );
-      } else {
-        const loser = a < d ? s.active : defending[0].owner,
-          losers = a < d ? fighting : defending;
-        const loss = Math.min(
-          Math.abs(a - d),
-          losers.reduce((n, u) => n + points(u), 0),
-        );
-        s.battle = {
-          attacker: s.active,
-          defender: defending[0].owner,
-          attackers: fighting.map((u) => u.id),
-          defenders: defending.map((u) => u.id),
-          origin,
-          target,
-          naval: units[0].naval,
-          attackerPower: a,
-          defenderPower: d,
-          loser,
-          loss,
-          required: minCasualties(losers, loss),
-        };
-        if (losers.every((u) => points(u) === 0))
-          resolveBattle(s, { type: "resolve-battle", actor: loser, ids: [] });
-      }
+      engageBattle(s, units, defenders, origin, target);
     } else
       log(
         s,

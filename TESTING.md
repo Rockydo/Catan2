@@ -562,3 +562,11 @@ Reproduce the engine audit with `npm test`, `npx tsx scripts/seasons-audit.ts`, 
 - Four two-year AI campaigns cover all 17 climates: 7,649 legal actions, 1,780 movements and 198 battles. State invariants and save roundtrips pass at every full-round boundary.
 - The large-map audit passes all four seasons on 125, 500, 1,000 and 2,500 tiles, with up to 562 pieces. At 2,500 tiles the sampled median decisions were 19–33 ms, with the slowest sampled decision 294 ms. These are bounded regression workloads, not guarantees for every campaign.
 - The audit fixture now avoids placing opposing test units on the same starting hex. Map construction tests initialize weather before serializing newly generated seas, matching the expedition command.
+
+## Thaw retreats, terrain labels and Andean generation
+
+- All 1,143 tests in 71 files pass. New scenarios cover automatic safe landings, melting-ice paths, blocked paths, allied shores, exhausted units, passengers, forced battles, whole-unit casualties, AI responses outside its turn, queued battles and save version 14. Old adrift troops stay in place on load and retry at the next full round.
+- Eighteen English/French browser checks pass in Firefox, Chromium and mobile Chromium. The six forced-landing checks also pass on the final engine build, including a reload between two consecutive battles. Terrain labels were checked at desktop and mobile sizes for Flat, Rugged, Forested, open water and frozen sea.
+- Andean conditional land weights still total 100%: Iron 11%, Gold 7%, Bare Peaks 18%, no newly generated Snow plains. Existing Andean Snow plains survive save import unchanged.
+- TypeScript, production build, formatting, diff checks and all 12 production HTTP checks pass. The local release retains earlier asset hashes; the user's browser campaign was not used or modified for testing.
+- Four two-year AI campaigns cover all 17 climates and complete 7,201 legal actions, 1,603 moves and 219 battles. State invariants and save roundtrips pass at every full-round boundary.

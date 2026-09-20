@@ -109,7 +109,7 @@ for (const locale of ["en", "fr"] as const) {
           (key) => JSON.parse(localStorage.getItem(key)!),
           SAVE_KEY,
         );
-        expect(saved.version).toBe(13);
+        expect(saved.version).toBe(14);
         for (const [id, climate, biome] of crops)
           expect(saved.game.tiles[id]).toMatchObject({
             id,

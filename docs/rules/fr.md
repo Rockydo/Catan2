@@ -147,7 +147,8 @@ Les armées marchent sur la glace ; les navires utilisent l’eau libre. La glac
 
 Un navire pris dans les glaces ne peut ni agir, ni se déplacer, ni se replier. Il combat au quart de sa puissance normale, arrondi au supérieur pour chaque navire. Le soutien des tours s’ajoute normalement. Ses points normaux déterminent toujours les pertes en unités entières.
 Les armées terrestres amies sur le même hexagone défendent la flotte à pleine puissance, y compris contre le bombardement côtier. Les armées alliées comptent aussi. Une armée voisine ne rejoint pas automatiquement le combat : amenez-la sur la glace pour escorter les navires. Les passagers embarqués restent à bord et ne forment pas une escorte terrestre. Au dégel, les navires retrouvent leur puissance et leur mobilité normales.
-Les troupes surprises par le dégel restent sur une plaque de glace à la dérive. Elles ne sont ni détruites ni téléportées. Elles peuvent rejoindre une terre ou glace adjacente autorisée, ou embarquer dans un transport ami selon les règles de capacité et d’activation. Elles ne marchent pas sur l’eau libre. Une flotte ennemie peut les attaquer. Le repli exige un terrain légal pour chaque survivant ; un navire encore gelé ne peut pas emprunter une sortie maritime.
+Au début d’une manche, les troupes surprises par le dégel se replient automatiquement sur la terre ferme sûre la plus proche, sans coût de mouvement. Elles peuvent traverser la zone de glace reliée qui vient de fondre et la glace restante, mais pas une mer déjà ouverte, des Pics rocheux ou des forces ennemies. Elles peuvent rejoindre une armée alliée. Si aucune rive sûre n’est accessible, elles attaquent la rive ennemie la plus proche selon les règles normales de terrain, de combat et de pertes par unités entières. À distance égale, elles choisissent la défense la plus faible. Les combats forcés se résolvent un par un avant le lancer de dés ; les replis en attente sont sauvegardés. Les navires et les passagers embarqués restent sur place.
+Si aucune terre n’est accessible, ou si le débarquement forcé échoue, les survivants restent sur une plaque de glace à secourir. Ils peuvent rejoindre une terre ou glace adjacente autorisée, ou embarquer dans un transport ami selon les règles de capacité et d’activation. Ils ne marchent pas sur l’eau libre et une flotte ennemie peut les attaquer. Ils retentent un repli au début de la manche suivante. Le repli exige un terrain légal pour chaque survivant ; un navire encore gelé ne peut pas emprunter une sortie maritime.
 
 ### IA et anciennes sauvegardes
 
@@ -846,13 +847,12 @@ Poids des transitions : Alpin ×2, Steppe ×1, Désert ×1, Subtropical ×1, Mé
 | Champs de pommes de terre | 18%                        | 2 Blé                   |
 | Pâturage d’alpagas        | 14%                        | 1 Laine + 1 Viande      |
 | Carrière de montagne      | 16%                        | 2 Pierre                |
-| Montagnes de minerai      | 10%                        | 1 Minerai               |
-| Montagnes d'or            | 6%                         | 1 Or                    |
+| Montagnes de minerai      | 11%                        | 1 Minerai               |
+| Montagnes d'or            | 7%                         | 1 Or                    |
 | Marais salants            | 6%                         | 1 Sel                   |
 | Collines d'argile         | 5%                         | 1 Argile                |
 | Bois riverains            | 5%                         | 1 Bois                  |
-| Pics rocheux              | 15%                        | 0                       |
-| Plaine enneigée           | 5%                         | 0                       |
+| Pics rocheux              | 18%                        | 0                       |
 | Terrain aquatique         | Tirage successif           | Part effective de l’eau |
 | ---                       | ---                        | ---                     |
 | Zone de pêche             | 12%                        | 12%                     |
@@ -936,7 +936,7 @@ Les bases annuelles actuelles incluent la productivité des cultures propre au c
 | Carrière de pierre             | Tempéré / Froid / Steppe / Tropical / Désert / Subtropical / Savane / Hyperaride / Mousson / Prairie                                                                                  | 1 Pierre           | terrain accidenté |
 | Collines de charbon            | Tempéré / Froid / Steppe / Méditerranéen / Tropical / Désert / Océanique / Alpin / Subtropical / Hyperaride / Mousson / Prairie / Mésoaméricain                                       | 1 Charbon          | terrain accidenté |
 | Marais salants                 | Tempéré / Méditerranéen / Tropical / Désert / Subtropical / Savane / Hyperaride / Andin / Prairie / Mésoaméricain                                                                     | 1 Sel              | plaine            |
-| Plaine enneigée                | Arctique / Glacial / Andin                                                                                                                                                            | 0                  | plaine            |
+| Plaine enneigée                | Arctique / Glacial                                                                                                                                                                    | 0                  | plaine            |
 | Chasse aux phoques             | Arctique / Glacial                                                                                                                                                                    | 1 Peaux + 1 Huile  | plaine            |
 | Montagnes de minerai arctiques | Arctique / Glacial                                                                                                                                                                    | 1 Minerai          | terrain accidenté |
 | Crête rocheuse arctique        | Arctique / Glacial                                                                                                                                                                    | 1 Pierre           | terrain accidenté |
@@ -1250,7 +1250,6 @@ Chaque saison dure deux manches complètes, début et fin, avec le même rendeme
 | Collines d'argile         | 1 Argile           | 1 Argile   | 1 Argile   | 1 Argile  |
 | Bois riverains            | 1 Bois             | 1 Bois     | 2 Bois     | 0         |
 | Pics rocheux              | 0                  | 0          | 0          | 0         |
-| Plaine enneigée           | 0                  | 0          | 0          | 0         |
 | Zone de pêche             | 1 Poissons         | 2 Poissons | 1 Poissons | 0         |
 
 ### Prairie

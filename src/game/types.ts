@@ -227,6 +227,7 @@ export interface TowerSiege {
 }
 export interface Battle {
   bombardment?: boolean;
+  thawRetreat?: true;
   attacker: number;
   defender: number;
   attackers: string[];
@@ -331,6 +332,12 @@ export interface Game extends World {
   researchChoice?: Card[];
   legacyResearchChoice?: true;
   battle?: Battle;
+  /** Forced landings pause for normal casualty choices, then resume in order. */
+  thawRetreats?: {
+    round: number;
+    ice: string[];
+    pending: { owner: number; origin: string; ids: string[] }[];
+  };
   trade?: Trade;
   alliances?: Alliance[];
   /** Former allies already sharing a tile can withdraw or battle in place. */

@@ -110,7 +110,7 @@ describe("retired generic crop", () => {
       expected.tiles["0,0"].biome = biome;
       expect(restored).toEqual(expected);
       assertInvariants(restored);
-      expect(JSON.parse(serialize(restored)).version).toBe(13);
+      expect(JSON.parse(serialize(restored)).version).toBe(14);
       expect(deserialize(serialize(restored))).toEqual(restored);
     },
   );

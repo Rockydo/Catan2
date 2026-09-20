@@ -89,7 +89,8 @@ describe("season transaction and production integrity", () => {
     s = run(s, { type: "end-turn" });
     expect(s.round).toBe(5);
     expect(s.pieces[ship.id].seasonStatus).toBeUndefined();
-    expect(s.pieces[stranded.id].seasonStatus).toBe("adrift");
+    expect(s.pieces[stranded.id].seasonStatus).toBeUndefined();
+    expect(s.pieces[stranded.id].tile).toBe(shore);
     expect(ready(s, s.pieces[ship.id])).toBe(true);
     s.phase = "economy";
     s = run(s, {
@@ -100,7 +101,7 @@ describe("season transaction and production integrity", () => {
     });
     expect(s.pieces[troop.id].carrier).toBeUndefined();
     expect(s.pieces[troop.id].tile).toBe(shore);
-    expect(s.pieces[stranded.id].tile).toBe(water);
+    expect(s.pieces[stranded.id].tile).toBe(shore);
     assertInvariants(deserialize(serialize(s)));
   });
 

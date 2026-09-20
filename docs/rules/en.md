@@ -147,7 +147,8 @@ Land armies can cross ice; ships use open water. Ice never becomes permanent con
 
 An icebound ship cannot move, act or retreat. It fights at one quarter of its normal power, rounded up separately for each ship. Watchtower support is added normally. Its normal unit points still determine whole-unit casualties.
 Friendly land armies on the same hex defend an icebound fleet at full strength, including against shore bombardment. Allied land armies also count. A neighboring army does not automatically join: move it onto the ice to escort the ships. Embarked passengers remain aboard and do not fight as a land escort. When the ice thaws, ships regain normal power and movement.
-Land troops caught by thaw remain on a drifting ice floe. They are not destroyed or teleported. They can move onto adjacent legal land or ice, or board a friendly transport subject to capacity and activation rules. They cannot walk across open water. Enemy fleets can attack them. Retreats require legal terrain for every surviving unit. An icebound ship cannot use an open-water escape while still frozen.
+At a round boundary, land troops caught by thaw automatically retreat to the nearest reachable safe solid land, at no movement cost. They may cross the connected ice sheet that just melted and any remaining ice, but cannot cross earlier open sea, Bare Peaks or hostile forces. Allied land armies may share the landing. If no safe shore is reachable, they attack the nearest enemy-held landing using normal terrain bonuses, combat and whole-unit casualties. Equally distant enemy landings favor the weaker defense. Several forced battles resolve one at a time before the dice roll; pending retreats survive saving and reloading. Ships and embarked passengers stay in place.
+If no land is reachable, or a forced landing fails, survivors remain on a drifting ice floe for rescue. They can move onto adjacent legal land or ice, or board a friendly transport subject to capacity and activation rules. They cannot walk across open water, and enemy fleets can attack them. They try again at the next round boundary. Retreats require legal terrain for every surviving unit. An icebound ship cannot use an open-water escape while still frozen.
 
 ### AI and existing saves
 
@@ -845,13 +846,12 @@ Transition weights : Alpine ×2, Steppe ×1, Desert ×1, Subtropical ×1, Mesoam
 | Potato fields   | 18%                | 2 Grain               |
 | Alpaca pasture  | 14%                | 1 Wool + 1 Meat       |
 | Mountain quarry | 16%                | 2 Stone               |
-| Iron mountains  | 10%                | 1 Iron ore            |
-| Gold mountains  | 6%                 | 1 Gold                |
+| Iron mountains  | 11%                | 1 Iron ore            |
+| Gold mountains  | 7%                 | 1 Gold                |
 | Salt flats      | 6%                 | 1 Salt                |
 | Clay hills      | 5%                 | 1 Clay                |
 | River woods     | 5%                 | 1 Wood                |
-| Bare Peaks      | 15%                | 0                     |
-| Snow plain      | 5%                 | 0                     |
+| Bare Peaks      | 18%                | 0                     |
 | Water terrain   | Sequential check   | Effective water share |
 | ---             | ---                | ---                   |
 | Fishing grounds | 12%                | 12%                   |
@@ -935,7 +935,7 @@ Current annual baselines include climate-specific crop productivity. Each season
 | Stone quarry          | Temperate / Cold / Steppe / Tropical / Desert / Subtropical / Savanna / Hyperarid / Monsoon / Prairie                                                                               | 1 Stone           | rugged |
 | Coal hills            | Temperate / Cold / Steppe / Mediterranean / Tropical / Desert / Oceanic / Alpine / Subtropical / Hyperarid / Monsoon / Prairie / Mesoamerican                                       | 1 Coal            | rugged |
 | Salt flats            | Temperate / Mediterranean / Tropical / Desert / Subtropical / Savanna / Hyperarid / Andean / Prairie / Mesoamerican                                                                 | 1 Salt            | flat   |
-| Snow plain            | Arctic / Glacial / Andean                                                                                                                                                           | 0                 | flat   |
+| Snow plain            | Arctic / Glacial                                                                                                                                                                    | 0                 | flat   |
 | Seal hunting grounds  | Arctic / Glacial                                                                                                                                                                    | 1 Hides + 1 Oil   | flat   |
 | Arctic iron mountains | Arctic / Glacial                                                                                                                                                                    | 1 Iron ore        | rugged |
 | Arctic stone ridge    | Arctic / Glacial                                                                                                                                                                    | 1 Stone           | rugged |
@@ -1249,7 +1249,6 @@ Each season lasts two full rounds, early and late, with the same scheduled yield
 | Clay hills      | 1 Clay          | 1 Clay     | 1 Clay     | 1 Clay     |
 | River woods     | 1 Wood          | 1 Wood     | 2 Wood     | 0          |
 | Bare Peaks      | 0               | 0          | 0          | 0          |
-| Snow plain      | 0               | 0          | 0          | 0          |
 | Fishing grounds | 1 Fish          | 2 Fish     | 1 Fish     | 0          |
 
 ### Prairie

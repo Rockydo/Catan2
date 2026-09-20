@@ -82,7 +82,7 @@ describe("Turnip fields replace Rye", () => {
         const restored = deserialize(oldSave(original, version));
         expect(restored).toEqual(expected);
         assertInvariants(restored);
-        expect(JSON.parse(serialize(restored)).version).toBe(13);
+        expect(JSON.parse(serialize(restored)).version).toBe(14);
         expect(deserialize(serialize(restored))).toEqual(restored);
       }
     },

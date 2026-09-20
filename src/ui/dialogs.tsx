@@ -98,6 +98,13 @@ export function BattleDialog({
         b.bombardment ? "Resolve shore bombardment" : "Resolve the battle",
       )}
     >
+      {b.thawRetreat && (
+        <p className="notice">
+          {tx(
+            "Melting ice forced this army to land here. No safe landing was reachable. Normal combat and casualty rules apply; other thaw retreats resume after this battle.",
+          )}
+        </p>
+      )}
       {tx(
         b.bombardment && (
           <p className="notice">

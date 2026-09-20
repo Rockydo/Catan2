@@ -44,6 +44,10 @@ import {
   MapPin,
   Users,
   ArrowLeftRight,
+  LandPlot,
+  Mountain,
+  Trees,
+  Waves,
 } from "lucide-react";
 import {
   GOODS,
@@ -186,10 +190,20 @@ export function DetailHeader({
   }
   if (selection.type === "tile") {
     const t = s.tiles[selection.id];
-    if (t)
+    if (t) {
+      const family = terrainFamily(t),
+        terrain = {
+          flat: { name: "Flat", icon: LandPlot },
+          rugged: { name: "Rugged", icon: Mountain },
+          forest: { name: "Forested", icon: Trees },
+          water: { name: "Water", icon: Waves },
+        }[family],
+        TerrainIcon = terrain.icon,
+        bonusUnit =
+          t.resource !== "peaks" &&
+          Object.values(UNIT_INFO).find((unit) => unit.family === family);
       return (
         <div className="panel-intro">
-          <span className="eyebrow">{tx(terrainFamily(t).toUpperCase())}</span>
           <h2>{tx(TERRAIN[tileTerrain(t)].name)}</h2>
           <div className="tile-metadata">
             <span
@@ -207,6 +221,13 @@ export function DetailHeader({
                 ({t.q}, {t.r})
               </strong>
             </span>
+          </div>
+          <div className="tile-combat-terrain">
+            <TerrainIcon size={15} aria-hidden="true" />
+            <span>
+              {tx("Combat terrain")}: <strong>{tx(terrain.name)}</strong>
+            </span>
+            {bonusUnit && <small>{tx(bonusUnit.name)} ×2</small>}
           </div>
           <p>
             {tx(
@@ -234,6 +255,7 @@ export function DetailHeader({
           <TileSeasonForecast game={s} tile={t} owner={viewer} />
         </div>
       );
+    }
   }
   const harbor = s.edges[selection.id]?.harbor;
   return (

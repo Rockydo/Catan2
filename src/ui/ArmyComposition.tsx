@@ -219,7 +219,7 @@ export function ArmyComposition({
                   <span>
                     <b>{tx("On a drifting ice floe")}</b>
                     {tx(
-                      " · Move onto adjacent land or ice, or board a friendly transport. Units are not lost to the thaw.",
+                      " · No landing was reachable, or the forced landing failed. Move onto adjacent land or ice, or board a friendly transport.",
                     )}
                   </span>
                 </p>

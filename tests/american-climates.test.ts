@@ -48,13 +48,12 @@ const expected = {
       ["potato-fields", 18],
       ["alpaca-pasture", 14],
       ["mountain-quarry", 16],
-      ["iron", 10],
-      ["gold", 6],
+      ["iron", 11],
+      ["gold", 7],
       ["salt-flats", 6],
       ["clay", 5],
       ["river-woods", 5],
-      ["bare-peaks", 15],
-      ["snow-plain", 5],
+      ["bare-peaks", 18],
     ],
     water: [["fish", 0.12]],
     compatible: ["alpine", "steppe", "desert", "subtropical", "mesoamerican"],
@@ -124,6 +123,26 @@ describe("American climate generation", () => {
     expect(climateTransitionWeight("mesoamerican", "subtropical")).toBe(2);
     expect(climateTransitionWeight("andean", "steppe")).toBe(1);
     expect(climateTransitionWeight("andean", "mesoamerican")).toBe(1);
+  });
+
+  it("keeps revealed Andean snow plains loadable after removing them from new terrain rolls", () => {
+    const s = newGame("regional-5-1");
+    const t = Object.values(s.tiles).find(
+      (tile) =>
+        tile.climate === "andean" &&
+        tile.resource !== "water" &&
+        tile.resource !== "ice",
+    )!;
+    expect(t).toBeDefined();
+    t.biome = "snow-plain";
+    t.resource = "snow";
+    const save = JSON.parse(serialize(s));
+    save.version = 13;
+    const loaded = deserialize(JSON.stringify(save));
+    expect(loaded.tiles[t.id]).toEqual(t);
+    expect(
+      CLIMATE_INFO.andean.terrain.some(([biome]) => biome === "snow-plain"),
+    ).toBe(false);
   });
 
   it("keeps American crops exclusive while retaining the old-world crop shares", () => {

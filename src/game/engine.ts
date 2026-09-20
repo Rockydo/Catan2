@@ -1,4 +1,5 @@
 import { syncEmergencyCoalition } from "./emergency-coalition";
+import { startThawRetreats, continueThawRetreats } from "./thaw-retreats";
 import {
   SEASONS,
   seasonAt,
@@ -232,10 +233,14 @@ function nextTurn(s: Game) {
     if (x.owner === s.active && x.last < s.players[s.active].turns)
       delete s.sieges[id];
   const old = s.active;
+  let previousIce: string[] | undefined;
   do {
     s.active = (s.active + 1) % s.players.length;
   } while (!s.players[s.active].alive);
   if (s.active <= old) {
+    previousIce = Object.values(s.tiles)
+      .filter((tile) => tile.surface === "frozen")
+      .map((tile) => tile.id);
     s.round++;
     syncSeasonSurfaces(s);
     const season = seasonAt(s);
@@ -243,6 +248,7 @@ function nextTurn(s: Game) {
       log(s, `Year ${seasonYear(s)}: ${seasonLabel(s)} begins.`, "info");
   }
   beginTurn(s);
+  if (previousIce) startThawRetreats(s, previousIce);
 }
 export function eliminate(s: Game) {
   if (s.phase.startsWith("setup")) return;
@@ -425,6 +431,7 @@ export function execute(s: Game, c: Command) {
   if (s.battle) {
     rule(c.type === "resolve-battle", "Resolve the battle before continuing.");
     resolveBattle(s, c);
+    continueThawRetreats(s);
     return;
   }
   if (s.allianceOffer) {
