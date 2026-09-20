@@ -12,6 +12,7 @@ import {
 } from "../src/game/climate-content";
 /** Export the same bilingual guide and live catalogue as portable Markdown. */
 import { mkdirSync, writeFileSync } from "node:fs";
+import { format } from "prettier";
 import chapters from "../src/rules/chapters.json";
 import {
   COSTS,
@@ -49,6 +50,7 @@ for (const locale of ["en", "fr"] as const) {
   lines.push(`## ${text("Climate tables", "Tables climatiques")}`);
   for (const climate of CLIMATES) {
     const c = CLIMATE_INFO[climate];
+    const whaleChance = c.water.find(([b]) => b === "whale")?.[1];
     lines.push(
       `### ${tx(c.name)}: ${Math.round(c.land * 100)}% ${text("land", "terre")} / ${Math.round((1 - c.land) * 100)}% ${text("water", "eau")}`,
       `${text("Compatible", "Compatible")} : ${c.compatible.map((n) => tx(CLIMATE_INFO[n].name)).join(", ")}`,
@@ -66,17 +68,19 @@ for (const locale of ["en", "fr"] as const) {
         ([b, n]) =>
           `| ${tx(BIOME_INFO[b].name)} | ${b === "water" ? "" : Math.round(c.water.find(([t]) => t === b)![1] * 100) + "%"} | ${Number((n * 100).toFixed(3))}% |`,
       ),
-      text(
-        `Open water (no adjacent land): Whale check ${c.water.find(([b]) => b === "whale")![1] * 200}%; effective share ${Number((waterProbabilities(climate, true).find(([b]) => b === "whale")![1] * 100).toFixed(3))}%. Table above: coastal water.`,
-        `Haute mer (sans terre adjacente) : tirage Baleines ${c.water.find(([b]) => b === "whale")![1] * 200} % ; part effective ${Number((waterProbabilities(climate, true).find(([b]) => b === "whale")![1] * 100).toFixed(3))} %. Tableau ci-dessus : eau côtière.`,
-      ),
+      whaleChance
+        ? text(
+            `Open water (no adjacent land): Whale check ${Math.min(1, whaleChance * 2) * 100}%; effective share ${Number(((waterProbabilities(climate, true).find(([b]) => b === "whale")?.[1] ?? 0) * 100).toFixed(3))}%. Table above: coastal water.`,
+            `Haute mer (sans terre adjacente) : tirage Baleines ${Math.min(1, whaleChance * 2) * 100} % ; part effective ${Number(((waterProbabilities(climate, true).find(([b]) => b === "whale")?.[1] ?? 0) * 100).toFixed(3))} %. Tableau ci-dessus : eau côtière.`,
+          )
+        : text("No whales in this climate.", "Aucune baleine dans ce climat."),
     );
   }
   lines.push(
     `## ${text("Terrain yields", "Production des terrains")}`,
     text(
-      "Current annual baselines include climate-specific cereal productivity. Each seasonal calendar totals four times that baseline, not necessarily the value used by an earlier game version.",
-      "Les bases annuelles actuelles incluent la productivité des céréales propre au climat. Chaque calendrier totalise quatre fois cette base, qui peut différer de celle d’une ancienne version du jeu.",
+      "Current annual baselines include climate-specific crop productivity. Each seasonal calendar totals four times that baseline, not necessarily the value used by an earlier game version.",
+      "Les bases annuelles actuelles incluent la productivité des cultures propre au climat. Chaque calendrier totalise quatre fois cette base, qui peut différer de celle d’une ancienne version du jeu.",
     ),
     `| ${text("Terrain | Climates | Base yield | Family", "Terrain | Climats | Production de base | Famille")} |`,
     "|---|---|---|---|",
@@ -113,8 +117,8 @@ for (const locale of ["en", "fr"] as const) {
   lines.push(
     `## ${text("Complete seasonal harvest tables", "Tables complètes des récoltes saisonnières")}`,
     text(
-      "Ordinary seas freeze in Spring/Autumn with fixed chances: Glacial 100%/100%, Arctic 70%/50%, Alpine 35%/25%, Cold 20%/10%. They all freeze in Winter and open in Summer. Glacial Frozen sea terrain stays frozen all year; Arctic Frozen sea opens in Summer. Glacial marine harvests occur only in Summer. Other marine rows show the open-water baseline: frozen Spring or Autumn yield moves into Summer without changing the current annual total. Select a tile for exact surfaces and yields.",
-      "Les mers ordinaires gèlent au Printemps/en Automne selon des probabilités fixes : Glacial 100 %/100 %, Arctique 70 %/50 %, Alpin 35 %/25 %, Froid 20 %/10 %. Elles gèlent toutes en Hiver et s’ouvrent en Été. La Banquise du climat Glacial reste gelée toute l’année ; la Banquise arctique s’ouvre en Été. Les récoltes marines du climat Glacial ont lieu seulement en Été. Les autres lignes marines indiquent la base en eau libre : le rendement bloqué par le gel printanier ou automnal est reporté en Été sans changer le total annuel actuel. Sélectionnez une tuile pour connaître ses états et rendements exacts.",
+      "Ordinary seas freeze in Spring/Autumn with fixed chances: Glacial 100%/100%, Arctic 70%/50%, Alpine 35%/25%, Cold 20%/10%, Prairie 10%/10%. These five climates freeze in Winter and open in Summer; Andean water never freezes. Glacial Frozen sea terrain stays frozen all year; Arctic Frozen sea opens in Summer. Glacial marine harvests occur only in Summer. Other marine rows show the open-water baseline: frozen Spring or Autumn yield moves into Summer without changing the current annual total. Select a tile for exact surfaces and yields.",
+      "Les mers ordinaires gèlent au Printemps/en Automne selon des probabilités fixes : Glacial 100 %/100 %, Arctique 70 %/50 %, Alpin 35 %/25 %, Froid 20 %/10 %, Prairie 10 %/10 %. Ces cinq climats gèlent en Hiver et s’ouvrent en Été ; les eaux andines ne gèlent jamais. La Banquise du climat Glacial reste gelée toute l’année ; la Banquise arctique s’ouvre en Été. Les récoltes marines du climat Glacial ont lieu seulement en Été. Les autres lignes marines indiquent la base en eau libre : le rendement bloqué par le gel printanier ou automnal est reporté en Été sans changer le total annuel actuel. Sélectionnez une tuile pour connaître ses états et rendements exacts.",
     ),
   );
   for (const climate of CLIMATES) {
@@ -210,7 +214,16 @@ for (const locale of ["en", "fr"] as const) {
     );
   writeFileSync(
     new URL(`../docs/rules/${locale}.md`, import.meta.url),
-    lines.join("\n\n") + "\n",
+    await format(
+      lines
+        .map((line, index) =>
+          index === 0
+            ? line
+            : `${line.startsWith("|") && lines[index - 1].startsWith("|") ? "\n" : "\n\n"}${line}`,
+        )
+        .join(""),
+      { parser: "markdown" },
+    ),
   );
 }
 console.log("Exported complete English and French rules to docs/rules.");

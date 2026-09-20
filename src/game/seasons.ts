@@ -12,6 +12,7 @@ export const SHOULDER_ICE_CHANCE = {
   arctic: { spring: 0.7, autumn: 0.5 },
   alpine: { spring: 0.35, autumn: 0.25 },
   cold: { spring: 0.2, autumn: 0.1 },
+  prairie: { spring: 0.1, autumn: 0.1 },
 } as const;
 
 export function seasonAt(
@@ -32,16 +33,28 @@ export function seasonYear(s: Pick<Game, "calendar" | "round">): number {
 function schedule(tile: Hex, raw: Raw, base: number): Year {
   const biome = tile.biome,
     climate = tile.climate ?? "temperate";
-  const frost = ["cold", "arctic", "alpine", "glacial"].includes(climate);
-  const dry = ["desert", "hyperarid"].includes(climate);
-  const rainy = ["tropical", "subtropical", "savanna", "monsoon"].includes(
+  const frost = ["cold", "arctic", "alpine", "glacial", "prairie"].includes(
     climate,
   );
+  const dry = ["desert", "hyperarid"].includes(climate);
+  const rainy = [
+    "tropical",
+    "subtropical",
+    "savanna",
+    "monsoon",
+    "mesoamerican",
+  ].includes(climate);
   const hot = dry || rainy;
   const times = (weights: Year): Year => weights.map((n) => n * base) as Year;
   const wetSummer = Math.max(1, base - 1),
     dryPeak = 2 * base - wetSummer;
   const wetDry: Year = [base, wetSummer, base, dryPeak];
+  if (biome === "cloud-forest" || biome === "volcanic-quarry")
+    return times([1, 1, 1, 1]);
+  if (biome === "alpaca-pasture")
+    return times(raw === "wool" ? [4, 0, 0, 0] : [1, 0, 2, 1]);
+  if (biome === "bison-range") return times([1, 0, 2, 1]);
+  if (biome === "sunflower-fields") return times([0, 0, 4, 0]);
   // Woods let a faction switch products. Identical calendars prevent switching
   // between forestry and hunting from manufacturing extra annual output.
   if (biome === "woods") return times(hot ? [1, 1, 1, 1] : [1, 1, 2, 0]);
@@ -55,6 +68,7 @@ function schedule(tile: Hex, raw: Raw, base: number): Year {
     return times([0, 4, 0, 0]);
   if (biome === "cattle-savanna") return times([1, 0, 2, 1]);
   if (raw === "grain") {
+    if (biome === "chinampa-gardens") return [4, 4, 4, 0];
     if (biome === "rice-field") {
       const harvests =
         climate === "monsoon" ? 1 : climate === "tropical" ? 3 : 2;
@@ -70,7 +84,9 @@ function schedule(tile: Hex, raw: Raw, base: number): Year {
     if (biome === "oasis") return times([0, 0, 4, 0]);
     if (biome === "golden-fields")
       return times(climate === "oceanic" ? [0, 0, 4, 0] : [0, 4, 0, 0]);
-    if (biome === "maize-field") return times([0, 0, 4, 0]);
+    if (biome === "maize-field" || biome === "sorghum-fields")
+      return times([0, 0, 4, 0]);
+    if (biome === "oat-fields") return times([0, 3, 1, 0]);
     if (biome === "millet-fields") return times([0, 0, 4, 0]);
     if (biome === "barley-fields")
       return times(
@@ -78,11 +94,14 @@ function schedule(tile: Hex, raw: Raw, base: number): Year {
           ? [0, 0, 4, 0]
           : [0, 4, 0, 0],
       );
-    if (biome === "rye-fields") return times([0, 4, 0, 0]);
+    // Early varieties provide a small Summer crop; maincrop lifting peaks in Autumn.
+    if (biome === "potato-fields" || biome === "turnip-fields")
+      return times([0, 1, 3, 0]);
     return times([0, 0, 4, 0]);
   }
   if (raw === "meat") {
-    if (biome === "cattle-pasture") return [1, 1, 4, 2];
+    if (biome === "cattle-pasture" || biome === "turkey-grounds")
+      return [1, 1, 4, 2];
     return times([1, 0, 2, 1]);
   }
   if (raw === "wool") return times(hot ? [1, 1, 1, 1] : [2, 2, 0, 0]);
@@ -111,7 +130,7 @@ function schedule(tile: Hex, raw: Raw, base: number): Year {
   // to risky agriculture. Clay extraction can continue during tropical rains.
   if (
     raw === "brick" &&
-    ["tropical", "subtropical", "monsoon"].includes(climate)
+    ["tropical", "subtropical", "monsoon", "mesoamerican"].includes(climate)
   )
     return wetDry;
   return times([1, 1, 1, 1]);
@@ -186,6 +205,14 @@ export function seasonWeather(tile: Hex, season: Season): string {
       : "Permanent snow";
   if (climate === "hyperarid")
     return season === "summer" ? "Extreme drought" : "Persistent drought";
+  if (climate === "andean")
+    return season === "winter"
+      ? "Cool dry season"
+      : season === "autumn"
+        ? "Dry season"
+        : season === "spring"
+          ? "Early rains"
+          : "Wet season";
   if (climate === "monsoon")
     return season === "spring"
       ? "Monsoon onset"
@@ -206,7 +233,7 @@ export function seasonWeather(tile: Hex, season: Season): string {
         : season === "summer"
           ? "Summer thaw"
           : "Snow cover";
-  if (["tropical", "subtropical", "savanna"].includes(climate))
+  if (["tropical", "subtropical", "savanna", "mesoamerican"].includes(climate))
     return season === "spring"
       ? "Early rains"
       : season === "summer"
@@ -231,7 +258,7 @@ export function seasonWeather(tile: Hex, season: Season): string {
   if (season === "winter")
     return climate === "oceanic" ? "Winter rains" : "Snow cover";
   if (season === "spring")
-    return ["cold", "arctic", "alpine"].includes(climate)
+    return ["cold", "arctic", "alpine", "prairie"].includes(climate)
       ? "Spring thaw"
       : "Spring growth";
   return season === "summer"

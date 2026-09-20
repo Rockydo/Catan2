@@ -213,7 +213,7 @@ export function SeasonCalendar({
             <p>
               {tx(
                 next === "winter"
-                  ? "Cold, Alpine, Arctic and Glacial seas freeze. Move ships to warmer waters before the next round."
+                  ? "Cold, Alpine, Arctic, Glacial and Prairie seas freeze. Move ships to warmer waters before the next round."
                   : next === "summer"
                     ? "Seasonal sea ice melts; Glacial pack ice stays frozen. Bring land units ashore or arrange transport before the next round."
                     : "Glacial seas freeze in Spring and Autumn; ice is patchy in other cold regions. Check each tile’s forecast before moving.",
@@ -264,8 +264,9 @@ export function TileSeasonForecast({
   );
   const weather = seasonWeather(tile, current);
   const coldSea =
-    ["cold", "alpine", "arctic", "glacial"].includes(tile.climate ?? "") &&
-    ["water", "ice"].includes(tile.resource);
+    ["cold", "alpine", "arctic", "glacial", "prairie"].includes(
+      tile.climate ?? "",
+    ) && ["water", "ice"].includes(tile.resource);
   const currentIcon = SEASON_ICONS[current];
   const Icon = currentIcon;
   return (

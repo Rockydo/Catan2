@@ -124,7 +124,9 @@ export function GoodSources({ good }: { good: Good }) {
       {BIOMES.filter(
         (t) =>
           good in yields(t) ||
-          workshopGoods(t).some((g) => processedFor(g) === good),
+          (Object.keys(yields(t)) as Raw[]).some(
+            (g) => processedFor(g) === good,
+          ),
       ).map((tile) => (
         <TerrainImage key={tile} tile={tile} />
       ))}
@@ -142,8 +144,8 @@ export function TerrainReference({ seaOnly = false }: { seaOnly?: boolean }) {
       <h2>{l("Terrain and production", "Terrains et production")}</h2>
       <p className="reference-intro">
         {l(
-          "Output below is the current climate-adjusted annual baseline for one settlement. Cereals with different regional yields list each case. Multiply raw output by town level, camp tier or collector tier. Towns, land merchants and merchant ships at levels III/IV also add 1×/2× the base tile yield as processed goods. Workshops add their tier × the linked resource's yield separately; none of these bonuses consume raw goods.",
-          "Les quantités ci-dessous sont les bases annuelles actuelles d’une colonie, ajustées au climat. Chaque rendement régional des céréales est indiqué. Multipliez la production brute par le niveau de l’agglomération, du camp ou du collecteur. Les agglomérations, marchands terrestres et navires marchands de niveau III/IV ajoutent aussi 1×/2× la base en produits transformés. Les ateliers ajoutent séparément leur palier × le rendement de la ressource liée ; ces bonus ne consomment aucune matière première.",
+          "Output below is the current climate-adjusted annual baseline for one settlement. Crops with different regional yields list each case. Multiply raw output by town level, camp tier or collector tier. Towns, land merchants and merchant ships at levels III/IV also add 1×/2× the base tile yield as processed goods. Workshops add their tier × the linked resource's yield separately; none of these bonuses consume raw goods.",
+          "Les quantités ci-dessous sont les bases annuelles actuelles d’une colonie, ajustées au climat. Chaque rendement régional des cultures est indiqué. Multipliez la production brute par le niveau de l’agglomération, du camp ou du collecteur. Les agglomérations, marchands terrestres et navires marchands de niveau III/IV ajoutent aussi 1×/2× la base en produits transformés. Les ateliers ajoutent séparément leur palier × le rendement de la ressource liée ; ces bonus ne consomment aucune matière première.",
         )}
       </p>
       <div className="terrain-reference-grid">
@@ -236,7 +238,8 @@ export function ClimateReference({
   const locale = useLocale(),
     l = (en: string, fr: string) => (locale === "fr" ? fr : en);
   const [climate, setClimate] = useState<Climate>(initial),
-    info = CLIMATE_INFO[climate];
+    info = CLIMATE_INFO[climate],
+    whaleChance = info.water.find(([b]) => b === "whale")?.[1];
   const pct = (v: number) =>
     `${Number((v * 100).toFixed(3)).toLocaleString(locale)}%`;
   return (
@@ -271,8 +274,8 @@ export function ClimateReference({
         {l("Initial climate weight: ", "Poids du climat initial : ")}
         {climateInitialWeight(climate).toLocaleString(locale)}
         {l(
-          ". The eleven established climates have weight 1 each; Glacial, Hyperarid and Monsoon have weight 0.35 each. Weights are normalized for the starting draw.",
-          ". Les onze climats établis ont chacun un poids de 1 ; Glacial, Hyperaride et Mousson ont chacun 0,35. Les poids sont normalisés pour le tirage initial.",
+          ". The fourteen non-extreme climates have weight 1 each; Glacial, Hyperarid and Monsoon have weight 0.35 each. Weights are normalized for the starting draw.",
+          ". Les quatorze climats non extrêmes ont chacun un poids de 1 ; Glacial, Hyperaride et Mousson ont chacun 0,35. Les poids sont normalisés pour le tirage initial.",
         )}
       </p>
       <p>
@@ -329,18 +332,24 @@ export function ClimateReference({
             )}
           </p>
           <p>
-            {l(
-              "Open water (no adjacent land): Whale check ",
-              "Haute mer (sans terre adjacente) : tirage Baleines ",
+            {whaleChance ? (
+              <>
+                {l(
+                  "Open water (no adjacent land): Whale check ",
+                  "Haute mer (sans terre adjacente) : tirage Baleines ",
+                )}
+                {pct(Math.min(1, whaleChance * 2))}
+                {l("; effective share ", " ; part effective ")}
+                {pct(
+                  waterProbabilities(climate, true).find(
+                    ([b]) => b === "whale",
+                  )?.[1] ?? 0,
+                )}
+                .
+              </>
+            ) : (
+              l("No whales in this climate.", "Aucune baleine dans ce climat.")
             )}
-            {pct(Math.min(1, info.water.find(([b]) => b === "whale")![1] * 2))}
-            {l("; effective share ", " ; part effective ")}
-            {pct(
-              waterProbabilities(climate, true).find(
-                ([b]) => b === "whale",
-              )![1],
-            )}
-            .
           </p>
           {waterProbabilities(climate).map(([t, n]) => (
             <div className="climate-terrain" key={t}>

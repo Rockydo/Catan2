@@ -7,7 +7,7 @@ for (const locale of ["en", "fr"] as const) {
   const grain = locale === "fr" ? "Blé" : "Grain";
   const rules = locale === "fr" ? "/rules-fr.html" : "/rules.html";
 
-  test(`${locale}: fourteen climates and regional cereal yields agree across the guide`, async ({
+  test(`${locale}: seventeen climates and regional cereal yields agree across the guide`, async ({
     page,
   }) => {
     const errors: string[] = [];
@@ -19,7 +19,7 @@ for (const locale of ["en", "fr"] as const) {
     });
     await page.goto(`${rules}#world`);
     const climate = page.locator(".climate-reference");
-    await expect(climate.locator(".climate-tabs button")).toHaveCount(14);
+    await expect(climate.locator(".climate-tabs button")).toHaveCount(17);
     for (const [name, land, art] of [
       ["Glacial", "45%", "glacial-snow-plain-summer.webp"],
       [
@@ -59,8 +59,8 @@ for (const locale of ["en", "fr"] as const) {
       ["rice-field", "monsoon", 1],
       ["barley-fields", "cold mediterranean alpine", 1],
       ["barley-fields", "oceanic", 2],
-      ["rye-fields", "temperate oceanic", 2],
-      ["rye-fields", "cold alpine", 1],
+      ["turnip-fields", "temperate oceanic", 2],
+      ["turnip-fields", "cold alpine", 1],
     ] as const) {
       const variant = catalogue.locator(
         `[data-terrain="${biome}"] [data-yield-climates="${climates}"]`,
@@ -75,7 +75,7 @@ for (const locale of ["en", "fr"] as const) {
 
     await page.goto(`${rules}#seasons`);
     const calendar = page.locator(".season-reference");
-    await expect(calendar.locator(".climate-tabs button")).toHaveCount(14);
+    await expect(calendar.locator(".climate-tabs button")).toHaveCount(17);
     for (const [name, biome, amounts] of [
       [locale === "fr" ? "Mousson" : "Monsoon", "rice-field", [0, 0, 4, 0]],
       [
@@ -88,6 +88,18 @@ for (const locale of ["en", "fr"] as const) {
         "chernozem-wheat",
         [0, 12, 0, 0],
       ],
+      [
+        locale === "fr" ? "Tempéré" : "Temperate",
+        "turnip-fields",
+        [0, 2, 6, 0],
+      ],
+      [
+        locale === "fr" ? "Océanique" : "Oceanic",
+        "turnip-fields",
+        [0, 2, 6, 0],
+      ],
+      [locale === "fr" ? "Froid" : "Cold", "turnip-fields", [0, 1, 3, 0]],
+      [locale === "fr" ? "Alpin" : "Alpine", "turnip-fields", [0, 1, 3, 0]],
     ] as const) {
       await calendar.getByRole("button", { name, exact: true }).click();
       await expect(calendar.locator(`[data-biome="${biome}"] td`)).toHaveText(

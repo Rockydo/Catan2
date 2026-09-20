@@ -11,6 +11,7 @@ import {
   CLIMATE_INFO,
   BIOMES,
   BIOME_INFO,
+  AMERICAN_CLIMATES,
   compatibleClimate,
 } from "./climate-content";
 import { allianceOf, friendly } from "./relations";
@@ -322,8 +323,8 @@ export function assertInvariants(s: Game) {
     int(t.number, 2, 12);
     rule(t.resource !== "fish", "Fish must remain water terrain.");
     rule(
-      t.resource !== "oil",
-      "Oil comes from Whale water tiles, not separate terrain.",
+      t.resource !== "oil" || t.biome === "sunflower-fields",
+      "Oil terrain must be Sunflower fields.",
     );
     if (t.whale !== undefined) {
       bool(t.whale);
@@ -1006,7 +1007,7 @@ export function serialize(s: Game): string {
   const body = JSON.stringify(s);
   return JSON.stringify({
     format: "catane-frontiers",
-    version: 11,
+    version: 12,
     savedAt: new Date().toISOString(),
     checksum: hash(body).toString(16),
     game: s,
@@ -1018,7 +1019,7 @@ export function deserialize(text: string): Game {
   rule(
     data &&
       data.format === "catane-frontiers" &&
-      [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].includes(data.version) &&
+      [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].includes(data.version) &&
       data.game,
     "This is not a supported Catane save.",
   );
@@ -1026,6 +1027,34 @@ export function deserialize(text: string): Game {
     hash(JSON.stringify(data.game)).toString(16) === data.checksum,
     "This save is damaged: its integrity check failed.",
   );
+  {
+    // Replace retired/prototype crops before older migrations inspect yields.
+    // Unreleased v12 prototypes also placed American crops in Old World climates.
+    // Preserve the tile and all linked producers, dice numbers and stored goods.
+    for (const tile of Object.values(data.game.tiles) as any[]) {
+      if (data.version < 12 && tile?.biome === "rye-fields") {
+        rule(tile.resource === "grain", "Invalid legacy rye resource.");
+        if (data.game.generation === 5)
+          rule(
+            ["temperate", "oceanic", "cold", "alpine"].includes(tile.climate),
+            "Legacy rye does not belong to its climate.",
+          );
+        tile.biome = "turnip-fields";
+      } else if (!AMERICAN_CLIMATES.includes(tile?.climate)) {
+        if (tile?.biome === "potato-fields") {
+          rule(tile.resource === "grain", "Invalid legacy crop resource.");
+          tile.biome = "turnip-fields";
+        } else if (tile?.biome === "maize-field") {
+          rule(tile.resource === "grain", "Invalid legacy crop resource.");
+          tile.biome =
+            tile.climate === undefined ||
+            ["temperate", "oceanic", "cold", "alpine"].includes(tile.climate)
+              ? "oat-fields"
+              : "sorghum-fields";
+        }
+      }
+    }
+  }
   if (data.version < 11) {
     // Retire the generic crop before older migrations inspect terrain yields.
     // Only its biome changes: Grain quantities, tile IDs and linked producers stay.

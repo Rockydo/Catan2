@@ -84,6 +84,40 @@ describe("seasonal AI planning", () => {
     expect(projectedIncome(s, s.active, 0)).toEqual({});
   });
 
+  it("forecasts both Potato harvest sizes across the season boundary while retaining annual value", () => {
+    const { s, crop } = seasonalFixture(2);
+    crop.biome = "potato-fields";
+    crop.climate = "andean";
+    s.active = 1;
+    s.phase = "roll";
+    // One Summer roll remains, then both living factions roll in Autumn.
+    expect(projectedIncome(s, 0, 1).grain).toBeCloseTo(2 / 6);
+    expect(projectedIncome(s, 0, 3).grain).toBeCloseTo(14 / 6);
+    expect(projectedIncome(s, 0, 8).grain).toBeCloseTo(16 / 6);
+    expect(income(s, 0).grain).toBeCloseTo(2 / 6);
+    s.phase = "economy";
+    expect(projectedIncome(s, 0, 1).grain).toBeCloseTo(6 / 6);
+    s.round = 3;
+    expect(projectedIncome(s, 0, 1).grain ?? 0).toBe(0);
+    expect(income(s, 0).grain).toBeCloseTo(2 / 6);
+  });
+
+  it("values a Potato maincrop as a complement to Summer wheat", () => {
+    const { s, crop } = seasonalFixture();
+    const potatoes = s.tiles["3,2"];
+    Object.assign(potatoes, {
+      resource: "grain",
+      biome: "potato-fields",
+      climate: "andean",
+    });
+    const [same, complementary] = withSeasonalPlanning(() => [
+      seasonalDiversityBonus(s, [crop.id]),
+      seasonalDiversityBonus(s, [potatoes.id]),
+    ]);
+    expect(same).toBe(0);
+    expect(complementary).toBeCloseTo(0.12);
+  });
+
   it("raises food scarcity and protects the last food before an unproductive half-year", () => {
     const { s, home } = seasonalFixture(1);
     home.stock = { grain: 2 };

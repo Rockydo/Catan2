@@ -7,7 +7,7 @@ import { generateWorld, randomAt, LAND_RESOURCES } from "../src/game/world";
 import { oldGoodsFixture, wrapOldGame } from "./nine-goods-fixture";
 
 describe("nine resources and affordable camps", () => {
-  it("keeps paired legacy goods and adds weighted Gold, water-only Fish and Whale Oil", () => {
+  it("keeps paired legacy goods, water-only Fish and Oil land exclusive to Sunflowers", () => {
     expect(RAW).toHaveLength(13);
     expect(PROCESSED).toHaveLength(10);
     expect(EXTENSIONS).toHaveLength(11);
@@ -21,7 +21,10 @@ describe("nine resources and affordable camps", () => {
     for (const t of Object.values(w.tiles)) {
       expect(t.resource).not.toBe("flax");
       expect(t.resource).not.toBe("fish");
-      expect(t.resource).not.toBe("oil");
+      if (t.resource === "oil") {
+        expect(t.biome).toBe("sunflower-fields");
+        expect(t.climate).toBe("prairie");
+      }
     }
   });
   it("converts old investments and stores without changing locations, rolls, readiness or random streams", () => {

@@ -1,0 +1,164 @@
+{
+  "tool": "Built-in image_gen",
+  "version": 1,
+  "date": "2026-09-20",
+  "columns": [
+    "spring",
+    "summer",
+    "autumn",
+    "winter"
+  ],
+  "processing": "Exact equal-cell extraction with 3px safety inset, resampled to 384px WebP at quality88. No color filters or creative postprocessing.",
+  "atlases": [
+    {
+      "id": "andean-crops-industry",
+      "rows": [
+        {
+          "climate": "andean",
+          "biome": "potato-fields"
+        },
+        {
+          "climate": "andean",
+          "biome": "alpaca-pasture"
+        },
+        {
+          "climate": "andean",
+          "biome": "mountain-quarry"
+        },
+        {
+          "climate": "andean",
+          "biome": "iron"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Create ONE production SPRITE ATLAS for a richly illustrated hex strategy board game, exactly FOUR COLUMNS and FOUR ROWS of equal square cells on a square canvas. No gutters, borders, labels or separators. Each cell is a full-bleed finely hand-painted miniature landscape, crisp realistic materials, 60-degree overhead view, no sky or horizon. Each cell fills all four corners with scenery; NEVER draw shaped tiles, hexagons, cutouts, floating platforms or margins. Main resource-identifying features must lie within the central 65 percent of each square for later hexagonal cropping. No words, text, icons, numbers, people, watermark or modern machinery. Rich, readable, consistent scale, natural daylight. COLUMNS left to right: SPRING, SUMMER, AUTUMN, WINTER. Each row repeats the SAME terrain composition with four clearly different seasons. No blending between the exactly equal cells. CLIMATE: ANDEAN high cultivated mountain valleys of South America, grassy terraces, grey-brown cliffs, distant snow only at extremely high mountain tips. No European pine forests. Spring moist growing season, Summer green early harvest, Autumn ochre-gold main harvest, Winter dry highland season with empty fields and straw-yellow grass, NOT blanket snow in valleys. ROW1 POTATO FIELDS: gently sloping terraces retained by old stone walls. Spring neat low broadleaf potato shoots. Summer dense green potato leaves and ONE small central woven basket holding a modest early harvest of clearly brown potatoes. Autumn largely browned low potato plants and several large centrally placed woven baskets full of brown potato tubers, visibly the MAIN harvest. Winter empty brown earthen furrows on stone terraces, no crops or baskets. ROW2 ALPACA PASTURE: a central small herd of recognizable long-necked Andean alpacas, white, brown, and cream, amongst tall highland grasses and grey rocks. Spring freshly shorn alpacas and rolled bundles of fleece in center. Summer fluffy healthy alpacas on lush green grass. Autumn cooler drier green-gold grass. Winter dry golden grass and fluffy alpacas without snow. ROW3 MOUNTAIN QUARRY: clearly central stepped pale-grey block stone quarry cut into Andean cliffs, square stone blocks and wooden hoist visible, highland coarse grass at edges, NO conifers. Mine remains open in Winter. ROW4 IRON MINE: central dark timber-framed mine entrance cut into grey-rust Andean rock, red iron veins, central wooden cart full of iron ore; sparse coarse highland grass, remains open in Winter. Generate exactly sixteen complete square scenes.",
+      "source": "/home/alvinh/.codex/generated_images/01a0bbf1-16a8-7401-bc97-c385ae57434f/exec-d28d23bd-ccf8-4ab1-b6b9-95da3d8c3afa.png"
+    },
+    {
+      "id": "andean-minerals-woods",
+      "rows": [
+        {
+          "climate": "andean",
+          "biome": "gold"
+        },
+        {
+          "climate": "andean",
+          "biome": "salt-flats"
+        },
+        {
+          "climate": "andean",
+          "biome": "clay"
+        },
+        {
+          "climate": "andean",
+          "biome": "river-woods"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Create ONE production SPRITE ATLAS for a richly illustrated hex strategy board game, exactly FOUR COLUMNS and FOUR ROWS of equal square cells on a square canvas. No gutters, borders, labels or separators. Each cell is a full-bleed finely hand-painted miniature landscape, crisp realistic materials, 60-degree overhead view, no sky or horizon. Each cell fills all four corners with scenery; NEVER draw shaped tiles, hexagons, cutouts, floating platforms or margins. Main resource-identifying features must lie within the central 65 percent of each square for later hexagonal cropping. No words, text, icons, numbers, people, watermark or modern machinery. Rich, readable, consistent scale, natural daylight. COLUMNS left to right: SPRING, SUMMER, AUTUMN, WINTER. Each row repeats the SAME terrain composition with four clearly different seasons. No blending between the exactly equal cells. CLIMATE: ANDEAN high valleys of South America, grey-tan cliffs, coarse highland grass, sparse native small trees, no European pines. Spring moist bright new grass, Summer flourishing green, Autumn golden dry grass, Winter cool dry highland season straw-yellow grass with NO blanket snow at valley level. Resources remain visible and mines OPEN all seasons. ROW1 GOLD MINE: central cave mouth framed by timber in weathered Andean rock, brilliant but natural warm yellow gold veins in exposed rock and a basket of gold-bearing stones centered before mine entrance, grass amongst stones. Spring/Summer greener, Autumn/Winter dry and gold. ROW2 SALT FLATS: broad polygonal white salt crust on yellowish Andean rock, mineral-yellow salt basin edges, shallow clear turquoise brine pools with a small central wicker basket of white salt crystals. Same arrangement year-round, no ice. Summer brighter water, Autumn/Winter reduced pools and drier crust. ROW3 CLAY HILLS: low muted orange and pale terracotta clay ridges cut by stepped erosion, wooden baskets of clay centrally visible, coarse highland grasses in rock cracks. Spring green, Summer green-gold, Autumn golden, Winter cool dry ochre. Do not make this a gold mine or red canyon. ROW4 RIVER WOODS: recognizably native Andean quenua/polylepis grove: compact twisted reddish-brown flaky-barked trees, small leafy crowns, NOT conifers, hugging a clear narrow mountain stream winding through central grey-brown rocks. A short stack of freshly cut modest red-brown logs centrally visible. Spring bright leaves, Summer dense green leaves, Autumn amber-green leaves and golden grass, Winter slightly sparser olive leaves and straw grass. Stream remains LIQUID year-round. No snow over valleys.",
+      "source": "/home/alvinh/.codex/generated_images/01a0bbf1-16a8-7401-bc97-c385ae57434f/exec-e633a3df-441e-4f7d-9937-0beda5867e9a.png"
+    },
+    {
+      "id": "andean-peaks-seas",
+      "rows": [
+        {
+          "climate": "andean",
+          "biome": "bare-peaks"
+        },
+        {
+          "climate": "andean",
+          "biome": "snow-plain"
+        },
+        {
+          "climate": "andean",
+          "biome": "fish"
+        },
+        {
+          "climate": "andean",
+          "biome": "water"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Create ONE production SPRITE ATLAS for a richly illustrated hex strategy board game, exactly FOUR COLUMNS and FOUR ROWS of equal square cells on a square canvas. No gutters, borders, labels or separators. Each cell is a full-bleed finely hand-painted miniature landscape, crisp realistic materials, 60-degree overhead view, no sky or horizon. Each cell fills all four corners with scenery; NEVER draw shaped tiles, hexagons, cutouts, floating platforms or margins. Main resource-identifying features must lie within the central 65 percent of each square for later hexagonal cropping. No words, text, icons, numbers, people, watermark or modern machinery. Rich, readable, consistent scale, natural daylight. COLUMNS left to right: SPRING, SUMMER, AUTUMN, WINTER. Each row repeats the SAME terrain composition with four clearly different seasons. No blending between the exactly equal cells. CLIMATE: ANDEAN South American high mountains and quiet deep blue lakes/seas. Spring soft cool light, Summer clear saturated green-blue light, Autumn amber-blue lower light, Winter dry cool light. Water NEVER freezes. Row1 BARE PEAKS: central mass of huge needle-like steep jagged grey Andean rock peaks, deep inaccessible gorges, truly impassable and utterly barren. Four same-composition seasons, snow ONLY clings on the very highest rock tips; Summer less tip snow, Winter slightly more, central rock faces always clearly grey and craggy, no trees, mines, paths or buildings. ROW2 SNOW PLAIN: high altitude broad empty snowfield with tiny exposed dark rocks and softly shaped wind drifts, always snowy in ALL FOUR SEASONS, bright ivory-blue with subtle grey stones, no resources, vegetation, animals or water. ROW3 FISH: clear medium-deep blue rippled liquid water completely filling square, a very clear central small shoal of 6-8 silvery elongated fish seen just underneath surface, fine scales and fins, no whales, no land or palm leaves, no boats or humans. Spring cool blue small ripples, Summer gentler turquoise-blue but not tropical, Autumn blue stronger ripples, Winter darker quiet cold-blue water with fish still visible and ABSOLUTELY NO ICE. ROW4 WATER: exactly the liquid water style and four seasonal lighting variations of fish row, but no fish or resources. Open water-only full-square tiles, no shores, islands or rocks, subtle flowing wave texture, clean quiet blues, never frozen. Scene texture should remain clearly visible at small game-tile size.",
+      "source": "/home/alvinh/.codex/generated_images/01a0bbf1-16a8-7401-bc97-c385ae57434f/exec-e1f2dca2-5185-4788-b364-b11507ccb0bb.png"
+    },
+    {
+      "id": "prairie-crops-herds",
+      "rows": [
+        {
+          "climate": "prairie",
+          "biome": "steppe-plain"
+        },
+        {
+          "climate": "prairie",
+          "biome": "maize-field"
+        },
+        {
+          "climate": "prairie",
+          "biome": "sunflower-fields"
+        },
+        {
+          "climate": "prairie",
+          "biome": "bison-range"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Create ONE production SPRITE ATLAS for a richly illustrated hex strategy board game, exactly FOUR COLUMNS and FOUR ROWS of equal square cells on a square canvas. No gutters, borders, labels or separators. Each cell is a full-bleed finely hand-painted miniature landscape, crisp realistic materials, 60-degree overhead view, no sky or horizon. Each cell fills all four corners with scenery; NEVER draw shaped tiles, hexagons, cutouts, floating platforms or margins. Main resource-identifying features must lie within the central 65 percent of each square for later hexagonal cropping. No words, text, icons, numbers, people, watermark or modern machinery. Rich, readable, consistent scale, natural daylight. COLUMNS left to right: SPRING, SUMMER, AUTUMN, WINTER. Each row repeats the SAME terrain composition with four clearly different seasons. No blending between the exactly equal cells. CLIMATE: PRAIRIE, North American Great Plains with sage-green tallgrass in Spring and Summer, golden grasses in Autumn, strong white snow coverage and dry stubble in Winter. Vast flat or softly rolling grassland, no mountains, no forest canopy, no buildings. Spring bright green seedlings, Summer tall flourishing growth, Autumn ripe seed and amber stubble, Winter snow. ROW1 STEPPE PLAIN: central group of wild thick-wool North American bighorn sheep with curved horns, some standing and some grazing amongst prairie grass, perhaps one deer, natural buff hides and creamy fleece, visible in all seasons. Winter animals on strong snow cover and exposed golden grass. ROW2 MAIZE FIELD: unmistakable cultivated rows of corn. Spring short green corn seedlings on dark soil. Summer tall vivid-green stalks with long broad leaves and subtle pale tassels, NOT wheat. Autumn drying gold corn stalks, large clearly yellow ripe corn cobs in central woven baskets. Winter snow-covered rows of cut broken dry corn stalk stubble, no ripe crops or baskets. ROW3 SUNFLOWER FIELDS: dense rows of recognizable sunflowers. Spring short green seedlings. Summer tall central large bright golden-yellow sunflower faces with dark centers, vividgreenleaves. Autumn brown drooping dried sunflower heads with a central low basket visibly full of striped dark ripe sunflower seeds, no fresh yellow flowers. Winter dry broken stalk stubble on white snow, no crops or baskets. ROW4 BISON RANGE: central herd of three to five imposing American bison, dark brown shaggy heads and great shoulder humps, clear horns and powerful bodies, among prairie tallgrass; keep main animals central and clearly distinguishable from cattle. Spring green with small calf, Summer luxuriant green grass, Autumn tawny golden grass, Winter bison coated lightly with snow and steam breath, heavy snow underfoot. No resource icons.",
+      "source": "/home/alvinh/.codex/generated_images/01a0bbf1-16a8-7401-bc97-c385ae57434f/exec-adf9afa2-637c-431a-90ac-3c7bb71d4a27.png"
+    },
+    {
+      "id": "prairie-woods-industry",
+      "rows": [
+        {
+          "climate": "prairie",
+          "biome": "river-woods"
+        },
+        {
+          "climate": "prairie",
+          "biome": "clay"
+        },
+        {
+          "climate": "prairie",
+          "biome": "stone"
+        },
+        {
+          "climate": "prairie",
+          "biome": "coal"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Create ONE production SPRITE ATLAS for a richly illustrated hex strategy board game, exactly FOUR COLUMNS and FOUR ROWS of equal square cells on a square canvas. No gutters, borders, labels or separators. Each cell is a full-bleed finely hand-painted miniature landscape, crisp realistic materials, 60-degree overhead view, no sky or horizon. Each cell fills all four corners with scenery; NEVER draw shaped tiles, hexagons, cutouts, floating platforms or margins. Main resource-identifying features must lie within the central 65 percent of each square for later hexagonal cropping. No words, text, icons, numbers, people, watermark or modern machinery. Rich, readable, consistent scale, natural daylight. COLUMNS left to right: SPRING, SUMMER, AUTUMN, WINTER. Each row repeats the SAME terrain composition with four clearly different seasons. No blending between the exactly equal cells. CLIMATE: PRAIRIE, North American Great Plains. Softly rolling sage-green tallgrass plains, Spring fresh green grass/wildflowers, Summer vivid deep-green grass, Autumn golden tawny dry grass, Winter strong white snow cover with golden dead grass tufts and bare trees. Not alpine or tropical. ROW1 RIVER WOODS: cottonwood trees beside a winding shallow prairie river, broad round cottonwood leafy crowns rather than conifers, centrally stacked short timber logs, exposed pale-grey rocks, surroundings grassland. Spring new bright leaves, Summer dense green, Autumn golden-yellow leaves, Winter leafless black-brown branches, snow and partly iced river. Logs remain recognizable in all seasons. ROW2 CLAY HILLS: low terracotta and buff-grey eroded prairie clay bluffs, soft rounded pale clay slopes with horizontal layers, central basket of orange clay clods, sparse grasses. Spring fresh green edges, Summer green-gold, Autumn amber grass, Winter snow blankets hill tops and flat ground but center shows terracotta clay cut face. ROW3 STONE QUARRY: central pale grey limestone quarry, stepped regular square blocks cut into a LOW hillside, wooden manual hoist and several light stone blocks in central foreground, tallgrass surroundings. No soaring mountains, no pine trees. Springgreen Summergreen Autumnamber Wintersnow, central quarry stone recognizable even under snow edges. ROW4 COAL MINE: low dark rock outcrop with central timber mine entrance and central wooden cart full of clearly black shiny coal chunks, dark coal seam exposed in grey rock, prairie grasses. Spring green grass, Summer greener, Autumn golden, Winter snow on grass and rock tops, coal mine entrance and black coal remain open and clearly visible. No humans or chimneys.",
+      "source": "/home/alvinh/.codex/generated_images/01a0bbf1-16a8-7401-bc97-c385ae57434f/exec-9ce7e218-e7a1-42a3-ba52-df223e348b65.png"
+    },
+    {
+      "id": "prairie-minerals-fish",
+      "rows": [
+        {
+          "climate": "prairie",
+          "biome": "iron"
+        },
+        {
+          "climate": "prairie",
+          "biome": "gold"
+        },
+        {
+          "climate": "prairie",
+          "biome": "salt-flats"
+        },
+        {
+          "climate": "prairie",
+          "biome": "fish"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Create ONE production SPRITE ATLAS for a richly illustrated hex strategy board game, exactly FOUR COLUMNS and FOUR ROWS of equal square cells on a square canvas. No gutters, borders, labels or separators. Each cell is a full-bleed finely hand-painted miniature landscape, crisp realistic materials, 60-degree overhead view, no sky or horizon. Each cell fills all four corners with scenery; NEVER draw shaped tiles, hexagons, cutouts, floating platforms or margins. Main resource-identifying features must lie within the central 65 percent of each square for later hexagonal cropping. No words, text, icons, numbers, people, watermark or modern machinery. Rich, readable, consistent scale, natural daylight. COLUMNS left to right: SPRING, SUMMER, AUTUMN, WINTER. Each row repeats the SAME terrain composition with four clearly different seasons. No blending between the exactly equal cells. CLIMATE: PRAIRIE, North American Great Plains. Flat or low rolling grassy landscapes, Spring light green grass, Summer deep green grass, Autumn golden dry grass, Winter strong snow coverage with dry tan grass patches. No alpine peaks or conifers. ROW1 IRON MINE: central low timber-framed mine entrance in exposed rusty red and grey ore seam in a low hill, wooden ore cart with rust-red and steelgrey chunks in central foreground. Prairie grasses encircle rock. Winter snow on rock tops and grasses, ore and entrance still clear. ROW2 GOLD MINE: central low mine entrance in grey-tan rocky prairie knoll, warm yellow metallic gold veins clearly present and central baskets of gold nuggets, restrained natural gold shine, no iron-red ore. All seasons resource visible, with stronger snow Winter. ROW3 SALT FLATS: broad flat white salt-crust prairie playa among coarse low grasses, central white salt crystal heap and wicker basket, shallow pale blue mineral pools and polygon cracked white plates. Spring moderate pools, Summer clearer brine reduced at edges, Autumn drier crust golden grass, Winter white snow on banks but central salt plates and crystals still distinguishable, some smooth ice on brine pools. ROW4 FISH WATER: medium blue open water completely fills each cell with clear silvery elongated fish shoal centered below the surface, no land, shore, whales or boats. Spring clean blue ripples, Summer lighter saturated blue small waves, Autumn deeper blue with stronger waves, Winter an ice-covered blue surface with fine branching pale fractures and frosty rims surrounding a large translucent central blue patch THROUGH WHICH a small shoal of fish is seen UNDER the ice. No beached or dead fish. Winter must visually be frozen, all other seasons open water.",
+      "source": "/home/alvinh/.codex/generated_images/01a0bbf1-16a8-7401-bc97-c385ae57434f/exec-5c11f876-2945-4339-8251-f2e0c1de4727.png"
+    },
+    {
+      "id": "prairie-open-water",
+      "rows": [
+        {
+          "climate": "prairie",
+          "biome": "water"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Create ONE production SPRITE ATLAS for a richly illustrated hex strategy board game, exactly FOUR COLUMNS and FOUR ROWS of equal square cells on a square canvas. No gutters, borders, labels or separators. Each cell is a full-bleed finely hand-painted miniature landscape, crisp realistic materials, 60-degree overhead view, no sky or horizon. Each cell fills all four corners with scenery; NEVER draw shaped tiles, hexagons, cutouts, floating platforms or margins. Main resource-identifying features must lie within the central 65 percent of each square for later hexagonal cropping. No words, text, icons, numbers, people, watermark or modern machinery. Rich, readable, consistent scale, natural daylight. COLUMNS left to right: SPRING, SUMMER, AUTUMN, WINTER. Each row repeats the SAME terrain composition with four clearly different seasons. No blending between the exactly equal cells. This final atlas contains ONLY PRAIRIE OPEN WATER. Each of its FOUR ROWS is an alternative water texture following the same four-season columns, with NO OTHER TYPES OF TERRAIN. ROW1 is the primary finished game tile set: Spring medium blue softly rippling open water, Summer lighter rich blue lightly undulating water, Autumn darker blue water with slightly stronger silvery waves, Winter full flat blue-white ice sheet with fine natural branching cracks and frosty pale areas, a large central darker translucent ice patch, STILL FROZEN with subtle cracks crossing the darker center. NO fish, no whales, no animals, no seaweed, no ships, no land, no shorelines, no rocks, no objects, no icons. Water or ice fills every square corner to corner, overhead view only. Rows2,3,4 repeat these four seasonal open-water styles with only slightly varied natural ripple placement. Match finely painted strategy-boardgame water art: visible natural flowing wave ridges and white glints, readable quiet blue fields, not abstract swirls, not a satellite image, not hyperreal photography. Exactly four columns Spring Summer Autumn Winter; exactly four equal rows. NO lines drawn between tiles.",
+      "source": "/home/alvinh/.codex/generated_images/01a0bbf1-16a8-7401-bc97-c385ae57434f/exec-8a0c12c5-7454-4da0-9b8a-13249d71f7d1.png",
+      "notes": "Only primary first row extracted; remaining water alternatives intentionally unused."
+    }
+  ]
+}

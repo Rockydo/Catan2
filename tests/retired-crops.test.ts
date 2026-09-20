@@ -108,42 +108,48 @@ describe("retired generic crop", () => {
       expected.tiles["0,0"].biome = biome;
       expect(restored).toEqual(expected);
       assertInvariants(restored);
-      expect(JSON.parse(serialize(restored)).version).toBe(11);
+      expect(JSON.parse(serialize(restored)).version).toBe(12);
       expect(deserialize(serialize(restored))).toEqual(restored);
     },
   );
 
-  it("keeps linked workshops, camps, guild orders, units and stored resources", () => {
-    const { s, home } = maritimeFixture();
-    // Keep this fixture outside coalition updates during deserialization.
-    s.phase = "setup-town";
-    Object.assign(s.tiles["0,0"], { biome: "rough-fields" });
-    home.extensions["0,0"] = 2;
-    home.extensionGoods = { "0,0": "grain" };
-    home.guild = {
-      kind: "farmers",
-      tier: 2,
-      born: 0,
-      used: false,
-      auto: true,
-      order: { tile: "0,0", tier: 2 },
-    };
-    const edge = s.tiles["0,0"].edges[0];
-    s.routes[edge] = {
-      id: `r${s.nextId++}`,
-      edge,
-      owner: home.owner,
-      kind: "road",
-      born: 0,
-      camps: { "0,0": 2 },
-    };
-    piece(s, "0,0", home.owner);
-    s.production[home.owner] = { grain: 4, provisions: 4 };
-    const restored = deserialize(oldSave(s));
-    const expected = structuredClone(s);
-    expected.tiles["0,0"].biome = "millet-fields";
-    expect(restored).toEqual(expected);
-  });
+  it.each([
+    ["rough-fields", "millet-fields", 10],
+    ["rye-fields", "turnip-fields", 11],
+  ] as const)(
+    "keeps %s workshops, camps, guild orders, units and stored resources",
+    (old, replacement, version) => {
+      const { s, home } = maritimeFixture();
+      // Keep this fixture outside coalition updates during deserialization.
+      s.phase = "setup-town";
+      Object.assign(s.tiles["0,0"], { biome: old });
+      home.extensions["0,0"] = 2;
+      home.extensionGoods = { "0,0": "grain" };
+      home.guild = {
+        kind: "farmers",
+        tier: 2,
+        born: 0,
+        used: false,
+        auto: true,
+        order: { tile: "0,0", tier: 2 },
+      };
+      const edge = s.tiles["0,0"].edges[0];
+      s.routes[edge] = {
+        id: `r${s.nextId++}`,
+        edge,
+        owner: home.owner,
+        kind: "road",
+        born: 0,
+        camps: { "0,0": 2 },
+      };
+      piece(s, "0,0", home.owner);
+      s.production[home.owner] = { grain: 4, provisions: 4 };
+      const restored = deserialize(oldSave(s, version));
+      const expected = structuredClone(s);
+      expected.tiles["0,0"].biome = replacement;
+      expect(restored).toEqual(expected);
+    },
+  );
 
   it.each([undefined, "temperate", "arctic", "mediterranean", "tropical"])(
     "preserves Autumn yields for legacy geography with climate %s",

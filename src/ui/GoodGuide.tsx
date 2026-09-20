@@ -12,7 +12,7 @@ import { inventory, ownTowns, income } from "../game/selectors";
 import { GoodIcon, Modal, Cost } from "./components";
 const USES: Record<Good, string> = {
   meat: "Livestock produces Meat during its harvest seasons. Meat replaces Grain one-for-one in recipes, after Grain and Fish. It can be processed into Rations. Trades transfer the exact named goods.",
-  oil: "Whales and Seal hunting grounds produce Oil alongside Hides. Oil replaces Coal one-for-one in recipes: Coal is spent first, then Oil covers a shortfall automatically. Artisans can refine Oil into Fuel. Trades transfer the exact named goods.",
+  oil: "Sunflower fields, Whales and Seal hunting grounds supply Oil. Oil replaces Coal one-for-one in recipes after Coal is spent. Sunflower-linked workshops and advanced towns and merchants produce Fuel from harvested Oil. Artisans can refine stored Oil into Fuel. Trades transfer the exact named goods.",
   fish: "Replaces Grain one-for-one in any building or recruitment recipe. Grain is spent first; Fish covers a shortfall automatically. Smokehouses add Rations without consuming your Fish.",
   gold: "Exchange 1 Gold for any raw good, or 2 Gold for any processed good. Gold occurs at different rates in each climate.",
   goldbars:
@@ -20,7 +20,8 @@ const USES: Record<Good, string> = {
   lumber: "Roads, settlements, ships and camp frames.",
   brick: "Roads, settlements and camp foundations.",
   wool: "Settlements, sails, research and light infantry.",
-  grain: "Settlements, cities, early troops, research and expeditions.",
+  grain:
+    "Grain is an abstract food resource from cereals, roots, gardens and Olive groves. It pays for settlements, cities, early troops, research and expeditions.",
   ore: "Cities, tools, heavy infantry, artillery and research.",
   stone: "Quarries, mine supports, walls and the foundations of every guild.",
   hides:
@@ -38,7 +39,7 @@ const USES: Record<Good, string> = {
     "Armor, cavalry tack, siege torsion, ship straps, exploration and camps.",
   reagents:
     "Textile dyes, ore treatment, water treatment, tanning, research and gunpowder.",
-  coke: "Refined coal fuel for metallurgy, tier-III guilds, industrial work orders, army and fleet supply.",
+  coke: "Fuel is processed from Coal or Oil for metallurgy, tier-III guilds, industrial work orders, army and fleet supply.",
 };
 export function GoodGuide({
   game,
@@ -90,9 +91,7 @@ export function GoodGuide({
       <div className="production-chain">
         <GoodIcon good={raw} size={32} />
         <b>{tx(GOOD_INFO[raw].name)}</b>
-        <span>
-          → {tx(raw === "oil" ? "Artisans’ Guild" : extensionName(raw))} →
-        </span>
+        <span>→ {tx(extensionName(raw))} →</span>
         <GoodIcon good={processed} size={32} />
         <b>{tx(GOOD_INFO[processed].name)}</b>
       </div>
@@ -100,7 +99,7 @@ export function GoodGuide({
         {tx(
           isRaw
             ? "Towns and camps collect this resource when their linked tile rolls during an active season."
-            : "A city extension produces this good when its linked raw-resource tile rolls during an active season. It consumes no stored raw goods.",
+            : "Linked workshops, advanced towns and advanced merchants produce processed goods from seasonal harvests without consuming stored raw goods. Artisans can also refine stored raw goods through paid orders.",
         )}
         {tx(" ")}
         {tx("Enemy occupation blocks that tile’s production.")}

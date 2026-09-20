@@ -360,8 +360,7 @@ function PrintedRoster() {
       </h1>
       {RAW.map((g) => (
         <p key={g}>
-          {tx(GOOD_INFO[g].name)} →{" "}
-          {g === "oil" ? tx(GUILDS.artisans.name) : tx(extensionName(g))} →{" "}
+          {tx(GOOD_INFO[g].name)} → {tx(extensionName(g))} →{" "}
           {tx(GOOD_INFO[processedFor(g)].name)}
         </p>
       ))}
@@ -488,20 +487,11 @@ function Catalogue({ initial = "goods" }: { initial?: CatalogSection }) {
               </span>
               {RAW.includes(g as (typeof RAW)[number]) && (
                 <p>
-                  {g === "oil" ? (
-                    labels(
-                      "Coal substitute · Artisans → Fuel",
-                      "Remplace le Charbon · Artisans → Combustible",
-                    )
-                  ) : (
-                    <>
-                      {tx(extensionName(g as (typeof RAW)[number]))}{" "}
-                      <ArrowRight size={12} />{" "}
-                      {tx(
-                        GOOD_INFO[processedFor(g as (typeof RAW)[number])].name,
-                      )}
-                    </>
-                  )}
+                  {g === "oil" &&
+                    labels("Coal substitute · ", "Remplace le Charbon · ")}
+                  {tx(extensionName(g as (typeof RAW)[number]))}{" "}
+                  <ArrowRight size={12} />{" "}
+                  {tx(GOOD_INFO[processedFor(g as (typeof RAW)[number])].name)}
                 </p>
               )}
             </article>

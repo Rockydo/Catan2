@@ -6,6 +6,7 @@ import {
   EXTREME_CLIMATES,
   CLIMATE_INFO,
   BIOMES,
+  AMERICAN_CLIMATES,
   BIOME_INFO,
   compatibleClimate,
   climateTransitionWeight,
@@ -103,6 +104,7 @@ it("retains the previous climates and their transition biases", () => {
     ...originalClimates,
     ...newClimates,
     ...EXTREME_CLIMATES,
+    ...AMERICAN_CLIMATES,
   ]);
   for (const from of originalClimates)
     for (const to of CLIMATE_INFO[from].compatible.filter((c) =>
@@ -119,7 +121,10 @@ it("retains the previous climates and their transition biases", () => {
     expect(
       Object.fromEntries(
         CLIMATE_INFO[from].compatible
-          .filter((to) => !EXTREME_CLIMATES.includes(to))
+          .filter(
+            (to) =>
+              !EXTREME_CLIMATES.includes(to) && !AMERICAN_CLIMATES.includes(to),
+          )
           .map((to) => [to, climateTransitionWeight(from, to)]),
       ),
     ).toEqual(expected[from as keyof typeof expected]);
@@ -158,7 +163,7 @@ it("uses the approved four-climate land tables and land/water ratios", () => {
         ["cattle-pasture", 8],
         ["woods", 20],
         ["barley-fields", 8],
-        ["rye-fields", 2],
+        ["turnip-fields", 2],
         ["golden-fields", 5],
         ["clay", 10],
         ["coastal-cliffs", 15],
@@ -176,7 +181,7 @@ it("uses the approved four-climate land tables and land/water ratios", () => {
         ["alpine-pasture", 10],
         ["goat-pasture", 5],
         ["barley-fields", 7],
-        ["rye-fields", 3],
+        ["turnip-fields", 3],
         ["forest", 10],
         ["gold", 5],
         ["clay", 5],
@@ -188,7 +193,7 @@ it("uses the approved four-climate land tables and land/water ratios", () => {
       terrain: [
         ["alluvial-clay", 25],
         ["rice-field", 15],
-        ["maize-field", 5],
+        ["sorghum-fields", 5],
         ["river-woods", 15],
         ["cattle-pasture", 5],
         ["jungle", 10],
@@ -324,14 +329,12 @@ it.each(CLIMATES)("doubles only the %s whale roll in open water", (climate) => {
     if (coastal.biome !== "water") expect(open).toEqual(coastal);
     else expect(["water", "whale"]).toContain(open.biome);
   }
-  const coastalWhales = waterProbabilities(climate).find(
-    ([b]) => b === "whale",
-  )![1];
-  const openWhales = waterProbabilities(climate, true).find(
-    ([b]) => b === "whale",
-  )![1];
+  const coastalWhales =
+    waterProbabilities(climate).find(([b]) => b === "whale")?.[1] ?? 0;
+  const openWhales =
+    waterProbabilities(climate, true).find(([b]) => b === "whale")?.[1] ?? 0;
   expect(openWhales).toBeCloseTo(coastalWhales * 2, 12);
-  expect(counts.whale / samples).toBeCloseTo(
+  expect((counts.whale ?? 0) / samples).toBeCloseTo(
     (1 - CLIMATE_INFO[climate].land) * openWhales,
     2,
   );

@@ -75,8 +75,8 @@ describe("extreme climate generation", () => {
   it("makes extreme starting climates rarer without excluding them", () => {
     const counts: Partial<Record<Climate, number>> = {};
     // Relative weights 1 and .35 become 20 and 7 evenly spaced samples.
-    for (let i = 0; i < 241; i++) {
-      const climate = chooseInitialClimate((i + 0.5) / 241);
+    for (let i = 0; i < 301; i++) {
+      const climate = chooseInitialClimate((i + 0.5) / 301);
       counts[climate] = (counts[climate] ?? 0) + 1;
     }
     for (const climate of CLIMATES) {
@@ -136,12 +136,12 @@ describe("extreme climate generation", () => {
   });
 
   it.each([
-    ["extreme-start-0", 5, "hyperarid"],
-    ["extreme-start-14", 5, "glacial"],
-    ["extreme-start-29", 5, "monsoon"],
-    ["extreme-grand-3", 10, "hyperarid"],
-    ["extreme-grand-4", 10, "monsoon"],
-    ["extreme-grand-151", 10, "glacial"],
+    ["regional-5-6", 5, "hyperarid"],
+    ["regional-5-29", 5, "glacial"],
+    ["regional-5-42", 5, "monsoon"],
+    ["regional-10-7", 10, "hyperarid"],
+    ["regional-10-5", 10, "monsoon"],
+    ["regional-10-68", 10, "glacial"],
   ] as const)(
     "completes ordinary AI setup for %s with %i factions",
     (seed, size, climate) => {
@@ -213,7 +213,7 @@ describe("extreme climate generation", () => {
   );
 
   it("preserves revealed terrain and climate reservations through further exploration", () => {
-    let s = newGame("extreme-start-14");
+    let s = newGame("regional-5-29");
     for (let turn = 0; turn < 3; turn++) {
       const original = structuredClone(s.tiles);
       const reserved = { ...s.climatePlan };
@@ -244,9 +244,10 @@ describe("extreme climate production", () => {
     ["monsoon", "rice-field", 1, [0, 0, 4, 0]],
     ["oceanic", "barley-fields", 2, [0, 8, 0, 0]],
     ["cold", "barley-fields", 1, [0, 0, 4, 0]],
-    ["temperate", "rye-fields", 2, [0, 8, 0, 0]],
-    ["oceanic", "rye-fields", 2, [0, 8, 0, 0]],
-    ["alpine", "rye-fields", 1, [0, 4, 0, 0]],
+    ["temperate", "turnip-fields", 2, [0, 2, 6, 0]],
+    ["oceanic", "turnip-fields", 2, [0, 2, 6, 0]],
+    ["cold", "turnip-fields", 1, [0, 1, 3, 0]],
+    ["alpine", "turnip-fields", 1, [0, 1, 3, 0]],
     ["temperate", "chernozem-wheat", 3, [0, 12, 0, 0]],
     ["steppe", "chernozem-wheat", 3, [0, 12, 0, 0]],
   ] as const)(
@@ -262,13 +263,16 @@ describe("extreme climate production", () => {
   );
 
   it.each([
-    ["oceanic", "barley-fields", 2],
-    ["temperate", "rye-fields", 2],
-    ["monsoon", "rice-field", 3],
-    ["steppe", "chernozem-wheat", 2],
+    ["oceanic", "barley-fields", 2, 8],
+    ["temperate", "turnip-fields", 2, 2],
+    ["temperate", "turnip-fields", 3, 6],
+    ["cold", "turnip-fields", 2, 1],
+    ["cold", "turnip-fields", 3, 3],
+    ["monsoon", "rice-field", 3, 4],
+    ["steppe", "chernozem-wheat", 2, 12],
   ] as const)(
     "uses %s %s fertility in annual income and city/workshop production",
-    (climate, biome, round) => {
+    (climate, biome, round, seasonalAmount) => {
       const { s, home } = maritimeFixture();
       s.calendar = { startRound: 1, startSeason: "spring" };
       s.round = round;
@@ -281,7 +285,10 @@ describe("extreme climate production", () => {
       const base = biomeYield(biome, climate).grain!;
       expect(income(s, home.owner).grain).toBeCloseTo((4 * base) / 6);
       production(s, 7);
-      expect(home.stock).toEqual({ grain: 16 * base, provisions: 16 * base });
+      expect(home.stock).toEqual({
+        grain: 4 * seasonalAmount,
+        provisions: 4 * seasonalAmount,
+      });
     },
   );
 

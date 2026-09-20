@@ -15,6 +15,9 @@ export const CLIMATES = [
   "glacial",
   "hyperarid",
   "monsoon",
+  "andean",
+  "prairie",
+  "mesoamerican",
 ] as const;
 export type Climate = (typeof CLIMATES)[number];
 export const BIOMES = [
@@ -59,7 +62,17 @@ export const BIOMES = [
   "wildlife-grassland",
   "dry-woodland",
   "barley-fields",
-  "rye-fields",
+  "potato-fields",
+  "turnip-fields",
+  "oat-fields",
+  "sorghum-fields",
+  "alpaca-pasture",
+  "sunflower-fields",
+  "bison-range",
+  "chinampa-gardens",
+  "turkey-grounds",
+  "cloud-forest",
+  "volcanic-quarry",
   "millet-fields",
   "maize-field",
   "cattle-pasture",
@@ -103,13 +116,93 @@ export const BIOME_INFO: Record<Biome, BiomeInfo> = {
     "barley-fields",
     "#cbb875",
   ),
-  "rye-fields": b(
-    "Rye fields",
+  "potato-fields": b(
+    "Potato fields",
+    "grain",
+    { grain: 2 },
+    "flat",
+    "potato-fields",
+    "#a9ad66",
+  ),
+  "turnip-fields": b(
+    "Turnip fields",
     "grain",
     { grain: 1 },
     "flat",
-    "rye-fields",
-    "#a9ad66",
+    "turnip-fields",
+    "#a4aa75",
+  ),
+  "oat-fields": b(
+    "Oat fields",
+    "grain",
+    { grain: 2 },
+    "flat",
+    "oat-fields",
+    "#c5bc86",
+  ),
+  "sorghum-fields": b(
+    "Sorghum fields",
+    "grain",
+    { grain: 2 },
+    "flat",
+    "sorghum-fields",
+    "#b69067",
+  ),
+  "alpaca-pasture": b(
+    "Alpaca pasture",
+    "wool",
+    { wool: 1, meat: 1 },
+    "flat",
+    "alpaca-pasture",
+    "#a5a085",
+  ),
+  "sunflower-fields": b(
+    "Sunflower fields",
+    "oil",
+    { oil: 1 },
+    "flat",
+    "sunflower-fields",
+    "#ccad4f",
+  ),
+  "bison-range": b(
+    "Bison range",
+    "meat",
+    { meat: 1, hides: 1 },
+    "flat",
+    "bison-range",
+    "#ae936e",
+  ),
+  "chinampa-gardens": b(
+    "Chinampa gardens",
+    "grain",
+    { grain: 3 },
+    "flat",
+    "chinampa-gardens",
+    "#659768",
+  ),
+  "turkey-grounds": b(
+    "Turkey grounds",
+    "meat",
+    { meat: 2 },
+    "forest",
+    "turkey-grounds",
+    "#71816a",
+  ),
+  "cloud-forest": b(
+    "Cloud forest",
+    "lumber",
+    { lumber: 1, hides: 1 },
+    "forest",
+    "cloud-forest",
+    "#5c8c7d",
+  ),
+  "volcanic-quarry": b(
+    "Volcanic quarry",
+    "stone",
+    { stone: 2 },
+    "rugged",
+    "volcanic-quarry",
+    "#7c777d",
   ),
   "millet-fields": b(
     "Millet fields",
@@ -364,7 +457,7 @@ export function biomeYield(
       climate === "monsoon" ? 1 : climate === "subtropical" ? 2 : 3;
   if (biome === "barley-fields" && climate === "oceanic") output.grain = 2;
   if (
-    biome === "rye-fields" &&
+    biome === "turnip-fields" &&
     (climate === "temperate" || climate === "oceanic")
   )
     output.grain = 2;
@@ -386,8 +479,8 @@ export const CLIMATE_INFO: Record<Climate, ClimateInfo> = {
     terrain: [
       ["golden-fields", 7],
       ["chernozem-wheat", 2],
-      ["maize-field", 4],
-      ["rye-fields", 4],
+      ["oat-fields", 4],
+      ["turnip-fields", 4],
       ["pasture", 9],
       ["cattle-pasture", 8],
       ["woods", 17],
@@ -410,6 +503,7 @@ export const CLIMATE_INFO: Record<Climate, ClimateInfo> = {
       "oceanic",
       "alpine",
       "subtropical",
+      "prairie",
     ],
   },
   cold: {
@@ -421,7 +515,7 @@ export const CLIMATE_INFO: Record<Climate, ClimateInfo> = {
       ["hunting-forest", 6],
       ["reindeer-range", 4],
       ["barley-fields", 7],
-      ["rye-fields", 3],
+      ["turnip-fields", 3],
       ["rough-pasture", 5],
       ["gold", 5],
       ["coal", 10],
@@ -434,7 +528,14 @@ export const CLIMATE_INFO: Record<Climate, ClimateInfo> = {
       ["cod", 0.1],
       ["whale", 0.1],
     ],
-    compatible: ["temperate", "steppe", "arctic", "oceanic", "alpine"],
+    compatible: [
+      "temperate",
+      "steppe",
+      "arctic",
+      "oceanic",
+      "alpine",
+      "prairie",
+    ],
   },
   arctic: {
     name: "Arctic",
@@ -484,6 +585,8 @@ export const CLIMATE_INFO: Record<Climate, ClimateInfo> = {
       "desert",
       "alpine",
       "savanna",
+      "andean",
+      "prairie",
     ],
   },
   mediterranean: {
@@ -528,7 +631,14 @@ export const CLIMATE_INFO: Record<Climate, ClimateInfo> = {
       ["fish", 0.1],
       ["whale", 0.05],
     ],
-    compatible: ["temperate", "desert", "subtropical", "savanna", "monsoon"],
+    compatible: [
+      "temperate",
+      "desert",
+      "subtropical",
+      "savanna",
+      "monsoon",
+      "mesoamerican",
+    ],
   },
   desert: {
     name: "Desert",
@@ -548,7 +658,15 @@ export const CLIMATE_INFO: Record<Climate, ClimateInfo> = {
       ["fish", 0.08],
       ["whale", 0.03],
     ],
-    compatible: ["tropical", "mediterranean", "steppe", "savanna", "hyperarid"],
+    compatible: [
+      "tropical",
+      "mediterranean",
+      "steppe",
+      "savanna",
+      "hyperarid",
+      "andean",
+      "prairie",
+    ],
   },
   oceanic: {
     name: "Oceanic",
@@ -559,7 +677,7 @@ export const CLIMATE_INFO: Record<Climate, ClimateInfo> = {
       ["cattle-pasture", 8],
       ["woods", 20],
       ["barley-fields", 8],
-      ["rye-fields", 2],
+      ["turnip-fields", 2],
       ["golden-fields", 5],
       ["clay", 10],
       ["coastal-cliffs", 15],
@@ -585,7 +703,7 @@ export const CLIMATE_INFO: Record<Climate, ClimateInfo> = {
       ["alpine-pasture", 10],
       ["goat-pasture", 5],
       ["barley-fields", 7],
-      ["rye-fields", 3],
+      ["turnip-fields", 3],
       ["forest", 10],
       ["gold", 5],
       ["clay", 5],
@@ -596,7 +714,7 @@ export const CLIMATE_INFO: Record<Climate, ClimateInfo> = {
       ["cod", 0.1],
       ["whale", 0.03],
     ],
-    compatible: ["cold", "arctic", "temperate", "steppe", "glacial"],
+    compatible: ["cold", "arctic", "temperate", "steppe", "glacial", "andean"],
   },
   subtropical: {
     name: "Subtropical",
@@ -605,7 +723,7 @@ export const CLIMATE_INFO: Record<Climate, ClimateInfo> = {
     terrain: [
       ["alluvial-clay", 25],
       ["rice-field", 15],
-      ["maize-field", 5],
+      ["sorghum-fields", 5],
       ["river-woods", 15],
       ["cattle-pasture", 5],
       ["jungle", 10],
@@ -625,6 +743,8 @@ export const CLIMATE_INFO: Record<Climate, ClimateInfo> = {
       "mediterranean",
       "savanna",
       "monsoon",
+      "andean",
+      "mesoamerican",
     ],
   },
   savanna: {
@@ -647,7 +767,14 @@ export const CLIMATE_INFO: Record<Climate, ClimateInfo> = {
       ["fish", 0.1],
       ["whale", 0.03],
     ],
-    compatible: ["tropical", "desert", "steppe", "subtropical", "monsoon"],
+    compatible: [
+      "tropical",
+      "desert",
+      "steppe",
+      "subtropical",
+      "monsoon",
+      "mesoamerican",
+    ],
   },
   glacial: {
     name: "Glacial",
@@ -711,7 +838,75 @@ export const CLIMATE_INFO: Record<Climate, ClimateInfo> = {
     ],
     compatible: ["tropical", "subtropical", "savanna"],
   },
+  andean: {
+    name: "Andean",
+    color: "#998b77",
+    land: 0.75,
+    terrain: [
+      ["potato-fields", 18],
+      ["alpaca-pasture", 14],
+      ["mountain-quarry", 16],
+      ["iron", 10],
+      ["gold", 6],
+      ["salt-flats", 6],
+      ["clay", 5],
+      ["river-woods", 5],
+      ["bare-peaks", 15],
+      ["snow-plain", 5],
+    ],
+    water: [["fish", 0.12]],
+    compatible: ["alpine", "steppe", "desert", "subtropical", "mesoamerican"],
+  },
+  prairie: {
+    name: "Prairie",
+    color: "#b5a35f",
+    land: 0.7,
+    terrain: [
+      ["steppe-plain", 32],
+      ["maize-field", 12],
+      ["sunflower-fields", 6],
+      ["bison-range", 16],
+      ["river-woods", 8],
+      ["clay", 8],
+      ["stone", 6],
+      ["coal", 5],
+      ["iron", 4],
+      ["gold", 1],
+      ["salt-flats", 2],
+    ],
+    water: [["fish", 0.1]],
+    compatible: ["cold", "temperate", "steppe", "desert", "mesoamerican"],
+  },
+  mesoamerican: {
+    name: "Mesoamerican",
+    color: "#568c65",
+    land: 0.45,
+    terrain: [
+      ["maize-field", 18],
+      ["chinampa-gardens", 8],
+      ["turkey-grounds", 8],
+      ["cloud-forest", 16],
+      ["tropical-woods", 10],
+      ["clay", 12],
+      ["volcanic-quarry", 10],
+      ["iron", 8],
+      ["gold", 4],
+      ["salt-flats", 4],
+      ["coal", 2],
+    ],
+    water: [
+      ["fish", 0.15],
+      ["whale", 0.05],
+    ],
+    compatible: ["tropical", "subtropical", "savanna", "andean", "prairie"],
+  },
 };
+
+export const AMERICAN_CLIMATES: readonly Climate[] = [
+  "andean",
+  "prairie",
+  "mesoamerican",
+];
 
 const NEW_CLIMATES: Climate[] = ["oceanic", "alpine", "subtropical", "savanna"];
 export const EXTREME_CLIMATES: readonly Climate[] = [
@@ -739,10 +934,17 @@ const TRANSITION_WEIGHTS: Partial<
   glacial: { arctic: 2, alpine: 1 },
   hyperarid: { desert: 2 },
   monsoon: { tropical: 2, subtropical: 1, savanna: 1 },
+  andean: { alpine: 2 },
+  prairie: { steppe: 2 },
+  mesoamerican: { subtropical: 2 },
 };
 /** Relative destination weights, after checking immediate-neighbor compatibility. */
 export function climateTransitionWeight(from: Climate, to: Climate): number {
   if (from === to) return 1;
+  if (AMERICAN_CLIMATES.includes(to))
+    return AMERICAN_CLIMATES.includes(from) ? 1 : 0.75;
+  if (AMERICAN_CLIMATES.includes(from))
+    return TRANSITION_WEIGHTS[from]?.[to] ?? 1;
   return (
     TRANSITION_WEIGHTS[from]?.[to] ??
     (EXTREME_CLIMATES.includes(to)

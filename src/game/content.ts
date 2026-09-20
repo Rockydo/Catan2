@@ -92,7 +92,7 @@ export const TERRAIN: Record<
     light: "#c8d0d8",
   },
   oil: {
-    name: "Whale oil",
+    name: "Oil source",
     family: "water",
     color: "#986a32",
     light: "#e8bc65",

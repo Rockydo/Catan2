@@ -43,7 +43,7 @@ it.each([1, 2, 3, 4])(
   },
 );
 
-it("keeps Oil off land and ports, and produces no Oil from ordinary Hides or Fish", () => {
+it("rejects unnamed Oil terrain and Oil ports, and produces no Oil from ordinary Hides or Fish", () => {
   const { s, water, home } = fishingFixture();
   expect(tileGoods(s.tiles[water])).toEqual(["fish"]);
   const land = s.vertices[home.vertex].tiles.find(
@@ -55,7 +55,9 @@ it("keeps Oil off land and ports, and produces no Oil from ordinary Hides or Fis
   expect(LAND_RESOURCES).not.toContain("oil");
   expect(PORT_RESOURCES).not.toContain("oil");
   s.tiles[land].resource = "oil";
-  expect(() => assertInvariants(s)).toThrow(/Oil comes from Whale/);
+  expect(() => assertInvariants(s)).toThrow(
+    /Oil terrain must be Sunflower fields/,
+  );
 });
 
 it("pays Coal before Oil, combines substitutes and reserves explicitly requested cards", () => {

@@ -349,7 +349,7 @@ for (const locale of ["en", "fr"] as const) {
 test("a generated mixed-climate campaign renders crop and livestock seasons without missing art", async ({
   page,
 }) => {
-  let s = newGame("season-review-7");
+  let s = newGame("season-review-15");
   s.calendar = { ...s.calendar!, startSeason: "spring" };
   syncSeasonSurfaces(s);
   while (s.phase.startsWith("setup")) s = run(s, chooseAIAction(s));
@@ -380,9 +380,9 @@ test("a generated mixed-climate campaign renders crop and livestock seasons with
   await expect(handoff).toBeVisible();
   await handoff.click();
   for (const [id, name, amount] of [
-    ["-2,0", "Barley fields", 8],
-    ["-5,2", "Maize fields", 0],
-    ["-1,0", "Cattle pasture", 1],
+    ["-1,3", "Barley fields", 0],
+    ["5,-5", "Oat fields", 6],
+    ["3,-4", "Cattle pasture", 1],
   ] as const) {
     await page.getByTestId(`hex-${id}`).press("Enter");
     const forecast = page.getByRole("region", { name: "Seasonal production" });

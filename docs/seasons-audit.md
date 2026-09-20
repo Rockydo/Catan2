@@ -12,7 +12,7 @@ AI should use annual income for durable town/army power evaluation, and a separa
 
 ## Crop grounding
 
-IRRI's long-running triple-cropping experiment distinguishes a dry-season, early-wet-season and late-wet-season rice crop. Triple crops require short-duration varieties, irrigation and careful scheduling. Tropical triple-crop rice is therefore an explicit game abstraction of intensively cultivated paddies, not a universal claim about all rice. Subtropical double cropping is a useful game contrast. The chosen annual rice totals are 12 Tropical, 8 Subtropical and 4 Monsoon, with four Grain per active window. This is a balance choice, not proof that two real crops must produce less than three: cooler rice regions can have higher yields per harvest. See [Cereal yields and game balance](cereal-balance.md) for primary sources, paddy/milled-rice distinctions and the complete cereal table.
+IRRI's long-running triple-cropping experiment distinguishes a dry-season, early-wet-season and late-wet-season rice crop. Triple crops require short-duration varieties, irrigation and careful scheduling. Tropical triple-crop rice is therefore an explicit game abstraction of intensively cultivated paddies, not a universal claim about all rice. Subtropical double cropping is a useful game contrast. The chosen annual rice totals are 12 Tropical, 8 Subtropical and 4 Monsoon, with four Grain per active window. This is a balance choice, not proof that two real crops must produce less than three: cooler rice regions can have higher yields per harvest. See [Crop yields and game balance](cereal-balance.md) for primary sources, paddy/milled-rice distinctions and the complete cereal table.
 
 Sources:
 
@@ -46,8 +46,9 @@ Ordinary sea tiles use one stable `freezeRoll = randomAt(seed, tile.id, "season-
 | Arctic  |    70% |     0% |    50% |   100% |
 | Alpine  |    35% |     0% |    25% |   100% |
 | Cold    |    20% |     0% |    10% |   100% |
+| Prairie |    10% |     0% |    10% |   100% |
 
-These are per-hex probabilities, not fixed proportions of each map. Reusing the same draw guarantees that Autumn ice is a subset of Spring ice and that the pattern repeats each year and reload. Other climates do not freeze ordinary sea. Glacial ordinary water freezes throughout Spring, Autumn and Winter, even in a reference fixture without a local roll, and opens in Summer. Arctic `resource: ice` terrain opens in Summer; Glacial `resource: ice` is permanent pack ice and never opens. It remains barren and never supplies construction ground.
+These are per-hex probabilities, not fixed proportions of each map. Reusing the same draw guarantees that Autumn ice is a subset of Spring ice and that the pattern repeats each year and reload. Other climates, including Andean, do not freeze ordinary sea. Glacial ordinary water freezes throughout Spring, Autumn and Winter, even in a reference fixture without a local roll, and opens in Summer. Arctic `resource: ice` terrain opens in Summer; Glacial `resource: ice` is permanent pack ice and never opens. It remains barren and never supplies construction ground.
 
 `seasonalProfile` transfers any frozen Spring or Autumn allocation into Summer independently for every raw component. Fish, Cod and both Whale goods retain a four-season sum of four times their individual printed yields. Frozen sea produces no marine harvest. The changed schedule still requires matching dice rolls; it does not repay missed rolls. Collectors, advanced processing and forecasts must all use this adjusted schedule. Generic catalogue rows without a local frost draw show the open-water baseline, except Glacial marine output which is already Summer-only; selected-tile forecasts show actual surfaces and yields.
 
@@ -95,8 +96,20 @@ Required regression coverage: all five generation shares and unchanged other dra
 
 ## Extreme climate and cereal integration
 
-The initial draw contains fourteen climates with relative weights 1 for each established climate and 0.35 for each extreme. Entry weights of 0.5 do not change the 85% continuity rule. Verify reciprocal compatibility, the 2/1 Glacial, 2 Hyperarid and 2/1/1 Monsoon exit weights, and preservation of all existing reservations through expeditions and reloads.
+The initial draw contains seventeen climates with relative weights 1 for each non-extreme climate and 0.35 for each extreme. Entry weights of 0.5 do not change the 85% continuity rule. Verify reciprocal compatibility, the 2/1 Glacial, 2 Hyperarid and 2/1/1 Monsoon exit weights, and preservation of all existing reservations through expeditions and reloads.
 
 Glacial land remains snowy in all four seasons. Its mines and ordinary productive seas allocate four times their baseline to Summer; Seal grounds remain productive every season. Permanent Glacial ice is barren and never opens. Test movement, construction, fishing coverage and forecasts for this distinction. Hyperarid scarcity and Monsoon fragmentation need no new disasters or AI exceptions.
 
-`biomeYield` supplies Rice baselines 3/2/1 for Tropical/Subtropical/Monsoon, Oceanic Barley 2, Temperate/Oceanic Rye 2 and baseline 1 for other Barley/Rye. Wheat and Maize remain 2, Millet 1; Black-soil wheat is 3. Global and climate-specific catalogues must show these actual values, including workshop output. Existing stored goods and terrain stay intact; current productivity applies on load. Test annual conservation against revised baselines, not historical values.
+`biomeYield` supplies Rice baselines 3/2/1 for Tropical/Subtropical/Monsoon, Oceanic Barley 2, Temperate/Oceanic Turnip fields 2, Andean Potato fields 2 and baseline 1 for other Barley/Turnip fields. Wheat and Maize remain 2, Millet 1; Black-soil wheat is 3. Global and climate-specific catalogues must show these actual values, including workshop output. Existing stored goods and terrain stay intact; current productivity applies on load. Test annual conservation against revised baselines, not historical values.
+
+## Regional crops and American climates
+
+Turnips replace Rye at the same 4% Temperate, 2% Oceanic, 3% Cold and 3% Alpine land shares, with baseline 2 in mild regions and 1 in Cold/Alpine. The schedule is 0/1/3/0 times that baseline. Oats replace the 4% Temperate Maize interval and pay 0/6/2/0; Sorghum replaces the 5% Subtropical Maize interval and pays 0/0/8/0. Both retain baseline 2. Potatoes generate only in Andean (baseline 2, 0/2/6/0); Maize only in Prairie and Mesoamerican (baseline 2, Autumn 8). See [Crop yields and game balance](cereal-balance.md) for sources and abstractions.
+
+Andean, Prairie and Mesoamerican have initial climate weight 1 and land ratios 75%, 70% and 45%. Entering an American climate from an older compatible climate has weight 0.75. Preferred exits Andean to Alpine, Prairie to Steppe and Mesoamerican to Subtropical have weight 2; other American exits have weight 1. Test reciprocal compatibility, exact normalized probabilities, preserved prior reservations and every land table summing to 100%.
+
+Prairie seas freeze in Winter and use fixed 10% Spring/Autumn frost thresholds. Frozen output moves into Summer. Andean seas stay open; highland dryness does not imply frozen water. The calendar warning, exact tile forecast, generated tables and artwork must agree. New dual-resource Alpaca, Bison and Cloud forest tiles must retain both goods through town and collector multiplication and automatic processing. The first resource determines their linked workshop. Sunflower Oil uses existing Coal substitution and Fuel production.
+
+Save version 12 replaces retired Rye and prototype non-American Potatoes with Turnips. Old non-American Maize becomes Oats in cool regions or Sorghum in warm regions; American crops retain their identity. Perform conversion before catalogue checks, retaining tile IDs, climate, dice, producers, inventories, units and random streams. No migration harvest is awarded. Keep archived crop artwork for earlier clients.
+
+Required coverage: all seventeen climate tables and transitions; region-exclusive crop generation; version-11 and prototype version-12 imports plus roundtrips; annual raw and processed conservation; unchanged food/Oil substitution; AI production valuation; English/French names, icons, forecasts and decoded artwork before and after reload. Generated guides must use shared yield helpers and tolerate climates without Whale entries.

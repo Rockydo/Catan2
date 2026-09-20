@@ -26,6 +26,8 @@ import { maritimeFixture } from "./maritime-fixture";
 import { piece } from "./helpers";
 
 const coldClimates = ["arctic", "alpine", "cold"] as const;
+const shoulderClimates = [...coldClimates, "prairie"] as const;
+const frozenClimates = [...shoulderClimates, "glacial"] as const;
 const shoulders = ["spring", "autumn"] as const;
 
 function fixture() {
@@ -88,10 +90,11 @@ describe("stable shoulder-season sea ice", () => {
       arctic: { spring: 0.7, autumn: 0.5 },
       alpine: { spring: 0.35, autumn: 0.25 },
       cold: { spring: 0.2, autumn: 0.1 },
+      prairie: { spring: 0.1, autumn: 0.1 },
     });
   });
 
-  it.each(coldClimates)(
+  it.each(shoulderClimates)(
     "uses strict threshold boundaries and stable cold spots in %s",
     (climate) => {
       const tile = marineTile();
@@ -170,7 +173,9 @@ describe("stable shoulder-season sea ice", () => {
     const water = Object.values(s.tiles).filter(
       (tile) =>
         tile.resource === "water" &&
-        coldClimates.includes(tile.climate as (typeof coldClimates)[number]),
+        frozenClimates.includes(
+          tile.climate as (typeof frozenClimates)[number],
+        ),
     );
     expect(water.length).toBeGreaterThan(0);
     for (const tile of water)
@@ -178,7 +183,9 @@ describe("stable shoulder-season sea ice", () => {
     for (const tile of Object.values(s.tiles).filter(
       (tile) =>
         tile.resource === "water" &&
-        !coldClimates.includes(tile.climate as (typeof coldClimates)[number]),
+        !frozenClimates.includes(
+          tile.climate as (typeof frozenClimates)[number],
+        ),
     ))
       expect(tile.freezeRoll).toBeUndefined();
     const rolls = Object.fromEntries(
@@ -206,8 +213,8 @@ describe("stable shoulder-season sea ice", () => {
       (v) =>
         unknownAtVertex(saved, v).length &&
         saved.vertices[v].tiles.some((id) =>
-          coldClimates.includes(
-            saved.tiles[id].climate as (typeof coldClimates)[number],
+          frozenClimates.includes(
+            saved.tiles[id].climate as (typeof frozenClimates)[number],
           ),
         ),
     )!;
@@ -221,7 +228,9 @@ describe("stable shoulder-season sea ice", () => {
       .filter(
         (tile) =>
           tile.resource === "water" &&
-          coldClimates.includes(tile.climate as (typeof coldClimates)[number]),
+          frozenClimates.includes(
+            tile.climate as (typeof frozenClimates)[number],
+          ),
       );
     expect(addedWater.length).toBeGreaterThan(0);
     for (const tile of addedWater)
