@@ -1911,5 +1911,6 @@
   "{0}: retreating from melting ice into an enemy-held landing at {1}.": "{0} : le dégel force un débarquement sur une terre occupée par l’ennemi en {1}.",
   "{0}: {1} units automatically retreated from melting ice to {2}.": "{0} : {1} unités se sont repliées automatiquement de la glace fondante vers {2}.",
   "Invalid thaw retreat battle.": "Combat de débarquement après dégel invalide.",
-  "Invalid thaw retreat queue.": "File de replis après dégel invalide."
+  "Invalid thaw retreat queue.": "File de replis après dégel invalide.",
+  "Invalid retired Andean snow terrain.": "Ancienne plaine enneigée andine invalide."
 }

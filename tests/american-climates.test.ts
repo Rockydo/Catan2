@@ -16,7 +16,7 @@ import { applyCommand, newGame } from "../src/game/engine";
 import { chooseAIAction, economyProjects } from "../src/game/ai";
 import { campCost, extensionCost, unitCost } from "../src/game/content";
 import { inventory, recipePayment } from "../src/game/selectors";
-import { run } from "./helpers";
+import { piece, run } from "./helpers";
 import { expeditionProspects } from "../src/game/ai-exploration";
 import { projectedIncome } from "../src/game/ai-seasonal";
 import { production } from "../src/game/economy";
@@ -125,7 +125,7 @@ describe("American climate generation", () => {
     expect(climateTransitionWeight("andean", "mesoamerican")).toBe(1);
   });
 
-  it("keeps revealed Andean snow plains loadable after removing them from new terrain rolls", () => {
+  it("replaces retired Andean snow plains on import without changing their number or geometry", () => {
     const s = newGame("regional-5-1");
     const t = Object.values(s.tiles).find(
       (tile) =>
@@ -139,10 +139,114 @@ describe("American climate generation", () => {
     const save = JSON.parse(serialize(s));
     save.version = 13;
     const loaded = deserialize(JSON.stringify(save));
-    expect(loaded.tiles[t.id]).toEqual(t);
+    const replacement = loaded.tiles[t.id];
+    expect(["iron", "gold", "bare-peaks"]).toContain(replacement.biome);
+    expect(replacement).toEqual({
+      ...t,
+      biome: replacement.biome,
+      resource: BIOME_INFO[replacement.biome!].resource,
+    });
+    expect(deserialize(serialize(loaded))).toEqual(loaded);
     expect(
       CLIMATE_INFO.andean.terrain.some(([biome]) => biome === "snow-plain"),
     ).toBe(false);
+  });
+
+  it.each([13, 14])(
+    "converts every unoccupied Andean snow plain in a v%s campaign deterministically",
+    (version) => {
+      const s = newGame("andean-snow-conversion");
+      for (const edge of Object.values(s.edges)) delete edge.harbor;
+      for (const id in s.climatePlan!) s.climatePlan![id] = "andean";
+      for (const tile of Object.values(s.tiles)) {
+        Object.assign(tile, {
+          climate: "andean",
+          biome: "snow-plain",
+          resource: "snow",
+        });
+        delete tile.fish;
+        delete tile.whale;
+        delete tile.surface;
+        delete tile.iceWeather;
+        delete tile.freezeRoll;
+      }
+      const save = JSON.parse(serialize(s));
+      save.version = version;
+      const loaded = deserialize(JSON.stringify(save));
+      const seen = new Set<string>();
+      for (const t of Object.values(loaded.tiles)) {
+        const roll = randomAt(s.seed, t.id, "andean-snow-replacement");
+        const biome = roll < 0.2 ? "iron" : roll < 0.4 ? "gold" : "bare-peaks";
+        expect(t).toEqual({
+          ...s.tiles[t.id],
+          biome,
+          resource: BIOME_INFO[biome].resource,
+        });
+        seen.add(biome);
+      }
+      expect(seen.size).toBe(3);
+      expect(loaded).toEqual({ ...s, tiles: loaded.tiles });
+      expect(deserialize(serialize(loaded))).toEqual(loaded);
+    },
+  );
+
+  it("keeps troops, towns, watchtowers and ports safe when their old snow tile would become peaks", () => {
+    const { s, home } = maritimeFixture();
+    const sites = ["0,0", "-2,0", "0,2", "-2,2"];
+    for (let i = 0; ; i++) {
+      s.seed = `safe-snow-${i}`;
+      if (
+        sites.every(
+          (id) => randomAt(s.seed, id, "andean-snow-replacement") >= 0.4,
+        )
+      )
+        break;
+    }
+    for (const t of Object.values(s.tiles)) t.climate = "andean";
+    for (const id of sites)
+      Object.assign(s.tiles[id], { biome: "snow-plain", resource: "snow" });
+    piece(s, "-2,0");
+    const vertex = s.tiles["0,2"].vertices[0];
+    s.towers[vertex] = { id: `w${s.nextId++}`, owner: 0, vertex, tier: 1 };
+    s.edges[s.tiles["-2,2"].edges[0]].harbor = "generic";
+    const loaded = deserialize(serialize(s));
+    for (const id of sites)
+      expect(["iron", "gold"]).toContain(loaded.tiles[id].biome);
+    expect(loaded.pieces).toEqual(s.pieces);
+    expect(loaded.towns[home.id]).toEqual(home);
+    expect(loaded.routes).toEqual(s.routes);
+    expect(loaded.towers).toEqual(s.towers);
+    expect(loaded.edges).toEqual(s.edges);
+    expect([loaded.rng, loaded.deckRng, loaded.dice, loaded.round]).toEqual([
+      s.rng,
+      s.deckRng,
+      s.dice,
+      s.round,
+    ]);
+    assertInvariants(loaded);
+  });
+
+  it("leaves snow plains in other climates alone and rejects a malformed retired tile", () => {
+    const s = newGame("andean-snow-other-climates");
+    for (const id in s.climatePlan!) s.climatePlan![id] = "arctic";
+    for (const tile of Object.values(s.tiles)) {
+      Object.assign(tile, {
+        climate: "arctic",
+        biome: "snow-plain",
+        resource: "snow",
+      });
+      delete tile.fish;
+      delete tile.whale;
+      delete tile.surface;
+      delete tile.iceWeather;
+      delete tile.freezeRoll;
+    }
+    expect(deserialize(serialize(s)).tiles).toEqual(s.tiles);
+    const tile = Object.values(s.tiles)[0];
+    Object.assign(tile, { climate: "andean", resource: "ore" });
+    expect(() => deserialize(serialize(s))).toThrow(
+      "Invalid retired Andean snow terrain",
+    );
   });
 
   it("keeps American crops exclusive while retaining the old-world crop shares", () => {

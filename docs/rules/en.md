@@ -66,6 +66,7 @@ Bare Peaks produce nothing and are impassable to every unit. Units cannot move t
 
 ### Existing campaigns
 
+Old Andean Snow plains become Iron, Gold or Bare Peaks on load, with respective chances of 20%, 20% and 60%. A tile with units, a pending battle, an adjacent town or watchtower, or a port becomes Iron or Gold if Peaks were rolled. Replacements are fixed by the seed and coordinates. Tile numbers and stored goods stay unchanged. Snow plains in other climates remain.
 Revealed tiles retain their assigned climate, dice numbers, camps, workshops, units and stored goods. Current climate-adjusted crop productivity applies on load. Retired Rough fields become Barley in Cold, Alpine and Oceanic climates, or Millet in Steppe and Savanna. Oceanic Barley has baseline 2 and pays 8 Grain in Summer; Oceanic Golden fields keep their Autumn harvest.
 Retired Rye fields and prototype Potato fields outside American regions become Turnip fields. Their baseline remains 2 in Temperate/Oceanic climates and 1 in Cold/Alpine climates, with Summer/Autumn payouts of 2/6 or 1/3. Former non-American Maize becomes Oats in Temperate and other cool climates, or Sorghum in warm climates; both retain baseline 2. American Potato and Maize fields keep their identity. No stored harvest is recalculated or awarded during migration.
 Saves made before climates existed classify their older tiles as Temperate for future borders. New exploration can use all seventeen climates. Start a new campaign to use the current terrain tables throughout the map.

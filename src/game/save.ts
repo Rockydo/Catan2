@@ -50,6 +50,41 @@ import {
 } from "./selectors";
 export const SAVE_KEY = "catane-frontiers-save-v1";
 export const BACKUP_KEY = "catane-frontiers-backup-v1";
+
+/** Retired Andean snow becomes Iron/Gold/Peaks in 1:1:3 proportions.
+ * Keep occupied ground habitable and use an independent, stable random draw. */
+function replaceAndeanSnow(s: Game) {
+  const retired = Object.values(s.tiles).filter(
+    (tile) => tile.climate === "andean" && tile.biome === "snow-plain",
+  );
+  if (!retired.length) return;
+  const occupied = new Set(Object.values(s.pieces).map((unit) => unit.tile));
+  for (const site of [
+    ...Object.values(s.towns),
+    ...Object.values(s.towers ?? {}),
+  ])
+    for (const id of s.vertices[site.vertex]?.tiles ?? []) occupied.add(id);
+  for (const edge of Object.values(s.edges))
+    if (edge.harbor) for (const id of edge.tiles) occupied.add(id);
+  if (s.setupVertex)
+    for (const id of s.vertices[s.setupVertex]?.tiles ?? []) occupied.add(id);
+  if (s.battle) {
+    occupied.add(s.battle.origin);
+    occupied.add(s.battle.target);
+  }
+  for (const tile of retired) {
+    rule(tile.resource === "snow", "Invalid retired Andean snow terrain.");
+    const roll = randomAt(s.seed, tile.id, "andean-snow-replacement");
+    tile.biome = roll < 0.2 ? "iron" : roll < 0.4 ? "gold" : "bare-peaks";
+    if (tile.biome === "bare-peaks" && occupied.has(tile.id))
+      tile.biome =
+        randomAt(s.seed, tile.id, "andean-snow-safe-replacement") < 0.5
+          ? "iron"
+          : "gold";
+    tile.resource = BIOME_INFO[tile.biome].resource;
+  }
+}
+
 export function assertInvariants(s: Game) {
   if (s.calendar)
     rule(
@@ -261,8 +296,6 @@ export function assertInvariants(s: Game) {
       const info = CLIMATE_INFO[t.climate!];
       rule(
         t.biome === "water" ||
-          // Revealed Andean snow plains survive the generation-table change.
-          (t.climate === "andean" && t.biome === "snow-plain") ||
           [...info.terrain, ...info.water].some(([b]) => b === t.biome),
         "Terrain does not belong to its climate.",
       );
@@ -1456,6 +1489,7 @@ export function deserialize(text: string): Game {
     }
     syncSeasonSurfaces(game);
   }
+  replaceAndeanSnow(data.game);
   assertInvariants(data.game);
   // Never silently redirect an old standing order to a different good.
   for (const town of Object.values((data.game as Game).towns))

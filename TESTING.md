@@ -570,3 +570,8 @@ Reproduce the engine audit with `npm test`, `npx tsx scripts/seasons-audit.ts`, 
 - Andean conditional land weights still total 100%: Iron 11%, Gold 7%, Bare Peaks 18%, no newly generated Snow plains. Existing Andean Snow plains survive save import unchanged.
 - TypeScript, production build, formatting, diff checks and all 12 production HTTP checks pass. The local release retains earlier asset hashes; the user's browser campaign was not used or modified for testing.
 - Four two-year AI campaigns cover all 17 climates and complete 7,201 legal actions, 1,603 moves and 219 battles. State invariants and save roundtrips pass at every full-round boundary.
+
+## Existing Andean snow replacement
+
+- All 1,147 tests in 71 files pass. Save import replaces retired Andean Snow plains with deterministic Iron/Gold/Bare Peaks draws weighted 20%/20%/60%. Troops, town and watchtower ground, ports and pending battle sites receive a walkable mineral tile if Peaks were drawn. Dice numbers, geometry, units, structures, inventories and random streams are preserved. Other climates keep their Snow plains.
+- Six English/French production-browser checks pass across Firefox, Chromium and mobile Chromium. They verify automatic save replacement, preservation of the preceding save in the backup slot, and stable terrain after reload. Build, formatting and save-integrity checks pass.
