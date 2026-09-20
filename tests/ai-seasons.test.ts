@@ -306,7 +306,7 @@ describe("seasonal AI planning", () => {
     expect(action.type === "move" && action.to === "1,0").toBe(false);
   });
 
-  it("retreats surviving icebound ships into open water after a land attack", () => {
+  it("keeps surviving icebound ships trapped after a land attack", () => {
     let { s } = seasonalFixture(4);
     Object.assign(s.tiles["1,0"], {
       resource: "water",
@@ -328,11 +328,13 @@ describe("seasonal AI planning", () => {
     expect(action).toMatchObject({
       type: "resolve-battle",
       actor: 1,
-      retreat: "2,0",
+      retreat: undefined,
     });
     s = run(s, action);
     const survivors = Object.values(s.pieces).filter((u) => u.owner === 1);
     expect(survivors).toHaveLength(1);
-    expect(survivors[0].tile).toBe("2,0");
+    expect(survivors[0].tile).toBe("1,0");
+    expect(survivors[0].seasonStatus).toBe("icebound");
+    expect(s.pieces[army.id].tile).toBe("0,0");
   });
 });

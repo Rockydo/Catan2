@@ -102,7 +102,7 @@ export function BattleDialog({
         b.bombardment && (
           <p className="notice">
             {tx(
-              "Artillery stays on land. Surviving defeated ships retreat if a water exit is available; otherwise they remain in place.",
+              "Artillery stays on land. Icebound ships cannot retreat; land escorts on their hex defend them. Other defeated ships retreat if a water exit is available.",
             )}
           </p>
         ),

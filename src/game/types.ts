@@ -1,5 +1,5 @@
 import type { Climate, Biome, TerrainResource } from "./climate-content";
-import type { Season } from "./seasons";
+import type { Season, SeasonHalf } from "./seasons";
 export const RAW = [
   "lumber",
   "brick",
@@ -54,8 +54,10 @@ export interface Hex {
   surface?: "frozen" | "open";
   /** Stable local cold spot, separate from dice and other random streams. */
   freezeRoll?: number;
-  /** Old saves retain open water until their current shoulder season ends. */
+  /** Preserve an older local harvest schedule until its current season ends. */
   thawGrace?: Season;
+  /** Latest resolved half-season. Surface is saved, so reloads never reroll ice. */
+  iceWeather?: { round: number; season: Season; half: SeasonHalf };
   id: string;
   q: number;
   r: number;
@@ -299,7 +301,13 @@ export interface Event {
 }
 export interface Game extends World {
   /** Seasons begin at this full-round boundary; older saves default to Spring. */
-  calendar?: { startRound: number; startSeason?: Season; iceModel?: 1 };
+  calendar?: {
+    startRound: number;
+    startSeason?: Season;
+    startYear?: number;
+    roundsPerSeason?: 2;
+    iceModel?: 1 | 2;
+  };
   version: 5;
   seed: string;
   generation: 4 | 5;

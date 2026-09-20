@@ -86,13 +86,13 @@ An extreme map may lack enough legal starting sites. The game rejects a seed wit
 
 ### Calendar
 
-One complete round is one season. Every surviving faction takes its turn before the next season begins. The sequence is Spring, Summer, Autumn, Winter; four rounds make one year. New campaigns start in a random season, with a 25% chance for each. The same world seed gives the same starting season. Seasons never change halfway through a round.
-The calendar beside the round number shows the current season and year. Open it to review the next season and preview landscapes. A preview changes artwork only: movement, production and legal actions still use the current season. Select a tile for its exact open-water or frozen surface and production in all four seasons.
+Each season lasts two full rounds: Early Spring, Late Spring, Early Summer, Late Summer, Early Autumn, Late Autumn, Early Winter, Late Winter. Every surviving faction takes its turn before the half-season advances. Eight rounds make one year. New campaigns start in the early half of a random season, with a 25% chance for each season. The world seed fixes that choice.
+The calendar shows the current half-season and year. Early and late halves use identical harvest values and seasonal artwork. Ice can change at every full-round boundary. Landscape previews do not advance time or change rules. Select a sea tile for its current surface, next freeze/thaw chance and eight-round probability outlook.
 
 ### Dice and harvest windows
 
 A tile produces only when its number is rolled during a productive season. Every matching roll pays, even if that tile has already produced in the same season. There is no once-per-year harvest limit, guaranteed harvest, replacement roll or compensation. Off-season matching rolls produce nothing. Dice remain two independent six-sided dice.
-For each resource, the four seasonal amounts add up to four times its current climate-adjusted annual baseline. This preserves that baseline’s annual dice expectation for the same producers and number of rolls; cereal balance updates can change the baseline itself. Timing is less reliable: Golden fields produce 8 Grain per settlement on each matching Summer roll, and zero in the other seasons. If their number never appears that Summer, the harvest is lost.
+For each resource, the four seasonal amounts add up to four times its current climate-adjusted annual baseline. Both halves pay the same amounts, so land output per roll is unchanged; cereal balance updates can change the baseline itself. Timing is less reliable: Golden fields produce 8 Grain per settlement on each matching Summer roll, and zero in the other seasons. If their number never appears that Summer, the harvest is lost.
 
 ### Crop types
 
@@ -123,7 +123,7 @@ Alpaca pasture has annual baseline 1 Wool plus 1 Meat. Wool pays 4 in Spring; Me
 Wood, hunting, salt production and clay work vary by climate. Cold forests retain a small Winter timber harvest. Warm-climate hunting and logging continue through Summer rains. Jungle and warm woodlands produce 1 each season; Savanna Wildlife grassland gives 2/1/3/2 Hides from Spring to Winter. Tropical Clay gives 1 each season; Subtropical and Monsoon Alluvial clay gives 2/1/2/3. Tropical, Subtropical, Savanna and Mesoamerican Salt flats give 1/0/1/2: evaporation stops during the wet Summer and peaks in the dry Winter. Desert and Hyperarid Salt flats give 1 each season. Seasonal totals follow the current climate-adjusted baseline. Hides and Oil on the same animal tile can have different seasonal outputs; both are collected.
 Cloud forest gives 1 Wood plus 1 Hides each season. Volcanic quarry gives 2 Stone each season. Andean river timber follows 1/1/2/0; Andean mines stay productive through the dry Winter. Prairie follows the Cold mining calendar.
 Mild-climate mines and quarries remain steady. Cold, Alpine, Arctic and Prairie mines and quarries favor Summer and stop in Winter; Glacial mines produce 4 times their baseline in Summer only. Coal in its listed climates stays available year-round. These reliable goods remain useful when food harvests are uncertain.
-Before adjusting for sea ice, Fish and Cod in Temperate, Cold, Arctic, Steppe, Oceanic, Alpine, Prairie and Andean climates produce at 1×/2×/1×/0× their baseline from Spring to Winter. Glacial Fish, Cod and both Whale goods produce 4 times their baseline in Summer only. Warmer-climate fish remains steady all year. Cold, Alpine and Arctic Whales use 1×/2×/1×/0×; warm-climate Whales use 0×/1×/2×/1×. Multiply both Hides and Oil. Seal grounds produce 1 Hides and 1 Oil in every season, including Summer. The generic marine table shows the open-water baseline. A selected tile’s forecast shows its exact yields after sea ice shifts frozen Spring or Autumn output into Summer.
+Before adjusting for sea ice, Fish and Cod in Temperate, Cold, Arctic, Steppe, Oceanic, Alpine, Prairie and Andean climates produce at 1×/2×/1×/0× their baseline from Spring to Winter. Glacial Fish, Cod and both Whale goods produce 4 times their baseline in Summer only. Warmer-climate fish remains steady all year. Cold, Alpine and Arctic Whales use 1×/2×/1×/0×; warm-climate Whales use 0×/1×/2×/1×. Multiply both Hides and Oil. Seal grounds produce 1 Hides and 1 Oil in every season, including Summer. The generic marine table shows the open-water baseline. Individual tiles retain their established local Summer concentration. Actual ice can block a scheduled harvest; it does not shift extra output into Summer.
 
 ### Production multipliers
 
@@ -138,22 +138,22 @@ Arctic land keeps snow in Spring, regains it in Autumn and has deep cover in Win
 
 ### Sea ice and thaw
 
-Ordinary sea hexes have the following freezing chances in Spring/Autumn: Glacial 100%/100%, Arctic 70%/50%, Alpine 35%/25%, Cold 20%/10%, Prairie 10%/10%. All ordinary sea hexes in these five climates freeze in Winter and open in Summer. This includes Fishing grounds, Cod grounds and Whale grounds; frozen resource tiles display ice and stop all marine production, including both Whale goods. Each hex’s pattern is fixed by the world seed and repeats every year, including after reloads. An Autumn-frozen hex is always frozen in Spring too. These are per-hex chances, not guaranteed proportions of a region; inspect the exact forecast before moving.
-Arctic Frozen sea terrain freezes in Spring, Autumn and Winter and opens only in Summer. Glacial Frozen sea terrain is permanent pack ice and stays frozen in all four seasons. Ordinary seas in other climates, including Andean, stay navigable.
-Frozen sea tiles produce no marine resources. For each tile and each raw resource, the Spring or Autumn yield removed by ice is added to Summer, preserving the four-season total. For example, a northern Fish tile with an open-water schedule of 1/2/1/0 produces 0/4/0/0 if it freezes in both Spring and Autumn, or 0/3/1/0 if it freezes only in Spring. Each payout still needs a matching dice roll; missed rolls are never reimbursed.
-Land units can enter frozen water. Ships can enter open water. Frozen water stops fishing coverage through that hex. A frozen port loses its improved trading rate until open water returns; ordinary reserve trading still works. Ship recruitment and sea expeditions require open water.
-Ice never becomes solid land for construction. Towns and towers need permanent solid land; roads need a genuine land side. Existing sea routes remain sea routes. Existing camps and buildings are not destroyed by freezing or thawing. Camps may be built in Winter under their normal connection rules, but only produce in their harvest seasons.
+At each half-season boundary, every revealed sea tile gets one check based on its climate, incoming half-season and current surface. Open tiles use the freeze chance; frozen tiles use the thaw chance. A failed check leaves the surface unchanged. The climate tables below list all chances. Weather uses separate seeded draws, does not affect dice, and cannot be rerolled by reloading. Different years can have different ice. Newly discovered water receives a surface consistent with the current part of the year.
+Glacial, Arctic, Alpine, Cold and Prairie waters can freeze. Other climates remain open. Seasonal ice always opens by Late Summer; Glacial Frozen sea terrain is permanent pack ice and never thaws. Arctic Frozen sea uses stronger freezing and slower thawing than ordinary Arctic water. Snow artwork stays tied to the four main seasons.
+The existing four-season harvest calendar is unchanged, including each sea tile’s established Summer concentration. Both halves use the same amount on a matching roll. Actual ice blocks all marine goods and processing from that tile; this weather does not store missed rolls or grant extra catch-up harvests. Fishing coverage cannot cross frozen water. A frozen port loses its favorable rate; ordinary bank trading remains available. Shipbuilding and sea expeditions require open water.
+Land armies can cross ice; ships use open water. Ice never becomes permanent construction ground. Roads, towns and towers still need solid land. Freeze and thaw do not destroy buildings, camps or units. A forecast percentage is a risk, not a promised future surface.
 
 ### Units caught by a surface change
 
-A ship caught by freezing becomes icebound. It stays in place with its passengers and cannot act until thaw. Land units may attack an enemy icebound fleet on that frozen hex using normal combat.
-Land units caught by thaw stay on a drifting ice floe. They are not killed or teleported. They may step onto adjacent land or frozen water, or board a friendly transport on the same or an adjacent hex, subject to normal capacity and activation rules. They cannot walk across open water. Enemy fleets may attack them normally. A trapped unit can retreat only to terrain its unit type can legally occupy.
-Move ships out of freezing regions and bring troops ashore before a surface change. A stranded force with no rescue route may remain trapped until the next suitable season.
+An icebound ship cannot move, act or retreat. It fights at one quarter of its normal power, rounded up separately for each ship. Watchtower support is added normally. Its normal unit points still determine whole-unit casualties.
+Friendly land armies on the same hex defend an icebound fleet at full strength, including against shore bombardment. Allied land armies also count. A neighboring army does not automatically join: move it onto the ice to escort the ships. Embarked passengers remain aboard and do not fight as a land escort. When the ice thaws, ships regain normal power and movement.
+Land troops caught by thaw remain on a drifting ice floe. They are not destroyed or teleported. They can move onto adjacent legal land or ice, or board a friendly transport subject to capacity and activation rules. They cannot walk across open water. Enemy fleets can attack them. Retreats require legal terrain for every surviving unit. An icebound ship cannot use an open-water escape while still frozen.
 
 ### AI and existing saves
 
-AI values durable production by its annual mean, so seasonal spikes do not artificially change strategic strength. Trading uses upcoming harvests and stockpiles; expansion considers complementary crop seasons. The AI also plans winter berths and rescues stranded troops.
-Existing campaigns keep their calendar, dice numbers, units and stored goods. Retired Rye and prototype non-American Potato fields become Turnip fields. Non-American Maize becomes Oats in cool climates or Sorghum in warm climates. Climate and annual baseline are preserved; the current crop schedule applies on load. Current climate-adjusted crop baselines apply to existing tiles when loaded; stored harvests are not recalculated. Campaigns saved before partial sea freezing also keep their current sea surfaces until the next season boundary. This grace period survives saving and reloading again, so loading cannot suddenly strand a force. Older saves without a calendar begin Spring at the next full round, preserving the current round. Newly explored land can contain the new crop and livestock types. Seasonal production then applies to old and new tiles alike.
+The AI values long-term production using its annual baseline, considers upcoming harvests in trade and looks for complementary crops. It uses public ice probabilities to avoid dangerous routes and arrange rescue. It cannot inspect future weather draws. Surface forecasts are probabilities rather than certainty.
+Version 13 preserves the current season, year and sea surfaces when loading an existing campaign. The current round becomes its early half; the following round is late. The new weather checks begin at the next full-round boundary. Reloading or discovering more tiles does not reroll existing weather. Warehouses, units, terrain, dice numbers and random streams survive.
+Campaigns saved before seasons activate their calendar next round. Retired Rough fields and Rye, and non-American Maize or prototype Potatoes, retain their documented crop migrations. Current crop balance applies without recalculating stored resources.
 
 ### Artwork preview
 
@@ -433,7 +433,7 @@ Use Show climates in the map controls to color climate regions. Tile inspection 
 
 ### Seasonal calendar
 
-Click the season beside the round number for the yearly calendar and read-only landscape previews. Select a tile to see its exact yields and open-water or frozen surface in all four seasons. The map’s resource labels show current seasonal quantities; zero means the tile is out of season, not that it has lost its resource.
+Click the season beside the round number for the yearly calendar and read-only landscape previews. Select a tile to see its harvest calendar and current surface. Cold sea tiles also show freeze/thaw chances and an eight-round ice outlook. The map’s resource labels show current seasonal quantities; zero means the tile is out of season, not that it has lost its resource.
 
 ## Climate tables
 
@@ -989,7 +989,7 @@ Bare Peaks: no production and no unit entry, including recruitment, retreat or d
 
 ## Complete seasonal harvest tables
 
-Ordinary seas freeze in Spring/Autumn with fixed chances: Glacial 100%/100%, Arctic 70%/50%, Alpine 35%/25%, Cold 20%/10%, Prairie 10%/10%. These five climates freeze in Winter and open in Summer; Andean water never freezes. Glacial Frozen sea terrain stays frozen all year; Arctic Frozen sea opens in Summer. Glacial marine harvests occur only in Summer. Other marine rows show the open-water baseline: frozen Spring or Autumn yield moves into Summer without changing the current annual total. Select a tile for exact surfaces and yields.
+Each season lasts two full rounds, early and late, with the same scheduled yield per matching roll in both halves. Marine rows show the established harvest calendar before actual ice blocks production; individual tiles retain their existing Summer concentration. No missed harvest is repaid. Physical ice changes independently at each half-season boundary using the tables below. Select a tile for its current surface, harvest values and next weather risks.
 
 ### Temperate
 
@@ -1286,6 +1286,88 @@ Ordinary seas freeze in Spring/Autumn with fixed chances: Glacial 100%/100%, Arc
 | Coal hills       | 1 Coal           | 1 Coal           | 1 Coal           | 1 Coal           |
 | Fishing grounds  | 1 Fish           | 1 Fish           | 1 Fish           | 1 Fish           |
 | Whale grounds    | 0                | 1 Hides + 1 Oil  | 2 Hides + 2 Oil  | 1 Hides + 1 Oil  |
+
+## Half-season freeze and thaw chances
+
+Each sea tile checks once per full round. Open water uses the freeze chance; ice uses the thaw chance. Otherwise its surface stays unchanged. Results are saved and can differ between years. Other climates stay open year-round. Glacial Frozen sea is permanent pack ice; ordinary Glacial seas thaw by Late Summer. Arctic Frozen sea has its own heavier-ice table.
+
+### Glacial
+
+| Half-season entered | Open water: freezes | Frozen water: thaws |
+| ------------------- | ------------------- | ------------------- |
+| Early Spring        | 25%                 | 5%                  |
+| Late Spring         | 10%                 | 15%                 |
+| Early Summer        | 0%                  | 70%                 |
+| Late Summer         | 0%                  | 100%                |
+| Early Autumn        | 60%                 | 0%                  |
+| Late Autumn         | 90%                 | 0%                  |
+| Early Winter        | 100%                | 0%                  |
+| Late Winter         | 100%                | 0%                  |
+
+### Arctic
+
+| Half-season entered | Open water: freezes | Frozen water: thaws |
+| ------------------- | ------------------- | ------------------- |
+| Early Spring        | 0%                  | 25%                 |
+| Late Spring         | 0%                  | 70%                 |
+| Early Summer        | 0%                  | 100%                |
+| Late Summer         | 0%                  | 100%                |
+| Early Autumn        | 25%                 | 0%                  |
+| Late Autumn         | 55%                 | 0%                  |
+| Early Winter        | 90%                 | 0%                  |
+| Late Winter         | 100%                | 0%                  |
+
+### Arctic Frozen sea
+
+| Half-season entered | Open water: freezes | Frozen water: thaws |
+| ------------------- | ------------------- | ------------------- |
+| Early Spring        | 0%                  | 10%                 |
+| Late Spring         | 0%                  | 30%                 |
+| Early Summer        | 0%                  | 75%                 |
+| Late Summer         | 0%                  | 100%                |
+| Early Autumn        | 70%                 | 0%                  |
+| Late Autumn         | 100%                | 0%                  |
+| Early Winter        | 100%                | 0%                  |
+| Late Winter         | 100%                | 0%                  |
+
+### Alpine
+
+| Half-season entered | Open water: freezes | Frozen water: thaws |
+| ------------------- | ------------------- | ------------------- |
+| Early Spring        | 0%                  | 60%                 |
+| Late Spring         | 0%                  | 80%                 |
+| Early Summer        | 0%                  | 100%                |
+| Late Summer         | 0%                  | 100%                |
+| Early Autumn        | 10%                 | 0%                  |
+| Late Autumn         | 25%                 | 0%                  |
+| Early Winter        | 75%                 | 0%                  |
+| Late Winter         | 100%                | 0%                  |
+
+### Cold
+
+| Half-season entered | Open water: freezes | Frozen water: thaws |
+| ------------------- | ------------------- | ------------------- |
+| Early Spring        | 0%                  | 70%                 |
+| Late Spring         | 0%                  | 90%                 |
+| Early Summer        | 0%                  | 100%                |
+| Late Summer         | 0%                  | 100%                |
+| Early Autumn        | 5%                  | 0%                  |
+| Late Autumn         | 15%                 | 0%                  |
+| Early Winter        | 60%                 | 0%                  |
+| Late Winter         | 100%                | 0%                  |
+
+### Prairie
+
+| Half-season entered | Open water: freezes | Frozen water: thaws |
+| ------------------- | ------------------- | ------------------- |
+| Early Spring        | 0%                  | 80%                 |
+| Late Spring         | 0%                  | 95%                 |
+| Early Summer        | 0%                  | 100%                |
+| Late Summer         | 0%                  | 100%                |
+| Early Autumn        | 5%                  | 0%                  |
+| Late Autumn         | 10%                 | 0%                  |
+| Early Winter        | 45%                 | 0%                  |
+| Late Winter         | 90%                 | 0%                  |
 
 ## All costs
 

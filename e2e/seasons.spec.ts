@@ -222,6 +222,10 @@ test("patchy autumn ice matches tile forecasts and summer previews", async ({
   await expect(
     page.locator('image[href$="arctic-fish-summer.webp"]'),
   ).toHaveCount(2);
+  const closeInspector = page.getByRole("button", {
+    name: "Close action panel",
+  });
+  if (await closeInspector.isVisible()) await closeInspector.click();
   await page.getByRole("button", { name: "Return to current season" }).click();
   await page.screenshot({
     path: `test-artifacts/patchy-ice-${test.info().project.name}.png`,
@@ -356,7 +360,7 @@ test("a generated mixed-climate campaign renders crop and livestock seasons with
   expect(
     new Set(Object.values(s.tiles).map((t) => t.climate)).size,
   ).toBeGreaterThanOrEqual(6);
-  s.round = 2;
+  s.round = 3;
   s.phase = "economy";
   s.players.forEach((p) => (p.control = "human"));
   syncSeasonSurfaces(s);

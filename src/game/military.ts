@@ -19,6 +19,7 @@ import {
   points,
   power,
   bombardmentPower,
+  fleetDefenders,
   bombardmentTargets,
   moveTargets,
   minCasualties,
@@ -237,15 +238,15 @@ export function militaryCommand(s: Game, c: Command): boolean {
       "Select artillery with 1 movement point and an adjacent enemy fleet.",
     );
     const target = c.to,
-      defenders = piecesAt(s, target, true).filter(
-        (u) => !friendly(s, u.owner, s.active),
-      );
+      defenders = fleetDefenders(s, target);
     defenders.sort(
       (a, b) =>
         Number(s.players[b.owner].control === "human") -
           Number(s.players[a.owner].control === "human") || a.owner - b.owner,
     );
-    const colonists = defenders.filter((u) => isSettler(u.kind));
+    const colonists = defenders.filter(
+      (u) => isSettler(u.kind) || u.kind === "merchant",
+    );
     removePieces(
       s,
       colonists.map((u) => u.id),

@@ -4,6 +4,8 @@ import {
   SHOULDER_ICE_CHANCE,
   frozenInSeason,
   seasonAt,
+  seasonHalf,
+  seasonYear,
   syncSeasonSurfaces,
 } from "./seasons";
 import {
@@ -56,7 +58,14 @@ export function assertInvariants(s: Game) {
         s.calendar.startRound <= s.round + 1 &&
         (s.calendar.startSeason === undefined ||
           SEASONS.includes(s.calendar.startSeason)) &&
-        (s.calendar.iceModel === undefined || s.calendar.iceModel === 1),
+        (s.calendar.iceModel === undefined ||
+          [1, 2].includes(s.calendar.iceModel)) &&
+        (s.calendar.roundsPerSeason === undefined ||
+          s.calendar.roundsPerSeason === 2) &&
+        (s.calendar.startYear === undefined ||
+          (Number.isSafeInteger(s.calendar.startYear) &&
+            s.calendar.startYear >= 1)) &&
+        (s.calendar.iceModel !== 2 || s.calendar.roundsPerSeason === 2),
       "Invalid seasonal calendar.",
     );
   rule(
@@ -297,7 +306,7 @@ export function assertInvariants(s: Game) {
         );
     if (t.freezeRoll !== undefined)
       rule(
-        s.calendar?.iceModel === 1 &&
+        [1, 2].includes(s.calendar?.iceModel ?? 0) &&
           t.resource === "water" &&
           typeof t.freezeRoll === "number" &&
           Number.isFinite(t.freezeRoll) &&
@@ -307,12 +316,35 @@ export function assertInvariants(s: Game) {
       );
     if (t.thawGrace !== undefined)
       rule(
-        s.calendar?.iceModel === 1 &&
+        [1, 2].includes(s.calendar?.iceModel ?? 0) &&
           t.resource === "water" &&
           (t.thawGrace === "spring" || t.thawGrace === "autumn") &&
           t.thawGrace === seasonAt(s),
         "Invalid sea thaw grace.",
       );
+    if (t.iceWeather !== undefined) {
+      object(t.iceWeather);
+      rule(
+        s.calendar?.iceModel === 2 &&
+          ["water", "ice"].includes(t.resource) &&
+          t.iceWeather.round === s.round &&
+          t.iceWeather.season === seasonAt(s) &&
+          t.iceWeather.half === seasonHalf(s) &&
+          ["frozen", "open"].includes(t.surface!),
+        "Invalid half-season sea state.",
+      );
+      rule(
+        !(t.resource === "ice" && t.climate === "glacial") ||
+          t.surface === "frozen",
+        "Permanent pack ice cannot melt.",
+      );
+    }
+    if (
+      s.calendar?.iceModel === 2 &&
+      seasonAt(s) &&
+      ["water", "ice"].includes(t.resource)
+    )
+      rule(!!t.iceWeather, "Missing half-season sea state.");
     if (t.surface !== undefined)
       rule(
         !!s.calendar &&
@@ -974,7 +1006,9 @@ export function assertInvariants(s: Game) {
               s.pieces[id].tile === b.origin,
           ) &&
           b.defenders.every(
-            (id) => s.pieces[id].naval && s.pieces[id].tile === b.target,
+            (id) =>
+              (s.pieces[id].naval || s.tiles[b.target].surface === "frozen") &&
+              s.pieces[id].tile === b.target,
           ),
         "Invalid shore bombardment battle.",
       );
@@ -1007,7 +1041,7 @@ export function serialize(s: Game): string {
   const body = JSON.stringify(s);
   return JSON.stringify({
     format: "catane-frontiers",
-    version: 12,
+    version: 13,
     savedAt: new Date().toISOString(),
     checksum: hash(body).toString(16),
     game: s,
@@ -1019,7 +1053,7 @@ export function deserialize(text: string): Game {
   rule(
     data &&
       data.format === "catane-frontiers" &&
-      [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].includes(data.version) &&
+      [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13].includes(data.version) &&
       data.game,
     "This is not a supported Catane save.",
   );
@@ -1322,6 +1356,28 @@ export function deserialize(text: string): Game {
         frozenInSeason(tile, current)
       )
         tile.thawGrace = current;
+    }
+    syncSeasonSurfaces(game);
+  }
+  if (data.version < 13 && data.game.calendar) {
+    const game = data.game as Game,
+      old = game.calendar!;
+    const current = seasonAt(game),
+      year = seasonYear(game);
+    game.calendar = {
+      ...old,
+      startRound: current ? game.round : old.startRound,
+      startSeason: current ?? old.startSeason ?? "spring",
+      startYear: year,
+      roundsPerSeason: 2,
+      iceModel: 2,
+    };
+    // Loading must not strand ships or change a battle halfway through a round.
+    // Preserve today's surface; the new weather rules start at the next boundary.
+    for (const tile of Object.values(game.tiles)) {
+      if (!current || !["water", "ice"].includes(tile.resource)) continue;
+      tile.surface ??= frozenInSeason(tile, current) ? "frozen" : "open";
+      tile.iceWeather = { round: game.round, season: current, half: "early" };
     }
     syncSeasonSurfaces(game);
   }

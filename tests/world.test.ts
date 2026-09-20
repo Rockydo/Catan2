@@ -15,6 +15,7 @@ import {
 import { newGame, applyCommand } from "../src/game/engine";
 import { assertInvariants, serialize, deserialize } from "../src/game/save";
 import { chooseAIAction } from "../src/game/ai";
+import { syncSeasonSurfaces } from "../src/game/seasons";
 describe("world and setup", () => {
   it("excludes frozen sea from ports while allowing snow-plain coasts", () => {
     let snowPorts = 0;
@@ -32,6 +33,7 @@ describe("world and setup", () => {
   it("removes saved ice ports without removing valid snow ports or changing terrain", () => {
     const s = newGame("ice-port-save");
     Object.assign(s, generateWorld(s.seed, 2000));
+    syncSeasonSurfaces(s);
     const coast = (resource: "ice" | "snow") =>
       Object.values(s.edges).find((edge) => {
         const resources = edge.tiles.map((id) => s.tiles[id].resource);

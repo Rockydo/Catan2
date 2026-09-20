@@ -86,6 +86,7 @@ import {
   points,
   power,
   bombardmentPower,
+  fleetDefenders,
   bombardmentTargets,
   speed,
   ready,
@@ -964,9 +965,7 @@ function ForcesPanel({
                   </p>
                   {tx(
                     bombardTargets.map((target) => {
-                      const fleet = piecesAt(s, target, true).filter(
-                        (u) => !friendly(s, u.owner, viewer),
-                      );
+                      const fleet = fleetDefenders(s, target, viewer);
                       return (
                         <button
                           key={target}

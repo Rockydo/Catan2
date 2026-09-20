@@ -1,5 +1,11 @@
 import { syncEmergencyCoalition } from "./emergency-coalition";
-import { SEASONS, seasonAt, seasonYear, syncSeasonSurfaces } from "./seasons";
+import {
+  SEASONS,
+  seasonAt,
+  seasonLabel,
+  seasonYear,
+  syncSeasonSurfaces,
+} from "./seasons";
 import { tileYield } from "./maritime";
 import { canChooseWoods } from "./selectors";
 import { allianceResponder } from "./relations";
@@ -136,7 +142,8 @@ export function newGame(
     generation: 5,
     calendar: {
       startRound: 1,
-      iceModel: 1,
+      iceModel: 2,
+      roundsPerSeason: 2,
       // A separate seeded draw leaves map generation and dice streams intact.
       startSeason: SEASONS[Math.floor(randomAt(seed, "calendar", "start") * 4)],
     },
@@ -233,11 +240,7 @@ function nextTurn(s: Game) {
     syncSeasonSurfaces(s);
     const season = seasonAt(s);
     if (season)
-      log(
-        s,
-        `Year ${seasonYear(s)}: ${season[0].toUpperCase() + season.slice(1)} begins.`,
-        "info",
-      );
+      log(s, `Year ${seasonYear(s)}: ${seasonLabel(s)} begins.`, "info");
   }
   beginTurn(s);
 }

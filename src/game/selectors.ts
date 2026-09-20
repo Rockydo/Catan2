@@ -162,7 +162,9 @@ export function power(s: Game, units: Piece[], tile: string) {
   return units.reduce(
     (n, u) =>
       n +
-      points(u) *
+      (u.naval && u.seasonStatus === "icebound"
+        ? Math.ceil(points(u) / 4)
+        : points(u)) *
         (!u.naval && UNIT_INFO[u.kind as UnitClass].family === family ? 2 : 1),
     units.some((u) => u.naval || points(u) > 0)
       ? [...new Set(units.map((u) => u.owner))].reduce(
@@ -170,6 +172,18 @@ export function power(s: Game, units: Piece[], tile: string) {
           0,
         )
       : 0,
+  );
+}
+/** Land escorts on sea ice defend a stranded fleet against bombardment too. */
+export function fleetDefenders(
+  s: Game,
+  tile: string,
+  owner = s.active,
+): Piece[] {
+  return piecesAt(s, tile).filter(
+    (u) =>
+      !friendly(s, u.owner, owner) &&
+      (u.naval || s.tiles[tile].surface === "frozen"),
   );
 }
 /** Artillery doubles its own power; shore watchtowers add support once. */
@@ -330,6 +344,7 @@ export function retreatOptions(
       (units?.length
         ? units.every(
             (u) =>
+              u.seasonStatus !== "icebound" &&
               canOccupy(s.tiles[n], u.naval) &&
               !hostileAt(s, n, u.owner, u.naval),
           )

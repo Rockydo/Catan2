@@ -554,3 +554,11 @@ Reproduce the engine audit with `npm test`, `npx tsx scripts/seasons-audit.ts`, 
 - Seven Chromium production-build scenarios pass, including English/French calendars and rules, adjacent frozen/open autumn seas, Summer art previews and exact per-tile surface forecasts. Revised Arctic autumn art was inspected at final resolution; all six asset mappings and both manifests validate.
 - Steppe land weights remain 100%: Millet 5%, Cattle range 16%, Steppe plain 29%; other weights unchanged. Land/water remains 65%/35%.
 - TypeScript, formatting, production build and diff whitespace checks pass. Earlier save surfaces remain unchanged during the current season; neither reloading nor previews reroll ice.
+
+## Early and late seasons
+
+- All 1,129 tests in 70 files pass. New coverage checks eight-round years, unchanged land yields and artwork between halves, per-climate freeze/thaw probabilities, idempotent weather, old-save migration, public AI weather estimates, and vulnerable fleets with land escorts.
+- English and French calendar, forecast, rulebook and reload flows pass in Chromium, Firefox and mobile Chromium. Existing crop migration, transport rescue and seasonal expedition flows also pass. Screenshots were inspected at desktop and mobile sizes.
+- Four two-year AI campaigns cover all 17 climates: 7,649 legal actions, 1,780 movements and 198 battles. State invariants and save roundtrips pass at every full-round boundary.
+- The large-map audit passes all four seasons on 125, 500, 1,000 and 2,500 tiles, with up to 562 pieces. At 2,500 tiles the sampled median decisions were 19–33 ms, with the slowest sampled decision 294 ms. These are bounded regression workloads, not guarantees for every campaign.
+- The audit fixture now avoids placing opposing test units on the same starting hex. Map construction tests initialize weather before serializing newly generated seas, matching the expedition command.

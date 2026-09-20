@@ -20,6 +20,7 @@ import {
   chooseClimateTransition,
 } from "../src/game/climate";
 import { newGame, applyCommand, canApplyCommand } from "../src/game/engine";
+import { syncSeasonSurfaces } from "../src/game/seasons";
 import {
   addHexes,
   neighbors,
@@ -397,6 +398,7 @@ it("keeps compatible climate buffers through seeded games, saves and successive 
         (v) => unknownAtVertex(s, v).length,
       )!;
       addHexes(s, s.seed, expeditionFootprint(s, vertex, 1, step));
+      syncSeasonSurfaces(s);
       for (const [id, t] of Object.entries(before))
         expect(s.tiles[id]).toEqual(t);
       for (const [id, c] of Object.entries(reserved))

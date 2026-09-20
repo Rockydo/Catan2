@@ -166,8 +166,11 @@ describe("stable shoulder-season sea ice", () => {
     expect(tile.freezeRoll).toBe(randomAt(s.seed, tile.id, "season-freeze"));
   });
 
-  it("keeps seeded rolls and other random streams stable across years, saves and discovery", () => {
+  it("keeps legacy harvest rolls and frost patterns stable across years, saves and discovery", () => {
     const s = newGame("stable-shoulder-ice-5");
+    s.calendar!.iceModel = 1;
+    delete s.calendar!.roundsPerSeason;
+    syncSeasonSurfaces(s);
     expect(s.calendar?.iceModel).toBe(1);
     const streams = randomStreams(s);
     const water = Object.values(s.tiles).filter(
@@ -428,7 +431,7 @@ describe("safe shoulder-ice save migration", () => {
         "Invalid sea thaw grace.",
       );
     }
-    for (const value of [0, 2, "1", true, null]) {
+    for (const value of [0, 3, "1", true, null]) {
       const invalid = structuredClone(s);
       Object.assign(invalid.calendar!, { iceModel: value });
       expect(() => assertInvariants(invalid)).toThrow(
@@ -466,7 +469,7 @@ describe("safe shoulder-ice save migration", () => {
     );
     expect(JSON.stringify(s)).toBe(before);
     const next = structuredClone(s);
-    next.round++;
+    next.round += 2;
     syncSeasonSurfaces(next);
     expect(next.tiles["0,0"].thawGrace).toBeUndefined();
     expect(rows(next, "current")).toEqual(forecast);
@@ -489,7 +492,7 @@ describe("safe shoulder-ice save migration", () => {
   });
 
   it.each(shoulders)(
-    "preserves open %s water and ships until the next season when upgrading version 9",
+    "preserves open %s water on version 9 upgrade and uses new weather thereafter",
     (season) => {
       const { s } = fixture();
       s.calendar = { startRound: 1, startSeason: season };
@@ -511,7 +514,7 @@ describe("safe shoulder-ice save migration", () => {
         streams = randomStreams(s);
       const loaded = deserialize(versionedSave(s, 9));
       const migrated = loaded.tiles[tile.id];
-      expect(loaded.calendar?.iceModel).toBe(1);
+      expect(loaded.calendar?.iceModel).toBe(2);
       expect(migrated.freezeRoll).toBe(
         randomAt(s.seed, tile.id, "season-freeze"),
       );
@@ -526,11 +529,15 @@ describe("safe shoulder-ice save migration", () => {
       expect(migrated.thawGrace).toBe(season);
       loaded.round++;
       syncSeasonSurfaces(loaded);
+      expect(migrated.thawGrace).toBe(season);
+      loaded.round++;
+      syncSeasonSurfaces(loaded);
       expect(migrated.thawGrace).toBeUndefined();
-      expect(loaded.pieces[ship.id].seasonStatus).toBe(
-        season === "autumn" ? "icebound" : undefined,
-      );
-      loaded.round = 5;
+      if (season === "spring") {
+        expect(migrated.surface).toBe("open");
+        expect(loaded.pieces[ship.id].seasonStatus).toBeUndefined();
+      }
+      loaded.round = season === "spring" ? 8 : 4;
       syncSeasonSurfaces(loaded);
       expect(migrated.surface).toBe("frozen");
       expect(loaded.pieces[ship.id].seasonStatus).toBe("icebound");
@@ -545,7 +552,11 @@ describe("safe shoulder-ice save migration", () => {
     const before = structuredClone(s),
       streams = randomStreams(s);
     const loaded = deserialize(versionedSave(s, 8));
-    expect(loaded.calendar).toMatchObject({ startRound: 24, iceModel: 1 });
+    expect(loaded.calendar).toMatchObject({
+      startRound: 24,
+      iceModel: 2,
+      roundsPerSeason: 2,
+    });
     expect(seasonAt(loaded)).toBeUndefined();
     expect(loaded.towns).toEqual(before.towns);
     expect(loaded.pieces).toEqual(before.pieces);

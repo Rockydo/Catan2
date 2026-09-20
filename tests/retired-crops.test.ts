@@ -30,6 +30,7 @@ function oldSave(game: Game, version = 10) {
 
 function cropWorld(climate: Climate) {
   const game = newGame("retired-crops");
+  game.calendar!.startYear = 1;
   for (const id of Object.keys(game.climatePlan!))
     game.climatePlan![id] = climate;
   for (const tile of Object.values(game.tiles)) {
@@ -43,6 +44,7 @@ function cropWorld(climate: Climate) {
     delete tile.surface;
     delete tile.freezeRoll;
     delete tile.thawGrace;
+    delete tile.iceWeather;
   }
   Object.assign(game.tiles["0,0"], { biome: "rough-fields" });
   return game;
@@ -108,7 +110,7 @@ describe("retired generic crop", () => {
       expected.tiles["0,0"].biome = biome;
       expect(restored).toEqual(expected);
       assertInvariants(restored);
-      expect(JSON.parse(serialize(restored)).version).toBe(12);
+      expect(JSON.parse(serialize(restored)).version).toBe(13);
       expect(deserialize(serialize(restored))).toEqual(restored);
     },
   );

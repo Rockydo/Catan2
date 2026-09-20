@@ -13,6 +13,10 @@ import {
   SEASONS,
   seasonAt,
   seasonYear,
+  seasonHalf,
+  seasonLabel,
+  iceOdds,
+  iceRisk,
   seasonalProfile,
   seasonalYield,
   seasonWeather,
@@ -119,7 +123,9 @@ export function SeasonCalendar({
       </div>
     ) : null;
   const Icon = SEASON_ICONS[current];
-  const next = SEASONS[(SEASONS.indexOf(current) + 1) % 4];
+  const nextState = { calendar: game.calendar, round: game.round + 1 };
+  const next = seasonAt(nextState)!;
+  const doubled = game.calendar?.roundsPerSeason === 2;
   return (
     <div className={`season-calendar season-${current}`} ref={root}>
       <button
@@ -128,13 +134,13 @@ export function SeasonCalendar({
         className="season-calendar-trigger"
         aria-expanded={open}
         aria-controls="season-calendar-panel"
-        aria-label={`${tx(SEASON_LABELS[current])} ${tx(`Year ${seasonYear(game)}`)}`}
+        aria-label={`${tx(seasonLabel(game))} ${tx(`Year ${seasonYear(game)}`)}`}
         title={tx("Open seasonal calendar")}
         onClick={() => (open ? close() : setOpen(true))}
       >
         <Icon size={17} aria-hidden="true" />
         <span>
-          <b>{tx(SEASON_LABELS[current])}</b>
+          <b>{tx(seasonLabel(game))}</b>
           <small>{tx(`Year ${seasonYear(game)}`)}</small>
         </span>
         <ChevronDown size={12} aria-hidden="true" />
@@ -191,7 +197,9 @@ export function SeasonCalendar({
             <CalendarDays size={16} />
             <span>
               {tx(
-                "One season per full round. Every faction plays before the season changes.",
+                doubled
+                  ? "Each season lasts two full rounds: early, then late. Every faction plays before the half-season changes."
+                  : "One season per full round. Every faction plays before the season changes.",
               )}
             </span>
           </p>
@@ -209,14 +217,18 @@ export function SeasonCalendar({
             </p>
           </div>
           <div className="season-calendar-rule">
-            <b>{tx(`Next: ${SEASON_LABELS[next]}`)}</b>
+            <b>
+              {tx("Next:")} {tx(seasonLabel(nextState))}
+            </b>
             <p>
               {tx(
-                next === "winter"
-                  ? "Cold, Alpine, Arctic, Glacial and Prairie seas freeze. Move ships to warmer waters before the next round."
-                  : next === "summer"
-                    ? "Seasonal sea ice melts; Glacial pack ice stays frozen. Bring land units ashore or arrange transport before the next round."
-                    : "Glacial seas freeze in Spring and Autumn; ice is patchy in other cold regions. Check each tile’s forecast before moving.",
+                doubled
+                  ? "Ice is checked at the next round boundary. Select a sea tile to see its freeze or thaw chance before moving."
+                  : next === "winter"
+                    ? "Cold, Alpine, Arctic, Glacial and Prairie seas freeze. Move ships to warmer waters before the next round."
+                    : next === "summer"
+                      ? "Seasonal sea ice melts; Glacial pack ice stays frozen. Bring land units ashore or arrange transport before the next round."
+                      : "Glacial seas freeze in Spring and Autumn; ice is patchy in other cold regions. Check each tile’s forecast before moving.",
               )}
             </p>
           </div>
@@ -263,6 +275,7 @@ export function TileSeasonForecast({
     Object.values(profile[season]).some((n) => !!n),
   );
   const weather = seasonWeather(tile, current);
+  const dynamicIce = game.calendar?.iceModel === 2;
   const coldSea =
     ["cold", "alpine", "arctic", "glacial", "prairie"].includes(
       tile.climate ?? "",
@@ -277,7 +290,7 @@ export function TileSeasonForecast({
       <div className="tile-season-heading">
         <span>
           <Icon size={16} />
-          <b>{tx(SEASON_LABELS[current])}</b>
+          <b>{tx(seasonLabel(game))}</b>
         </span>
         {anyYield && <YieldGoods stock={output} />}
       </div>
@@ -301,7 +314,7 @@ export function TileSeasonForecast({
                     {tx(SEASON_LABELS[season])}
                   </span>
                   {anyYield && <YieldGoods stock={profile[season]} empty="0" />}
-                  {coldSea && (
+                  {coldSea && !dynamicIce && (
                     <small className="season-surface-label">
                       {tx(
                         frozenInSeason(tile, season)
@@ -340,7 +353,8 @@ export function TileSeasonForecast({
           )}
         </p>
       )}
-      {tile.thawGrace === current && (
+      {coldSea && dynamicIce && <IceForecast game={game} tile={tile} />}
+      {tile.thawGrace === current && !dynamicIce && (
         <p className="season-note">
           {tx(
             "This saved campaign keeps this sea tile open until the next season. Future seasons follow the forecast.",
@@ -348,5 +362,61 @@ export function TileSeasonForecast({
         </p>
       )}
     </section>
+  );
+}
+
+function IceForecast({ game, tile }: { game: Game; tile: Hex }) {
+  const next = { calendar: game.calendar, round: game.round + 1 };
+  const [freeze, melt] = iceOdds(tile, seasonAt(next)!, seasonHalf(next));
+  const iced = tile.surface === "frozen";
+  const permanent = tile.resource === "ice" && tile.climate === "glacial";
+  return (
+    <div className="ice-forecast" aria-label={tx("Sea ice forecast")}>
+      <div className="ice-next-risk">
+        <Snowflake size={17} />
+        <span>
+          <b>{tx(seasonLabel(next))}</b>
+          <br />
+          {permanent ? (
+            tx("Permanent pack ice")
+          ) : (
+            <>
+              {Math.round((iced ? melt : freeze) * 100)}%{" "}
+              {tx(iced ? "chance to thaw" : "chance to freeze")}
+            </>
+          )}
+        </span>
+      </div>
+      {!permanent && (
+        <details>
+          <summary>{tx("Ice outlook for the next eight rounds")}</summary>
+          <div className="ice-outlook-grid">
+            {Array.from({ length: 8 }, (_, i) => {
+              const round = game.round + i + 1,
+                at = { calendar: game.calendar, round };
+              const risk = iceRisk(game, tile, round);
+              return (
+                <div key={round}>
+                  <span>{tx(seasonLabel(at))}</span>
+                  <b>
+                    {Math.round(risk * 100)}% {tx("frozen")}
+                  </b>
+                </div>
+              );
+            })}
+          </div>
+          <p>
+            {tx(
+              "Probabilities, not guaranteed surfaces. Each boundary resolves once; reloading does not reroll weather.",
+            )}
+          </p>
+        </details>
+      )}
+      <p>
+        {tx(
+          "Early and late use the same harvest calendar. Frozen water blocks scheduled harvests; missed dice rolls are not stored.",
+        )}
+      </p>
+    </div>
   );
 }

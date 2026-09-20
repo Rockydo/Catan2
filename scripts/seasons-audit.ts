@@ -114,8 +114,12 @@ function soak() {
       const home = ownTowns(s, player.id)[0];
       for (const good of GOODS) home.stock[good] = 12;
       for (const naval of [false, true]) {
-        const tile = s.vertices[home.vertex].tiles.find((id) =>
-          canOccupy(s.tiles[id], naval),
+        const tile = s.vertices[home.vertex].tiles.find(
+          (id) =>
+            canOccupy(s.tiles[id], naval) &&
+            Object.values(s.pieces).every(
+              (u) => u.tile !== id || u.owner === player.id,
+            ),
         );
         if (tile)
           unit(s, player.id, naval ? "transport" : "light", 1, tile, naval);
@@ -198,8 +202,12 @@ function stress() {
         ["convoy", 4, 5, true],
         ["fishing", 4, 5, true],
       ] as const) {
-        const tile = s.vertices[home.vertex].tiles.find((id) =>
-          canOccupy(s.tiles[id], naval),
+        const tile = s.vertices[home.vertex].tiles.find(
+          (id) =>
+            canOccupy(s.tiles[id], naval) &&
+            Object.values(s.pieces).every(
+              (u) => u.tile !== id || u.owner === player.id,
+            ),
         );
         if (tile)
           for (let i = 0; i < quantity; i++)
@@ -207,7 +215,7 @@ function stress() {
       }
     }
     const populated = s;
-    for (const round of [6, 7, 8, 9]) {
+    for (const round of [6, 8, 10, 12]) {
       s = structuredClone(populated);
       s.round = round;
       syncSeasonSurfaces(s);

@@ -298,7 +298,13 @@ describe("calendar, sea ice and save migration", () => {
     original.version = 8;
     original.checksum = hash(JSON.stringify(original.game)).toString(16);
     const loaded = deserialize(JSON.stringify(original));
-    expect(loaded.calendar).toEqual({ startRound: 24, iceModel: 1 });
+    expect(loaded.calendar).toEqual({
+      startRound: 24,
+      startSeason: "spring",
+      startYear: 1,
+      roundsPerSeason: 2,
+      iceModel: 2,
+    });
     expect(seasonAt(loaded)).toBeUndefined();
     expect(loaded.rng).toBe(s.rng);
     expect(loaded.towns).toEqual(s.towns);

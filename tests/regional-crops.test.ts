@@ -14,6 +14,7 @@ import type { Game } from "../src/game/types";
 
 function ryeWorld(climate: Climate = "temperate") {
   const s = newGame("retired-rye");
+  s.calendar!.startYear = 1;
   for (const id of Object.keys(s.climatePlan!)) s.climatePlan![id] = climate;
   for (const tile of Object.values(s.tiles)) {
     Object.assign(tile, { climate, resource: "grain", biome: "rye-fields" });
@@ -22,6 +23,7 @@ function ryeWorld(climate: Climate = "temperate") {
     delete tile.surface;
     delete tile.freezeRoll;
     delete tile.thawGrace;
+    delete tile.iceWeather;
   }
   return s;
 }
@@ -80,7 +82,7 @@ describe("Turnip fields replace Rye", () => {
         const restored = deserialize(oldSave(original, version));
         expect(restored).toEqual(expected);
         assertInvariants(restored);
-        expect(JSON.parse(serialize(restored)).version).toBe(12);
+        expect(JSON.parse(serialize(restored)).version).toBe(13);
         expect(deserialize(serialize(restored))).toEqual(restored);
       }
     },

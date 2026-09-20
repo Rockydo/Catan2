@@ -73,6 +73,7 @@ import {
   ready,
   power,
   bombardmentPower,
+  fleetDefenders,
   points,
   sumStock,
   moveTargets,
@@ -1810,7 +1811,7 @@ function HelpDialog({ onClose }: { onClose: () => void }) {
           <h3>{tx("2. Build an economy")}</h3>
           <p>
             {tx(
-              "Each roll produces for every faction from active seasonal tiles, including seven. A season lasts one full round. Check each tile's four-season forecast, then build, trade and command in any order. Cities, camps and workshops multiply the current harvest.",
+              "Each roll produces for every faction from active seasonal tiles, including seven. A season lasts two full rounds, early and late. Check each tile's four-season forecast, then build, trade and command in any order. Cities, camps and workshops multiply the current harvest.",
             )}
           </p>
         </article>
@@ -1945,9 +1946,9 @@ function AttackPreview({
   useLocale();
 
   const units = ids.map((id) => s.pieces[id]),
-    defenders = piecesAt(s, to, bombardment ? true : undefined).filter(
-      (u) => !friendly(s, u.owner, s.active),
-    ),
+    defenders = bombardment
+      ? fleetDefenders(s, to)
+      : piecesAt(s, to).filter((u) => !friendly(s, u.owner, s.active)),
     a = bombardment ? bombardmentPower(s, units) : power(s, units, to),
     d = power(s, defenders, to),
     diff = Math.abs(a - d);

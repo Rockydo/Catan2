@@ -86,8 +86,8 @@ Une carte extrême peut manquer d’emplacements initiaux légaux. Le jeu signal
 
 ### Calendrier
 
-Une manche complète correspond à une saison. Chaque faction survivante joue avant le changement de saison. L’ordre est Printemps, Été, Automne, Hiver ; quatre manches forment une année. Une nouvelle campagne commence dans une saison tirée au hasard, avec 25 % de chances pour chacune. Une même graine de monde donne la même saison initiale. La saison ne change jamais en cours de manche.
-Le calendrier à côté du numéro de manche indique la saison et l’année. Ouvrez-le pour consulter la saison suivante et prévisualiser les paysages. Un aperçu ne modifie que les images : déplacements, production et actions légales suivent toujours la saison en cours. Sélectionnez une tuile pour connaître son état exact, eau libre ou gelée, et sa production pour chacune des quatre saisons.
+Chaque saison dure deux manches complètes : début puis fin de Printemps, d’Été, d’Automne et d’Hiver. Chaque faction survivante joue avant le changement de demi-saison. Huit manches forment une année. Une nouvelle campagne commence au début d’une saison aléatoire, avec 25 % de chances pour chacune. La graine du monde fixe ce choix.
+Le calendrier indique la demi-saison et l’année. Début et fin utilisent les mêmes rendements et paysages. La glace peut évoluer à chaque nouvelle manche. L’aperçu des paysages ne change ni le temps ni les règles. Sélectionnez une tuile marine pour son état actuel, sa prochaine probabilité de gel ou de dégel et les prévisions sur huit manches.
 
 ### Dés et périodes de récolte
 
@@ -123,7 +123,7 @@ Le Pâturage d’alpagas a une base annuelle de 1 Laine et 1 Viande. La Laine do
 Bois, chasse, sel et argile varient selon le climat. Les Forêts froides conservent une petite production de Bois en Hiver. La chasse et l’abattage des climats chauds continuent durant les pluies d’Été. Jungle et boisements chauds produisent 1 à chaque saison ; la Prairie à gibier donne 2/1/3/2 Peaux du Printemps à l’Hiver. L’Argile tropicale donne 1 à chaque saison ; les Berges argileuses des climats Subtropical et Mousson donnent 2/1/2/3. Les Salines des climats Tropical, Subtropical, Savane et Mésoaméricain donnent 1/0/1/2 : l’évaporation s’arrête durant l’Été humide et culmine en Hiver sec. Les Salines désertiques et hyperarides donnent 1 à chaque saison. Les totaux saisonniers suivent la base actuelle ajustée au climat. Peaux et Huile d’une même tuile animale peuvent suivre des calendriers différents ; les deux ressources sont récoltées.
 La Forêt de nuages donne 1 Bois et 1 Peaux à chaque saison. La Carrière volcanique donne 2 Pierres à chaque saison. Le Bois riverain andin suit 1/1/2/0 ; les mines andines restent productives durant l’Hiver sec. Prairie suit le calendrier minier du climat Froid.
 Les mines et carrières des climats doux restent régulières. En climats Froid, Alpin, Arctique et Prairie, elles privilégient l’Été et s’arrêtent en Hiver ; les mines du climat Glacial donnent quatre fois leur base en Été seulement. Le Charbon reste disponible toute l’année dans ses climats de génération. Ces ressources régulières restent utiles lorsque les récoltes alimentaires sont incertaines.
-Avant l’ajustement lié au gel, Poisson et Morue des climats Tempéré, Froid, Arctique, Steppe, Océanique, Alpin, Prairie et Andin produisent 1×/2×/1×/0× leur base du Printemps à l’Hiver. Les Poissons, Morues et les deux ressources des Baleines du climat Glacial donnent quatre fois leur base en Été seulement. Le Poisson des climats chauds produit régulièrement toute l’année. Les Baleines des climats Froid, Alpin et Arctique suivent 1×/2×/1×/0× ; celles des climats chauds suivent 0×/1×/2×/1×. Appliquez le multiplicateur aux Peaux et à l’Huile. Les terrains de chasse aux Phoques produisent 1 Peaux et 1 Huile à chaque saison, y compris en Été. La table marine générale indique le calendrier de base en eau libre. Les prévisions de la tuile sélectionnée donnent ses rendements exacts, après report en Été de la production supprimée par le gel du Printemps ou de l’Automne.
+Avant l’ajustement lié au gel, Poisson et Morue des climats Tempéré, Froid, Arctique, Steppe, Océanique, Alpin, Prairie et Andin produisent 1×/2×/1×/0× leur base du Printemps à l’Hiver. Les Poissons, Morues et les deux ressources des Baleines du climat Glacial donnent quatre fois leur base en Été seulement. Le Poisson des climats chauds produit régulièrement toute l’année. Les Baleines des climats Froid, Alpin et Arctique suivent 1×/2×/1×/0× ; celles des climats chauds suivent 0×/1×/2×/1×. Appliquez le multiplicateur aux Peaux et à l’Huile. Les terrains de chasse aux Phoques produisent 1 Peaux et 1 Huile à chaque saison, y compris en Été. La table marine générale indique le calendrier de base en eau libre. Chaque tuile conserve sa concentration estivale locale existante. La glace réelle peut bloquer une récolte prévue, sans reporter de quantité supplémentaire en Été.
 
 ### Multiplicateurs de production
 
@@ -138,22 +138,22 @@ Les terres arctiques conservent leur neige au Printemps, se couvrent à nouveau 
 
 ### Gel et dégel
 
-Chaque hexagone de mer ordinaire a les probabilités de gel suivantes au Printemps/en Automne : Glacial 100 %/100 %, Arctique 70 %/50 %, Alpin 35 %/25 %, Froid 20 %/10 %, Prairie 10 %/10 %. Toutes les mers ordinaires de ces cinq climats gèlent en Hiver et s’ouvrent en Été. Cela comprend les zones de Poissons, de Morues et de Baleines : elles affichent de la glace et cessent toute production marine, y compris les deux ressources des Baleines. Le calendrier de chaque hexagone est fixé par la graine du monde et se répète chaque année, même après rechargement. Un hexagone gelé en Automne l’est toujours aussi au Printemps. Ces probabilités s’appliquent à chaque hexagone et ne garantissent pas une proportion régionale ; consultez les prévisions exactes avant de vous déplacer.
-La Banquise arctique reste gelée au Printemps, en Automne et en Hiver et s’ouvre en Été. La Banquise du climat Glacial est permanente et reste gelée aux quatre saisons. Les mers ordinaires des autres climats, y compris Andin, restent navigables.
-Une tuile de mer gelée ne produit aucune ressource marine. Pour chaque tuile et chaque ressource brute, le rendement du Printemps ou de l’Automne supprimé par le gel est ajouté à l’Été, sans modifier le total des quatre saisons. Par exemple, une tuile Poisson du nord dont le calendrier en eau libre est 1/2/1/0 produit 0/4/0/0 si elle gèle au Printemps et en Automne, ou 0/3/1/0 si elle ne gèle qu’au Printemps. Chaque récolte exige toujours un jet correspondant ; les jets manqués ne sont jamais compensés.
-Les troupes terrestres peuvent entrer sur l’eau gelée ; les navires sur l’eau libre. Une mer gelée bloque le passage de la couverture de pêche. Un port gelé perd son taux amélioré jusqu’au retour des eaux libres ; les échanges ordinaires avec la réserve restent possibles. Construire un navire ou lancer une expédition maritime exige de l’eau libre.
-La glace ne devient jamais une terre ferme pour construire. Les agglomérations et tours exigent une terre permanente ; les routes exigent un côté réellement terrestre. Les liaisons maritimes restent maritimes. Le gel et le dégel ne détruisent ni camps ni bâtiments existants. On peut construire un camp en Hiver selon les règles de connexion habituelles, mais il ne produit que pendant ses saisons productives.
+Au début de chaque demi-saison, chaque tuile marine révélée effectue un tirage selon son climat, la demi-saison qui commence et son état actuel. Une tuile libre utilise la probabilité de gel ; une tuile gelée utilise celle de dégel. Un échec conserve l’état actuel. Les tables ci-dessous donnent toutes les probabilités. La météo utilise des tirages distincts des dés et ne peut pas être relancée en rechargeant. Le gel peut varier d’une année à l’autre. Les nouvelles tuiles explorées reçoivent un état cohérent avec la période de l’année.
+Les eaux des climats Glacial, Arctique, Alpin, Froid et Prairie peuvent geler. Les autres restent libres. La glace saisonnière disparaît au plus tard en fin d’Été. Le terrain Banquise du climat Glacial est permanent et ne dégèle jamais. La Banquise arctique gèle davantage et dégèle plus lentement que l’eau ordinaire du même climat. Les paysages enneigés restent liés aux quatre saisons principales.
+Le calendrier des récoltes existant reste inchangé, y compris la concentration estivale propre aux tuiles marines. Début et fin de saison paient la même quantité sur un jet correspondant. La glace bloque toutes les ressources marines et leur transformation sur cette tuile. Cette météo ne conserve aucun jet manqué et n’ajoute aucun rattrapage. La couverture de pêche ne traverse pas la glace. Un port gelé perd son taux favorable ; les échanges ordinaires avec la réserve restent possibles. Construire un navire ou lancer une expédition maritime exige de l’eau libre.
+Les armées marchent sur la glace ; les navires utilisent l’eau libre. La glace ne permet jamais de construire sans terre ferme. Gel et dégel ne détruisent ni bâtiments, ni camps, ni unités. Une probabilité représente un risque, pas un état futur garanti.
 
 ### Unités surprises par le changement
 
-Un navire surpris par le gel reste pris dans les glaces. Il demeure sur place avec ses passagers et ne peut agir avant le dégel. Des troupes terrestres peuvent attaquer une flotte ennemie immobilisée sur cette glace selon les règles de combat ordinaires.
-Des troupes terrestres surprises par le dégel restent sur une plaque de glace à la dérive. Elles ne meurent pas et ne sont pas téléportées. Elles peuvent rejoindre une terre ou glace adjacente, ou embarquer dans un transport ami situé sur la même tuile ou une tuile adjacente, selon les capacités et règles d’activation habituelles. Elles ne peuvent pas marcher sur l’eau libre. Une flotte ennemie peut les attaquer normalement. Le repli n’est possible que vers un terrain légal pour le type d’unité.
-Sortez vos navires des régions qui gèlent et ramenez vos troupes à terre avant le changement. Une force sans issue ni secours peut rester bloquée jusqu’à une saison favorable.
+Un navire pris dans les glaces ne peut ni agir, ni se déplacer, ni se replier. Il combat au quart de sa puissance normale, arrondi au supérieur pour chaque navire. Le soutien des tours s’ajoute normalement. Ses points normaux déterminent toujours les pertes en unités entières.
+Les armées terrestres amies sur le même hexagone défendent la flotte à pleine puissance, y compris contre le bombardement côtier. Les armées alliées comptent aussi. Une armée voisine ne rejoint pas automatiquement le combat : amenez-la sur la glace pour escorter les navires. Les passagers embarqués restent à bord et ne forment pas une escorte terrestre. Au dégel, les navires retrouvent leur puissance et leur mobilité normales.
+Les troupes surprises par le dégel restent sur une plaque de glace à la dérive. Elles ne sont ni détruites ni téléportées. Elles peuvent rejoindre une terre ou glace adjacente autorisée, ou embarquer dans un transport ami selon les règles de capacité et d’activation. Elles ne marchent pas sur l’eau libre. Une flotte ennemie peut les attaquer. Le repli exige un terrain légal pour chaque survivant ; un navire encore gelé ne peut pas emprunter une sortie maritime.
 
 ### IA et anciennes sauvegardes
 
-L’IA évalue la production durable selon sa moyenne annuelle ; les pics saisonniers ne modifient donc pas artificiellement la puissance stratégique. Les échanges tiennent compte des récoltes à venir et des stocks ; l’expansion considère les cultures complémentaires. L’IA prévoit aussi des abris hivernaux et le secours des troupes à la dérive.
-Les campagnes existantes conservent leur calendrier, numéros, unités et stocks. Les anciens Champs de seigle et les Pommes de terre du prototype hors des régions américaines deviennent des Champs de navets. Le Maïs non américain devient de l’Avoine en climat frais ou du Sorgho en climat chaud. Le climat et la base annuelle sont conservés ; le calendrier actuel s’applique au chargement. Les bases actuelles des cultures ajustées au climat s’appliquent aux tuiles existantes au chargement ; les récoltes stockées ne sont pas recalculées. Les campagnes sauvegardées avant le gel partiel des mers conservent aussi leur surface marine actuelle jusqu’au prochain changement de saison. Ce délai reste valable après une nouvelle sauvegarde et un rechargement : charger la partie ne peut donc pas immobiliser soudainement une force. Les anciennes sauvegardes sans calendrier commencent au Printemps à la prochaine manche complète, sans modifier la manche en cours. Les nouvelles zones explorées peuvent contenir les nouvelles cultures et élevages. La production saisonnière s’applique ensuite aux anciennes et nouvelles tuiles.
+L’IA évalue la production durable selon sa base annuelle, tient compte des récoltes à venir pour les échanges et recherche des cultures complémentaires. Elle utilise les probabilités publiques du gel pour éviter les trajets dangereux et prévoir les secours. Elle ne consulte pas les futurs tirages météo. Les prévisions de surface sont probabilistes.
+La version 13 conserve la saison, l’année et les surfaces marines au chargement. La manche actuelle devient le début de saison ; la suivante en est la fin. Les nouveaux tirages météo commencent à la prochaine manche complète. Recharger ou explorer de nouvelles tuiles ne relance pas la météo existante. Stocks, unités, terrains, numéros et tirages sont conservés.
+Les sauvegardes antérieures aux saisons activent leur calendrier à la manche suivante. Les migrations prévues restent applicables aux anciens Champs pauvres, au Seigle et aux cultures américaines mal placées dans les prototypes. L’équilibrage actuel des cultures s’applique sans recalculer les stocks.
 
 ### Aperçu des paysages
 
@@ -434,7 +434,7 @@ Afficher les climats, dans les commandes de carte, colore les zones climatiques.
 
 ### Calendrier des saisons
 
-Cliquez sur la saison à côté du numéro de manche pour consulter l’année et les aperçus de paysages. Sélectionnez une tuile pour voir ses rendements exacts et son état, eau libre ou gelée, pour les quatre saisons. Les étiquettes de la carte montrent les quantités de la saison actuelle ; zéro signifie hors saison, pas une perte de ressource.
+Cliquez sur la saison à côté du numéro de manche pour consulter l’année et les aperçus de paysages. Sélectionnez une tuile pour voir son calendrier de récoltes et son état actuel. Les mers froides indiquent aussi les probabilités de gel et de dégel sur les huit prochaines manches. Les étiquettes de la carte montrent les quantités de la saison actuelle ; zéro signifie hors saison, pas une perte de ressource.
 
 ## Tables climatiques
 
@@ -990,7 +990,7 @@ Pics rocheux : aucune production et aucune entrée d’unité, y compris par rec
 
 ## Tables complètes des récoltes saisonnières
 
-Les mers ordinaires gèlent au Printemps/en Automne selon des probabilités fixes : Glacial 100 %/100 %, Arctique 70 %/50 %, Alpin 35 %/25 %, Froid 20 %/10 %, Prairie 10 %/10 %. Ces cinq climats gèlent en Hiver et s’ouvrent en Été ; les eaux andines ne gèlent jamais. La Banquise du climat Glacial reste gelée toute l’année ; la Banquise arctique s’ouvre en Été. Les récoltes marines du climat Glacial ont lieu seulement en Été. Les autres lignes marines indiquent la base en eau libre : le rendement bloqué par le gel printanier ou automnal est reporté en Été sans changer le total annuel actuel. Sélectionnez une tuile pour connaître ses états et rendements exacts.
+Chaque saison dure deux manches complètes, début et fin, avec le même rendement prévu par jet correspondant. Les lignes marines indiquent le calendrier existant avant blocage par la glace réelle ; chaque tuile conserve sa concentration estivale existante. Aucune récolte manquée n’est compensée. La glace évolue indépendamment à chaque demi-saison selon les tables ci-dessous. Sélectionnez une tuile pour connaître son état actuel, ses rendements et ses risques météorologiques.
 
 ### Tempéré
 
@@ -1287,6 +1287,88 @@ Les mers ordinaires gèlent au Printemps/en Automne selon des probabilités fixe
 | Collines de charbon  | 1 Charbon        | 1 Charbon         | 1 Charbon         | 1 Charbon         |
 | Zone de pêche        | 1 Poissons       | 1 Poissons        | 1 Poissons        | 1 Poissons        |
 | Zone de Baleines     | 0                | 1 Peaux + 1 Huile | 2 Peaux + 2 Huile | 1 Peaux + 1 Huile |
+
+## Probabilités de gel et de dégel par demi-saison
+
+Chaque tuile marine effectue un tirage par manche complète. L’eau libre utilise la probabilité de gel ; la glace utilise celle de dégel. Sinon, l’état reste inchangé. Les résultats sont sauvegardés et peuvent varier d’une année à l’autre. Les autres climats restent libres toute l’année. La Banquise glaciale est permanente ; les mers glaciales ordinaires dégèlent au plus tard en fin d’été. La Banquise arctique possède sa propre table de glace persistante.
+
+### Glacial
+
+| Demi-saison atteinte | Eau libre : gel | Eau gelée : dégel |
+| -------------------- | --------------- | ----------------- |
+| Début de printemps   | 25%             | 5%                |
+| Fin de printemps     | 10%             | 15%               |
+| Début d’été          | 0%              | 70%               |
+| Fin d’été            | 0%              | 100%              |
+| Début d’automne      | 60%             | 0%                |
+| Fin d’automne        | 90%             | 0%                |
+| Début d’hiver        | 100%            | 0%                |
+| Fin d’hiver          | 100%            | 0%                |
+
+### Arctique
+
+| Demi-saison atteinte | Eau libre : gel | Eau gelée : dégel |
+| -------------------- | --------------- | ----------------- |
+| Début de printemps   | 0%              | 25%               |
+| Fin de printemps     | 0%              | 70%               |
+| Début d’été          | 0%              | 100%              |
+| Fin d’été            | 0%              | 100%              |
+| Début d’automne      | 25%             | 0%                |
+| Fin d’automne        | 55%             | 0%                |
+| Début d’hiver        | 90%             | 0%                |
+| Fin d’hiver          | 100%            | 0%                |
+
+### Arctique : Banquise
+
+| Demi-saison atteinte | Eau libre : gel | Eau gelée : dégel |
+| -------------------- | --------------- | ----------------- |
+| Début de printemps   | 0%              | 10%               |
+| Fin de printemps     | 0%              | 30%               |
+| Début d’été          | 0%              | 75%               |
+| Fin d’été            | 0%              | 100%              |
+| Début d’automne      | 70%             | 0%                |
+| Fin d’automne        | 100%            | 0%                |
+| Début d’hiver        | 100%            | 0%                |
+| Fin d’hiver          | 100%            | 0%                |
+
+### Alpin
+
+| Demi-saison atteinte | Eau libre : gel | Eau gelée : dégel |
+| -------------------- | --------------- | ----------------- |
+| Début de printemps   | 0%              | 60%               |
+| Fin de printemps     | 0%              | 80%               |
+| Début d’été          | 0%              | 100%              |
+| Fin d’été            | 0%              | 100%              |
+| Début d’automne      | 10%             | 0%                |
+| Fin d’automne        | 25%             | 0%                |
+| Début d’hiver        | 75%             | 0%                |
+| Fin d’hiver          | 100%            | 0%                |
+
+### Froid
+
+| Demi-saison atteinte | Eau libre : gel | Eau gelée : dégel |
+| -------------------- | --------------- | ----------------- |
+| Début de printemps   | 0%              | 70%               |
+| Fin de printemps     | 0%              | 90%               |
+| Début d’été          | 0%              | 100%              |
+| Fin d’été            | 0%              | 100%              |
+| Début d’automne      | 5%              | 0%                |
+| Fin d’automne        | 15%             | 0%                |
+| Début d’hiver        | 60%             | 0%                |
+| Fin d’hiver          | 100%            | 0%                |
+
+### Prairie
+
+| Demi-saison atteinte | Eau libre : gel | Eau gelée : dégel |
+| -------------------- | --------------- | ----------------- |
+| Début de printemps   | 0%              | 80%               |
+| Fin de printemps     | 0%              | 95%               |
+| Début d’été          | 0%              | 100%              |
+| Fin d’été            | 0%              | 100%              |
+| Début d’automne      | 5%              | 0%                |
+| Fin d’automne        | 10%             | 0%                |
+| Début d’hiver        | 45%             | 0%                |
+| Fin d’hiver          | 90%             | 0%                |
 
 ## Tous les coûts
 

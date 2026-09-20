@@ -3,7 +3,7 @@ import { shipStats } from "./content";
 import { canApplyCommand } from "./engine";
 import {
   SEASONS,
-  frozenInSeason,
+  iceRisk,
   seasonAt,
   seasonalProfile,
   type Season,
@@ -23,7 +23,7 @@ import {
 } from "./selectors";
 
 type Outputs = Record<number, Stock>;
-type SeasonalCache = Map<Season, Outputs>;
+type SeasonalCache = Map<string, Outputs>;
 let planningCache: WeakMap<Game, SeasonalCache> | undefined;
 let planningSources: { source: Game; outputs: SeasonalCache }[] | undefined;
 let berthCache: WeakMap<Game["pieces"], Map<string, number>> | undefined;
@@ -49,7 +49,7 @@ export function withSeasonalPlanning<T>(run: () => T): T {
   }
 }
 
-function outputsIn(s: Game, season: Season): Outputs {
+function outputsIn(s: Game, season: Season, round?: number): Outputs {
   let cache = planningCache?.get(s);
   if (!cache) {
     // Counterparty trade planning changes active/phase only. Share the same
@@ -71,16 +71,44 @@ function outputsIn(s: Game, season: Season): Outputs {
     }
     planningCache?.set(s, cache);
   }
-  const found = cache.get(season);
+  const key = `${season}/${round ?? "calendar"}`;
+  const found = cache.get(key);
   if (found) return found;
   const result: Outputs = Object.fromEntries(s.players.map((p) => [p.id, {}]));
-  for (const source of productionSources(s, season)) {
+  const forecastWeather =
+    s.calendar?.iceModel === 2 && round !== undefined && round > s.round;
+  const view: Game = forecastWeather
+    ? Object.assign(Object.create(s), {
+        round: round!,
+        tiles: Object.fromEntries(
+          Object.entries(s.tiles).map(([id, tile]) => [
+            id,
+            ["water", "ice"].includes(tile.resource)
+              ? {
+                  ...tile,
+                  surface: "open" as const,
+                  iceWeather: { round: round!, season, half: "early" as const },
+                }
+              : tile,
+          ]),
+        ),
+      })
+    : s;
+  for (const source of productionSources(
+    view,
+    round === s.round ? "current" : season,
+  )) {
     const stock = result[source.owner];
     stock[source.good] =
       (stock[source.good] ?? 0) +
-      source.amount * probability(s.tiles[source.tile].number);
+      source.amount *
+        probability(s.tiles[source.tile].number) *
+        (forecastWeather &&
+        ["water", "ice"].includes(s.tiles[source.tile].resource)
+          ? 1 - iceRisk(s, s.tiles[source.tile], round)
+          : 1);
   }
-  cache.set(season, result);
+  cache.set(key, result);
   return result;
 }
 
@@ -106,15 +134,15 @@ export function projectedIncomes(s: Game, rolls = 6): Outputs {
     if (active <= old) round++;
   };
   if (s.phase !== "roll") advance();
-  const seasonalRolls = new Map<Season | undefined, number>();
+  const seasonalRolls = new Map<number, number>();
   for (let i = 0; i < count; i++) {
-    const season = seasonAt({ calendar: s.calendar, round });
-    seasonalRolls.set(season, (seasonalRolls.get(season) ?? 0) + 1);
+    seasonalRolls.set(round, (seasonalRolls.get(round) ?? 0) + 1);
     advance();
   }
-  for (const [season, n] of seasonalRolls) {
+  for (const [round, n] of seasonalRolls) {
+    const season = seasonAt({ calendar: s.calendar, round });
     const forecast = season
-      ? outputsIn(s, season)
+      ? outputsIn(s, season, round)
       : Object.fromEntries(s.players.map((p) => [p.id, income(s, p.id)]));
     for (const player of s.players)
       for (const [good, amount] of Object.entries(forecast[player.id]))
@@ -163,14 +191,12 @@ export function seasonalDiversityBonus(
   );
 }
 
-function safeAfter(
-  tile: Game["tiles"][string],
-  naval: boolean,
-  season: Season,
-) {
-  const frozen = frozenInSeason(tile, season);
-  const marine = tile.resource === "water" || tile.resource === "ice";
-  return naval ? marine && !frozen : marine ? frozen : canOccupy(tile, false);
+function safeAfter(s: Game, tile: Game["tiles"][string], naval: boolean) {
+  if (!tile) return false;
+  if (!["water", "ice"].includes(tile.resource))
+    return !naval && canOccupy(tile, false);
+  const frozen = iceRisk(s, tile);
+  return naval ? frozen < 0.15 : frozen > 0.85;
 }
 
 export function seasonalDestinationSafe(
@@ -178,11 +204,11 @@ export function seasonalDestinationSafe(
   tileId: string,
   naval: boolean,
 ): boolean {
-  const tile = s.tiles[tileId],
-    next = seasonAt({ calendar: s.calendar, round: s.round + 1 });
-  if (!tile || !next) return !!tile;
-  if (!["water", "ice"].includes(tile.resource)) return true;
-  return naval ? !frozenInSeason(tile, next) : frozenInSeason(tile, next);
+  const tile = s.tiles[tileId];
+  if (!tile) return false;
+  if (!s.calendar || !seasonAt({ calendar: s.calendar, round: s.round + 1 }))
+    return true;
+  return safeAfter(s, tile, naval);
 }
 
 function freeBerths(s: Game, ship: Piece): number {
@@ -292,10 +318,10 @@ export function seasonalEvacuation(s: Game): Command | undefined {
   for (const unit of ownPieces(s)) {
     if (!ready(s, unit) || speed(unit) + unit.bonus - unit.moved < 1) continue;
     const tile = s.tiles[unit.tile];
+    const risk = iceRisk(s, tile);
     const danger = unit.naval
-      ? frozenInSeason(tile, next)
-      : (tile.resource === "ice" || tile.resource === "water") &&
-        !frozenInSeason(tile, next);
+      ? risk >= 0.25
+      : (tile.resource === "ice" || tile.resource === "water") && risk <= 0.75;
     if (!danger && unit.seasonStatus !== "adrift") continue;
     const key = `${unit.naval}/${unit.tile}`;
     groups.set(key, [...(groups.get(key) ?? []), unit]);
@@ -311,7 +337,7 @@ export function seasonalEvacuation(s: Game): Command | undefined {
     for (let i = 0; i < queue.length; i++) {
       const at = queue[i],
         path = paths.get(at)!;
-      if (path.length && safeAfter(s.tiles[at], first.naval, next)) {
+      if (path.length && safeAfter(s, s.tiles[at], first.naval)) {
         best = path;
         break;
       }

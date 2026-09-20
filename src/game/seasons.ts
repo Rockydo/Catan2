@@ -4,9 +4,10 @@ import { randomAt } from "./world";
 
 export const SEASONS = ["spring", "summer", "autumn", "winter"] as const;
 export type Season = (typeof SEASONS)[number];
+export type SeasonHalf = "early" | "late";
 type Year = [number, number, number, number];
 
-/** A shared local roll keeps autumn's cold spots within spring's ice cover. */
+/** Legacy frost thresholds, retained for existing local harvest schedules. */
 export const SHOULDER_ICE_CHANCE = {
   glacial: { spring: 1, autumn: 1 },
   arctic: { spring: 0.7, autumn: 0.5 },
@@ -20,12 +21,183 @@ export function seasonAt(
 ): Season | undefined {
   if (!s.calendar || s.round < s.calendar.startRound) return undefined;
   const offset = SEASONS.indexOf(s.calendar.startSeason ?? "spring");
-  return SEASONS[(s.round - s.calendar.startRound + offset) % 4];
+  return SEASONS[
+    (Math.floor(
+      (s.round - s.calendar.startRound) / (s.calendar.roundsPerSeason ?? 1),
+    ) +
+      offset) %
+      4
+  ];
+}
+export function seasonHalf(s: Pick<Game, "calendar" | "round">): SeasonHalf {
+  return s.calendar?.roundsPerSeason === 2 &&
+    (s.round - s.calendar.startRound) % 2 === 1
+    ? "late"
+    : "early";
 }
 export function seasonYear(s: Pick<Game, "calendar" | "round">): number {
   return s.calendar
-    ? Math.max(1, Math.floor((s.round - s.calendar.startRound) / 4) + 1)
+    ? (s.calendar.startYear ?? 1) +
+        Math.max(
+          0,
+          Math.floor(
+            (s.round - s.calendar.startRound) /
+              (4 * (s.calendar.roundsPerSeason ?? 1)),
+          ),
+        )
     : 1;
+}
+export function seasonLabel(s: Pick<Game, "calendar" | "round">): string {
+  const season = seasonAt(s);
+  if (!season) return "Spring next round";
+  const name = season[0].toUpperCase() + season.slice(1);
+  return s.calendar?.roundsPerSeason === 2
+    ? `${seasonHalf(s) === "early" ? "Early" : "Late"} ${name}`
+    : name;
+}
+
+type IceOdds = readonly [freeze: number, melt: number];
+type IceYear = readonly [
+  IceOdds,
+  IceOdds,
+  IceOdds,
+  IceOdds,
+  IceOdds,
+  IceOdds,
+  IceOdds,
+  IceOdds,
+];
+/** On entry to each half-season: chance for open water to freeze / ice to melt.
+ * Summer guarantees a full thaw by its late half, except permanent pack ice. */
+export const ICE_TRANSITIONS = {
+  glacial: [
+    [0.25, 0.05],
+    [0.1, 0.15],
+    [0, 0.7],
+    [0, 1],
+    [0.6, 0],
+    [0.9, 0],
+    [1, 0],
+    [1, 0],
+  ],
+  arctic: [
+    [0, 0.25],
+    [0, 0.7],
+    [0, 1],
+    [0, 1],
+    [0.25, 0],
+    [0.55, 0],
+    [0.9, 0],
+    [1, 0],
+  ],
+  alpine: [
+    [0, 0.6],
+    [0, 0.8],
+    [0, 1],
+    [0, 1],
+    [0.1, 0],
+    [0.25, 0],
+    [0.75, 0],
+    [1, 0],
+  ],
+  cold: [
+    [0, 0.7],
+    [0, 0.9],
+    [0, 1],
+    [0, 1],
+    [0.05, 0],
+    [0.15, 0],
+    [0.6, 0],
+    [1, 0],
+  ],
+  prairie: [
+    [0, 0.8],
+    [0, 0.95],
+    [0, 1],
+    [0, 1],
+    [0.05, 0],
+    [0.1, 0],
+    [0.45, 0],
+    [0.9, 0],
+  ],
+} as const satisfies Record<string, IceYear>;
+const ARCTIC_PACK: IceYear = [
+  [0, 0.1],
+  [0, 0.3],
+  [0, 0.75],
+  [0, 1],
+  [0.7, 0],
+  [1, 0],
+  [1, 0],
+  [1, 0],
+];
+export function iceOdds(tile: Hex, season: Season, half: SeasonHalf): IceOdds {
+  if (tile.resource === "ice" && tile.climate === "glacial") return [1, 0];
+  const table =
+    tile.resource === "ice"
+      ? ARCTIC_PACK
+      : ICE_TRANSITIONS[tile.climate as keyof typeof ICE_TRANSITIONS];
+  return (
+    table?.[SEASONS.indexOf(season) * 2 + Number(half === "late")] ?? [0, 1]
+  );
+}
+/** Public risk only. AI forecasts never inspect the weather seed or future draws. */
+export function iceRisk(
+  s: Pick<Game, "calendar" | "round">,
+  tile: Hex,
+  round = s.round + 1,
+): number {
+  if (!["water", "ice"].includes(tile.resource)) return 0;
+  if (s.calendar?.iceModel !== 2)
+    return Number(frozenInSeason(tile, seasonAt({ ...s, round })));
+  let risk = Number(tile.surface === "frozen");
+  for (let r = s.round + 1; r <= round; r++) {
+    const at = { calendar: s.calendar, round: r },
+      season = seasonAt(at);
+    if (!season) continue;
+    const [freeze, melt] = iceOdds(tile, season, seasonHalf(at));
+    risk = risk * (1 - melt) + (1 - risk) * freeze;
+  }
+  return risk;
+}
+function resolveWeather(s: Game, tile: Hex) {
+  const current = seasonAt(s);
+  if (!current) return;
+  if (tile.iceWeather?.round === s.round) return;
+  // Reconstruct newly discovered tiles from the last guaranteed Summer reset.
+  // This is at most eight cheap hash draws, even in a very old campaign.
+  let first = tile.iceWeather ? tile.iceWeather.round + 1 : s.round - 7;
+  first = Math.max(first, s.round - 7, s.calendar!.startRound);
+  if (!tile.iceWeather || tile.iceWeather.round < s.round - 8) {
+    tile.surface = "open";
+    for (let r = s.round; r >= first; r--) {
+      const at = { calendar: s.calendar, round: r };
+      if (seasonAt(at) === "summer" && seasonHalf(at) === "late") {
+        first = r;
+        break;
+      }
+    }
+    // Initial Winter/Spring starts inherit winter ice before local thaw rolls.
+    if (
+      !["summer", "autumn"].includes(
+        seasonAt({ calendar: s.calendar, round: first })!,
+      )
+    )
+      tile.surface =
+        tile.resource === "ice" || tile.climate! in ICE_TRANSITIONS
+          ? "frozen"
+          : "open";
+  }
+  for (let round = first; round <= s.round; round++) {
+    const at = { calendar: s.calendar, round },
+      season = seasonAt(at)!;
+    const [freeze, melt] = iceOdds(tile, season, seasonHalf(at));
+    const iced = tile.surface === "frozen";
+    const chance = iced ? melt : freeze;
+    if (randomAt(s.seed, tile.id, `ice-weather-${round}`) < chance)
+      tile.surface = iced ? "open" : "frozen";
+  }
+  tile.iceWeather = { round: s.round, season: current, half: seasonHalf(s) };
 }
 
 /** Exact integer schedules. Each resource independently sums to four times
@@ -146,11 +318,16 @@ export function seasonalProfile(
     autumn: {},
     winter: {},
   };
+  // Keep the established per-tile harvest calendar separate from weather.
+  // Early/late ice changes access, never the amounts printed for a season.
+  const harvestTile = tile.iceWeather
+    ? { ...tile, iceWeather: undefined }
+    : tile;
   for (const [raw, base] of Object.entries(tileYield(tile, owner))) {
     const amounts = schedule(tile, raw as Raw, base!);
     if (tile.resource === "water")
       for (const i of [0, 2] as const)
-        if (frozenInSeason(tile, SEASONS[i])) {
+        if (frozenInSeason(harvestTile, SEASONS[i])) {
           amounts[1] += amounts[i];
           amounts[i] = 0;
         }
@@ -165,6 +342,8 @@ export function seasonalYield(
   owner: number | undefined,
   season?: Season,
 ): Stock {
+  if (season && tile.iceWeather?.season === season && tile.surface === "frozen")
+    return {};
   return season ? seasonalProfile(tile, owner)[season] : tileYield(tile, owner);
 }
 /** Woods workshops keep their chosen product, independently of the raw choice. */
@@ -182,6 +361,8 @@ export function seasonalWorkshopBase(
 }
 
 export function frozenInSeason(tile: Hex, season?: Season): boolean {
+  if (season && tile.iceWeather?.season === season)
+    return tile.surface === "frozen";
   if (!season) return tile.resource === "ice";
   if (tile.resource === "ice")
     return tile.climate === "glacial" || season !== "summer";
@@ -275,6 +456,19 @@ export function syncSeasonSurfaces(s: Game): void {
   const season = seasonAt(s);
   for (const tile of Object.values(s.tiles)) {
     if (tile.resource !== "water" && tile.resource !== "ice") continue;
+    if (s.calendar.iceModel === 2) {
+      if (
+        tile.resource === "water" &&
+        tile.climate &&
+        tile.climate in SHOULDER_ICE_CHANCE
+      )
+        tile.freezeRoll ??= randomAt(s.seed, tile.id, "season-freeze");
+      if (season && tile.thawGrace && tile.thawGrace !== season)
+        delete tile.thawGrace;
+      resolveWeather(s, tile);
+      continue;
+    }
+    delete tile.iceWeather;
     if (
       s.calendar.iceModel === 1 &&
       tile.resource === "water" &&

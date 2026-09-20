@@ -1,4 +1,9 @@
-import { SEASONS, seasonalProfile } from "../src/game/seasons";
+import {
+  SEASONS,
+  seasonalProfile,
+  ICE_TRANSITIONS,
+  iceOdds,
+} from "../src/game/seasons";
 import type { Hex } from "../src/game/types";
 import {
   CLIMATES,
@@ -117,8 +122,8 @@ for (const locale of ["en", "fr"] as const) {
   lines.push(
     `## ${text("Complete seasonal harvest tables", "Tables complètes des récoltes saisonnières")}`,
     text(
-      "Ordinary seas freeze in Spring/Autumn with fixed chances: Glacial 100%/100%, Arctic 70%/50%, Alpine 35%/25%, Cold 20%/10%, Prairie 10%/10%. These five climates freeze in Winter and open in Summer; Andean water never freezes. Glacial Frozen sea terrain stays frozen all year; Arctic Frozen sea opens in Summer. Glacial marine harvests occur only in Summer. Other marine rows show the open-water baseline: frozen Spring or Autumn yield moves into Summer without changing the current annual total. Select a tile for exact surfaces and yields.",
-      "Les mers ordinaires gèlent au Printemps/en Automne selon des probabilités fixes : Glacial 100 %/100 %, Arctique 70 %/50 %, Alpin 35 %/25 %, Froid 20 %/10 %, Prairie 10 %/10 %. Ces cinq climats gèlent en Hiver et s’ouvrent en Été ; les eaux andines ne gèlent jamais. La Banquise du climat Glacial reste gelée toute l’année ; la Banquise arctique s’ouvre en Été. Les récoltes marines du climat Glacial ont lieu seulement en Été. Les autres lignes marines indiquent la base en eau libre : le rendement bloqué par le gel printanier ou automnal est reporté en Été sans changer le total annuel actuel. Sélectionnez une tuile pour connaître ses états et rendements exacts.",
+      "Each season lasts two full rounds, early and late, with the same scheduled yield per matching roll in both halves. Marine rows show the established harvest calendar before actual ice blocks production; individual tiles retain their existing Summer concentration. No missed harvest is repaid. Physical ice changes independently at each half-season boundary using the tables below. Select a tile for its current surface, harvest values and next weather risks.",
+      "Chaque saison dure deux manches complètes, début et fin, avec le même rendement prévu par jet correspondant. Les lignes marines indiquent le calendrier existant avant blocage par la glace réelle ; chaque tuile conserve sa concentration estivale existante. Aucune récolte manquée n’est compensée. La glace évolue indépendamment à chaque demi-saison selon les tables ci-dessous. Sélectionnez une tuile pour connaître son état actuel, ses rendements et ses risques météorologiques.",
     ),
   );
   for (const climate of CLIMATES) {
@@ -154,6 +159,36 @@ for (const locale of ["en", "fr"] as const) {
           `| ${tx(BIOME_INFO[biome].name)}${choice ? ` (${tx(GOOD_INFO[choice].name)})` : ""} | ${SEASONS.map((season) => cost(profile[season]) || "0").join(" | ")} |`,
         );
       }
+  }
+  lines.push(
+    `## ${text("Half-season freeze and thaw chances", "Probabilités de gel et de dégel par demi-saison")}`,
+    text(
+      "Each sea tile checks once per full round. Open water uses the freeze chance; ice uses the thaw chance. Otherwise its surface stays unchanged. Results are saved and can differ between years. Other climates stay open year-round. Glacial Frozen sea is permanent pack ice; ordinary Glacial seas thaw by Late Summer. Arctic Frozen sea has its own heavier-ice table.",
+      "Chaque tuile marine effectue un tirage par manche complète. L’eau libre utilise la probabilité de gel ; la glace utilise celle de dégel. Sinon, l’état reste inchangé. Les résultats sont sauvegardés et peuvent varier d’une année à l’autre. Les autres climats restent libres toute l’année. La Banquise glaciale est permanente ; les mers glaciales ordinaires dégèlent au plus tard en fin d’été. La Banquise arctique possède sa propre table de glace persistante.",
+    ),
+  );
+  for (const climate of Object.keys(ICE_TRANSITIONS) as Array<
+    keyof typeof ICE_TRANSITIONS
+  >) {
+    for (const pack of climate === "arctic" ? [false, true] : [false]) {
+      lines.push(
+        `### ${tx(CLIMATE_INFO[climate].name)}${pack ? text(" Frozen sea", " : Banquise") : ""}`,
+        `| ${text("Half-season entered | Open water: freezes | Frozen water: thaws", "Demi-saison atteinte | Eau libre : gel | Eau gelée : dégel")} |`,
+        "|---|---|---|",
+      );
+      for (const season of SEASONS)
+        for (const half of ["early", "late"] as const) {
+          const odds = iceOdds(
+            { climate, resource: pack ? "ice" : "water" } as Hex,
+            season,
+            half,
+          );
+          const name = `${half === "early" ? "Early" : "Late"} ${season[0].toUpperCase() + season.slice(1)}`;
+          lines.push(
+            `| ${tx(name)} | ${Math.round(odds[0] * 100)}% | ${Math.round(odds[1] * 100)}% |`,
+          );
+        }
+    }
   }
   lines.push(
     `## ${text("All costs", "Tous les coûts")}`,

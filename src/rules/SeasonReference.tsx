@@ -1,3 +1,4 @@
+import { IceReference } from "./IceReference";
 import { useState } from "react";
 import {
   CLIMATES,
@@ -10,7 +11,6 @@ import {
   SEASONS,
   seasonalProfile,
   seasonWeather,
-  SHOULDER_ICE_CHANCE,
   type Season,
 } from "../game/seasons";
 import { GOOD_INFO } from "../game/content";
@@ -51,8 +51,6 @@ export function SeasonReference({
   const l = (en: string, fr: string) => (locale === "fr" ? fr : en);
   const [climate, setClimate] = useState<Climate>(initial);
   const [season, setSeason] = useState<Season>("summer");
-  const iceChances =
-    SHOULDER_ICE_CHANCE[climate as keyof typeof SHOULDER_ICE_CHANCE];
   const biomes = [
     ...new Set<Biome>([
       ...CLIMATE_INFO[climate].terrain.map(([biome]) => biome),
@@ -112,19 +110,13 @@ export function SeasonReference({
           </select>
         </label>
       </div>
-      {iceChances && (
-        <p className="season-note">
-          {climate === "glacial"
-            ? l(
-                "Ordinary Glacial sea freezes in Spring, Autumn and Winter and opens in Summer. Its Fish, Cod and Whale harvests occur only in Summer. Glacial Frozen sea terrain stays frozen all year and produces nothing. Land stays snowy in every season.",
-                "La mer ordinaire du climat Glacial gèle au Printemps, en Automne et en Hiver et s’ouvre en Été. Poissons, Morues et Baleines produisent seulement en Été. Le terrain Banquise du climat Glacial reste gelé toute l’année et ne produit rien. Les terres restent enneigées à chaque saison.",
-              )
-            : l(
-                `Ordinary sea tiles freeze with a ${iceChances.spring * 100}% Spring chance and ${iceChances.autumn * 100}% Autumn chance. Each tile keeps its pattern. These sea rows show the open-water baseline; a frozen Spring or Autumn harvest moves into Summer. Select a map tile for its exact forecast.`,
-                `Les tuiles marines ordinaires ont ${iceChances.spring * 100} % de chances de geler au Printemps et ${iceChances.autumn * 100} % en Automne. Chaque tuile conserve ce rythme. Ces lignes marines indiquent la production sans gel printanier ou automnal ; une récolte bloquée par ce gel est reportée en Été. Sélectionnez une tuile de la carte pour ses prévisions exactes.`,
-              )}
-        </p>
-      )}
+      <p className="season-note">
+        {l(
+          "Early and late halves use the same harvest values and landscape art. Existing local marine harvest calendars are unchanged. Actual ice can block a scheduled harvest; new weather does not bank missed rolls or add catch-up production.",
+          "Le début et la fin de saison utilisent les mêmes récoltes et paysages. Les calendriers marins locaux restent inchangés. La glace peut bloquer une récolte prévue ; la météo ne conserve aucun jet manqué et n’ajoute aucun rattrapage.",
+        )}
+      </p>
+      <IceReference climate={climate} />
       <div className="season-reference-scroll">
         <table>
           <thead>

@@ -112,6 +112,7 @@ import {
   points,
   power,
   bombardmentPower,
+  fleetDefenders,
   bombardmentTargets,
   ready,
   fresh,
@@ -2231,9 +2232,7 @@ function chooseMilitary(s: Game): Command {
         ),
         ids = artillery.map((u) => u.id);
       return bombardmentTargets(s, ids).flatMap((to) => {
-        const fleet = piecesAt(s, to, true).filter(
-            (u) => !friendly(s, u.owner, s.active),
-          ),
+        const fleet = fleetDefenders(s, to, s.active),
           attack = bombardmentPower(s, artillery),
           defense = power(s, fleet, to);
         return warTarget(s, fleet[0].owner) && attack > defense
@@ -2603,9 +2602,7 @@ function chooseMilitary(s: Game): Command {
           ),
         ];
         const firingPositions = targets.flatMap((water) => {
-          const fleet = piecesAt(s, water, true).filter(
-            (u) => !friendly(s, u.owner, s.active),
-          );
+          const fleet = fleetDefenders(s, water, s.active);
           return neighbors(water).filter(
             (shore) =>
               s.tiles[shore] &&

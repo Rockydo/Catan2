@@ -183,7 +183,8 @@ export function RollExperience({
         <div>
           <span className="eyebrow">
             {tx("ROUND ")}
-            {tx(r.round)} · {r.season && <>{tx(SEASON_LABELS[r.season])} · </>}
+            {tx(r.round)} ·{" "}
+            {r.season && <>{tx(r.seasonLabel ?? SEASON_LABELS[r.season])} · </>}
             {tx(rolling ? "CASTING THE DICE" : "HARVEST REPORT")}
           </span>
           <h2>
