@@ -130,6 +130,10 @@ import {
 } from "./selectors";
 import { canApplyCommand } from "./engine";
 import { planningPath as pathTo } from "./ai-paths";
+import {
+  campaignTransportAction,
+  campaignTransportDemand,
+} from "./ai-transport";
 
 interface Project {
   action: Command;
@@ -916,8 +920,16 @@ export function economyProjects(s: Game): Project[] {
             (n, u) => n + shipStats(u.kind as ShipClass, u.tier).capacity,
             0,
           );
-        const overseas = invasionCoasts(s, tiles[0]).some(
+        const shortcutDemand = campaignTransportDemand(s, tile);
+        const invasion = invasionCoasts(s, tiles[0]).some(
           (w) => pathTo(s, tile, w, true, s.active) !== null,
+        );
+        const overseas = shortcutDemand > 0 || invasion;
+        // A shortcut for one detachment does not require berths for every
+        // soldier elsewhere on the connected continent.
+        const passengerDemand = Math.max(
+          shortcutDemand,
+          invasion ? localLand.length : 0,
         );
         const stranded = localLand.filter((u) => !hasLandObjective(s, u.tile));
         const threats = Object.values(s.pieces).filter(
@@ -997,10 +1009,10 @@ export function economyProjects(s: Game): Project[] {
                 ? Math.max(
                     0,
                     Math.min(
-                      localLand.length,
+                      passengerDemand,
                       Math.max(
                         4,
-                        Math.ceil(localLand.length * (0.5 + resistance * 0.35)),
+                        Math.ceil(passengerDemand * (0.5 + resistance * 0.35)),
                       ),
                     ) - berths,
                   )
@@ -1009,7 +1021,7 @@ export function economyProjects(s: Game): Project[] {
             const urgent =
               need > 0 &&
               (info.capacity
-                ? overseas && stranded.length > berths
+                ? overseas && Math.max(stranded.length, shortcutDemand) > berths
                 : enemyPower > escortPower ||
                   (commerceRaid &&
                     resistance >= 0.3 &&
@@ -2251,6 +2263,8 @@ function chooseMilitary(s: Game): Command {
     })
     .sort((a, b) => b.score - a.score);
   for (const shot of shoreShots) if (check(s, shot.action)) return shot.action;
+  const crossing = campaignTransportAction(s);
+  if (crossing && check(s, crossing)) return crossing;
   // Complete stationary operations before pathfinding can pull units away.
   for (const group of groups) {
     if (!group[0].naval) {
@@ -2272,7 +2286,7 @@ function chooseMilitary(s: Game): Command {
     if (!units.length) continue;
     const ids = units.map((u) => u.id),
       tile = units[0].tile;
-    if (!units[0].naval) {
+    if (!units[0].naval && !emergency) {
       // Embark only when a reachable overseas objective has no land path.
       for (const sea of neighbors(tile).filter((id) =>
         canOccupy(s.tiles[id], true),
@@ -2324,7 +2338,7 @@ function chooseMilitary(s: Game): Command {
           if (check(s, action)) return action;
         }
       }
-    } else {
+    } else if (units[0].naval && !emergency) {
       const passengers = Object.values(s.pieces).filter(
         (u) => u.carrier && ids.includes(u.carrier),
       );

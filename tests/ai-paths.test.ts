@@ -1,7 +1,7 @@
 import { expect, it } from "vitest";
 import { funded, piece } from "./helpers";
 import { pathTo } from "../src/game/selectors";
-import { planningPath } from "../src/game/ai-paths";
+import { planningPath, planningDistance } from "../src/game/ai-paths";
 it("cached strategic paths match legal paths across terrain, hostile positions and movement bounds", () => {
   const s = funded("path-cache-check");
   const tiles = Object.keys(s.tiles);
@@ -14,6 +14,9 @@ it("cached strategic paths match legal paths across terrain, hostile positions a
           for (const to of tiles.filter((_, i) => i % 11 === 0)) {
             expect(planningPath(s, from, to, naval, owner, max)).toEqual(
               pathTo(s, from, to, naval, owner, max),
+            );
+            expect(planningDistance(s, from, to, naval, owner, max)).toBe(
+              pathTo(s, from, to, naval, owner, max)?.length ?? Infinity,
             );
           }
       }
