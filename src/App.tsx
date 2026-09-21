@@ -344,6 +344,10 @@ export default function App() {
       clearTimeout(timeout);
       setBusy(false);
       if (event.data.error) {
+        console.error(
+          "AI calculation failed",
+          event.data.stack ?? event.data.error,
+        );
         stopWorker();
         setPaused(true);
         setToast(`AI paused: ${event.data.error}`);

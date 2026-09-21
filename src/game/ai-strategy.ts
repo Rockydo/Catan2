@@ -149,18 +149,22 @@ export function coalitionSupport(
     )
   )
     return 0;
-  const front = [
+  const front = new Set([
     ...ownTowns(s, crisis.leader).flatMap((t) => landAtVertex(s, t.vertex)),
     ...ownPieces(s, crisis.leader).map((u) => u.tile),
-  ];
-  const distanceToFront = Math.min(
-    Infinity,
-    ...ownTowns(s, recipient).flatMap((t) =>
-      landAtVertex(s, t.vertex).flatMap((tile) =>
-        front.map((enemy) => distance(tile, enemy)),
-      ),
-    ),
+  ]);
+  const recipientTiles = new Set(
+    ownTowns(s, recipient).flatMap((t) => landAtVertex(s, t.vertex)),
   );
+  // Keep the exact closest distance without passing the entire town/army
+  // cross-product as function arguments. Chrome workers have a smaller stack
+  // than the main thread; ordinary late-game armies can exceed that limit.
+  let distanceToFront = Infinity;
+  closest: for (const tile of recipientTiles)
+    for (const enemy of front) {
+      distanceToFront = Math.min(distanceToFront, distance(tile, enemy));
+      if (distanceToFront === 0) break closest;
+    }
   const scores = factionStrengths(s);
   const weakness = Math.min(1, scores[donor] / Math.max(1, scores[recipient]));
   return (
