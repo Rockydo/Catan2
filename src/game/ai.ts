@@ -1,4 +1,6 @@
 import { appendValues, maxValue, minValue } from "./aggregate";
+import { recruitmentBatch, recruitmentFundingCost } from "./ai-recruitment";
+import { bankOrderToward } from "./ai-bank";
 import { colonistAction, colonistProjects } from "./ai-colonization";
 import {
   seasonalDestinationSafe,
@@ -27,6 +29,7 @@ import {
   harvestYield,
   towerSites,
   towerDefense,
+  towerPower,
 } from "./maritime";
 import { shipStats, shipCost, TOWER_COSTS } from "./content";
 import { recipePayment, withPlanningFrame } from "./selectors";
@@ -142,6 +145,8 @@ interface Project {
   score: number;
   label: string;
   urgent?: boolean;
+  /** Units needed before this recruitment priority should be reassessed. */
+  quantity?: number;
 }
 export function marginalValues(s: Game, p = s.active): Record<Good, number> {
   const inc = income(s, p),
@@ -572,28 +577,7 @@ export function expansionPaths(
   return out;
 }
 function importToward(s: Game, cost: Stock): Command | null {
-  const stock = inventory(s),
-    values = marginalValues(s),
-    deficits = GOODS.filter((g) => (cost[g] ?? 0) > (stock[g] ?? 0)).sort(
-      (a, b) => values[b] - values[a],
-    );
-  for (const take of deficits) {
-    const options = GOODS.filter(
-      (g) =>
-        g !== take && (stock[g] ?? 0) - (cost[g] ?? 0) >= bankRate(s, g, take),
-    )
-      .map((g) => ({ g, score: bankRate(s, g, take) * values[g] }))
-      .sort((a, b) => a.score - b.score);
-    if (options[0]) {
-      const give = options[0].g;
-      return {
-        type: "bank",
-        give: { [give]: Math.max(1, bankRate(s, give, take)) },
-        take: { [take]: bankRate(s, give, take) < 1 ? 2 : 1 },
-      };
-    }
-  }
-  return null;
+  return bankOrderToward(s, cost, inventory(s), marginalValues(s));
 }
 export function economyProjects(s: Game): Project[] {
   const projects: Project[] = [],
@@ -650,6 +634,7 @@ export function economyProjects(s: Game): Project[] {
     score: number,
     label: string,
     urgent = false,
+    quantity = 1,
   ) {
     if (emergencyTarget(s) !== undefined) {
       const combatRecruit =
@@ -680,6 +665,7 @@ export function economyProjects(s: Game): Project[] {
         score,
         label,
         urgent,
+        quantity,
       });
   }
   for (const t of towns) {
@@ -783,7 +769,7 @@ export function economyProjects(s: Game): Project[] {
           (id) => landRegions(s).get(id) === landRegions(s).get(u.tile),
         ),
     );
-    const coastalThreat = enemyFleets.some(
+    const coastalTargets = enemyFleets.filter(
       (water) =>
         tiles.some((tile) => distance(tile, water) <= 5) &&
         neighbors(water).some(
@@ -793,18 +779,25 @@ export function economyProjects(s: Game): Project[] {
             tiles.some(
               (tile) => landRegions(s).get(tile) === landRegions(s).get(shore),
             ),
-        ) &&
-        localForce
-          .filter((u) => u.kind === "artillery")
-          .reduce((n, u) => n + u.tier * 2, 0) <=
-          power(
-            s,
-            combatantsAt(s, water, true).filter(
-              (u) => !friendly(s, u.owner, s.active),
-            ),
-            water,
-          ),
+        ),
     );
+    const coastalPower = maxValue([
+      0,
+      ...coastalTargets.map((water) =>
+        power(
+          s,
+          combatantsAt(s, water, true).filter(
+            (u) => !friendly(s, u.owner, s.active),
+          ),
+          water,
+        ),
+      ),
+    ]);
+    const localArtillery = localForce
+      .filter((u) => u.kind === "artillery")
+      .reduce((n, u) => n + u.tier * 2, 0);
+    const coastalThreat =
+      coastalTargets.length > 0 && localArtillery <= coastalPower;
     const strandedRegion =
       tiles.length > 0 && !tiles.some((id) => hasLandObjective(s, id));
     if (
@@ -834,9 +827,10 @@ export function economyProjects(s: Game): Project[] {
           (k) => k !== "merchant" && !isSettler(k),
         ))
           for (let tier = 1; tier <= Math.min(4, t.turnLevel); tier++) {
-            const free = s.players[s.active].bonuses.recruits.some(
+            const freeCount = s.players[s.active].bonuses.recruits.filter(
                 (b) => b.tier === tier && b.classes.includes(kind),
-              ),
+              ).length,
+              free = freeCount > 0,
               cost = free ? {} : unitCost(kind, tier);
             if (
               strandedRegion &&
@@ -864,6 +858,55 @@ export function economyProjects(s: Game): Project[] {
               continue;
             const favored =
               UNIT_INFO[kind].family === terrainFamily(s.tiles[tile]);
+            // Stop at the next change of priority: a basic guard, a local
+            // defense, enough siege power, or the current campaign target.
+            let quantity = defendNow
+              ? Math.ceil(
+                  (Math.min(
+                    danger,
+                    danger <= militaryNeeded * 1.5
+                      ? danger
+                      : Math.min(6, t.level + 1),
+                  ) -
+                    protectedPower -
+                    (protectedPower === 0
+                      ? towerPower(s, s.active, tile)
+                      : 0)) /
+                    (tier * (favored ? 2 : 1)),
+                )
+              : kind === "artillery"
+                ? Math.max(
+                    target
+                      ? Math.ceil(
+                          (target.level -
+                            1 +
+                            target.wall +
+                            towerDefense(s, target.owner, target.vertex) -
+                            units
+                              .filter((u) => u.kind === "artillery")
+                              .reduce((n, u) => n + u.tier, 0)) /
+                            tier,
+                        )
+                      : 0,
+                    coastalThreat
+                      ? Math.floor(
+                          (coastalPower - localArtillery) / (tier * 2),
+                        ) + 1
+                      : 0,
+                  )
+                : Math.ceil(
+                    ((ourPower < minimumFieldPower(s)
+                      ? minimumFieldPower(s)
+                      : militaryNeeded) -
+                      ourPower) /
+                      tier,
+                  );
+            if (strandedRegion && !defendNow && kind !== "artillery")
+              quantity = Math.min(
+                quantity,
+                Math.max(2, Math.ceil(towns.length / 2)) - localForce.length,
+              );
+            quantity = Math.max(1, freeCount, quantity);
             const urgency = defendNow
               ? 35 + danger * 3
               : ourPower < minimumFieldPower(s)
@@ -893,6 +936,8 @@ export function economyProjects(s: Game): Project[] {
                 cost,
                 score,
                 `Recruit ${kind} for ${danger ? "defense" : "the campaign"}`,
+                false,
+                quantity,
               );
           }
       }
@@ -996,14 +1041,15 @@ export function economyProjects(s: Game): Project[] {
           for (let tier = 1; tier <= t.turnLevel; tier++) {
             const info = shipStats(kind, tier);
             if (t.turnLevel < info.level) continue;
-            const free = s.players[s.active].bonuses.ships.some(
+            const freeCount = s.players[s.active].bonuses.ships.filter(
                 (v, i) =>
                   v.includes(kind) &&
                   tier ===
                     (s.players[s.active].bonuses.shipTiers?.[i] ??
                       s.players[s.active].bonuses.shipTier ??
                       1),
-              ),
+              ).length,
+              free = freeCount > 0,
               cost = free ? {} : shipCost(kind, tier);
             const need = info.capacity
               ? overseas
@@ -1041,6 +1087,10 @@ export function economyProjects(s: Game): Project[] {
                   ? "Open an overseas passage"
                   : "Protect the sea lanes",
                 urgent,
+                Math.max(
+                  freeCount,
+                  Math.ceil(need / (info.capacity || info.power)),
+                ),
               );
           }
       }
@@ -1713,7 +1763,12 @@ function chooseEconomy(s: Game): Command {
   const affordablePriority = candidates.find(
     (p) => affordable(s, p.cost) && check(s, p.action),
   );
-  if (affordablePriority) return affordablePriority.action;
+  if (affordablePriority)
+    return recruitmentBatch(
+      s,
+      affordablePriority.action,
+      affordablePriority.quantity,
+    );
   // Research can resolve a construction shortage immediately. Do not let
   // an unaffordable expansion reserve suppress every discovery indefinitely.
   const discovery = projects.find(
@@ -1741,7 +1796,16 @@ function chooseEconomy(s: Game): Command {
     return deficit(a) - deficit(b) || b.score - a.score;
   })[0];
   if (reserve) {
-    const trade = acquireToward(s, reserve.cost);
+    const trade = acquireToward(
+      s,
+      recruitmentFundingCost(
+        s,
+        reserve.action,
+        reserve.quantity,
+        reserve.cost,
+        values,
+      ),
+    );
     if (trade && check(s, trade)) return trade;
   }
   const top = projects[0];
@@ -1758,10 +1822,16 @@ function chooseEconomy(s: Game): Command {
       )
     )
       continue;
-    if (affordable(s, cost) && check(s, project.action)) return project.action;
+    if (affordable(s, cost) && check(s, project.action))
+      return reserve
+        ? project.action
+        : recruitmentBatch(s, project.action, project.quantity);
   }
   if (reserve) return { type: "military" };
-  const trade = acquireToward(s, top.cost);
+  const trade = acquireToward(
+    s,
+    recruitmentFundingCost(s, top.action, top.quantity, top.cost, values),
+  );
   if (trade && check(s, trade)) return trade;
   return { type: "military" };
 }

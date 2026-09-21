@@ -228,7 +228,7 @@ it("imports missing transport materials instead of leaving its army stranded", (
   enemy.stock = {};
   const action = chooseAIAction(s);
   expect(action.type).toBe("bank");
-  expect(action.take).toEqual({ lumber: 1 });
+  expect(action.take).toEqual({ lumber: 8 });
   let next = run(s, action);
   for (let step = 0; step < 8; step++) {
     const c = chooseAIAction(next);

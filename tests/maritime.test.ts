@@ -480,8 +480,8 @@ describe("AI and save compatibility", () => {
     s.players[0].control = "standard";
     const c = chooseAIAction(s);
     expect(c.type).toBe("bank");
-    expect(c.give).toEqual({ goldbars: 1 });
-    expect(Object.values(c.take!)[0]).toBe(2);
+    expect(c.give).toEqual({ goldbars: 3 });
+    expect(Object.values(c.take!)[0]).toBe(6);
     expect(applyCommand(s, c).ok).toBe(true);
   });
   it("AI moves a merchant toward a more productive safe location", () => {

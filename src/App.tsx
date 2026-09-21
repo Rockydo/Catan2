@@ -353,12 +353,14 @@ export default function App() {
         setToast(`AI paused: ${event.data.error}`);
         return;
       }
-      if (!commit(event.data.command)) {
-        setPaused(true);
-        setToast(
-          "The AI attempted an invalid action and has been paused. Your game remains saved.",
-        );
-      }
+      for (const command of event.data.commands ?? [event.data.command])
+        if (!commit(command)) {
+          setPaused(true);
+          setToast(
+            "The AI attempted an invalid action and has been paused. Your game remains saved.",
+          );
+          break;
+        }
     };
     worker.onerror = () => {
       if (!cancelled) {

@@ -47,14 +47,12 @@ describe("proactive and selfish AI strategy", () => {
     ownTowns(s)[0].stock = { lumber: 20, wool: 1, hides: 1 };
     const action = chooseAIAction(s);
     expect(action.type).toBe("bank");
-    expect(action.take).toEqual({ grain: 1 });
+    expect(action.take).toEqual({ grain: 2 });
     expect(chooseAIAction(run(s, action)).type).toBe("recruit");
   });
   it("can develop the economy once the minimum guard is funded", () => {
     let s = strategyFixture();
     for (const t of ownTowns(s)) t.level = t.turnLevel = 1;
-    s = run(s, chooseAIAction(s));
-    s = run(s, chooseAIAction(s));
     s = run(s, chooseAIAction(s));
     expect(Object.values(s.pieces)).toHaveLength(3);
     expect(chooseAIAction(s).type).not.toBe("military");
