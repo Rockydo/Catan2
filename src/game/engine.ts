@@ -88,6 +88,7 @@ import {
   movableRoutes,
   expeditionSites,
   effectiveCost,
+  withPlanningFrame,
   affordable,
   sumStock,
 } from "./selectors";
@@ -363,6 +364,41 @@ function payload(c: Command) {
 export function applyCommand(state: Game, c: Command): Result {
   return commandResult(state, c, false);
 }
+/** Plan and execute a private sequence with one copy of the campaign. Each
+ * decision sees the preceding order's complete result, including coalitions.
+ * The draft never escapes on failure and the caller's campaign stays intact.
+ * Views are temporary: the planner must not retain them after it returns. */
+export function applyCommandPlan(
+  state: Game,
+  choose: (view: Game, commands: readonly Command[]) => Command | undefined,
+): Result & { commands: Command[] } {
+  const commands: Command[] = [];
+  try {
+    let view = structuredClone(state);
+    for (;;) {
+      const command = choose(view, commands);
+      if (!command) break;
+      // Planning caches are keyed by Game identity. Execution gets a fresh key
+      // before changing any draft data, just as an ordinary transaction does.
+      const next = { ...view };
+      payload(command);
+      advanceCommand(next, command, false);
+      view = { ...next };
+      commands.push(command);
+    }
+    return { ok: true, state: commands.length ? view : state, commands };
+  } catch (error) {
+    return {
+      ok: false,
+      state,
+      commands: [],
+      error:
+        error instanceof Error
+          ? error.message
+          : "The action could not be completed.",
+    };
+  }
+}
 /** Full rule validation for AI previews, without copying read-only map geometry.
  * Expeditions and Woods changes retain a fully isolated world copy. End-turn
  * and surrender previews also isolate sea tiles at possible season boundaries.
@@ -403,12 +439,7 @@ function commandResult(state: Game, c: Command, preview: boolean): Result {
             edges: state.edges,
           }
         : structuredClone(state);
-    if (s.phase === "military") s.phase = "economy";
-    s.actions++;
-    execute(s, c);
-    breakSieges(s);
-    eliminate(s);
-    if (!preview) syncEmergencyCoalition(s);
+    advanceCommand(s, c, preview);
     return { ok: true, state: { ...s } };
   } catch (error) {
     return {
@@ -420,6 +451,14 @@ function commandResult(state: Game, c: Command, preview: boolean): Result {
           : "The action could not be completed.",
     };
   }
+}
+function advanceCommand(s: Game, c: Command, preview: boolean) {
+  if (s.phase === "military") s.phase = "economy";
+  s.actions++;
+  execute(s, c);
+  withPlanningFrame(s, () => breakSieges(s));
+  eliminate(s);
+  if (!preview) syncEmergencyCoalition(s);
 }
 export function execute(s: Game, c: Command) {
   const p = s.players[s.active],

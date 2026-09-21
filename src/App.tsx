@@ -1,3 +1,4 @@
+import { routineAIOrder } from "./game/ai-protocol";
 import { terrainName } from "./game/maritime";
 import { LanguageSwitch } from "./ui/LanguageSwitch";
 import { localize as tx, useLocale, rulesUrl } from "./i18n";
@@ -186,10 +187,14 @@ export default function App() {
   const fileInput = useRef<HTMLInputElement>(null);
   const audioRef = useRef<AudioContext | null>(null);
   const commit = useCallback(
-    (command: Command) => {
+    (command: Command, plannedState?: Game) => {
       const current = gameRef.current;
       if (!current || roll.locked.current) return false;
-      const result = applyCommand(current, command);
+      // Worker plans have already run through the same engine. The reply is
+      // accepted only for the exact current snapshot and request below.
+      const result = plannedState
+        ? { ok: true, state: plannedState, error: undefined }
+        : applyCommand(current, command);
       if (!result.ok) {
         setToast(result.error ?? "That action is unavailable.");
         return false;
@@ -321,10 +326,12 @@ export default function App() {
       if (aiWorker.current === worker) aiWorker.current = null;
     };
     setBusy(true);
-    const timer = setTimeout(() => {
-      pending = true;
-      worker.postMessage({ state: snapshot, request });
-    }, aiSpeed);
+    const started = performance.now();
+    let presentationTimer: ReturnType<typeof setTimeout> | undefined;
+    // Think while the previous action is visible. Routine economic orders do
+    // not wait out the animation pacing setting before starting more work.
+    pending = true;
+    worker.postMessage({ state: snapshot, request });
     const timeout = setTimeout(() => {
       if (!cancelled) {
         setPaused(true);
@@ -342,8 +349,8 @@ export default function App() {
         return;
       pending = false;
       clearTimeout(timeout);
-      setBusy(false);
       if (event.data.error) {
+        setBusy(false);
         console.error(
           "AI calculation failed",
           event.data.stack ?? event.data.error,
@@ -353,14 +360,30 @@ export default function App() {
         setToast(`AI paused: ${event.data.error}`);
         return;
       }
-      for (const command of event.data.commands ?? [event.data.command])
-        if (!commit(command)) {
+      const commands: Command[] = event.data.commands ?? [event.data.command];
+      const publish = () => {
+        if (
+          cancelled ||
+          gameRef.current !== snapshot ||
+          event.data.request !== request
+        )
+          return;
+        setBusy(false);
+        const ok = event.data.state
+          ? commit(commands[commands.length - 1], event.data.state)
+          : commands.every((command) => commit(command));
+        if (!ok) {
           setPaused(true);
           setToast(
             "The AI attempted an invalid action and has been paused. Your game remains saved.",
           );
-          break;
         }
+      };
+      const wait = commands.every(routineAIOrder)
+        ? 0
+        : Math.max(0, aiSpeed - (performance.now() - started));
+      if (wait > 0) presentationTimer = setTimeout(publish, wait);
+      else publish();
     };
     worker.onerror = () => {
       if (!cancelled) {
@@ -375,7 +398,7 @@ export default function App() {
     };
     return () => {
       cancelled = true;
-      clearTimeout(timer);
+      clearTimeout(presentationTimer);
       clearTimeout(timeout);
       if (pending) stopWorker();
       worker.onmessage = null;

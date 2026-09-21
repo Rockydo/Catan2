@@ -64,8 +64,16 @@ interface PlanningIndex {
   stocks: Map<number, Stock>;
   nearest: Map<string, Town | undefined>;
   towerSupport: Map<string, number>;
+  memo: Map<string, unknown>;
 }
 let planningIndex: PlanningIndex | undefined;
+/** Reuse a pure calculation only while this exact AI snapshot is being read. */
+export function planningValue<T>(s: Game, key: string, calculate: () => T): T {
+  if (planningIndex?.source !== s) return calculate();
+  const cache = planningIndex.memo;
+  if (!cache.has(key)) cache.set(key, calculate());
+  return cache.get(key) as T;
+}
 export const ownTowns = (s: Game, p = s.active) => {
   if (planningIndex?.source.towns === s.towns)
     return (planningIndex.towns.get(p) ?? []).slice();
@@ -647,6 +655,7 @@ export function withPlanningFrame<T>(source: Game, run: () => T): T {
     stocks: new Map(),
     nearest: new Map(),
     towerSupport: new Map(),
+    memo: new Map(),
   };
   for (const tower of Object.values(source.towers ?? {}))
     for (const tile of source.vertices[tower.vertex].tiles) {

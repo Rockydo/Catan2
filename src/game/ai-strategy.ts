@@ -9,10 +9,11 @@ import {
   piecesAt,
   income,
   power,
-  pathTo,
+  planningValue,
   speed,
 } from "./selectors";
 import { walkableAtVertex as landAtVertex, distance } from "./world";
+import { planningDistance } from "./ai-paths";
 
 export interface FactionStrength {
   towns: number;
@@ -176,6 +177,13 @@ export function coalitionSupport(
 }
 
 const threatCache = new WeakMap<Game, Map<string, Piece[]>>();
+const threatGroups = new WeakMap<
+  Game,
+  {
+    groups: { owner: number; tile: string; speed: number; units: Piece[] }[];
+    order: Map<string, number>;
+  }
+>();
 /** Reachable land threats only; troops across water cannot threaten a land town. */
 export function townThreats(s: Game, t: Town): Piece[] {
   let cache = threatCache.get(s);
@@ -185,19 +193,45 @@ export function townThreats(s: Game, t: Town): Piece[] {
   }
   const cached = cache.get(t.id);
   if (cached) return cached;
+  let indexed = threatGroups.get(s);
+  if (!indexed) {
+    const groups = new Map<
+      string,
+      { owner: number; tile: string; speed: number; units: Piece[] }
+    >();
+    const order = new Map<string, number>();
+    for (const u of Object.values(s.pieces)) {
+      if (u.naval || u.carrier || points(u) <= 0) continue;
+      order.set(u.id, order.size);
+      const movement = speed(u),
+        key = `${u.owner}/${u.tile}/${movement}`;
+      if (!groups.has(key))
+        groups.set(key, {
+          owner: u.owner,
+          tile: u.tile,
+          speed: movement,
+          units: [],
+        });
+      groups.get(key)!.units.push(u);
+    }
+    indexed = { groups: [...groups.values()], order };
+    threatGroups.set(s, indexed);
+  }
   const tiles = landAtVertex(s, t.vertex);
-  const threats = Object.values(s.pieces).filter(
-    (u) =>
-      !friendly(s, u.owner, t.owner) &&
-      !u.naval &&
-      points(u) > 0 &&
-      !u.carrier &&
-      tiles.some(
-        (id) =>
-          distance(u.tile, id) <= speed(u) &&
-          pathTo(s, u.tile, id, false, u.owner, speed(u)) !== null,
-      ),
-  );
+  const threats = indexed.groups
+    .filter(
+      (g) =>
+        !friendly(s, g.owner, t.owner) &&
+        tiles.some(
+          (id) =>
+            distance(g.tile, id) <= g.speed &&
+            Number.isFinite(
+              planningDistance(s, g.tile, id, false, g.owner, g.speed),
+            ),
+        ),
+    )
+    .flatMap((g) => g.units)
+    .sort((a, b) => indexed!.order.get(a.id)! - indexed!.order.get(b.id)!);
   cache.set(t.id, threats);
   return threats;
 }
@@ -210,7 +244,8 @@ export function threatPower(
   const groups = new Map<string, Piece[]>();
   for (const u of threats) {
     const key = `${u.owner}/${u.tile}`;
-    groups.set(key, [...(groups.get(key) ?? []), u]);
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key)!.push(u);
   }
   return maxValue([
     0,
@@ -288,13 +323,18 @@ export function townGuardPower(
   t: Town,
   excluded: string[] = [],
 ): number {
-  const tiles = landAtVertex(s, t.vertex);
-  const leaving = new Set(excluded);
-  return tiles
-    .flatMap((tile) => piecesAt(s, tile, false))
-    .filter((u) => friendly(s, u.owner, t.owner))
-    .filter((u) => !leaving.has(u.id))
-    .reduce((n, u) => n + power(s, [u], u.tile), 0);
+  const calculate = () => {
+    const tiles = landAtVertex(s, t.vertex);
+    const leaving = new Set(excluded);
+    return tiles
+      .flatMap((tile) => piecesAt(s, tile, false))
+      .filter((u) => friendly(s, u.owner, t.owner))
+      .filter((u) => !leaving.has(u.id))
+      .reduce((n, u) => n + power(s, [u], u.tile), 0);
+  };
+  return excluded.length
+    ? calculate()
+    : planningValue(s, `guard/${t.id}`, calculate);
 }
 /** Maintain a delaying guard without spending an entire economy trying to
  * match a stack far beyond the campaign budget. Transport and raids still need funding. */

@@ -1,13 +1,14 @@
-import { chooseAIOrders } from "./ai-orders";
+import { planAIOrders } from "./ai-orders";
 import { type Game } from "./types";
 self.onmessage = (event: MessageEvent<{ state: Game; request: number }>) => {
   try {
     const started = performance.now();
-    const commands = chooseAIOrders(event.data.state);
+    const { commands, state } = planAIOrders(event.data.state);
     self.postMessage({
       request: event.data.request,
       command: commands[0],
       commands,
+      state,
       ms: performance.now() - started,
     });
   } catch (error) {

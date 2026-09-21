@@ -1,6 +1,7 @@
 import { appendValues, maxValue, minValue } from "./aggregate";
 import { recruitmentBatch, recruitmentFundingCost } from "./ai-recruitment";
 import { bankOrderToward } from "./ai-bank";
+import { cachedMilitaryWait } from "./ai-maneuvers";
 import { colonistAction, colonistProjects } from "./ai-colonization";
 import {
   seasonalDestinationSafe,
@@ -133,7 +134,15 @@ import {
   townAt,
 } from "./selectors";
 import { canApplyCommand } from "./engine";
-import { planningPath as pathTo } from "./ai-paths";
+import { planningPath as pathTo, planningDistance } from "./ai-paths";
+const reachable = (
+  s: Game,
+  from: string,
+  to: string,
+  naval: boolean,
+  owner: number,
+  max = Infinity,
+) => Number.isFinite(planningDistance(s, from, to, naval, owner, max));
 import {
   campaignTransportAction,
   campaignTransportDemand,
@@ -500,21 +509,28 @@ export function expansionPaths(
     string,
     { cost: number; first: string; kind: "road" | "route" }
   >();
-  const queue: {
+  type Visit = {
     v: string;
     kind: "road" | "route";
     cost: number;
     first: string;
     firstKind: "road" | "route";
-  }[] = [];
+  };
+  // Costs are small non-negative integers. FIFO buckets preserve the old
+  // stable cheapest-first ordering without sorting the entire queue per edge.
+  const buckets: Visit[][] = [],
+    cursors: number[] = [];
+  const enqueue = (visit: Visit) => {
+    (buckets[visit.cost] ??= []).push(visit);
+  };
   for (const t of ownTowns(s))
     for (const kind of ["road", "route"] as const)
-      queue.push({ v: t.vertex, kind, cost: 0, first: "", firstKind: kind });
+      enqueue({ v: t.vertex, kind, cost: 0, first: "", firstKind: kind });
   for (const r of Object.values(s.routes))
     if (r.owner === s.active)
       for (const v of s.edges[r.edge].vertices)
         if (!townAt(s, v) || townAt(s, v)!.owner === s.active)
-          queue.push({
+          enqueue({
             v,
             kind: r.kind,
             cost: 0,
@@ -522,9 +538,15 @@ export function expansionPaths(
             firstKind: r.kind,
           });
   const visited = new Map<string, number>();
-  while (queue.length) {
-    queue.sort((a, b) => a.cost - b.cost);
-    const cur = queue.shift()!,
+  for (let cost = 0; cost < buckets.length;) {
+    const queue = buckets[cost] ?? [],
+      cursor = cursors[cost] ?? 0;
+    if (cursor >= queue.length) {
+      cost++;
+      continue;
+    }
+    cursors[cost] = cursor + 1;
+    const cur = queue[cursor],
       key = `${cur.v}/${cur.kind}`;
     if (
       (visited.get(key) ?? Infinity) <= cur.cost ||
@@ -547,7 +569,7 @@ export function expansionPaths(
       continue;
     // Roads and sea routes may meet at any unblocked network junction.
     const other = cur.kind === "road" ? "route" : "road";
-    queue.push({ ...cur, kind: other });
+    enqueue({ ...cur, kind: other });
     for (const edgeId of s.vertices[cur.v].edges) {
       const e = s.edges[edgeId],
         r = s.routes[edgeId];
@@ -565,7 +587,7 @@ export function expansionPaths(
       )
         continue;
       const to = e.vertices.find((v) => v !== cur.v)!;
-      queue.push({
+      enqueue({
         v: to,
         kind: cur.kind,
         cost: cur.cost + (r ? 0 : 1),
@@ -967,8 +989,8 @@ export function economyProjects(s: Game): Project[] {
             0,
           );
         const shortcutDemand = campaignTransportDemand(s, tile);
-        const invasion = invasionCoasts(s, tiles[0]).some(
-          (w) => pathTo(s, tile, w, true, s.active) !== null,
+        const invasion = invasionCoasts(s, tiles[0]).some((w) =>
+          reachable(s, tile, w, true, s.active),
         );
         const overseas = shortcutDemand > 0 || invasion;
         // A shortcut for one detachment does not require berths for every
@@ -983,7 +1005,7 @@ export function economyProjects(s: Game): Project[] {
             u.naval &&
             !friendly(s, u.owner, s.active) &&
             distance(u.tile, tile) <= 3 &&
-            pathTo(s, u.tile, tile, true, u.owner, 3) !== null,
+            reachable(s, u.tile, tile, true, u.owner, 3),
         );
         const enemyPower = maxValue([
           0,
@@ -1001,7 +1023,7 @@ export function economyProjects(s: Game): Project[] {
             (water) =>
               piecesAt(s, water, true).some(
                 (u) => warTarget(s, u.owner) && collector(u),
-              ) && pathTo(s, tile, water, true, s.active) !== null,
+              ) && reachable(s, tile, water, true, s.active),
           ),
           commerceGuard = commerceTargets.length
             ? minValue(
@@ -1026,7 +1048,7 @@ export function economyProjects(s: Game): Project[] {
               waterAtVertex(s, town.vertex).some(
                 (water) =>
                   tileGood(s.tiles[water]) &&
-                  pathTo(s, tile, water, true, s.active) !== null,
+                  reachable(s, tile, water, true, s.active),
               ),
             ),
           escortTarget = Math.max(
@@ -1985,7 +2007,7 @@ function invasionCoasts(s: Game, excludeLand?: string): string[] {
           !u.carrier &&
           !collector(u) &&
           region.get(u.tile) === home &&
-          pathTo(s, excludeLand, u.tile, false, s.active) !== null,
+          reachable(s, excludeLand, u.tile, false, s.active),
       )
     : undefined;
   const wanted = new Set(
@@ -2036,7 +2058,7 @@ function hasLandObjective(
         (u.carrier
           ? neighbors(u.tile).some((id) => landRegions(s).get(id) === region)
           : landRegions(s).get(u.tile) === region &&
-            pathTo(s, origin, u.tile, false, s.active) !== null),
+            reachable(s, origin, u.tile, false, s.active)),
     );
   const fieldGroups = new Map<string, Piece[]>();
   for (const unit of available) {
@@ -2048,11 +2070,7 @@ function hasLandObjective(
   const result = Object.values(s.towns).some((t) => {
     if (!warTarget(s, t.owner)) return false;
     const tiles = landAtVertex(s, t.vertex);
-    if (
-      !tiles.some(
-        (target) => pathTo(s, origin, target, false, s.active) !== null,
-      )
-    )
+    if (!tiles.some((target) => reachable(s, origin, target, false, s.active)))
       return false;
     const defenders = tiles.flatMap((tile) =>
       piecesAt(s, tile, false).filter(
@@ -2173,7 +2191,7 @@ function collectorMove(s: Game): Command | null {
           ({ unit: v, movement }) =>
             v.naval === naval &&
             distance(v.tile, tile) <= movement &&
-            pathTo(s, v.tile, tile, v.naval, v.owner, movement) !== null,
+            reachable(s, v.tile, tile, v.naval, v.owner, movement),
         ),
       );
     return dangerCache.get(key)!;
@@ -2256,6 +2274,15 @@ function chooseMilitary(s: Game): Command {
   if (operation) return operation;
   const supply = guildMilitaryOrder(s);
   if (supply && check(s, supply)) return supply;
+  const maneuver = cachedMilitaryWait(s, () => chooseManeuver(s, emergency));
+  if (maneuver.type !== "end-turn") return maneuver;
+  if (emergency) {
+    const support = collectorMove(s) ?? colonistAction(s);
+    if (support) return support;
+  }
+  return maneuver;
+}
+function chooseManeuver(s: Game, emergency: boolean): Command {
   const groups = armyGroups(s, s.active, false, true),
     drive = conquestDrive(s),
     enemyTowns = Object.values(s.towns)
@@ -2397,8 +2424,8 @@ function chooseMilitary(s: Game): Command {
                   ),
               ),
           ) &&
-          invasionCoasts(s, tile).some(
-            (w) => pathTo(s, sea, w, true, s.active) !== null,
+          invasionCoasts(s, tile).some((w) =>
+            reachable(s, sea, w, true, s.active),
           )
         ) {
           const action = {
@@ -2428,7 +2455,7 @@ function chooseMilitary(s: Game): Command {
               enemyTowns.flatMap((t) =>
                 landAtVertex(s, t.vertex).map(
                   (v) =>
-                    (pathTo(s, id, v, false, s.active)?.length ?? Infinity) /
+                    planningDistance(s, id, v, false, s.active) /
                     leaderPressure(s, t.owner),
                 ),
               ),
@@ -2572,8 +2599,8 @@ function chooseMilitary(s: Game): Command {
                   !hostileAt(s, l) &&
                   hasLandObjective(s, l, passengers) &&
                   enemyTowns.some((t) =>
-                    landAtVertex(s, t.vertex).some(
-                      (v) => pathTo(s, l, v, false, s.active) !== null,
+                    landAtVertex(s, t.vertex).some((v) =>
+                      reachable(s, l, v, false, s.active),
                     ),
                   ),
               ),
@@ -2604,7 +2631,7 @@ function chooseMilitary(s: Game): Command {
               neighbors(u.tile).filter(
                 (w) =>
                   canOccupy(s.tiles[w], true) &&
-                  pathTo(s, origin, w, true, s.active) !== null,
+                  reachable(s, origin, w, true, s.active),
               ),
             );
           if (pickup.length) objectives = [...new Set(pickup)];
@@ -2848,8 +2875,8 @@ function chooseMilitary(s: Game): Command {
             (u) =>
               u.naval &&
               shipStats(u.kind as ShipClass, u.tier).capacity > 0 &&
-              invasionCoasts(s, origin).some(
-                (w) => pathTo(s, u.tile, w, true, s.active) !== null,
+              invasionCoasts(s, origin).some((w) =>
+                reachable(s, u.tile, w, true, s.active),
               ),
           )
           .flatMap((u) =>
@@ -2995,7 +3022,7 @@ function chooseMilitary(s: Game): Command {
               (u) =>
                 !friendly(s, u.owner, s.active) &&
                 !displaced.includes(u.id) &&
-                pathTo(s, n, to, false, u.owner, 3) !== null,
+                reachable(s, n, to, false, u.owner, 3),
             ),
           );
           const biggest = threatPower(s, nearby, [to]);
@@ -3099,10 +3126,6 @@ function chooseMilitary(s: Game): Command {
   choices.sort((a, b) => b.score - a.score);
   for (const choice of choices.slice(0, 12))
     if (check(s, choice.action)) return choice.action;
-  if (emergency) {
-    const support = collectorMove(s) ?? colonistAction(s);
-    if (support) return support;
-  }
   return { type: "end-turn" };
 }
 

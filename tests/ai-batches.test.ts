@@ -197,7 +197,7 @@ describe("AI worker order sequences", () => {
     const before = JSON.stringify(s);
     const commands = chooseAIOrders(s, () => 0);
     expect(commands.length).toBeGreaterThan(1);
-    expect(commands.length).toBeLessThanOrEqual(8);
+    expect(commands.length).toBeLessThanOrEqual(64);
     expect(JSON.stringify(s)).toBe(before);
     let view = s;
     for (const c of commands) {

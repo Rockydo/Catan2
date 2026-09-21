@@ -33,6 +33,7 @@ import {
 } from "./guilds";
 import {
   affordable,
+  blockAt,
   besieged,
   ownTowns,
   ownPieces,
@@ -42,7 +43,7 @@ import {
   routeSites,
   speed,
 } from "./selectors";
-import { planningPath } from "./ai-paths";
+import { planningDistance } from "./ai-paths";
 import { warTarget } from "./ai-strategy";
 import {
   neighbors,
@@ -70,13 +71,32 @@ function routeDemand(s: Game) {
     );
   return routeDemandCache.get(s)!;
 }
-function economicOrders(s: Game, town: Town, values: Record<Good, number>) {
+type EconomicOrder = { order: GuildOrder; cost: Stock; value: number };
+function economicOrders(
+  s: Game,
+  town: Town,
+  values: Record<Good, number>,
+  cache: Map<string, EconomicOrder[]>,
+  tiers: number[],
+) {
   const g = town.guild!,
-    candidates: GuildOrder[] = [];
+    candidates: GuildOrder[] = [],
+    // Non-extraction contracts depend on faction stocks, not which city hosts
+    // them. Quote them once for all matching guilds in this planning decision.
+    key = `${town.owner}/${g.kind}/${g.tier}/${tiers.join(",")}`,
+    cached = !extractionGuild(g.kind) && cache.get(key);
+  if (cached)
+    return cached.map(({ order, cost, value }) => ({
+      action: orderCommand(town, order),
+      cost,
+      value,
+    }));
   if (extractionGuild(g.kind))
     appendValues(
       candidates,
-      extractionTiles(s, town).map((tile) => ({ tile })),
+      extractionTiles(s, town)
+        .filter((tile) => !blockAt(s, tile, town.owner))
+        .map((tile) => ({ tile })),
     );
   if (
     g.kind === "builders" &&
@@ -106,9 +126,17 @@ function economicOrders(s: Game, town: Town, values: Record<Good, number>) {
           if (give !== take) candidates.push({ give, take });
     }
   }
-  return candidates
+  const quoted = candidates
     .flatMap((order) =>
-      Array.from({ length: g.tier }, (_, i) => ({ ...order, tier: i + 1 })),
+      tiers
+        .filter(
+          (tier) =>
+            g.kind !== "merchants" ||
+            tier === 3 ||
+            !order.give ||
+            TRADE_RAW.includes(order.give as (typeof TRADE_RAW)[number]),
+        )
+        .map((tier) => ({ ...order, tier })),
     )
     .flatMap((order) => {
       try {
@@ -129,12 +157,18 @@ function economicOrders(s: Game, town: Town, values: Record<Good, number>) {
                 ) * 0.7
               : 0) -
             stockValue(cost, values);
-        return [{ action: orderCommand(town, order), cost, value }];
+        return [{ order, cost, value }];
       } catch {
         return [];
       }
     })
     .sort((a, b) => b.value - a.value);
+  if (!extractionGuild(g.kind)) cache.set(key, quoted);
+  return quoted.map(({ order, cost, value }) => ({
+    action: orderCommand(town, order),
+    cost,
+    value,
+  }));
 }
 function suppliedFormation(s: Game, town: Town, planningConstruction = false) {
   const g = town.guild!,
@@ -180,8 +214,8 @@ function suppliedFormation(s: Game, town: Town, planningConstruction = false) {
         0,
         ...enemies
           .filter((t) =>
-            landAtVertex(s, t.vertex).some(
-              (to) => planningPath(s, tile, to, false, town.owner) !== null,
+            landAtVertex(s, t.vertex).some((to) =>
+              Number.isFinite(planningDistance(s, tile, to, false, town.owner)),
             ),
           )
           .map((t) => Math.min(g.tier * 2, siegeRequirement(s, t, group)) * 8),
@@ -190,10 +224,11 @@ function suppliedFormation(s: Game, town: Town, planningConstruction = false) {
         best = { ids: selected.map((u) => u.id), value };
       continue;
     }
-    const paths = [...new Set(targets)]
-      .map((to) => planningPath(s, tile, to, naval, town.owner))
-      .filter((path) => path && path.length > remaining);
-    if (!paths.length) continue;
+    const needsMovement = [...new Set(targets)].some((to) => {
+      const distance = planningDistance(s, tile, to, naval, town.owner);
+      return Number.isFinite(distance) && distance > remaining;
+    });
+    if (!needsMovement) continue;
     const value =
       selected.reduce((n, u) => n + Math.max(1, points(u)), 0) *
       guildSupplyMovement(g.tier);
@@ -239,16 +274,23 @@ export function guildEconomyProjects(
   s: Game,
   values: Record<Good, number>,
 ): Project[] {
-  const projects: Project[] = [];
+  const projects: Project[] = [],
+    quotes = new Map<string, EconomicOrder[]>();
   for (const town of ownTowns(s)) {
     if (town.level < 2 || besieged(s, town.id)) continue;
     const guilds = townGuilds(town);
     for (const g of guilds) {
       const view = { ...town, guild: g };
       if (economicGuild(g.kind) && !guildReadyError(s, view)) {
-        const best = economicOrders(s, view, values).filter(
-          (o) => o.value > 0.15 && !guildTierUsed(g, o.action.tier!),
-        );
+        const best = economicOrders(
+          s,
+          view,
+          values,
+          quotes,
+          Array.from({ length: g.tier }, (_, i) => i + 1).filter(
+            (tier) => !guildTierUsed(g, tier),
+          ),
+        ).filter((o) => o.value > 0.15);
         // Prefer an affordable productive order; don't let one missing input block all alternatives.
         const order = best.find((o) => affordable(s, o.cost)) ?? best[0];
         if (order)
@@ -277,9 +319,7 @@ export function guildEconomyProjects(
       let benefit = 0;
       if (economicGuild(kind)) {
         // Upgrading adds a separate order; lower-tier income is retained.
-        const orders = economicOrders(s, next, values).filter(
-          (o) => o.action.tier === tier,
-        );
+        const orders = economicOrders(s, next, values, quotes, [tier]);
         benefit = Math.max(0, orders[0]?.value ?? 0) * 6;
       } else {
         const formation = suppliedFormation(s, next, true);

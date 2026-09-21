@@ -1,22 +1,7 @@
 import { chooseAIAction } from "./ai";
-import { applyCommand } from "./engine";
+import { applyCommandPlan } from "./engine";
 import type { Command, Game } from "./types";
-
-const ECONOMIC_ORDERS = new Set([
-  "bank",
-  "recruit",
-  "ship",
-  "road",
-  "route",
-  "settlement",
-  "camp",
-  "city",
-  "extension",
-  "wall",
-  "tower",
-  "guild",
-  "guild-order",
-]);
+import { routineAIOrder } from "./ai-protocol";
 
 /** Replan after every transaction, but present routine orders together. Time
  * and count bounds keep pause/cancel responsive. No player prompt, combat,
@@ -25,31 +10,32 @@ export function chooseAIOrders(
   s: Game,
   now = () => performance.now(),
 ): Command[] {
-  const started = now(),
-    commands = [chooseAIAction(s)];
-  if (s.phase !== "economy" || s.players[s.active].control === "human")
-    return commands;
-  let view = s;
-  while (commands.length < 8 && now() - started < 150) {
-    const previous = commands[commands.length - 1];
-    if (!ECONOMIC_ORDERS.has(previous.type)) break;
-    const result = applyCommand(view, previous);
-    if (!result.ok)
-      throw new Error(result.error ?? "Invalid AI economic order");
-    view = result.state;
+  return planAIOrders(s, now).commands;
+}
+
+/** The worker returns the already-validated result. The UI publishes one
+ * snapshot instead of replaying and copying the world for every contract. */
+export function planAIOrders(s: Game, now = () => performance.now()) {
+  const started = now();
+  const result = applyCommandPlan(s, (view, commands) => {
     if (
-      view.active !== s.active ||
-      view.phase !== "economy" ||
-      view.battle ||
-      view.trade ||
-      view.allianceOffer ||
-      view.researchChoice ||
-      now() - started >= 150
+      commands.length &&
+      (commands.length >= 64 ||
+        now() - started >= 150 ||
+        s.phase !== "economy" ||
+        s.players[s.active].control === "human" ||
+        !routineAIOrder(commands[commands.length - 1]) ||
+        view.active !== s.active ||
+        view.phase !== "economy" ||
+        view.battle ||
+        view.trade ||
+        view.allianceOffer ||
+        view.researchChoice)
     )
-      break;
+      return undefined;
     const next = chooseAIAction(view);
-    if (!ECONOMIC_ORDERS.has(next.type)) break;
-    commands.push(next);
-  }
-  return commands;
+    return !commands.length || routineAIOrder(next) ? next : undefined;
+  });
+  if (!result.ok) throw new Error(result.error ?? "Invalid AI economic order");
+  return { commands: result.commands, state: result.state };
 }

@@ -1,6 +1,6 @@
 import type { Game } from "./types";
 import { neighbors, canOccupy } from "./world";
-import { hostileAt } from "./selectors";
+import { hostileAt, planningValue } from "./selectors";
 
 interface RouteTree {
   previous: Map<string, string>;
@@ -9,6 +9,32 @@ interface RouteTree {
 // AI planning treats its input as immutable. A new engine command produces a
 // new Game, so neither occupation nor exploration can leave a stale route tree.
 const cache = new WeakMap<Game, Map<string, RouteTree>>();
+let lastNetwork: string | undefined;
+let sharedRoutes = new Map<string, RouteTree>();
+function networkRoutes(s: Game) {
+  return planningValue(s, "path-network", () => {
+    // Routes depend on passability, alliances and occupation, never on stocks,
+    // guild allowances, walls or the number of soldiers sharing a hex.
+    const occupation = new Set<string>();
+    for (const u of Object.values(s.pieces))
+      if (!u.carrier)
+        occupation.add(`${u.tile}/${u.owner}/${u.naval}/${!!u.seasonStatus}`);
+    const network = JSON.stringify([
+      Object.values(s.tiles).map((t) => [
+        t.id,
+        canOccupy(t),
+        canOccupy(t, true),
+      ]),
+      [...occupation].sort(),
+      s.alliances,
+    ]);
+    if (network !== lastNetwork) {
+      lastNetwork = network;
+      sharedRoutes = new Map();
+    }
+    return sharedRoutes;
+  });
+}
 function routeTree(
   s: Game,
   from: string,
@@ -18,7 +44,7 @@ function routeTree(
 ): RouteTree {
   let frame = cache.get(s);
   if (!frame) {
-    frame = new Map();
+    frame = networkRoutes(s);
     cache.set(s, frame);
   }
   const key = `${from}/${naval}/${owner}/${max}`;
@@ -40,6 +66,8 @@ function routeTree(
       }
     }
     tree = { previous, depth };
+    // Bound retained geometry even during very large, open-ended campaigns.
+    if (frame.size >= 256) frame.delete(frame.keys().next().value!);
     frame.set(key, tree);
   }
   return tree;
