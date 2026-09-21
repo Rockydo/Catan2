@@ -317,8 +317,15 @@ export function RollExperience({
                     </div>
                     {player.supportGold > 0 && (
                       <small className="harvest-support">
-                        {tx(
-                          `Includes ${player.supportGold} Gold of AI support`,
+                        {tx(`Includes ${player.supportGold} Gold of support`)}
+                        {player.supportBars > 0 && (
+                          <>
+                            {" "}
+                            ·{" "}
+                            {tx(
+                              `Includes ${player.supportBars} Gold bars of support`,
+                            )}
+                          </>
                         )}
                       </small>
                     )}

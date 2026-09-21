@@ -29,14 +29,14 @@ for (const locale of ["en", "fr"]) {
         exact: true,
       })
       .click();
-    await expect(page.getByTestId("ai-gold-support")).toHaveText(
+    await expect(page.getByTestId("dominance-support")).toContainText(
       fr
-        ? "Soutien aux IA : 3 Or par colonie ou ville à chaque lancer de dés."
-        : "AI support: 3 Gold per settlement or city on every dice roll.",
+        ? "3 Or par colonie ou ville à chaque lancer de dés."
+        : "3 Gold per settlement or city on every dice roll.",
     );
     const perFaction = fr
-      ? "Soutien aux IA : +3 Or par lancer"
-      : "AI support: +3 Gold per roll";
+      ? "Soutien : +3 Or par lancer"
+      : "Support: +3 Gold per roll";
     await expect(page.getByTestId("faction-power-0")).not.toContainText(
       perFaction,
     );
@@ -60,9 +60,7 @@ for (const locale of ["en", "fr"]) {
     await page
       .getByRole("button", { name: fr ? "Garder ouvert" : "Keep open" })
       .click();
-    const receipt = fr
-      ? "Dont 3 Or de soutien aux IA"
-      : "Includes 3 Gold of AI support";
+    const receipt = fr ? "Dont 3 Or de soutien" : "Includes 3 Gold of support";
     await expect(
       page.getByTestId("roll-player-0").locator(".harvest-support"),
     ).toHaveCount(0);

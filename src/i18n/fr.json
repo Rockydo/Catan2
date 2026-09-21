@@ -1913,8 +1913,11 @@
   "Invalid thaw retreat battle.": "Combat de débarquement après dégel invalide.",
   "Invalid thaw retreat queue.": "File de replis après dégel invalide.",
   "Invalid retired Andean snow terrain.": "Ancienne plaine enneigée andine invalide.",
-  "Invalid AI support receipt.": "Reçu de soutien aux IA invalide.",
-  "Includes {0} Gold of AI support": "Dont {0} Or de soutien aux IA",
-  "AI support: {0} Gold per settlement or city on every dice roll.": "Soutien aux IA : {0} Or par colonie ou ville à chaque lancer de dés.",
-  "AI support: +{0} Gold per roll": "Soutien aux IA : +{0} Or par lancer"
+  "Invalid support receipt.": "Reçu de soutien invalide.",
+  "Includes {0} Gold of support": "Dont {0} Or de soutien",
+  "Includes {0} Gold bars of support": "Dont {0} Lingots d’or de soutien",
+  "Support against {0}: {1} Gold per settlement or city on every dice roll.": "Soutien contre {0} : {1} Or par colonie ou ville à chaque lancer de dés.",
+  "Plus {0} Gold bars per city on every dice roll.": "Plus {0} Lingots d’or par ville à chaque lancer de dés.",
+  "Support: +{0} Gold per roll": "Soutien : +{0} Or par lancer",
+  "+{0} Gold bars per roll": "+{0} Lingots d’or par lancer"
 }

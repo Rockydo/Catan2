@@ -899,8 +899,24 @@ export function assertInvariants(s: Game) {
           !!s.players[Number(owner)] &&
           amount % support.perTown === 0 &&
           amount <= (s.production[Number(owner)]?.gold ?? 0),
-        "Invalid AI support receipt.",
+        "Invalid support receipt.",
       );
+    }
+    if (support.perCity !== undefined || support.goldbars !== undefined) {
+      int(support.perCity, 0, 8);
+      object(support.goldbars);
+      for (const [owner, amount] of Object.entries(support.goldbars!)) {
+        int(amount, 1);
+        rule(
+          String(Number(owner)) === owner &&
+            !!s.players[Number(owner)] &&
+            support.perCity! > 0 &&
+            amount % support.perCity! === 0 &&
+            amount <= (s.production[Number(owner)]?.goldbars ?? 0) &&
+            !!support.gold[Number(owner)],
+          "Invalid support receipt.",
+        );
+      }
     }
   }
   if (s.researchChoice)

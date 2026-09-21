@@ -346,7 +346,13 @@ export interface Game extends World {
   dice: [number, number] | null;
   production: Record<number, Stock>;
   /** Part of the last roll's receipts, preserved for replay after spending. */
-  productionSupport?: { perTown: number; gold: Record<number, number> };
+  productionSupport?: {
+    perTown: number;
+    gold: Record<number, number>;
+    /** Absent in legacy gold-only receipts. */
+    perCity?: number;
+    goldbars?: Record<number, number>;
+  };
   events: Event[];
   winner: number | null;
   actions: number;

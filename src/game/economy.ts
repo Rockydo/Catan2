@@ -17,7 +17,7 @@ import {
   nearestTown,
 } from "./selectors";
 import { processedFor, GOOD_INFO } from "./content";
-import { aiGoldSupport } from "./ai-support";
+import { dominanceSupport } from "./ai-support";
 export function rule(condition: unknown, message: string): asserts condition {
   if (!condition) throw new Error(message);
 }
@@ -124,7 +124,7 @@ export function log(
   return event;
 }
 export function production(s: Game, total: number) {
-  const support = aiGoldSupport(s);
+  const support = dominanceSupport(s);
   delete s.productionSupport;
   s.production = {};
   for (const p of s.players) s.production[p.id] = {};
@@ -137,14 +137,24 @@ export function production(s: Game, total: number) {
       produce(source.owner, source.town.stock, source.good, source.amount);
   if (support) {
     const gold: Record<number, number> = {};
+    const goldbars: Record<number, number> = {};
     for (const town of Object.values(s.towns)) {
       const owner = s.players[town.owner];
-      if (!owner.alive || owner.control === "human") continue;
-      produce(owner.id, town.stock, "gold", support);
-      gold[owner.id] = (gold[owner.id] ?? 0) + support;
+      if (!owner.alive || owner.id === support.leader) continue;
+      produce(owner.id, town.stock, "gold", support.perTown);
+      gold[owner.id] = (gold[owner.id] ?? 0) + support.perTown;
+      if (town.level >= 2 && support.perCity > 0) {
+        produce(owner.id, town.stock, "goldbars", support.perCity);
+        goldbars[owner.id] = (goldbars[owner.id] ?? 0) + support.perCity;
+      }
     }
     if (Object.keys(gold).length)
-      s.productionSupport = { perTown: support, gold };
+      s.productionSupport = {
+        perTown: support.perTown,
+        perCity: support.perCity,
+        gold,
+        goldbars,
+      };
   }
   const generated = Object.values(s.production).reduce(
     (n, v) => n + sumStock(v),
