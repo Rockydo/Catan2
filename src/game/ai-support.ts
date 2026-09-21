@@ -1,3 +1,4 @@
+import { maxValue } from "./aggregate";
 import type { Game } from "./types";
 import { factionStrengths } from "./ai-strategy";
 import { withPlanningFrame } from "./selectors";
@@ -28,6 +29,6 @@ export function aiGoldSupport(s: Game, scores?: readonly number[]): number {
     scores = withPlanningFrame(view, () => factionStrengths(view));
   }
   const total = alive.reduce((sum, p) => sum + scores[p.id], 0),
-    human = Math.max(...humans.map((p) => scores[p.id]));
+    human = maxValue(humans.map((p) => scores[p.id]));
   return supportGoldPerTown(human, total);
 }

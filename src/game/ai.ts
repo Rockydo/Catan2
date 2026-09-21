@@ -1,3 +1,4 @@
+import { appendValues, maxValue, minValue } from "./aggregate";
 import { colonistAction, colonistProjects } from "./ai-colonization";
 import {
   seasonalDestinationSafe,
@@ -165,11 +166,11 @@ export function marginalValues(s: Game, p = s.active): Record<Good, number> {
   values.fish = values.grain;
   values.meat = values.grain;
   values.oil = values.coal;
-  const rawBest = Math.max(
-    ...RAW.filter((g) => g !== "gold").map((g) => values[g]),
+  const rawBest = maxValue(
+    RAW.filter((g) => g !== "gold").map((g) => values[g]),
   );
-  const processedBest = Math.max(
-    ...PROCESSED.filter((g) => g !== "goldbars").map((g) => values[g]),
+  const processedBest = maxValue(
+    PROCESSED.filter((g) => g !== "goldbars").map((g) => values[g]),
   );
   values.gold = Math.max(rawBest, processedBest / 2) * 1.12;
   values.goldbars = Math.max(rawBest * 2, processedBest) * 1.12;
@@ -283,7 +284,7 @@ function bestGoods(
 /** Values use our economy and the public board, never rival hands or deck order. */
 export function researchUtility(s: Game, kind: string): number {
   const towns = ownTowns(s).filter((t) => !besieged(s, t.id));
-  const level = Math.max(0, ...towns.map((t) => t.turnLevel));
+  const level = maxValue([0, ...towns.map((t) => t.turnLevel)]);
   const reward = RESEARCH_GOODS[kind];
   if (reward) return 9 + reward.total * (reward.processed ? 2.5 : 1.6);
   if (RESEARCH_RECRUITS[kind]) {
@@ -304,11 +305,11 @@ export function researchUtility(s: Game, kind: string): number {
   if (kind === "merchant") {
     const stock = inventory(s),
       values = marginalValues(s);
-    const best = Math.max(...RAW.map((g) => values[g]));
-    return Math.max(
+    const best = maxValue(RAW.map((g) => values[g]));
+    return maxValue([
       0,
       ...RAW.map((g) => Math.min(6, stock[g] ?? 0) * (best - values[g]) * 3),
-    );
+    ]);
   }
   if (kind === "roads")
     return routeSites(s, "road").length || routeSites(s, "route").length
@@ -816,14 +817,14 @@ export function economyProjects(s: Game): Project[] {
     ) {
       const target = enemyTowns.sort(
         (a, b) =>
-          Math.min(
-            ...s.vertices[a.vertex].tiles.map((v) =>
-              Math.min(...tiles.map((k) => distance(v, k))),
+          minValue(
+            s.vertices[a.vertex].tiles.map((v) =>
+              minValue(tiles.map((k) => distance(v, k))),
             ),
           ) -
-          Math.min(
-            ...s.vertices[b.vertex].tiles.map((v) =>
-              Math.min(...tiles.map((k) => distance(v, k))),
+          minValue(
+            s.vertices[b.vertex].tiles.map((v) =>
+              minValue(tiles.map((k) => distance(v, k))),
             ),
           ),
       )[0];
@@ -939,14 +940,14 @@ export function economyProjects(s: Game): Project[] {
             distance(u.tile, tile) <= 3 &&
             pathTo(s, u.tile, tile, true, u.owner, 3) !== null,
         );
-        const enemyPower = Math.max(
+        const enemyPower = maxValue([
           0,
           ...s.players.map((p) =>
             threats
               .filter((u) => u.owner === p.id)
               .reduce((n, u) => n + points(u), 0),
           ),
-        );
+        ]);
         const escorts = ships.filter(
             (u) => shipStats(u.kind as ShipClass, u.tier).capacity === 0,
           ),
@@ -958,8 +959,8 @@ export function economyProjects(s: Game): Project[] {
               ) && pathTo(s, tile, water, true, s.active) !== null,
           ),
           commerceGuard = commerceTargets.length
-            ? Math.min(
-                ...commerceTargets.map((water) =>
+            ? minValue(
+                commerceTargets.map((water) =>
                   power(
                     s,
                     combatantsAt(s, water, true).filter(
@@ -1252,7 +1253,7 @@ export function economyProjects(s: Game): Project[] {
   );
   const mayExplore = aiExpeditionAllowed(s);
   const strengths = factionStrengths(s);
-  const strengthGap = 1 - strengths[s.active] / Math.max(1, ...strengths);
+  const strengthGap = 1 - strengths[s.active] / maxValue([1, ...strengths]);
   const needsEscape = mayExplore && isCornered(s);
   const catchUp =
     mayExplore && strengthGap >= 0.25 && (expansionRoom < 2 || missingRaw >= 3);
@@ -1426,10 +1427,10 @@ export function economyProjects(s: Game): Project[] {
   ) {
     const max = Math.min(
       4,
-      Math.max(
+      maxValue([
         ...towns.filter((t) => !besieged(s, t.id)).map((t) => t.level),
         1,
-      ),
+      ]),
     );
     for (let tier = 1; tier <= max; tier++)
       add(
@@ -1439,7 +1440,7 @@ export function economyProjects(s: Game): Project[] {
         "Invest in useful research",
       );
   }
-  projects.push(...guildEconomyProjects(s, values));
+  appendValues(projects, guildEconomyProjects(s, values));
   return projects.sort((a, b) => b.score - a.score);
 }
 /** At most one concrete offer per AI turn, aimed at a current construction deficit. */
@@ -2353,8 +2354,8 @@ function chooseMilitary(s: Game): Command {
         const landing = land
           .map((id) => ({
             id,
-            d: Math.min(
-              ...enemyTowns.flatMap((t) =>
+            d: minValue(
+              enemyTowns.flatMap((t) =>
                 landAtVertex(s, t.vertex).map(
                   (v) =>
                     (pathTo(s, id, v, false, s.active)?.length ?? Infinity) /
@@ -2386,7 +2387,7 @@ function chooseMilitary(s: Game): Command {
       variants.push(original.filter((u) => u.id !== keeper.id));
     }
     if (!original[0].naval && original.length > 1) {
-      const fastest = Math.max(...original.map(speed));
+      const fastest = maxValue(original.map(speed));
       const mobile = original.filter((u) => speed(u) === fastest);
       if (mobile.length < original.length) variants.push(mobile);
       // A small cheap party can afford a risky raid without committing the main army.
@@ -2563,7 +2564,7 @@ function chooseMilitary(s: Game): Command {
             (t) =>
               landAtVertex(s, t.vertex).some(
                 (tile) =>
-                  distance(origin, tile) <= Math.max(...group.map(speed)) * 2,
+                  distance(origin, tile) <= maxValue(group.map(speed)) * 2,
               ) &&
               threatPower(
                 s,
@@ -2655,7 +2656,7 @@ function chooseMilitary(s: Game): Command {
       const objectiveWeight = (target: string) => {
         if (weights.has(target)) return weights.get(target)!;
         const near = naval ? neighbors(target) : [target];
-        let value = Math.max(
+        let value = maxValue([
           1,
           Math.min(5, denialAt(target, group) * 2),
           ...enemyTowns
@@ -2705,11 +2706,11 @@ function chooseMilitary(s: Game): Command {
                 landAtVertex(s, t.vertex),
               );
               return danger > townGuardPower(s, t) &&
-                distance(origin, target) <= Math.max(...group.map(speed)) * 2
+                distance(origin, target) <= maxValue(group.map(speed)) * 2
                 ? 3
                 : 0;
             }),
-        );
+        ]);
         if (emergency) {
           // Spread across productive fronts already occupied by allies. An
           // uncovered target keeps its full value; combat strength is not pooled.
@@ -2823,8 +2824,8 @@ function chooseMilitary(s: Game): Command {
             .filter((v) => v.path?.length)
             .sort((a, b) => {
               const proximity = (tile: string) =>
-                Math.min(
-                  ...enemyTowns.flatMap((t) =>
+                minValue(
+                  enemyTowns.flatMap((t) =>
                     landAtVertex(s, t.vertex).map((id) => distance(tile, id)),
                   ),
                 );
@@ -2896,7 +2897,7 @@ function chooseMilitary(s: Game): Command {
           score += 150;
         if (!naval) {
           const remaining =
-            Math.min(...group.map((u) => speed(u) + u.bonus - u.moved)) -
+            minValue(group.map((u) => speed(u) + u.bonus - u.moved)) -
             path.length;
           if (remaining >= 1) {
             for (const town of enemyTowns.filter(
@@ -2976,7 +2977,7 @@ function chooseMilitary(s: Game): Command {
             const to = path
               .slice(
                 0,
-                Math.max(0, ...Object.values(targets).map((p) => p.length)),
+                maxValue([0, ...Object.values(targets).map((p) => p.length)]),
               )
               .reverse()
               .find((id) => targets[id] && !hostileAt(s, id, s.active, naval));

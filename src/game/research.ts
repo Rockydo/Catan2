@@ -1,3 +1,4 @@
+import { appendValues } from "./aggregate";
 import { aiExpeditionAllowed, AI_EXPEDITION_RESTRICTION } from "./ai-expansion";
 import {
   type Game,
@@ -42,8 +43,11 @@ export function playResearch(s: Game, c: Command) {
     b = p.bonuses;
   function addShips(tier: number, classes: ShipClass[][]) {
     b.shipTiers ??= b.ships.map(() => b.shipTier ?? 1);
-    b.shipTiers.push(...classes.map(() => tier));
-    b.ships.push(...classes);
+    appendValues(
+      b.shipTiers,
+      classes.map(() => tier),
+    );
+    appendValues(b.ships, classes);
     b.shipTier = tier;
   }
   function addDiscount(discount: NonNullable<typeof b.discount>) {
@@ -74,8 +78,9 @@ export function playResearch(s: Game, c: Command) {
       ownTowns(s).some((t) => t.turnLevel >= reward.tier && !besieged(s, t.id)),
       "No town has the required recruitment level.",
     );
-    b.recruits.push(
-      ...Array.from({ length: reward.count }, () => ({
+    appendValues(
+      b.recruits,
+      Array.from({ length: reward.count }, () => ({
         tier: reward.tier,
         classes: [...reward.classes],
       })),
@@ -139,8 +144,9 @@ export function playResearch(s: Game, c: Command) {
       ownTowns(s).some((t) => t.turnLevel >= tier && !besieged(s, t.id)),
       "No town has the required recruitment level.",
     );
-    b.recruits.push(
-      ...Array.from(
+    appendValues(
+      b.recruits,
+      Array.from(
         {
           length: kind === "levy" || (kind === "muster" && tier === 3) ? 2 : 1,
         },

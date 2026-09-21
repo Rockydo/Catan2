@@ -1,3 +1,4 @@
+import { maxValue, minValue } from "./aggregate";
 import {
   seasonAt,
   seasonalYield,
@@ -310,7 +311,7 @@ export function moveTargets(s: Game, ids: string[]): Record<string, string[]> {
     )
   )
     return {};
-  const max = Math.min(...units.map((u) => speed(u) + u.bonus - u.moved));
+  const max = minValue(units.map((u) => speed(u) + u.bonus - u.moved));
   const result: Record<string, string[]> = {};
   // Former allies may still share a hex after a pact ends. They may withdraw or
   // initiate combat on that hex for one MP, without teleporting either army.
@@ -497,8 +498,8 @@ export function nearestTown(
     bestDistance = Infinity;
   // ownTowns is already ordered by ID, preserving the original tie break.
   for (const town of ownTowns(s, p)) {
-    const d = Math.min(
-      ...landAtVertex(s, town.vertex).map((t) => distance(tile, t)),
+    const d = minValue(
+      landAtVertex(s, town.vertex).map((t) => distance(tile, t)),
     );
     if (!best || d < bestDistance) {
       best = town;
@@ -807,7 +808,7 @@ export function expeditionSites(
 }
 export const siegePower = (units: Piece[]) =>
   units.filter((u) => u.kind === "artillery").reduce((n, u) => n + u.tier, 0) +
-  Math.max(0, ...units.map((u) => u.guildSiege ?? 0));
+  maxValue([0, ...units.map((u) => u.guildSiege ?? 0)]);
 export function siegeRequirement(s: Game, town: Town, units: Piece[]) {
   return Math.max(
     0,

@@ -1,3 +1,4 @@
+import { maxValue, minValue } from "../game/aggregate";
 import {
   frozenInSeason,
   seasonAt,
@@ -584,10 +585,10 @@ export function Board({
           return hexCenter({ q, r });
         }),
       ];
-      const minX = Math.min(...centers.map((p) => p.x)) - 75,
-        maxX = Math.max(...centers.map((p) => p.x)) + 75,
-        minY = Math.min(...centers.map((p) => p.y)) - 70,
-        maxY = Math.max(...centers.map((p) => p.y)) + 70;
+      const minX = minValue(centers.map((p) => p.x)) - 75,
+        maxX = maxValue(centers.map((p) => p.x)) + 75,
+        minY = minValue(centers.map((p) => p.y)) - 70,
+        maxY = maxValue(centers.map((p) => p.y)) + 70;
       return { x: minX, y: minY, w: maxX - minX, h: maxY - minY };
     }, [s.seed, Object.keys(s.tiles).length, expeditionPreview.join(";")]);
   const sites = useMemo(

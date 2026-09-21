@@ -1,3 +1,4 @@
+import { maxValue, minValue } from "./aggregate";
 import {
   biomeYield,
   CLIMATES,
@@ -119,14 +120,12 @@ export function expeditionApproach(
     const footprint = expeditionFootprint(s, vertex, tier, direction);
     if (footprint.length !== [0, 10, 20, 40][tier]) continue;
     const score = targets.length
-      ? Math.max(
-          ...targets.map((target) => {
-            const before = Math.min(
-              ...s.vertices[vertex].tiles.map((id) => distance(id, target)),
+      ? maxValue(
+          targets.map((target) => {
+            const before = minValue(
+              s.vertices[vertex].tiles.map((id) => distance(id, target)),
             );
-            const after = Math.min(
-              ...footprint.map((id) => distance(id, target)),
-            );
+            const after = minValue(footprint.map((id) => distance(id, target)));
             return Math.max(0, before - after) * 5;
           }),
         )

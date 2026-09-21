@@ -1,3 +1,4 @@
+import { minValue } from "./aggregate";
 import type { Game, Town, Watchtower } from "./types";
 import { piecesAt, siegeRequirement, towerSiegeRequirement } from "./selectors";
 import { landAtVertex } from "./world";
@@ -21,12 +22,12 @@ export function townSiegeStatuses(s: Game, town: Town) {
       const groups = landAtVertex(s, town.vertex).map((tile) =>
         piecesAt(s, tile, false).filter((u) => u.owner === siege.owner),
       );
-      const required = Math.min(
+      const required = minValue([
         ...groups
           .filter((g) => g.length)
           .map((g) => siegeRequirement(s, town, g)),
         siegeRequirement(s, town, []),
-      );
+      ]);
       const remaining = Math.max(0, required - siege.progress);
       const breached = siege.raided !== null;
       const destructionReady =
@@ -72,10 +73,10 @@ export function towerSiegeStatuses(s: Game, tower: Watchtower) {
           ),
         }))
         .filter((g) => g.units.some((u) => u.kind !== "merchant"));
-      const required = Math.min(
+      const required = minValue([
         towerSiegeRequirement(tower, []),
         ...groups.map((g) => towerSiegeRequirement(tower, g.units)),
-      );
+      ]);
       return {
         siege,
         groups,

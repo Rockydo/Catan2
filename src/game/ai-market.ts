@@ -1,3 +1,4 @@
+import { maxValue } from "./aggregate";
 import {
   GOODS,
   RAW,
@@ -56,11 +57,11 @@ export function marketValues(s: Game): Record<Good, number> {
   values.fish = values.grain;
   values.meat = values.grain;
   values.oil = values.coal;
-  const rawBest = Math.max(
-    ...RAW.filter((g) => g !== "gold").map((g) => values[g]),
+  const rawBest = maxValue(
+    RAW.filter((g) => g !== "gold").map((g) => values[g]),
   );
-  const processedBest = Math.max(
-    ...PROCESSED.filter((g) => g !== "goldbars").map((g) => values[g]),
+  const processedBest = maxValue(
+    PROCESSED.filter((g) => g !== "goldbars").map((g) => values[g]),
   );
   values.gold = Math.max(rawBest, processedBest / 2) * 1.08;
   values.goldbars = Math.max(rawBest * 2, processedBest) * 1.08;

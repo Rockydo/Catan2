@@ -1,3 +1,4 @@
+import { appendValues, maxValue, minValue } from "./aggregate";
 import { isSettler } from "./content";
 import type {
   Command,
@@ -73,7 +74,10 @@ function economicOrders(s: Game, town: Town, values: Record<Good, number>) {
   const g = town.guild!,
     candidates: GuildOrder[] = [];
   if (extractionGuild(g.kind))
-    candidates.push(...extractionTiles(s, town).map((tile) => ({ tile })));
+    appendValues(
+      candidates,
+      extractionTiles(s, town).map((tile) => ({ tile })),
+    );
   if (
     g.kind === "builders" &&
     s.players[town.owner].bonuses.routes < 2 &&
@@ -86,7 +90,11 @@ function economicOrders(s: Game, town: Town, values: Record<Good, number>) {
     s.players[town.owner].hand.length < 2
   )
     candidates.push({});
-  if (g.kind === "artisans") candidates.push(...RAW.map((raw) => ({ raw })));
+  if (g.kind === "artisans")
+    appendValues(
+      candidates,
+      RAW.map((raw) => ({ raw })),
+    );
   if (g.kind === "merchants") {
     for (const pool of g.tier === 3
       ? [TRADE_RAW, TRADE_PROCESSED]
@@ -162,13 +170,13 @@ function suppliedFormation(s: Game, town: Town, planningConstruction = false) {
   for (const [tile, group] of groups) {
     if (group.every((u) => collector(u) || isSettler(u.kind))) continue;
     const selected = group;
-    const remaining = Math.min(
-      ...selected.map((u) =>
+    const remaining = minValue(
+      selected.map((u) =>
         planningConstruction ? speed(u) : speed(u) + u.bonus - u.moved,
       ),
     );
     if (g.kind === "engineers") {
-      const value = Math.max(
+      const value = maxValue([
         0,
         ...enemies
           .filter((t) =>
@@ -177,7 +185,7 @@ function suppliedFormation(s: Game, town: Town, planningConstruction = false) {
             ),
           )
           .map((t) => Math.min(g.tier * 2, siegeRequirement(s, t, group)) * 8),
-      );
+      ]);
       if (value > 0 && (!best || value > best.value))
         best = { ids: selected.map((u) => u.id), value };
       continue;

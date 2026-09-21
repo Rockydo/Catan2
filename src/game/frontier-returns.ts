@@ -1,3 +1,4 @@
+import { minValue } from "./aggregate";
 import type { Game, Town, UnitClass } from "./types";
 import {
   hash,
@@ -66,8 +67,8 @@ export function restoreOnFrontier(
           .map((v) => ({
             v,
             score:
-              Math.min(
-                ...s.vertices[v].tiles.flatMap((a) =>
+              minValue(
+                s.vertices[v].tiles.flatMap((a) =>
                   built.flatMap((t) =>
                     s.vertices[t.vertex].tiles.map((b) => distance(a, b)),
                   ),

@@ -1,3 +1,4 @@
+import { appendValues } from "./aggregate";
 import { emergencyTarget } from "./relations";
 import type { Game } from "./types";
 import { factionStrengths } from "./ai-strategy";
@@ -30,7 +31,8 @@ export function isCornered(s: Game, player = s.active): boolean {
   if (!sites.size) return true;
   const queue = ownTowns(s, player).map((t) => t.vertex);
   for (const route of Object.values(s.routes))
-    if (route.owner === player) queue.push(...s.edges[route.edge].vertices);
+    if (route.owner === player)
+      appendValues(queue, s.edges[route.edge].vertices);
   const seen = new Set<string>();
   const checkedEdges = new Set<string>();
   for (let i = 0; i < queue.length; i++) {
@@ -59,7 +61,7 @@ export function isCornered(s: Game, player = s.active): boolean {
         )
       )
         continue;
-      queue.push(...edge.vertices);
+      appendValues(queue, edge.vertices);
     }
   }
   return true;

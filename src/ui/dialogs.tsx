@@ -1,3 +1,4 @@
+import { minValue } from "../game/aggregate";
 import { localize as tx, useLocale } from "../i18n";
 import { ResearchArt } from "./ResearchArt";
 import { RESEARCH_GOODS, RESEARCH_MARCH } from "../game/content";
@@ -504,15 +505,15 @@ export function ResearchPlayDialog({
                       {tx(
                         Math.max(
                           0,
-                          Math.min(
-                            ...units.map((u) => speed(u) + u.bonus - u.moved),
+                          minValue(
+                            units.map((u) => speed(u) + u.bonus - u.moved),
                           ),
                         ),
                       )}
                       {tx(" ")}→{tx(" ")}
                       {tx(
-                        Math.min(
-                          ...units.map((u) => speed(u) + u.bonus - u.moved),
+                        minValue(
+                          units.map((u) => speed(u) + u.bonus - u.moved),
                         ) + RESEARCH_MARCH[kind].movement,
                       )}
                       {tx(" ")}

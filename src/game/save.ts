@@ -450,7 +450,7 @@ export function assertInvariants(s: Game) {
         Array.isArray(e.vertices) &&
         e.vertices.length === 2 &&
         e.vertices.every((v) => s.vertices[v]) &&
-        key === edgeKey(...e.vertices),
+        key === edgeKey(e.vertices[0], e.vertices[1]),
       "Invalid route edge.",
     );
     rule(

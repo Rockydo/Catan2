@@ -1,3 +1,4 @@
+import { maxValue } from "../game/aggregate";
 import { localize as tx, useLocale } from "../i18n";
 import { AllianceSummary } from "./Alliances";
 import { allianceOf } from "../game/relations";
@@ -48,7 +49,7 @@ export const FactionStandings = memo(function FactionStandings({
     [game],
   );
   const globalPower = standings.reduce((sum, row) => sum + row.score.total, 0);
-  const maximum = Math.max(1, ...standings.map((s) => s.score.total));
+  const maximum = maxValue([1, ...standings.map((s) => s.score.total)]);
   const support = aiGoldSupport(
     game,
     game.players.map(

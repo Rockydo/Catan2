@@ -1,3 +1,4 @@
+import { maxValue } from "../game/aggregate";
 import { localize as tx, useLocale } from "../i18n";
 import { MapLabel } from "./MapLabel";
 import { memo, useId, type CSSProperties } from "react";
@@ -455,7 +456,7 @@ export const ArmyMiniature = memo(function ArmyMiniature({
   useLocale();
 
   const kinds = [...new Set(units.map((u) => u.kind))],
-    rank = Math.max(...units.map((u) => u.tier));
+    rank = maxValue(units.map((u) => u.tier));
   return (
     <g pointerEvents="none" data-unit-kinds={kinds.join(",")}>
       {tx(
@@ -511,8 +512,8 @@ export const ArmyMiniature = memo(function ArmyMiniature({
             >
               <MilitaryGlyph
                 kind={kind}
-                tier={Math.max(
-                  ...units.filter((u) => u.kind === kind).map((u) => u.tier),
+                tier={maxValue(
+                  units.filter((u) => u.kind === kind).map((u) => u.tier),
                 )}
                 accent={RANK_METAL[rank]}
               />

@@ -1,3 +1,4 @@
+import { maxValue } from "./aggregate";
 import { friendly, allianceOf, emergencyTarget } from "./relations";
 import { townGuilds } from "./guilds";
 import type { Game, Piece, Town } from "./types";
@@ -211,12 +212,12 @@ export function threatPower(
     const key = `${u.owner}/${u.tile}`;
     groups.set(key, [...(groups.get(key) ?? []), u]);
   }
-  return Math.max(
+  return maxValue([
     0,
     ...[...groups.values()].flatMap((group) =>
       tiles.map((tile) => power(s, group, tile)),
     ),
-  );
+  ]);
 }
 /** A planning target, not a unit cap. Real local danger can justify more guards.
  * Compare raw unit points with raw unit points, and limit speculative armament
@@ -226,12 +227,12 @@ export function threatPower(
 export function conquestDrive(s: Game): number {
   const scores = factionStrengths(s),
     ours = scores[s.active],
-    rival = Math.max(
+    rival = maxValue([
       1,
       ...s.players
         .filter((p) => p.alive && p.id !== s.active)
         .map((p) => scores[p.id]),
-    ),
+    ]),
     advantage = Math.max(0, Math.min(1, ours / rival - 1)),
     crisis = dominance(s);
   return (
@@ -271,7 +272,7 @@ export function campaignPowerTarget(s: Game): number {
       )) *
     (1 + (dominance(s).leader === s.active ? 0 : dominance(s).severity) * 1.5) *
     drive;
-  const opponent = Math.max(0, ...stacks.values());
+  const opponent = maxValue([0, ...stacks.values()]);
   return Math.max(
     minimumFieldPower(s),
     Math.min(

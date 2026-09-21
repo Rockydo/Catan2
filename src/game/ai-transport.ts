@@ -1,3 +1,4 @@
+import { minValue } from "./aggregate";
 import type { Command, Game, Piece, ShipClass } from "./types";
 import { shipStats } from "./content";
 import { emergencyTarget } from "./relations";
@@ -161,7 +162,7 @@ export function campaignPassage(
     .slice(0, berths);
   if (!force.length || !passengers.length || !canOccupy(s.tiles[fleet], true))
     return null;
-  const pace = Math.min(...force.map(speed));
+  const pace = minValue(force.map(speed));
   const direct = (fronts.get(army)?.distance ?? Infinity) / pace;
   if (direct < 5) {
     cache.set(key, null);
@@ -300,7 +301,7 @@ export function campaignTransportAction(s: Game): Command | null {
     const passengers = ownPieces(s).filter(
       (u) => u.carrier && ids.has(u.carrier),
     );
-    const sailing = Math.min(...ships.map(speed));
+    const sailing = minValue(ships.map(speed));
     if (!passengers.length) {
       empty.push({
         tile,
@@ -314,7 +315,7 @@ export function campaignTransportAction(s: Game): Command | null {
       continue;
     }
     if (!passengers.some((u) => points(u) > 0)) continue;
-    const pace = Math.min(...passengers.map(speed));
+    const pace = minValue(passengers.map(speed));
     const landing = coasts
       .map((c) => ({
         ...c,

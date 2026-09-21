@@ -1,3 +1,4 @@
+import { appendValues, maxValue } from "../game/aggregate";
 import { Snowflake, Waves } from "lucide-react";
 import { terrainName } from "../game/maritime";
 import { localize as tx, useLocale } from "../i18n";
@@ -60,7 +61,7 @@ export function selectHalfForce(s: Game, units: Piece[]): string[] {
     remainders: Piece[] = [];
   for (const group of grouped(eligible)) {
     const half = Math.floor(group.length / 2);
-    chosen.push(...group.slice(0, half));
+    appendValues(chosen, group.slice(0, half));
     if (group.length % 2) remainders.push(group[half]);
   }
   const target =
@@ -198,7 +199,7 @@ export function ArmyComposition({
                 {tx(support > 0 ? ` · +${support} tower support` : "")}
                 {tx(
                   force.some((u) => u.guildSiege)
-                    ? ` · +${Math.max(...force.map((u) => u.guildSiege ?? 0))} Engineer siege power this turn`
+                    ? ` · +${maxValue(force.map((u) => u.guildSiege ?? 0))} Engineer siege power this turn`
                     : "",
                 )}
               </p>

@@ -1,3 +1,4 @@
+import { appendValues, minValue } from "./aggregate";
 import { factionStrengths } from "./ai-strategy";
 import { townGuilds } from "./guilds";
 import { GOODS, type Game, type Piece, type Town } from "./types";
@@ -22,8 +23,8 @@ const quota = (count: number, share: number) => Math.round(count * share);
 const rebased = (born: number, before: number, after: number) =>
   born >= before ? after : Math.max(0, after - 1);
 function tileDistance(s: Game, tile: string, towns: Town[]) {
-  return Math.min(
-    ...towns.flatMap((t) =>
+  return minValue(
+    towns.flatMap((t) =>
       s.vertices[t.vertex].tiles.map((id) => distance(tile, id)),
     ),
   );
@@ -63,24 +64,20 @@ export function startRebellion(
   while (region.length < count) {
     pool.sort(
       (a, b) =>
-        Math.min(
-          ...s.vertices[a.vertex].tiles.map((id) =>
-            tileDistance(s, id, region),
-          ),
+        minValue(
+          s.vertices[a.vertex].tiles.map((id) => tileDistance(s, id, region)),
         ) +
         noise.get(a.id)! -
-        Math.min(
-          ...s.vertices[b.vertex].tiles.map((id) =>
-            tileDistance(s, id, region),
-          ),
+        minValue(
+          s.vertices[b.vertex].tiles.map((id) => tileDistance(s, id, region)),
         ) -
         noise.get(b.id)!,
     );
     region.push(pool.shift()!);
   }
   const regionalScore = (tiles: string[]) =>
-    Math.min(...tiles.map((id) => tileDistance(s, id, region))) -
-    Math.min(...tiles.map((id) => tileDistance(s, id, pool)));
+    minValue(tiles.map((id) => tileDistance(s, id, region))) -
+    minValue(tiles.map((id) => tileDistance(s, id, pool)));
   function regionalOrder<T>(items: T[], tiles: (item: T) => string[]): T[] {
     return items
       .map((item) => ({
@@ -128,8 +125,9 @@ export function startRebellion(
   const townVertices = new Set(towns.map((t) => t.vertex));
   const rebelVertices = new Set(region.map((t) => t.vertex));
   const secedingTowers = towers.filter((t) => rebelVertices.has(t.vertex));
-  secedingTowers.push(
-    ...regionalOrder(
+  appendValues(
+    secedingTowers,
+    regionalOrder(
       towers.filter((t) => !townVertices.has(t.vertex)),
       (t) => s.vertices[t.vertex].tiles,
     ).slice(
@@ -190,8 +188,9 @@ export function startRebellion(
         destination = tile;
         break;
       }
-      queue.push(
-        ...neighbors(tile).filter((id) => canOccupy(s.tiles[id], naval)),
+      appendValues(
+        queue,
+        neighbors(tile).filter((id) => canOccupy(s.tiles[id], naval)),
       );
     }
     if (!destination) {
