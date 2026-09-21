@@ -43,6 +43,7 @@ Choose **English** or **Français** on the main menu or in campaign settings. Th
 - Single-tier Settlers and Settler ships found towns without a connected road. Their price includes the settlement; select the unit and use **Found settlement**.
 - Four research tiers, with eight cards each. Buy a choice of two random cards and keep one.
 - AI difficulty and action-speed settings are separate. Faster actions do not reduce AI intelligence.
+- If a human exceeds 40% of total faction power, every AI receives 1 Gold per settlement or city on every dice roll, rising by 1 for each further five percentage points (45% gives 2, 50% gives 3).
 - No victory points or military upkeep. Destroy every rival's last town to win.
 
 This is a substantial variant, so read the short first-game chapter even if you know Catan. There is no online multiplayer or matchmaking. Sharing a save transfers a campaign; it does not connect two players.

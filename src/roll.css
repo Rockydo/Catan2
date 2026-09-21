@@ -347,6 +347,12 @@ button.dice:disabled {
   color: #485e42;
   padding: 3px 0;
 }
+.harvest-support {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  color: #485e42;
+}
 .no-yield {
   background: #eeefe3;
 }

@@ -1912,5 +1912,9 @@
   "{0}: {1} units automatically retreated from melting ice to {2}.": "{0} : {1} unités se sont repliées automatiquement de la glace fondante vers {2}.",
   "Invalid thaw retreat battle.": "Combat de débarquement après dégel invalide.",
   "Invalid thaw retreat queue.": "File de replis après dégel invalide.",
-  "Invalid retired Andean snow terrain.": "Ancienne plaine enneigée andine invalide."
+  "Invalid retired Andean snow terrain.": "Ancienne plaine enneigée andine invalide.",
+  "Invalid AI support receipt.": "Reçu de soutien aux IA invalide.",
+  "Includes {0} Gold of AI support": "Dont {0} Or de soutien aux IA",
+  "AI support: {0} Gold per settlement or city on every dice roll.": "Soutien aux IA : {0} Or par colonie ou ville à chaque lancer de dés.",
+  "AI support: +{0} Gold per roll": "Soutien aux IA : +{0} Or par lancer"
 }

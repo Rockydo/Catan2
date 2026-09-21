@@ -887,6 +887,22 @@ export function assertInvariants(s: Game) {
     "Invalid dice.",
   );
   for (const stock of Object.values(s.production)) validStock(stock, true);
+  if (s.productionSupport !== undefined) {
+    const support = s.productionSupport;
+    object(support);
+    int(support.perTown, 1, 13);
+    object(support.gold);
+    for (const [owner, amount] of Object.entries(support.gold)) {
+      int(amount, 1);
+      rule(
+        String(Number(owner)) === owner &&
+          !!s.players[Number(owner)] &&
+          amount % support.perTown === 0 &&
+          amount <= (s.production[Number(owner)]?.gold ?? 0),
+        "Invalid AI support receipt.",
+      );
+    }
+  }
   if (s.researchChoice)
     rule(
       Array.isArray(s.researchChoice) &&

@@ -16,6 +16,7 @@ export interface RollReport {
     alive: boolean;
     goods: Stock;
     total: number;
+    supportGold: number;
   }[];
   tiles: string[] | null;
   total: number;
@@ -36,6 +37,7 @@ export function rollReport(s: Game, live = false): RollReport | null {
     alive: p.alive,
     goods: { ...s.production[p.id] },
     total: sumStock(s.production[p.id] ?? {}),
+    supportGold: s.productionSupport?.gold[p.id] ?? 0,
   }));
   return {
     id: `${s.seed}:${s.actions}`,

@@ -6,6 +6,7 @@ import { memo, useMemo } from "react";
 import { ChevronDown, ScrollText } from "lucide-react";
 import type { Game } from "../game/types";
 import { factionStrengthDetails } from "../game/ai-strategy";
+import { aiGoldSupport } from "../game/ai-support";
 import {
   ownTowns,
   ownPieces,
@@ -48,6 +49,12 @@ export const FactionStandings = memo(function FactionStandings({
   );
   const globalPower = standings.reduce((sum, row) => sum + row.score.total, 0);
   const maximum = Math.max(1, ...standings.map((s) => s.score.total));
+  const support = aiGoldSupport(
+    game,
+    game.players.map(
+      (p) => standings.find((row) => row.player.id === p.id)!.score.total,
+    ),
+  );
   return (
     <section
       className="faction-standings"
@@ -63,6 +70,13 @@ export const FactionStandings = memo(function FactionStandings({
           "The AI’s overall strength estimate. Open a faction for its breakdown; battle power depends on terrain and defenses.",
         )}
       </p>
+      {support > 0 && (
+        <p className="power-explainer" data-testid="ai-gold-support">
+          {tx(
+            `AI support: ${support} Gold per settlement or city on every dice roll.`,
+          )}
+        </p>
+      )}
       <AllianceSummary
         game={game}
         viewer={viewer}
@@ -132,6 +146,11 @@ export const FactionStandings = memo(function FactionStandings({
                     <ScrollText size={11} /> {tx(cards)}
                     {tx(" research cards")}
                   </small>
+                  {support > 0 && p.alive && p.control !== "human" && (
+                    <small>
+                      {tx(`AI support: +${support * towns} Gold per roll`)}
+                    </small>
+                  )}
                 </span>
                 <span className="power-value">
                   <strong data-testid={`faction-score-${p.id}`}>

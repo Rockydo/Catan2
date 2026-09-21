@@ -575,3 +575,9 @@ Reproduce the engine audit with `npm test`, `npx tsx scripts/seasons-audit.ts`, 
 
 - All 1,147 tests in 71 files pass. Save import replaces retired Andean Snow plains with deterministic Iron/Gold/Bare Peaks draws weighted 20%/20%/60%. Troops, town and watchtower ground, ports and pending battle sites receive a walkable mineral tile if Peaks were drawn. Dice numbers, geometry, units, structures, inventories and random streams are preserved. Other climates keep their Snow plains.
 - Six English/French production-browser checks pass across Firefox, Chromium and mobile Chromium. They verify automatic save replacement, preservation of the preceding save in the backup slot, and stable terrain after reload. Build, formatting and save-integrity checks pass.
+
+## Gold support against a dominant human
+
+- All 1,171 tests in 72 files pass. Coverage includes the strict 40% cutoff, every 5% step, every faction's dice roll, separate payments to every AI town, city levels, blockades, seasons, eliminated factions, hotseat humans, current power after mutations, and saved receipt validation. Gold remains in the receiving town; support does not feed back into the power estimate.
+- All 33 focused browser checks pass across Firefox, Chromium and mobile Chromium. English and French standings show the current per-town and per-faction rates. Harvest receipts include delivered support; replay and reload do not produce a second payment. Existing dice reports, faction standings and accessibility scans pass. Desktop and mobile receipt screenshots were inspected.
+- TypeScript, the production build, formatting, diff checks and all 12 production HTTP checks pass. Existing campaigns receive support from the next roll, without retroactive payments. Tests used isolated saves; the player's campaign was not modified. The local deployment retains older hashed assets for already-open games.

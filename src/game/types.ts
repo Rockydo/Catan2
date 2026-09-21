@@ -345,6 +345,8 @@ export interface Game extends World {
   allianceOffer?: AllianceOffer;
   dice: [number, number] | null;
   production: Record<number, Stock>;
+  /** Part of the last roll's receipts, preserved for replay after spending. */
+  productionSupport?: { perTown: number; gold: Record<number, number> };
   events: Event[];
   winner: number | null;
   actions: number;

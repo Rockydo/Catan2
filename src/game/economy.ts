@@ -17,6 +17,7 @@ import {
   nearestTown,
 } from "./selectors";
 import { processedFor, GOOD_INFO } from "./content";
+import { aiGoldSupport } from "./ai-support";
 export function rule(condition: unknown, message: string): asserts condition {
   if (!condition) throw new Error(message);
 }
@@ -123,6 +124,8 @@ export function log(
   return event;
 }
 export function production(s: Game, total: number) {
+  const support = aiGoldSupport(s);
+  delete s.productionSupport;
   s.production = {};
   for (const p of s.players) s.production[p.id] = {};
   function produce(owner: number, stock: Stock, g: Good, amount: number) {
@@ -132,6 +135,17 @@ export function production(s: Game, total: number) {
   for (const source of productionSources(s))
     if (s.tiles[source.tile].number === total)
       produce(source.owner, source.town.stock, source.good, source.amount);
+  if (support) {
+    const gold: Record<number, number> = {};
+    for (const town of Object.values(s.towns)) {
+      const owner = s.players[town.owner];
+      if (!owner.alive || owner.control === "human") continue;
+      produce(owner.id, town.stock, "gold", support);
+      gold[owner.id] = (gold[owner.id] ?? 0) + support;
+    }
+    if (Object.keys(gold).length)
+      s.productionSupport = { perTown: support, gold };
+  }
   const generated = Object.values(s.production).reduce(
     (n, v) => n + sumStock(v),
     0,
