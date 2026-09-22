@@ -350,12 +350,16 @@ Les Artisans transforment la matière choisie en son produit habituel sans ateli
 
 ### Services militaires
 
-Commandants et Navigateurs ravitaillent des formations entières admissibles près de la ville, quelle que soit leur taille. Le bonus suit chaque unité après division ou fusion ; chaque unité reçoit ce service une fois par tour. Ils ajoutent du mouvement, pas de puissance de combat. Recrues, passagers embarqués et unités ayant terminé leur activation sont exclus. Le mouvement des Navigateurs ne contourne pas les règles de disponibilité des transports. Consultez le contrat pour le bonus exact et sa portée.
+Commandants et Navigateurs ravitaillent des formations entières admissibles près de la ville, quelle que soit leur taille. Le bonus suit chaque unité après division ou fusion ; chaque unité IA reçoit ce service une fois par tour. Ils ajoutent du mouvement, pas de puissance de combat. Recrues, passagers embarqués et unités ayant terminé leur activation sont exclus. Le mouvement des Navigateurs ne contourne pas les règles de disponibilité des transports. Consultez le contrat pour le bonus exact et sa portée.
 
 ### Équipement des Ingénieurs
 
-Les Ingénieurs équipent chaque combattant admissible d’une armée adjacente. Son bonus de siège est le meilleur bonus individuel, pas leur somme : +2/+4/+6 selon le contrat. Diviser conserve les outils, fusionner ne les multiplie pas. Chaque unité reçoit des outils une fois par tour, séparément du ravitaillement des Commandants. Ils expirent au début du prochain tour du propriétaire et affectent sièges de villes et tours, jamais les batailles. Recrues et passagers sont exclus.
+Les Ingénieurs équipent chaque combattant admissible d’une armée adjacente. Son bonus de siège est le meilleur bonus individuel, pas leur somme : +2/+4/+6 selon le contrat. Diviser conserve les outils, fusionner ne les multiplie pas. Chaque unité IA reçoit des outils une fois par tour, séparément du ravitaillement des Commandants. Ils expirent au début du prochain tour du propriétaire et affectent sièges de villes et tours, jamais les batailles. Recrues et passagers sont exclus.
 Les Bâtisseurs donnent 2/3/6 liaisons gratuites ce tour, avec raccordements et blocages ordinaires, sans colonies ni camps gratuits. Les Érudits offrent deux cartes aléatoires ordinaires au palier II/III/IV pour en garder une, jouable immédiatement. Leurs commandes sont manuelles ; terminez une découverte avant la suivante. Les guildes avancées conservent le contrat distinct de chaque palier inférieur.
+
+### Guildes militaires humaines
+
+Les factions humaines peuvent cumuler les contrats distincts des Commandants, Navigateurs ou Ingénieurs sur la même formation. Chaque palier conserve un contrat payant par tour du propriétaire. Les bonus de mouvement s’additionnent. Les bonus des Ingénieurs s’additionnent sur chaque unité ; l’armée utilise ensuite le meilleur bonus individuel de siège. Le palier I atteint les hexagones adjacents, le II un hexagone plus loin et le III deux hexagones plus loin. Le palier construit détermine la portée de tous les contrats. Les guildes IA conservent leur portée adjacente et leurs limites de cumul. Les restrictions de recrutement, d’embarquement et d’activation restent applicables.
 
 ## Expéditions et retours de factions
 

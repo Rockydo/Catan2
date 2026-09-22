@@ -356,6 +356,10 @@ Commanders and Navigators supply entire selected eligible formations beside the 
 Engineers equip every eligible combat unit in one adjacent army. Its siege bonus is the highest equipped unit's bonus, not a sum: +2/+4/+6 by contract tier. Splitting retains equipment, merging does not multiply it. Each unit receives tools once per owner turn, separately from Commander supplies. Tools expire at the start of the next owner turn. They affect city and tower sieges, never battles; new and embarked units are ineligible.
 Builders grant 2/3/6 free route segments this turn, with normal connections and blocking; no free settlements or camps. Scholars provide a choice of two ordinary random cards at research tier II/III/IV, playable immediately. They are manual only; finish a pending discovery before another order. Higher guild tiers retain each lower tier's separate contract.
 
+### Human combat guilds
+
+Human factions may stack separate Commander, Navigator or Engineer tier contracts on the same formation. Each guild tier still grants one paid contract per owner turn. Movement bonuses add together; Engineer bonuses add on each unit, and an army uses the highest resulting individual siege bonus. Guild tier I reaches adjacent hexes, tier II one hex farther, and tier III two hexes farther. The established guild tier determines reach for all its contracts. AI guilds keep adjacent range and the existing non-stacking limits. Recruitment, embarkation and activation restrictions still apply.
+
 ## Expeditions and returning factions
 
 ### Launch an expedition

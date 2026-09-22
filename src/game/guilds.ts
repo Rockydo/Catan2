@@ -1,4 +1,5 @@
 import { tileOptions } from "./maritime";
+import { distance } from "./world";
 import { drawResearch } from "./research-draw";
 import { COSTS, GOOD_INFO, processedFor, ROMAN } from "./content";
 import {
@@ -366,30 +367,26 @@ export function guildOrderQuote(
     researchTier = tier + 1;
   } else {
     const naval = g.kind === "navigators";
+    const human = s.players[town.owner].control === "human";
     rule(
       ids?.length && new Set(ids).size === ids.length,
-      `Choose an adjacent friendly ${naval ? "fleet" : "army"}.`,
+      human
+        ? "Choose a friendly formation within guild reach."
+        : `Choose an adjacent friendly ${naval ? "fleet" : "army"}.`,
     );
+    const eligible = guildUnits(s, town),
+      allowed = new Set(eligible.map((u) => u.id));
     units = ids.map((id) => s.pieces[id]);
     rule(
-      units.every(
-        (u) =>
-          u &&
-          u.owner === town.owner &&
-          u.naval === naval &&
-          ready(s, u) &&
-          (g.kind === "engineers"
-            ? !u.guildSiege && points(u) > 0
-            : !u.guildSupplied) &&
-          s.vertices[town.vertex].tiles.includes(u.tile) &&
-          u.tile === units[0].tile,
-      ),
-      "Choose an adjacent friendly formation. New, embarked, already-acted or already guild-supplied units cannot receive an order.",
+      units.every((u) => u && allowed.has(u.id) && u.tile === units[0].tile),
+      human
+        ? "Choose a friendly formation within guild reach. New recruits, embarked troops and units that ended their activation are excluded."
+        : "Choose an adjacent friendly formation. New, embarked, already-acted or already guild-supplied units cannot receive an order.",
     );
     // IDs identify the formation, never a capped detachment. Include every
     // eligible friendly unit here, even when a caller sends only one anchor.
     const tile = units[0].tile;
-    units = guildUnits(s, town).filter((u) => u.tile === tile);
+    units = eligible.filter((u) => u.tile === tile);
     siege = g.kind === "engineers" ? tier * 2 : 0;
     addStock(
       cost,
@@ -425,15 +422,26 @@ export function guildOrderQuote(
   };
 }
 export function guildUnits(s: Game, town: Town): Piece[] {
-  const naval = town.guild?.kind === "navigators";
-  return ownPieces(s, town.owner).filter(
+  const naval = town.guild?.kind === "navigators",
+    human = s.players[town.owner].control === "human",
+    extraReach = human ? (town.guild?.tier ?? 1) - 1 : 0;
+  const nearby =
+    extraReach > 0
+      ? ownPieces(s, town.owner).filter(
+          (u) =>
+            !u.carrier &&
+            s.vertices[town.vertex].tiles.some(
+              (tile) => distance(tile, u.tile) <= extraReach,
+            ),
+        )
+      : ownPieces(s, town.owner).filter((u) => !u.carrier && s.vertices[town.vertex].tiles.includes(u.tile));
+  return nearby.filter(
     (u) =>
       u.naval === naval &&
       ready(s, u) &&
       (town.guild?.kind === "engineers"
-        ? !u.guildSiege && points(u) > 0
-        : !u.guildSupplied) &&
-      s.vertices[town.vertex].tiles.includes(u.tile),
+        ? (human || !u.guildSiege) && points(u) > 0
+        : human || !u.guildSupplied),
   );
 }
 export function guildCommand(s: Game, c: Command): boolean {
@@ -560,7 +568,10 @@ export function guildCommand(s: Game, c: Command): boolean {
   addStock(town.stock, quote.gain);
   for (const u of quote.units) {
     u.bonus += quote.movement;
-    if (quote.siege) u.guildSiege = quote.siege;
+    if (quote.siege)
+      u.guildSiege =
+        quote.siege +
+        (s.players[town.owner].control === "human" ? (u.guildSiege ?? 0) : 0);
     else u.guildSupplied = true;
   }
   s.players[s.active].bonuses.routes += quote.routes;

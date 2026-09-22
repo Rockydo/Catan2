@@ -735,7 +735,9 @@ export function assertInvariants(s: Game) {
       );
     if (u.guildSupplied !== undefined) bool(u.guildSupplied);
     if (u.guildSiege !== undefined) {
-      int(u.guildSiege, 2, 6);
+      // Human guild contracts stack. Transfers can leave these temporary
+      // tools on an AI-owned unit until its next turn resets them.
+      int(u.guildSiege, 2);
       rule(
         !u.naval &&
           !["merchant", "settler"].includes(u.kind) &&

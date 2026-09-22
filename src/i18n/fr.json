@@ -1919,5 +1919,8 @@
   "Support against {0}: {1} Gold per settlement or city on every dice roll.": "Soutien contre {0} : {1} Or par colonie ou ville à chaque lancer de dés.",
   "Plus {0} Gold bars per city on every dice roll.": "Plus {0} Lingots d’or par ville à chaque lancer de dés.",
   "Support: +{0} Gold per roll": "Soutien : +{0} Or par lancer",
-  "+{0} Gold bars per roll": "+{0} Lingots d’or par lancer"
+  "+{0} Gold bars per roll": "+{0} Lingots d’or par lancer",
+  "Choose a friendly formation within guild reach.": "Choisissez une formation alliée à portée de la guilde.",
+  "Choose a friendly formation within guild reach. New recruits, embarked troops and units that ended their activation are excluded.": "Choisissez une formation alliée à portée de la guilde. Les nouvelles recrues, les passagers embarqués et les unités ayant terminé leur activation sont exclus.",
+  "Human combat guilds can stack their separate tier contracts on the same formation. Guild tier I reaches adjacent tiles; tier II reaches one tile farther; tier III reaches two tiles farther. Bonuses affect every eligible unit. New recruits, embarked troops and units that ended their activation are excluded.": "Les guildes militaires humaines peuvent cumuler leurs contrats de chaque palier sur la même formation. Le palier I atteint les hexagones adjacents, le II porte un hexagone plus loin et le III deux hexagones plus loin. Les bonus concernent toutes les unités admissibles. Les nouvelles recrues, les passagers embarqués et les unités ayant terminé leur activation sont exclus."
 }

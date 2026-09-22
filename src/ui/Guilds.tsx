@@ -645,7 +645,9 @@ function GuildWorkOrder({ game: s, town, interactive, onAction }: Props) {
             )}
             <p className="muted small">
               {tx(
-                "Every eligible unit in the formation receives this guild’s equipment once per turn. New recruits, embarked troops and units that ended their activation are excluded. Spent movement is not refunded; remaining points can fund movement, battles or raids.",
+                s.players[town.owner].control === "human"
+                  ? "Human combat guilds can stack their separate tier contracts on the same formation. Guild tier I reaches adjacent tiles; tier II reaches one tile farther; tier III reaches two tiles farther. Bonuses affect every eligible unit. New recruits, embarked troops and units that ended their activation are excluded."
+                  : "Every eligible unit in the formation receives this guild’s equipment once per turn. New recruits, embarked troops and units that ended their activation are excluded. Spent movement is not refunded; remaining points can fund movement, battles or raids.",
               )}
             </p>
           </>
