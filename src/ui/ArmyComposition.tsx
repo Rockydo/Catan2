@@ -12,7 +12,14 @@ import {
   TERRAIN,
   shipStats,
 } from "../game/content";
-import { points, power, ready, speed, unitName } from "../game/selectors";
+import {
+  points,
+  power,
+  ready,
+  speed,
+  unitName,
+  siegePower,
+} from "../game/selectors";
 import { towerPower } from "../game/maritime";
 import { UnitPortrait } from "./components";
 
@@ -180,6 +187,16 @@ export function ArmyComposition({
                   <b>{tx(readyCount)}</b>
                   {tx(" ready to move")}
                 </span>
+                {siegePower(force) > 0 && (
+                  <span
+                    title={tx(
+                      "Reduces the turns needed to breach a town. Does not add combat power.",
+                    )}
+                  >
+                    <b>{tx(siegePower(force))}</b>
+                    {tx(" siege power")}
+                  </span>
+                )}
                 {tx(
                   capacity > 0 && (
                     <span>

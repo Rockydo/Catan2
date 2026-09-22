@@ -137,6 +137,8 @@ import {
   besieged,
   expeditionSites,
   siegeRequirement,
+  siegePower,
+  canBesiege,
   towerSiegeRequirement,
   townAt,
 } from "./selectors";
@@ -657,6 +659,7 @@ export function economyProjects(s: Game): Project[] {
   const artillery = units
     .filter((u) => u.kind === "artillery")
     .reduce((n, u) => n + u.tier, 0);
+  const vulnerableCoasts = enemyTowns.filter((t) => !protects(s, t, true));
   const hostileShips = Object.values(s.pieces).filter(
     (u) => u.naval && !friendly(s, u.owner, s.active),
   );
@@ -997,6 +1000,27 @@ export function economyProjects(s: Game): Project[] {
             (n, u) => n + shipStats(u.kind as ShipClass, u.tier).capacity,
             0,
           );
+        const siegeTargets = vulnerableCoasts.filter((town) =>
+          waterAtVertex(s, town.vertex).some(
+            (coast) =>
+              water.get(coast) === water.get(tile) &&
+              reachable(s, tile, coast, true, s.active),
+          ),
+        );
+        const siegeNeed = siegeTargets.length
+          ? Math.max(
+              0,
+              Math.min(
+                6,
+                Math.max(
+                  1,
+                  minValue(
+                    siegeTargets.map((town) => siegeRequirement(s, town, [])),
+                  ),
+                ),
+              ) - siegePower(ships),
+            )
+          : 0;
         const shortcutDemand = campaignTransportDemand(s, tile);
         const invasion = invasionCoasts(s, tiles[0]).some((w) =>
           reachable(s, tile, w, true, s.active),
@@ -1080,6 +1104,7 @@ export function economyProjects(s: Game): Project[] {
               ).length,
               free = freeCount > 0,
               cost = free ? {} : shipCost(kind, tier);
+            const siegeDemand = info.siege > 0 ? siegeNeed : 0;
             const need = info.capacity
               ? overseas
                 ? Math.max(
@@ -1093,7 +1118,7 @@ export function economyProjects(s: Game): Project[] {
                     ) - berths,
                   )
                 : 0
-              : Math.max(0, escortTarget - escortPower);
+              : Math.max(siegeDemand, escortTarget - escortPower, 0);
             const urgent =
               need > 0 &&
               (info.capacity
@@ -1108,17 +1133,21 @@ export function economyProjects(s: Game): Project[] {
                 cost,
                 free
                   ? 35
-                  : (((urgent ? 36 : blockade ? 14 : 5) + Math.min(12, need)) *
+                  : (((urgent ? 36 : siegeDemand ? 20 : blockade ? 14 : 5) +
+                      Math.min(12, need)) *
                       (0.8 +
                         Math.min(need, info.capacity || info.power) * 0.12)) /
                       (1 + stockValue(cost, values) / 70),
                 info.capacity
                   ? "Open an overseas passage"
-                  : "Protect the sea lanes",
+                  : siegeDemand
+                    ? "Equip a fleet to siege exposed coastal towns"
+                    : "Protect the sea lanes",
                 urgent,
                 Math.max(
                   freeCount,
                   Math.ceil(need / (info.capacity || info.power)),
+                  siegeDemand ? Math.ceil(siegeDemand / info.siege) : 0,
                 ),
               );
           }
@@ -2214,28 +2243,34 @@ function townOperation(s: Game): Command | null {
     .filter((t) => warTarget(s, t.owner))
     .sort((a, b) => leaderPressure(s, b.owner) - leaderPressure(s, a.owner));
   for (const group of armyGroups(s)) {
-    if (group[0].naval) continue;
+    const naval = group[0].naval;
+    if (!group.some((u) => canBesiege(s, u))) continue;
     for (const town of enemies.filter(
       (t) =>
-        s.vertices[t.vertex].tiles.includes(group[0].tile) && !protects(s, t),
+        s.vertices[t.vertex].tiles.includes(group[0].tile) &&
+        !protects(s, t, naval),
     )) {
       const siege = s.sieges[`${s.active}:${town.id}`];
       if (siege?.last === s.players[s.active].turns) continue;
       if (siege?.raided != null) {
         const ids = group
-          .filter((u) => fresh(s, u))
+          .filter((u) => fresh(s, u) && canBesiege(s, u))
           .slice(0, 1)
           .map((u) => u.id);
         const destroy = { type: "destroy-town", town: town.id, ids };
         if (ids.length && check(s, destroy)) return destroy;
       }
       const ids = group
-        .filter((u) => speed(u) + u.bonus - u.moved >= 1)
+        .filter(
+          (u) =>
+            speed(u) + u.bonus - u.moved >= 1 && (!naval || canBesiege(s, u)),
+        )
         .map((u) => u.id);
       // Pull down a supporting tower when doing so removes more siege delay
       // than the tower costs to overcome. Do not abandon accumulated city work.
       const eligible = ids.map((id) => s.pieces[id]);
       if (
+        !naval &&
         ids.length &&
         siege?.raided == null &&
         (siege?.progress ?? 0) < siegeRequirement(s, town, eligible)
@@ -2270,13 +2305,7 @@ function townOperation(s: Game): Command | null {
       const crew: Piece[] = ordered.length ? [ordered[0]] : [];
       for (const unit of ordered
         .slice(1)
-        .sort(
-          (a, b) =>
-            (b.kind === "artillery" ? b.tier : 0) +
-            (b.guildSiege ?? 0) -
-            (a.kind === "artillery" ? a.tier : 0) -
-            (a.guildSiege ?? 0),
-        )) {
+        .sort((a, b) => siegePower([b]) - siegePower([a]))) {
         if (siegeRequirement(s, town, crew) <= (siege?.progress ?? 0)) break;
         if (
           siegeRequirement(s, town, [...crew, unit]) <
@@ -2687,7 +2716,6 @@ function chooseManeuver(s: Game, emergency: boolean): Command {
         origin = group[0].tile,
         naval = group[0].naval;
       if (
-        !naval &&
         Object.values(s.sieges).some(
           (siege) =>
             siege.owner === s.active &&
@@ -2695,9 +2723,11 @@ function chooseManeuver(s: Game, emergency: boolean): Command {
             warTarget(s, s.towns[siege.town].owner) &&
             s.vertices[s.towns[siege.town].vertex].tiles.includes(origin) &&
             !s.vertices[s.towns[siege.town].vertex].tiles.some((tile) =>
-              piecesAt(s, tile, false).some(
+              piecesAt(s, tile).some(
                 (u) =>
-                  u.owner === s.active && !collector(u) && !ids.includes(u.id),
+                  u.owner === s.active &&
+                  canBesiege(s, u) &&
+                  !ids.includes(u.id),
               ),
             ),
         )
@@ -2789,6 +2819,15 @@ function chooseManeuver(s: Game, emergency: boolean): Command {
             }
           }
         }
+        // Siege-capable fleets can attack an undefended coast directly, without
+        // waiting for transports. Passenger fleets keep their landing orders.
+        if (!passengers.length && group.some((u) => canBesiege(s, u)))
+          objectives = [
+            ...objectives,
+            ...enemyTowns
+              .filter((t) => !protects(s, t, true))
+              .flatMap((t) => waterAtVertex(s, t.vertex)),
+          ];
         if (!objectives.length && !emergency)
           objectives = ownPieces(s)
             .filter(
@@ -2915,7 +2954,7 @@ function chooseManeuver(s: Game, emergency: boolean): Command {
                 );
               return (
                 leaderPressure(s, t.owner) *
-                (protects(s, t)
+                (protects(s, t, naval)
                   ? 0.2
                   : (2.5 + Math.min(3, sumStock(t.stock) / 20)) /
                     (1 + siegeRequirement(s, t, group) * 0.35)) *

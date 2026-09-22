@@ -349,7 +349,8 @@ function PrintedRoster() {
                 {ROMAN[t]} · {tx(s.name)} ·{" "}
                 {labels("Power / loss points", "Puissance / points de pertes")}:{" "}
                 {s.power} · {labels("Movement", "Mouvement")}: {s.speed} ·{" "}
-                {labels("Berths", "Places")}: {s.capacity}
+                {labels("Berths", "Places")}: {s.capacity} ·{" "}
+                {labels("Siege", "Siège")}: {s.siege}
               </p>
             );
           })}
@@ -607,6 +608,11 @@ function Catalogue({ initial = "goods" }: { initial?: CatalogSection }) {
                       <Anchor size={15} />
                       {s.capacity} {labels("berths", "places")}
                     </span>
+                    {s.siege > 0 && (
+                      <span>
+                        {s.siege} {labels("siege power", "puissance de siège")}
+                      </span>
+                    )}
                   </div>
                   {k === "settlership" && (
                     <p>

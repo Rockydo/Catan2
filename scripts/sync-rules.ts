@@ -219,17 +219,17 @@ for (const locale of ["en", "fr"] as const) {
     `## ${text("Ship roster", "Navires")}`,
     "| " +
       text(
-        "Ship | Tier | Power / casualty points | Movement | Berths",
-        "Navire | Palier | Puissance / points de pertes | Mouvement | Places",
+        "Ship | Tier | Power / casualty points | Movement | Berths | Siege",
+        "Navire | Palier | Puissance / points de pertes | Mouvement | Places | Siège",
       ) +
       " |",
-    "|---|---|---|---|---|",
+    "|---|---|---|---|---|---|",
   );
   for (const k of Object.keys(SHIP_INFO) as ShipClass[])
     for (let i = 1; i <= SHIP_NAMES[k].length; i++) {
       const s = shipStats(k, i);
       lines.push(
-        `| ${tx(s.name)} | ${ROMAN[i]} | ${s.power} | ${s.speed} | ${s.capacity} |`,
+        `| ${tx(s.name)} | ${ROMAN[i]} | ${s.power} | ${s.speed} | ${s.capacity} | ${s.siege} |`,
       );
     }
   lines.push(

@@ -25,6 +25,7 @@ import {
   minCasualties,
   retreatOptions,
   protects,
+  canBesiege,
   siegeRequirement,
   towerSiegeRequirement,
   towerGuards,
@@ -133,10 +134,12 @@ export function breakSieges(s: Game) {
     if (
       !town ||
       friendly(s, town.owner, siege.owner) ||
-      protects(s, town) ||
       !s.vertices[town.vertex].tiles.some((t) =>
-        piecesAt(s, t, false).some(
-          (u) => u.owner === siege.owner && points(u) > 0,
+        piecesAt(s, t).some(
+          (u) =>
+            u.owner === siege.owner &&
+            canBesiege(s, u) &&
+            !protects(s, town, u.naval),
         ),
       )
     ) {
@@ -284,25 +287,32 @@ export function engageBattle(
 }
 
 export function siegeArmy(s: Game, c: Command) {
-  const units = selected(s, c.ids, c.type !== "siege", false);
+  const units = selected(s, c.ids, c.type !== "siege");
+  const naval = units[0].naval;
   if (c.type === "siege")
     rule(
       units.every((u) => speed(u) + u.bonus - u.moved >= 1),
       "Sieging or raiding costs 1 remaining movement point per participating unit.",
     );
   rule(
-    units.some((u) => points(u) > 0),
-    "Civilian units cannot siege or raid towns.",
+    units.some((u) => canBesiege(s, u)),
+    naval
+      ? "Coastal sieges require a carrack or a tier III or IV frigate in open water."
+      : "Civilian units cannot siege or raid towns.",
   );
   const town = s.towns[c.town ?? ""];
   rule(town && !friendly(s, town.owner, s.active), "Select an enemy town.");
   rule(
     s.vertices[town.vertex].tiles.includes(units[0].tile),
-    "The army must be on a land hex adjacent to the town.",
+    naval
+      ? "The fleet must be on an open-water hex adjacent to the town."
+      : "The army must be on a land hex adjacent to the town.",
   );
   rule(
-    !protects(s, town),
-    "Defeat every defending army on the town’s adjacent land hexes first.",
+    !protects(s, town, naval),
+    naval
+      ? "Defeat every defending army and fleet adjacent to the town first."
+      : "Defeat every defending army on the town’s adjacent land hexes first.",
   );
   return { units, town };
 }

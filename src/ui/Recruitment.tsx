@@ -337,11 +337,13 @@ export function Recruitment({
                             kind === "merchantship" ||
                             kind === "fishing"
                           ? `×${tier} harvest`
-                          : kind === "artillery"
-                            ? `−${tier} siege`
-                            : unit?.family
-                              ? `×2 ${unit.family}`
-                              : "",
+                          : ship?.siege
+                            ? `−${ship.siege} siege`
+                            : kind === "artillery"
+                              ? `−${tier} siege`
+                              : unit?.family
+                                ? `×2 ${unit.family}`
+                                : "",
                     )}
                   </span>
                   {kind === "fishing" && <span>{tx(`Range ${tier}`)}</span>}

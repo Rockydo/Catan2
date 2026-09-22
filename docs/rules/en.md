@@ -255,13 +255,13 @@ Change selected neighbours during your action phase or restore automatic coverag
 
 ### Guarded towns
 
-Before besieging, raiding or destroying a town, remove every defending or allied armed land guard from all land tiles touching its vertex. Fleets, embarked troops and land merchants do not guard towns. Third-party enemies block movement but do not protect the town. The attacking force remains on an adjacent land tile; the map links it to the target.
+Before besieging, raiding or destroying a town, remove every defending or allied armed land guard from all land tiles touching its vertex. Fleets do not stop land sieges, but armed fleets touching the town also protect it against naval sieges. Embarked troops and land merchants never guard towns. Third-party enemies block movement but do not protect the town. The attacking force remains on an adjacent land tile, or an adjacent open-water tile for a siege fleet; the map links it to the target.
 
 ### How long a siege lasts
 
-Defense D = town level − 1 + wall tier + supporting owned watchtower tiers. Siege power A = participating artillery tiers + the highest Engineer-tools bonus among participants. Required siege-only operations = max(0, D − A). If completed steps already meet this value, raid for 1 movement point; otherwise spend 1 point to add one step. Reaching the threshold with that step enables the raid on a later operation, not the same one.
+Defense D = town level − 1 + wall tier + supporting owned watchtower tiers. Siege power A = participating artillery tiers or ship siege batteries + the highest Engineer-tools bonus among participants. Only one formation on one hex operates at a time; land and naval forces cannot combine siege power. Required siege-only operations = max(0, D − A). If completed steps already meet this value, raid for 1 movement point; otherwise spend 1 point to add one step. Reaching the threshold with that step enables the raid on a later operation, not the same one.
 Each attacker can perform only one siege, raid or destruction operation against a given town per owner turn. No walls or artillery: a settlement is raided on turn 1 and destroyed on turn 2; City I needs siege, raid, destroy; City II needs two siege steps; City III needs three. If artillery already meets the defense, raid immediately without entering a preliminary siege. Raid and destruction can never happen on the same owner turn.
-Continue a siege operation every subsequent owner turn and keep at least one armed attacker adjacent. Missing a turn, withdrawing or a defending guard arriving breaks the siege and resets progress and destruction permission. Different attackers never share progress. Artillery changes the requirement at the next operation. After a breach, repeat raids do not need more siege steps even if artillery leaves.
+Continue a siege operation every subsequent owner turn and keep at least one armed land attacker or siege-capable ship adjacent. Naval sieges also end if the last battery freezes or a defending fleet arrives. Missing a turn, withdrawing or a defending guard arriving breaks the siege and resets progress and destruction permission. Different attackers never share progress. Artillery changes the requirement at the next operation. After a breach, repeat raids do not need more siege steps even if artillery leaves.
 
 ### Raid or destroy
 
@@ -280,12 +280,17 @@ A tower can itself be sieged after clearing its defending land guards. Its indep
 An armed land force can destroy a road bordering its hex for 1 movement point. Clear the owner's or allies' guards on either land side first. All attached camps disappear. You may demolish your own road this way, with no refund. Fleets use the equivalent action for sea routes, after clearing defending fleets on either water side.
 Click a siege badge, town, tower or dashed link for defenses, progress, attacking composition, siege equipment, last operation and goods at risk. Every town inspector also shows its total resistance even before an attack.
 
+### Naval sieges
+
+Carracks have 1/2/3/4 siege power at tiers I/II/III/IV. Galleys have 0/0/1/2: only War Frigates and Royal Frigates can siege. Transport, convoy, fishing, merchant and settler ships have no siege power and cannot conduct a town operation alone. Escort ships can join a fleet with a battery; embarked artillery contributes nothing.
+A siege fleet must occupy an open-water tile touching the town. Clear defending or allied land armies and armed fleets on every adjacent tile first. Use the normal defense total, siege progress, 1-movement-point operation cost, one operation per town per attacker turn, whole-warehouse raid and next-turn destruction rules. Destruction requires a fresh siege fleet. There is no ranged town attack, no instant capture and no damage based on naval combat power. Icebound ships cannot operate. At least one siege-capable ship must remain adjacent, unless a land army maintains the siege. Naval batteries do not attack watchtowers or land roads.
+
 ## Fleets and sea harvests
 
 ### Routes are not fleets
 
 A sea route is an edge piece that extends your settlement network. A mobile ship occupies a water hex, moves and fights. Neither substitutes for the other. Build mobile ships beside a coastal town, without needing a printed port, on a revealed water hex without enemies. Town level at the start of the turn gates ship tier. No limit on hulls per order, town, turn or fleet, provided you pay. Ships cannot upgrade.
-Transports are fast carriers; convoys carry more units but move more slowly. The ship tables list combat power, movement and capacity for every class. Each ship class has four tiers. Fleets move at the slowest participating ship's speed. Combat follows whole-piece losses and retreats, using each hull's listed power/casualty points. Passengers add no naval power. Surviving ships keep full power and berths.
+Transports are fast carriers; convoys carry more units but move more slowly. The ship tables list combat power, siege power, movement and capacity for every class. Each ship class has four tiers. Fleets move at the slowest participating ship's speed. Combat follows whole-piece losses and retreats, using each hull's listed power/casualty points. Passengers add no naval power. Surviving ships keep full power and berths.
 
 ### Fishing and merchant ships
 
@@ -298,7 +303,7 @@ Load or unload across a shared land-water edge, with no port required. Every par
 
 ### Loss of a carrier
 
-If a carrier sinks, move passengers into spare berths on friendly surviving participating ships on that water hex. Any without a berth die. There is no goods cargo system. A fleet cannot raid or destroy a town from offshore, and cannot cut a land road.
+If a carrier sinks, move passengers into spare berths on friendly surviving participating ships on that water hex. Any without a berth die. There is no goods cargo system. A fleet with siege batteries can raid and destroy an adjacent coastal town using the siege rules. Fleets cannot cut land roads.
 
 ### Shore bombardment
 
@@ -1574,33 +1579,33 @@ Prices are paid per construction or upgrade step. Watchtower I offers two altern
 
 ## Ship roster
 
-| Ship              | Tier | Power / casualty points | Movement | Berths |
-| ----------------- | ---- | ----------------------- | -------- | ------ |
-| Settler Ship      | I    | 0                       | 2        | 0      |
-| Fishing Skiff     | I    | 0                       | 2        | 0      |
-| Fishing Cutter    | II   | 1                       | 2        | 0      |
-| Deepwater Trawler | III  | 2                       | 3        | 0      |
-| Grand Trawler     | IV   | 3                       | 3        | 0      |
-| Trading Sloop     | I    | 0                       | 2        | 0      |
-| Merchant Cog      | II   | 1                       | 2        | 0      |
-| Merchant Galleon  | III  | 2                       | 3        | 0      |
-| Treasure Galleon  | IV   | 3                       | 3        | 0      |
-| Coastal Transport | I    | 1                       | 3        | 1      |
-| Sailing Transport | II   | 2                       | 3        | 2      |
-| Ocean Transport   | III  | 3                       | 4        | 3      |
-| Royal Transport   | IV   | 4                       | 4        | 4      |
-| Cargo Barge       | I    | 1                       | 2        | 2      |
-| Convoy Cog        | II   | 2                       | 2        | 4      |
-| Convoy Galleon    | III  | 3                       | 2        | 6      |
-| Grand Convoy      | IV   | 4                       | 3        | 8      |
-| Patrol Galley     | I    | 2                       | 3        | 0      |
-| War Galley        | II   | 3                       | 4        | 0      |
-| War Frigate       | III  | 5                       | 4        | 0      |
-| Royal Frigate     | IV   | 7                       | 5        | 0      |
-| Guard Carrack     | I    | 3                       | 1        | 0      |
-| Battle Carrack    | II   | 5                       | 2        | 0      |
-| Armored Carrack   | III  | 7                       | 2        | 0      |
-| Dreadnought       | IV   | 10                      | 2        | 0      |
+| Ship              | Tier | Power / casualty points | Movement | Berths | Siege |
+| ----------------- | ---- | ----------------------- | -------- | ------ | ----- |
+| Settler Ship      | I    | 0                       | 2        | 0      | 0     |
+| Fishing Skiff     | I    | 0                       | 2        | 0      | 0     |
+| Fishing Cutter    | II   | 1                       | 2        | 0      | 0     |
+| Deepwater Trawler | III  | 2                       | 3        | 0      | 0     |
+| Grand Trawler     | IV   | 3                       | 3        | 0      | 0     |
+| Trading Sloop     | I    | 0                       | 2        | 0      | 0     |
+| Merchant Cog      | II   | 1                       | 2        | 0      | 0     |
+| Merchant Galleon  | III  | 2                       | 3        | 0      | 0     |
+| Treasure Galleon  | IV   | 3                       | 3        | 0      | 0     |
+| Coastal Transport | I    | 1                       | 3        | 1      | 0     |
+| Sailing Transport | II   | 2                       | 3        | 2      | 0     |
+| Ocean Transport   | III  | 3                       | 4        | 3      | 0     |
+| Royal Transport   | IV   | 4                       | 4        | 4      | 0     |
+| Cargo Barge       | I    | 1                       | 2        | 2      | 0     |
+| Convoy Cog        | II   | 2                       | 2        | 4      | 0     |
+| Convoy Galleon    | III  | 3                       | 2        | 6      | 0     |
+| Grand Convoy      | IV   | 4                       | 3        | 8      | 0     |
+| Patrol Galley     | I    | 2                       | 3        | 0      | 0     |
+| War Galley        | II   | 3                       | 4        | 0      | 0     |
+| War Frigate       | III  | 5                       | 4        | 0      | 1     |
+| Royal Frigate     | IV   | 7                       | 5        | 0      | 2     |
+| Guard Carrack     | I    | 3                       | 1        | 0      | 1     |
+| Battle Carrack    | II   | 5                       | 2        | 0      | 2     |
+| Armored Carrack   | III  | 7                       | 2        | 0      | 3     |
+| Dreadnought       | IV   | 10                      | 2        | 0      | 4     |
 
 ## All research cards
 

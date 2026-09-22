@@ -1,6 +1,11 @@
 import { localize as tx, useLocale } from "../i18n";
 import type { Game, Town } from "../game/types";
-import { siegeRequirement, siegePower, protects } from "../game/selectors";
+import {
+  siegeRequirement,
+  siegePower,
+  protects,
+  canBesiege,
+} from "../game/selectors";
 import { towerDefense } from "../game/maritime";
 import { townSiegeStatuses } from "../game/siege-status";
 export function TownDefense({
@@ -21,14 +26,19 @@ export function TownDefense({
     .filter(
       (u) =>
         u &&
-        !u.naval &&
+        canBesiege(s, u) &&
         !u.carrier &&
         u.owner !== town.owner &&
         u.kind !== "merchant",
     );
   const formation =
     units.length > 0 &&
-    units.every((u) => u.tile === units[0].tile && u.owner === units[0].owner);
+    units.every(
+      (u) =>
+        u.tile === units[0].tile &&
+        u.owner === units[0].owner &&
+        u.naval === units[0].naval,
+    );
   const adjusted = formation ? siegeRequirement(s, town, units) : base;
   const status = townSiegeStatuses(s, town)[0];
   return (
@@ -55,7 +65,7 @@ export function TownDefense({
       {tx(
         formation && (
           <span>
-            {tx("Selected army: −")}
+            {tx(units[0].naval ? "Selected fleet: −" : "Selected army: −")}
             {tx(siegePower(units))}
             {tx(" siege turns.")}
             {tx(" ")}

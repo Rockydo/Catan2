@@ -50,10 +50,10 @@ for (const breached of [false, true])
       "2 completed siege steps · 4 currently required · 2 remaining",
     );
     await expect(dialog).toContainText(
-      "Siege power reduction: 2 turns · Required with this army: 4 turns",
+      "Siege power reduction: 2 turns · Required with this force: 4 turns",
     );
     await expect(dialog).toContainText(
-      "Siege power reduction: 1 turns · Required with this army: 5 turns",
+      "Siege power reduction: 1 turns · Required with this force: 5 turns",
     );
     await expect(dialog).toContainText(
       "already operated against this town this turn",

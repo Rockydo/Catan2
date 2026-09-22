@@ -256,6 +256,15 @@ describe("decisive, faction-neutral opposition to a leader", () => {
     );
     expect(ships.length).toBeGreaterThan(0);
     for (let i = 0; i < 4; i++) piece(s, "-2,1", 0, "galley", 1);
+    // Patrol galleys cover the blockade, but cannot perform the new coastal siege.
+    const batteries = economyProjects(s).filter(
+      (p) =>
+        p.action.type === "ship" &&
+        ["galley", "carrack"].includes(p.action.kind!),
+    );
+    expect(batteries.every((p) => p.action.kind === "carrack")).toBe(true);
+    piece(s, "-2,1", 0, "carrack", 3);
+    piece(s, "-2,1", 0, "carrack", 3);
     const enough = structuredClone(s);
     expect(
       economyProjects(enough).filter(

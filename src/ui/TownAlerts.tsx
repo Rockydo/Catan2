@@ -104,7 +104,7 @@ export function SiegeProgress({
             )}
             <small>
               {tx(
-                "Based on the strongest adjacent artillery group. Reinforcements or withdrawal can change the siege.",
+                "Based on the strongest adjacent siege formation. Reinforcements or withdrawal can change the siege.",
               )}
             </small>
           </div>

@@ -621,6 +621,10 @@ export function shipStats(kind: ShipClass, tier = 1) {
     power: stats.power[i],
     speed: stats.speed[i],
     capacity: stats.capacity[i],
+    // Slow carracks carry siege batteries throughout their progression. Fast
+    // frigates gain lighter batteries only in the two advanced tiers.
+    siege:
+      kind === "carrack" ? i + 1 : kind === "galley" ? Math.max(0, i - 1) : 0,
   };
 }
 export const shipCost = (kind: ShipClass, tier = 1) =>

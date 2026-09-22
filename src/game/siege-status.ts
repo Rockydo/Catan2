@@ -1,14 +1,33 @@
 import { minValue } from "./aggregate";
 import type { Game, Town, Watchtower } from "./types";
-import { piecesAt, siegeRequirement, towerSiegeRequirement } from "./selectors";
+import {
+  piecesAt,
+  siegeRequirement,
+  towerSiegeRequirement,
+  canBesiege,
+} from "./selectors";
 import { landAtVertex } from "./world";
+
+/** Land and naval formations remain separate, even when ice has put both on
+ * one hex. Siege equipment never pools across tiles or movement types. */
+export function townSiegeGroups(s: Game, town: Town, owner: number) {
+  return s.vertices[town.vertex].tiles.flatMap((tile) =>
+    [false, true]
+      .map((naval) => ({
+        tile,
+        naval,
+        units: piecesAt(s, tile, naval).filter((u) => u.owner === owner),
+      }))
+      .filter((group) => group.units.some((u) => canBesiege(s, u))),
+  );
+}
 
 /** Saved participants stay on their hex; old saves fall back to adjacent forces. */
 export function siegeParticipants(s: Game, town: Town, owner: number) {
   const siege = s.sieges[`${owner}:${town.id}`];
   if (!siege) return [];
-  const nearby = landAtVertex(s, town.vertex).flatMap((tile) =>
-    piecesAt(s, tile, false).filter((u) => u.owner === owner),
+  const nearby = townSiegeGroups(s, town, owner).flatMap(
+    (group) => group.units,
   );
   const linked = nearby.filter((u) => siege.units?.includes(u.id));
   return linked.length ? linked : nearby;
@@ -19,8 +38,8 @@ export function townSiegeStatuses(s: Game, town: Town) {
   return Object.values(s.sieges)
     .filter((siege) => siege.town === town.id)
     .map((siege) => {
-      const groups = landAtVertex(s, town.vertex).map((tile) =>
-        piecesAt(s, tile, false).filter((u) => u.owner === siege.owner),
+      const groups = townSiegeGroups(s, town, siege.owner).map(
+        (group) => group.units,
       );
       const required = minValue([
         ...groups

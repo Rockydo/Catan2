@@ -171,9 +171,9 @@ export const blockAt = (s: Game, tile: string, p = s.active) =>
   );
 export const besieged = (s: Game, town: string) =>
   Object.values(s.sieges).some((x) => x.town === town);
-export const protects = (s: Game, t: Town) =>
+export const protects = (s: Game, t: Town, naval = false) =>
   s.vertices[t.vertex].tiles.some((tile) =>
-    piecesAt(s, tile, false).some(
+    piecesAt(s, tile, naval ? undefined : false).some(
       (u) => friendly(s, u.owner, t.owner) && points(u) > 0,
     ),
   );
@@ -927,9 +927,28 @@ export function expeditionSites(
     );
   });
 }
+/** A ship needs a siege battery and navigable water to operate against a town.
+ * Land armies retain their ordinary siege ability without artillery. */
+export const canBesiege = (s: Game, u: Piece) =>
+  !u.carrier &&
+  (u.naval
+    ? shipStats(u.kind as ShipClass, u.tier).siege > 0 &&
+      u.seasonStatus !== "icebound" &&
+      canOccupy(s.tiles[u.tile], true)
+    : points(u) > 0);
 export const siegePower = (units: Piece[]) =>
-  units.filter((u) => u.kind === "artillery").reduce((n, u) => n + u.tier, 0) +
-  maxValue([0, ...units.map((u) => u.guildSiege ?? 0)]);
+  units.reduce(
+    (n, u) =>
+      n +
+      (u.naval
+        ? u.seasonStatus === "icebound"
+          ? 0
+          : shipStats(u.kind as ShipClass, u.tier).siege
+        : u.kind === "artillery"
+          ? u.tier
+          : 0),
+    0,
+  ) + maxValue([0, ...units.map((u) => u.guildSiege ?? 0)]);
 export function siegeRequirement(s: Game, town: Town, units: Piece[]) {
   return Math.max(
     0,

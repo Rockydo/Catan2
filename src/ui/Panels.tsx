@@ -99,6 +99,7 @@ import {
   sumStock,
   besieged,
   protects,
+  canBesiege,
   siegeRequirement,
   towerSiegeRequirement,
   effectiveCost,
@@ -857,7 +858,7 @@ function ForcesPanel({
     );
   const canFound = !!settler && colonizationSites(s, settler).length > 0;
   const selectedCanSiege =
-    selected.length > 0 &&
+    selected.some((u) => canBesiege(s, u)) &&
     selected.every((u) => ready(s, u) && speed(u) + u.bonus - u.moved >= 1);
   return (
     <div className="panel-content" tabIndex={0}>
@@ -1090,7 +1091,9 @@ function ForcesPanel({
                   {tx(
                     adjTowns
                       .filter(
-                        (t) => !friendly(s, t.owner, viewer) && !actingNaval,
+                        (t) =>
+                          !friendly(s, t.owner, viewer) &&
+                          (!actingNaval || mine.some((u) => canBesiege(s, u))),
                       )
                       .map((t) => {
                         const siege = s.sieges[`${viewer}:${t.id}`],
@@ -1107,8 +1110,10 @@ function ForcesPanel({
                             </small>
                             <p>
                               {tx(
-                                protects(s, t)
-                                  ? "Protected by an adjacent defending army."
+                                protects(s, t, actingNaval)
+                                  ? actingNaval
+                                    ? "Protected by an adjacent defending army or fleet."
+                                    : "Protected by an adjacent defending army."
                                   : raided
                                     ? "Raided. Each later turn: raid new goods or destroy the town."
                                     : canRaid
@@ -1147,7 +1152,7 @@ function ForcesPanel({
                                     !interactive ||
                                     !selectedCanSiege ||
                                     s.phase !== "economy" ||
-                                    protects(s, t) ||
+                                    protects(s, t, actingNaval) ||
                                     siege?.last === s.players[viewer].turns ||
                                     (raided && sumStock(t.stock) === 0)
                                   }

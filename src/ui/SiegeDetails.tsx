@@ -16,6 +16,7 @@ import { towerDefense, towerName } from "../game/maritime";
 import {
   siegeParticipants,
   townSiegeStatuses,
+  townSiegeGroups,
   towerSiegeStatuses,
 } from "../game/siege-status";
 import { Modal, GoodsList, UnitPortrait } from "./components";
@@ -84,14 +85,7 @@ export function SiegeDetails({
                   const participants = new Set(
                     siegeParticipants(s, town, siege.owner).map((u) => u.id),
                   );
-                  const groups = landAtVertex(s, town.vertex)
-                    .map((tile) => ({
-                      tile,
-                      units: piecesAt(s, tile, false).filter(
-                        (u) => u.owner === siege.owner,
-                      ),
-                    }))
-                    .filter((g) => g.units.length);
+                  const groups = townSiegeGroups(s, town, siege.owner);
                   return (
                     <section
                       key={siege.owner}
@@ -127,14 +121,14 @@ export function SiegeDetails({
                         {tx(" ")}
                         {tx(
                           breached
-                            ? `Warehouse breached. Destruction ${siege.raided! < turn && !operated ? "is unlocked" : "unlocks next attacker turn"}; it still requires a fresh adjacent army. New goods can be raided on a later owner turn.`
+                            ? `Warehouse breached. Destruction ${siege.raided! < turn && !operated ? "is unlocked" : "unlocks next attacker turn"}; it still requires a fresh adjacent army or siege fleet. New goods can be raided on a later owner turn.`
                             : remaining
                               ? `Complete ${remaining} more siege ${remaining === 1 ? "step" : "steps"}, then raid on a separate owner turn.`
                               : "No siege-only steps remain. The next permitted operation can raid.",
                         )}
                       </p>
                       {tx(
-                        groups.map(({ tile, units }) => {
+                        groups.map(({ tile, units, naval }) => {
                           const artillery = siegePower(units);
                           const counts = new Map<string, typeof units>();
                           for (const u of units) {
@@ -142,16 +136,19 @@ export function SiegeDetails({
                             counts.set(key, [...(counts.get(key) ?? []), u]);
                           }
                           return (
-                            <div className="formation-faction" key={tile}>
+                            <div
+                              className="formation-faction"
+                              key={`${tile}/${naval}`}
+                            >
                               <b>
-                                {tx("Army at ")}
+                                {tx(naval ? "Fleet at " : "Army at ")}
                                 {tx(tile)} · {tx(units.length)}
-                                {tx(" units")}
+                                {tx(naval ? " ships" : " units")}
                               </b>
                               <p className="muted small">
                                 {tx("Siege power reduction: ")}
                                 {tx(artillery)}
-                                {tx(" turns · Required with this army: ")}
+                                {tx(" turns · Required with this force: ")}
                                 {tx(siegeRequirement(s, town, units))}
                                 {tx(" ")}
                                 {tx("turns.")}
@@ -216,7 +213,7 @@ export function SiegeDetails({
               <GoodsList stock={town.stock} />
               <p className="muted small">
                 {tx(
-                  "Raids transfer the entire warehouse to the attacker's nearest surviving town. Each siege step or raid costs 1 movement point per participating unit; only one operation per town per attacker turn. Armies on different hexes never combine artillery. Reinforcements, casualties and withdrawal can change these estimates. Destruction requires a later turn than the first raid.",
+                  "Raids transfer the entire warehouse to the attacker's nearest surviving town. Each siege step or raid costs 1 movement point per participating unit; only one operation per town per attacker turn. Land and naval formations, and forces on different hexes, never combine siege power. Reinforcements, casualties and withdrawal can change these estimates. Destruction requires a later turn than the first raid.",
                 )}
               </p>
             </>

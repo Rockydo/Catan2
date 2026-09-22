@@ -256,7 +256,7 @@ Le bonus dépend du terrain, pas de la ressource : Pâturage pauvre est accident
 
 ### Agglomérations gardées
 
-Avant d’assiéger, piller ou détruire, éliminez tous les gardes terrestres armés du défenseur ou de ses alliés sur les terres touchant l’intersection. Flottes, passagers embarqués et marchands ne gardent pas les villes. Un ennemi tiers bloque le mouvement mais ne protège pas la cible. L’armée attaquante reste sur sa terre adjacente ; un lien visuel la relie à la cible.
+Avant d’assiéger, piller ou détruire, éliminez tous les gardes terrestres armés du défenseur ou de ses alliés sur les terres touchant l’intersection. Les flottes ne bloquent pas les sièges terrestres, mais les flottes armées adjacentes protègent aussi contre les sièges navals. Passagers embarqués et marchands ne gardent pas les villes. Un ennemi tiers bloque le mouvement mais ne protège pas la cible. La force attaquante reste sur sa terre adjacente, ou en eau libre adjacente pour une flotte de siège ; un lien visuel la relie à la cible.
 
 ### Durée du siège
 
@@ -281,12 +281,18 @@ Vous pouvez assiéger une tour après avoir chassé ses gardes terrestres. Sa d�
 Une force terrestre armée détruit une route bordant sa tuile pour 1 PM. Chassez d’abord les gardes du propriétaire ou de ses alliés des deux côtés terrestres. Tous les camps liés disparaissent. Vous pouvez ainsi démolir votre propre route, sans remboursement. Une flotte fait de même avec les liaisons maritimes, après avoir chassé les flottes gardiennes des côtés maritimes.
 Cliquez sur un indicateur de siège, une ville, une tour ou le lien pointillé pour voir défense, progrès, composition adverse, équipement, dernière opération et stocks exposés. L’inspecteur de chaque agglomération montre aussi sa résistance totale avant toute attaque.
 
+### Sièges navals
+
+Les caraques ont une puissance de siège de 1/2/3/4 aux paliers I/II/III/IV. Les galères ont 0/0/1/2 : seules les frégates des paliers III et IV peuvent assiéger. Transports, convois, navires de pêche, marchands et de colons n’ont aucune puissance de siège et ne peuvent pas mener seuls une opération contre une agglomération. Des escortes peuvent rejoindre une flotte équipée de batteries ; l’artillerie embarquée ne contribue pas.
+La flotte doit occuper une tuile d’eau libre touchant l’agglomération. Il faut d’abord éliminer toutes les armées terrestres et flottes armées du défenseur ou de ses alliés sur les tuiles adjacentes. Les règles ordinaires s’appliquent : défense totale, progression du siège, coût de 1 point de mouvement, une opération par agglomération et tour de l’attaquant, pillage de tout l’entrepôt, puis destruction à partir du tour suivant. La destruction exige une flotte de siège fraîche. Pas d’attaque à distance de l’agglomération, de capture immédiate ni de dégâts basés sur la puissance de combat navale. Les navires pris dans les glaces ne peuvent pas agir. Au moins un navire doté de batteries doit rester adjacent, sauf si une armée terrestre maintient le siège. Les batteries navales ne peuvent pas attaquer les tours de guet ou les routes terrestres.
+Pour un siège naval, la puissance des batteries remplace celle de l’artillerie dans la formule de résistance. Les formations terrestres et navales ne se combinent jamais, même sur une même tuile. Le départ ou le gel de la dernière batterie, ou l’arrivée d’une flotte de défense, interrompt un siège uniquement naval.
+
 ## Flottes et récoltes maritimes
 
 ### Liaisons et flottes sont distinctes
 
 Une liaison maritime est une pièce d’arête qui étend votre réseau de colonies. Un navire mobile occupe une tuile d’eau, se déplace et combat. L’un ne remplace pas l’autre. Construisez les navires près d’une agglomération côtière, sans port imprimé, sur une eau révélée sans ennemis. Le niveau au début du tour limite leur palier. Aucun plafond par commande, ville, tour ou flotte si vous payez chaque navire. Ils ne peuvent pas évoluer.
-Les transports privilégient la vitesse ; les convois portent plus d’unités mais avancent moins vite. Les tables des navires indiquent puissance, mouvement et capacité pour chaque classe. Chaque classe possède quatre paliers. La flotte avance à la vitesse du plus lent de ses participants. Les combats utilisent pertes entières et retraites, selon la puissance et les points de pertes de chaque coque. Les passagers n’ajoutent aucune puissance navale. Les survivants conservent toute leur puissance et capacité.
+Les transports privilégient la vitesse ; les convois portent plus d’unités mais avancent moins vite. Les tables des navires indiquent puissance de combat, puissance de siège, mouvement et capacité pour chaque classe. Chaque classe possède quatre paliers. La flotte avance à la vitesse du plus lent de ses participants. Les combats utilisent pertes entières et retraites, selon la puissance et les points de pertes de chaque coque. Les passagers n’ajoutent aucune puissance navale. Les survivants conservent toute leur puissance et capacité.
 
 ### Navires de pêche et marchands
 
@@ -299,7 +305,7 @@ Embarquez ou débarquez à travers une arête commune terre-eau, sans port requi
 
 ### Perte d’un transport
 
-Si un transport coule, ses passagers rejoignent les places libres des navires amis survivants ayant participé sur cette tuile. Les autres meurent. Aucun système de cargaison de ressources. Une flotte ne pille ni ne détruit une ville depuis la mer, et ne coupe pas une route terrestre.
+Si un transport coule, ses passagers rejoignent les places libres des navires amis survivants ayant participé sur cette tuile. Les autres meurent. Aucun système de cargaison de ressources. Une flotte dotée de batteries de siège peut piller et détruire une agglomération côtière adjacente selon les règles de siège. Elle ne coupe pas les routes terrestres.
 
 ### Bombardement côtier
 
@@ -1575,33 +1581,33 @@ Les coûts concernent chaque construction ou étape. La Tour de guet I propose d
 
 ## Navires
 
-| Navire               | Palier | Puissance / points de pertes | Mouvement | Places |
-| -------------------- | ------ | ---------------------------- | --------- | ------ |
-| Navire de colons     | I      | 0                            | 2         | 0      |
-| Barque de pêche      | I      | 0                            | 2         | 0      |
-| Cotre de pêche       | II     | 1                            | 2         | 0      |
-| Chalutier hauturier  | III    | 2                            | 3         | 0      |
-| Grand chalutier      | IV     | 3                            | 3         | 0      |
-| Sloop marchand       | I      | 0                            | 2         | 0      |
-| Cogue marchande      | II     | 1                            | 2         | 0      |
-| Galion marchand      | III    | 2                            | 3         | 0      |
-| Galion au trésor     | IV     | 3                            | 3         | 0      |
-| Transport côtier     | I      | 1                            | 3         | 1      |
-| Transport à voiles   | II     | 2                            | 3         | 2      |
-| Transport océanique  | III    | 3                            | 4         | 3      |
-| Transport royal      | IV     | 4                            | 4         | 4      |
-| Barge de transport   | I      | 1                            | 2         | 2      |
-| Cogue de convoi      | II     | 2                            | 2         | 4      |
-| Galion de convoi     | III    | 3                            | 2         | 6      |
-| Grand convoi         | IV     | 4                            | 3         | 8      |
-| Galère de patrouille | I      | 2                            | 3         | 0      |
-| Galère de guerre     | II     | 3                            | 4         | 0      |
-| Frégate de guerre    | III    | 5                            | 4         | 0      |
-| Frégate royale       | IV     | 7                            | 5         | 0      |
-| Caraque de garde     | I      | 3                            | 1         | 0      |
-| Caraque de combat    | II     | 5                            | 2         | 0      |
-| Caraque cuirassée    | III    | 7                            | 2         | 0      |
-| Cuirassé             | IV     | 10                           | 2         | 0      |
+| Navire               | Palier | Puissance / points de pertes | Mouvement | Places | Siège |
+| -------------------- | ------ | ---------------------------- | --------- | ------ | ----- |
+| Navire de colons     | I      | 0                            | 2         | 0      | 0     |
+| Barque de pêche      | I      | 0                            | 2         | 0      | 0     |
+| Cotre de pêche       | II     | 1                            | 2         | 0      | 0     |
+| Chalutier hauturier  | III    | 2                            | 3         | 0      | 0     |
+| Grand chalutier      | IV     | 3                            | 3         | 0      | 0     |
+| Sloop marchand       | I      | 0                            | 2         | 0      | 0     |
+| Cogue marchande      | II     | 1                            | 2         | 0      | 0     |
+| Galion marchand      | III    | 2                            | 3         | 0      | 0     |
+| Galion au trésor     | IV     | 3                            | 3         | 0      | 0     |
+| Transport côtier     | I      | 1                            | 3         | 1      | 0     |
+| Transport à voiles   | II     | 2                            | 3         | 2      | 0     |
+| Transport océanique  | III    | 3                            | 4         | 3      | 0     |
+| Transport royal      | IV     | 4                            | 4         | 4      | 0     |
+| Barge de transport   | I      | 1                            | 2         | 2      | 0     |
+| Cogue de convoi      | II     | 2                            | 2         | 4      | 0     |
+| Galion de convoi     | III    | 3                            | 2         | 6      | 0     |
+| Grand convoi         | IV     | 4                            | 3         | 8      | 0     |
+| Galère de patrouille | I      | 2                            | 3         | 0      | 0     |
+| Galère de guerre     | II     | 3                            | 4         | 0      | 0     |
+| Frégate de guerre    | III    | 5                            | 4         | 0      | 1     |
+| Frégate royale       | IV     | 7                            | 5         | 0      | 2     |
+| Caraque de garde     | I      | 3                            | 1         | 0      | 1     |
+| Caraque de combat    | II     | 5                            | 2         | 0      | 2     |
+| Caraque cuirassée    | III    | 7                            | 2         | 0      | 3     |
+| Cuirassé             | IV     | 10                           | 2         | 0      | 4     |
 
 ## Toutes les cartes Développement
 
