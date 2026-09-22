@@ -53,8 +53,8 @@ import {
 } from "./world";
 export const sumStock = (s: Stock) =>
   Object.values(s).reduce((a, b) => a + (b ?? 0), 0);
-// Index only the immutable input of an AI decision. Engine validation clones
-// that input before mutating it, and therefore deliberately bypasses this index.
+// Index immutable reads. Engine transactions mutate separate, unregistered
+// drafts, so cached UI data can never leak into execution.
 interface PlanningIndex {
   source: Game;
   towns: Map<number, Town[]>;
@@ -67,27 +67,42 @@ interface PlanningIndex {
   memo: Map<string, unknown>;
 }
 let planningIndex: PlanningIndex | undefined;
-/** Reuse a pure calculation only while this exact AI snapshot is being read. */
+const viewIndexes = new WeakMap<Game, PlanningIndex>();
+/** Opt in only after a game snapshot is published to the UI. It must never be
+ * mutated afterwards. New engine results and imported saves have new identities. */
+export function prepareGameView(s: Game): void {
+  if (!viewIndexes.has(s)) viewIndexes.set(s, createPlanningIndex(s));
+}
+function readIndex(s: Game): PlanningIndex | undefined {
+  return planningIndex?.source === s
+    ? planningIndex
+    : (viewIndexes.get(s) ?? planningIndex);
+}
+/** Reuse a pure calculation within a decision or a published UI snapshot. */
 export function planningValue<T>(s: Game, key: string, calculate: () => T): T {
-  if (planningIndex?.source !== s) return calculate();
-  const cache = planningIndex.memo;
+  const index = readIndex(s);
+  if (index?.source !== s) return calculate();
+  const cache = index.memo;
   if (!cache.has(key)) cache.set(key, calculate());
   return cache.get(key) as T;
 }
 export const ownTowns = (s: Game, p = s.active) => {
-  if (planningIndex?.source.towns === s.towns)
-    return (planningIndex.towns.get(p) ?? []).slice();
+  const index = readIndex(s);
+  if (index?.source.towns === s.towns)
+    return (index.towns.get(p) ?? []).slice();
   return Object.values(s.towns)
     .filter((t) => t.owner === p)
     .sort((a, b) => Number(a.id.slice(1)) - Number(b.id.slice(1)));
 };
-export const ownPieces = (s: Game, p = s.active) =>
-  planningIndex?.source.pieces === s.pieces
-    ? (planningIndex.pieces.get(p) ?? []).slice()
+export const ownPieces = (s: Game, p = s.active) => {
+  const index = readIndex(s);
+  return index?.source.pieces === s.pieces
+    ? (index.pieces.get(p) ?? []).slice()
     : Object.values(s.pieces).filter((u) => u.owner === p);
+};
 export const inventory = (s: Game, p = s.active): Stock => {
-  const cache =
-    planningIndex?.source.towns === s.towns ? planningIndex.stocks : undefined;
+  const index = readIndex(s);
+  const cache = index?.source.towns === s.towns ? index.stocks : undefined;
   if (cache?.has(p)) return { ...cache.get(p)! };
   const out: Stock = {};
   for (const t of ownTowns(s, p))
@@ -99,20 +114,25 @@ export const affordable = (s: Game, cost: Stock, p = s.active) => {
   const stock = inventory(s, p);
   return GOODS.every((g) => (stock[g] ?? 0) >= (cost[g] ?? 0));
 };
-export const townAt = (s: Game, v: string) =>
-  planningIndex?.source.towns === s.towns
-    ? planningIndex.vertices.get(v)
+export const townAt = (s: Game, v: string) => {
+  const index = readIndex(s);
+  return index?.source.towns === s.towns
+    ? index.vertices.get(v)
     : Object.values(s.towns).find((t) => t.vertex === v);
-export const piecesAt = (s: Game, tile: string, naval?: boolean) =>
-  (planningIndex?.source.pieces === s.pieces
-    ? (planningIndex.tiles.get(tile) ?? [])
-    : Object.values(s.pieces)
+};
+export const piecesAt = (s: Game, tile: string, naval?: boolean) => {
+  const index = readIndex(s);
+  return (
+    index?.source.pieces === s.pieces
+      ? (index.tiles.get(tile) ?? [])
+      : Object.values(s.pieces)
   ).filter(
     (u) =>
       u.tile === tile &&
       !u.carrier &&
       (naval === undefined || u.naval === naval),
   );
+};
 export const hostileAt = (
   s: Game,
   tile: string,
@@ -162,8 +182,9 @@ export const unitName = (u: Piece) =>
     : UNIT_INFO[u.kind as UnitClass].names[u.tier - 1];
 export const probability = (n: number) => (6 - Math.abs(7 - n)) / 36;
 function combatTowerPower(s: Game, owner: number, tile: string) {
-  return planningIndex?.source === s
-    ? (planningIndex.towerSupport.get(`${owner}/${tile}`) ?? 0)
+  const index = readIndex(s);
+  return index?.source === s
+    ? (index.towerSupport.get(`${owner}/${tile}`) ?? 0)
     : towerPower(s, owner, tile);
 }
 export function power(s: Game, units: Piece[], tile: string) {
@@ -494,11 +515,12 @@ export function nearestTown(
   tile: string,
   p: number,
 ): Town | undefined {
+  const index = readIndex(s);
   const cache =
-    planningIndex?.source.towns === s.towns &&
-    planningIndex.source.vertices === s.vertices &&
-    planningIndex.source.tiles === s.tiles
-      ? planningIndex.nearest
+    index?.source.towns === s.towns &&
+    index.source.vertices === s.vertices &&
+    index.source.tiles === s.tiles
+      ? index.nearest
       : undefined;
   const key = `${p}/${tile}`;
   if (cache?.has(key)) return cache.get(key);
@@ -643,9 +665,7 @@ export function productionSources(
 // AI evaluations repeatedly inspect the same immutable state and player views.
 // Cache only inside one decision, so UI reads and mutable test fixtures stay fresh.
 let incomeFrame: WeakMap<Game, Record<number, Stock>> | undefined;
-export function withPlanningFrame<T>(source: Game, run: () => T): T {
-  const previous = incomeFrame;
-  const previousIndex = planningIndex;
+function createPlanningIndex(source: Game): PlanningIndex {
   const index: PlanningIndex = {
     source,
     towns: new Map(),
@@ -680,7 +700,12 @@ export function withPlanningFrame<T>(source: Game, run: () => T): T {
       index.tiles.get(unit.tile)!.push(unit);
     }
   }
-  planningIndex = index;
+  return index;
+}
+export function withPlanningFrame<T>(source: Game, run: () => T): T {
+  const previous = incomeFrame;
+  const previousIndex = planningIndex;
+  planningIndex = createPlanningIndex(source);
   incomeFrame = new WeakMap();
   try {
     return run();

@@ -413,8 +413,14 @@ export function commandError(state: Game, c: Command): string | undefined {
 function commandResult(state: Game, c: Command, preview: boolean): Result {
   try {
     payload(c);
-    const s: Game =
-      preview && !["expedition", "woods-choice"].includes(c.type)
+    const localOrder =
+      preview &&
+      ["recruit", "ship", "city", "wall", "extension", "guild"].includes(
+        c.type,
+      );
+    const s: Game = localOrder
+      ? localOrderDraft(state, c)
+      : preview && !["expedition", "woods-choice"].includes(c.type)
         ? {
             ...structuredClone({
               ...state,
@@ -439,7 +445,13 @@ function commandResult(state: Game, c: Command, preview: boolean): Result {
             edges: state.edges,
           }
         : structuredClone(state);
-    advanceCommand(s, c, preview);
+    if (localOrder) {
+      // Use the actual order rules and payments, but do not process
+      // unrelated sieges/eliminations when only checking a menu option.
+      if (s.phase === "military") s.phase = "economy";
+      s.actions++;
+      execute(s, c);
+    } else advanceCommand(s, c, preview);
     return { ok: true, state: { ...s } };
   } catch (error) {
     return {
@@ -451,6 +463,31 @@ function commandResult(state: Game, c: Command, preview: boolean): Result {
           : "The action could not be completed.",
     };
   }
+}
+/** These orders change only the active owner's stores/vouchers, the selected
+ * town, newly recruited pieces and log. Copy the selected town deeply for guild
+ * and workshop upgrades. This private draft is never used for real orders. */
+function localOrderDraft(state: Game, command: Command): Game {
+  return {
+    ...state,
+    towns: Object.fromEntries(
+      Object.entries(state.towns).map(([id, town]) => [
+        id,
+        town.id === command.town
+          ? structuredClone(town)
+          : town.owner === state.active
+            ? { ...town, stock: { ...town.stock } }
+            : town,
+      ]),
+    ),
+    players: state.players.map((player) =>
+      player.id === state.active
+        ? { ...player, bonuses: structuredClone(player.bonuses) }
+        : player,
+    ),
+    pieces: { ...state.pieces },
+    events: [...state.events],
+  };
 }
 function advanceCommand(s: Game, c: Command, preview: boolean) {
   if (s.phase === "military") s.phase = "economy";

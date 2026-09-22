@@ -67,6 +67,7 @@ import {
 import { newGame, applyCommand } from "./game/engine";
 import {
   inventory,
+  prepareGameView,
   ownTowns,
   ownPieces,
   income,
@@ -175,6 +176,7 @@ export default function App() {
   } | null>(null);
   const gameRef = useRef(game);
   gameRef.current = game;
+  if (game) prepareGameView(game);
   const aiWorker = useRef<Worker | null>(null);
   const aiRequest = useRef(0);
   useEffect(

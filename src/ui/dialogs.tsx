@@ -2,7 +2,7 @@ import { minValue } from "../game/aggregate";
 import { localize as tx, useLocale } from "../i18n";
 import { ResearchArt } from "./ResearchArt";
 import { RESEARCH_GOODS, RESEARCH_MARCH } from "../game/content";
-import { applyCommand } from "../game/engine";
+import { previewError } from "./command-preview";
 import { useState } from "react";
 import {
   Download,
@@ -584,15 +584,15 @@ export function ResearchPlayDialog({
         ),
       )}
       {tx(
-        !applyCommand(s, command).ok && (
+        !!previewError(s, command) && (
           <p className="muted" role="status">
-            {tx(applyCommand(s, command).error)}
+            {tx(previewError(s, command))}
           </p>
         ),
       )}
       <button
         className="primary full"
-        disabled={!applyCommand(s, command).ok}
+        disabled={!!previewError(s, command)}
         onClick={() => {
           onAction(command);
         }}

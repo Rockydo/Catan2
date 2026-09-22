@@ -1,7 +1,7 @@
 import { tileOptions } from "../game/maritime";
 import { extractionGoods } from "../game/guilds";
 import { localize as tx, useLocale } from "../i18n";
-import { useState } from "react";
+import { memo, useState } from "react";
 import {
   Pickaxe,
   Anvil,
@@ -62,7 +62,7 @@ const EMBLEMS = {
   builders: Construction,
   scholars: BookOpen,
 };
-export function GuildCrest({
+export const GuildCrest = memo(function GuildCrest({
   kind,
   tier = 0,
   size = 38,
@@ -115,7 +115,7 @@ export function GuildCrest({
       )}
     </svg>
   );
-}
+});
 interface Props {
   game: Game;
   town: Town;

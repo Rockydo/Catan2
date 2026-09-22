@@ -548,7 +548,206 @@ const MapHex = memo(function MapHex({
   );
 });
 
-export function Board({
+const MapTown = memo(function MapTown({
+  game: s,
+  town: t,
+  selected,
+  onSelect,
+  onInspectSiege,
+  clicked,
+}: {
+  game: Game;
+  town: Game["towns"][string];
+  selected: boolean;
+  onSelect: Props["onSelect"];
+  onInspectSiege: Props["onInspectSiege"];
+  clicked: (action: () => void) => void;
+}) {
+  useLocale();
+  const { x, y } = vertexPoint(s.vertices[t.vertex]),
+    siege = townSiegeStatuses(s, t)[0],
+    guilds = townGuilds(t);
+  return (
+    <g key={t.id}>
+      <g
+        className="map-town"
+        data-map-x={x}
+        data-map-y={y}
+        filter="url(#piece-shadow)"
+        role="button"
+        tabIndex={0}
+        aria-label={tx(
+          `${t.name}, level ${t.level}, wall ${t.wall}, ${s.players[t.owner].name}${guilds.length ? `, ${guilds.map((g) => `${GUILDS[g.kind].name} tier ${g.tier}`).join(", ")}` : ""}${siege ? `, ${siege.label}` : ""}`,
+        )}
+        data-testid={`town-${t.id}`}
+        transform={`translate(${x} ${y})`}
+        onClick={(ev) => {
+          ev.stopPropagation();
+          clicked(() => onSelect({ type: "vertex", id: t.vertex }));
+        }}
+        onKeyDown={(ev) => {
+          if (ev.key === "Enter") onSelect({ type: "vertex", id: t.vertex });
+        }}
+      >
+        <circle r="17" fill="transparent" />
+        <title>
+          {t.name} ·{tx(" ")}
+          {tx(["", "Settlement", "City I", "City II", "City III"][t.level])}
+          {tx(" ")}
+          {tx("· wall ")}
+          {tx(t.wall)} · {tx(Object.keys(t.extensions).length)}
+          {tx(" ")}
+          {tx("extensions")}
+          {tx(
+            guilds.map((g) => ` · ${GUILDS[g.kind].name} ${g.tier}`).join(""),
+          )}
+          {tx(siege ? ` · ${siege.label}` : "")}
+        </title>
+        <TownMiniature town={t} color={COLORS[t.owner]} selected={selected} />
+        {tx(
+          guilds.length > 0 && (
+            <g
+              transform="translate(13 -30)"
+              pointerEvents="none"
+              data-testid={`guild-badge-${t.id}`}
+            >
+              <GuildCrest
+                kind={guilds[0].kind}
+                tier={guilds[0].tier}
+                size={18}
+              />
+              {tx(
+                guilds.length > 1 && (
+                  <g>
+                    <circle
+                      cx="19"
+                      cy="4"
+                      r="7"
+                      fill="#153e37"
+                      stroke="#f4dba0"
+                    />
+                    <text
+                      x="19"
+                      y="7"
+                      textAnchor="middle"
+                      fontSize="8"
+                      fontWeight="800"
+                      fill="#fff0c9"
+                    >
+                      {tx(guilds.length)}
+                    </text>
+                  </g>
+                ),
+              )}
+            </g>
+          ),
+        )}
+      </g>
+      {tx(
+        siege && (
+          <g
+            className="map-siege-badge"
+            transform={`translate(${x} ${y - 72})`}
+            role="button"
+            tabIndex={0}
+            aria-label={tx(`Inspect siege of ${t.name}`)}
+            onClick={(ev) => {
+              ev.stopPropagation();
+              clicked(() => onInspectSiege(t.id));
+            }}
+            onKeyDown={(ev) => {
+              if (ev.key === "Enter" || ev.key === " ") {
+                ev.preventDefault();
+                ev.stopPropagation();
+                onInspectSiege(t.id);
+              }
+            }}
+            data-testid={`siege-badge-${t.id}`}
+          >
+            <title>{tx("Click for full siege details")}</title>
+            <rect x="-33" y="15" width="66" height="29" fill="transparent" />
+            <rect
+              x="-29"
+              y="20"
+              width="58"
+              height="16"
+              rx="5"
+              fill="#823b2e"
+              stroke="#ffe6bd"
+              strokeWidth="1"
+            />
+            <MapLabel
+              x="0"
+              y="31"
+              textAnchor="middle"
+              fill="#fff3db"
+              fontSize="8"
+              fontWeight="800"
+            >
+              {tx(
+                siege.breached
+                  ? "BREACHED"
+                  : siege.remaining === 0
+                    ? "EXPOSED"
+                    : `SIEGE ${siege.completed}/${siege.required}`,
+              )}
+            </MapLabel>
+            <rect
+              x="-25"
+              y="37"
+              width="50"
+              height="3"
+              rx="1.5"
+              fill="#392b28"
+            />
+            <rect
+              x="-25"
+              y="37"
+              width={50 * siege.fraction}
+              height="3"
+              rx="1.5"
+              fill="#f1b56b"
+            />
+          </g>
+        ),
+      )}
+    </g>
+  );
+});
+
+const EMPTY_IDS: string[] = [];
+/** Keep current event handlers without redrawing the world for menus or tabs. */
+export function Board(props: Props) {
+  const latest = useRef(props);
+  latest.current = props;
+  const events = useMemo(
+    () => ({
+      onSelect: (value: Selection) => latest.current.onSelect(value),
+      onMove: (id: string) => latest.current.onMove(id),
+      onBuild: (type: string, id: string) => latest.current.onBuild(type, id),
+      onInspectSiege: (id: string) => latest.current.onInspectSiege(id),
+      onInspectTowerSiege: (id: string) =>
+        latest.current.onInspectTowerSiege(id),
+      onSeasonPreviewChange: (season?: Season) =>
+        latest.current.onSeasonPreviewChange?.(season),
+    }),
+    [],
+  );
+  return (
+    <BoardScene
+      {...props}
+      {...events}
+      unitIds={props.unitIds.length ? props.unitIds : EMPTY_IDS}
+      expeditionPreview={
+        props.expeditionPreview?.length ? props.expeditionPreview : EMPTY_IDS
+      }
+      productionTiles={
+        props.productionTiles?.length ? props.productionTiles : EMPTY_IDS
+      }
+    />
+  );
+}
+const BoardScene = memo(function BoardScene({
   game: s,
   viewer = s.active,
   selection,
@@ -664,6 +863,16 @@ export function Board({
       ),
     [s.tiles, s.vertices],
   );
+  const sceneRevision = useMemo(
+    () => ({}),
+    [
+      s,
+      mode,
+      climates,
+      mode === "colonize" ? unitIds.join(",") : "",
+      mode === "move-route" ? selection?.id : undefined,
+    ],
+  );
   const {
     svg,
     terrain,
@@ -680,6 +889,13 @@ export function Board({
     bounds,
     Math.max(6, Math.sqrt(tiles.length / 100) * 4),
     s.seed,
+    sceneRevision,
+  );
+  const clickRef = useRef(clicked);
+  clickRef.current = clicked;
+  const clickAction = useCallback(
+    (action: () => void) => clickRef.current(action),
+    [],
   );
   const actions = useRef({ onMove, onSelect, mode, interactive, clicked });
   actions.current = { onMove, onSelect, mode, interactive, clicked };
@@ -1483,178 +1699,19 @@ export function Board({
               }),
             )}
             {tx(
-              towns.map((t) => {
-                const { x, y } = vertexPoint(s.vertices[t.vertex]),
-                  siege = townSiegeStatuses(s, t)[0],
-                  guilds = townGuilds(t),
-                  selected =
-                    selection?.type === "vertex" && selection.id === t.vertex;
-                return (
-                  <g key={t.id}>
-                    <g
-                      className="map-town"
-                      data-map-x={x}
-                      data-map-y={y}
-                      filter="url(#piece-shadow)"
-                      role="button"
-                      tabIndex={0}
-                      aria-label={tx(
-                        `${t.name}, level ${t.level}, wall ${t.wall}, ${s.players[t.owner].name}${guilds.length ? `, ${guilds.map((g) => `${GUILDS[g.kind].name} tier ${g.tier}`).join(", ")}` : ""}${siege ? `, ${siege.label}` : ""}`,
-                      )}
-                      data-testid={`town-${t.id}`}
-                      transform={`translate(${x} ${y})`}
-                      onClick={(ev) => {
-                        ev.stopPropagation();
-                        clicked(() =>
-                          onSelect({ type: "vertex", id: t.vertex }),
-                        );
-                      }}
-                      onKeyDown={(ev) => {
-                        if (ev.key === "Enter")
-                          onSelect({ type: "vertex", id: t.vertex });
-                      }}
-                    >
-                      <circle r="17" fill="transparent" />
-                      <title>
-                        {t.name} ·{tx(" ")}
-                        {tx(
-                          ["", "Settlement", "City I", "City II", "City III"][
-                            t.level
-                          ],
-                        )}
-                        {tx(" ")}
-                        {tx("· wall ")}
-                        {tx(t.wall)} · {tx(Object.keys(t.extensions).length)}
-                        {tx(" ")}
-                        {tx("extensions")}
-                        {tx(
-                          guilds
-                            .map((g) => ` · ${GUILDS[g.kind].name} ${g.tier}`)
-                            .join(""),
-                        )}
-                        {tx(siege ? ` · ${siege.label}` : "")}
-                      </title>
-                      <TownMiniature
-                        town={t}
-                        color={COLORS[t.owner]}
-                        selected={selected}
-                      />
-                      {tx(
-                        guilds.length > 0 && (
-                          <g
-                            transform="translate(13 -30)"
-                            pointerEvents="none"
-                            data-testid={`guild-badge-${t.id}`}
-                          >
-                            <GuildCrest
-                              kind={guilds[0].kind}
-                              tier={guilds[0].tier}
-                              size={18}
-                            />
-                            {tx(
-                              guilds.length > 1 && (
-                                <g>
-                                  <circle
-                                    cx="19"
-                                    cy="4"
-                                    r="7"
-                                    fill="#153e37"
-                                    stroke="#f4dba0"
-                                  />
-                                  <text
-                                    x="19"
-                                    y="7"
-                                    textAnchor="middle"
-                                    fontSize="8"
-                                    fontWeight="800"
-                                    fill="#fff0c9"
-                                  >
-                                    {tx(guilds.length)}
-                                  </text>
-                                </g>
-                              ),
-                            )}
-                          </g>
-                        ),
-                      )}
-                    </g>
-                    {tx(
-                      siege && (
-                        <g
-                          className="map-siege-badge"
-                          transform={`translate(${x} ${y - 72})`}
-                          role="button"
-                          tabIndex={0}
-                          aria-label={tx(`Inspect siege of ${t.name}`)}
-                          onClick={(ev) => {
-                            ev.stopPropagation();
-                            clicked(() => onInspectSiege(t.id));
-                          }}
-                          onKeyDown={(ev) => {
-                            if (ev.key === "Enter" || ev.key === " ") {
-                              ev.preventDefault();
-                              ev.stopPropagation();
-                              onInspectSiege(t.id);
-                            }
-                          }}
-                          data-testid={`siege-badge-${t.id}`}
-                        >
-                          <title>{tx("Click for full siege details")}</title>
-                          <rect
-                            x="-33"
-                            y="15"
-                            width="66"
-                            height="29"
-                            fill="transparent"
-                          />
-                          <rect
-                            x="-29"
-                            y="20"
-                            width="58"
-                            height="16"
-                            rx="5"
-                            fill="#823b2e"
-                            stroke="#ffe6bd"
-                            strokeWidth="1"
-                          />
-                          <MapLabel
-                            x="0"
-                            y="31"
-                            textAnchor="middle"
-                            fill="#fff3db"
-                            fontSize="8"
-                            fontWeight="800"
-                          >
-                            {tx(
-                              siege.breached
-                                ? "BREACHED"
-                                : siege.remaining === 0
-                                  ? "EXPOSED"
-                                  : `SIEGE ${siege.completed}/${siege.required}`,
-                            )}
-                          </MapLabel>
-                          <rect
-                            x="-25"
-                            y="37"
-                            width="50"
-                            height="3"
-                            rx="1.5"
-                            fill="#392b28"
-                          />
-                          <rect
-                            x="-25"
-                            y="37"
-                            width={50 * siege.fraction}
-                            height="3"
-                            rx="1.5"
-                            fill="#f1b56b"
-                          />
-                        </g>
-                      ),
-                    )}
-                  </g>
-                );
-              }),
+              towns.map((t) => (
+                <MapTown
+                  key={t.id}
+                  game={s}
+                  town={t}
+                  selected={
+                    selection?.type === "vertex" && selection.id === t.vertex
+                  }
+                  onSelect={onSelect}
+                  onInspectSiege={onInspectSiege}
+                  clicked={clickAction}
+                />
+              )),
             )}
             {tx(
               Object.entries(groupUnits).map(([tile, units]) => {
@@ -1899,4 +1956,4 @@ export function Board({
       </div>
     </div>
   );
-}
+});

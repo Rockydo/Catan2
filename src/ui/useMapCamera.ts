@@ -8,7 +8,12 @@ export interface MapBounds {
 type Point = { x: number; y: number };
 
 /** Composite motion; refresh crisp vectors promptly when input settles. */
-export function useMapCamera(bounds: MapBounds, maxZoom: number, seed: string) {
+export function useMapCamera(
+  bounds: MapBounds,
+  maxZoom: number,
+  seed: string,
+  sceneRevision: object,
+) {
   const svg = useRef<SVGSVGElement>(null);
   const terrain = useRef<SVGSVGElement>(null);
   const layer = useRef<HTMLDivElement>(null);
@@ -180,7 +185,7 @@ export function useMapCamera(bounds: MapBounds, maxZoom: number, seed: string) {
       }),
     );
     cull(view());
-  });
+  }, [sceneRevision]);
   useLayoutEffect(() => {
     commit();
   }, [bounds.x, bounds.y, bounds.w, bounds.h]);

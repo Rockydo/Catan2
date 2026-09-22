@@ -29,7 +29,7 @@ import {
   type ShipClass,
 } from "../game/types";
 import { GOOD_INFO, UNIT_INFO, SHIP_INFO } from "../game/content";
-import { commandError } from "../game/engine";
+import { previewError } from "./command-preview";
 export function GoodIcon({ good, size = 24 }: { good: Good; size?: number }) {
   useLocale();
 
@@ -220,7 +220,7 @@ export function ActionButton({
 }) {
   useLocale();
 
-  const reason = disabled ? "Wait for your turn." : commandError(game, command);
+  const reason = disabled ? "Wait for your turn." : previewError(game, command);
   const payment = cost && !exactCost ? recipePayment(game, cost) : undefined;
   return (
     <button

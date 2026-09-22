@@ -30,7 +30,7 @@ import {
 import { walkableAtVertex as landAtVertex, waterAtVertex } from "../game/world";
 import { terrainName } from "../game/maritime";
 import { ownTowns, hostileAt, inventory } from "../game/selectors";
-import { applyCommand } from "../game/engine";
+import { previewError } from "./command-preview";
 import { UnitPortrait, Cost } from "./components";
 function remembered(key: string, fallback: string) {
   try {
@@ -267,16 +267,16 @@ export function Recruitment({
             );
             // Validate one hull for placement/tier, then the complete payment.
             // Previewing a large naval order should never construct that fleet.
-            const result = applyCommand(
+            const error = previewError(
               s,
               naval ? { ...command, count: 1 } : command,
             );
             const canPay =
               !naval || affordable(s, recipePayment(s, cost, viewer), viewer);
-            const available = interactive && result.ok && canPay;
+            const available = interactive && !error && canPay;
             const explanation = !interactive
               ? "Available during your action phase"
-              : (result.error ??
+              : (error ??
                 (!canPay ? "Not enough resources for this order" : undefined));
             return (
               <article
@@ -372,7 +372,7 @@ export function Recruitment({
                   />
                 </button>
                 {tx(
-                  !result.ok && (
+                  !!error && (
                     <small
                       className="recruit-unavailable"
                       title={tx(explanation)}
