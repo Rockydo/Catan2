@@ -1,9 +1,9 @@
 import type { Page } from "@playwright/test";
-import { SAVE_KEY } from "../src/game/save";
+import { SAVE_KEY, deserialize, serialize } from "../src/game/save";
 
 /** Read only. Supports both releases when comparing disposable browser runs. */
 export async function browserSave(page: Page): Promise<string | null> {
-  return page.evaluate(async (key) => {
+  const text = await page.evaluate(async (key) => {
     const db = await new Promise<IDBDatabase | null>((resolve) => {
       const r = indexedDB.open("catane-frontiers-campaigns", 1);
       r.onupgradeneeded = () => {
@@ -32,4 +32,12 @@ export async function browserSave(page: Page): Promise<string | null> {
     }
     return localStorage.getItem(key);
   }, SAVE_KEY);
+  if (!text) return null;
+  const header = JSON.parse(text);
+  if (header.format !== "catane-frontiers-packed") return text;
+  // Diagnostics expose ordinary JSON for old and new builds. Retain the date
+  // so repeated reads of an unchanged save compare byte for byte.
+  const legacy = JSON.parse(serialize(deserialize(text)));
+  legacy.savedAt = header.savedAt;
+  return JSON.stringify(legacy);
 }

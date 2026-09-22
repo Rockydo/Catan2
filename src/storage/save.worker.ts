@@ -1,13 +1,26 @@
-import { deserialize, serialize } from "../game/save";
+import { deserialize, serialize, serializePacked } from "../game/save";
 import type { Game } from "../game/types";
+import { applySnapshotDelta, type SnapshotDelta } from "../game/snapshot-delta";
 import { compress, expand, exportCompact, importSave } from "./codec";
 import { readRecords, writeRecord, type SaveRecord } from "./database";
 
 export type SaveRequest =
   | { type: "load"; legacy: (string | null)[] }
-  | { type: "save" | "export"; game: Game }
+  | { type: "export"; game: Game }
+  | ({ type: "save" } & (
+      { game: Game } | { base: number; delta: SnapshotDelta }
+    ))
   | { type: "import"; text: string };
+export interface SaveResult {
+  mirror?: string;
+  fallback?: string;
+  bytes?: number;
+  snapshotToken?: number;
+  resync?: boolean;
+}
 let revision: string | undefined;
+let savedSnapshot: Game | undefined;
+let snapshotToken = 0;
 let preserveBackup = false;
 let initialBackup: string | undefined;
 async function load(legacy: (string | null)[]) {
@@ -75,7 +88,17 @@ async function handle(request: SaveRequest) {
     case "export":
       return exportCompact(request.game);
     case "save": {
-      const text = serialize(request.game);
+      if (
+        !("game" in request) &&
+        (!savedSnapshot || request.base !== snapshotToken)
+      )
+        return { resync: true };
+      const game =
+        "game" in request
+          ? request.game
+          : applySnapshotDelta(savedSnapshot!, request.delta);
+      const small = Object.keys(game.pieces).length < 256;
+      const text = small ? serialize(game) : serializePacked(game);
       const record: SaveRecord = {
         revision: crypto.randomUUID(),
         savedAt: Date.now(),
@@ -98,13 +121,16 @@ async function handle(request: SaveRequest) {
         // Never fall back over a competing tab's newer save.
         if (error instanceof Error && error.message.startsWith("Another tab"))
           throw error;
-        return { fallback: text };
+        savedSnapshot = game;
+        return { fallback: text, snapshotToken: ++snapshotToken };
       }
       initialBackup = undefined;
       revision = record.revision;
       preserveBackup = false;
+      savedSnapshot = game;
       return {
-        mirror: text.length <= 512_000 ? text : undefined,
+        snapshotToken: ++snapshotToken,
+        mirror: small && text.length <= 512_000 ? text : undefined,
         bytes: record.bytes.byteLength,
       };
     }

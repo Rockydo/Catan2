@@ -1,7 +1,8 @@
 import { BACKUP_KEY, SAVE_KEY, loadLocal, saveLocal } from "../game/save";
 import type { Game } from "../game/types";
+import { snapshotDelta } from "../game/snapshot-delta";
 import { exportCompact, importSave } from "./codec";
-import type { SaveRequest } from "./save.worker";
+import type { SaveRequest, SaveResult } from "./save.worker";
 
 export type LoadedCampaign = ReturnType<typeof loadLocal> & {
   needsSave?: boolean;
@@ -32,6 +33,7 @@ function call<T>(message: SaveRequest): Promise<T> {
         };
         worker.onerror = () => {
           failed = true;
+          savedBase = undefined;
           worker?.terminate();
           worker = undefined;
           for (const job of waiting.values()) job.reject(new Error(WARNING));
@@ -68,6 +70,7 @@ export async function loadCampaign(): Promise<LoadedCampaign> {
 let pending: Game | undefined,
   running = false,
   unsaved = false;
+let savedBase: { game: Game; token: number } | undefined;
 let error = "";
 const listeners = new Set<(error: string, pending: boolean) => void>();
 function notify() {
@@ -100,10 +103,21 @@ async function drain() {
     try {
       if (failed) saveLocal(game);
       else {
-        const result = await call<{ mirror?: string; fallback?: string }>({
-          type: "save",
-          game,
-        });
+        // Retain just the last acknowledged immutable snapshot. Small changes
+        // no longer copy the entire army through the main-thread message port.
+        let result = await call<SaveResult>(
+          savedBase && savedBase.game.seed === game.seed
+            ? {
+                type: "save",
+                base: savedBase.token,
+                delta: snapshotDelta(savedBase.game, game),
+              }
+            : { type: "save", game },
+        );
+        if (result.resync)
+          result = await call<SaveResult>({ type: "save", game });
+        if (result.resync || result.snapshotToken === undefined)
+          throw new Error(WARNING);
         if (result.fallback) {
           // Keep the previous primary if a fallback write also exceeds quota.
           const previous = localStorage.getItem(SAVE_KEY);
@@ -130,6 +144,7 @@ async function drain() {
             /* Optional legacy mirror; the durable save succeeded. */
           }
         }
+        savedBase = { game, token: result.snapshotToken };
       }
       error = "";
       unsaved = !!pending;

@@ -1,4 +1,4 @@
-import { deserialize, serialize } from "../game/save";
+import { deserialize, serializePacked } from "../game/save";
 import type { Game } from "../game/types";
 
 // Limit expanded input too: a small compressed file can conceal a huge payload.
@@ -37,7 +37,7 @@ export async function expand(
   }
 }
 export async function exportCompact(game: Game): Promise<string> {
-  const bytes = await compress(serialize(game));
+  const bytes = await compress(serializePacked(game));
   const parts: string[] = [];
   // Bounded chunks, without spreading a large array into a function call.
   for (let start = 0; start < bytes.length; start += 16384) {
@@ -57,7 +57,8 @@ export async function unpackSave(text: string): Promise<string> {
   if (text.length > MAX_SAVE_BYTES)
     throw new Error("Save files must be under 128 MB.");
   // The normal legacy header avoids parsing a large game twice.
-  if (/^\s*\{\s*"format"\s*:\s*"catane-frontiers"/.test(text)) return text;
+  if (/^\s*\{\s*"format"\s*:\s*"catane-frontiers(?:-packed)?"/.test(text))
+    return text;
   // Ordinary historical JSON files remain supported without re-encoding.
   if (!/^\s*\{\s*"format"\s*:\s*"catane-frontiers-compressed"/.test(text)) {
     const candidate = JSON.parse(text);

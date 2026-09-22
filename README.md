@@ -54,6 +54,8 @@ Drag to pan; use the wheel to zoom. Click a town, route, tile, army or fleet to 
 
 Campaigns autosave as compressed records in browser IndexedDB, with an atomic previous-save backup. Large campaigns do not use the small localStorage quota. Existing browser saves migrate automatically after a successful write. Saving, compression and load validation run in a background worker. If you refresh before the latest write completes, the browser asks you to wait or confirm leaving.
 
+Large saves also store repeated unit data once and encode sequential unit IDs compactly before compression. Every unit and its individual state are restored separately. Autosaves send only changes to the worker after the first snapshot; each stored save remains complete and can load independently of its backup.
+
 **Export save** in campaign settings creates a portable backup. Exports are compact, losslessly compressed JSON files. **Import save** accepts these files and all previous uncompressed saves, up to 128 MB after decompression. Use it to continue in another browser or computer. Export before clearing browser data, replacing a campaign or changing the server address. Different browsers, hostnames and ports have separate storage. Saves are not uploaded to GitHub or a game server.
 
 Once installed and built, the game runs locally without an account or an internet connection. Artwork, rules and AI are included. The server listens only on your computer by default. `HOST` and `PORT` environment variables can change its address; exposing it on a network still does not add multiplayer.
@@ -111,6 +113,15 @@ To measure compression and exact save recovery without a browser:
 ```sh
 SAVE_PATH=/path/to/campaign.json npx tsx scripts/save-performance.ts
 ```
+
+To compare refresh loading of the old and current formats in a disposable Chromium profile:
+
+```sh
+SAVE_PATH=/path/to/campaign.json GAME_URL=http://127.0.0.1:4173 \
+  npx tsx scripts/save-load-performance.ts
+```
+
+This checks the exact loaded state and measures when the campaign menu appears. It does not open or change your playing browser.
 
 The interactive rules are built alongside the game. Their bilingual chapter source is `src/rules/chapters.json`; costs, rosters, cards and guild contracts are read from `src/game`. To save the full guide as PDF, use its print button. With the local production server running, `npm run docs:pdf` also writes both PDFs into `releases/`.
 

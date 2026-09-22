@@ -1,12 +1,12 @@
 import { test, expect, type Page } from "@playwright/test";
 import { fishingFixture } from "../tests/maritime-fixture";
 import { piece } from "../tests/helpers";
-import { serialize, SAVE_KEY, BACKUP_KEY } from "../src/game/save";
+import { deserialize, serialize, SAVE_KEY, BACKUP_KEY } from "../src/game/save";
 import { importSave } from "../src/storage/codec";
 import { readFile } from "node:fs/promises";
 
 async function saved(page: Page, key = "primary") {
-  return page.evaluate(async (key) => {
+  const record = await page.evaluate(async (key) => {
     const db = await new Promise<IDBDatabase>((resolve, reject) => {
       const r = indexedDB.open("catane-frontiers-campaigns", 1);
       r.onsuccess = () => resolve(r.result);
@@ -26,7 +26,7 @@ async function saved(page: Page, key = "primary") {
           .pipeThrough(new DecompressionStream("gzip")),
       ).text();
       return {
-        game: JSON.parse(text).game,
+        text,
         revision: record.revision,
         bytes: record.bytes.length,
       };
@@ -34,6 +34,7 @@ async function saved(page: Page, key = "primary") {
       db.close();
     }
   }, key);
+  return record ? { ...record, game: deserialize(record.text) } : null;
 }
 function fixture(large = false) {
   const f = fishingFixture();
@@ -119,7 +120,7 @@ test("large saves survive localStorage quota, bulk recruitment, refresh and comp
 test("damaged compressed primary recovers the previous save and keeps the valid backup", async ({
   page,
 }) => {
-  const { s, home } = fixture();
+  const { s, home } = fixture(true);
   await seed(page, serialize(s));
   await page.goto("/");
   await page.getByRole("button", { name: /Continue campaign/ }).click();
@@ -161,7 +162,16 @@ test("damaged compressed primary recovers the previous save and keeps the valid 
   await expect(
     page.getByText("Recovered your previous save from the backup."),
   ).toBeVisible();
-  await expect.poll(async () => (await saved(page))?.game).toEqual(backup);
+  await expect
+    .poll(async () => {
+      try {
+        return (await saved(page))?.game;
+      } catch {
+        // Recovery is visible before the replacement transaction commits.
+        return null;
+      }
+    })
+    .toEqual(backup);
   expect((await saved(page, "backup"))!.game).toEqual(backup);
 });
 
@@ -208,6 +218,8 @@ test("rapid actions coalesce behind an outstanding save and protect refresh unti
     const w = window as any,
       Native = window.Worker;
     w.savePosts = 0;
+    w.saveFull = 0;
+    w.saveDeltas = 0;
     w.holdSave = false;
     window.Worker = class extends Native {
       constructor(url: string | URL, options?: WorkerOptions) {
@@ -222,7 +234,11 @@ test("rapid actions coalesce behind an outstanding save and protect refresh unti
         });
       }
       postMessage(data: any) {
-        if (data.type === "save") w.savePosts++;
+        if (data.type === "save") {
+          w.savePosts++;
+          if (data.game) w.saveFull++;
+          if (data.delta) w.saveDeltas++;
+        }
         super.postMessage(data);
       }
     };
@@ -260,9 +276,60 @@ test("rapid actions coalesce behind an outstanding save and protect refresh unti
   });
   await expect(page.locator(".save-status")).toHaveText("Saved locally");
   expect(await page.evaluate(() => (window as any).savePosts)).toBe(start + 2);
+  expect(await page.evaluate(() => (window as any).saveFull)).toBe(1);
+  expect(await page.evaluate(() => (window as any).saveDeltas)).toBe(2);
   expect(Object.keys((await saved(page))!.game.pieces)).toHaveLength(3);
   expect((await saved(page))!.game.actions).toBe(s.actions + 3);
   await page.reload();
   await page.getByRole("button", { name: /Continue campaign/ }).click();
   expect(Object.keys((await saved(page))!.game.pieces)).toHaveLength(3);
+});
+
+test("a stale save-worker base requests a full snapshot before writing", async ({
+  page,
+}) => {
+  const { s, home } = fixture(true);
+  await seed(page, serialize(s));
+  await page.addInitScript(() => {
+    const Native = window.Worker;
+    const w = window as any;
+    w.saveResyncs = 0;
+    w.saveFull = 0;
+    window.Worker = class extends Native {
+      corrupted = false;
+      constructor(url: string | URL, options?: WorkerOptions) {
+        super(url, options);
+        if (!String(url).includes("save.worker")) return;
+        this.addEventListener("message", ({ data }) => {
+          if (data.type === "save" && data.result?.resync) w.saveResyncs++;
+        });
+      }
+      postMessage(data: any) {
+        if (data.type === "save" && data.game) w.saveFull++;
+        if (data.type === "save" && data.delta && !this.corrupted) {
+          this.corrupted = true;
+          data = { ...data, base: -1 };
+        }
+        super.postMessage(data);
+      }
+    };
+  });
+  await page.goto("/");
+  await page.getByRole("button", { name: /Continue campaign/ }).click();
+  await expect(page.locator(".save-status")).toHaveText("Saved locally");
+  await page.getByTestId(`town-${home.id}`).press("Enter");
+  await page.getByRole("button", { name: "Forces", exact: true }).click();
+  await page.locator('[data-testid="recruit-heavy"] .recruit-purchase').click();
+  await expect
+    .poll(async () => (await saved(page))?.game.actions)
+    .toBe(s.actions + 1);
+  expect(await page.evaluate(() => (window as any).saveResyncs)).toBe(1);
+  expect(await page.evaluate(() => (window as any).saveFull)).toBe(2);
+  expect(Object.keys((await saved(page))!.game.pieces)).toHaveLength(6001);
+  expect(Object.keys((await saved(page, "backup"))!.game.pieces)).toHaveLength(
+    6000,
+  );
+  await page.reload();
+  await page.getByRole("button", { name: /Continue campaign/ }).click();
+  expect(Object.keys((await saved(page))!.game.pieces)).toHaveLength(6001);
 });

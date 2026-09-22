@@ -1,3 +1,4 @@
+import { packGame, unpackGame } from "./save-packing";
 import { syncEmergencyCoalition } from "./emergency-coalition";
 import {
   SEASONS,
@@ -1182,10 +1183,17 @@ export function assertInvariants(s: Game) {
     );
 }
 export function serialize(s: Game): string {
-  const body = JSON.stringify(s);
+  return saveEnvelope(s, false);
+}
+export function serializePacked(s: Game): string {
+  return saveEnvelope(s, true);
+}
+function saveEnvelope(s: Game, packed: boolean): string {
+  const body = JSON.stringify(packed ? packGame(s) : s);
   const header = JSON.stringify({
-    format: "catane-frontiers",
+    format: packed ? "catane-frontiers-packed" : "catane-frontiers",
     version: 14,
+    ...(packed ? { packing: 1 } : {}),
     savedAt: new Date().toISOString(),
     checksum: hash(body).toString(16),
   });
@@ -1200,7 +1208,8 @@ export function deserialize(text: string): Game {
   const data = JSON.parse(text);
   rule(
     data &&
-      data.format === "catane-frontiers" &&
+      (data.format === "catane-frontiers" ||
+        (data.format === "catane-frontiers-packed" && data.packing === 1)) &&
       [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14].includes(data.version) &&
       data.game,
     "This is not a supported Catane save.",
@@ -1209,6 +1218,8 @@ export function deserialize(text: string): Game {
     hash(JSON.stringify(data.game)).toString(16) === data.checksum,
     "This save is damaged: its integrity check failed.",
   );
+  if (data.format === "catane-frontiers-packed")
+    data.game = unpackGame(data.game);
   {
     // Replace retired/prototype crops before older migrations inspect yields.
     // Unreleased v12 prototypes also placed American crops in Old World climates.

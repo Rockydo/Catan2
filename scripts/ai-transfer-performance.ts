@@ -48,6 +48,9 @@ try {
         postMs: 0,
         fullRequests: 0,
         continuedRequests: 0,
+        savePostMs: 0,
+        saveFullRequests: 0,
+        saveDeltaRequests: 0,
       });
       const stringify = JSON.stringify;
       JSON.stringify = function (...args: any[]) {
@@ -96,7 +99,13 @@ try {
         }
         postMessage(data: any) {
           if (!this.ai) {
+            const started = performance.now();
             super.postMessage(data);
+            if (data.type === "save" && p.start && !p.done) {
+              p.savePostMs += performance.now() - started;
+              if (data.game) p.saveFullRequests++;
+              if (data.delta) p.saveDeltaRequests++;
+            }
             return;
           }
           if (p.done) return;
@@ -216,6 +225,9 @@ try {
     jsonMs: probe.jsonMs,
     jsonCalls: probe.jsonCalls,
     postMs: probe.postMs,
+    savePostMs: probe.savePostMs,
+    saveFullRequests: probe.saveFullRequests,
+    saveDeltaRequests: probe.saveDeltaRequests,
     frameP95: sorted[Math.floor(sorted.length * 0.95)],
     longTasks: probe.longs,
     mainThread: {
