@@ -52,7 +52,8 @@ export const TownMiniature = memo(function TownMiniature({
           />
         ),
       )}
-      <ellipse cy="9" rx="14" ry="6" fill="#172e35" opacity=".25" />
+      <ellipse cy="10" rx="16" ry="7" fill="#172e35" opacity=".18" />
+      <ellipse cy="9" rx="14" ry="6" fill="#172e35" opacity=".3" />
       <path
         d="M-13 5 0-2 14 5 1 13Z"
         fill={side}

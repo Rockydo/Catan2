@@ -76,6 +76,14 @@ npm run docs            # Refresh both Markdown rule references
 
 `npm run check` builds and runs the unit and browser suites. Build before running browser tests on their own. Do not rebuild while a browser test run is using `dist`.
 
+To measure camera performance on an exported late-game campaign, run:
+
+```sh
+SAVE_PATH=/path/to/campaign.json GAME_URL=http://127.0.0.1:4173 LABEL=local npx tsx scripts/camera-performance.ts
+```
+
+This opens a disposable Chromium profile and measures ordinary and rapid wheel zooming. Reports and a close-up screenshot go to `test-artifacts/`. It does not edit the export or connect to your playing browser. Compare the same export, browser, viewport and machine between builds; the timings are not universal frame-rate guarantees.
+
 The interactive rules are built alongside the game. Their bilingual chapter source is `src/rules/chapters.json`; costs, rosters, cards and guild contracts are read from `src/game`. To save the full guide as PDF, use its print button. With the local production server running, `npm run docs:pdf` also writes both PDFs into `releases/`.
 
 `python scripts/package-release.py` packages a built copy with sources and tests. The resulting ZIP can run with Node.js without installing dependencies, because it includes `dist`. Local saves, browser profiles and test artifacts are excluded. Generated builds and release bundles are not committed to this repository.

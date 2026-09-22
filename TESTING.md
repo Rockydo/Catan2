@@ -1,5 +1,13 @@
 # Release verification
 
+## Late-game camera performance: 2026-09-22
+
+- Replayed real mouse-wheel zooms in an isolated Chromium profile using an exported Round 28 campaign: 430 tiles, 216 towns and 1,540 units. The original export and the playing browser were not modified.
+- Sixteen ordinary zoom-in notches used 382 ms of main-thread task time, down from 569 ms; zoom-out used 403 ms, down from 590 ms. Twelve rapid zoom-in notches used 191 ms instead of 208 ms; rapid zoom-out used 213 ms instead of 219 ms. Frame-time p95 was about 16.8 ms, with no long tasks in the measured camera segments. These are local headless-browser measurements, not guarantees for every machine.
+- Isolated wheel notches now update crisp geometry on the next frame. Continuous gestures retain compositing and the short 80 ms final sharpening window. Coalesced wheel events retain their scroll distance. Decorative shadows use vector shapes instead of hundreds of independent blur filters. Offscreen groups are culled with a smaller travel buffer, and unchanged army counters no longer rebuild on unrelated selections.
+- All 1,221 unit tests pass. Thirty-three Chromium checks cover camera anchoring, coalesced input, zoom limits, deep pan/zoom coverage, selection, movement, recruitment, seasons, climates, siege inspection and save preservation. The six camera checks also pass in Firefox. Production build, formatting, diff checks and all 12 HTTP checks pass. Close-up artwork and counter clarity were inspected.
+- `scripts/camera-performance.ts` reproduces the camera workload from `SAVE_PATH`, using `GAME_URL` and `LABEL` for build comparisons. Output goes to the ignored `test-artifacts/` directory. No engine, AI policy or save-format changes were needed.
+
 ## Climate generation and production: 2026-09-18
 
 - 662 tests pass across 48 files. Thirty new tests cover all seven probability tables over 140,000 terrain rolls, effective sequential water probabilities, compatible climate borders over 30 seeded worlds and 120 expansions, immutable revealed terrain and reservations, save validation, legacy migration, all new yields, Woods choices, fixed workshop products, secondary-resource guild contracts, collector multipliers, ice movement and construction, and AI harvest choices.

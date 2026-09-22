@@ -276,15 +276,6 @@ const TerrainLayer = memo(function TerrainLayer({
           <stop stopColor="#fff3c1" stopOpacity=".04" />
           <stop offset="1" stopColor="#183b36" stopOpacity=".12" />
         </linearGradient>
-        <filter id="tile-shadow" x="-20%" y="-20%" width="140%" height="150%">
-          <feDropShadow
-            dx="0"
-            dy="2"
-            stdDeviation="1.2"
-            floodColor="#355d59"
-            floodOpacity=".17"
-          />
-        </filter>
         <pattern
           id="sea-lines"
           width="110"
@@ -299,15 +290,6 @@ const TerrainLayer = memo(function TerrainLayer({
             opacity=".12"
           />
         </pattern>
-        <filter id="piece-shadow" x="-60%" y="-60%" width="220%" height="230%">
-          <feDropShadow
-            dx="0"
-            dy="2"
-            stdDeviation="1.5"
-            floodColor="#102a31"
-            floodOpacity=".65"
-          />
-        </filter>
         <filter id="selected-glow">
           <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="#fff4c8" />
         </filter>
@@ -348,10 +330,15 @@ const TerrainLayer = memo(function TerrainLayer({
             <g key={tile.id} data-map-x={x} data-map-y={y}>
               <polygon
                 points={poly}
+                transform="translate(0 1.5)"
+                fill="#355d59"
+                opacity=".17"
+              />
+              <polygon
+                points={poly}
                 fill={sea ? "url(#water-tile)" : "#c9b98c"}
                 stroke={sea ? "#95bcb155" : "#e2d4ad"}
                 strokeWidth={sea ? 0.7 : 1}
-                filter="url(#tile-shadow)"
               />
               <TerrainArt
                 resource={seasonalTerrainPattern(tile, artworkSeason)}
@@ -548,6 +535,104 @@ const MapHex = memo(function MapHex({
   );
 });
 
+const MapArmy = memo(function MapArmy({
+  tile,
+  units,
+  players,
+  x,
+  y,
+  selected,
+  movable,
+  onSelect,
+  onMove,
+  clicked,
+}: {
+  tile: string;
+  units: Piece[];
+  players: Game["players"];
+  x: number;
+  y: number;
+  selected: boolean;
+  movable: boolean;
+  onSelect: Props["onSelect"];
+  onMove: Props["onMove"];
+  clicked: (action: () => void) => void;
+}) {
+  useLocale();
+  const { owners, composition, label } = useMemo(() => {
+    const owners: number[] = [],
+      counts = new Map<string, number>();
+    let power = 0;
+    for (const unit of units) {
+      if (!owners.includes(unit.owner)) owners.push(unit.owner);
+      const name = unitName(unit);
+      counts.set(name, (counts.get(name) ?? 0) + 1);
+      power += points(unit);
+    }
+    const composition = [...counts]
+      .map(([name, count]) => `${count} ${name}`)
+      .join(", ");
+    return {
+      owners,
+      composition,
+      label: `${owners.map((id) => players[id].name).join(" & ")} ${units[0].naval ? "fleet" : "army"}, ${units.length} pieces, ${power} base power; ${composition}`,
+    };
+  }, [units, players]);
+  const p = units[0].owner;
+  const activate = () =>
+    movable ? onMove(tile) : onSelect({ type: "tile", id: tile });
+  return (
+    <g
+      className="army-token"
+      data-map-x={x + 21}
+      data-map-y={y + 12}
+      role="button"
+      tabIndex={0}
+      aria-label={tx(label)}
+      data-testid={`army-${tile}`}
+      transform={`translate(${x + 21} ${y + 12})`}
+      onClick={(e) => {
+        e.stopPropagation();
+        clicked(activate);
+      }}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") activate();
+      }}
+    >
+      <title>{tx(composition)}</title>
+      <rect
+        x="-17"
+        y="-21"
+        width="34"
+        height="44"
+        rx="12"
+        fill="transparent"
+        pointerEvents="all"
+      />
+      {tx(
+        owners.length > 1 && (
+          <g aria-hidden="true" className="alliance-map-badges">
+            {tx(
+              owners.map((owner, i) => (
+                <circle
+                  key={owner}
+                  cx={-18 + i * 10}
+                  cy={-27}
+                  r={5}
+                  fill={COLORS[owner]}
+                  stroke="#f3e4bf"
+                  strokeWidth={1.5}
+                />
+              )),
+            )}
+          </g>
+        ),
+      )}
+      <ArmyMiniature units={units} color={COLORS[p]} selected={selected} />
+    </g>
+  );
+});
+
 const MapTown = memo(function MapTown({
   game: s,
   town: t,
@@ -573,7 +658,6 @@ const MapTown = memo(function MapTown({
         className="map-town"
         data-map-x={x}
         data-map-y={y}
-        filter="url(#piece-shadow)"
         role="button"
         tabIndex={0}
         aria-label={tx(
@@ -805,6 +889,7 @@ const BoardScene = memo(function BoardScene({
       () => (mode === "move" ? moveTargets(s, unitIds) : {}),
       [s, mode, unitIds.join(",")],
     );
+  const selectedUnits = new Set(unitIds);
   const relocations = new Set(
     mode === "move-route" && selection?.type === "edge"
       ? relocationSites(s, selection.id)
@@ -1715,75 +1800,21 @@ const BoardScene = memo(function BoardScene({
             )}
             {tx(
               Object.entries(groupUnits).map(([tile, units]) => {
-                const { x, y } = hexCenter(s.tiles[tile]),
-                  p = units[0].owner,
-                  naval = units[0].naval,
-                  selected = unitIds.some((id) =>
-                    units.some((u) => u.id === id),
-                  );
-                const activate = () =>
-                  mode === "move" && targets[tile] && interactive
-                    ? onMove(tile)
-                    : onSelect({ type: "tile", id: tile });
+                const { x, y } = hexCenter(s.tiles[tile]);
                 return (
-                  <g
-                    key={`army${tile}`}
-                    className="army-token"
-                    data-map-x={x}
-                    data-map-y={y}
-                    filter="url(#piece-shadow)"
-                    role="button"
-                    tabIndex={0}
-                    aria-label={tx(
-                      `${[...new Set(units.map((u) => u.owner))].map((id) => s.players[id].name).join(" & ")} ${naval ? "fleet" : "army"}, ${units.length} pieces, ${units.reduce((n, u) => n + points(u), 0)} base power; ${[...new Set(units.map(unitName))].map((name) => `${units.filter((u) => unitName(u) === name).length} ${name}`).join(", ")}`,
-                    )}
-                    data-testid={`army-${tile}`}
-                    transform={`translate(${x + 21} ${y + 12})`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      clicked(activate);
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") activate();
-                    }}
-                  >
-                    <title>{tx(units.map(unitName).join(" · "))}</title>
-                    <rect
-                      x="-17"
-                      y="-21"
-                      width="34"
-                      height="44"
-                      rx="12"
-                      fill="transparent"
-                      pointerEvents="all"
-                    />
-                    {tx(
-                      [...new Set(units.map((u) => u.owner))].length > 1 && (
-                        <g aria-hidden="true" className="alliance-map-badges">
-                          {tx(
-                            [...new Set(units.map((u) => u.owner))].map(
-                              (owner, i) => (
-                                <circle
-                                  key={owner}
-                                  cx={-18 + i * 10}
-                                  cy={-27}
-                                  r={5}
-                                  fill={COLORS[owner]}
-                                  stroke="#f3e4bf"
-                                  strokeWidth={1.5}
-                                />
-                              ),
-                            ),
-                          )}
-                        </g>
-                      ),
-                    )}
-                    <ArmyMiniature
-                      units={units}
-                      color={COLORS[p]}
-                      selected={selected}
-                    />
-                  </g>
+                  <MapArmy
+                    key={tile}
+                    tile={tile}
+                    units={units}
+                    players={s.players}
+                    x={x}
+                    y={y}
+                    selected={units.some((u) => selectedUnits.has(u.id))}
+                    movable={mode === "move" && !!targets[tile] && interactive}
+                    onSelect={onSelect}
+                    onMove={onMove}
+                    clicked={clickAction}
+                  />
                 );
               }),
             )}

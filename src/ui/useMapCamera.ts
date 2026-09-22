@@ -1,3 +1,4 @@
+import { wheelZoomFactor } from "./map-camera-math";
 import { useEffect, useLayoutEffect, useRef, type PointerEvent } from "react";
 export interface MapBounds {
   x: number;
@@ -6,8 +7,12 @@ export interface MapBounds {
   h: number;
 }
 type Point = { x: number; y: number };
+// Covers tile corners and the largest miniature/badge, in world coordinates.
+const SPRITE_MARGIN = 80;
+const OVERSCAN = 0.15;
 
-/** Composite motion; refresh crisp vectors promptly when input settles. */
+/** Crisp single notches; composite continuous gestures without a second paint
+ * for each isolated wheel event. Camera input never schedules a React render. */
 export function useMapCamera(
   bounds: MapBounds,
   maxZoom: number,
@@ -20,6 +25,8 @@ export function useMapCamera(
   const ocean = useRef<SVGRectElement>(null);
   const hitArea = useRef<SVGRectElement>(null);
   const camera = useRef({ zoom: 1, x: 0, y: 0 });
+  const lastWheel = useRef(-Infinity);
+  const sharpFrame = useRef(false);
   const settings = useRef({ bounds, maxZoom });
   settings.current = { bounds, maxZoom };
   const committed = useRef(bounds);
@@ -39,13 +46,13 @@ export function useMapCamera(
   }
   function cull(v: MapBounds) {
     const visible = viewport(v);
-    // A quarter viewport on each side plus the largest miniature/label.
+    // A small travel buffer on each side plus the largest miniature/label.
     // Refresh before a drag or zoom-out could expose anything hidden.
     const region = {
-      x: visible.x - visible.w * 0.25 - 80,
-      y: visible.y - visible.h * 0.25 - 80,
-      w: visible.w * 1.5 + 160,
-      h: visible.h * 1.5 + 160,
+      x: visible.x - visible.w * OVERSCAN - SPRITE_MARGIN,
+      y: visible.y - visible.h * OVERSCAN - SPRITE_MARGIN,
+      w: visible.w * (1 + OVERSCAN * 2) + SPRITE_MARGIN * 2,
+      h: visible.h * (1 + OVERSCAN * 2) + SPRITE_MARGIN * 2,
     };
     // The invisible input surface must not inflate the SVG paint bounds to
     // hundreds of screen widths when zoomed in.
@@ -103,6 +110,7 @@ export function useMapCamera(
     cancelAnimationFrame(frame.current);
     frame.current = 0;
     clearTimeout(settle.current);
+    sharpFrame.current = false;
     const v = view();
     const box = `${v.x} ${v.y} ${v.w} ${v.h}`;
     for (const ref of [svg, terrain])
@@ -131,10 +139,10 @@ export function useMapCamera(
       region = drawn.current;
     if (
       region &&
-      (visible.x < region.x + 80 ||
-        visible.y < region.y + 80 ||
-        visible.x + visible.w > region.x + region.w - 80 ||
-        visible.y + visible.h > region.y + region.h - 80)
+      (visible.x < region.x + SPRITE_MARGIN ||
+        visible.y < region.y + SPRITE_MARGIN ||
+        visible.x + visible.w > region.x + region.w - SPRITE_MARGIN ||
+        visible.y + visible.h > region.y + region.h - SPRITE_MARGIN)
     ) {
       commit();
       return;
@@ -147,8 +155,15 @@ export function useMapCamera(
     const y = marginY * (1 - scale) + (base.y - v.y) * baseScale * scale;
     layer.current!.style.transform = `translate3d(${x}px, ${y}px, 0) scale(${scale})`;
   }
-  function schedule() {
-    if (!frame.current) frame.current = requestAnimationFrame(apply);
+  function schedule(sharp = false) {
+    sharpFrame.current ||= sharp;
+    if (!frame.current)
+      frame.current = requestAnimationFrame(() => {
+        const crisp = sharpFrame.current;
+        sharpFrame.current = false;
+        if (crisp) commit();
+        else apply();
+      });
     clearTimeout(settle.current);
     // Restore sharp vector labels within a few frames of the final notch.
     // Keep a short quiet window so a rapid wheel/trackpad gesture stays on the
@@ -158,19 +173,22 @@ export function useMapCamera(
     }, 80);
   }
   function setPan(next: Point) {
+    if (camera.current.x === next.x && camera.current.y === next.y) return;
     camera.current.x = next.x;
     camera.current.y = next.y;
     schedule();
   }
   function setZoom(next: number | ((z: number) => number)) {
-    camera.current.zoom = Math.max(
+    const zoom = Math.max(
       0.6,
       Math.min(
         settings.current.maxZoom,
         typeof next === "function" ? next(camera.current.zoom) : next,
       ),
     );
-    schedule();
+    if (zoom === camera.current.zoom) return;
+    camera.current.zoom = zoom;
+    schedule(true);
   }
   // Index geometry once per React scene update, never by reading thousands of
   // DOM attributes during a camera refresh. Include new construction/reveals.
@@ -205,7 +223,7 @@ export function useMapCamera(
     // changing the drawing must never trigger another camera refresh.
     resize.observe(layer.current!.parentElement!);
     function wheel(event: WheelEvent) {
-      if (event.ctrlKey) return;
+      if (event.ctrlKey || !event.deltaY) return;
       event.preventDefault();
       const r = rect.current!,
         v = view(),
@@ -220,9 +238,11 @@ export function useMapCamera(
         0.6,
         Math.min(
           settings.current.maxZoom,
-          current.zoom * (event.deltaY < 0 ? 1.12 : 1 / 1.12),
+          current.zoom *
+            wheelZoomFactor(event.deltaY, event.deltaMode, r.height),
         ),
       );
+      if (next === current.zoom) return;
       const b = settings.current.bounds,
         cx = b.x + b.w / 2,
         cy = b.y + b.h / 2,
@@ -230,7 +250,10 @@ export function useMapCamera(
       current.x = point.x + (cx + current.x - point.x) * ratio - cx;
       current.y = point.y + (cy + current.y - point.y) * ratio - cy;
       current.zoom = next;
-      schedule();
+      const now = performance.now();
+      const isolated = now - lastWheel.current > 110;
+      lastWheel.current = now;
+      schedule(isolated);
     }
     element.addEventListener("wheel", wheel, { passive: false });
     // Layout offsets may change when a surrounding drawer or page scrolls.

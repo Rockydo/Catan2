@@ -324,3 +324,97 @@ test("deep zoom culls distant artwork, keeps the viewport covered while dragging
     path: `test-artifacts/zoom-coverage-${test.info().project.name}.png`,
   });
 });
+
+test("an isolated notch is sharp on the next frame without a second zoom paint", async ({
+  page,
+}) => {
+  await load(page);
+  await closePanel(page);
+  await page.waitForLoadState("networkidle");
+  const result = await page.evaluate(async () => {
+    const map = document.querySelector<SVGSVGElement>(".world-map")!;
+    const layer = document.querySelector<HTMLElement>(".map-camera-layer")!;
+    const bounds = layer.parentElement!.getBoundingClientRect();
+    const start = map.getAttribute("viewBox");
+    let commits = 0,
+      scaled = false;
+    const changes = new MutationObserver((records) => {
+      commits += records.filter((r) => r.attributeName === "viewBox").length;
+      scaled ||= !!layer.style.transform;
+    });
+    changes.observe(map, { attributes: true, attributeFilter: ["viewBox"] });
+    changes.observe(layer, { attributes: true, attributeFilter: ["style"] });
+    map.dispatchEvent(
+      new WheelEvent("wheel", {
+        deltaY: -100,
+        clientX: bounds.x + bounds.width / 2,
+        clientY: bounds.y + bounds.height / 2,
+        cancelable: true,
+      }),
+    );
+    await new Promise(requestAnimationFrame);
+    const firstFrame = map.getAttribute("viewBox");
+    await new Promise((resolve) => setTimeout(resolve, 150));
+    changes.disconnect();
+    return { changed: firstFrame !== start, commits, scaled };
+  });
+  expect(result).toEqual({ changed: true, commits: 1, scaled: false });
+});
+
+test("coalesced wheel distance is preserved, horizontal gestures and zoom limits do no work", async ({
+  page,
+}) => {
+  await load(page);
+  await closePanel(page);
+  await page.waitForLoadState("networkidle");
+  const result = await page.evaluate(async () => {
+    const map = document.querySelector<SVGSVGElement>(".world-map")!;
+    const layer = document.querySelector<HTMLElement>(".map-camera-layer")!;
+    const r = layer.parentElement!.getBoundingClientRect();
+    const width = () => Number(map.getAttribute("viewBox")!.split(" ")[2]);
+    const wheel = (deltaY: number) =>
+      map.dispatchEvent(
+        new WheelEvent("wheel", {
+          deltaY,
+          clientX: r.x + r.width * 0.3,
+          clientY: r.y + r.height * 0.6,
+          cancelable: true,
+        }),
+      );
+    const wait = () => new Promise((resolve) => setTimeout(resolve, 140));
+    const initial = width();
+    wheel(-300);
+    await wait();
+    const zoomed = width();
+    for (let i = 0; i < 3; i++) wheel(100);
+    await wait();
+    const restored = width();
+    const snapshot = map.getAttribute("viewBox");
+    wheel(0);
+    await wait();
+    const horizontalUnchanged =
+      map.getAttribute("viewBox") === snapshot && !layer.style.transform;
+    // Reach the cap, then verify further scrolling schedules no DOM changes.
+    for (let i = 0; i < 20; i++) wheel(-600);
+    await wait();
+    let mutations = 0;
+    const observer = new MutationObserver((records) => {
+      mutations += records.length;
+    });
+    observer.observe(map, { attributes: true });
+    observer.observe(layer, { attributes: true });
+    for (let i = 0; i < 8; i++) wheel(-100);
+    await wait();
+    observer.disconnect();
+    return {
+      ratio: initial / zoomed,
+      restored: restored / initial,
+      horizontalUnchanged,
+      mutations,
+    };
+  });
+  expect(result.ratio).toBeCloseTo(1.12 ** 3, 8);
+  expect(result.restored).toBeCloseTo(1, 8);
+  expect(result.horizontalUnchanged).toBe(true);
+  expect(result.mutations).toBe(0);
+});

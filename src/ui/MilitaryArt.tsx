@@ -459,6 +459,11 @@ export const ArmyMiniature = memo(function ArmyMiniature({
     rank = maxValue(units.map((u) => u.tier));
   return (
     <g pointerEvents="none" data-unit-kinds={kinds.join(",")}>
+      <path
+        d="M-16-15Q0-22 16-15V10Q14 19 0 24Q-14 19-16 10Z"
+        fill="#102a31"
+        opacity=".45"
+      />
       {tx(
         selected && (
           <path
