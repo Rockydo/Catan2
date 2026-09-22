@@ -4,11 +4,12 @@ The performance work uses exported campaigns in disposable processes and browser
 
 ## September 22 measurements
 
-The AI replay used a 530-tile campaign with 314 towns and 8,703 units at the start of the turn. The optimization-only comparison finished the same 138 commands with the same final state hash.
+The AI replay used a 530-tile campaign with 314 towns and 8,703 units at the start of the turn. The optimization-only comparison finished the same 138 commands with the same final state hash. A separate 60-decision replay on the larger fixture also preserved every command and its final hash.
 
 | Measurement | Before this pass | After |
 |---|---:|---:|
 | Full exported AI turn, unchanged rules | 27.8 s | 20.8 s |
+| 2,000-tile fixed 60 AI decisions, unchanged rules | 93.6 s | 85.1 s |
 | 2,000-tile ordinary zoom-in, p95 frame | 100 ms | 50 ms |
 | 2,000-tile ordinary zoom-out, p95 frame | 100 ms | 50 ms |
 | 2,000-tile rapid zoom-in, p95 frame | 116.6 ms | 50.1 ms |
