@@ -52,7 +52,9 @@ This is a substantial variant, so read the short first-game chapter even if you 
 
 Drag to pan; use the wheel to zoom. Click a town, route, tile, army or fleet to inspect it. The action rail provides construction, forces, trade, research and exploration. Keyboard shortcuts are `B`, `F`, `T`, `R` and `E`; `Escape` closes panels. Touch users can use the on-screen controls.
 
-Campaigns autosave in the browser. **Export save** in campaign settings creates a portable backup. Use **Import save** to continue in another browser or computer. Export before clearing browser data, replacing a campaign or changing the server address. Different browsers, hostnames and ports have separate storage. Saves are not uploaded to GitHub or a game server.
+Campaigns autosave as compressed records in browser IndexedDB, with an atomic previous-save backup. Large campaigns do not use the small localStorage quota. Existing browser saves migrate automatically after a successful write. Saving, compression and load validation run in a background worker. If you refresh before the latest write completes, the browser asks you to wait or confirm leaving.
+
+**Export save** in campaign settings creates a portable backup. Exports are compact, losslessly compressed JSON files. **Import save** accepts these files and all previous uncompressed saves, up to 128 MB after decompression. Use it to continue in another browser or computer. Export before clearing browser data, replacing a campaign or changing the server address. Different browsers, hostnames and ports have separate storage. Saves are not uploaded to GitHub or a game server.
 
 Once installed and built, the game runs locally without an account or an internet connection. Artwork, rules and AI are included. The server listens only on your computer by default. `HOST` and `PORT` environment variables can change its address; exposing it on a network still does not add multiplayer.
 

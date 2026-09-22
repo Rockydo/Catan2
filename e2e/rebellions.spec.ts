@@ -30,6 +30,7 @@ test("AI rebellion announces the revived realm, focuses its territory, and persi
     window.Worker = class extends Native {
       constructor(url: string | URL, options?: WorkerOptions) {
         super(url, options);
+        if (!String(url).includes("ai.worker")) return;
         this.addEventListener("message", (e) => e.stopImmediatePropagation());
       }
     };

@@ -82,12 +82,13 @@ import {
   moveTargets,
 } from "./game/selectors";
 import {
-  serialize,
-  deserialize,
-  loadLocal,
-  saveLocal,
-  SAVE_KEY,
-} from "./game/save";
+  saveCampaign,
+  observeSaving,
+  hasUnsavedChanges,
+  exportCampaign,
+  importCampaign,
+  type LoadedCampaign,
+} from "./storage/client";
 import { Board, type Selection, type BoardMode } from "./ui/Board";
 import { SeasonCalendar } from "./ui/SeasonCalendar";
 import type { Season } from "./game/seasons";
@@ -122,9 +123,9 @@ const PHASE_NAMES: Record<Game["phase"], string> = {
   military: "Build, trade & command",
   finished: "Campaign complete",
 };
-function downloadGame(game: Game) {
+async function downloadGame(game: Game) {
   const url = URL.createObjectURL(
-    new Blob([serialize(game)], { type: "application/json" }),
+    new Blob([await exportCampaign(game)], { type: "application/json" }),
   );
   const a = document.createElement("a");
   a.href = url;
@@ -132,11 +133,14 @@ function downloadGame(game: Game) {
   a.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
-export default function App() {
+export default function App({
+  initialCampaign,
+}: {
+  initialCampaign: LoadedCampaign;
+}) {
   useLocale();
 
-  const initial = useRef<ReturnType<typeof loadLocal> | null>(null);
-  if (initial.current === null) initial.current = loadLocal();
+  const initial = useRef(initialCampaign);
   const [game, setGame] = useState<Game | null>(initial.current.game),
     [menu, setMenu] = useState(true),
     [newSetup, setNewSetup] = useState(false),
@@ -162,6 +166,7 @@ export default function App() {
         : (initial.current.error ?? ""),
     ),
     [saveError, setSaveError] = useState(""),
+    [saving, setSaving] = useState(false),
     [preview, setPreview] = useState<string[]>([]),
     [acknowledged, setAcknowledged] = useState(-1),
     [help, setHelp] = useState(false),
@@ -237,16 +242,20 @@ export default function App() {
     },
     [roll.begin, roll.close, townAlerts.capture],
   );
+  useEffect(
+    () =>
+      observeSaving((error, pending) => {
+        setSaveError(error);
+        setSaving(pending);
+      }),
+    [],
+  );
   useEffect(() => {
-    if (!game) return;
-    try {
-      saveLocal(game);
-      setSaveError("");
-    } catch {
-      setSaveError(
-        "Automatic saving is unavailable or storage is full. Export your game to keep it safe.",
-      );
-    }
+    if (
+      game &&
+      !(game === initial.current.game && initial.current.needsSave === false)
+    )
+      saveCampaign(game);
   }, [game]);
   useEffect(() => {
     if (!toast) return;
@@ -254,13 +263,11 @@ export default function App() {
     return () => clearTimeout(timer);
   }, [toast]);
   useEffect(() => {
-    const before = () => {
-      if (gameRef.current)
-        try {
-          saveLocal(gameRef.current);
-        } catch {
-          /* The visible save warning remains available. */
-        }
+    const before = (event: BeforeUnloadEvent) => {
+      if (hasUnsavedChanges()) {
+        event.preventDefault();
+        event.returnValue = "";
+      }
     };
     window.addEventListener("beforeunload", before);
     return () => window.removeEventListener("beforeunload", before);
@@ -589,9 +596,9 @@ export default function App() {
     const file = event.target.files?.[0];
     if (!file) return;
     try {
-      if (file.size > 40_000_000)
-        throw new Error("Save files must be under 40 MB.");
-      const loaded = deserialize(await file.text());
+      if (file.size > 128_000_000)
+        throw new Error("Save files must be under 128 MB.");
+      const loaded = await importCampaign(await file.text());
       roll.reset(loaded);
       townAlerts.reset();
       setAlertFocus(null);
@@ -885,11 +892,20 @@ export default function App() {
                   <span
                     className={`save-status ${saveError ? "bad" : ""}`}
                     title={tx(
-                      saveError || "Every action is saved automatically",
+                      saveError ||
+                        (saving
+                          ? "Saving…"
+                          : "Every action is saved automatically"),
                     )}
                   >
                     <Check size={13} />
-                    {tx(saveError ? "Save issue" : "Saved locally")}
+                    {tx(
+                      saveError
+                        ? "Save issue"
+                        : saving
+                          ? "Saving…"
+                          : "Saved locally",
+                    )}
                   </span>
                   <button
                     className="icon-button"
@@ -1265,7 +1281,15 @@ export default function App() {
                 saveError && (
                   <div className="save-warning" role="alert">
                     {tx(saveError)}
-                    <button onClick={() => downloadGame(game)}>
+                    <button
+                      onClick={() => {
+                        void downloadGame(game).catch(() =>
+                          setToast(
+                            "The game could not be exported. Please try again.",
+                          ),
+                        );
+                      }}
+                    >
                       {tx("Export now")}
                     </button>
                   </div>
@@ -1465,7 +1489,13 @@ export default function App() {
                   <div className="settings-actions">
                     <button
                       className="secondary"
-                      onClick={() => downloadGame(game)}
+                      onClick={() => {
+                        void downloadGame(game).catch(() =>
+                          setToast(
+                            "The game could not be exported. Please try again.",
+                          ),
+                        );
+                      }}
                     >
                       <Download size={18} />
                       {tx("Export saved game")}
@@ -1672,7 +1702,13 @@ export default function App() {
               </button>
               <button
                 className="secondary full"
-                onClick={() => downloadGame(game)}
+                onClick={() => {
+                  void downloadGame(game).catch(() =>
+                    setToast(
+                      "The game could not be exported. Please try again.",
+                    ),
+                  );
+                }}
               >
                 {tx("Export this victory")}
               </button>

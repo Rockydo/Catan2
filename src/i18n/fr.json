@@ -1935,5 +1935,11 @@
   "Equip a fleet to siege exposed coastal towns": "Équiper une flotte pour assiéger les agglomérations côtières sans défense",
   "Warehouse breached. Destruction {0}; it still requires a fresh adjacent army or siege fleet. New goods can be raided on a later owner turn.": "Entrepôt accessible. La destruction {0} ; elle exige encore une armée ou une flotte de siège fraîche adjacente. Les nouvelles ressources peuvent être pillées lors d’un prochain tour de l’attaquant.",
   "Raids transfer the entire warehouse to the attacker's nearest surviving town. Each siege step or raid costs 1 movement point per participating unit; only one operation per town per attacker turn. Land and naval formations, and forces on different hexes, never combine siege power. Reinforcements, casualties and withdrawal can change these estimates. Destruction requires a later turn than the first raid.": "Le pillage transfère tout l’entrepôt vers l’agglomération survivante la plus proche de l’attaquant. Chaque opération de siège ou pillage coûte 1 point de mouvement par participant, avec une seule opération par agglomération et tour de l’attaquant. Les formations terrestres et navales, comme celles sur des tuiles différentes, ne cumulent jamais leur puissance de siège. Renforts, pertes et retraits peuvent modifier ces estimations. La destruction exige un tour ultérieur au premier pillage.",
-  "Based on the strongest adjacent siege formation. Reinforcements or withdrawal can change the siege.": "Selon la formation de siège adjacente la plus puissante. Renforts et retraits peuvent modifier le siège."
+  "Based on the strongest adjacent siege formation. Reinforcements or withdrawal can change the siege.": "Selon la formation de siège adjacente la plus puissante. Renforts et retraits peuvent modifier le siège.",
+  "Loading campaign…": "Chargement de la partie…",
+  "This save exceeds the 128 MB expanded limit.": "Cette sauvegarde dépasse la limite de 128 Mo après décompression.",
+  "Save files must be under 128 MB.": "Les sauvegardes doivent faire moins de 128 Mo.",
+  "Another tab saved a newer campaign. Export this game before reloading.": "Un autre onglet a enregistré une partie plus récente. Exportez cette partie avant de recharger.",
+  "The game could not be exported. Please try again.": "Impossible d’exporter la partie. Veuillez réessayer.",
+  "Saving…": "Sauvegarde…"
 }

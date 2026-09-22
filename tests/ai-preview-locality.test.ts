@@ -92,3 +92,26 @@ it("routine previews still obey pending player decisions", () => {
     );
   }
 });
+
+it("recruitment shares immutable existing units and geometry without touching the source", () => {
+  const { s, home, land } = guildFixture();
+  const old = piece(s, land, 0, "heavy");
+  const before = structuredClone(s);
+  freeze(s);
+  const command = {
+    type: "recruit",
+    town: home.id,
+    tile: land,
+    kind: "heavy",
+    tier: 1,
+    count: 100,
+  };
+  const result = applyCommand(s, command);
+  expect(result.ok).toBe(true);
+  expect(s).toEqual(before);
+  expect(result.state.pieces[old.id]).toBe(old);
+  expect(result.state.tiles).toBe(s.tiles);
+  expect(result.state.pieces).not.toBe(s.pieces);
+  expect(canApplyCommand(s, command)).toBe(true);
+  expect(s).toEqual(before);
+});

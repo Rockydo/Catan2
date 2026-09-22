@@ -403,7 +403,9 @@ export function applyCommandPlan(
  * Expeditions and Woods changes retain a fully isolated world copy. End-turn
  * and surrender previews also isolate sea tiles at possible season boundaries.
  * Routine economic orders copy only the records their real rules may change.
- * This never publishes the preview.
+ * Recruitment transactions also reuse immutable geometry and existing unit
+ * records: deployment only adds units, while follow-up cleanup only deletes
+ * keys from the copied piece map. This never publishes the preview.
  */
 export function canApplyCommand(state: Game, c: Command): boolean {
   return commandResult(state, c, true).ok;
@@ -428,7 +430,8 @@ function commandResult(state: Game, c: Command, preview: boolean): Result {
       ].includes(c.type);
     const s: Game = localOrder
       ? localOrderDraft(state, c)
-      : preview && !["expedition", "woods-choice"].includes(c.type)
+      : (preview && !["expedition", "woods-choice"].includes(c.type)) ||
+          ["recruit", "ship"].includes(c.type)
         ? {
             ...structuredClone({
               ...state,
@@ -436,7 +439,13 @@ function commandResult(state: Game, c: Command, preview: boolean): Result {
               climatePlan: undefined,
               vertices: undefined,
               edges: undefined,
+              ...(["recruit", "ship"].includes(c.type)
+                ? { pieces: undefined }
+                : {}),
             }),
+            ...(["recruit", "ship"].includes(c.type)
+              ? { pieces: { ...state.pieces } }
+              : {}),
             tiles:
               ["end-turn", "surrender"].includes(c.type) && state.calendar
                 ? Object.fromEntries(
@@ -458,7 +467,7 @@ function commandResult(state: Game, c: Command, preview: boolean): Result {
       // unrelated sieges/eliminations when only checking a menu option.
       if (s.phase === "military") s.phase = "economy";
       s.actions++;
-      execute(s, c);
+      execute(s, c, true);
     } else advanceCommand(s, c, preview);
     return { ok: true, state: { ...s } };
   } catch (error) {
@@ -477,17 +486,15 @@ function commandResult(state: Game, c: Command, preview: boolean): Result {
  * deeply for guild and workshop changes. This draft is never published. */
 function localOrderDraft(state: Game, command: Command): Game {
   let pieces = state.pieces;
-  if (["recruit", "ship", "guild-order"].includes(command.type)) {
+  if (command.type === "guild-order") {
     pieces = { ...pieces };
-    if (command.type === "guild-order") {
-      // Supply applies to the entire selected formation, including soldiers not
-      // explicitly listed in the order. Only their scalar bonuses can change.
-      const tile = state.pieces[command.ids?.[0] ?? ""]?.tile;
-      if (tile)
-        for (const unit of Object.values(pieces))
-          if (unit.owner === state.active && unit.tile === tile)
-            pieces[unit.id] = { ...unit };
-    }
+    // Supply applies to the entire selected formation, including soldiers not
+    // explicitly listed in the order. Only their scalar bonuses can change.
+    const tile = state.pieces[command.ids?.[0] ?? ""]?.tile;
+    if (tile)
+      for (const unit of Object.values(pieces))
+        if (unit.owner === state.active && unit.tile === tile)
+          pieces[unit.id] = { ...unit };
   }
   return {
     ...state,
@@ -518,7 +525,7 @@ function advanceCommand(s: Game, c: Command, preview: boolean) {
   eliminate(s);
   if (!preview) syncEmergencyCoalition(s);
 }
-export function execute(s: Game, c: Command) {
+export function execute(s: Game, c: Command, preview = false) {
   const p = s.players[s.active],
     actor = c.actor ?? s.active;
   rule(
@@ -863,15 +870,11 @@ export function execute(s: Game, c: Command) {
       Number.isInteger(c.count) && c.count >= 1 && c.count <= 100,
       "Choose a recruitment quantity from 1 to 100.",
     );
-    // The outer applyCommand owns the transaction: one invalid piece rolls
-    // back the whole order, including resources and vouchers.
-    for (let i = 0; i < c.count; i++) execute(s, { ...c, count: undefined });
-    return;
   }
   if (c.type === "recruit" || c.type === "ship") {
     const t = townOwned(s, c.town),
       naval = c.type === "ship",
-      quantity = naval ? (c.count ?? 1) : 1;
+      quantity = c.count ?? 1;
     rule(
       Number.isSafeInteger(quantity) && quantity >= 1,
       "Choose a positive whole-number ship quantity.",
@@ -935,20 +938,26 @@ export function execute(s: Game, c: Command) {
         "This town did not start the turn at the required recruitment level.",
       );
       cost = unitCost(kind as UnitClass, tier);
-      free = p.bonuses.recruits.findIndex(
-        (v) => v.tier === tier && v.classes.includes(kind as UnitClass),
-      );
-      if (free >= 0) cost = {};
-      t.recruited++;
+      t.recruited += quantity;
     }
-    pay(s, cost);
+    if (naval) pay(s, cost);
     if (naval) {
       for (const index of freeShips.reverse()) {
         p.bonuses.ships.splice(index, 1);
         p.bonuses.shipTiers?.splice(index, 1);
       }
-    } else if (free >= 0) p.bonuses.recruits.splice(free, 1);
+    }
     for (let built = 0; built < quantity; built++) {
+      if (!naval) {
+        // Preserve per-recruit payments, including proportional warehouse
+        // rounding and vouchers, without repeating deployment/world scans.
+        free = p.bonuses.recruits.findIndex(
+          (v) => v.tier === tier && v.classes.includes(kind as UnitClass),
+        );
+        pay(s, free >= 0 ? {} : cost);
+        if (free >= 0) p.bonuses.recruits.splice(free, 1);
+      }
+      if (preview) continue;
       const id = nextId(s, "u");
       s.pieces[id] = {
         id,

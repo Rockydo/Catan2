@@ -20,6 +20,7 @@ test("bulk AI orders are applied together and saved with exact payments", async 
       window.Worker = class extends NativeWorker {
         constructor(url: string | URL, options?: WorkerOptions) {
           super(url, options);
+          if (!String(url).includes("ai.worker")) return;
           w.aiWorker = this;
           this.addEventListener("message", (event) => {
             event.stopImmediatePropagation();

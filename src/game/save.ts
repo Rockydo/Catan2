@@ -688,6 +688,7 @@ export function assertInvariants(s: Game) {
   }
 
   const tileOwners = new Map<string, Set<number>>();
+  const passengerCounts = new Map<string, number>();
   for (const [key, u] of Object.entries(s.pieces)) {
     object(u);
     rule(u.id === key && s.tiles[u.tile], "Invalid unit reference.");
@@ -746,6 +747,7 @@ export function assertInvariants(s: Game) {
       );
     }
     if (u.carrier) {
+      passengerCounts.set(u.carrier, (passengerCounts.get(u.carrier) ?? 0) + 1);
       const carrier = s.pieces[u.carrier];
       rule(
         !u.naval &&
@@ -779,7 +781,7 @@ export function assertInvariants(s: Game) {
   for (const u of Object.values(s.pieces))
     if (u.naval)
       rule(
-        Object.values(s.pieces).filter((v) => v.carrier === u.id).length <=
+        (passengerCounts.get(u.id) ?? 0) <=
           shipStats(u.kind as keyof typeof SHIP_INFO, u.tier).capacity,
         "A ship exceeds its berths.",
       );
@@ -1191,7 +1193,10 @@ export function serialize(s: Game): string {
   return `${header.slice(0, -1)},"game":${body}}`;
 }
 export function deserialize(text: string): Game {
-  rule(text.length < 40_000_000, "This save exceeds the 40 MB import limit.");
+  rule(
+    text.length < 128_000_000,
+    "This save exceeds the 128 MB expanded limit.",
+  );
   const data = JSON.parse(text);
   rule(
     data &&

@@ -177,3 +177,34 @@ it("AI and research commissions remain available after many launches in the same
   expect(Object.values(next.pieces)[0].tile).toBe(water);
   assertInvariants(next);
 });
+
+it("bulk deployment preserves sequential warehouse rounding, vouchers and substitutes", async () => {
+  const { execute } = await import("../src/game/engine");
+  const { s, home, enemy } = maritimeFixture();
+  s.towns.extra = {
+    ...structuredClone(home),
+    id: "extra",
+    stock: { grain: 27, fish: 38, ore: 37, gold: 182 },
+  };
+  home.stock = { grain: 18, meat: 12, ore: 54, gold: 421 };
+  enemy.stock = { gold: 77 };
+  s.players[0].bonuses.recruits = [
+    { tier: 2, classes: ["heavy"] },
+    { tier: 1, classes: ["heavy"] },
+    { tier: 1, classes: ["cavalry"] },
+    { tier: 1, classes: ["heavy"] },
+  ];
+  const command = {
+    type: "recruit",
+    town: home.id,
+    tile: "0,0",
+    kind: "heavy",
+    tier: 1,
+  };
+  const sequential = structuredClone(s),
+    bulk = structuredClone(s);
+  for (let i = 0; i < 100; i++) execute(sequential, command);
+  execute(bulk, { ...command, count: 100 });
+  expect({ ...bulk, events: [] }).toEqual({ ...sequential, events: [] });
+  expect(bulk.events.at(-1)?.text).toContain("100 ×");
+});

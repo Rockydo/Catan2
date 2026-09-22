@@ -265,14 +265,14 @@ export function Recruitment({
                 n! * Math.max(0, count - free),
               ]),
             );
-            // Validate one hull for placement/tier, then the complete payment.
-            // Previewing a large naval order should never construct that fleet.
-            const error = previewError(
+            // Validate placement/tier once, then check the whole order cost.
+            // A quantity control must not simulate hundreds of new pieces.
+            const error = previewError(s, { ...command, count: 1 });
+            const canPay = affordable(
               s,
-              naval ? { ...command, count: 1 } : command,
+              recipePayment(s, cost, viewer),
+              viewer,
             );
-            const canPay =
-              !naval || affordable(s, recipePayment(s, cost, viewer), viewer);
             const available = interactive && !error && canPay;
             const explanation = !interactive
               ? "Available during your action phase"

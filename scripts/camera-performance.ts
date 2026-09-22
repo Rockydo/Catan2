@@ -1,12 +1,16 @@
+import { browserSave } from "./browser-save";
+import { unpackSave } from "../src/storage/codec";
 import { chromium } from "@playwright/test";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { deserialize, serialize, SAVE_KEY } from "../src/game/save";
+import { deserialize, serialize } from "../src/game/save";
 
 // Example: SAVE_PATH=/path/to/export.json GAME_URL=http://127.0.0.1:4179
 // LABEL=candidate npx tsx scripts/camera-performance.ts
 // Disposable browser only. The export and the player's browser stay untouched.
 if (!process.env.SAVE_PATH) throw Error("Set SAVE_PATH to a campaign export.");
-const game = deserialize(readFileSync(process.env.SAVE_PATH, "utf8"));
+const game = deserialize(
+  await unpackSave(readFileSync(process.env.SAVE_PATH, "utf8")),
+);
 const viewer =
   game.players.find((p) => p.alive && p.control === "human") ??
   game.players.find((p) => p.alive)!;
@@ -30,26 +34,26 @@ try {
   });
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
-  await page.addInitScript(
-    ({ key, data }) => {
-      localStorage.setItem(key, data);
-      localStorage.setItem("catane-language", "en");
-    },
-    { key: SAVE_KEY, data: serialize(game) },
-  );
+  await page.addInitScript(() => localStorage.setItem("catane-language", "en"));
   await page.addInitScript("window.__name = fn => fn");
   await page.goto(process.env.GAME_URL ?? "http://127.0.0.1:4173/");
-  await page.getByRole("button", { name: /Continue campaign/ }).click();
+  await page.locator("input[type=file]").setInputFiles({
+    name: "performance-copy.json",
+    mimeType: "application/json",
+    buffer: Buffer.from(serialize(game)),
+  });
+  await page.locator(".board-frame").waitFor();
   const handoff = page.getByRole("button", {
     name: `I am ${viewer.name}`,
     exact: true,
   });
   if (await handoff.isVisible()) await handoff.click();
   await page.waitForLoadState("networkidle");
-  const originalSave = await page.evaluate(
-    (key) => localStorage.getItem(key),
-    SAVE_KEY,
-  );
+  await page
+    .locator(".save-status:not(.bad)")
+    .filter({ hasText: "Saved locally" })
+    .waitFor();
+  const originalSave = await browserSave(page);
   const cdp = await page.context().newCDPSession(page);
   await cdp.send("Performance.enable");
   const box = (await page.locator(".board-frame").boundingBox())!;
@@ -118,10 +122,7 @@ try {
       styleMs: difference("RecalcStyleDuration"),
     });
   }
-  const saved = await page.evaluate(
-    (key) => localStorage.getItem(key),
-    SAVE_KEY,
-  );
+  const saved = await browserSave(page);
   if (saved !== originalSave)
     throw Error("Camera input changed the campaign save");
   // Inspect the crowded center at normal playing scale, not just the overview.

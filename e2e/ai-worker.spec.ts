@@ -36,6 +36,7 @@ test("Grand AI reuses its worker, ignores stale replies, and cancels pending wor
     window.Worker = class extends NativeWorker {
       constructor(url: string | URL, options?: WorkerOptions) {
         super(url, options);
+        if (!String(url).includes("ai.worker")) return;
         w.aiWorkers.push(this);
         this.addEventListener("message", (event) => {
           if (w.aiHold) {
@@ -45,7 +46,7 @@ test("Grand AI reuses its worker, ignores stale replies, and cancels pending wor
         });
       }
       postMessage(message: any) {
-        w.aiRequests.push(message.request);
+        if (message.state) w.aiRequests.push(message.request);
         super.postMessage(message);
       }
     };

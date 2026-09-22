@@ -51,3 +51,17 @@ describe("production receipt snapshots", () => {
     expect(report.tiles).toEqual([]);
   });
 });
+
+it("restores recorded receipts without inspecting troops or recalculating production", () => {
+  const s = run(harvestFixture(), { type: "roll" });
+  const recorded = structuredClone(s.production);
+  s.pieces = new Proxy(s.pieces, {
+    ownKeys() {
+      throw new Error("Historical receipt scanned troops");
+    },
+  });
+  const report = rollReport(s)!;
+  for (const player of report.players)
+    expect(player.goods).toEqual(recorded[player.id]);
+  expect(report.tiles).toBeNull();
+});

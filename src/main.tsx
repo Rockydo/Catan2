@@ -1,3 +1,4 @@
+import { loadCampaign } from "./storage/client";
 import { localize as tx, setLocale, getLocale } from "./i18n";
 import React from "react";
 import { createRoot } from "react-dom/client";
@@ -36,8 +37,16 @@ class ErrorBoundary extends React.Component<
   }
 }
 setLocale(getLocale());
-createRoot(document.getElementById("root")!).render(
-  <ErrorBoundary>
-    <App />
-  </ErrorBoundary>,
+const root = createRoot(document.getElementById("root")!);
+root.render(
+  <main className="crash-screen" aria-live="polite">
+    <h1>{tx("Loading campaign…")}</h1>
+  </main>,
 );
+void loadCampaign().then((initialCampaign) => {
+  root.render(
+    <ErrorBoundary>
+      <App initialCampaign={initialCampaign} />
+    </ErrorBoundary>,
+  );
+});

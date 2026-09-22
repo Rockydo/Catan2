@@ -1,3 +1,4 @@
+import { unpackSave } from "../src/storage/codec";
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
@@ -14,7 +15,9 @@ const { deserialize, assertInvariants } = await import(moduleAt("save"));
 const { planAIOrders } = await import(moduleAt("ai-orders"));
 const { chooseAIAction } = await import(moduleAt("ai"));
 const { applyCommand } = await import(moduleAt("engine"));
-let state = deserialize(readFileSync(process.env.SAVE_PATH, "utf8"));
+let state = deserialize(
+  await unpackSave(readFileSync(process.env.SAVE_PATH, "utf8")),
+);
 const actor = state.active,
   turn = state.players[actor].turns;
 const limit = process.env.DECISIONS ? Number(process.env.DECISIONS) : undefined;

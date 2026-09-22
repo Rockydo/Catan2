@@ -1,6 +1,10 @@
 import { seasonAt, seasonLabel, type Season } from "../game/seasons";
 import type { Game, Stock } from "../game/types";
-import { productionSources, sumStock } from "../game/selectors";
+import {
+  productionSources,
+  sumStock,
+  withPlanningFrame,
+} from "../game/selectors";
 
 export interface RollReport {
   id: string;
@@ -29,8 +33,13 @@ export function rollReport(s: Game, live = false): RollReport | null {
   if (!s.dice) return null;
   const total = s.dice[0] + s.dice[1];
   const tiles = new Set<string>();
-  for (const source of productionSources(s))
-    if (s.tiles[source.tile].number === total) tiles.add(source.tile);
+  // Reloaded receipts use recorded deliveries; only a live roll needs map
+  // highlights. A single read index bounds live scans of large collector fleets.
+  if (live)
+    withPlanningFrame(s, () => {
+      for (const source of productionSources(s))
+        if (s.tiles[source.tile].number === total) tiles.add(source.tile);
+    });
   const players = s.players.map((p) => ({
     id: p.id,
     name: p.name,

@@ -24,6 +24,7 @@ test("a large coalition trade completes in the real worker and survives reload",
       window.Worker = class extends NativeWorker {
         constructor(url: string | URL, options?: WorkerOptions) {
           super(url, options);
+          if (!String(url).includes("ai.worker")) return;
           w.testWorker = this;
           this.addEventListener("message", (event) => {
             // Inspect the genuine worker reply before allowing the next action.
