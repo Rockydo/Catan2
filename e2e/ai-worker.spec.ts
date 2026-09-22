@@ -31,6 +31,7 @@ test("Grand AI reuses its worker, ignores stale replies, and cancels pending wor
     localStorage.setItem("catane-ai-pacing", "20");
     w.aiWorkers = [];
     w.aiRequests = [];
+    w.aiBatchFlags = [];
     w.aiHold = false;
     const NativeWorker = window.Worker;
     window.Worker = class extends NativeWorker {
@@ -46,8 +47,10 @@ test("Grand AI reuses its worker, ignores stale replies, and cancels pending wor
         });
       }
       postMessage(message: any) {
-        if (message.state || message.baseRequest !== undefined)
+        if (message.state || message.baseRequest !== undefined) {
           w.aiRequests.push(message.request);
+          w.aiBatchFlags.push(message.batchMoves);
+        }
         super.postMessage(message);
       }
     };
@@ -108,6 +111,11 @@ test("Grand AI reuses its worker, ignores stale replies, and cancels pending wor
     () => (window as any).aiRequests as number[],
   );
   expect(new Set(requests).size).toBe(requests.length);
+  expect(
+    await page.evaluate(() =>
+      (window as any).aiBatchFlags.every((flag: unknown) => flag === true),
+    ),
+  ).toBe(true);
   expect(errors).toEqual([]);
   await page.getByRole("button", { name: "Pause AI", exact: true }).click();
 });
@@ -149,6 +157,7 @@ test("pausing after a reply but before presentation resends the visible snapshot
               request: data.request,
               full: !!data.state,
               base: data.baseRequest,
+              batchMoves: data.batchMoves,
             });
           super.postMessage(data);
         }
@@ -176,6 +185,9 @@ test("pausing after a reply but before presentation resends the visible snapshot
   const posts = await page.evaluate(() => (window as any).posts);
   expect(posts[1].full).toBe(true);
   expect(posts[1].base).toBeUndefined();
+  expect(posts.every((post: { batchMoves: boolean }) => !post.batchMoves)).toBe(
+    true,
+  );
   expect(await page.evaluate(() => (window as any).workers.length)).toBe(1);
   const expected = run(s, { type: "roll" });
   await expect

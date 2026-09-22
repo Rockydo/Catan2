@@ -380,7 +380,7 @@ const ECONOMIC_RECORDS_ONLY = new Set([
 /** Only an uncontested move can share stationary troops. Combat may displace
  * defenders, rescue passengers or trigger other mutations, so it keeps the
  * fully isolated transaction. Validation still runs through militaryCommand. */
-function peacefulMove(s: Game, c: Command): boolean {
+export function peacefulMove(s: Game, c: Command): boolean {
   const first = s.pieces[c.ids?.[0] ?? ""];
   return (
     c.type === "move" &&

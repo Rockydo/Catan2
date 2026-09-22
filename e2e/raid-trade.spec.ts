@@ -13,24 +13,31 @@ async function state(page: Page): Promise<Game> {
   );
 }
 async function saved(page: Page, s: Game) {
-  await page.addInitScript(({ key, data }) => localStorage.setItem(key, data), {
-    key: SAVE_KEY,
-    data: serialize(s),
-  });
+  await page.addInitScript(
+    ({ key, data }) => {
+      if (!localStorage.getItem(key)) localStorage.setItem(key, data);
+    },
+    { key: SAVE_KEY, data: serialize(s) },
+  );
   await page.goto("/");
   await page.getByRole("button", { name: /Continue campaign/ }).click();
 }
 
-test("live worker trade offers pop up, wait for the human, and support decline, close, Escape and acceptance", async ({
-  page,
-}) => {
-  const s = tradeFixture();
-  await saved(page, s);
-  const offer = page.getByRole("dialog", { name: "Tidewatch offers a trade" });
-  for (const dismissal of ["Decline", "Close dialog", "Escape"]) {
+for (const dismissal of ["Decline", "Close dialog", "Escape"])
+  test(`live worker trade offers wait for the human and support ${dismissal}`, async ({
+    page,
+  }) => {
+    // Each dismissal gets a fresh disposable campaign. Refresh must preserve
+    // the declined trade, not reset the IndexedDB save to an old fixture.
+    const s = tradeFixture();
+    await saved(page, s);
+    const offer = page.getByRole("dialog", {
+      name: "Tidewatch offers a trade",
+    });
     await expect(offer).toBeVisible();
     await expect(offer).toContainText("You receive");
     await expect(offer).toContainText("You give");
+    await expect.poll(async () => (await state(page)).trade?.to).toBe(0);
     const pending = await state(page);
     expect(pending.trade?.to).toBe(0);
     await page.waitForTimeout(500);
@@ -39,16 +46,23 @@ test("live worker trade offers pop up, wait for the human, and support decline, 
     else
       await offer.getByRole("button", { name: dismissal, exact: true }).click();
     await expect(offer).toHaveCount(0);
+    await expect.poll(async () => (await state(page)).trade).toBeUndefined();
     const declined = await state(page);
     expect(inventory(declined, 0)).toEqual(inventory(s, 0));
     expect(declined.players[1].tradeOffered).toBe(true);
     await expect
       .poll(async () => (await state(page)).actions)
       .toBeGreaterThan(pending.actions + 1);
-    await page.reload();
-    await page.getByRole("button", { name: /Continue campaign/ }).click();
-  }
+  });
+
+test("live worker trade offers can be accepted with exact payments", async ({
+  page,
+}) => {
+  const s = tradeFixture();
+  await saved(page, s);
+  const offer = page.getByRole("dialog", { name: "Tidewatch offers a trade" });
   await expect(offer).toBeVisible();
+  await expect.poll(async () => (await state(page)).trade?.to).toBe(0);
   const pending = await state(page),
     expected = run(pending, {
       type: "respond-trade",
@@ -64,7 +78,9 @@ test("live worker trade offers pop up, wait for the human, and support decline, 
   });
   await offer.getByRole("button", { name: "Accept trade" }).click();
   await expect(offer).toHaveCount(0);
-  expect(inventory(await state(page), 0)).toEqual(inventory(expected, 0));
+  await expect
+    .poll(async () => inventory(await state(page), 0))
+    .toEqual(inventory(expected, 0));
 });
 
 test("a previously raided city offers another raid or destruction, with one operation per turn", async ({
@@ -98,6 +114,9 @@ test("a previously raided city offers another raid or destruction, with one oper
   await page
     .getByRole("button", { name: "Raid all goods", exact: true })
     .click();
+  await expect
+    .poll(async () => (await state(page)).towns[target.id].stock)
+    .toEqual({});
   const raided = await state(page);
   expect(raided.towns[target.id].stock).toEqual({});
   expect(raided.towns[receiving.id].stock.grain).toBe((before.grain ?? 0) + 8);
@@ -127,5 +146,7 @@ test("a previously raided city offers another raid or destruction, with one oper
     .getByRole("dialog")
     .getByRole("button", { name: "Confirm destruction", exact: true })
     .click();
-  expect((await state(page)).towns[target.id]).toBeUndefined();
+  await expect
+    .poll(async () => (await state(page)).towns[target.id])
+    .toBeUndefined();
 });

@@ -164,6 +164,28 @@ Validation passed 1,345 unit tests and all 81 selected browser scenarios across 
 
 A ground-only canvas prototype and several SVG painting experiments did not consistently improve ordinary zoom on the dense 2,000-tile fixture. They were not shipped. `TRACE_CAMERA=1` on the camera diagnostic records browser layout and paint activity; `PROBE_CSS` allows disposable visibility experiments. Ordinary zoom on this stress fixture still has roughly 50 ms frame p95 and remains open work.
 
+## Peaceful movement batches in Ultra Fast
+
+Ultra Fast now publishes multiple peaceful moves together, subject to the existing 150 ms calculation budget and 64-order limit. The AI still reassesses the complete resulting position before every order. Normal, Fast and Relaxed pacing keep their individual move presentation; human autoplay does not batch movements.
+
+The worker classifies each move before execution, using the same hostile-occupation check as the engine. Battles are always separate, including an attack that destroys every defender immediately. Allied destinations and transported passengers remain valid. Icebound ships and adrift armies count as defenders. Dice, research/trade/alliance decisions and turn boundaries stop a batch. A failed later order rolls back the whole unpublished sequence; pausing discards any unpublished result.
+
+The Round 32 comparison preserved all 485 commands and final hash, including the same human casualty decision. With CPU profiling enabled in both disposable Chromium runs:
+
+| Measurement | Individual moves | Batched peaceful moves |
+| --- | ---: | ---: |
+| Total sequence | 57.98 s | 44.64 s |
+| Worker calculation | 40.31 s | 37.81 s |
+| Main-thread task time | 22.81 s | 9.91 s |
+| Main-thread script time | 15.62 s | 6.52 s |
+| Published worker batches | 464 | 176 |
+
+Total duration fell by 23% and main-thread work by 56%. These times overlap and must not be added together. Both runs had about 16.8 ms frame p95, no long tasks and no browser errors. The change reduces publication, copying, saving and rendering overhead; it does not reduce AI search depth. The complete Round 31 replay retained all 144 orders and final hash, finishing in 21.15 seconds, close to the preceding 21.70-second result. That turn has less movement to combine.
+
+Regression coverage checks exact state and command equality, full AI turns at both pacing modes, allies, passengers, stranded defenders, attack boundaries, rollback, time/count limits, worker continuation, stale replies and cancellation. The browser trade tests now give each dismissal its own disposable campaign and wait for background-save completion, rather than expecting refresh to replace the newer durable save with the original fixture.
+
+Validation passed all 1,355 unit tests and 57 selected browser scenarios across Chromium, Firefox and the mobile viewport. The deployed-build replay then completed the same 485-order sequence in 45.68 seconds with 177 batches, the original final hash, no errors and no long tasks. All 12 production HTTP checks passed.
+
 ## Changes
 
 - Guild planning looks up local formations instead of scanning every unit repeatedly. Original unit ordering is preserved.
@@ -179,5 +201,7 @@ Use the commands in the README for `scripts/campaign-performance.ts` and `script
 Regression coverage includes nearby guild selection, changing garrisons, isolated order previews, map sprite decoding and fallback, camera alignment, culling, dice visibility, movement after zoom and save preservation. Browser checks run in Chromium and Firefox. Reports and exported fixtures stay in the ignored `test-artifacts` directory.
 
 ## Remaining work
+
+A fresh worker-only profile of the first 80 Round 32 orders retained the original command prefix and took 4.98 seconds across 30 batches. Production fingerprints and repeated occupation-index construction remain prominent costs. Military planning and emergency-coalition strength updates both use these calculations; their inclusive timings overlap.
 
 The wider performance goal remains open. Production signatures, large-map military/economic planning and publication/rendering remain measurable costs. Dense-map terrain and army painting remain measurable costs even after caching town and resource artwork. Further changes must preserve complete AI decisions, game rules, visual clarity and existing saves.

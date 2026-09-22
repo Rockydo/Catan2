@@ -774,7 +774,7 @@
   "Outward direction": "Direction d'exploration",
   "Owned by": "Appartient à",
   "PROCESSED GOOD": "PRODUIT TRANSFORMÉ",
-  "Pacing changes the pause between actions. All speeds use the same full AI planning; calculation time is additional.": "Ce réglage change la pause entre les actions. Tous les rythmes utilisent la même IA complète ; le temps de calcul s'ajoute à la pause.",
+  "Pacing changes the pause between actions. All speeds use the same full AI planning; calculation time is additional. Ultra Fast groups peaceful moves; battles and player decisions stay separate.": "Ce réglage change la pause entre les actions. Tous les rythmes utilisent la même IA complète ; le temps de calcul s'ajoute à la pause. Ultra rapide regroupe les déplacements sans combat ; les combats et les décisions du joueur restent séparés.",
   "Pact commitment ends in {0} rounds.": "L'engagement du pacte se termine dans {0} manches.",
   "Pairs to receive (2 goods per Gold bar)": "Paires reçues (2 ressources par Lingot d'or)",
   "Palisade": "Palissade",

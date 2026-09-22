@@ -7,6 +7,8 @@ export interface AIRequest {
   state?: Game;
   baseRequest?: number;
   delta?: boolean;
+  /** Ultra Fast may publish several uncontested moves in one bounded batch. */
+  batchMoves?: boolean;
 }
 export interface AIReply {
   request: number;
@@ -34,7 +36,7 @@ export class AISession {
     // A failed calculation must not leave a reusable continuation token.
     this.latest = undefined;
     try {
-      const { commands, state } = this.plan(input, now);
+      const { commands, state } = this.plan(input, now, !!message.batchMoves);
       const result = message.delta
         ? { delta: snapshotDelta(input, state) }
         : { state };

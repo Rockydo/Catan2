@@ -352,11 +352,14 @@ export default function App({
     aiBase.current = null;
     // Retain a token only after publication, never merely after receipt. A pause
     // during the presentation delay therefore resends the visible snapshot.
-    worker.postMessage(
-      base?.worker === worker && base.game === snapshot
-        ? { baseRequest: base.request, request, delta: true }
-        : { state: snapshot, request, delta: true },
-    );
+    worker.postMessage({
+      ...(base?.worker === worker && base.game === snapshot
+        ? { baseRequest: base.request }
+        : { state: snapshot }),
+      request,
+      delta: true,
+      batchMoves: aiSpeed <= 20,
+    });
     let resynced = false;
     const timeout = setTimeout(() => {
       if (!cancelled) {
@@ -375,7 +378,12 @@ export default function App({
         return;
       if (event.data.resync && !resynced) {
         resynced = true;
-        worker.postMessage({ state: snapshot, request, delta: true });
+        worker.postMessage({
+          state: snapshot,
+          request,
+          delta: true,
+          batchMoves: aiSpeed <= 20,
+        });
         return;
       }
       pending = false;
@@ -1593,7 +1601,7 @@ export default function App({
                   </label>
                   <p className="muted">
                     {tx(
-                      "Pacing changes the pause between actions. All speeds use the same full AI planning; calculation time is additional.",
+                      "Pacing changes the pause between actions. All speeds use the same full AI planning; calculation time is additional. Ultra Fast groups peaceful moves; battles and player decisions stay separate.",
                     )}
                   </p>
                   <label className="checkbox-field">

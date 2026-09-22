@@ -4,14 +4,14 @@ import {
 } from "./ai-recruitment";
 import { withPlanningFrame } from "./selectors";
 import { chooseAIAction, marginalValues } from "./ai";
-import { applyCommandPlan } from "./engine";
+import { applyCommandPlan, peacefulMove } from "./engine";
 import type { Command, Game } from "./types";
 import { routineAIOrder } from "./ai-protocol";
 
-/** Reassess strategy between projects, but finish an already budgeted set of
- * bank imports together. Routine orders share one published snapshot. Time
- * and count bounds keep pause/cancel responsive. No player prompt, combat,
- * dice presentation or turn boundary is crossed by a batch. */
+/** Reassess strategy after every order, but finish an already budgeted set of
+ * bank imports together. Routine orders share one published snapshot; Ultra
+ * Fast may also group peaceful moves. Time and count bounds keep pause/cancel
+ * responsive. No player prompt, combat, dice or turn boundary is crossed. */
 export function chooseAIOrders(
   s: Game,
   now = () => performance.now(),
@@ -25,7 +25,11 @@ export function chooseAIOrders(
 export function createAIOrderPlanner(ownedSnapshots = false) {
   let continuation:
     { expected?: string; state: Game; intent: RecruitmentIntent } | undefined;
-  return function planAIOrders(s: Game, now = () => performance.now()) {
+  return function planAIOrders(
+    s: Game,
+    now = () => performance.now(),
+    batchMoves = false,
+  ) {
     const started = now();
     let pending =
       continuation &&
@@ -41,6 +45,7 @@ export function createAIOrderPlanner(ownedSnapshots = false) {
         ? continuation.intent
         : undefined;
     continuation = undefined;
+    let previousWasRoutine = true;
     const result = applyCommandPlan(s, (view, commands) => {
       if (
         commands.length &&
@@ -48,7 +53,7 @@ export function createAIOrderPlanner(ownedSnapshots = false) {
           now() - started >= 150 ||
           s.phase !== "economy" ||
           s.players[s.active].control === "human" ||
-          !routineAIOrder(commands[commands.length - 1]) ||
+          !previousWasRoutine ||
           view.active !== s.active ||
           view.phase !== "economy" ||
           view.battle ||
@@ -67,7 +72,13 @@ export function createAIOrderPlanner(ownedSnapshots = false) {
       next ??= chooseAIAction(view, (intent) => {
         pending = intent;
       });
-      return !commands.length || routineAIOrder(next) ? next : undefined;
+      // Classify against the position BEFORE execution. After a won battle,
+      // its destination may look peaceful, but combat must still be published.
+      const routine =
+        routineAIOrder(next) || (batchMoves && peacefulMove(view, next));
+      if (commands.length && !routine) return undefined;
+      previousWasRoutine = routine;
+      return next;
     });
     if (!result.ok)
       throw new Error(result.error ?? "Invalid AI economic order");

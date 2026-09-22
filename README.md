@@ -96,7 +96,7 @@ SAVE_PATH=/path/to/campaign.json LABEL=local npx tsx scripts/campaign-performanc
 
 Export while an AI faction is active. The script runs the normal AI batches, validates the resulting campaign and writes timings, commands and a final-state hash to `test-artifacts/`. It measures engine work without browser rendering or the selected AI action delay. It never changes the export or browser storage.
 
-For comparisons, set `SOURCE_ROOT=/path/to/older/checkout` to use an older engine. Set `EXPECT_PATH=/path/to/previous/report.json` to require identical commands and final state. Optional `DECISIONS=60` measures a fixed number of individual decisions instead of complete worker batches; use the same mode and export on both versions. Changes to AI batch sizes can legitimately change its decision sequence, so compare complete-turn timings separately from tests that require identical decisions.
+For comparisons, set `SOURCE_ROOT=/path/to/older/checkout` to use an older engine. Set `EXPECT_PATH=/path/to/previous/report.json` to require identical commands and final state. Optional `DECISIONS=60` measures a fixed number of individual decisions instead of complete worker batches; use the same mode and export on both versions. Time-bounded publication batches can contain different numbers of orders. Optimization-only changes must still preserve the full order sequence and final state. Ultra Fast also groups uncontested moves into these bounded batches; other pacing settings keep individual movement presentation.
 
 To include the browser, worker transfers and autosaving in the AI measurement:
 
