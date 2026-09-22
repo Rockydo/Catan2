@@ -203,12 +203,17 @@ function stockValue(stock: Stock, values: Record<Good, number>) {
   return GOODS.reduce((n, g) => n + (stock[g] ?? 0) * values[g], 0);
 }
 function tradeNeeds(s: Game, player: number): Stock {
-  const view =
-    player === s.active
-      ? s
-      : { ...s, active: player, phase: "economy" as const };
-  const projects = economyProjects(view);
-  return (projects.find((p) => p.urgent) ?? projects[0])?.cost ?? {};
+  return planningValue(s, `tradeNeeds/${player}`, () => {
+    const view =
+      player === s.active
+        ? s
+        : { ...s, active: player, phase: "economy" as const };
+    const projects =
+      view === s
+        ? economyProjects(s)
+        : withPlanningFrame(view, () => economyProjects(view));
+    return (projects.find((p) => p.urgent) ?? projects[0])?.cost ?? {};
+  });
 }
 export function shouldAcceptTrade(s: Game): boolean {
   const t = s.trade;

@@ -32,6 +32,9 @@ async function close(page: Page) {
   if (await b.isVisible()) await b.click();
 }
 async function state(page: Page): Promise<Game> {
+  // Gameplay updates immediately; the durable browser mirror follows the
+  // background save transaction. Inspect it only after acknowledgement.
+  await expect(page.locator(".save-status")).toHaveText("Saved locally");
   return page.evaluate(
     (key) => JSON.parse(localStorage.getItem(key)!).game,
     SAVE_KEY,

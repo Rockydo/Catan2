@@ -8,6 +8,14 @@ import { browserSave } from "./browser-save";
 if (!process.env.SAVE_PATH)
   throw Error("Set SAVE_PATH to an exported campaign.");
 const game = await importSave(readFileSync(process.env.SAVE_PATH, "utf8"));
+const batchLimit = process.env.BATCH_LIMIT
+  ? Number(process.env.BATCH_LIMIT)
+  : undefined;
+if (
+  batchLimit !== undefined &&
+  (!Number.isInteger(batchLimit) || batchLimit < 1)
+)
+  throw Error("BATCH_LIMIT must be a positive integer.");
 if (process.env.AI_SEAT !== undefined) {
   const seat = Number(process.env.AI_SEAT);
   if (
@@ -31,7 +39,7 @@ try {
     errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await page.addInitScript(
-    ({ actor, humans }) => {
+    ({ actor, humans, batchLimit }) => {
       const w = window as any;
       w.__name = (f: any) => f;
       localStorage.setItem("catane-ai-pacing", "20");
@@ -85,13 +93,16 @@ try {
             if (
               (active !== undefined && active !== actor) ||
               prompt ||
-              d.error
+              d.error ||
+              (batchLimit !== undefined && p.rows.length >= batchLimit)
             ) {
               p.stopReason = d.error
                 ? "error"
                 : prompt
                   ? "human-decision"
-                  : "turn-boundary";
+                  : active !== undefined && active !== actor
+                    ? "turn-boundary"
+                    : "batch-limit";
               p.done = performance.now();
               p.lastActions = d.state?.actions ?? d.delta?.values.actions;
             }
@@ -131,6 +142,7 @@ try {
     },
     {
       actor: game.active,
+      batchLimit,
       humans: game.players
         .filter((p) => p.control === "human")
         .map((p) => p.id),

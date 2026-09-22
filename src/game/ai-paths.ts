@@ -74,6 +74,20 @@ function routeTree(
 }
 
 /** Cost-only queries share the same search without allocating entire paths. */
+export function planningDistances(
+  s: Game,
+  from: string,
+  naval: boolean,
+  owner: number,
+  max = Infinity,
+): (to: string) => number {
+  const { depth } = routeTree(s, from, naval, owner, max);
+  // A fan-out query holds one tree for its local loop, even if other queries
+  // evict it from the bounded shared cache. Do not expose the mutable map.
+  return (to) =>
+    canOccupy(s.tiles[to], naval) ? (depth.get(to) ?? Infinity) : Infinity;
+}
+
 export function planningDistance(
   s: Game,
   from: string,

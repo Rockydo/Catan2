@@ -3,9 +3,85 @@ import { piece, run, nextOwnerTurn } from "./helpers";
 import { pathTo } from "../src/game/selectors";
 import { crossing } from "./transport-fixture";
 import { chooseAIAction, economyProjects } from "../src/game/ai";
-import { campaignPassage } from "../src/game/ai-transport";
+import {
+  campaignPassage,
+  campaignTransportDemand,
+  campaignTransportAction,
+} from "../src/game/ai-transport";
 import { assertInvariants, serialize, deserialize } from "../src/game/save";
 import type { Command } from "../src/game/types";
+
+it("funding proves a crossing exists without replacing the best transport itinerary", () => {
+  const { s } = crossing(false);
+  for (let i = 0; i < 6; i++) piece(s, "-4,0", 0, "heavy");
+  // This nearby force has a short direct march and needs no ferry.
+  piece(s, "3,-1", 0, "heavy");
+  piece(s, "4,0", 1, "heavy", 4);
+  expect(campaignTransportDemand(s, "-3,0")).toBe(6);
+  expect(campaignPassage(s, "-4,0", "-3,0")).toEqual({
+    army: "-4,0",
+    pickup: "-4,0",
+    embark: "-3,0",
+    landing: "3,-1",
+    sea: "2,0",
+    target: "4,0",
+    turns: 6,
+    saving: 20,
+    units: 6,
+  });
+  expect(campaignTransportDemand(s, "-3,0")).toBe(6);
+  expect(campaignPassage(s, "-4,0", "-3,0", 3, 4)?.landing).toBe("3,0");
+  expect(campaignPassage(s, "-4,0", "-3,0", 3, 1)?.landing).toBe("3,-1");
+});
+
+it("landing assessments change when a new position adds fast threats or friendly guards", () => {
+  const { s } = crossing(false);
+  for (let i = 0; i < 6; i++) piece(s, "-4,0", 0, "heavy");
+  piece(s, "4,0", 1, "heavy", 4);
+  expect(campaignPassage(s, "-4,0", "-3,0")?.landing).toBe("3,-1");
+  const reinforced = structuredClone(s);
+  piece(reinforced, "3,0", 0, "heavy", 2);
+  expect(campaignPassage(reinforced, "-4,0", "-3,0")?.landing).toBe("3,0");
+  const threatened = structuredClone(s);
+  piece(threatened, "4,0", 1, "cavalry", 4);
+  expect(campaignPassage(threatened, "-4,0", "-3,0")).toBeNull();
+  expect(campaignTransportDemand(threatened, "-3,0")).toBe(0);
+  // Old immutable snapshots retain their own plan.
+  expect(campaignPassage(s, "-4,0", "-3,0")?.landing).toBe("3,-1");
+});
+
+it("counts a landing tower once for passengers and friendly shore guards together", () => {
+  const { s } = crossing(false);
+  for (let i = 0; i < 8; i++) piece(s, "-4,0", 0, "heavy");
+  piece(s, "3,0", 0, "heavy", 2);
+  piece(s, "4,0", 1, "heavy", 4);
+  piece(s, "4,0", 1, "heavy", 3);
+  s.towers.tower = {
+    id: "tower",
+    owner: 0,
+    tier: 2,
+    vertex: s.tiles["3,0"].vertices[0],
+  };
+  // Two passengers + two guards + one tower = six against seven.
+  expect(campaignPassage(s, "-4,0", "-3,0", 3, 2)?.landing).not.toBe("3,0");
+  expect(campaignPassage(s, "-4,0", "-3,0", 3, 3)?.landing).toBe("3,0");
+});
+
+it("keeps passenger order across several ships when planning a combined landing", () => {
+  const { s } = crossing(false);
+  const first = piece(s, "2,0", 0, "convoy", 1);
+  const second = piece(s, "2,0", 0, "convoy", 1);
+  const passengers = [second, first, second, first].map((ship) => {
+    const unit = piece(s, "2,0", 0, "heavy", 3);
+    unit.carrier = ship.id;
+    return unit;
+  });
+  piece(s, "4,0", 1, "heavy", 4);
+  const command = campaignTransportAction(s);
+  expect(command?.type).toBe("unload");
+  expect(command?.ids).toEqual(passengers.map((unit) => unit.id));
+  expect(command?.ships).toEqual([first.id, second.id]);
+});
 
 it("takes a faster sea crossing even though a long land route exists on the same continent", () => {
   const { s } = crossing();

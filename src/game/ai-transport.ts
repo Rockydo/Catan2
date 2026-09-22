@@ -15,24 +15,39 @@ import {
   piecesAt,
   moveTargets,
 } from "./selectors";
-import { planningPath, planningDistance } from "./ai-paths";
+import { planningPath, planningDistance, planningDistances } from "./ai-paths";
 import { seasonalDestinationSafe } from "./ai-seasonal";
 
 interface Front {
   distance: number;
   target: string;
 }
-interface Coast {
+interface Shore {
   land: string;
   sea: string;
+}
+interface Coast extends Shore {
   front: Front;
 }
 interface Theater {
   fronts: Map<string, Front>;
   coasts: Coast[];
-  shores: { land: string; sea: string }[];
+  shores: Shore[];
   armies: Map<string, Piece[]>;
   fleets: Map<string, Piece[]>;
+  passengers: Map<string, Piece[]>;
+  landings: Map<string, { guards: Piece[]; danger: number } | null>;
+  seaPickups: Map<string, (Shore & { distance: number })[]>;
+  seaLandings: Map<string, (Coast & { distance: number })[]>;
+  forces: Map<
+    string,
+    {
+      passengers: Piece[];
+      pace: number;
+      direct: number;
+      safety: Map<string, boolean>;
+    }
+  >;
 }
 export interface Passage {
   army: string;
@@ -54,18 +69,26 @@ function theater(s: Game): Theater {
   if (cached) return cached;
   const enemy = emergencyTarget(s, s.active);
   const armies = new Map<string, Piece[]>(),
-    fleets = new Map<string, Piece[]>();
-  for (const u of ownPieces(s)) {
+    fleets = new Map<string, Piece[]>(),
+    passengers = new Map<string, Piece[]>(),
+    carriers = new Map<string, string>(),
+    units = ownPieces(s);
+  for (const u of units) {
     if (u.carrier || points(u) === 0 || u.seasonStatus) continue;
     const groups = u.naval ? fleets : armies;
-    groups.set(u.tile, [...(groups.get(u.tile) ?? []), u]);
+    if (!groups.has(u.tile)) groups.set(u.tile, []);
+    groups.get(u.tile)!.push(u);
+    if (u.naval) carriers.set(u.id, u.tile);
+  }
+  for (const u of units) {
+    const tile = u.carrier && carriers.get(u.carrier);
+    if (!tile) continue;
+    if (!passengers.has(tile)) passengers.set(tile, []);
+    passengers.get(tile)!.push(u);
   }
   const fieldForces = [
     ...armies.values(),
-    ...[...fleets.values()].map((ships) => {
-      const ids = new Set(ships.map((u) => u.id));
-      return ownPieces(s).filter((u) => u.carrier && ids.has(u.carrier));
-    }),
+    ...[...fleets.keys()].map((tile) => passengers.get(tile) ?? []),
   ].filter((g) => g.length);
   const enemyTowns = Object.values(s.towns).filter((t) => t.owner === enemy);
   const vulnerable = enemyTowns.filter((t) => {
@@ -114,26 +137,73 @@ function theater(s: Game): Theater {
         if (front) coasts.push({ land: tile.id, sea, front });
       }
   }
-  const result = { fronts, coasts, shores, armies, fleets };
+  const result: Theater = {
+    fronts,
+    coasts,
+    shores,
+    armies,
+    fleets,
+    passengers,
+    landings: new Map(),
+    seaPickups: new Map(),
+    seaLandings: new Map(),
+    forces: new Map(),
+  };
   theaters.set(s, result);
   return result;
 }
 
+function reachableShores<T extends Shore>(
+  s: Game,
+  from: string,
+  shores: T[],
+  cache: Map<string, (T & { distance: number })[]>,
+): (T & { distance: number })[] {
+  const cached = cache.get(from);
+  if (cached) return cached;
+  const distances = planningDistances(s, from, true, s.active);
+  const result: (T & { distance: number })[] = [];
+  for (const shore of shores) {
+    const distance = distances(shore.sea);
+    if (Number.isFinite(distance)) result.push({ ...shore, distance });
+  }
+  // Keep only a bounded number of source shores per immutable theater. These
+  // lists preserve coast order and omit only unreachable destinations.
+  if (cache.size >= 64) cache.delete(cache.keys().next().value!);
+  cache.set(from, result);
+  return result;
+}
+
 function landingSafe(s: Game, land: string, passengers: Piece[]): boolean {
-  if (hostileAt(s, land, s.active) || !seasonalDestinationSafe(s, land, false))
-    return false;
-  const guards = piecesAt(s, land, false).filter((u) => u.owner === s.active);
-  const danger = Object.values(s.pieces).filter(
-    (u) =>
-      !u.naval &&
-      !u.carrier &&
-      u.owner === emergencyTarget(s, s.active) &&
-      points(u) > 0 &&
-      distance(u.tile, land) <= speed(u) &&
-      planningPath(s, u.tile, land, false, u.owner, speed(u)) !== null,
-  );
+  const cache = theater(s).landings;
+  if (!cache.has(land)) {
+    if (
+      hostileAt(s, land, s.active) ||
+      !seasonalDestinationSafe(s, land, false)
+    )
+      cache.set(land, null);
+    else {
+      const enemy = emergencyTarget(s, s.active);
+      const danger = (enemy === undefined ? [] : ownPieces(s, enemy)).filter(
+        (u) =>
+          !u.naval &&
+          !u.carrier &&
+          points(u) > 0 &&
+          distance(u.tile, land) <= speed(u) &&
+          Number.isFinite(
+            planningDistance(s, u.tile, land, false, u.owner, speed(u)),
+          ),
+      );
+      cache.set(land, {
+        guards: piecesAt(s, land, false).filter((u) => u.owner === s.active),
+        danger: threatPower(s, danger, [land]),
+      });
+    }
+  }
+  const assessment = cache.get(land);
+  if (!assessment) return false;
   return (
-    threatPower(s, danger, [land]) <= power(s, [...passengers, ...guards], land)
+    assessment.danger <= power(s, [...passengers, ...assessment.guards], land)
   );
 }
 
@@ -147,85 +217,130 @@ export function campaignPassage(
   sailing = 3,
   berths = 2,
 ): Passage | null {
+  return findPassage(s, army, fleet, sailing, berths, false);
+}
+
+function findPassage(
+  s: Game,
+  army: string,
+  fleet: string,
+  sailing: number,
+  berths: number,
+  existence: boolean,
+): Passage | null {
   if (emergencyTarget(s, s.active) === undefined) return null;
   let cache = passages.get(s);
   if (!cache) {
     cache = new Map();
     passages.set(s, cache);
   }
-  const key = `${army}/${fleet}/${sailing}/${berths}`;
+  const fullKey = `${army}/${fleet}/${sailing}/${berths}`;
+  if (cache.has(fullKey)) return cache.get(fullKey)!;
+  const key = existence ? `exists/${fullKey}` : fullKey;
   if (cache.has(key)) return cache.get(key)!;
-  const { fronts, coasts, shores, armies } = theater(s);
+  const { fronts, coasts, shores, armies, forces, seaPickups, seaLandings } =
+    theater(s);
   const force = armies.get(army) ?? [];
-  const passengers = [...force]
-    .sort((a, b) => b.tier - a.tier)
-    .slice(0, berths);
-  if (!force.length || !passengers.length || !canOccupy(s.tiles[fleet], true))
+  const forceKey = `${army}/${berths}`;
+  let formation = forces.get(forceKey);
+  if (!formation) {
+    const pace = minValue(force.map(speed));
+    formation = {
+      passengers: [...force].sort((a, b) => b.tier - a.tier).slice(0, berths),
+      pace,
+      direct: (fronts.get(army)?.distance ?? Infinity) / pace,
+      safety: new Map(),
+    };
+    forces.set(forceKey, formation);
+  }
+  const { passengers, pace, direct, safety: safeLandings } = formation;
+  if (!force.length || !passengers.length || !canOccupy(s.tiles[fleet], true)) {
+    cache.set(key, null);
     return null;
-  const pace = minValue(force.map(speed));
-  const direct = (fronts.get(army)?.distance ?? Infinity) / pace;
+  }
   if (direct < 5) {
     cache.set(key, null);
     return null;
   }
   // Also consider pickup shores outside the enemy's current land component.
-  const pickups = shores
-    .map((c) => ({
-      ...c,
-      walk: planningDistance(s, army, c.land, false, s.active),
-      sail: planningDistance(s, fleet, c.sea, true, s.active),
-    }))
-    .filter((c) => Number.isFinite(c.walk) && Number.isFinite(c.sail))
-    .map((c) => ({
-      ...c,
-      wait: Math.max(Math.ceil(c.walk / pace), Math.ceil(c.sail / sailing)),
-    }))
+  const reachable = reachableShores(s, fleet, shores, seaPickups);
+  if (!reachable.length) {
+    cache.set(key, null);
+    return null;
+  }
+  const walkDistance = planningDistances(s, army, false, s.active);
+  const candidates: (Shore & { walk: number; wait: number })[] = [];
+  for (const shore of reachable) {
+    const walk = walkDistance(shore.land);
+    if (!Number.isFinite(walk)) continue;
+    candidates.push({
+      land: shore.land,
+      sea: shore.sea,
+      walk,
+      wait: Math.max(
+        Math.ceil(walk / pace),
+        Math.ceil(shore.distance / sailing),
+      ),
+    });
+  }
+  const pickups = candidates
     .sort((a, b) => a.wait - b.wait || a.walk - b.walk)
     .slice(0, 12);
   let best: Passage | null = null;
-  const safeLandings = new Map<string, boolean>();
+  const accept = (
+    pickup: { land: string; sea: string },
+    landing: Coast & { turns: number },
+  ): Passage | null => {
+    if (!safeLandings.has(landing.land))
+      safeLandings.set(landing.land, landingSafe(s, landing.land, passengers));
+    if (!safeLandings.get(landing.land)) return null;
+    return {
+      army,
+      pickup: pickup.land,
+      embark: pickup.sea,
+      landing: landing.land,
+      sea: landing.sea,
+      target: landing.front.target,
+      turns: landing.turns,
+      saving: Number.isFinite(direct) ? direct - landing.turns : 20,
+      units: force.length,
+    };
+  };
   for (const pickup of pickups) {
-    const landings = coasts
-      .filter(
-        (c) =>
-          c.land !== pickup.land &&
-          c.front.distance / pace + pickup.wait + 2 < direct,
+    const landings: (Coast & { turns: number })[] = [];
+    for (const coast of reachableShores(s, pickup.sea, coasts, seaLandings)) {
+      if (
+        coast.land === pickup.land ||
+        !(coast.front.distance / pace + pickup.wait + 2 < direct)
       )
-      .map((c) => ({
-        ...c,
-        distance: planningDistance(s, pickup.sea, c.sea, true, s.active),
-      }))
-      .filter((c) => Number.isFinite(c.distance))
-      .map((c) => ({
-        ...c,
-        turns:
-          pickup.wait +
-          2 +
-          Math.ceil(c.distance / sailing) +
-          Math.ceil(c.front.distance / pace),
-      }))
-      .filter((c) => c.turns + 2 <= direct && c.turns <= direct * 0.8)
-      .sort((a, b) => a.turns - b.turns || a.front.distance - b.front.distance);
+        continue;
+      const turns =
+        pickup.wait +
+        2 +
+        Math.ceil(coast.distance / sailing) +
+        Math.ceil(coast.front.distance / pace);
+      if (!(turns + 2 <= direct && turns <= direct * 0.8)) continue;
+      const landing = { ...coast, turns };
+      // Funding needs proof of a useful crossing, not its optimal itinerary.
+      // Keep this result separate from the full planner's sorted best route.
+      if (existence) {
+        const plan = accept(pickup, landing);
+        if (plan) {
+          cache.set(key, plan);
+          return plan;
+        }
+      } else landings.push(landing);
+    }
+    landings.sort(
+      (a, b) => a.turns - b.turns || a.front.distance - b.front.distance,
+    );
     for (const landing of landings) {
       if (best && landing.turns >= best.turns) break;
-      if (!safeLandings.has(landing.land))
-        safeLandings.set(
-          landing.land,
-          landingSafe(s, landing.land, passengers),
-        );
-      if (!safeLandings.get(landing.land)) continue;
-      best = {
-        army,
-        pickup: pickup.land,
-        embark: pickup.sea,
-        landing: landing.land,
-        sea: landing.sea,
-        target: landing.front.target,
-        turns: landing.turns,
-        saving: Number.isFinite(direct) ? direct - landing.turns : 20,
-        units: force.length,
-      };
-      break;
+      const plan = accept(pickup, landing);
+      if (plan) {
+        best = plan;
+        break;
+      }
     }
   }
   cache.set(key, best);
@@ -237,7 +352,7 @@ export function campaignTransportDemand(s: Game, sea: string): number {
   if (emergencyTarget(s, s.active) === undefined) return 0;
   return [...theater(s).armies].reduce(
     (sum, [army, units]) =>
-      sum + (campaignPassage(s, army, sea) ? units.length : 0),
+      sum + (findPassage(s, army, sea, 3, 2, true) ? units.length : 0),
     0,
   );
 }
@@ -285,7 +400,13 @@ function march(s: Game, units: Piece[], target: string): Command | null {
  * may establish a safe bridgehead before enough troops arrive to win a battle. */
 export function campaignTransportAction(s: Game): Command | null {
   if (emergencyTarget(s, s.active) === undefined) return null;
-  const { armies, fleets, coasts } = theater(s);
+  const {
+    armies,
+    fleets,
+    coasts,
+    passengers: embarked,
+    seaLandings,
+  } = theater(s);
   const empty: {
     tile: string;
     ships: Piece[];
@@ -297,10 +418,7 @@ export function campaignTransportAction(s: Game): Command | null {
       (u) => shipStats(u.kind as ShipClass, u.tier).capacity > 0,
     );
     if (!carriers.length) continue;
-    const ids = new Set(ships.map((u) => u.id));
-    const passengers = ownPieces(s).filter(
-      (u) => u.carrier && ids.has(u.carrier),
-    );
+    const passengers = embarked.get(tile) ?? [];
     const sailing = minValue(ships.map(speed));
     if (!passengers.length) {
       empty.push({
@@ -316,12 +434,8 @@ export function campaignTransportAction(s: Game): Command | null {
     }
     if (!passengers.some((u) => points(u) > 0)) continue;
     const pace = minValue(passengers.map(speed));
-    const landing = coasts
-      .map((c) => ({
-        ...c,
-        distance: planningDistance(s, tile, c.sea, true, s.active),
-      }))
-      .filter((c) => Number.isFinite(c.distance))
+    const landing = reachableShores(s, tile, coasts, seaLandings)
+      .slice()
       .sort(
         (a, b) =>
           a.distance / sailing +

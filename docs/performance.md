@@ -80,6 +80,27 @@ Movement validation uses a temporary occupation index. An uncontested move copie
 
 Validation included 1,292 unit tests and 78 browser checks across Chromium and Firefox. It covers frozen input records, moving carriers and passengers, allied destinations, combat after an uncontested move, rollback, separate collector deliveries, seasonal forecasts, stock-only reads, sieges, army controls and large-save recovery. The faster Round 32 replay recorded a 33.3 ms p95 frame interval and two long main-thread tasks, so this pass does not claim improved rendering latency. The diagnostic can now record main-thread CPU profiles separately from ordinary timing runs.
 
+## Transport-planning follow-up
+
+The 2,000-tile fixture exposed a single trade decision that spent most of its time evaluating transport needs for other factions. The comparison uses the same position and engine rules, with every selected order and final state checked against the previous build.
+
+| Measurement                                   |  Before |   After |
+| --------------------------------------------- | ------: | ------: |
+| Isolated slow decision, including its command | 53.28 s |  4.61 s |
+| 2,000 tiles: fixed 60 decisions               | 86.36 s | 37.68 s |
+
+Trade evaluations reuse each partner's intended next project within the same immutable decision. Each partner view has its own temporary read index. Transport planning groups forces and passengers without repeatedly copying growing arrays, computes landing threats once per land hex, and retains separate landing-safety results for different passenger capacities.
+
+Repeated destination queries hold one read-only distance function for a route tree. Reachable pickup and landing lists are shared across formation comparisons, with at most 64 source lists per cache. Lists retain their original order and remove only unreachable shores. The ordinary path cache stays bounded.
+
+Shipbuilding only needs to know whether a qualifying crossing exists. That query stops at the first valid crossing and keeps its cache separate from the actual transport planner. Actual ferry assignments still evaluate complete journey times and retain the original route ordering and tie breaks. All eligible routes and threats remain available, with the same planning depth.
+
+In the production browser worker, the isolated decision completed in 4.51 seconds with the normal 20-second watchdog enabled, no errors and the same saved state. An additional comparison of 2,808 full passages across 24 varied crossing scenarios retained every itinerary and transport-funding result. The real Round 32 replay retained its 485 commands and final hash, taking 63.06 seconds versus 62.17 seconds before this pass; that difference is not a material speed gain. The large-map trade evaluation was the bottleneck targeted here.
+
+Regression checks cover movement bounds, hostile corridors, route-cache eviction, different passenger capacities, new enemy cavalry, friendly shore reinforcements, combined tower support and passenger ordering across ships.
+
+Validation passed 1,313 unit tests and 66 browser checks across Chromium, Firefox and the mobile viewport. The complete Round 31 AI turn finished in 21.62 seconds with its original 144 commands and final hash. A maritime browser assertion was updated to wait for background-save acknowledgement before inspecting the stored campaign; the visible camp upgrade had already completed.
+
 ## Save performance contract
 
 - Compression must be lossless, with all supported historical exports still importable.
