@@ -1,3 +1,4 @@
+import { sharePublishedSnapshot } from "./ui/publish-snapshot";
 import { routineAIOrder } from "./game/ai-protocol";
 import { terrainName } from "./game/maritime";
 import { LanguageSwitch } from "./ui/LanguageSwitch";
@@ -201,6 +202,7 @@ export default function App() {
         setToast(result.error ?? "That action is unavailable.");
         return false;
       }
+      result.state = sharePublishedSnapshot(current, result.state);
       setSeasonPreview(undefined);
       townAlerts.capture(current, result.state);
       if (command.type === "roll") roll.begin(result.state);

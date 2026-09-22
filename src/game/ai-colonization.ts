@@ -13,6 +13,7 @@ import {
   ownPieces,
   ownTowns,
   points,
+  planningValue,
   probability,
   ready,
   settlementSites,
@@ -21,8 +22,13 @@ import {
 
 /** Only revealed, reachable sites. Colonists avoid combat rather than trying to win it. */
 function planner(s: Game) {
-  const values = marketValues(s),
-    inc = income(s);
+  return planningValue(s, `colonistPlanner/${s.active}`, () =>
+    createPlanner(s),
+  );
+}
+function createPlanner(s: Game) {
+  let values: ReturnType<typeof marketValues> | undefined;
+  let inc: Stock | undefined;
   const foes = Object.values(s.pieces).filter(
     (u) => !u.carrier && !friendly(s, u.owner, s.active),
   );
@@ -40,25 +46,38 @@ function planner(s: Game) {
   const sites = settlementSites(s, s.active, true).filter(
     (v) => !s.vertices[v].tiles.some((t) => hostileAt(s, t)),
   );
-  const candidates = sites.map((vertex) => ({
-    vertex,
-    value:
-      (1 + seasonalDiversityBonus(s, s.vertices[vertex].tiles)) *
-      s.vertices[vertex].tiles.reduce(
-        (sum, t) =>
-          sum +
-          probability(s.tiles[t].number) *
-            Object.entries(tileYield(s.tiles[t], s.active)).reduce(
-              (n, [g, amount]) =>
-                n +
-                (amount! * (values[g as keyof typeof values] ?? 1)) /
-                  (1 + 4 * (inc[g as keyof Stock] ?? 0)),
-              0,
-            ),
-        0,
-      ),
-  }));
-  return (origin: string, naval: boolean, recruiting = false) => {
+  const siteValues = new Map<string, number>();
+  const siteValue = (vertex: string) => {
+    if (!siteValues.has(vertex)) {
+      values ??= marketValues(s);
+      inc ??= income(s);
+      siteValues.set(
+        vertex,
+        (1 + seasonalDiversityBonus(s, s.vertices[vertex].tiles)) *
+          s.vertices[vertex].tiles.reduce(
+            (sum, t) =>
+              sum +
+              probability(s.tiles[t].number) *
+                Object.entries(tileYield(s.tiles[t], s.active)).reduce(
+                  (n, [g, amount]) =>
+                    n +
+                    (amount! * (values![g as keyof typeof values] ?? 1)) /
+                      (1 + 4 * (inc![g as keyof Stock] ?? 0)),
+                  0,
+                ),
+            0,
+          ),
+      );
+    }
+    return siteValues.get(vertex)!;
+  };
+  type Target = { vertex: string; path: string[]; score: number } | undefined;
+  const targets = new Map<string, Target>();
+  const evaluate = (
+    origin: string,
+    naval: boolean,
+    recruiting: boolean,
+  ): Target => {
     const blocked = danger[naval ? 1 : 0];
     if (blocked.has(origin)) return undefined;
     const paths = new Map<string, string[]>([[origin, []]]),
@@ -79,23 +98,36 @@ function planner(s: Game) {
         }
     }
     let best: { vertex: string; path: string[]; score: number } | undefined;
-    for (const site of candidates) {
-      if (site.value <= 0 || (recruiting && connected.has(site.vertex)))
-        continue;
-      for (const tile of s.vertices[site.vertex].tiles) {
+    for (const vertex of sites) {
+      if (recruiting && connected.has(vertex)) continue;
+      for (const tile of s.vertices[vertex].tiles) {
         const path = paths.get(tile);
         if (!path || blocked.has(tile)) continue;
-        const score = (site.value * 44) / (1 + path.length * 0.28) + 5;
-        if (!best || score > best.score)
-          best = { vertex: site.vertex, path, score };
+        // An isolated colonist does not need a production forecast for sites
+        // outside its reachable area. Scores and tie ordering stay identical.
+        const value = siteValue(vertex);
+        if (value <= 0) continue;
+        const score = (value * 44) / (1 + path.length * 0.28) + 5;
+        if (!best || score > best.score) best = { vertex, path, score };
       }
     }
     return best;
   };
+  return (origin: string, naval: boolean, recruiting = false): Target => {
+    const key = `${origin}/${naval}/${recruiting}`;
+    if (!targets.has(key))
+      targets.set(key, evaluate(origin, naval, recruiting));
+    return targets.get(key);
+  };
 }
 
 export function colonistAction(s: Game): Command | null {
-  const units = ownPieces(s).filter((u) => isSettler(u.kind) && ready(s, u));
+  const units = ownPieces(s).filter(
+    (u) =>
+      isSettler(u.kind) &&
+      ready(s, u) &&
+      (speed(u) + u.bonus - u.moved > 0 || colonizationSites(s, u).length > 0),
+  );
   if (!units.length) return null;
   const plan = planner(s);
   for (const unit of units) {
@@ -123,7 +155,7 @@ export function colonistProjects(
   const towns = ownTowns(s),
     units = ownPieces(s),
     projects = [];
-  const plan = planner(s);
+  let plan: ReturnType<typeof planner> | undefined;
   for (const naval of [false, true]) {
     // Fund additional parties as the empire grows, but first use parties already travelling.
     if (
@@ -131,6 +163,7 @@ export function colonistProjects(
       Math.max(1, Math.ceil(towns.length / 4))
     )
       continue;
+    plan ??= planner(s);
     let best: { action: Command; cost: Stock; score: number } | undefined;
     for (const town of towns) {
       if (town.turnLevel < 1 || besieged(s, town.id)) continue;

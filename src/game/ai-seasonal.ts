@@ -12,18 +12,22 @@ import { canOccupy, neighbors } from "./world";
 import { friendly } from "./relations";
 import {
   income,
+  planningValue,
   fresh,
   moveTargets,
   ownPieces,
   piecesAt,
   probability,
   productionSources,
+  productionSignature,
   ready,
   speed,
 } from "./selectors";
 
 type Outputs = Record<number, Stock>;
 type SeasonalCache = Map<string, Outputs>;
+let lastProductionSignature: string | undefined;
+let lastProductionOutputs: SeasonalCache = new Map();
 let planningCache: WeakMap<Game, SeasonalCache> | undefined;
 let planningSources: { source: Game; outputs: SeasonalCache }[] | undefined;
 let berthCache: WeakMap<Game["pieces"], Map<string, number>> | undefined;
@@ -66,7 +70,12 @@ function outputsIn(s: Game, season: Season, round?: number): Outputs {
         v.calendar === s.calendar,
     )?.outputs;
     if (!cache) {
-      cache = new Map();
+      const signature = productionSignature(s);
+      if (signature !== lastProductionSignature) {
+        lastProductionSignature = signature;
+        lastProductionOutputs = new Map();
+      }
+      cache = lastProductionOutputs;
       planningSources?.push({ source: s, outputs: cache });
     }
     planningCache?.set(s, cache);
@@ -108,6 +117,7 @@ function outputsIn(s: Game, season: Season, round?: number): Outputs {
           ? 1 - iceRisk(s, s.tiles[source.tile], round)
           : 1);
   }
+  if (cache.size >= 32) cache.delete(cache.keys().next().value!);
   cache.set(key, result);
   return result;
 }
@@ -167,15 +177,20 @@ export function seasonalDiversityBonus(
   owner = s.active,
 ): number {
   if (!s.calendar) return 0;
-  const existing = SEASONS.map((season) => food(outputsIn(s, season)[owner]));
+  const existing = planningValue(s, `seasonalFood/${owner}`, () =>
+    SEASONS.map((season) => food(outputsIn(s, season)[owner])),
+  );
   const mean = existing.reduce((n, amount) => n + amount, 0) / 4;
   if (mean <= 0) return 0;
+  const profiles = tiles.map((id) =>
+    planningValue(s, `foodProfile/${owner}/${id}`, () =>
+      seasonalProfile(s.tiles[id], owner),
+    ),
+  );
   const candidate = SEASONS.map((season) =>
     tiles.reduce(
-      (n, id) =>
-        n +
-        probability(s.tiles[id].number) *
-          food(seasonalProfile(s.tiles[id], owner)[season]),
+      (n, id, i) =>
+        n + probability(s.tiles[id].number) * food(profiles[i][season]),
       0,
     ),
   );
@@ -324,7 +339,8 @@ export function seasonalEvacuation(s: Game): Command | undefined {
       : (tile.resource === "ice" || tile.resource === "water") && risk <= 0.75;
     if (!danger && unit.seasonStatus !== "adrift") continue;
     const key = `${unit.naval}/${unit.tile}`;
-    groups.set(key, [...(groups.get(key) ?? []), unit]);
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key)!.push(unit);
   }
   for (const group of groups.values()) {
     const first = group[0],

@@ -1,5 +1,12 @@
 import { appendValues, maxValue, minValue } from "./aggregate";
-import { recruitmentBatch, recruitmentFundingCost } from "./ai-recruitment";
+import {
+  recruitmentBatch,
+  recruitmentFundingCost,
+  collectionBatchSize,
+  recruitmentFundingTarget,
+  recruitmentIntentOrder,
+  type RecruitmentIntent,
+} from "./ai-recruitment";
 import { bankOrderToward } from "./ai-bank";
 import { cachedMilitaryWait } from "./ai-maneuvers";
 import { colonistAction, colonistProjects } from "./ai-colonization";
@@ -33,7 +40,7 @@ import {
   towerPower,
 } from "./maritime";
 import { shipStats, shipCost, TOWER_COSTS } from "./content";
-import { recipePayment, withPlanningFrame } from "./selectors";
+import { recipePayment, withPlanningFrame, planningValue } from "./selectors";
 import {
   marketValues,
   marketStockValue,
@@ -91,7 +98,7 @@ import {
   neighbors,
   hash,
   distance,
-  walkableAtVertex as landAtVertex,
+  walkableAtVertex,
   canOccupy,
   waterAtVertex,
   vertexNeighbors,
@@ -134,19 +141,19 @@ import {
   townAt,
 } from "./selectors";
 import { canApplyCommand } from "./engine";
-import { planningPath as pathTo, planningDistance } from "./ai-paths";
-const reachable = (
-  s: Game,
-  from: string,
-  to: string,
-  naval: boolean,
-  owner: number,
-  max = Infinity,
-) => Number.isFinite(planningDistance(s, from, to, naval, owner, max));
+import {
+  planningPath as pathTo,
+  planningDistance,
+  planningReachable as reachable,
+} from "./ai-paths";
 import {
   campaignTransportAction,
   campaignTransportDemand,
 } from "./ai-transport";
+
+// Each town is considered by many groups, tiers and targets in one decision.
+const landAtVertex = (s: Game, vertex: string) =>
+  planningValue(s, `walkableTown/${vertex}`, () => walkableAtVertex(s, vertex));
 
 interface Project {
   action: Command;
@@ -275,7 +282,8 @@ function armyGroups(
     )
       continue;
     const id = `${u.tile}/${u.naval}`;
-    groups.set(id, [...(groups.get(id) ?? []), u]);
+    if (!groups.has(id)) groups.set(id, []);
+    groups.get(id)!.push(u);
   }
   return [...groups.values()];
 }
@@ -633,8 +641,28 @@ export function economyProjects(s: Game): Project[] {
     militaryNeeded = campaignPowerTarget(s),
     crisis = dominance(s),
     resistance = crisis.leader === s.active ? 0 : crisis.severity;
+  const land = landRegions(s),
+    water = landRegions(s, true);
+  const fieldUnits = units.filter(
+    (u) => !u.naval && !collector(u) && !u.carrier,
+  );
+  const regionalForces = new Map<string, Piece[]>();
+  const regionalShips = new Map<number | undefined, Piece[]>();
+  for (const unit of units) {
+    if (!unit.naval || collector(unit)) continue;
+    const region = water.get(unit.tile);
+    if (!regionalShips.has(region)) regionalShips.set(region, []);
+    regionalShips.get(region)!.push(unit);
+  }
+  const artillery = units
+    .filter((u) => u.kind === "artillery")
+    .reduce((n, u) => n + u.tier, 0);
+  const hostileShips = Object.values(s.pieces).filter(
+    (u) => u.naval && !friendly(s, u.owner, s.active),
+  );
   // All tiers/towns inspect the same deployment threats during this decision.
   const collectionDanger = new Map<string, boolean>();
+  const collectionOutput = new Map<string, number>();
   const armedEnemies = Object.values(s.pieces)
     .filter((u) => !friendly(s, u.owner, s.active) && points(u) > 0)
     .map((u) => ({ unit: u, movement: speed(u) }));
@@ -782,15 +810,14 @@ export function economyProjects(s: Game): Project[] {
         );
       }
     }
-    const localForce = units.filter(
-      (u) =>
-        !u.naval &&
-        !collector(u) &&
-        !u.carrier &&
-        tiles.some(
-          (id) => landRegions(s).get(id) === landRegions(s).get(u.tile),
-        ),
-    );
+    const regions = new Set(tiles.map((id) => land.get(id)));
+    const regionKey = [...regions].sort().join(",");
+    if (!regionalForces.has(regionKey))
+      regionalForces.set(
+        regionKey,
+        fieldUnits.filter((u) => regions.has(land.get(u.tile))),
+      );
+    const localForce = regionalForces.get(regionKey)!;
     const coastalTargets = enemyFleets.filter(
       (water) =>
         tiles.some((tile) => distance(tile, water) <= 5) &&
@@ -869,9 +896,7 @@ export function economyProjects(s: Game): Project[] {
                   1 +
                   target.wall +
                   towerDefense(s, target.owner, target.vertex) >
-                  units
-                    .filter((u) => u.kind === "artillery")
-                    .reduce((n, u) => n + u.tier, 0));
+                  artillery);
             if (
               kind === "artillery" &&
               (!neededArtillery || (ourPower < 3 && !coastalThreat)) &&
@@ -904,9 +929,7 @@ export function economyProjects(s: Game): Project[] {
                             1 +
                             target.wall +
                             towerDefense(s, target.owner, target.vertex) -
-                            units
-                              .filter((u) => u.kind === "artillery")
-                              .reduce((n, u) => n + u.tier, 0)) /
+                            artillery) /
                             tier,
                         )
                       : 0,
@@ -968,22 +991,8 @@ export function economyProjects(s: Game): Project[] {
       for (const tile of waterAtVertex(s, t.vertex).filter(
         (id) => !hostileAt(s, id),
       )) {
-        const localLand = units.filter(
-            (u) =>
-              !u.naval &&
-              !collector(u) &&
-              !u.carrier &&
-              tiles.some(
-                (id) => landRegions(s).get(id) === landRegions(s).get(u.tile),
-              ),
-          ),
-          ships = units.filter(
-            (u) =>
-              u.naval &&
-              !collector(u) &&
-              landRegions(s, true).get(u.tile) ===
-                landRegions(s, true).get(tile),
-          ),
+        const localLand = localForce,
+          ships = regionalShips.get(water.get(tile)) ?? [],
           berths = ships.reduce(
             (n, u) => n + shipStats(u.kind as ShipClass, u.tier).capacity,
             0,
@@ -1000,10 +1009,8 @@ export function economyProjects(s: Game): Project[] {
           invasion ? localLand.length : 0,
         );
         const stranded = localLand.filter((u) => !hasLandObjective(s, u.tile));
-        const threats = Object.values(s.pieces).filter(
+        const threats = hostileShips.filter(
           (u) =>
-            u.naval &&
-            !friendly(s, u.owner, s.active) &&
             distance(u.tile, tile) <= 3 &&
             reachable(s, u.tile, tile, true, u.owner, 3),
         );
@@ -1181,21 +1188,27 @@ export function economyProjects(s: Game): Project[] {
         const rated = deployments
           .filter((id) => !hostileAt(s, id))
           .map((tile) => {
-            const output = harvestTiles(s, { kind, tile, tier }).reduce(
-              (n, id) =>
-                n +
-                probability(s.tiles[id].number) *
-                  stockValue(
-                    harvestYield(
-                      s.tiles[id],
-                      s.active,
-                      tier,
-                      kind !== "fishing",
-                    ),
-                    values,
-                  ),
-              0,
-            );
+            const key = `${kind}/${tier}/${tile}`;
+            if (!collectionOutput.has(key))
+              collectionOutput.set(
+                key,
+                harvestTiles(s, { kind, tile, tier }).reduce(
+                  (n, id) =>
+                    n +
+                    probability(s.tiles[id].number) *
+                      stockValue(
+                        harvestYield(
+                          s.tiles[id],
+                          s.active,
+                          tier,
+                          kind !== "fishing",
+                        ),
+                        values,
+                      ),
+                  0,
+                ),
+              );
+            const output = collectionOutput.get(key)!;
             const danger = collectionAtRisk(tile, naval);
             return {
               tile,
@@ -1219,6 +1232,8 @@ export function economyProjects(s: Game): Project[] {
             cost,
             rated[0].score + (free ? 45 : 0),
             "Develop mobile resource collection",
+            false,
+            free ? 1 : collectionBatchSize(count, tier),
           );
       }
     }
@@ -1677,7 +1692,10 @@ export function coalitionTrade(
 function acquireToward(s: Game, cost: Stock): Command | null {
   return playerTradeToward(s, cost) ?? importToward(s, cost);
 }
-function chooseEconomy(s: Game): Command {
+function chooseEconomy(
+  s: Game,
+  onRecruitment?: (intent: RecruitmentIntent) => void,
+): Command {
   const projects = economyProjects(s);
   for (const card of [...s.players[s.active].hand].sort(
     (a, b) => researchUtility(s, b.kind) - researchUtility(s, a.kind),
@@ -1688,6 +1706,28 @@ function chooseEconomy(s: Game): Command {
   }
   const stock = inventory(s),
     values = marginalValues(s);
+  const commission = (project: Project): Command | null => {
+    const economic =
+      ["merchant", "merchantship", "fishing"].includes(
+        project.action.kind ?? "",
+      ) && ["recruit", "ship"].includes(project.action.type);
+    if (!economic || (project.quantity ?? 1) <= 1) return null;
+    const target = recruitmentFundingTarget(
+      s,
+      project.action,
+      project.quantity,
+      project.cost,
+      values,
+    );
+    if (target.count <= 1) return null;
+    const intent: RecruitmentIntent = {
+      command: { ...project.action, count: target.count },
+      cost: target.cost,
+    };
+    const next = recruitmentIntentOrder(s, intent, values);
+    if (next?.type === "bank") onRecruitment?.(intent);
+    return next;
+  };
   const fieldPower = ownPieces(s)
     .filter((u) => !u.naval && !collector(u) && u.kind !== "artillery")
     .reduce((n, u) => n + u.tier, 0);
@@ -1786,10 +1826,13 @@ function chooseEconomy(s: Game): Command {
     (p) => affordable(s, p.cost) && check(s, p.action),
   );
   if (affordablePriority)
-    return recruitmentBatch(
-      s,
-      affordablePriority.action,
-      affordablePriority.quantity,
+    return (
+      commission(affordablePriority) ??
+      recruitmentBatch(
+        s,
+        affordablePriority.action,
+        affordablePriority.quantity,
+      )
     );
   // Research can resolve a construction shortage immediately. Do not let
   // an unaffordable expansion reserve suppress every discovery indefinitely.
@@ -1847,9 +1890,12 @@ function chooseEconomy(s: Game): Command {
     if (affordable(s, cost) && check(s, project.action))
       return reserve
         ? project.action
-        : recruitmentBatch(s, project.action, project.quantity);
+        : (commission(project) ??
+            recruitmentBatch(s, project.action, project.quantity));
   }
   if (reserve) return { type: "military" };
+  const planned = commission(top);
+  if (planned) return planned;
   const trade = acquireToward(
     s,
     recruitmentFundingCost(s, top.action, top.quantity, top.cost, values),
@@ -2036,58 +2082,130 @@ function invasionCoasts(s: Game, excludeLand?: string): string[] {
   cache.set(key, result);
   return result;
 }
+function landObjectives(s: Game) {
+  return planningValue(s, `landObjectives/${s.active}`, () =>
+    Object.values(s.towns)
+      .filter((t) => warTarget(s, t.owner))
+      .map((t) => {
+        const tiles = landAtVertex(s, t.vertex);
+        const defenders = tiles.flatMap((tile) =>
+          piecesAt(s, tile, false).filter(
+            (u) => friendly(s, u.owner, t.owner) && !collector(u),
+          ),
+        );
+        return { tiles, defenders, strength: new Map<string, number>() };
+      }),
+  );
+}
+function objectiveBeatable(
+  s: Game,
+  objective: ReturnType<typeof landObjectives>[number],
+  groups: Map<string, Piece[]>,
+) {
+  const { tiles, defenders, strength } = objective;
+  if (!defenders.length) return true;
+  return tiles.some((tile) => {
+    if (!strength.has(tile))
+      strength.set(tile, threatPower(s, defenders, [tile]));
+    for (const force of groups.values())
+      if (power(s, force, tile) > strength.get(tile)!) return true;
+    return false;
+  });
+}
+function fieldGroupsFor(s: Game, units: Piece[]) {
+  const groups = new Map<string, Piece[]>();
+  for (const unit of units) {
+    const key = unit.carrier
+      ? (s.pieces[unit.carrier]?.tile ?? unit.tile)
+      : unit.tile;
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key)!.push(unit);
+  }
+  return groups;
+}
+interface LandingObjectives {
+  targets: string[][];
+  reachable: Map<string, boolean>;
+}
+const landingObjectives = new WeakMap<
+  Game,
+  {
+    arrays: WeakMap<Piece[], LandingObjectives>;
+    forces: Map<string, LandingObjectives>;
+  }
+>();
+function landingHasObjective(
+  s: Game,
+  origin: string,
+  arriving: Piece[],
+): boolean {
+  let cached = landingObjectives.get(s);
+  if (!cached) {
+    cached = { arrays: new WeakMap(), forces: new Map() };
+    landingObjectives.set(s, cached);
+  }
+  let plan = cached.arrays.get(arriving);
+  if (!plan) {
+    // Many potential beaches are evaluated for exactly the same arriving
+    // army. Group its soldiers and assess defenders once, not at every beach.
+    const key = `${s.active}/${arriving.map((u) => u.id).join(",")}`;
+    plan = cached.forces.get(key);
+    if (!plan) {
+      const groups = fieldGroupsFor(s, arriving);
+      plan = {
+        targets: landObjectives(s)
+          .filter((objective) => objectiveBeatable(s, objective, groups))
+          .map((o) => o.tiles),
+        reachable: new Map(),
+      };
+      cached.forces.set(key, plan);
+    }
+    cached.arrays.set(arriving, plan);
+  }
+  if (!plan.reachable.has(origin))
+    plan.reachable.set(
+      origin,
+      plan.targets.some((tiles) =>
+        tiles.some((target) => reachable(s, origin, target, false, s.active)),
+      ),
+    );
+  return plan.reachable.get(origin)!;
+}
 function hasLandObjective(
   s: Game,
   origin: string,
   arriving?: Piece[],
 ): boolean {
+  if (arriving) return landingHasObjective(s, origin, arriving);
   let cache = objectiveCache.get(s);
   if (!cache) {
     cache = new Map();
     objectiveCache.set(s, cache);
   }
-  const key = `${s.active}/${origin}/${arriving ? `landing:${arriving.map((u) => u.id).join(",")}` : "local"}`;
+  const key = `${s.active}/${origin}/local`;
   if (cache.has(key)) return cache.get(key)!;
   const region = landRegions(s).get(origin);
-  const available =
-    arriving ??
-    ownPieces(s).filter(
-      (u) =>
-        !u.naval &&
-        !collector(u) &&
-        (u.carrier
+  const eligibility = new Map<string, boolean>();
+  const available = ownPieces(s).filter((u) => {
+    if (u.naval || collector(u)) return false;
+    const key = `${u.tile}/${!!u.carrier}`;
+    if (!eligibility.has(key))
+      eligibility.set(
+        key,
+        u.carrier
           ? neighbors(u.tile).some((id) => landRegions(s).get(id) === region)
           : landRegions(s).get(u.tile) === region &&
-            reachable(s, origin, u.tile, false, s.active)),
-    );
-  const fieldGroups = new Map<string, Piece[]>();
-  for (const unit of available) {
-    const key = unit.carrier
-      ? (s.pieces[unit.carrier]?.tile ?? unit.tile)
-      : unit.tile;
-    fieldGroups.set(key, [...(fieldGroups.get(key) ?? []), unit]);
-  }
-  const result = Object.values(s.towns).some((t) => {
-    if (!warTarget(s, t.owner)) return false;
-    const tiles = landAtVertex(s, t.vertex);
-    if (!tiles.some((target) => reachable(s, origin, target, false, s.active)))
-      return false;
-    const defenders = tiles.flatMap((tile) =>
-      piecesAt(s, tile, false).filter(
-        (u) => friendly(s, u.owner, t.owner) && !collector(u),
-      ),
-    );
-    // A reachable but overwhelmingly defended choke point is not a reason to
-    // strand every unit on this island. Seek another beach or an expedition.
-    return (
-      !defenders.length ||
-      tiles.some((tile) =>
-        [...fieldGroups.values()].some(
-          (force) => power(s, force, tile) > threatPower(s, defenders, [tile]),
-        ),
-      )
-    );
+              reachable(s, origin, u.tile, false, s.active),
+      );
+    return eligibility.get(key)!;
   });
+  const fieldGroups = fieldGroupsFor(s, available);
+  const result = landObjectives(s).some(
+    (objective) =>
+      objective.tiles.some((target) =>
+        reachable(s, origin, target, false, s.active),
+      ) && objectiveBeatable(s, objective, fieldGroups),
+  );
   cache.set(key, result);
   return result;
 }
@@ -3129,12 +3247,18 @@ function chooseManeuver(s: Game, emergency: boolean): Command {
   return { type: "end-turn" };
 }
 
-export function chooseAIAction(s: Game): Command {
+export function chooseAIAction(
+  s: Game,
+  onRecruitment?: (intent: RecruitmentIntent) => void,
+): Command {
   return withSeasonalPlanning(() =>
-    withPlanningFrame(s, () => chooseAction(s)),
+    withPlanningFrame(s, () => chooseAction(s, onRecruitment)),
   );
 }
-function chooseAction(s: Game): Command {
+function chooseAction(
+  s: Game,
+  onRecruitment?: (intent: RecruitmentIntent) => void,
+): Command {
   if (s.battle) {
     const b = s.battle,
       losers = (b.loser === b.attacker ? b.attackers : b.defenders).map(
@@ -3265,7 +3389,7 @@ function chooseAction(s: Game): Command {
     }
     const operation = chooseMilitary(s);
     if (operation.type !== "end-turn") return operation;
-    const action = chooseEconomy(s);
+    const action = chooseEconomy(s, onRecruitment);
     return action.type === "military" ? { type: "end-turn" } : action;
   }
   if (s.phase === "military") return chooseMilitary(s);

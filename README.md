@@ -43,7 +43,7 @@ Choose **English** or **Français** on the main menu or in campaign settings. Th
 - Single-tier Settlers and Settler ships found towns without a connected road. Their price includes the settlement; select the unit and use **Found settlement**.
 - Four research tiers, with eight cards each. Buy a choice of two random cards and keep one.
 - AI difficulty and action-speed settings are separate. Faster actions do not reduce AI intelligence.
-- If a human exceeds 40% of total faction power, every AI receives 1 Gold per settlement or city on every dice roll, rising by 1 for each further five percentage points (45% gives 2, 50% gives 3).
+- If any faction exceeds 40% of total faction power, every other faction receives 1 Gold per settlement or city on every dice roll, rising by 1 for each further five percentage points (45% gives 2, 50% gives 3). Above 60%, they also receive 1 Gold bar per city, rising by 1 at 65%, 70% and so on. Settlements do not receive Gold bars.
 - No victory points or military upkeep. Destroy every rival's last town to win.
 
 This is a substantial variant, so read the short first-game chapter even if you know Catan. There is no online multiplayer or matchmaking. Sharing a save transfers a campaign; it does not connect two players.
@@ -83,6 +83,16 @@ SAVE_PATH=/path/to/campaign.json GAME_URL=http://127.0.0.1:4173 LABEL=local npx 
 ```
 
 This opens a disposable Chromium profile and measures ordinary and rapid wheel zooming. Reports and a close-up screenshot go to `test-artifacts/`. It does not edit the export or connect to your playing browser. Compare the same export, browser, viewport and machine between builds; the timings are not universal frame-rate guarantees.
+
+To measure the rest of an AI turn from an exported campaign, run:
+
+```sh
+SAVE_PATH=/path/to/campaign.json LABEL=local npx tsx scripts/campaign-performance.ts
+```
+
+Export while an AI faction is active. The script runs the normal AI batches, validates the resulting campaign and writes timings, commands and a final-state hash to `test-artifacts/`. It measures engine work without browser rendering or the selected AI action delay. It never changes the export or browser storage.
+
+For comparisons, set `SOURCE_ROOT=/path/to/older/checkout` to use an older engine. Set `EXPECT_PATH=/path/to/previous/report.json` to require identical commands and final state. Optional `DECISIONS=60` measures a fixed number of individual decisions instead of complete worker batches; use the same mode and export on both versions. Changes to AI batch sizes can legitimately change its decision sequence, so compare complete-turn timings separately from tests that require identical decisions.
 
 The interactive rules are built alongside the game. Their bilingual chapter source is `src/rules/chapters.json`; costs, rosters, cards and guild contracts are read from `src/game`. To save the full guide as PDF, use its print button. With the local production server running, `npm run docs:pdf` also writes both PDFs into `releases/`.
 

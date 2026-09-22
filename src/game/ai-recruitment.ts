@@ -2,19 +2,19 @@ import type { Command, Game, Good, Stock, UnitClass, ShipClass } from "./types";
 import { canApplyCommand } from "./engine";
 import { unitCost, shipCost } from "./content";
 import { inventory, recipePayment } from "./selectors";
-import { canFundAtBank } from "./ai-bank";
+import { canFundAtBank, bankOrderToward } from "./ai-bank";
 
 /** Reserve a fundable batch, so imports do not buy one soldier's inputs at a
- * time. Economic units keep their single-unit production-site decisions. */
-export function recruitmentFundingCost(
+ * time. Collection orders use small proportional batches at their chosen production site. */
+export function recruitmentFundingTarget(
   s: Game,
   command: Command,
   desired: number | undefined,
   fallback: Stock,
   values: Record<Good, number>,
-): Stock {
+): { cost: Stock; count: number } {
   if (!desired || desired <= 1 || !["recruit", "ship"].includes(command.type))
-    return fallback;
+    return { cost: fallback, count: 1 };
   const naval = command.type === "ship",
     tier = command.tier ?? 1,
     bonuses = s.players[s.active].bonuses,
@@ -49,7 +49,7 @@ export function recruitmentFundingCost(
     if (canFundAtBank(s, cost(count), stock, values)) low = count;
     else high = count - 1;
   }
-  return low > 1 ? cost(low) : fallback;
+  return { cost: low > 1 ? cost(low) : fallback, count: low };
 }
 
 /** Expand an already selected, legal order to its planned need. Use the actual
@@ -76,4 +76,39 @@ export function recruitmentBatch(
     else high = count - 1;
   }
   return low > 1 ? order(low) : command;
+}
+
+/** Keep early development precise. In a mature collection economy, add at
+ * most 5% of its existing tier-weighted capacity before reassessing production,
+ * military priorities and deployment. This is a batch size, never a unit cap. */
+export function collectionBatchSize(
+  existingTiers: number,
+  tier: number,
+): number {
+  return Math.max(1, Math.min(100, Math.floor(existingTiers / (20 * tier))));
+}
+
+export function recruitmentFundingCost(
+  s: Game,
+  command: Command,
+  desired: number | undefined,
+  fallback: Stock,
+  values: Record<Good, number>,
+): Stock {
+  return recruitmentFundingTarget(s, command, desired, fallback, values).cost;
+}
+
+export interface RecruitmentIntent {
+  command: Command;
+  /** Fixed, fully fundable inputs. Imports never sell these reserved cards. */
+  cost: Stock;
+}
+export function recruitmentIntentOrder(
+  s: Game,
+  intent: RecruitmentIntent,
+  values: Record<Good, number>,
+): Command | null {
+  if (canApplyCommand(s, intent.command)) return intent.command;
+  const trade = bankOrderToward(s, intent.cost, inventory(s), values);
+  return trade && canApplyCommand(s, trade) ? trade : null;
 }

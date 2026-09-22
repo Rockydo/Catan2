@@ -16,6 +16,7 @@ import {
   tileGoods,
   harvestTiles,
   harvestYield,
+  collector,
   towerPower,
   towerDefense,
 } from "./maritime";
@@ -381,20 +382,27 @@ export function retreatOptions(
         : canOccupy(s.tiles[n], naval) && !hostileAt(s, n, owner, naval)),
   );
 }
+function settlementSite(
+  s: Game,
+  v: string,
+  p: number,
+  setup: boolean,
+): boolean {
+  return !!(
+    solidAtVertex(s, v).length &&
+    !townAt(s, v) &&
+    (!s.towers?.[v] || s.towers[v].owner === p) &&
+    !vertexNeighbors(s, v).some((n) => townAt(s, n)) &&
+    !s.vertices[v].tiles.some((t) => blockAt(s, t, p)) &&
+    (setup || s.vertices[v].edges.some((e) => s.routes[e]?.owner === p))
+  );
+}
 export function settlementSites(
   s: Game,
   p = s.active,
   setup = false,
 ): string[] {
-  return Object.keys(s.vertices).filter(
-    (v) =>
-      solidAtVertex(s, v).length &&
-      !townAt(s, v) &&
-      (!s.towers?.[v] || s.towers[v].owner === p) &&
-      !vertexNeighbors(s, v).some((n) => townAt(s, n)) &&
-      !s.vertices[v].tiles.some((t) => blockAt(s, t, p)) &&
-      (setup || s.vertices[v].edges.some((e) => s.routes[e]?.owner === p)),
-  );
+  return Object.keys(s.vertices).filter((v) => settlementSite(s, v, p, setup));
 }
 /** A settler carries the settlement cost; only the road requirement is waived. */
 export function colonizationSites(s: Game, unit: Piece | undefined): string[] {
@@ -407,9 +415,12 @@ export function colonizationSites(s: Game, unit: Piece | undefined): string[] {
   )
     return [];
   const corners = new Set(s.tiles[unit.tile].vertices);
-  return settlementSites(s, unit.owner, true).filter(
+  // Keep map order for callers that choose the first site, but inspect only
+  // this tile's six corners. A spent settler can still found a town here.
+  return Object.keys(s.vertices).filter(
     (v) =>
       corners.has(v) &&
+      settlementSite(s, v, unit.owner, true) &&
       !s.vertices[v].tiles.some((tile) => hostileAt(s, tile, unit.owner)),
   );
 }
@@ -561,6 +572,19 @@ export function productionSources(
     good: Good;
     amount: number;
   }[] = [];
+  // Several towns, camps and merchants may harvest the same tile. Evaluate
+  // its calendar once per owner during this read, without retaining mutable
+  // game data between actions or seasons.
+  const yields = new Map<string, Stock>();
+  const yieldAt = (id: string, owner: number): Stock => {
+    const key = `${owner}/${id}`;
+    let output = yields.get(key);
+    if (!output) {
+      output = seasonalYield(tiles[id], owner, season);
+      yields.set(key, output);
+    }
+    return output;
+  };
   const blocked = (id: string, owner: number) =>
     s.tiles[id].resource === "water"
       ? navalBlockAt(s, id, owner)
@@ -575,7 +599,7 @@ export function productionSources(
           town.owner,
           town.level,
           true,
-          seasonalYield(tiles[id], town.owner, season),
+          yieldAt(id, town.owner),
         ),
       ))
         out.push({
@@ -605,9 +629,7 @@ export function productionSources(
       const good = tileGood(tiles[id]),
         town = nearestTown(s, id, r.owner);
       if (good && town && !blocked(id, r.owner))
-        for (const [raw, amount] of Object.entries(
-          seasonalYield(tiles[id], r.owner, season),
-        ))
+        for (const [raw, amount] of Object.entries(yieldAt(id, r.owner)))
           out.push({
             owner: r.owner,
             town,
@@ -648,7 +670,7 @@ export function productionSources(
             u.owner,
             u.tier,
             u.kind !== "fishing",
-            seasonalYield(tiles[id], u.owner, season),
+            yieldAt(id, u.owner),
           ),
         ))
           out.push({
@@ -662,8 +684,48 @@ export function productionSources(
   }
   return out.filter((source) => source.amount > 0);
 }
-// AI evaluations repeatedly inspect the same immutable state and player views.
-// Cache only inside one decision, so UI reads and mutable test fixtures stay fresh.
+/** Complete public inputs to passive production. Resource spending, movement
+ * allowances, walls and guild contracts do not change a harvest. Fingerprint
+ * values, not object identity: engine batches mutate a private draft in place. */
+export function productionSignature(s: Game): string {
+  return planningValue(s, "production-signature", () => {
+    const blockade = new Set<string>();
+    const collectors = [];
+    for (const u of Object.values(s.pieces)) {
+      if (u.carrier) continue;
+      if (u.naval ? !isSettler(u.kind) : points(u) > 0)
+        blockade.add(`${u.owner}/${u.tile}/${u.naval}`);
+      if (collector(u))
+        collectors.push([u.owner, u.tile, u.kind, u.tier, u.coverage]);
+    }
+    return JSON.stringify([
+      s.round,
+      s.calendar,
+      s.tiles,
+      s.vertices,
+      s.alliances,
+      s.players.map((p) => p.id),
+      Object.values(s.towns).map((t) => [
+        t.id,
+        t.owner,
+        t.vertex,
+        t.level,
+        t.extensions,
+        t.extensionGoods,
+      ]),
+      Object.values(s.routes)
+        .filter((r) => Object.keys(r.camps).length)
+        .map((r) => [r.owner, r.camps]),
+      [...blockade].sort(),
+      collectors,
+    ]);
+  });
+}
+// Retain only the latest production position, not a history of growing saves.
+let lastIncomeSignature: string | undefined;
+let lastIncome: Record<number, Stock> | undefined;
+// Within a decision, immutable state and counterparty views share forecasts.
+// Outside that frame, the value signature guards the retained last result.
 let incomeFrame: WeakMap<Game, Record<number, Stock>> | undefined;
 function createPlanningIndex(source: Game): PlanningIndex {
   const index: PlanningIndex = {
@@ -717,19 +779,26 @@ export function withPlanningFrame<T>(source: Game, run: () => T): T {
 export function income(s: Game, p = s.active): Stock {
   let all = incomeFrame?.get(s);
   if (!all) {
-    all = Object.fromEntries(s.players.map((p) => [p.id, {}])) as Record<
-      number,
-      Stock
-    >;
-    for (const source of productionSources(s, "annual")) {
-      const out = all[source.owner];
-      out[source.good] =
-        (out[source.good] ?? 0) +
-        probability(s.tiles[source.tile].number) * source.amount;
+    const signature = productionSignature(s);
+    if (lastIncomeSignature === signature) all = lastIncome;
+    if (!all) {
+      all = Object.fromEntries(s.players.map((p) => [p.id, {}])) as Record<
+        number,
+        Stock
+      >;
+      for (const source of productionSources(s, "annual")) {
+        const out = all[source.owner];
+        out[source.good] =
+          (out[source.good] ?? 0) +
+          probability(s.tiles[source.tile].number) * source.amount;
+      }
+      lastIncomeSignature = signature;
+      lastIncome = all;
     }
     incomeFrame?.set(s, all);
   }
-  return all[p];
+  // Callers can adjust a valuation without poisoning the retained forecast.
+  return { ...all[p] };
 }
 /** Recipes accept raw substitutes; direct trades still spend exact goods. */
 export function recipePayment(s: Game, cost: Stock, p = s.active): Stock {

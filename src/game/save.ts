@@ -1179,13 +1179,14 @@ export function assertInvariants(s: Game) {
 }
 export function serialize(s: Game): string {
   const body = JSON.stringify(s);
-  return JSON.stringify({
+  const header = JSON.stringify({
     format: "catane-frontiers",
     version: 14,
     savedAt: new Date().toISOString(),
     checksum: hash(body).toString(16),
-    game: s,
   });
+  // Reuse the exact checksummed body instead of serializing a large game twice.
+  return `${header.slice(0, -1)},"game":${body}}`;
 }
 export function deserialize(text: string): Game {
   rule(text.length < 40_000_000, "This save exceeds the 40 MB import limit.");
