@@ -7,7 +7,7 @@ interface PackedUnits {
   templates: Record<string, unknown>[];
   rows: number[];
 }
-type PackedGame = Omit<Game, "pieces"> & { pieces: PackedUnits };
+export type PackedGame = Omit<Game, "pieces"> & { pieces: PackedUnits };
 const LIMIT = 128_000_000;
 const invalid = () => new Error("This compact save is damaged.");
 function jsonBytes(value: unknown): number {

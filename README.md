@@ -54,7 +54,7 @@ Drag to pan; use the wheel to zoom. Click a town, route, tile, army or fleet to 
 
 Campaigns autosave as compressed records in browser IndexedDB, with an atomic previous-save backup. Large campaigns do not use the small localStorage quota. Existing browser saves migrate automatically after a successful write. Saving, compression and load validation run in a background worker. If you refresh before the latest write completes, the browser asks you to wait or confirm leaving.
 
-Large saves also store repeated unit data once and encode sequential unit IDs compactly before compression. Every unit and its individual state are restored separately. Autosaves send only changes to the worker after the first snapshot; each stored save remains complete and can load independently of its backup.
+Large saves also group repeated unit data and map fields before compression. Sequential unit IDs and repeated entries use compact sequences. Every unit, terrain coordinate, stored resource and individual order is preserved. Autosaves send only changes to the worker after the first snapshot; each stored save remains complete and can load independently of its backup. Existing saves use the latest format on their next save or export.
 
 **Export save** in campaign settings creates a portable backup. Exports are compact, losslessly compressed JSON files. **Import save** accepts these files and all previous uncompressed saves, up to 128 MB after decompression. Use it to continue in another browser or computer. Export before clearing browser data, replacing a campaign or changing the server address. Different browsers, hostnames and ports have separate storage. Saves are not uploaded to GitHub or a game server.
 
@@ -116,7 +116,7 @@ To measure compression and exact save recovery without a browser:
 SAVE_PATH=/path/to/campaign.json npx tsx scripts/save-performance.ts
 ```
 
-To compare refresh loading of the old and current formats in a disposable Chromium profile:
+To compare refresh loading of original JSON, unit-template saves and the current format in a disposable Chromium profile:
 
 ```sh
 SAVE_PATH=/path/to/campaign.json GAME_URL=http://127.0.0.1:4173 \

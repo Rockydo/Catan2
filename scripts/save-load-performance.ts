@@ -2,14 +2,26 @@ import { chromium } from "@playwright/test";
 import { readFileSync, mkdirSync, writeFileSync } from "node:fs";
 import { compress, importSave } from "../src/storage/codec";
 import { serialize, serializePacked } from "../src/game/save";
+import { packGame } from "../src/game/save-packing";
+import { hash } from "../src/game/world";
 
-// Compare old gzip JSON with template-packed gzip in the same current build.
+// Compare original JSON, the first template format, and current table packing.
 // Uses a disposable browser profile, never the player's storage or export.
 if (!process.env.SAVE_PATH) throw Error("Set SAVE_PATH to a campaign export.");
 const game = await importSave(readFileSync(process.env.SAVE_PATH, "utf8"));
 const expected = JSON.stringify(game);
+const templateGame = packGame(game);
+const template = JSON.stringify({
+  format: "catane-frontiers-packed",
+  version: 14,
+  packing: 1,
+  savedAt: new Date().toISOString(),
+  checksum: hash(JSON.stringify(templateGame)).toString(16),
+  game: templateGame,
+});
 const encodings = {
   legacy: Array.from(await compress(serialize(game))),
+  templates: Array.from(await compress(template)),
   packed: Array.from(await compress(serializePacked(game))),
 };
 const browser = await chromium.launch({
@@ -60,11 +72,14 @@ try {
   const samples: { format: string; loadMs: number; readyMs: number }[] = [];
   for (const format of [
     "legacy",
+    "templates",
     "packed",
     "packed",
+    "templates",
     "legacy",
     "legacy",
     "packed",
+    "templates",
   ] as const) {
     await page.evaluate(async (bytes) => {
       localStorage.removeItem("catane-frontiers-save-v1");
@@ -118,8 +133,10 @@ try {
     towns: Object.keys(game.towns).length,
     units: Object.keys(game.pieces).length,
     legacyBytes: encodings.legacy.length,
+    templateBytes: encodings.templates.length,
     packedBytes: encodings.packed.length,
     legacyMedianReadyMs: median("legacy"),
+    templateMedianReadyMs: median("templates"),
     packedMedianReadyMs: median("packed"),
     samples,
     exactRoundTrip: true,

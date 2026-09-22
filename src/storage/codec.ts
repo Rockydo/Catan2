@@ -4,9 +4,14 @@ import type { Game } from "../game/types";
 // Limit expanded input too: a small compressed file can conceal a huge payload.
 export const MAX_SAVE_BYTES = 128_000_000;
 export async function compress(text: string): Promise<Uint8Array<ArrayBuffer>> {
+  const blob = new Blob([text]);
+  // Include the envelope and table metadata in the decompressed byte budget.
+  // Never acknowledge a write that our loader would have to reject.
+  if (blob.size >= MAX_SAVE_BYTES)
+    throw new Error("This save exceeds the 128 MB expanded limit.");
   return new Uint8Array(
     await new Response(
-      new Blob([text]).stream().pipeThrough(new CompressionStream("gzip")),
+      blob.stream().pipeThrough(new CompressionStream("gzip")),
     ).arrayBuffer(),
   );
 }

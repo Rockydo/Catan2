@@ -133,6 +133,25 @@ The Round 32 replay retained all 485 orders and the same final state hash. It to
 
 `scripts/save-performance.ts` reports both compressed formats and checks exact round trips. `scripts/save-load-performance.ts` measures refresh loading and verifies the actual game returned by the worker. Save tests cover template aliasing, key order, numeric ID deltas, legacy imports, corrupt checksums, invalid tables, reconstruction amplification, backup recovery, localStorage quota, competing tabs, coalesced actions and worker resynchronization.
 
+### Map tables and repeated unit sequences
+
+The next pass stores tiles, vertices, edges, towns, roads and towers as column tables. Records with different field orders or optional fields have separate layouts. A record's own ID is stored once. This retains all geometry and saved values; it does not reconstruct the map from a seed or round coordinates. Repeated unit-template indices and ID deltas use run lengths when that reduces the representation. Saves using the original unit-template format remain supported.
+
+| Campaign | Unit templates, gzip | Map tables, gzip | New portable export |
+| --- | ---: | ---: | ---: |
+| Latest export, 14,695 units | 120,593 bytes | 97,464 bytes | 130,039 bytes |
+| Growth copy, 240,000 units | 132,196 bytes | 98,972 bytes | 132,051 bytes |
+
+The 240,000-unit file's packed JSON falls from about 2.2 MB to 645 KB before gzip. Repeated army ownership checks run once per faction occupying a tile, while every unit's fields, terrain, passenger and movement state are still validated. The validation loop also avoids allocating an extra pair array per unit.
+
+In before/after disposable Chromium runs with warm assets, median refresh-to-menu time for that growth copy fell from 894 to 735 ms. These measurements include full validation and worker transfer but not opening and painting the map. The complete loaded JSON matched in every run. The updated load diagnostic also alternates the original JSON, unit-template and table formats in one build so format costs can be compared separately from validation changes.
+
+That same-build comparison measured 723 ms for unit templates and 740 ms for map tables at 240,000 units; on the latest export it measured 103 and 109 ms. Table reconstruction has a small cost. The overall loading improvement comes from reducing repeated validation work. A separate live-build check imported, autosaved and refreshed a 60,000-unit campaign with an exact state match and no browser errors.
+
+The expanded-data checks cover shared column-name amplification, including multibyte text, before records are allocated. Compression checks the complete UTF-8 payload size, including its envelope, before a save can be acknowledged. Tests cover malformed layouts, duplicate keys, invalid runs, optional fields, prototype-named fields, old-format loading and exact ordering. All 1,339 unit tests and the 15 storage browser checks passed in Chromium, Firefox and the mobile viewport, including quota fallback, bulk recruitment, refresh, export/import, backup recovery and competing tabs.
+
+The complete Round 31 browser replay preserved all 144 commands and its final state hash. It finished in 21.70 seconds with no browser errors or long tasks. This save-format change does not materially change AI thinking time.
+
 ## Changes
 
 - Guild planning looks up local formations instead of scanning every unit repeatedly. Original unit ordering is preserved.

@@ -1,4 +1,5 @@
 import { packGame, unpackGame } from "./save-packing";
+import { packTables, unpackTables } from "./save-tables";
 import { syncEmergencyCoalition } from "./emergency-coalition";
 import {
   SEASONS,
@@ -690,7 +691,9 @@ export function assertInvariants(s: Game) {
 
   const tileOwners = new Map<string, Set<number>>();
   const passengerCounts = new Map<string, number>();
-  for (const [key, u] of Object.entries(s.pieces)) {
+  // Do not allocate a [key, unit] array for every soldier in a large army.
+  for (const key of Object.keys(s.pieces)) {
+    const u = s.pieces[key];
     object(u);
     rule(u.id === key && s.tiles[u.tile], "Invalid unit reference.");
     int(u.owner, 0, s.players.length - 1);
@@ -762,21 +765,24 @@ export function assertInvariants(s: Game) {
         canOccupy(s.tiles[u.tile], u.naval) || !!u.seasonStatus,
         "A unit is on impassable terrain.",
       );
-      rule(
-        [...(tileOwners.get(u.tile) ?? [])].every(
-          (owner) =>
-            friendly(s, owner, u.owner) ||
-            s.withdrawals?.some(
-              (w) =>
-                w.tile === u.tile &&
-                w.owners.includes(owner) &&
-                w.owners.includes(u.owner),
-            ),
-        ),
-        "Opposing armies occupy the same hex.",
-      );
-      if (!tileOwners.has(u.tile)) tileOwners.set(u.tile, new Set());
-      tileOwners.get(u.tile)!.add(u.owner);
+      const owners = tileOwners.get(u.tile);
+      if (!owners?.has(u.owner)) {
+        rule(
+          [...(owners ?? [])].every(
+            (owner) =>
+              friendly(s, owner, u.owner) ||
+              s.withdrawals?.some(
+                (w) =>
+                  w.tile === u.tile &&
+                  w.owners.includes(owner) &&
+                  w.owners.includes(u.owner),
+              ),
+          ),
+          "Opposing armies occupy the same hex.",
+        );
+        if (owners) owners.add(u.owner);
+        else tileOwners.set(u.tile, new Set([u.owner]));
+      }
     }
   }
   for (const u of Object.values(s.pieces))
@@ -1189,11 +1195,11 @@ export function serializePacked(s: Game): string {
   return saveEnvelope(s, true);
 }
 function saveEnvelope(s: Game, packed: boolean): string {
-  const body = JSON.stringify(packed ? packGame(s) : s);
+  const body = JSON.stringify(packed ? packTables(packGame(s)) : s);
   const header = JSON.stringify({
     format: packed ? "catane-frontiers-packed" : "catane-frontiers",
     version: 14,
-    ...(packed ? { packing: 1 } : {}),
+    ...(packed ? { packing: 2 } : {}),
     savedAt: new Date().toISOString(),
     checksum: hash(body).toString(16),
   });
@@ -1209,7 +1215,8 @@ export function deserialize(text: string): Game {
   rule(
     data &&
       (data.format === "catane-frontiers" ||
-        (data.format === "catane-frontiers-packed" && data.packing === 1)) &&
+        (data.format === "catane-frontiers-packed" &&
+          [1, 2].includes(data.packing))) &&
       [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14].includes(data.version) &&
       data.game,
     "This is not a supported Catane save.",
@@ -1219,7 +1226,9 @@ export function deserialize(text: string): Game {
     "This save is damaged: its integrity check failed.",
   );
   if (data.format === "catane-frontiers-packed")
-    data.game = unpackGame(data.game);
+    data.game = unpackGame(
+      data.packing === 2 ? unpackTables(data.game) : data.game,
+    );
   {
     // Replace retired/prototype crops before older migrations inspect yields.
     // Unreleased v12 prototypes also placed American crops in Old World climates.
