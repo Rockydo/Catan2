@@ -3,7 +3,7 @@ import type { Stock } from "../game/types";
 import { localize as tx, useLocale } from "../i18n";
 import { MapLabel, MapResourceIcon } from "./MapLabel";
 import { memo } from "react";
-import type { Town, Raw } from "../game/types";
+import type { Raw } from "../game/types";
 import { GOOD_INFO } from "../game/content";
 
 function shade(color: string, brightness: number) {
@@ -24,11 +24,15 @@ function shade(color: string, brightness: number) {
 
 /** Native vector miniatures stay crisp at every map zoom. */
 export const TownMiniature = memo(function TownMiniature({
-  town: t,
+  level,
+  wall,
+  extensionCount,
   color,
   selected,
 }: {
-  town: Town;
+  level: number;
+  wall: number;
+  extensionCount: number;
   color: string;
   selected: boolean;
 }) {
@@ -40,7 +44,7 @@ export const TownMiniature = memo(function TownMiniature({
     light = shade(color, 1.16);
   return (
     <MapSprite
-      assetKey={`town/${color}/${t.level}/${t.wall}/${Object.keys(t.extensions).length}/${selected}`}
+      assetKey={`town/${color}/${level}/${wall}/${extensionCount}/${selected}`}
       bounds={{ x: -25, y: -34, width: 54, height: 59 }}
       className="town-miniature"
       pointerEvents="none"
@@ -67,20 +71,20 @@ export const TownMiniature = memo(function TownMiniature({
         strokeWidth="1"
       />
       {tx(
-        t.wall > 0 && (
+        wall > 0 && (
           <ellipse
             cy="5"
             rx="16"
             ry="10"
             fill="#69776d"
-            stroke={t.wall === 1 ? "#8c623f" : "#788581"}
+            stroke={wall === 1 ? "#8c623f" : "#788581"}
             strokeWidth="3"
-            strokeDasharray={t.wall === 1 ? "2 1" : "5 1"}
+            strokeDasharray={wall === 1 ? "2 1" : "5 1"}
           />
         ),
       )}
       {tx(
-        t.level === 1 ? (
+        level === 1 ? (
           <>
             <path
               d="M-9-3V6L0 11V1Z"
@@ -127,17 +131,17 @@ export const TownMiniature = memo(function TownMiniature({
               strokeWidth=".7"
             />
             <path
-              d={`M-4 4V${-12 - (t.level - 2) * 3}L2 ${-16 - (t.level - 2) * 3} 8 ${-12 - (t.level - 2) * 3}V5L2 9Z`}
+              d={`M-4 4V${-12 - (level - 2) * 3}L2 ${-16 - (level - 2) * 3} 8 ${-12 - (level - 2) * 3}V5L2 9Z`}
               fill={color}
               stroke={edge}
               strokeWidth=".8"
             />
             <path
-              d={`M2 9V${-16 - (t.level - 2) * 3}L8 ${-12 - (t.level - 2) * 3}V5Z`}
+              d={`M2 9V${-16 - (level - 2) * 3}L8 ${-12 - (level - 2) * 3}V5Z`}
               fill={side}
             />
             <path
-              d={`M-6 ${-12 - (t.level - 2) * 3} 1 ${-22 - (t.level - 2) * 3} 10 ${-12 - (t.level - 2) * 3} 2 ${-7 - (t.level - 2) * 3}Z`}
+              d={`M-6 ${-12 - (level - 2) * 3} 1 ${-22 - (level - 2) * 3} 10 ${-12 - (level - 2) * 3} 2 ${-7 - (level - 2) * 3}Z`}
               fill={roof}
               stroke={edge}
               strokeWidth=".9"
@@ -155,7 +159,7 @@ export const TownMiniature = memo(function TownMiniature({
               strokeWidth=".8"
             />
             {tx(
-              t.level >= 3 && (
+              level >= 3 && (
                 <>
                   <path
                     d="M8 7V-9L13-12 17-8V7L13 10Z"
@@ -175,7 +179,7 @@ export const TownMiniature = memo(function TownMiniature({
             <path d="M-8 11V4Q-6 1-4 3V10Z" fill="#1e3137" />
             <path d="M0-3V-7M4-6V-10" stroke="#20353a" strokeWidth="1.7" />
             {tx(
-              t.level === 4 && (
+              level === 4 && (
                 <path
                   d="M13-18V-27L23-23 13-20"
                   fill={color}
@@ -188,18 +192,18 @@ export const TownMiniature = memo(function TownMiniature({
         ),
       )}
       {tx(
-        t.wall > 0 && (
+        wall > 0 && (
           <path
             d="M-15 8Q0 22 15 8"
             fill="none"
-            stroke={t.wall === 1 ? "#9b744b" : "#8e9f92"}
+            stroke={wall === 1 ? "#9b744b" : "#8e9f92"}
             strokeWidth="3"
-            strokeDasharray={t.wall === 1 ? "2 1" : "4 1"}
+            strokeDasharray={wall === 1 ? "2 1" : "4 1"}
           />
         ),
       )}
       {tx(
-        t.level > 1 && (
+        level > 1 && (
           <g transform="translate(13 14)">
             <rect
               x="-7"
@@ -218,18 +222,18 @@ export const TownMiniature = memo(function TownMiniature({
               fontWeight="750"
               fill="#fff0c8"
             >
-              {tx(["", "", "I", "II", "III"][t.level])}
+              {tx(["", "", "I", "II", "III"][level])}
             </MapLabel>
           </g>
         ),
       )}
       {tx(
-        Object.keys(t.extensions).length > 0 && (
+        extensionCount > 0 && (
           <g transform="translate(-11 15)">
             {tx(
-              Object.keys(t.extensions).map((id, i) => (
+              Array.from({ length: extensionCount }, (_, i) => (
                 <circle
-                  key={id}
+                  key={i}
                   cx={i * 4}
                   r="1.6"
                   fill="#ffe9aa"

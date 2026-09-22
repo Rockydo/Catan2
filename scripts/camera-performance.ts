@@ -53,9 +53,17 @@ try {
     .locator(".save-status:not(.bad)")
     .filter({ hasText: "Saved locally" })
     .waitFor();
+  if (process.env.PROBE_CSS)
+    await page.addStyleTag({ content: process.env.PROBE_CSS });
   const originalSave = await browserSave(page);
   const cdp = await page.context().newCDPSession(page);
   await cdp.send("Performance.enable");
+  if (process.env.TRACE_CAMERA)
+    await cdp.send("Tracing.start", {
+      categories:
+        "devtools.timeline,blink.user_timing,disabled-by-default-devtools.timeline.frame",
+      transferMode: "ReturnAsStream",
+    });
   const box = (await page.locator(".board-frame").boundingBox())!;
   await page.mouse.move(box.x + box.width * 0.48, box.y + box.height * 0.46);
   const results = [];
@@ -123,6 +131,21 @@ try {
     });
   }
   const saved = await browserSave(page);
+  if (process.env.TRACE_CAMERA) {
+    const done = new Promise<string>((resolve) =>
+      cdp.once("Tracing.tracingComplete", (data) => resolve(data.stream!)),
+    );
+    await cdp.send("Tracing.end");
+    const stream = await done,
+      parts: string[] = [];
+    for (;;) {
+      const data = await cdp.send("IO.read", { handle: stream });
+      parts.push(data.data);
+      if (data.eof) break;
+    }
+    await cdp.send("IO.close", { handle: stream });
+    writeFileSync(`${output}.trace.json`, parts.join(""));
+  }
   if (saved !== originalSave)
     throw Error("Camera input changed the campaign save");
   // Inspect the crowded center at normal playing scale, not just the overview.
@@ -133,6 +156,7 @@ try {
     tiles: Object.keys(game.tiles).length,
     towns: Object.keys(game.towns).length,
     units: Object.keys(game.pieces).length,
+    ...(process.env.PROBE_CSS ? { diagnosticCss: process.env.PROBE_CSS } : {}),
     results,
     errors,
   };

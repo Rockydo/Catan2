@@ -18,7 +18,7 @@ import type { TerrainKey } from "../game/content";
 import { localize as tx, useLocale } from "../i18n";
 import { friendly } from "../game/relations";
 import { GuildCrest } from "./Guilds";
-import { GUILDS, townGuilds } from "../game/guilds";
+import { groupMapUnits, townMapView } from "./map-scene";
 import { MapLabel, MapLabelDefinitions } from "./MapLabel";
 import { ResourceIcon } from "./ResourceIcon";
 import {
@@ -538,7 +538,7 @@ const MapHex = memo(function MapHex({
 const MapArmy = memo(function MapArmy({
   tile,
   units,
-  players,
+  playerNames,
   x,
   y,
   selected,
@@ -549,7 +549,7 @@ const MapArmy = memo(function MapArmy({
 }: {
   tile: string;
   units: Piece[];
-  players: Game["players"];
+  playerNames: string[];
   x: number;
   y: number;
   selected: boolean;
@@ -575,9 +575,9 @@ const MapArmy = memo(function MapArmy({
     return {
       owners,
       composition,
-      label: `${owners.map((id) => players[id].name).join(" & ")} ${units[0].naval ? "fleet" : "army"}, ${units.length} pieces, ${power} base power; ${composition}`,
+      label: `${owners.map((id) => playerNames[id]).join(" & ")} ${units[0].naval ? "fleet" : "army"}, ${units.length} pieces, ${power} base power; ${composition}`,
     };
-  }, [units, players]);
+  }, [units, playerNames]);
   const p = units[0].owner;
   const activate = () =>
     movable ? onMove(tile) : onSelect({ type: "tile", id: tile });
@@ -634,24 +634,19 @@ const MapArmy = memo(function MapArmy({
 });
 
 const MapTown = memo(function MapTown({
-  game: s,
-  town: t,
   selected,
   onSelect,
   onInspectSiege,
   clicked,
-}: {
-  game: Game;
-  town: Game["towns"][string];
+  ...t
+}: ReturnType<typeof townMapView> & {
   selected: boolean;
   onSelect: Props["onSelect"];
   onInspectSiege: Props["onInspectSiege"];
   clicked: (action: () => void) => void;
 }) {
   useLocale();
-  const { x, y } = vertexPoint(s.vertices[t.vertex]),
-    siege = townSiegeStatuses(s, t)[0],
-    guilds = townGuilds(t);
+  const { x, y } = t;
   return (
     <g key={t.id}>
       <g
@@ -661,7 +656,7 @@ const MapTown = memo(function MapTown({
         role="button"
         tabIndex={0}
         aria-label={tx(
-          `${t.name}, level ${t.level}, wall ${t.wall}, ${s.players[t.owner].name}${guilds.length ? `, ${guilds.map((g) => `${GUILDS[g.kind].name} tier ${g.tier}`).join(", ")}` : ""}${siege ? `, ${siege.label}` : ""}`,
+          `${t.name}, level ${t.level}, wall ${t.wall}, ${t.ownerName}${t.guildCount ? `, ${t.guildLabel}` : ""}${t.siegeLabel ? `, ${t.siegeLabel}` : ""}`,
         )}
         data-testid={`town-${t.id}`}
         transform={`translate(${x} ${y})`}
@@ -679,29 +674,29 @@ const MapTown = memo(function MapTown({
           {tx(["", "Settlement", "City I", "City II", "City III"][t.level])}
           {tx(" ")}
           {tx("· wall ")}
-          {tx(t.wall)} · {tx(Object.keys(t.extensions).length)}
+          {tx(t.wall)} · {tx(t.extensionCount)}
           {tx(" ")}
           {tx("extensions")}
-          {tx(
-            guilds.map((g) => ` · ${GUILDS[g.kind].name} ${g.tier}`).join(""),
-          )}
-          {tx(siege ? ` · ${siege.label}` : "")}
+          {tx(t.guildTitle)}
+          {tx(t.siegeLabel ? ` · ${t.siegeLabel}` : "")}
         </title>
-        <TownMiniature town={t} color={COLORS[t.owner]} selected={selected} />
+        <TownMiniature
+          level={t.level}
+          wall={t.wall}
+          extensionCount={t.extensionCount}
+          color={COLORS[t.owner]}
+          selected={selected}
+        />
         {tx(
-          guilds.length > 0 && (
+          t.guildKind && t.guildTier && (
             <g
               transform="translate(13 -30)"
               pointerEvents="none"
               data-testid={`guild-badge-${t.id}`}
             >
-              <GuildCrest
-                kind={guilds[0].kind}
-                tier={guilds[0].tier}
-                size={18}
-              />
+              <GuildCrest kind={t.guildKind} tier={t.guildTier} size={18} />
               {tx(
-                guilds.length > 1 && (
+                t.guildCount > 1 && (
                   <g>
                     <circle
                       cx="19"
@@ -718,7 +713,7 @@ const MapTown = memo(function MapTown({
                       fontWeight="800"
                       fill="#fff0c9"
                     >
-                      {tx(guilds.length)}
+                      {tx(t.guildCount)}
                     </text>
                   </g>
                 ),
@@ -728,7 +723,7 @@ const MapTown = memo(function MapTown({
         )}
       </g>
       {tx(
-        siege && (
+        t.siegeBadge && (
           <g
             className="map-siege-badge"
             transform={`translate(${x} ${y - 72})`}
@@ -768,13 +763,7 @@ const MapTown = memo(function MapTown({
               fontSize="8"
               fontWeight="800"
             >
-              {tx(
-                siege.breached
-                  ? "BREACHED"
-                  : siege.remaining === 0
-                    ? "EXPOSED"
-                    : `SIEGE ${siege.completed}/${siege.required}`,
-              )}
+              {tx(t.siegeBadge)}
             </MapLabel>
             <rect
               x="-25"
@@ -787,7 +776,7 @@ const MapTown = memo(function MapTown({
             <rect
               x="-25"
               y="37"
-              width={50 * siege.fraction}
+              width={50 * t.siegeFraction!}
               height="3"
               rx="1.5"
               fill="#f1b56b"
@@ -896,15 +885,17 @@ const BoardScene = memo(function BoardScene({
       : [],
   );
 
-  const groupUnits = useMemo(
-    () =>
-      Object.values(s.pieces)
-        .filter((u) => !u.carrier)
-        .reduce<Record<string, Piece[]>>((groups, u) => {
-          (groups[u.tile] ??= []).push(u);
-          return groups;
-        }, {}),
-    [s.pieces],
+  const previousGroups = useRef<Record<string, Piece[]>>({});
+  const groupUnits = useMemo(() => {
+    const groups = groupMapUnits(s.pieces, previousGroups.current);
+    previousGroups.current = groups;
+    return groups;
+  }, [s.pieces]);
+  const namesKey = JSON.stringify(s.players.map((p) => p.name));
+  const playerNames = useMemo<string[]>(() => JSON.parse(namesKey), [namesKey]);
+  const besiegedTowns = useMemo(
+    () => new Set(Object.values(s.sieges).map((siege) => siege.town)),
+    [s.sieges],
   );
   const coverage = useMemo(
     () =>
@@ -1787,8 +1778,7 @@ const BoardScene = memo(function BoardScene({
               towns.map((t) => (
                 <MapTown
                   key={t.id}
-                  game={s}
-                  town={t}
+                  {...townMapView(s, t, besiegedTowns.has(t.id))}
                   selected={
                     selection?.type === "vertex" && selection.id === t.vertex
                   }
@@ -1806,7 +1796,7 @@ const BoardScene = memo(function BoardScene({
                     key={tile}
                     tile={tile}
                     units={units}
-                    players={s.players}
+                    playerNames={playerNames}
                     x={x}
                     y={y}
                     selected={units.some((u) => selectedUnits.has(u.id))}

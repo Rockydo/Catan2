@@ -3,11 +3,11 @@ import { funded } from "../tests/helpers";
 import { ownTowns } from "../src/game/selectors";
 import { serialize, SAVE_KEY } from "../src/game/save";
 
-async function load(page: Page) {
+async function load(page: Page, level = 4) {
   const s = funded("map-sprite-check"),
     town = ownTowns(s)[0];
-  town.level = town.turnLevel = 4;
-  town.wall = 4;
+  town.level = town.turnLevel = level;
+  town.wall = level === 1 ? 0 : 4;
   await page.addInitScript(
     ({ key, data }) => {
       localStorage.setItem(key, data);
@@ -19,6 +19,45 @@ async function load(page: Page) {
   await page.getByRole("button", { name: /Continue campaign/ }).click();
   return { s, town };
 }
+
+test("town artwork and labels update after walls, city upgrades and extensions", async ({
+  page,
+}) => {
+  const { town } = await load(page, 1);
+  const node = page.getByTestId(`town-${town.id}`);
+  await node.press("Enter");
+  await expect(node).toHaveAttribute("aria-label", /level 1, wall 0/);
+  await expect(node.locator(".town-miniature > image")).toHaveCount(1);
+  const original = await node
+    .locator(".town-miniature > image")
+    .getAttribute("href");
+  await page.getByRole("button", { name: /^Build Palisade/ }).click();
+  await expect(node).toHaveAttribute("aria-label", /level 1, wall 1/);
+  await expect(node.locator(".town-miniature > image")).not.toHaveAttribute(
+    "href",
+    original!,
+  );
+  for (const [level, name] of [
+    [2, "City I"],
+    [3, "City II"],
+    [4, "City III"],
+  ] as const) {
+    await page
+      .getByRole("button", { name: `Upgrade to ${name}`, exact: false })
+      .first()
+      .click();
+    await expect(node).toHaveAttribute(
+      "aria-label",
+      new RegExp(`level ${level}, wall 1`),
+    );
+  }
+  await page
+    .getByTestId("city-extensions")
+    .getByRole("button", { name: /Build extension/ })
+    .first()
+    .click();
+  await expect(node.locator(":scope > title")).toContainText("1 extensions");
+});
 
 test("cached map vectors keep complete references, labels, selection and dice toggling", async ({
   page,
@@ -64,6 +103,8 @@ test("cached map vectors keep complete references, labels, selection and dice to
     .toContain("selection-halo");
   const label = page.locator(".production-resources").first();
   await expect(label).toHaveAttribute("aria-label", /.+/);
+  const close = page.getByRole("button", { name: "Close action panel" });
+  if (await close.isVisible()) await close.click();
   await page.getByRole("button", { name: "Hide dice numbers" }).click();
   await expect(page.locator(".production-token[data-number]")).toHaveCount(0);
   await page.getByRole("button", { name: "Show dice numbers" }).click();

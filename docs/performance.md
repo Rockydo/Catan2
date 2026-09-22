@@ -152,6 +152,18 @@ The expanded-data checks cover shared column-name amplification, including multi
 
 The complete Round 31 browser replay preserved all 144 commands and its final state hash. It finished in 21.70 seconds with no browser errors or long tasks. This save-format change does not materially change AI thinking time.
 
+## Reusing unchanged map formations and towns
+
+The map previously rebuilt every formation array after a unit update and passed the whole game into every town marker. It now keeps unchanged formations by reference, copies only groups with changed ordered members, and excludes embarked passengers as before. Removed groups are released; the cache holds only the current scene. Army labels depend on faction names instead of the changing player records.
+
+Town markers receive their visible fields rather than the whole town and game. Stocks and completed guild orders do not redraw buildings. Level, walls, extension count, ownership, guild composition, selection and siege status still update. Siege presentation is recalculated from current artillery, watchtower support and attacker turns, including changes outside the town record.
+
+A disposable Chromium replay of Round 32 compared the deployed build with this change using CPU profiling in both runs. It retained all 485 commands and the complete final state hash. Main-thread task time fell from 24.54 to 22.81 seconds (7.0%); script time fell from 17.02 to 15.62 seconds (8.2%). Total replay time changed from 59.14 to 57.98 seconds, while AI-worker time remained about 40 seconds. Neither run reported browser errors or long tasks. These are single local before/after measurements, not a claim that AI thinking became 7% faster.
+
+Validation passed 1,345 unit tests and all 81 selected browser scenarios across Chromium, Firefox and the mobile viewport. The mobile sprite test was corrected to close the action inspector before clicking the map controls it covered. Coverage includes city upgrades, walls, extensions, multiple guild badges, artillery-dependent sieges, formation selection, recruitment in both languages, movement, camera alignment and sprite fallback.
+
+A ground-only canvas prototype and several SVG painting experiments did not consistently improve ordinary zoom on the dense 2,000-tile fixture. They were not shipped. `TRACE_CAMERA=1` on the camera diagnostic records browser layout and paint activity; `PROBE_CSS` allows disposable visibility experiments. Ordinary zoom on this stress fixture still has roughly 50 ms frame p95 and remains open work.
+
 ## Changes
 
 - Guild planning looks up local formations instead of scanning every unit repeatedly. Original unit ordering is preserved.

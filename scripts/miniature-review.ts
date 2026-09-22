@@ -4,11 +4,8 @@ import { createElement as h } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { TownMiniature, ShipMiniature } from "../src/ui/MapPieces";
 import { COLORS, NAMES, SHIP_INFO } from "../src/game/content";
-import { ownTowns } from "../src/game/selectors";
-import { funded } from "../tests/helpers";
 const folder = `test-artifacts/${process.env.PASS ?? "polish-final"}`;
 mkdirSync(folder, { recursive: true });
-const town = ownTowns(funded())[0];
 const svg = h(
   "svg",
   { viewBox: "0 0 1000 690", width: 1000, height: 690 },
@@ -29,13 +26,9 @@ const svg = h(
           "g",
           { transform: "scale(1.9)" },
           h(TownMiniature, {
-            town: {
-              ...town,
-              owner: row,
-              level,
-              wall: level > 1 ? level - 1 : 0,
-              extensions: {},
-            },
+            level,
+            wall: level > 1 ? level - 1 : 0,
+            extensionCount: 0,
             color: COLORS[row],
             selected: false,
           }),
