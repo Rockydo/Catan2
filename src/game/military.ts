@@ -406,16 +406,20 @@ export function militaryCommand(s: Game, c: Command): boolean {
   if (c.type === "move") {
     const units = selected(s, c.ids);
     rule(c.to && s.tiles[c.to], "Choose a revealed destination.");
-    const path = moveTargets(s, c.ids!)[c.to];
+    // Validate against one read-only occupation snapshot, then leave its scope
+    // before moving any pieces or resolving combat on the mutable draft.
+    const { path, defenders } = withPlanningFrame(s, () => ({
+      path: moveTargets(s, c.ids!)[c.to!],
+      defenders: combatantsAt(s, c.to!, units[0].naval).filter(
+        (u) => !friendly(s, u.owner, s.active),
+      ),
+    }));
     rule(
       path?.length,
       "The destination is unreachable with the selected army’s remaining movement.",
     );
     const target = c.to,
-      origin = path.length > 1 ? path[path.length - 2] : units[0].tile,
-      defenders = combatantsAt(s, target, units[0].naval).filter(
-        (u) => !friendly(s, u.owner, s.active),
-      );
+      origin = path.length > 1 ? path[path.length - 2] : units[0].tile;
     defenders.sort(
       (a, b) =>
         Number(s.players[b.owner].control === "human") -

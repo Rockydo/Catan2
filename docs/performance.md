@@ -61,6 +61,25 @@ The AI worker retains its last completed immutable position. A request reference
 
 Economic batches share unchanged terrain and existing units. Commands that can mutate those records detach them first. Siege cleanup now builds one temporary occupation index after movement and checks each town's land/naval guards once, instead of scanning every unit for each attacker. These indexes do not survive the mutable operation.
 
+## Production and movement follow-up
+
+This pass compares against the worker-transfer build above, with the same saves and unchanged decisions.
+
+| Measurement | Before | After |
+|---|---:|---:|
+| Round 32 scenario: 485 orders to the same human battle decision | 100.20 s | 67.11 s |
+| Round 32 scenario: worker calculation | 76.09 s | 42.25 s |
+| Round 31: complete AI turn, 144 orders | 24.03 s | 22.43 s |
+| 2,000-tile fixture: fixed 60 decisions | 86.57 s | 86.36 s |
+
+Both real-save comparisons and the 2,000-tile comparison preserved every command and the final state hash. The growth fixture finishes those 60 decisions with 5,952 units. Its improvement is within timing noise; its remaining planning bottlenecks need separate work. Camera checks on that fixture still have approximately 50 ms p95 zoom frames, with no save changes or browser errors.
+
+Production now indexes blockading factions once per calculation and shares coverage, seasonal yields and warehouse lookups for identical collectors. It retains one delivery per producer in exactly the original order. It does not multiply grouped floating-point totals, which could alter AI tie breaks. Every returned delivery is independent and still points to the correct town. Comparing complete delivery arrays across the current season, annual output and all four seasons found no differences. On the 14,695-unit export, an indexed annual calculation fell from about 44 ms to 11 ms.
+
+Movement validation uses a temporary occupation index. An uncontested move copies the selected force and its passengers, retaining immutable terrain and stationary units. Contested moves retain the full isolated transaction. Later combat in a planned sequence detaches those records before executing; a failed later order still leaves the input unchanged. Read indexes build town, unit, tile and tower views only when needed.
+
+Validation included 1,292 unit tests and 78 browser checks across Chromium and Firefox. It covers frozen input records, moving carriers and passengers, allied destinations, combat after an uncontested move, rollback, separate collector deliveries, seasonal forecasts, stock-only reads, sieges, army controls and large-save recovery. The faster Round 32 replay recorded a 33.3 ms p95 frame interval and two long main-thread tasks, so this pass does not claim improved rendering latency. The diagnostic can now record main-thread CPU profiles separately from ordinary timing runs.
+
 ## Save performance contract
 
 - Compression must be lossless, with all supported historical exports still importable.
@@ -86,4 +105,4 @@ Regression coverage includes nearby guild selection, changing garrisons, isolate
 
 ## Remaining work
 
-The wider performance goal remains open. Production forecasts, military planning and non-economic draft copies remain measurable AI costs. Dense-map terrain and army painting remain measurable costs even after caching town and resource artwork. Further changes must preserve complete AI decisions, game rules, visual clarity and existing saves.
+The wider performance goal remains open. Production signatures, large-map military/economic planning and publication/rendering remain measurable costs. Dense-map terrain and army painting remain measurable costs even after caching town and resource artwork. Further changes must preserve complete AI decisions, game rules, visual clarity and existing saves.

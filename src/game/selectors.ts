@@ -601,10 +601,41 @@ export function productionSources(
     }
     return output;
   };
-  const blocked = (id: string, owner: number) =>
-    s.tiles[id].resource === "water"
-      ? navalBlockAt(s, id, owner)
-      : blockAt(s, id, owner);
+  // Blockades depend on the occupying factions, not their stack size. Keep
+  // this index local: production also runs on mutable roll/forecast drafts.
+  const units = Object.values(s.pieces);
+  const blockades = new Map<string, Set<number>>();
+  for (const u of units) {
+    if (
+      u.carrier ||
+      u.naval !== (s.tiles[u.tile]?.resource === "water") ||
+      (u.naval ? isSettler(u.kind) : points(u) <= 0)
+    )
+      continue;
+    let owners = blockades.get(u.tile);
+    if (!owners) blockades.set(u.tile, (owners = new Set()));
+    owners.add(u.owner);
+  }
+  const blocks = new Map<string, boolean>();
+  const blocked = (id: string, owner: number) => {
+    const key = `${owner}/${id}`;
+    if (!blocks.has(key)) {
+      let result = false;
+      for (const faction of blockades.get(id) ?? [])
+        if (!friendly(s, faction, owner)) {
+          result = true;
+          break;
+        }
+      blocks.set(key, result);
+    }
+    return blocks.get(key)!;
+  };
+  const warehouses = new Map<string, Town | undefined>();
+  const warehouse = (id: string, owner: number) => {
+    const key = `${owner}/${id}`;
+    if (!warehouses.has(key)) warehouses.set(key, nearestTown(s, id, owner));
+    return warehouses.get(key);
+  };
   for (const town of Object.values(s.towns))
     for (const id of s.vertices[town.vertex].tiles) {
       const good = town.extensionGoods?.[id] ?? tileGood(tiles[id], town.owner);
@@ -643,7 +674,7 @@ export function productionSources(
   for (const r of Object.values(s.routes))
     for (const [id, tier] of Object.entries(r.camps)) {
       const good = tileGood(tiles[id]),
-        town = nearestTown(s, id, r.owner);
+        town = warehouse(id, r.owner);
       if (good && town && !blocked(id, r.owner))
         for (const [raw, amount] of Object.entries(yieldAt(id, r.owner)))
           out.push({
@@ -672,31 +703,41 @@ export function productionSources(
           ),
         })
       : s;
-  for (const u of Object.values(s.pieces)) {
-    const covered = harvestTiles(harvestWorld, u);
-    if (!covered.length) continue;
-    const town = nearestTown(s, u.tile, u.owner);
-    if (!town) continue;
-    for (const id of covered) {
-      const good = tileGood(tiles[id]);
-      if (good && (u.kind !== "fishing" || !blocked(id, u.owner)))
-        for (const [raw, amount] of Object.entries(
-          harvestYield(
-            tiles[id],
-            u.owner,
-            u.tier,
-            u.kind !== "fishing",
-            yieldAt(id, u.owner),
-          ),
-        ))
-          out.push({
-            owner: u.owner,
-            town,
-            tile: id,
-            good: raw as Good,
-            amount: amount!,
-          });
+  const collectors = new Map<string, typeof out>();
+  for (const u of units) {
+    if (u.carrier || !collector(u)) continue;
+    const key = JSON.stringify([u.owner, u.kind, u.tier, u.tile, u.coverage]);
+    let sources = collectors.get(key);
+    if (!sources) {
+      sources = [];
+      const covered = harvestTiles(harvestWorld, u);
+      const town = covered.length ? warehouse(u.tile, u.owner) : undefined;
+      if (town)
+        for (const id of covered) {
+          const good = tileGood(tiles[id]);
+          if (good && (u.kind !== "fishing" || !blocked(id, u.owner)))
+            for (const [raw, amount] of Object.entries(
+              harvestYield(
+                tiles[id],
+                u.owner,
+                u.tier,
+                u.kind !== "fishing",
+                yieldAt(id, u.owner),
+              ),
+            ))
+              sources.push({
+                owner: u.owner,
+                town,
+                tile: id,
+                good: raw as Good,
+                amount: amount!,
+              });
+        }
+      collectors.set(key, sources);
     }
+    // Preserve producer order and individual additions exactly. Multiplying
+    // an aggregate would change floating-point forecasts and AI tie breaks.
+    for (const source of sources) out.push({ ...source });
   }
   return out.filter((source) => source.amount > 0);
 }
@@ -744,43 +785,77 @@ let lastIncome: Record<number, Stock> | undefined;
 // Outside that frame, the value signature guards the retained last result.
 let incomeFrame: WeakMap<Game, Record<number, Stock>> | undefined;
 function createPlanningIndex(source: Game): PlanningIndex {
-  const index: PlanningIndex = {
+  // A movement check needs tile occupancy, while a stock quote may need only
+  // towns. Build each immutable index on demand instead of grouping the full
+  // empire for every short read scope. One unit array serves all requested views.
+  let units: Piece[] | undefined;
+  const unitRecords = () => (units ??= Object.values(source.pieces));
+  let towns: PlanningIndex["towns"] | undefined;
+  let vertices: PlanningIndex["vertices"] | undefined;
+  let pieces: PlanningIndex["pieces"] | undefined;
+  let pieceOrder: PlanningIndex["pieceOrder"] | undefined;
+  let tiles: PlanningIndex["tiles"] | undefined;
+  let towerSupport: PlanningIndex["towerSupport"] | undefined;
+  return {
     source,
-    towns: new Map(),
-    vertices: new Map(),
-    pieces: new Map(),
-    pieceOrder: new Map(),
-    tiles: new Map(),
+    get towns() {
+      if (!towns) {
+        towns = new Map();
+        for (const town of Object.values(source.towns)) {
+          if (!towns.has(town.owner)) towns.set(town.owner, []);
+          towns.get(town.owner)!.push(town);
+        }
+        for (const owned of towns.values())
+          owned.sort((a, b) => Number(a.id.slice(1)) - Number(b.id.slice(1)));
+      }
+      return towns;
+    },
+    get vertices() {
+      return (vertices ??= new Map(
+        Object.values(source.towns).map((t) => [t.vertex, t]),
+      ));
+    },
+    get pieces() {
+      if (!pieces) {
+        pieces = new Map();
+        for (const unit of unitRecords()) {
+          if (!pieces.has(unit.owner)) pieces.set(unit.owner, []);
+          pieces.get(unit.owner)!.push(unit);
+        }
+      }
+      return pieces;
+    },
+    get pieceOrder() {
+      return (pieceOrder ??= new Map(
+        unitRecords().map((unit, i) => [unit, i]),
+      ));
+    },
+    get tiles() {
+      if (!tiles) {
+        tiles = new Map();
+        for (const unit of unitRecords()) {
+          if (unit.carrier) continue;
+          if (!tiles.has(unit.tile)) tiles.set(unit.tile, []);
+          tiles.get(unit.tile)!.push(unit);
+        }
+      }
+      return tiles;
+    },
     stocks: new Map(),
     nearest: new Map(),
-    towerSupport: new Map(),
+    get towerSupport() {
+      if (!towerSupport) {
+        towerSupport = new Map();
+        for (const tower of Object.values(source.towers ?? {}))
+          for (const tile of source.vertices[tower.vertex].tiles) {
+            const key = `${tower.owner}/${tile}`;
+            towerSupport.set(key, (towerSupport.get(key) ?? 0) + tower.tier);
+          }
+      }
+      return towerSupport;
+    },
     memo: new Map(),
   };
-  for (const tower of Object.values(source.towers ?? {}))
-    for (const tile of source.vertices[tower.vertex].tiles) {
-      const key = `${tower.owner}/${tile}`;
-      index.towerSupport.set(
-        key,
-        (index.towerSupport.get(key) ?? 0) + tower.tier,
-      );
-    }
-  for (const town of Object.values(source.towns)) {
-    if (!index.towns.has(town.owner)) index.towns.set(town.owner, []);
-    index.towns.get(town.owner)!.push(town);
-    index.vertices.set(town.vertex, town);
-  }
-  for (const towns of index.towns.values())
-    towns.sort((a, b) => Number(a.id.slice(1)) - Number(b.id.slice(1)));
-  for (const unit of Object.values(source.pieces)) {
-    index.pieceOrder.set(unit, index.pieceOrder.size);
-    if (!index.pieces.has(unit.owner)) index.pieces.set(unit.owner, []);
-    index.pieces.get(unit.owner)!.push(unit);
-    if (!unit.carrier) {
-      if (!index.tiles.has(unit.tile)) index.tiles.set(unit.tile, []);
-      index.tiles.get(unit.tile)!.push(unit);
-    }
-  }
-  return index;
 }
 export function withPlanningFrame<T>(source: Game, run: () => T): T {
   const previous = incomeFrame;

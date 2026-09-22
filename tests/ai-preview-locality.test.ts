@@ -1,6 +1,7 @@
 import { expect, it } from "vitest";
 import {
   applyCommand,
+  applyCommandPlan,
   canApplyCommand,
   commandError,
 } from "../src/game/engine";
@@ -8,6 +9,7 @@ import { GUILD_KINDS } from "../src/game/guilds";
 import type { Command, Game } from "../src/game/types";
 import { guildFixture } from "./guild-fixture";
 import { piece } from "./helpers";
+import { maritimeFixture } from "./maritime-fixture";
 
 function freeze(root: object) {
   const queue = [root],
@@ -113,5 +115,74 @@ it("recruitment shares immutable existing units and geometry without touching th
   expect(result.state.tiles).toBe(s.tiles);
   expect(result.state.pieces).not.toBe(s.pieces);
   expect(canApplyCommand(s, command)).toBe(true);
+  expect(s).toEqual(before);
+});
+
+it("uncontested movement copies its ship and passengers while preserving frozen stationary records", () => {
+  const { s } = maritimeFixture();
+  s.tiles["0,0"].resource = s.tiles["1,0"].resource = "water";
+  const ship = piece(s, "0,0", 0, "transport"),
+    passenger = piece(s, "0,0", 0, "merchant", 3),
+    stationary = piece(s, "0,0", 0, "galley"),
+    ally = piece(s, "1,0", 1, "galley");
+  passenger.carrier = ship.id;
+  passenger.coverage = ["0,1"];
+  ship.campaign = { enemy: 1, target: "3,0" };
+  s.alliances = [{ id: "pact", members: [0, 1], threat: 2, lockedUntil: 20 }];
+  const before = structuredClone(s);
+  freeze(s);
+  const command = { type: "move", ids: [ship.id], to: "1,0" };
+  expect(canApplyCommand(s, command)).toBe(true);
+  const result = applyCommand(s, command);
+  expect(result.ok).toBe(true);
+  expect(result.state.tiles).toBe(s.tiles);
+  expect(result.state.pieces[ship.id]).toMatchObject({ tile: "1,0", moved: 1 });
+  expect(result.state.pieces[passenger.id]).toMatchObject({
+    tile: "1,0",
+    carrier: ship.id,
+  });
+  expect(result.state.pieces[ship.id].campaign).toBeUndefined();
+  expect(result.state.pieces[passenger.id].coverage).toBeUndefined();
+  expect(result.state.pieces[stationary.id]).toBe(stationary);
+  expect(result.state.pieces[ally.id]).toBe(ally);
+  expect(s).toEqual(before);
+  const failure = applyCommand(s, { ...command, to: "3,0" });
+  expect(failure.ok).toBe(false);
+  expect(failure.state).toBe(s);
+  expect(s).toEqual(before);
+});
+
+it("a move followed by combat detaches defenders and rolls back a failing later order", () => {
+  const { s } = maritimeFixture();
+  const attacker = piece(s, "0,0", 0, "cavalry", 4),
+    defender = piece(s, "2,0", 1, "heavy", 2);
+  const commands: Command[] = [
+    { type: "move", ids: [attacker.id], to: "1,0" },
+    { type: "move", ids: [attacker.id], to: "2,0" },
+  ];
+  const before = structuredClone(s);
+  freeze(s);
+  let expected = s;
+  for (const command of commands) {
+    const result = applyCommand(expected, command);
+    expect(result.ok).toBe(true);
+    expected = result.state;
+  }
+  const result = applyCommandPlan(s, (_, done) => commands[done.length]);
+  expect(result.ok).toBe(true);
+  expect(result.state.battle).toBeDefined();
+  expect(result.state).toEqual(expected);
+  expect(result.state.pieces[defender.id]).not.toBe(defender);
+  expect(s).toEqual(before);
+  const failed = applyCommandPlan(
+    s,
+    (_, done) =>
+      commands[done.length] ??
+      (done.length === 2
+        ? { type: "move", ids: [attacker.id], to: "3,0" }
+        : undefined),
+  );
+  expect(failed.ok).toBe(false);
+  expect(failed.state).toBe(s);
   expect(s).toEqual(before);
 });

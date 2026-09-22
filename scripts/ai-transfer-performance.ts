@@ -133,6 +133,13 @@ try {
     mimeType: "application/json",
     buffer: Buffer.from(serialize(game)),
   });
+  const cdp = await page.context().newCDPSession(page);
+  await cdp.send("Performance.enable");
+  const before = await cdp.send("Performance.getMetrics");
+  if (process.env.PROFILE_UI) {
+    await cdp.send("Profiler.enable");
+    await cdp.send("Profiler.start");
+  }
   await page.getByRole("button", { name: "Resume AI", exact: true }).click();
   const progress = setInterval(() => {
     void page
@@ -182,6 +189,14 @@ try {
   if (failure) throw Error(failure);
   await page.waitForTimeout(200);
   const probe = await page.evaluate(() => (window as any).probe);
+  const metrics = await cdp.send("Performance.getMetrics");
+  const metricMs = (name: string) =>
+    1000 *
+    ((metrics.metrics.find((m) => m.name === name)?.value ?? 0) -
+      (before.metrics.find((m) => m.name === name)?.value ?? 0));
+  const profile = process.env.PROFILE_UI
+    ? (await cdp.send("Profiler.stop")).profile
+    : undefined;
   let saved = JSON.parse((await browserSave(page))!).game;
   for (let i = 0; i < 20 && saved.actions !== probe.lastActions; i++) {
     await page.waitForTimeout(100);
@@ -203,6 +218,12 @@ try {
     postMs: probe.postMs,
     frameP95: sorted[Math.floor(sorted.length * 0.95)],
     longTasks: probe.longs,
+    mainThread: {
+      taskMs: metricMs("TaskDuration"),
+      scriptMs: metricMs("ScriptDuration"),
+      layoutMs: metricMs("LayoutDuration"),
+      styleMs: metricMs("RecalcStyleDuration"),
+    },
     errors,
     finalHash: createHash("sha256").update(JSON.stringify(saved)).digest("hex"),
     commands: probe.commands,
@@ -218,6 +239,11 @@ try {
     throw Error("AI decisions or final state changed");
   mkdirSync("test-artifacts", { recursive: true });
   const label = (process.env.LABEL ?? "result").replace(/[^a-z0-9_-]/gi, "-");
+  if (profile)
+    writeFileSync(
+      `test-artifacts/ai-transfer-${label}.cpuprofile`,
+      JSON.stringify(profile),
+    );
   writeFileSync(
     `test-artifacts/ai-transfer-${label}.json`,
     JSON.stringify(result, null, 2),

@@ -38,6 +38,26 @@ function readings(s: Game) {
 }
 
 describe("immutable UI snapshots", () => {
+  it("does not index troops for a stock-only read and shares one scan across unit views", () => {
+    const { s, water } = fishingFixture();
+    for (let i = 0; i < 1000; i++) piece(s, water, 0, "fishing");
+    const values = vi.spyOn(Object, "values");
+    try {
+      prepareGameView(s);
+      inventory(s);
+      expect(
+        values.mock.calls.filter(([value]) => value === s.pieces),
+      ).toHaveLength(0);
+      expect(piecesAt(s, water)).toHaveLength(1000);
+      expect(ownPieces(s)).toHaveLength(1000);
+      expect(piecesAt(s, water)).toHaveLength(1000);
+      expect(
+        values.mock.calls.filter(([value]) => value === s.pieces),
+      ).toHaveLength(1);
+    } finally {
+      values.mockRestore();
+    }
+  });
   it("matches uncached lookups and keeps transaction drafts independent", () => {
     const { s, home, water } = fishingFixture();
     const land = s.vertices[home.vertex].tiles.find(

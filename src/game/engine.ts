@@ -377,6 +377,35 @@ const ECONOMIC_RECORDS_ONLY = new Set([
   "tower",
   "guild",
 ]);
+/** Only an uncontested move can share stationary troops. Combat may displace
+ * defenders, rescue passengers or trigger other mutations, so it keeps the
+ * fully isolated transaction. Validation still runs through militaryCommand. */
+function peacefulMove(s: Game, c: Command): boolean {
+  const first = s.pieces[c.ids?.[0] ?? ""];
+  return (
+    c.type === "move" &&
+    !!first &&
+    !!c.to &&
+    !hostileAt(s, c.to, first.owner, first.naval)
+  );
+}
+function detachMovingPieces(original: Game, draft: Game, command: Command) {
+  const carriers = new Set<string>();
+  for (const id of command.ids ?? []) {
+    const unit = draft.pieces[id];
+    if (!unit) continue;
+    if (unit.naval) carriers.add(id);
+    if (unit === original.pieces[id]) draft.pieces[id] = { ...unit };
+  }
+  if (carriers.size)
+    for (const unit of Object.values(draft.pieces))
+      if (
+        unit.carrier &&
+        carriers.has(unit.carrier) &&
+        unit === original.pieces[unit.id]
+      )
+        draft.pieces[unit.id] = { ...unit };
+}
 /** Plan and execute a private sequence with one copy of the campaign. Each
  * decision sees the preceding order's complete result, including coalitions.
  * The draft never escapes on failure and the caller's campaign stays intact.
@@ -414,17 +443,21 @@ export function applyCommandPlan(
       const next = { ...view };
       payload(command);
       if (!detached && !ECONOMIC_RECORDS_ONLY.has(command.type)) {
-        Object.assign(
-          next,
-          structuredClone({
-            tiles: next.tiles,
-            vertices: next.vertices,
-            edges: next.edges,
-            climatePlan: next.climatePlan,
-            pieces: next.pieces,
-          }),
-        );
-        detached = true;
+        if (peacefulMove(next, command))
+          detachMovingPieces(state, next, command);
+        else {
+          Object.assign(
+            next,
+            structuredClone({
+              tiles: next.tiles,
+              vertices: next.vertices,
+              edges: next.edges,
+              climatePlan: next.climatePlan,
+              pieces: next.pieces,
+            }),
+          );
+          detached = true;
+        }
       }
       advanceCommand(next, command, false);
       view = { ...next };
@@ -460,6 +493,8 @@ export function commandError(state: Game, c: Command): string | undefined {
 function commandResult(state: Game, c: Command, preview: boolean): Result {
   try {
     payload(c);
+    const moving = peacefulMove(state, c);
+    const shareUnits = moving || ["recruit", "ship"].includes(c.type);
     const localOrder =
       preview &&
       [
@@ -475,7 +510,7 @@ function commandResult(state: Game, c: Command, preview: boolean): Result {
     const s: Game = localOrder
       ? localOrderDraft(state, c)
       : (preview && !["expedition", "woods-choice"].includes(c.type)) ||
-          ["recruit", "ship"].includes(c.type)
+          shareUnits
         ? {
             ...structuredClone({
               ...state,
@@ -483,13 +518,9 @@ function commandResult(state: Game, c: Command, preview: boolean): Result {
               climatePlan: undefined,
               vertices: undefined,
               edges: undefined,
-              ...(["recruit", "ship"].includes(c.type)
-                ? { pieces: undefined }
-                : {}),
+              ...(shareUnits ? { pieces: undefined } : {}),
             }),
-            ...(["recruit", "ship"].includes(c.type)
-              ? { pieces: { ...state.pieces } }
-              : {}),
+            ...(shareUnits ? { pieces: { ...state.pieces } } : {}),
             tiles:
               ["end-turn", "surrender"].includes(c.type) && state.calendar
                 ? Object.fromEntries(
@@ -506,6 +537,7 @@ function commandResult(state: Game, c: Command, preview: boolean): Result {
             edges: state.edges,
           }
         : structuredClone(state);
+    if (moving) detachMovingPieces(state, s, c);
     if (localOrder) {
       // Use the actual order rules and payments, but do not process
       // unrelated sieges/eliminations when only checking a menu option.

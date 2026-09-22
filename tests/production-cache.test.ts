@@ -1,4 +1,5 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import * as maritime from "../src/game/maritime";
 import { fishingFixture } from "./maritime-fixture";
 import { piece } from "./helpers";
 import {
@@ -67,6 +68,38 @@ function fixture() {
 }
 
 describe("retained production forecasts", () => {
+  it("shares collector coverage without combining or reordering individual deliveries", () => {
+    const { s, merchant, fisher } = fixture();
+    const buildings = productionSources({ ...s, pieces: {} });
+    const merchants = productionSources({
+      ...s,
+      pieces: { [merchant.id]: merchant },
+    }).slice(buildings.length);
+    const fishers = productionSources({
+      ...s,
+      pieces: { [fisher.id]: fisher },
+    }).slice(buildings.length);
+    const expected = [...buildings, ...merchants, ...fishers];
+    for (let i = 0; i < 500; i++) {
+      piece(s, merchant.tile, merchant.owner, "merchant", merchant.tier);
+      piece(s, fisher.tile, fisher.owner, "fishing", fisher.tier);
+      expected.push(...merchants, ...fishers);
+    }
+    const coverage = vi.spyOn(maritime, "harvestTiles");
+    try {
+      const result = productionSources(s);
+      expect(result).toEqual(expected);
+      expect(coverage).toHaveBeenCalledTimes(2);
+      const first = result[buildings.length];
+      expect(first).not.toBe(
+        result[buildings.length + merchants.length + fishers.length],
+      );
+      expect(first.town).toBe(s.towns[first.town.id]);
+      expect(new Set(result).size).toBe(result.length);
+    } finally {
+      coverage.mockRestore();
+    }
+  });
   const changes: [string, (f: ReturnType<typeof fixture>) => void][] = [
     [
       "dice number",
