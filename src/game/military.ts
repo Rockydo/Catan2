@@ -33,6 +33,7 @@ import {
   nearestTown,
   hostileAt,
   ownTowns,
+  withPlanningFrame,
 } from "./selectors";
 
 export function selected(
@@ -105,6 +106,14 @@ export function removePieces(
   for (const id of removed) delete s.pieces[id];
 }
 export function breakSieges(s: Game) {
+  if (!Object.keys(s.sieges).length && !Object.keys(s.towerSieges ?? {}).length)
+    return;
+  // Movement, battles and diplomacy call this on mutable drafts. Build a
+  // fresh local index once, after those mutations; only sieges and logs change
+  // during this read. Never retain an occupation index across military orders.
+  withPlanningFrame(s, () => checkSieges(s));
+}
+function checkSieges(s: Game) {
   for (const [id, siege] of Object.entries(s.towerSieges ?? {})) {
     const tower = s.towers[siege.vertex];
     if (
@@ -131,15 +140,18 @@ export function breakSieges(s: Game) {
   }
   for (const [id, siege] of Object.entries(s.sieges)) {
     const town = s.towns[siege.town];
+    const guarded = new Map<boolean, boolean>();
+    const hasGuard = (naval: boolean) => {
+      if (!guarded.has(naval)) guarded.set(naval, protects(s, town, naval));
+      return guarded.get(naval)!;
+    };
     if (
       !town ||
       friendly(s, town.owner, siege.owner) ||
       !s.vertices[town.vertex].tiles.some((t) =>
         piecesAt(s, t).some(
           (u) =>
-            u.owner === siege.owner &&
-            canBesiege(s, u) &&
-            !protects(s, town, u.naval),
+            u.owner === siege.owner && canBesiege(s, u) && !hasGuard(u.naval),
         ),
       )
     ) {

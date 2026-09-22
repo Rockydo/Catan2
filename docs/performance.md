@@ -40,6 +40,36 @@ Autosaves use gzip in IndexedDB with a primary/previous-save transaction. A work
 
 Compressed and historical exports both import. Expanded saves are limited to 128 MB, including a bound during decompression. All campaign data is retained, including orders, stockpiles and pending decisions. `SAVE_PATH=/path/to/export.json npx tsx scripts/save-performance.ts` checks exact round trips and reports sizes and load timings without touching browser storage.
 
+A synthetic growth copy with 60,000 units retained the same map and towns, duplicating valid unembarked land units with unique IDs. Its 9.08 MB JSON became a 474 KB stored save and a 632 KB portable export. In disposable Chromium, import took 1.19 seconds and refresh to the campaign menu took 0.87 seconds. Both the codec and browser reload preserved the exact campaign. This tests storage and loading scale, not a complete 60,000-unit AI turn.
+
+## Worker transfers and siege checks
+
+The next comparison used the same released rules and campaigns, including the naval siege update. Both builds ran in disposable Chromium profiles with the 20 ms pacing setting, compression and autosaves enabled.
+
+| Measurement | Before | After |
+|---|---:|---:|
+| Round 31: complete AI turn, 144 orders | 26.09 s | 24.03 s |
+| Round 32 scenario: 485 orders to a human battle decision | 131.85 s | 100.20 s |
+| Round 32 scenario: worker calculation | 94.31 s | 76.09 s |
+| Round 32 scenario: full campaign requests to AI worker | 463 | 1 |
+| Round 32 scenario: main-thread AI transfer calls | 3.233 s | 0.010 s |
+| Round 32 scenario: main-thread JSON encoding | 2.634 s | 0.037 s |
+
+Round 32 starts the next Purple action phase on a private copy of the 14,695-unit export. It skips intervening players and their rolls. The measurement ends at the same battle requiring human casualties; it does not count waiting for that response as AI work. Both replays preserved the full command sequence and final state hash. The Round 32 p95 frame interval was 16.8 ms, with no long main-thread tasks in the final run. Time-bounded batches can contain different numbers of orders without changing the order sequence.
+
+The AI worker retains its last completed immutable position. A request references that position only after the UI has published it. Responses contain changed records, including explicit deletions and property ordering, rather than the full campaign. Pausing during calculation cancels the worker; pausing before a received result is displayed causes a full resynchronization from the visible position. Imported campaigns and human decisions also resynchronize. No unpublished worker result can silently advance the visible campaign.
+
+Economic batches share unchanged terrain and existing units. Commands that can mutate those records detach them first. Siege cleanup now builds one temporary occupation index after movement and checks each town's land/naval guards once, instead of scanning every unit for each attacker. These indexes do not survive the mutable operation.
+
+## Save performance contract
+
+- Compression must be lossless, with all supported historical exports still importable.
+- Saving must retain the previous valid snapshot and report failure instead of claiming success. Another tab's newer campaign must not be silently overwritten.
+- Autosaving may retain one outstanding write and one latest pending snapshot. Intermediate actions must not create an unbounded queue.
+- Compression, decompression and validation run outside the main thread. Refresh must warn while current changes are not yet saved.
+- Repeated unit validation must use indexed or linear passes. Increasing fleet size must not introduce a full-army scan per ship.
+- Performance comparisons use disposable copies and never mutate the playing browser's campaign. Changes to copying or caching must preserve command order and complete state.
+
 ## Changes
 
 - Guild planning looks up local formations instead of scanning every unit repeatedly. Original unit ordering is preserved.
@@ -56,4 +86,4 @@ Regression coverage includes nearby guild selection, changing garrisons, isolate
 
 ## Remaining work
 
-The wider performance goal remains open. Worker snapshot transfer and publication still copy or compare substantial game data. Dense-map terrain and army painting remain measurable costs even after caching town and resource artwork. Further changes must preserve complete AI decisions, game rules, visual clarity and existing saves.
+The wider performance goal remains open. Production forecasts, military planning and non-economic draft copies remain measurable AI costs. Dense-map terrain and army painting remain measurable costs even after caching town and resource artwork. Further changes must preserve complete AI decisions, game rules, visual clarity and existing saves.

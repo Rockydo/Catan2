@@ -19,57 +19,66 @@ export function chooseAIOrders(
   return planAIOrders(s, now).commands;
 }
 
-// Keep one interrupted commissioning plan across worker messages. Accept it
-// only when the entire input matches the last validated result. A new save,
-// user action, battle or worker restart safely returns to strategic planning.
-let continuation: { expected: string; intent: RecruitmentIntent } | undefined;
-
-/** The worker returns the already-validated result. The UI publishes one
- * snapshot instead of replaying and copying the world for every contract. */
-export function planAIOrders(s: Game, now = () => performance.now()) {
-  const started = now();
-  let pending =
-    continuation &&
-    continuation.expected === JSON.stringify(s) &&
-    s.phase === "economy" &&
-    !s.battle &&
-    !s.trade &&
-    !s.allianceOffer &&
-    !s.researchChoice &&
-    s.players[s.active].control !== "human"
-      ? continuation.intent
-      : undefined;
-  continuation = undefined;
-  const result = applyCommandPlan(s, (view, commands) => {
-    if (
-      commands.length &&
-      (commands.length >= 64 ||
-        now() - started >= 150 ||
-        s.phase !== "economy" ||
-        s.players[s.active].control === "human" ||
-        !routineAIOrder(commands[commands.length - 1]) ||
-        view.active !== s.active ||
-        view.phase !== "economy" ||
-        view.battle ||
-        view.trade ||
-        view.allianceOffer ||
-        view.researchChoice)
-    )
-      return undefined;
-    let next: Command | null = null;
-    if (pending) {
-      next = withPlanningFrame(view, () =>
-        recruitmentIntentOrder(view, pending!, marginalValues(view)),
-      );
-      if (!next || next.type !== "bank") pending = undefined;
-    }
-    next ??= chooseAIAction(view, (intent) => {
-      pending = intent;
+// A worker owns immutable, retained snapshots, so its continuation can use
+// identity. Ordinary callers retain the full-value guard against mutations.
+// Each worker session has independent intent and retains at most one result.
+export function createAIOrderPlanner(ownedSnapshots = false) {
+  let continuation:
+    { expected?: string; state: Game; intent: RecruitmentIntent } | undefined;
+  return function planAIOrders(s: Game, now = () => performance.now()) {
+    const started = now();
+    let pending =
+      continuation &&
+      ((ownedSnapshots && continuation.state === s) ||
+        (continuation.expected ?? JSON.stringify(continuation.state)) ===
+          JSON.stringify(s)) &&
+      s.phase === "economy" &&
+      !s.battle &&
+      !s.trade &&
+      !s.allianceOffer &&
+      !s.researchChoice &&
+      s.players[s.active].control !== "human"
+        ? continuation.intent
+        : undefined;
+    continuation = undefined;
+    const result = applyCommandPlan(s, (view, commands) => {
+      if (
+        commands.length &&
+        (commands.length >= 64 ||
+          now() - started >= 150 ||
+          s.phase !== "economy" ||
+          s.players[s.active].control === "human" ||
+          !routineAIOrder(commands[commands.length - 1]) ||
+          view.active !== s.active ||
+          view.phase !== "economy" ||
+          view.battle ||
+          view.trade ||
+          view.allianceOffer ||
+          view.researchChoice)
+      )
+        return undefined;
+      let next: Command | null = null;
+      if (pending) {
+        next = withPlanningFrame(view, () =>
+          recruitmentIntentOrder(view, pending!, marginalValues(view)),
+        );
+        if (!next || next.type !== "bank") pending = undefined;
+      }
+      next ??= chooseAIAction(view, (intent) => {
+        pending = intent;
+      });
+      return !commands.length || routineAIOrder(next) ? next : undefined;
     });
-    return !commands.length || routineAIOrder(next) ? next : undefined;
-  });
-  if (!result.ok) throw new Error(result.error ?? "Invalid AI economic order");
-  if (pending)
-    continuation = { expected: JSON.stringify(result.state), intent: pending };
-  return { commands: result.commands, state: result.state };
+    if (!result.ok)
+      throw new Error(result.error ?? "Invalid AI economic order");
+    if (pending)
+      continuation = {
+        state: result.state,
+        expected: ownedSnapshots ? undefined : JSON.stringify(result.state),
+        intent: pending,
+      };
+    return { commands: result.commands, state: result.state };
+  };
 }
+
+export const planAIOrders = createAIOrderPlanner();

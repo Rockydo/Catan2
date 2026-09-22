@@ -1,21 +1,5 @@
-import { planAIOrders } from "./ai-orders";
-import { type Game } from "./types";
-self.onmessage = (event: MessageEvent<{ state: Game; request: number }>) => {
-  try {
-    const started = performance.now();
-    const { commands, state } = planAIOrders(event.data.state);
-    self.postMessage({
-      request: event.data.request,
-      command: commands[0],
-      commands,
-      state,
-      ms: performance.now() - started,
-    });
-  } catch (error) {
-    self.postMessage({
-      request: event.data.request,
-      error: error instanceof Error ? error.message : String(error),
-      stack: error instanceof Error ? error.stack : undefined,
-    });
-  }
+import { AISession, type AIRequest } from "./ai-session";
+const session = new AISession();
+self.onmessage = (event: MessageEvent<AIRequest>) => {
+  self.postMessage(session.handle(event.data));
 };

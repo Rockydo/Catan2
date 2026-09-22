@@ -46,7 +46,8 @@ test("Grand AI reuses its worker, ignores stale replies, and cancels pending wor
         });
       }
       postMessage(message: any) {
-        if (message.state) w.aiRequests.push(message.request);
+        if (message.state || message.baseRequest !== undefined)
+          w.aiRequests.push(message.request);
         super.postMessage(message);
       }
     };
@@ -109,4 +110,86 @@ test("Grand AI reuses its worker, ignores stale replies, and cancels pending wor
   expect(new Set(requests).size).toBe(requests.length);
   expect(errors).toEqual([]);
   await page.getByRole("button", { name: "Pause AI", exact: true }).click();
+});
+
+test("pausing after a reply but before presentation resends the visible snapshot", async ({
+  page,
+}) => {
+  let s = newGame(
+    "cancel-before-publication",
+    REALM_NAMES.slice(0, 5).map((name, i) => ({
+      name,
+      control: i === 0 ? "human" : "standard",
+    })),
+  );
+  while (s.phase.startsWith("setup")) s = run(s, chooseAIAction(s));
+  s.active = 1;
+  s.phase = "roll";
+  await page.addInitScript(
+    ({ key, data }) => {
+      localStorage.setItem(key, data);
+      localStorage.setItem("catane-ai-pacing", "800");
+      const w = window as any;
+      w.posts = [];
+      w.replies = [];
+      w.workers = [];
+      const Native = window.Worker;
+      window.Worker = class extends Native {
+        ai = false;
+        constructor(url: string | URL, options?: WorkerOptions) {
+          super(url, options);
+          this.ai = String(url).includes("ai.worker");
+          if (!this.ai) return;
+          w.workers.push(this);
+          this.addEventListener("message", (e) => w.replies.push(e.data));
+        }
+        postMessage(data: any) {
+          if (this.ai)
+            w.posts.push({
+              request: data.request,
+              full: !!data.state,
+              base: data.baseRequest,
+            });
+          super.postMessage(data);
+        }
+      };
+    },
+    { key: SAVE_KEY, data: serialize(s) },
+  );
+  await page.goto("/");
+  await page.getByRole("button", { name: /Continue campaign/ }).click();
+  await expect
+    .poll(() => page.evaluate(() => (window as any).replies.length))
+    .toBe(1);
+  await page.getByRole("button", { name: "Pause AI", exact: true }).click();
+  await page.waitForTimeout(900);
+  expect(
+    await page.evaluate(
+      (key) => JSON.parse(localStorage.getItem(key)!).game.actions,
+      SAVE_KEY,
+    ),
+  ).toBe(s.actions);
+  await page.getByRole("button", { name: "Resume AI", exact: true }).click();
+  await expect
+    .poll(() => page.evaluate(() => (window as any).posts.length))
+    .toBe(2);
+  const posts = await page.evaluate(() => (window as any).posts);
+  expect(posts[1].full).toBe(true);
+  expect(posts[1].base).toBeUndefined();
+  expect(await page.evaluate(() => (window as any).workers.length)).toBe(1);
+  const expected = run(s, { type: "roll" });
+  await expect
+    .poll(() =>
+      page.evaluate(
+        (key) => JSON.parse(localStorage.getItem(key)!).game.actions,
+        SAVE_KEY,
+      ),
+    )
+    .toBe(expected.actions);
+  const saved = await page.evaluate(
+    (key) => JSON.parse(localStorage.getItem(key)!).game,
+    SAVE_KEY,
+  );
+  expect(saved.dice).toEqual(expected.dice);
+  expect(saved.production).toEqual(expected.production);
 });

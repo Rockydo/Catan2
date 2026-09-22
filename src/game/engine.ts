@@ -88,7 +88,6 @@ import {
   movableRoutes,
   expeditionSites,
   effectiveCost,
-  withPlanningFrame,
   affordable,
   sumStock,
 } from "./selectors";
@@ -364,6 +363,20 @@ function payload(c: Command) {
 export function applyCommand(state: Game, c: Command): Result {
   return commandResult(state, c, false);
 }
+const ECONOMIC_RECORDS_ONLY = new Set([
+  "bank",
+  "recruit",
+  "ship",
+  "road",
+  "route",
+  "settlement",
+  "city",
+  "wall",
+  "extension",
+  "camp",
+  "tower",
+  "guild",
+]);
 /** Plan and execute a private sequence with one copy of the campaign. Each
  * decision sees the preceding order's complete result, including coalitions.
  * The draft never escapes on failure and the caller's campaign stays intact.
@@ -374,7 +387,25 @@ export function applyCommandPlan(
 ): Result & { commands: Command[] } {
   const commands: Command[] = [];
   try {
-    let view = structuredClone(state);
+    // Routine purchases change stores, buildings and the piece dictionary,
+    // but never edit existing soldiers or terrain. Detach those records only
+    // before an action that may do so, including all unknown future commands.
+    let detached = false;
+    let view: Game = {
+      ...structuredClone({
+        ...state,
+        tiles: undefined,
+        vertices: undefined,
+        edges: undefined,
+        climatePlan: undefined,
+        pieces: undefined,
+      }),
+      tiles: state.tiles,
+      vertices: state.vertices,
+      edges: state.edges,
+      climatePlan: state.climatePlan,
+      pieces: { ...state.pieces },
+    };
     for (;;) {
       const command = choose(view, commands);
       if (!command) break;
@@ -382,6 +413,19 @@ export function applyCommandPlan(
       // before changing any draft data, just as an ordinary transaction does.
       const next = { ...view };
       payload(command);
+      if (!detached && !ECONOMIC_RECORDS_ONLY.has(command.type)) {
+        Object.assign(
+          next,
+          structuredClone({
+            tiles: next.tiles,
+            vertices: next.vertices,
+            edges: next.edges,
+            climatePlan: next.climatePlan,
+            pieces: next.pieces,
+          }),
+        );
+        detached = true;
+      }
       advanceCommand(next, command, false);
       view = { ...next };
       commands.push(command);
@@ -521,7 +565,7 @@ function advanceCommand(s: Game, c: Command, preview: boolean) {
   if (s.phase === "military") s.phase = "economy";
   s.actions++;
   execute(s, c);
-  withPlanningFrame(s, () => breakSieges(s));
+  breakSieges(s);
   eliminate(s);
   if (!preview) syncEmergencyCoalition(s);
 }

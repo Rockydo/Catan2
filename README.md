@@ -96,6 +96,20 @@ Export while an AI faction is active. The script runs the normal AI batches, val
 
 For comparisons, set `SOURCE_ROOT=/path/to/older/checkout` to use an older engine. Set `EXPECT_PATH=/path/to/previous/report.json` to require identical commands and final state. Optional `DECISIONS=60` measures a fixed number of individual decisions instead of complete worker batches; use the same mode and export on both versions. Changes to AI batch sizes can legitimately change its decision sequence, so compare complete-turn timings separately from tests that require identical decisions.
 
+To include the browser, worker transfers and autosaving in the AI measurement:
+
+```sh
+SAVE_PATH=/path/to/campaign.json GAME_URL=http://127.0.0.1:4173 LABEL=local npx tsx scripts/ai-transfer-performance.ts
+```
+
+This uses a disposable browser and stops at the turn boundary or a decision requiring the human player, such as choosing battle casualties. It reports both worker calculation time and elapsed time. `EXPECT_PATH` checks the complete command list and final state against an earlier report. Optional `AI_SEAT=2` starts that faction's action phase on a private copy for diagnosis; this skips intervening turns and dice, so it is a scenario rather than a normal turn replay.
+
+To measure compression and exact save recovery without a browser:
+
+```sh
+SAVE_PATH=/path/to/campaign.json npx tsx scripts/save-performance.ts
+```
+
 The interactive rules are built alongside the game. Their bilingual chapter source is `src/rules/chapters.json`; costs, rosters, cards and guild contracts are read from `src/game`. To save the full guide as PDF, use its print button. With the local production server running, `npm run docs:pdf` also writes both PDFs into `releases/`.
 
 `python scripts/package-release.py` packages a built copy with sources and tests. The resulting ZIP can run with Node.js without installing dependencies, because it includes `dist`. Local saves, browser profiles and test artifacts are excluded. Generated builds and release bundles are not committed to this repository.

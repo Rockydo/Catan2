@@ -164,3 +164,33 @@ it("shared path searches respect changed occupation, alliances, and thawed ice",
   s.tiles["1,0"].surface = "open";
   expect(compare()).toBeNull();
 });
+
+it("economic batches share unchanged units and detach them before later movement", () => {
+  const { s, land } = guildFixture();
+  const u = piece(s, land, 0, "heavy");
+  const before = JSON.stringify(s);
+  const purchase: Command = {
+    type: "bank",
+    give: { gold: 1 },
+    take: { grain: 1 },
+  };
+  const economy = applyCommandPlan(s, (_, orders) =>
+    orders.length ? undefined : purchase,
+  );
+  expect(economy.ok).toBe(true);
+  expect(economy.state.tiles).toBe(s.tiles);
+  expect(economy.state.pieces[u.id]).toBe(u);
+  const destination = Object.keys(s.tiles).find(
+    (id) => id !== land && pathTo(s, land, id, false, 0)?.length === 1,
+  )!;
+  expect(destination).toBeDefined();
+  const commands: Command[] = [
+    purchase,
+    { type: "move", ids: [u.id], to: destination },
+  ];
+  const moving = applyCommandPlan(s, (_, orders) => commands[orders.length]);
+  expect(moving.ok).toBe(true);
+  expect(moving.state).toEqual(run(run(s, purchase), commands[1]));
+  expect(moving.state.pieces[u.id]).not.toBe(u);
+  expect(JSON.stringify(s)).toBe(before);
+});

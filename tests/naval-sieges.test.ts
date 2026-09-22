@@ -1,4 +1,4 @@
-import { expect, it } from "vitest";
+import { expect, it, vi } from "vitest";
 import { maritimeFixture } from "./maritime-fixture";
 import { piece, run, nextOwnerTurn } from "./helpers";
 import { applyCommand } from "../src/game/engine";
@@ -152,6 +152,41 @@ it("a siege breaks when its last battery withdraws, freezes or gains a defending
     breakSieges(s);
     expect(s.sieges[`0:${enemy.id}`]).toBeUndefined();
     expect(s.pieces[escort.id]).toBeDefined();
+  }
+});
+
+it("large mixed sieges index occupation once and recheck guards after an in-place change", () => {
+  const { s, enemy, ship } = fixture("carrack", 2);
+  for (let i = 0; i < 1000; i++) piece(s, ship.tile, 0, "carrack", 2);
+  const land = s.vertices[enemy.vertex].tiles.find((id) => id !== ship.tile)!;
+  const army = piece(s, land, 0, "heavy");
+  piece(s, ship.tile, 1, "galley", 2);
+  const key = `0:${enemy.id}`;
+  s.sieges[key] = {
+    owner: 0,
+    town: enemy.id,
+    progress: 1,
+    last: 0,
+    raided: null,
+  };
+  const values = vi.spyOn(Object, "values");
+  try {
+    breakSieges(s);
+    // A defending fleet prevents the batteries from besieging, but the land
+    // army can maintain the siege. Repeated naval attackers share that check.
+    expect(s.sieges[key]).toBeDefined();
+    expect(
+      values.mock.calls.filter(([value]) => value === s.pieces),
+    ).toHaveLength(1);
+    delete s.pieces[army.id];
+    values.mockClear();
+    breakSieges(s);
+    expect(s.sieges[key]).toBeUndefined();
+    expect(
+      values.mock.calls.filter(([value]) => value === s.pieces),
+    ).toHaveLength(1);
+  } finally {
+    values.mockRestore();
   }
 });
 

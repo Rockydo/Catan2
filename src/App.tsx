@@ -1,3 +1,5 @@
+import { applySnapshotDelta } from "./game/snapshot-delta";
+import type { AIReply } from "./game/ai-session";
 import { sharePublishedSnapshot } from "./ui/publish-snapshot";
 import { routineAIOrder } from "./game/ai-protocol";
 import { terrainName } from "./game/maritime";
@@ -185,6 +187,9 @@ export default function App({
   if (game) prepareGameView(game);
   const aiWorker = useRef<Worker | null>(null);
   const aiRequest = useRef(0);
+  const aiBase = useRef<{ worker: Worker; game: Game; request: number } | null>(
+    null,
+  );
   useEffect(
     () => () => {
       aiWorker.current?.terminate();
@@ -195,7 +200,7 @@ export default function App({
   const fileInput = useRef<HTMLInputElement>(null);
   const audioRef = useRef<AudioContext | null>(null);
   const commit = useCallback(
-    (command: Command, plannedState?: Game) => {
+    (command: Command, plannedState?: Game, shared = false) => {
       const current = gameRef.current;
       if (!current || roll.locked.current) return false;
       // Worker plans have already run through the same engine. The reply is
@@ -207,7 +212,7 @@ export default function App({
         setToast(result.error ?? "That action is unavailable.");
         return false;
       }
-      result.state = sharePublishedSnapshot(current, result.state);
+      if (!shared) result.state = sharePublishedSnapshot(current, result.state);
       setSeasonPreview(undefined);
       townAlerts.capture(current, result.state);
       if (command.type === "roll") roll.begin(result.state);
@@ -335,6 +340,7 @@ export default function App({
     const stopWorker = () => {
       worker.terminate();
       if (aiWorker.current === worker) aiWorker.current = null;
+      if (aiBase.current?.worker === worker) aiBase.current = null;
     };
     setBusy(true);
     const started = performance.now();
@@ -342,7 +348,16 @@ export default function App({
     // Think while the previous action is visible. Routine economic orders do
     // not wait out the animation pacing setting before starting more work.
     pending = true;
-    worker.postMessage({ state: snapshot, request });
+    const base = aiBase.current;
+    aiBase.current = null;
+    // Retain a token only after publication, never merely after receipt. A pause
+    // during the presentation delay therefore resends the visible snapshot.
+    worker.postMessage(
+      base?.worker === worker && base.game === snapshot
+        ? { baseRequest: base.request, request, delta: true }
+        : { state: snapshot, request, delta: true },
+    );
+    let resynced = false;
     const timeout = setTimeout(() => {
       if (!cancelled) {
         setPaused(true);
@@ -351,16 +366,21 @@ export default function App({
         stopWorker();
       }
     }, 20000);
-    worker.onmessage = (event) => {
+    worker.onmessage = (event: MessageEvent<AIReply>) => {
       if (
         cancelled ||
         gameRef.current !== snapshot ||
         event.data.request !== request
       )
         return;
+      if (event.data.resync && !resynced) {
+        resynced = true;
+        worker.postMessage({ state: snapshot, request, delta: true });
+        return;
+      }
       pending = false;
       clearTimeout(timeout);
-      if (event.data.error) {
+      if (event.data.error || event.data.resync) {
         setBusy(false);
         console.error(
           "AI calculation failed",
@@ -368,10 +388,13 @@ export default function App({
         );
         stopWorker();
         setPaused(true);
-        setToast(`AI paused: ${event.data.error}`);
+        setToast(
+          `AI paused: ${event.data.error ?? "Unable to synchronize the campaign."}`,
+        );
         return;
       }
-      const commands: Command[] = event.data.commands ?? [event.data.command];
+      const commands: Command[] =
+        event.data.commands ?? (event.data.command ? [event.data.command] : []);
       const publish = () => {
         if (
           cancelled ||
@@ -380,9 +403,16 @@ export default function App({
         )
           return;
         setBusy(false);
-        const ok = event.data.state
-          ? commit(commands[commands.length - 1], event.data.state)
-          : commands.every((command) => commit(command));
+        const next = event.data.delta
+          ? applySnapshotDelta(snapshot, event.data.delta)
+          : event.data.state;
+        const ok =
+          commands.length > 0 &&
+          (next
+            ? commit(commands[commands.length - 1], next, !!event.data.delta)
+            : commands.every((command) => commit(command)));
+        if (ok && next)
+          aiBase.current = { worker, game: gameRef.current!, request };
         if (!ok) {
           setPaused(true);
           setToast(
