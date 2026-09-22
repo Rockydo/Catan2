@@ -1,3 +1,4 @@
+import { MapSprite } from "./MapSprite";
 import type { Stock } from "../game/types";
 import { localize as tx, useLocale } from "../i18n";
 import { MapLabel, MapResourceIcon } from "./MapLabel";
@@ -38,7 +39,12 @@ export const TownMiniature = memo(function TownMiniature({
     edge = shade(color, 0.4),
     light = shade(color, 1.16);
   return (
-    <g className="town-miniature" pointerEvents="none">
+    <MapSprite
+      assetKey={`town/${color}/${t.level}/${t.wall}/${Object.keys(t.extensions).length}/${selected}`}
+      bounds={{ x: -25, y: -34, width: 54, height: 59 }}
+      className="town-miniature"
+      pointerEvents="none"
+    >
       {tx(
         selected && (
           <ellipse
@@ -235,7 +241,7 @@ export const TownMiniature = memo(function TownMiniature({
           </g>
         ),
       )}
-    </g>
+    </MapSprite>
   );
 });
 
@@ -286,85 +292,107 @@ export const ProductionToken = memo(function ProductionToken({
     <g
       className={`production-token ${active ? "producing" : ""} ${dormant ? "dormant" : ""}`}
       pointerEvents="none"
+      data-number={showNumber ? number : undefined}
+      style={{ filter: "none" }}
       fontFamily="ui-sans-serif, system-ui, sans-serif"
     >
       <title>{tooltip}</title>
-      <rect
-        x={-pillWidth / 2}
-        y={showNumber ? 14 : 7}
-        width={pillWidth}
-        height="13"
-        rx="5"
-        fill={dormant ? "#e4e7df" : "url(#token-paper)"}
-        stroke={active ? "#c89c42" : "#8a795b"}
-        strokeWidth=".6"
-      />
-      {tx(
-        showNumber && (
-          <>
-            <path d="M-7 9H7V18H-7Z" fill="#fff3d7" />
-            <circle
-              cy="1"
-              r="13"
-              fill="url(#token-paper)"
-              stroke={active ? "#b67d28" : "#9c8963"}
-              strokeWidth={active ? 1.6 : 0.7}
-            />
-            <circle
-              cy="1"
-              r="11"
-              fill="none"
-              stroke="#bcaa7c"
-              strokeWidth=".4"
-            />
-            <MapLabel
-              y="5"
-              textAnchor="middle"
-              fontSize="14.5"
-              fontWeight="800"
-              fill={
-                number === 7
-                  ? "#ae3f2f"
-                  : number === 6 || number === 8
-                    ? "#8e572d"
-                    : "#34433c"
-              }
+      <MapSprite
+        assetKey={`production/${resource}/${JSON.stringify(products)}/${compact}/${number}/${showNumber}/${active}/${dormant}`}
+        bounds={{
+          x: -Math.max(pillWidth / 2, 14) - 4,
+          y: showNumber ? -16 : 3,
+          width: Math.max(pillWidth, 28) + 8,
+          height: showNumber ? 47 : 21,
+        }}
+        className="production-token-art"
+        aria-hidden="true"
+        style={{
+          filter: active
+            ? "drop-shadow(0 0 2px #f5c975aa)"
+            : "drop-shadow(0 1px 1px #21373065)",
+        }}
+      >
+        <rect
+          x={-pillWidth / 2}
+          y={showNumber ? 14 : 7}
+          width={pillWidth}
+          height="13"
+          rx="5"
+          fill={dormant ? "#e4e7df" : "url(#token-paper)"}
+          stroke={active ? "#c89c42" : "#8a795b"}
+          strokeWidth=".6"
+        />
+        {tx(
+          showNumber && (
+            <>
+              <path d="M-7 9H7V18H-7Z" fill="#fff3d7" />
+              <circle
+                cy="1"
+                r="13"
+                fill="url(#token-paper)"
+                stroke={active ? "#b67d28" : "#9c8963"}
+                strokeWidth={active ? 1.6 : 0.7}
+              />
+              <circle
+                cy="1"
+                r="11"
+                fill="none"
+                stroke="#bcaa7c"
+                strokeWidth=".4"
+              />
+              <MapLabel
+                y="5"
+                textAnchor="middle"
+                fontSize="14.5"
+                fontWeight="800"
+                fill={
+                  number === 7
+                    ? "#ae3f2f"
+                    : number === 6 || number === 8
+                      ? "#8e572d"
+                      : "#34433c"
+                }
+              >
+                {tx(number)}
+              </MapLabel>
+              {tx(
+                Array.from({ length: pips }, (_, i) => (
+                  <circle
+                    key={i}
+                    cx={(i - (pips - 1) / 2) * 2.3}
+                    cy="9"
+                    r=".72"
+                    fill={number === 7 ? "#ad4530" : "#8c754a"}
+                  />
+                )),
+              )}
+            </>
+          ),
+        )}
+        <g>
+          {products.map(([good, quantity], i) => (
+            <g
+              key={good}
+              transform={`translate(${-rowWidth / 2 + widths.slice(0, i).reduce((sum, width) => sum + width, 0) + i * productGap}, ${(showNumber ? 14 : 7) + (13 - iconSize) / 2})`}
             >
-              {tx(number)}
-            </MapLabel>
-            {tx(
-              Array.from({ length: pips }, (_, i) => (
-                <circle
-                  key={i}
-                  cx={(i - (pips - 1) / 2) * 2.3}
-                  cy="9"
-                  r=".72"
-                  fill={number === 7 ? "#ad4530" : "#8c754a"}
-                />
-              )),
-            )}
-          </>
-        ),
-      )}
+              <MapResourceIcon good={good} size={iconSize} />
+              <MapLabel
+                x={(widths[i] + iconSize + iconGap) / 2}
+                y={iconSize / 2 + numberSize * 0.36}
+                fontSize={numberSize}
+                textAnchor="middle"
+                fill="#30493f"
+              >
+                {quantity}
+              </MapLabel>
+            </g>
+          ))}
+        </g>
+      </MapSprite>
       <g className="production-resources" aria-label={productLabel} role="img">
-        {products.map(([good, quantity], i) => (
-          <g
-            key={good}
-            data-resource={good}
-            data-quantity={quantity}
-            transform={`translate(${-rowWidth / 2 + widths.slice(0, i).reduce((sum, width) => sum + width, 0) + i * productGap}, ${(showNumber ? 14 : 7) + (13 - iconSize) / 2})`}
-          >
-            <MapResourceIcon good={good} size={iconSize} />
-            <MapLabel
-              x={(widths[i] + iconSize + iconGap) / 2}
-              y={iconSize / 2 + numberSize * 0.36}
-              fontSize={numberSize}
-              textAnchor="middle"
-              fill="#30493f"
-            >
-              {quantity}
-            </MapLabel>
-          </g>
+        {products.map(([good, quantity]) => (
+          <g key={good} data-resource={good} data-quantity={quantity} />
         ))}
       </g>
     </g>

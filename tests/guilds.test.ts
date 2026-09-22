@@ -257,10 +257,11 @@ it("standing orders run after the roll, wait without spending, retain saved tier
   expect(deserialize(serialize(n))).toEqual(n);
 });
 it.each(["commanders", "navigators"] as const)(
-  "%s supply covers entire large formations once per unit across cities",
+  "AI %s supply covers entire large formations once per unit across cities",
   (kind) => {
     for (const tier of [1, 2, 3]) {
       const { s, home, enemy, land, water } = guildFixture(kind, tier);
+      s.players[0].control = "standard";
       const naval = kind === "navigators";
       const units = Array.from({ length: 40 }, () =>
         piece(s, naval ? water : land, 0, naval ? "galley" : "heavy"),
@@ -303,9 +304,10 @@ it.each(["commanders", "navigators"] as const)(
     }
   },
 );
-it("military supply rejects duplicate, new, embarked, enemy, acted and wrong-kind units", () => {
+it("AI military supply rejects duplicate, new, embarked, enemy, acted and wrong-kind units", () => {
   const { s, home, land } = guildFixture("commanders", 3),
     u = piece(s, land);
+  s.players[0].control = "standard";
   for (const patch of [
     { born: 10 },
     { carrier: "dummy" },
@@ -612,9 +614,10 @@ it("standing recipes are independent per tier, can be paused separately, and aff
   expect(n.towns[home.id].guild!.used).toBe(true);
 });
 it.each(["commanders", "navigators"] as const)(
-  "%s supplies three different formations with separate tier allowances",
+  "AI %s supplies three different formations with separate tier allowances",
   (kind) => {
     const { s, home } = guildFixture(kind, 3);
+    s.players[0].control = "standard";
     const tiles = s.vertices[home.vertex].tiles;
     for (const tile of tiles)
       s.tiles[tile].resource = kind === "commanders" ? "grain" : "water";

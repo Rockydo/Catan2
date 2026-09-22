@@ -92,8 +92,9 @@ it("AI continues a victorious attack with an adjacent raid in the same turn", ()
   expect(s.pieces[u.id].moved).toBe(2);
 });
 
-it("supply after combat restores options for a whole army without refunding spent points", () => {
+it("AI supply after combat restores options for a whole army without refunding spent points", () => {
   let { s, home, land } = guildFixture("commanders", 3);
+  s.players[0].control = "standard";
   const army = Array.from({ length: 25 }, () => piece(s, land, 0, "heavy", 2));
   const ids = army.map((u) => u.id);
   // Model one already-spent combat/movement point for the ready formation.

@@ -209,8 +209,9 @@ it.each([1, 2, 3])(
   },
 );
 
-it("Engineer tools buff a whole army once, combine with marching supplies, and never multiply with stack size or battle power", () => {
+it("AI Engineer tools buff a whole army once, combine with marching supplies, and never multiply with stack size or battle power", () => {
   let { s, home, enemy, land } = guildFixture("engineers", 3);
+  s.players[0].control = "standard";
   home.guilds = [
     home.guild!,
     { kind: "commanders", tier: 3, born: 0, used: false, auto: false },

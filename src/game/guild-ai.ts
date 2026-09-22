@@ -36,7 +36,8 @@ import {
   blockAt,
   besieged,
   ownTowns,
-  ownPieces,
+  ownPiecesAtVertex,
+  planningValue,
   points,
   recipePayment,
   siegeRequirement,
@@ -176,11 +177,8 @@ function suppliedFormation(s: Game, town: Town, planningConstruction = false) {
   // Construction opens next turn: newly recruited or already moved formations
   // still justify a depot. Actual orders keep strict readiness validation.
   const units = planningConstruction
-    ? ownPieces(s, town.owner).filter(
-        (u) =>
-          u.naval === naval &&
-          !u.carrier &&
-          s.vertices[town.vertex].tiles.includes(u.tile),
+    ? ownPiecesAtVertex(s, town.vertex, town.owner).filter(
+        (u) => u.naval === naval,
       )
     : guildUnits(s, town);
   if (!units.length) return undefined;
@@ -189,17 +187,23 @@ function suppliedFormation(s: Game, town: Town, planningConstruction = false) {
     if (!groups.has(u.tile)) groups.set(u.tile, []);
     groups.get(u.tile)!.push(u);
   }
-  const enemies = Object.values(s.towns).filter((t) => warTarget(s, t.owner));
-  const targets = naval
-    ? [
-        ...Object.values(s.pieces)
-          .filter((u) => u.naval && warTarget(s, u.owner))
-          .map((u) => u.tile),
-        ...enemies
-          .flatMap((t) => landAtVertex(s, t.vertex).flatMap(neighbors))
-          .filter((id) => canOccupy(s.tiles[id], true)),
-      ]
-    : enemies.flatMap((t) => landAtVertex(s, t.vertex));
+  const enemies = planningValue(s, `guildEnemies/${s.active}`, () =>
+    Object.values(s.towns).filter((t) => warTarget(s, t.owner)),
+  );
+  const targets = planningValue(s, `guildTargets/${s.active}/${naval}`, () => [
+    ...new Set(
+      naval
+        ? [
+            ...Object.values(s.pieces)
+              .filter((u) => u.naval && warTarget(s, u.owner))
+              .map((u) => u.tile),
+            ...enemies
+              .flatMap((t) => landAtVertex(s, t.vertex).flatMap(neighbors))
+              .filter((id) => canOccupy(s.tiles[id], true)),
+          ]
+        : enemies.flatMap((t) => landAtVertex(s, t.vertex)),
+    ),
+  ]);
   let best: { ids: string[]; value: number } | undefined;
   for (const [tile, group] of groups) {
     if (group.every((u) => collector(u) || isSettler(u.kind))) continue;
@@ -224,7 +228,7 @@ function suppliedFormation(s: Game, town: Town, planningConstruction = false) {
         best = { ids: selected.map((u) => u.id), value };
       continue;
     }
-    const needsMovement = [...new Set(targets)].some((to) => {
+    const needsMovement = targets.some((to) => {
       const distance = planningDistance(s, tile, to, naval, town.owner);
       return Number.isFinite(distance) && distance > remaining;
     });

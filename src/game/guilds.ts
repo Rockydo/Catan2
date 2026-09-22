@@ -22,6 +22,7 @@ import {
   besieged,
   blockAt,
   ownPieces,
+  ownPiecesAtVertex,
   ownTowns,
   ready,
   points,
@@ -434,7 +435,7 @@ export function guildUnits(s: Game, town: Town): Piece[] {
               (tile) => distance(tile, u.tile) <= extraReach,
             ),
         )
-      : ownPieces(s, town.owner).filter((u) => !u.carrier && s.vertices[town.vertex].tiles.includes(u.tile));
+      : ownPiecesAtVertex(s, town.vertex, town.owner);
   return nearby.filter(
     (u) =>
       u.naval === naval &&

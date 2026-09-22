@@ -2297,6 +2297,8 @@ function townOperation(s: Game): Command | null {
 function collectorMove(s: Game): Command | null {
   const values = marketValues(s);
   const dangerCache = new Map<string, boolean>();
+  const harvestScores = new Map<string, number>();
+  const staying = new Set<string>();
   const threats = Object.values(s.pieces)
     .filter((v) => !friendly(s, v.owner, s.active) && points(v) > 0)
     .map((v) => ({ unit: v, movement: speed(v) }));
@@ -2315,7 +2317,28 @@ function collectorMove(s: Game): Command | null {
     return dangerCache.get(key)!;
   }
   for (const u of ownPieces(s).filter((u) => collector(u) && ready(s, u))) {
+    if (speed(u) + u.bonus - u.moved < 1) continue;
+    // Identical collectors on the same hex have the same legal destinations
+    // and harvest choices. Keep their original order, but don't reassess a
+    // stationary formation once for every individual merchant.
+    const position = JSON.stringify([
+      u.kind,
+      u.tier,
+      u.tile,
+      u.naval,
+      u.coverage,
+      u.bonus - u.moved,
+    ]);
+    if (staying.has(position)) continue;
     const score = (tile: string) => {
+      const key = JSON.stringify([
+        u.kind,
+        u.tier,
+        tile,
+        tile === u.tile ? u.coverage : undefined,
+      ]);
+      const cached = harvestScores.get(key);
+      if (cached !== undefined) return cached;
       const projected = {
         ...u,
         tile,
@@ -2331,7 +2354,9 @@ function collectorMove(s: Game): Command | null {
             ),
         0,
       );
-      return output - (threatened(tile, u.naval) ? 20 : 0);
+      const result = output - (threatened(tile, u.naval) ? 20 : 0);
+      harvestScores.set(key, result);
+      return result;
     };
     const current = score(u.tile),
       targets = moveTargets(s, [u.id]);
@@ -2348,6 +2373,7 @@ function collectorMove(s: Game): Command | null {
       .sort((a, b) => b.score - a.score)[0];
     if (best && best.score > current + 0.08)
       return { type: "move", ids: [u.id], to: best.tile };
+    staying.add(position);
   }
   return null;
 }

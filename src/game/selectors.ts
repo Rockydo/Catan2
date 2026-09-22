@@ -61,6 +61,7 @@ interface PlanningIndex {
   towns: Map<number, Town[]>;
   vertices: Map<string, Town>;
   pieces: Map<number, Piece[]>;
+  pieceOrder: Map<Piece, number>;
   tiles: Map<string, Piece[]>;
   stocks: Map<number, Stock>;
   nearest: Map<string, Town | undefined>;
@@ -134,6 +135,21 @@ export const piecesAt = (s: Game, tile: string, naval?: boolean) => {
       (naval === undefined || u.naval === naval),
   );
 };
+/** Nearby field units in their original campaign order. Guilds inspect the
+ * same city repeatedly; do not scan every soldier in the empire each time. */
+export function ownPiecesAtVertex(s: Game, vertex: string, owner = s.active) {
+  const index = readIndex(s);
+  if (index?.source !== s)
+    return ownPieces(s, owner).filter(
+      (u) => !u.carrier && s.vertices[vertex].tiles.includes(u.tile),
+    );
+  return planningValue(s, `localPieces/${owner}/${vertex}`, () =>
+    s.vertices[vertex].tiles
+      .flatMap((tile) => index.tiles.get(tile) ?? [])
+      .filter((u) => u.owner === owner)
+      .sort((a, b) => index.pieceOrder.get(a)! - index.pieceOrder.get(b)!),
+  ).slice();
+}
 export const hostileAt = (
   s: Game,
   tile: string,
@@ -733,6 +749,7 @@ function createPlanningIndex(source: Game): PlanningIndex {
     towns: new Map(),
     vertices: new Map(),
     pieces: new Map(),
+    pieceOrder: new Map(),
     tiles: new Map(),
     stocks: new Map(),
     nearest: new Map(),
@@ -755,6 +772,7 @@ function createPlanningIndex(source: Game): PlanningIndex {
   for (const towns of index.towns.values())
     towns.sort((a, b) => Number(a.id.slice(1)) - Number(b.id.slice(1)));
   for (const unit of Object.values(source.pieces)) {
+    index.pieceOrder.set(unit, index.pieceOrder.size);
     if (!index.pieces.has(unit.owner)) index.pieces.set(unit.owner, []);
     index.pieces.get(unit.owner)!.push(unit);
     if (!unit.carrier) {

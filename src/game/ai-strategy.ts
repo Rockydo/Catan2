@@ -323,18 +323,15 @@ export function townGuardPower(
   t: Town,
   excluded: string[] = [],
 ): number {
-  const calculate = () => {
+  const guards = planningValue(s, `guardPieces/${t.id}`, () => {
     const tiles = landAtVertex(s, t.vertex);
-    const leaving = new Set(excluded);
     return tiles
       .flatMap((tile) => piecesAt(s, tile, false))
       .filter((u) => friendly(s, u.owner, t.owner))
-      .filter((u) => !leaving.has(u.id))
-      .reduce((n, u) => n + power(s, [u], u.tile), 0);
-  };
-  return excluded.length
-    ? calculate()
-    : planningValue(s, `guard/${t.id}`, calculate);
+      .map((u) => ({ id: u.id, power: power(s, [u], u.tile) }));
+  });
+  const leaving = new Set(excluded);
+  return guards.reduce((n, u) => n + (leaving.has(u.id) ? 0 : u.power), 0);
 }
 /** Maintain a delaying guard without spending an entire economy trying to
  * match a stack far beyond the campaign budget. Transport and raids still need funding. */
@@ -361,38 +358,77 @@ export function leavesTownExposed(
   defeated: string[] = [],
 ): boolean {
   if (group[0].naval) return false;
-  return ownTowns(s).some((t) => {
+  const near =
+    planningValue(s, `townsNearArmy/${s.active}`, () => {
+      const byTile = new Map<string, Town[]>();
+      for (const town of ownTowns(s))
+        for (const tile of landAtVertex(s, town.vertex)) {
+          if (!byTile.has(tile)) byTile.set(tile, []);
+          byTile.get(tile)!.push(town);
+        }
+      return byTile;
+    }).get(group[0].tile) ?? [];
+  // The destination only determines which nearby towns the army still covers.
+  // Assess each town once for this detachment, not once per possible move.
+  const groups = planningValue(
+    s,
+    "departureRisk",
+    () =>
+      new WeakMap<Piece[], { members: Piece[]; risks: Map<string, boolean> }>(),
+  );
+  let cached = groups.get(group);
+  // Transport planners shrink detachments in place while choosing a guard.
+  // Array identity alone would keep the assessment for the larger army.
+  if (
+    !cached ||
+    cached.members.length !== group.length ||
+    cached.members.some((u, i) => u !== group[i])
+  ) {
+    cached = { members: group.slice(), risks: new Map() };
+    groups.set(group, cached);
+  }
+  const risks = cached.risks;
+  const defeatedKey = defeated.join(","),
+    defeatedIds = new Set(defeated);
+  let leaving: string[] | undefined;
+  return near.some((t) => {
     const tiles = landAtVertex(s, t.vertex);
-    if (!tiles.includes(group[0].tile) || (to && tiles.includes(to)))
-      return false;
-    const threats = townThreats(s, t).filter(
-      (u) => !defeated.includes(u.id) && warTarget(s, u.owner, t.owner),
-    );
-    const danger = threatPower(s, threats, tiles);
-    const remaining = townGuardPower(
-      s,
-      t,
-      group.map((u) => u.id),
-    );
-    if (danger <= remaining) return false;
-    const current = townGuardPower(s, t);
-    if (emergencyTarget(s, t.owner) !== undefined)
-      return (
-        remaining < Math.min(danger, Math.max(1, Math.min(6, current * 0.2)))
+    if (to && tiles.includes(to)) return false;
+    const key = `${t.id}/${defeatedKey}`;
+    if (risks.has(key)) return risks.get(key)!;
+    const result = () => {
+      const threats = townThreats(s, t).filter(
+        (u) => !defeatedIds.has(u.id) && warTarget(s, u.owner, t.owner),
       );
-    // If even the full garrison cannot hold, hoarding every unit cannot save
-    // it. Keep a delaying guard and allow counter-raids against the leader.
-    // A defensible town still requires enough troops to match the real threat.
-    const survivalThreat = threats.some(
-      (u) => leaderPressure(s, u.owner, t.owner) >= 1.5,
-    );
-    if (
-      survivalThreat &&
-      danger > current * (s.players[t.owner].turns >= 12 ? 1.15 : 1.3) &&
-      remaining >=
-        Math.max(1, current * (s.players[t.owner].turns >= 12 ? 0.15 : 0.25))
-    )
-      return false;
-    return true;
+      const danger = threatPower(s, threats, tiles);
+      const remaining = townGuardPower(
+        s,
+        t,
+        (leaving ??= group.map((u) => u.id)),
+      );
+      if (danger <= remaining) return false;
+      const current = townGuardPower(s, t);
+      if (emergencyTarget(s, t.owner) !== undefined)
+        return (
+          remaining < Math.min(danger, Math.max(1, Math.min(6, current * 0.2)))
+        );
+      // If even the full garrison cannot hold, hoarding every unit cannot save
+      // it. Keep a delaying guard and allow counter-raids against the leader.
+      // A defensible town still requires enough troops to match the real threat.
+      const survivalThreat = threats.some(
+        (u) => leaderPressure(s, u.owner, t.owner) >= 1.5,
+      );
+      if (
+        survivalThreat &&
+        danger > current * (s.players[t.owner].turns >= 12 ? 1.15 : 1.3) &&
+        remaining >=
+          Math.max(1, current * (s.players[t.owner].turns >= 12 ? 0.15 : 0.25))
+      )
+        return false;
+      return true;
+    };
+    const exposed = result();
+    risks.set(key, exposed);
+    return exposed;
   });
 }

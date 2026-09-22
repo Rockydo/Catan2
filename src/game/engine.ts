@@ -402,7 +402,8 @@ export function applyCommandPlan(
 /** Full rule validation for AI previews, without copying read-only map geometry.
  * Expeditions and Woods changes retain a fully isolated world copy. End-turn
  * and surrender previews also isolate sea tiles at possible season boundaries.
- * All mutable campaign data still gets cloned; this never publishes the preview.
+ * Routine economic orders copy only the records their real rules may change.
+ * This never publishes the preview.
  */
 export function canApplyCommand(state: Game, c: Command): boolean {
   return commandResult(state, c, true).ok;
@@ -415,9 +416,16 @@ function commandResult(state: Game, c: Command, preview: boolean): Result {
     payload(c);
     const localOrder =
       preview &&
-      ["recruit", "ship", "city", "wall", "extension", "guild"].includes(
-        c.type,
-      );
+      [
+        "recruit",
+        "ship",
+        "city",
+        "wall",
+        "extension",
+        "guild",
+        "bank",
+        "guild-order",
+      ].includes(c.type);
     const s: Game = localOrder
       ? localOrderDraft(state, c)
       : preview && !["expedition", "woods-choice"].includes(c.type)
@@ -465,9 +473,22 @@ function commandResult(state: Game, c: Command, preview: boolean): Result {
   }
 }
 /** These orders change only the active owner's stores/vouchers, the selected
- * town, newly recruited pieces and log. Copy the selected town deeply for guild
- * and workshop upgrades. This private draft is never used for real orders. */
+ * town, newly recruited or supplied pieces and log. Copy the selected town
+ * deeply for guild and workshop changes. This draft is never published. */
 function localOrderDraft(state: Game, command: Command): Game {
+  let pieces = state.pieces;
+  if (["recruit", "ship", "guild-order"].includes(command.type)) {
+    pieces = { ...pieces };
+    if (command.type === "guild-order") {
+      // Supply applies to the entire selected formation, including soldiers not
+      // explicitly listed in the order. Only their scalar bonuses can change.
+      const tile = state.pieces[command.ids?.[0] ?? ""]?.tile;
+      if (tile)
+        for (const unit of Object.values(pieces))
+          if (unit.owner === state.active && unit.tile === tile)
+            pieces[unit.id] = { ...unit };
+    }
+  }
   return {
     ...state,
     towns: Object.fromEntries(
@@ -485,7 +506,7 @@ function localOrderDraft(state: Game, command: Command): Game {
         ? { ...player, bonuses: structuredClone(player.bonuses) }
         : player,
     ),
-    pieces: { ...state.pieces },
+    pieces,
     events: [...state.events],
   };
 }

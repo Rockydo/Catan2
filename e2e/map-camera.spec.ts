@@ -182,11 +182,11 @@ test("camera drag, anchored wheel zoom, fit, resize and keyboard selection stay 
   expect(patterns.length).toBeLessThan(40);
   await page.getByRole("button", { name: "Hide dice numbers" }).click();
   await expect(
-    page.locator(".terrain-map .production-token circle"),
+    page.locator(".terrain-map .production-token[data-number]"),
   ).toHaveCount(0);
   await page.getByRole("button", { name: "Show dice numbers" }).click();
   await expect(
-    page.locator(".terrain-map .production-token circle").first(),
+    page.locator(".terrain-map .production-token[data-number]").first(),
   ).toBeVisible();
   await page.screenshot({
     path: `test-artifacts/map-camera-${test.info().project.name}.png`,
