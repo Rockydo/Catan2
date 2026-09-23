@@ -139,6 +139,10 @@ try {
   const originalSave = await browserSave(page);
   const cdp = await page.context().newCDPSession(page);
   await cdp.send("Performance.enable");
+  if (process.env.PROFILE_CAMERA) {
+    await cdp.send("Profiler.enable");
+    await cdp.send("Profiler.start");
+  }
   if (process.env.TRACE_CAMERA)
     await cdp.send("Tracing.start", {
       categories:
@@ -229,6 +233,10 @@ try {
     });
   }
   const saved = await browserSave(page);
+  if (process.env.PROFILE_CAMERA) {
+    const { profile } = await cdp.send("Profiler.stop");
+    writeFileSync(`${output}.cpuprofile`, JSON.stringify(profile));
+  }
   if (process.env.TRACE_CAMERA) {
     const done = new Promise<string>((resolve) =>
       cdp.once("Tracing.tracingComplete", (data) => resolve(data.stream!)),

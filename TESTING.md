@@ -1,5 +1,10 @@
 # Release verification
 
+## Final requested performance check: 2026-09-23
+
+- The deployed renderer remains `e063aeb`. A final hardware-backed 2,000-tile navigation profile preserves the complete campaign and reports no browser errors. Its profile identifies shader compilation/status waits and replacement of temporary vector artwork as remaining startup costs. Evidence: `test-artifacts/camera-startup-profile-growth2000.{json,cpuprofile,trace.json}`.
+- `PROFILE_CAMERA=1` now records a CPU profile in the existing disposable-browser diagnostic. No game or save behavior changes in this final check. At the user's request, further optimization work stops here; the earlier startup limitations remain documented rather than claimed resolved.
+
 ## Dense-map GPU terrain and shared production badges: 2026-09-23
 
 - Maps with at least 800 tiles can draw their existing terrain and production artwork through WebGL 2. The interactive SVG stays in place. Camera frames update only the viewport and draw two instanced passes; they do not read tile DOM or regenerate artwork. The canvas sits outside the transformed SVG layer, so long drags cannot expose the edge of a cached viewport. Smaller maps retain the prepared SVG renderer.
