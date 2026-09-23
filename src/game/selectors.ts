@@ -94,10 +94,22 @@ interface PlanningIndex {
 }
 let planningIndex: PlanningIndex | undefined;
 const viewIndexes = new WeakMap<Game, PlanningIndex>();
+// Published economic orders often share the entire immutable troop dictionary.
+// Its indexes contain no campaign reference, so they can survive such orders
+// without retaining old towns, terrain, diplomacy or snapshots. Mutable engine
+// scopes deliberately never consult this cache.
+const publishedPieceReads = new WeakMap<Game["pieces"], PieceReadIndex>();
 /** Opt in only after a game snapshot is published to the UI. It must never be
  * mutated afterwards. New engine results and imported saves have new identities. */
 export function prepareGameView(s: Game): void {
-  if (!viewIndexes.has(s)) viewIndexes.set(s, createPlanningIndex(s));
+  if (!viewIndexes.has(s)) {
+    let troops = publishedPieceReads.get(s.pieces);
+    if (!troops) {
+      troops = createPieceReadIndex(s.pieces);
+      publishedPieceReads.set(s.pieces, troops);
+    }
+    viewIndexes.set(s, createPlanningIndex(s, undefined, undefined, troops));
+  }
   prepareWorldView(s);
 }
 function readIndex(s: Game): PlanningIndex | undefined {

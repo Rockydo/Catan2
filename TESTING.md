@@ -1,5 +1,13 @@
 # Release verification
 
+## Reuse of unchanged published armies: 2026-09-23
+
+- Published snapshots now weakly share troop lists and their owner, tile, passenger, collector, movement and pure troop-value indexes by immutable roster identity. Economic orders no longer rebuild these indexes. The shared object retains no campaign, town or terrain state. New roster dictionaries rebuild every index; mutable engine and AI planning scopes never consult this cache.
+- Five new regressions cover lazy scans across 20 snapshots, fresh stocks/towns/terrain/diplomacy, worker deltas that move/recruit/remove/reorder/capture/strand troops and change passengers, mutable scope isolation, and actual bank/recruitment commands against frozen inputs. All 1,803 unit tests in 137 files pass.
+- Three bounded 240,000-unit Chromium replays each show four main-thread long tasks before this change and one after it. All five AI commands and the complete final campaign match exactly in every run. In the separate profile, troop enumeration self time fell from about 123 to 60 ms; snapshot comparison and record copying remain significant. This reduces pauses during publication, not the AI's search depth or decision budget.
+- The full Round 32 replay preserves all 485 orders and its final-state hash. It completes at the same human decision in 8.07 seconds, with no long tasks or browser errors and frame-time p95 of 16.8 ms. This does not establish an improvement in total AI thinking time. Reports use `ai-transfer-published-read-*` and the existing `scripts/ai-transfer-performance.ts` diagnostic. Tests use exported copies and disposable profiles, leaving the playing campaign untouched.
+- All 87 focused browser checks pass across Chromium, Firefox and mobile Chromium, covering army panels, selection, faction scores, camera controls, large saves, worker reuse, bulk orders and upload cancellation. The deployed build also passes 11 Chromium checks and all 12 HTTP checks. TypeScript, build, formatting and whitespace validation pass. Old hashed assets are retained for already-open games.
+
 ## Responsive initial AI transfers: 2026-09-23
 
 - Published snapshots above 16,384 troops reach the AI worker in 2,048-unit chunks. The sender yields after roughly 6 ms or eight packets, while smaller snapshots and published-state continuations keep their direct path. The worker receives the complete ordered roster before planning. This changes message delivery, not AI priorities, search depth or action budgets.

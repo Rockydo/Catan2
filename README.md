@@ -168,6 +168,8 @@ This uses a disposable browser and stops at the turn boundary or a decision requ
 
 Initial AI uploads above 16,384 troops use chunks of at most 2,048 units. The interface yields between short groups of messages, so map input and Pause can run while the snapshot is sent. The worker plans only after the entire snapshot arrives. Published-state tokens still handle subsequent orders. The transfer diagnostic reports the longest individual posting call, upload duration and overlapping long tasks separately from AI thinking.
 
+Published snapshots also share their troop indexes when the roster has not changed. Economic orders can update towns and resources without rescanning every army. Changes to units rebuild the indexes; terrain, diplomacy, production and town calculations still use the current campaign. Mutable engine and AI planning scopes do not read this UI cache.
+
 Set `BATCH_LIMIT=1` to isolate a slow first worker batch without playing the rest of the turn. The normal 20-second worker timeout remains enabled. The report includes autosave transfer time and counts full versus incremental save messages.
 
 The report also separates main-thread script, layout and style work. Set `PROFILE_UI=1` to write a Chrome `.cpuprofile` alongside it. Profiling adds overhead, so use a separate run when comparing timings.
