@@ -64,6 +64,7 @@ interface PlanningIndex {
   vertexOrder: Map<string, number>;
   pieces: Map<number, Piece[]>;
   pieceOrder: Map<Piece, number>;
+  passengers: Map<string, Piece[]>;
   tiles: Map<string, Piece[]>;
   stocks: Map<number, Stock>;
   nearest: Map<string, Town | undefined>;
@@ -121,6 +122,36 @@ export const ownPieces = (s: Game, p = s.active) => {
     ? (index.pieces.get(p) ?? []).slice()
     : allPieces(s).filter((u) => u.owner === p);
 };
+/** Passenger lists preserve global unit order, independent of ship selection
+ * order. Unregistered mutable drafts read current records on every call. */
+export function passengersOn(s: Game, carriers: readonly string[]): Piece[] {
+  if (!carriers.length) return [];
+  const selected = new Set(carriers),
+    index = readIndex(s);
+  if (index?.source.pieces !== s.pieces)
+    return allPieces(s).filter((u) => !!u.carrier && selected.has(u.carrier));
+  const result: Piece[] = [];
+  let occupied = 0;
+  for (const id of selected) {
+    const passengers = index.passengers.get(id);
+    if (!passengers?.length) continue;
+    occupied++;
+    for (const unit of passengers) result.push(unit);
+  }
+  if (occupied > 1) {
+    const order = index.pieceOrder;
+    result.sort((a, b) => order.get(a)! - order.get(b)!);
+  }
+  return result;
+}
+export function passengerCount(s: Game, carrier: string): number {
+  const index = readIndex(s);
+  if (index?.source.pieces === s.pieces)
+    return index.passengers.get(carrier)?.length ?? 0;
+  let count = 0;
+  for (const unit of allPieces(s)) if (unit.carrier === carrier) count++;
+  return count;
+}
 export const inventory = (s: Game, p = s.active): Stock => {
   const index = readIndex(s);
   const cache = index?.source.towns === s.towns ? index.stocks : undefined;
@@ -895,6 +926,7 @@ function createPlanningIndex(
   let vertexOrder: PlanningIndex["vertexOrder"] | undefined;
   let pieces: PlanningIndex["pieces"] | undefined;
   let pieceOrder: PlanningIndex["pieceOrder"] | undefined;
+  let passengers: PlanningIndex["passengers"] | undefined;
   let tiles: PlanningIndex["tiles"] | undefined;
   let towerSupport: PlanningIndex["towerSupport"] | undefined;
   return {
@@ -940,6 +972,18 @@ function createPlanningIndex(
       return (pieceOrder ??= new Map(
         unitRecords().map((unit, i) => [unit, i]),
       ));
+    },
+    get passengers() {
+      if (shared) return shared.passengers;
+      if (!passengers) {
+        passengers = new Map();
+        for (const unit of unitRecords()) {
+          if (!unit.carrier) continue;
+          if (!passengers.has(unit.carrier)) passengers.set(unit.carrier, []);
+          passengers.get(unit.carrier)!.push(unit);
+        }
+      }
+      return passengers;
     },
     get tiles() {
       if (shared) return shared.tiles;

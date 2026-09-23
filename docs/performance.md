@@ -542,3 +542,25 @@ The accompanying AI cleanup skips market analysis when no collector can move. A 
 All 1,494 unit tests and 33 browser scenarios passed. After the final validation change, all unit tests and all 21 storage browser scenarios passed again. Browser checks cover Chromium, Firefox and the mobile viewport, including bulk recruitment, refresh, compact exports, old imports, storage quota fallback, corrupt-primary recovery, competing tabs, coalesced writes and stale worker bases. All checks used disposable copies. The playing campaign was not opened or modified.
 
 The local deployment passed all 12 production HTTP checks and nine additional Chromium storage/worker scenarios. Earlier hashed assets remain available to already-open sessions. Campaigns adopt the smaller format on their next save or export after loading the update. The broader performance goal remains active.
+
+## Indexed military objectives and fleet passengers
+
+Military target scoring now builds local town, camp and deployment indexes within one read-only decision. Army variants share the unchanged facts about each target: defending forces, neighboring helpers, stored goods and town defenses. Formation-specific siege power and movement remain separate. Emergency-coalition commitments group units with the same position and orders, count each group once, and exclude the moving detachment. Scores use the same arithmetic and policies as before. These indexes are discarded after the decision.
+
+Fleet planning now indexes passengers once per immutable troop snapshot. Counting occupied berths no longer scans the full army for every ship. Selecting several carriers restores their passengers in the original global unit order, even when the carriers were selected in another order. Mutable drafts continue to read their current records, and the cache is shared only where troop records are unchanged.
+
+| Workload | Before | After | Exact comparison |
+| --- | ---: | ---: | --- |
+| Round 31 export, complete AI turn | 14.09 s | 12.51 s | 144 orders and final state |
+| Round 32 export, through the human casualty decision | 21.69 s | 21.20 s | 485 orders and final state |
+| Growth map, 2,000 tiles and 1,000 towns, first 60 decisions | 13.81 s | 12.44 s | 60 orders and final state |
+
+The Round 31 replay improved by about 11%, and the growth-map sample by about 10%. Round 32 was only slightly faster. A second intermediate growth run took 12.47 seconds. These are local samples of different workloads, not fixed gains for every campaign. Browser replays retained approximately 16.8 ms frame p95, with no long main-thread tasks or errors.
+
+In the sampled 60-decision CPU profiles, objective scoring fell from about 1.41 seconds to 0.07 seconds, including the new index construction. This is the time for target scoring, not total AI planning. Economic planning and other military operations still account for most of the remaining turn time.
+
+Regression tests compare every target weight with the original scanning policy across ordinary wars, alliances, emergency coalitions, ships, stranded units, campaign orders, siege equipment and changed positions. A repeated-stack case checks that the coalition is indexed once. Passenger tests cover selection order, duplicate ship selections, shared frames, mutable drafts, boarding, disembarking, capture and removal. The independent planning audit retained all 7,520 projects and military decisions across 96 scenarios; all 96 trade comparisons also matched.
+
+All 1,498 unit tests and 111 browser scenarios passed. Browser coverage spans Chromium, Firefox and mobile, including guilds, force selection, transport shortcuts, coastal sieges, seasonal movement, forced thaw landings, worker continuation and large-save recovery. Tests and replays used disposable copies. The player's live campaign was not opened or modified.
+
+The deployed build passed all 12 production HTTP checks and 10 additional Chromium transport, worker and storage scenarios. Earlier hashed assets remain available to already-open sessions. The broader performance goal remains active.

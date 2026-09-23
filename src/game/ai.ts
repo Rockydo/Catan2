@@ -9,6 +9,7 @@ import {
 } from "./ai-recruitment";
 import { bankOrderToward } from "./ai-bank";
 import { cachedMilitaryWait } from "./ai-maneuvers";
+import { militaryObjectiveScorer } from "./ai-objectives";
 import { colonistAction, colonistProjects } from "./ai-colonization";
 import {
   seasonalDestinationSafe,
@@ -114,6 +115,8 @@ import {
 import {
   ownTowns,
   ownPieces,
+  passengerCount,
+  passengersOn,
   inventory,
   income,
   probability,
@@ -2612,7 +2615,7 @@ function chooseManeuver(s: Game, emergency: boolean): Command {
           (n, u) =>
             n +
             shipStats(u.kind as ShipClass, u.tier).capacity -
-            allPieces(s).filter((v) => v.carrier === u.id).length,
+            passengerCount(s, u.id),
           0,
         );
         const boarding: Piece[] = [];
@@ -2653,9 +2656,7 @@ function chooseManeuver(s: Game, emergency: boolean): Command {
         }
       }
     } else if (units[0].naval && !emergency) {
-      const passengers = allPieces(s).filter(
-        (u) => u.carrier && ids.includes(u.carrier),
-      );
+      const passengers = passengersOn(s, ids);
       if (passengers.length) {
         const land = neighbors(tile).filter(
           (t) =>
@@ -2690,6 +2691,12 @@ function chooseManeuver(s: Game, emergency: boolean): Command {
       }
     }
   }
+  const scoreObjectives = militaryObjectiveScorer(
+    s,
+    enemyTowns,
+    allies,
+    denialAt,
+  );
   const choices: { action: Command; score: number }[] = [];
   for (const original of groups) {
     const variants = [original];
@@ -2794,17 +2801,15 @@ function chooseManeuver(s: Game, emergency: boolean): Command {
       )
         continue;
       const targets = moveTargets(s, ids);
+      const passengers = naval ? passengersOn(s, ids) : [];
       const blockade =
         naval &&
         group.some(
           (u) => shipStats(u.kind as ShipClass, u.tier).capacity === 0,
         ) &&
-        !allPieces(s).some((u) => u.carrier && ids.includes(u.carrier));
+        !passengers.length;
       let objectives: string[] = [];
       if (naval) {
-        const passengers = allPieces(s).filter(
-          (u) => u.carrier && ids.includes(u.carrier),
-        );
         objectives = passengers.length
           ? invasionCoasts(s).filter((w) =>
               neighbors(w).some(
@@ -2974,93 +2979,7 @@ function chooseManeuver(s: Game, emergency: boolean): Command {
         );
       });
       const weights = new Map<string, number>();
-      const objectiveWeight = (target: string) => {
-        if (weights.has(target)) return weights.get(target)!;
-        const near = naval ? neighbors(target) : [target];
-        let value = maxValue([
-          1,
-          Math.min(5, denialAt(target, group) * 2),
-          ...enemyTowns
-            .filter((t) =>
-              landAtVertex(s, t.vertex).some((id) => near.includes(id)),
-            )
-            .map((t) => {
-              const helpers = landAtVertex(s, t.vertex)
-                .flatMap((id) => piecesAt(s, id, false))
-                .filter(
-                  (u) =>
-                    u.owner !== s.active &&
-                    u.owner !== t.owner &&
-                    friendly(s, u.owner, s.active),
-                );
-              return (
-                leaderPressure(s, t.owner) *
-                (protects(s, t, naval)
-                  ? 0.2
-                  : (2.5 + Math.min(3, sumStock(t.stock) / 20)) /
-                    (1 + siegeRequirement(s, t, group) * 0.35)) *
-                (1 + 0.8 / Math.max(1, ownTowns(s, t.owner).length)) *
-                (1 +
-                  Math.min(2, new Set(helpers.map((u) => u.owner)).size) * 0.3)
-              );
-            }),
-          ...Object.values(s.routes)
-            .filter(
-              (r) =>
-                warTarget(s, r.owner) &&
-                Object.keys(r.camps).some((id) => near.includes(id)),
-            )
-            .map((r) => leaderPressure(s, r.owner)),
-          ...combatantsAt(s, target, naval)
-            .filter((u) => warTarget(s, u.owner) && collector(u))
-            .map(
-              (u) =>
-                (2 + u.tier + Math.max(0, u.tier - 2)) *
-                leaderPressure(s, u.owner),
-            ),
-          ...allies
-            .filter((t) => landAtVertex(s, t.vertex).includes(target))
-            .map((t) => {
-              const danger = threatPower(
-                s,
-                townThreats(s, t),
-                landAtVertex(s, t.vertex),
-              );
-              return danger > townGuardPower(s, t) &&
-                distance(origin, target) <= maxValue(group.map(speed)) * 2
-                ? 3
-                : 0;
-            }),
-        ]);
-        if (emergency) {
-          // Spread across productive fronts already occupied by allies. An
-          // uncovered target keeps its full value; combat strength is not pooled.
-          const front = new Set([...near, ...near.flatMap(neighbors)]);
-          const committed = allPieces(s).filter(
-            (u) =>
-              u.naval === naval &&
-              !u.carrier &&
-              (near.includes(u.tile) ||
-                (u.campaign?.enemy === emergencyTarget(s) &&
-                  front.has(u.campaign!.target))) &&
-              friendly(s, u.owner, s.active) &&
-              !ids.includes(u.id) &&
-              points(u) > 0,
-          );
-          value /=
-            1 +
-            Math.min(
-              3,
-              committed.reduce((n, u) => n + points(u), 0) /
-                Math.max(
-                  2,
-                  group.reduce((n, u) => n + points(u), 0),
-                ),
-            );
-        }
-        weights.set(target, value);
-        return value;
-      };
+      const objectiveWeight = scoreObjectives(group, weights);
       // Armies with no candidate objectives need no full-world distance tree.
       let originDistances: ((target: string) => number) | undefined;
       const distanceFrom = (target: string) =>
