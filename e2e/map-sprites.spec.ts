@@ -330,3 +330,49 @@ test("failed sprite decoding keeps the original playable vectors", async ({
   await expect(townNode.locator(".selection-halo")).toBeVisible();
   expect(errors).toEqual([]);
 });
+
+test("stalled image preparation reveals playable vectors and late images preserve the current selection", async ({
+  page,
+}) => {
+  const errors: string[] = [];
+  page.on("pageerror", (e) => errors.push(e.message));
+  await page.addInitScript(() => {
+    const decode = HTMLImageElement.prototype.decode;
+    const pending: (() => void)[] = [];
+    HTMLImageElement.prototype.decode = function () {
+      const decoded = decode.call(this);
+      return new Promise<void>((resolve, reject) => {
+        // Catch decoding failures immediately while the artificial gate is held.
+        const settled = decoded.then(
+          () => () => resolve(),
+          (e) => () => reject(e),
+        );
+        pending.push(() => {
+          void settled.then((finish) => finish());
+        });
+      });
+    };
+    Object.assign(window, {
+      releaseSpriteDecodes: () =>
+        pending.splice(0).forEach((finish) => finish()),
+    });
+  });
+  const { town } = await load(page);
+  const node = page.getByTestId(`town-${town.id}`);
+  await expect(page.locator(".map-camera-layer")).toBeVisible();
+  await expect(node.locator(".town-miniature > image")).toHaveCount(0);
+  await expect(node.locator(".town-miniature path").first()).toBeVisible();
+  await node.press("Enter");
+  await expect(node.locator(".selection-halo")).toBeVisible();
+  await page.evaluate(() =>
+    (
+      window as unknown as { releaseSpriteDecodes: () => void }
+    ).releaseSpriteDecodes(),
+  );
+  const image = node.locator(".town-miniature > image");
+  await expect(image).toHaveCount(1);
+  expect(decodeURIComponent((await image.getAttribute("href"))!)).toContain(
+    "selection-halo",
+  );
+  expect(errors).toEqual([]);
+});

@@ -18,7 +18,7 @@ import type { TerrainKey } from "../game/content";
 import { localize as tx, useLocale } from "../i18n";
 import { friendly } from "../game/relations";
 import { MapGuildCrest } from "./Guilds";
-import { MapSprite } from "./MapSprite";
+import { MapSprite, PreparedMapLayer } from "./MapSprite";
 import { groupMapUnits, townMapView } from "./map-scene";
 import { MapLabel, MapLabelDefinitions } from "./MapLabel";
 import { ResourceIcon } from "./ResourceIcon";
@@ -1003,7 +1003,7 @@ const BoardScene = memo(function BoardScene({
     <div
       className={`board-frame mode-${mode}${climates ? " climate-only" : ""}`}
     >
-      <div ref={layer} className="map-camera-layer">
+      <PreparedMapLayer layerRef={layer}>
         <TerrainLayer
           viewer={viewer}
           terrainRef={terrain}
@@ -1863,7 +1863,7 @@ const BoardScene = memo(function BoardScene({
             )}
           </g>
         </svg>
-      </div>
+      </PreparedMapLayer>
       <div
         className="map-controls"
         role="group"

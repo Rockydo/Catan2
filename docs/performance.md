@@ -1124,3 +1124,28 @@ New regressions check every troop class and tier, passengers and stranding, inde
 All 1,663 unit tests passed. Independent reference comparisons retained all 13,206 planning proposals across 128 scenarios and all 96 trade comparisons, including offers, aid and acceptance decisions. All 168 targeted staging browser scenarios passed across Firefox, Chromium and mobile, covering power displays, alliances, support gold, bulk orders, transport, settlers, naval sieges, recruitment controls and save reloads.
 
 The locally published build passed all 12 production HTTP checks and 16 additional Chromium power, save and worker scenarios. Type checking, formatting, the build and whitespace checks passed. Prior hashed assets remain available to open sessions. Validation used disposable profiles and exported copies; the source exports and playing campaign were not modified. Full troop scans, production coverage and transaction copies remain measurable planning costs, so the broader performance goal stays active.
+
+## Opening crowded maps after refresh
+
+The first map layout was processing thousands of temporary vector miniatures immediately before replacing them with their shared SVG images. The camera layer now prepares those images before its initial layout. It waits only for the initial batch, with a 250 ms fallback deadline after registration. Failed or stalled decoding reveals the original playable vectors. Subsequent selection, construction, season changes and camera input keep their existing immediate behavior.
+
+The sprite cache also retains an asset while any mounted miniature uses it. The former 256-entry limit could evict artwork still displayed elsewhere in a large scene, causing repeated serialization and decoding. The cache now limits unused assets to 256 and releases older unused entries first. Active entries share artwork already held by the visible components; they do not retain campaign snapshots. In the 2,000-tile fixture, image-decode calls during opening fell from 663 to 555, with identical final artwork.
+
+`scripts/map-open-performance.ts` separates refresh-to-menu from opening the map. It warms artwork through an import, then measures three refresh/open cycles in a disposable Chromium profile, with the copied campaign on a human turn and AI paused. Opening ends after the map is visible, sprite decoding has settled and three frames have passed. It verifies the complete prepared campaign against the imported save and checks that opening never changes that save. `PROFILE_OPEN=1` can capture a CPU profile. These measurements include map construction and drawing, unlike the earlier menu-only load diagnostic.
+
+| Workload, median of three serial samples | Previous build | Updated build |
+| --- | ---: | ---: |
+| Round 32 export: refresh to menu | 103.7 ms | 103.9 ms |
+| Round 32 export: open map | 543.3 ms | 475.4 ms |
+| Round 32 export: main-thread work while opening | 523.3 ms | 449.0 ms |
+| 2,000 tiles, 1,000 towns: refresh to menu | 189.6 ms | 184.1 ms |
+| 2,000 tiles, 1,000 towns: open map | 1,036.5 ms | 955.9 ms |
+| 2,000 tiles, 1,000 towns: main-thread work while opening | 1,160.8 ms | 923.7 ms |
+
+Opening improved by about 13% on the real export and 8% on the larger map. Refresh-to-menu was broadly unchanged. Measurements used Chromium's default software rendering with warm assets, not cold downloads or the user's running browser. They are local samples, not fixed timing guarantees. The final exact-state check on the larger fixture also passed after adding the diagnostic's input comparison.
+
+The four crowded-map wheel sequences retained approximately 33 ms p95 frame intervals in three sequences and 50 ms in the fourth. Total main-thread time changed from 2,624 to 2,532 ms, a small difference rather than an established zoom improvement. The final before/after screenshots were byte-identical. No camera sequence changed the campaign.
+
+All 1,666 unit tests and 96 staging browser scenarios passed across Chromium, Firefox and mobile. Coverage includes cache reuse beyond its unused-entry limit, reference-counted release and eviction, delayed and failed decoding, selection changes before images finish, town upgrades, guild and troop artwork, seasonal labels, camera anchoring and culling, army selection, large-save refresh/export and localization. Type checking, formatting and the build passed. Save encoding, rules and AI decisions were not changed in this pass. Large-map painting and other planning costs remain measurable, so the broader performance goal stays active.
+
+The local deployment passed all 12 production HTTP checks and 24 further Chromium sprite, camera and large-save scenarios. Earlier hashed assets were retained for open sessions. All diagnostics and browser checks used exported copies or disposable fixtures. The source exports and playing campaign were not modified.

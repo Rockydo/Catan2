@@ -1,19 +1,69 @@
 import {
+  createContext,
+  useContext,
   useLayoutEffect,
   useRef,
   useState,
   type ReactNode,
+  type RefObject,
   type SVGProps,
 } from "react";
 import { useLocale } from "../i18n";
+import { retainedCache } from "./retained-cache";
 
 type Bounds = { x: number; y: number; width: number; height: number };
 type Asset = { url: string; ready: Promise<void> };
 // SVG image decoding is shared by identical miniatures. The browser can reuse
 // the painted image instead of walking dozens of paths at every wheel notch.
 // Keep vectors inside the image so high zoom and high-DPI displays stay sharp.
-const assets = new Map<string, Asset>();
-const LIMIT = 256;
+const assets = retainedCache<Asset>(256);
+
+const Preparation = createContext<{
+  pending: Promise<void>[];
+  collecting: boolean;
+} | null>(null);
+
+/** Prepare the initial decorative images before laying out their throwaway
+ * vector fallbacks. A failed or stalled decoder still reveals playable vectors. */
+export function PreparedMapLayer({
+  children,
+  layerRef,
+}: {
+  children: ReactNode;
+  layerRef: RefObject<HTMLDivElement | null>;
+}) {
+  const batch = useRef({ pending: [] as Promise<void>[], collecting: true });
+  const [ready, setReady] = useState(false);
+  useLayoutEffect(() => {
+    let active = true;
+    const reveal = () => {
+      if (!active) return;
+      active = false;
+      batch.current.collecting = false;
+      batch.current.pending.length = 0;
+      clearTimeout(timeout);
+      setReady(true);
+    };
+    const timeout = setTimeout(reveal, 250);
+    // Child layout effects have registered the initial scene's images.
+    void Promise.allSettled(batch.current.pending).then(reveal);
+    return () => {
+      active = false;
+      clearTimeout(timeout);
+    };
+  }, []);
+  return (
+    <Preparation.Provider value={batch.current}>
+      <div
+        ref={layerRef}
+        className="map-camera-layer"
+        style={ready ? undefined : { display: "none" }}
+      >
+        {children}
+      </div>
+    </Preparation.Provider>
+  );
+}
 
 function encode(node: SVGGElement, bounds: Bounds): string | undefined {
   const serializer = new XMLSerializer(),
@@ -63,24 +113,26 @@ export function MapSprite({
 } & Omit<SVGProps<SVGGElement>, "children" | "ref">) {
   const locale = useLocale(),
     key = `${locale}/${assetKey}`;
+  const preparation = useContext(Preparation);
   const node = useRef<SVGGElement>(null);
   const [decoded, setDecoded] = useState<{ key: string; url: string }>();
   const [failed, setFailed] = useState<string>();
   const url = decoded?.key === key && failed !== key ? decoded.url : undefined;
   useLayoutEffect(() => {
-    if (url || failed === key || !node.current) return;
-    let asset = assets.get(key);
-    if (!asset) {
-      const source = encode(node.current, bounds);
+    const element = node.current;
+    if (failed === key || !element) return;
+    const lease = assets.retain(key, () => {
+      const source = encode(element, bounds);
       if (!source) return;
       const image = new Image();
       image.src = source;
-      asset = { url: source, ready: image.decode() };
-      if (assets.size >= LIMIT) assets.delete(assets.keys().next().value!);
-      assets.set(key, asset);
-    }
+      return { url: source, ready: image.decode() };
+    });
+    if (!lease) return;
+    const asset = lease.value;
     let active = true;
     const source = asset.url;
+    if (preparation?.collecting) preparation.pending.push(asset.ready);
     asset.ready
       .then(() => {
         if (active) setDecoded({ key, url: source });
@@ -90,8 +142,9 @@ export function MapSprite({
       });
     return () => {
       active = false;
+      lease.release();
     };
-  }, [key, url, failed]);
+  }, [key, failed]);
   return (
     <g
       {...props}
