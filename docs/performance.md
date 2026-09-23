@@ -186,6 +186,29 @@ Regression coverage checks exact state and command equality, full AI turns at bo
 
 Validation passed all 1,355 unit tests and 57 selected browser scenarios across Chromium, Firefox and the mobile viewport. The deployed-build replay then completed the same 485-order sequence in 45.68 seconds with 177 batches, the original final hash, no errors and no long tasks. All 12 production HTTP checks passed.
 
+## Sharing troop records during AI decisions
+
+AI planning now enumerates the army dictionary once within a read-only decision and shares that ordered list across production forecasts, threat assessment, transport capacity, colonization and route planning. The per-owner and per-tile indexes use the same list. Published UI snapshots use the same mechanism. Mutable execution drafts still read current records, and nested planning scopes restore the caller's index even after an exception. No cache survives a decision through a mutable object reference.
+
+Enumeration preserves own enumerable property order, including numeric keys and deletion followed by reinsertion. It uses a key list and preallocated result array, avoiding a slower `Object.values` path for large dictionaries. It does not combine units, approximate production, reduce search depth or change action order.
+
+The Round 32 comparison used disposable Chromium profiles, normal autosaving and Ultra Fast pacing, without CPU profiling in either run:
+
+| Measurement | Previous deployed build | Shared records |
+| --- | ---: | ---: |
+| Total sequence | 45.68 s | 30.69 s |
+| Worker calculation | 38.81 s | 25.33 s |
+| Main-thread task time | 10.17 s | 7.97 s |
+| Published batches | 177 | 139 |
+
+All 485 orders and the complete final state hash matched. Total time fell by 33%; faster planning also fits more orders into the existing time-limited batches. Frame p95 stayed at about 16.8 ms, with no errors or long tasks. These timings overlap and cannot be added together.
+
+The complete Round 31 turn retained all 144 orders and final hash, finishing in 18.75 seconds compared with 21.15 seconds. On the 2,000-tile, 1,000-town growth fixture, the same 60 decisions finished in 34.13 seconds compared with 37.68 seconds, with the same final state. These are local samples, not a constant speedup for every campaign.
+
+Validation passed all 1,357 unit tests and 93 browser checks across Chromium, Firefox and the mobile viewport. A separate refresh comparison on the 240,000-unit storage fixture recovered exactly the same full campaign in all nine loads. Median time to the campaign menu was 639 ms for current saves, versus 739 ms for compressed original JSON in the same build. Current storage was 98,972 bytes, versus 1,748,566 bytes for compressed original JSON. This measures loading with warm assets, not painting the map or a 240,000-unit AI turn.
+
+All 12 production HTTP checks passed after deployment. The live-build Round 32 replay completed in 30.76 seconds with the same 485 orders and final hash, 139 batches, no browser errors or long tasks, and 16.8 ms frame p95.
+
 ## Changes
 
 - Guild planning looks up local formations instead of scanning every unit repeatedly. Original unit ordering is preserved.
@@ -202,6 +225,6 @@ Regression coverage includes nearby guild selection, changing garrisons, isolate
 
 ## Remaining work
 
-A fresh worker-only profile of the first 80 Round 32 orders retained the original command prefix and took 4.98 seconds across 30 batches. Production fingerprints and repeated occupation-index construction remain prominent costs. Military planning and emergency-coalition strength updates both use these calculations; their inclusive timings overlap.
+After sharing troop records, a fresh worker-only profile retained the first 82 original Round 32 orders and took 3.59 seconds across 24 batches. Enumerating current troop records in separate planning scopes, production fingerprints and delivery allocation remain prominent costs. Threat assessment, military planning and emergency-coalition strength updates also remain measurable; their inclusive timings overlap.
 
 The wider performance goal remains open. Production signatures, large-map military/economic planning and publication/rendering remain measurable costs. Dense-map terrain and army painting remain measurable costs even after caching town and resource artwork. Further changes must preserve complete AI decisions, game rules, visual clarity and existing saves.

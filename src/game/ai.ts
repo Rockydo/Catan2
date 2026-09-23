@@ -18,7 +18,7 @@ import {
   withSeasonalPlanning,
 } from "./ai-seasonal";
 import { isSettler } from "./content";
-import { canChooseWoods } from "./selectors";
+import { allPieces, canChooseWoods } from "./selectors";
 import { allianceResponder, friendly, emergencyTarget } from "./relations";
 import { acceptsAlliance } from "./diplomacy";
 import { guildEconomyProjects, guildMilitaryOrder } from "./guild-ai";
@@ -622,7 +622,7 @@ export function economyProjects(s: Game): Project[] {
     values = marginalValues(s),
     towns = ownTowns(s),
     units = ownPieces(s),
-    enemies = Object.values(s.pieces).filter(
+    enemies = allPieces(s).filter(
       (u) => !friendly(s, u.owner, s.active) && !u.naval && !u.carrier,
     ),
     enemyTowns = Object.values(s.towns).filter((t) => warTarget(s, t.owner)),
@@ -633,7 +633,7 @@ export function economyProjects(s: Game): Project[] {
     inc = income(s),
     enemyFleets = [
       ...new Set(
-        Object.values(s.pieces)
+        allPieces(s)
           .filter(
             (u) =>
               (u.naval || !!u.seasonStatus) &&
@@ -665,13 +665,13 @@ export function economyProjects(s: Game): Project[] {
     .filter((u) => u.kind === "artillery")
     .reduce((n, u) => n + u.tier, 0);
   const vulnerableCoasts = enemyTowns.filter((t) => !protects(s, t, true));
-  const hostileShips = Object.values(s.pieces).filter(
+  const hostileShips = allPieces(s).filter(
     (u) => u.naval && !friendly(s, u.owner, s.active),
   );
   // All tiers/towns inspect the same deployment threats during this decision.
   const collectionDanger = new Map<string, boolean>();
   const collectionOutput = new Map<string, number>();
-  const armedEnemies = Object.values(s.pieces)
+  const armedEnemies = allPieces(s)
     .filter((u) => !friendly(s, u.owner, s.active) && points(u) > 0)
     .map((u) => ({ unit: u, movement: speed(u) }));
   function collectionAtRisk(tile: string, naval: boolean) {
@@ -2333,7 +2333,7 @@ function collectorMove(s: Game): Command | null {
   const dangerCache = new Map<string, boolean>();
   const harvestScores = new Map<string, number>();
   const staying = new Set<string>();
-  const threats = Object.values(s.pieces)
+  const threats = allPieces(s)
     .filter((v) => !friendly(s, v.owner, s.active) && points(v) > 0)
     .map((v) => ({ unit: v, movement: speed(v) }));
   function threatened(tile: string, naval: boolean) {
@@ -2574,7 +2574,7 @@ function chooseManeuver(s: Game, emergency: boolean): Command {
           (n, u) =>
             n +
             shipStats(u.kind as ShipClass, u.tier).capacity -
-            Object.values(s.pieces).filter((v) => v.carrier === u.id).length,
+            allPieces(s).filter((v) => v.carrier === u.id).length,
           0,
         );
         const boarding: Piece[] = [];
@@ -2590,7 +2590,7 @@ function chooseManeuver(s: Game, emergency: boolean): Command {
           !units.some(
             (u) =>
               u.kind === "artillery" &&
-              Object.values(s.pieces).some(
+              allPieces(s).some(
                 (v) =>
                   v.naval &&
                   warTarget(s, v.owner) &&
@@ -2615,7 +2615,7 @@ function chooseManeuver(s: Game, emergency: boolean): Command {
         }
       }
     } else if (units[0].naval && !emergency) {
-      const passengers = Object.values(s.pieces).filter(
+      const passengers = allPieces(s).filter(
         (u) => u.carrier && ids.includes(u.carrier),
       );
       if (passengers.length) {
@@ -2761,12 +2761,10 @@ function chooseManeuver(s: Game, emergency: boolean): Command {
         group.some(
           (u) => shipStats(u.kind as ShipClass, u.tier).capacity === 0,
         ) &&
-        !Object.values(s.pieces).some(
-          (u) => u.carrier && ids.includes(u.carrier),
-        );
+        !allPieces(s).some((u) => u.carrier && ids.includes(u.carrier));
       let objectives: string[] = [];
       if (naval) {
-        const passengers = Object.values(s.pieces).filter(
+        const passengers = allPieces(s).filter(
           (u) => u.carrier && ids.includes(u.carrier),
         );
         objectives = passengers.length
@@ -2784,7 +2782,7 @@ function chooseManeuver(s: Game, emergency: boolean): Command {
                   ),
               ),
             )
-          : Object.values(s.pieces)
+          : allPieces(s)
               .filter(
                 (u) =>
                   (u.naval || !!u.seasonStatus) &&
@@ -2870,7 +2868,7 @@ function chooseManeuver(s: Game, emergency: boolean): Command {
             ),
           ...[
             ...new Set(
-              Object.values(s.pieces)
+              allPieces(s)
                 .filter(
                   (u) =>
                     (!u.naval || !!u.seasonStatus) &&
@@ -2896,7 +2894,7 @@ function chooseManeuver(s: Game, emergency: boolean): Command {
       if (group.every((u) => u.kind === "artillery")) {
         const targets = [
           ...new Set(
-            Object.values(s.pieces)
+            allPieces(s)
               .filter((u) => u.naval && warTarget(s, u.owner))
               .map((u) => u.tile),
           ),
@@ -3000,7 +2998,7 @@ function chooseManeuver(s: Game, emergency: boolean): Command {
           // Spread across productive fronts already occupied by allies. An
           // uncovered target keeps its full value; combat strength is not pooled.
           const front = new Set([...near, ...near.flatMap(neighbors)]);
-          const committed = Object.values(s.pieces).filter(
+          const committed = allPieces(s).filter(
             (u) =>
               u.naval === naval &&
               !u.carrier &&
@@ -3341,7 +3339,7 @@ function chooseAction(
           points(u) * 10 +
           (u.kind === "artillery" ? 5 : 0) +
           (u.naval
-            ? Object.values(s.pieces)
+            ? allPieces(s)
                 .filter((v) => v.carrier === u.id)
                 .reduce((n, u) => n + u.tier * 20, 0)
             : 0),

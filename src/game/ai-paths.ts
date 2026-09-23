@@ -1,6 +1,6 @@
 import type { Game } from "./types";
 import { neighbors, canOccupy } from "./world";
-import { hostileAt, planningValue } from "./selectors";
+import { allPieces, hostileAt, planningValue } from "./selectors";
 
 interface RouteTree {
   previous: Map<string, string>;
@@ -16,7 +16,7 @@ function networkRoutes(s: Game) {
     // Routes depend on passability, alliances and occupation, never on stocks,
     // guild allowances, walls or the number of soldiers sharing a hex.
     const occupation = new Set<string>();
-    for (const u of Object.values(s.pieces))
+    for (const u of allPieces(s))
       if (!u.carrier)
         occupation.add(`${u.tile}/${u.owner}/${u.naval}/${!!u.seasonStatus}`);
     const network = JSON.stringify([

@@ -6,6 +6,7 @@ import { tileYield } from "./maritime";
 import { marketValues } from "./ai-market";
 import { seasonalDestinationSafe, seasonalDiversityBonus } from "./ai-seasonal";
 import {
+  allPieces,
   besieged,
   colonizationSites,
   hostileAt,
@@ -29,7 +30,7 @@ function planner(s: Game) {
 function createPlanner(s: Game) {
   let values: ReturnType<typeof marketValues> | undefined;
   let inc: Stock | undefined;
-  const foes = Object.values(s.pieces).filter(
+  const foes = allPieces(s).filter(
     (u) => !u.carrier && !friendly(s, u.owner, s.active),
   );
   const danger = [false, true].map(

@@ -3,6 +3,7 @@ import { friendly, allianceOf, emergencyTarget } from "./relations";
 import { townGuilds } from "./guilds";
 import type { Game, Piece, Town } from "./types";
 import {
+  allPieces,
   points,
   ownTowns,
   ownPieces,
@@ -200,7 +201,7 @@ export function townThreats(s: Game, t: Town): Piece[] {
       { owner: number; tile: string; speed: number; units: Piece[] }
     >();
     const order = new Map<string, number>();
-    for (const u of Object.values(s.pieces)) {
+    for (const u of allPieces(s)) {
       if (u.naval || u.carrier || points(u) <= 0) continue;
       order.set(u.id, order.size);
       const movement = speed(u),
@@ -282,7 +283,7 @@ export function conquestDrive(s: Game): number {
 export function campaignPowerTarget(s: Game): number {
   const towns = ownTowns(s);
   const stacks = new Map<string, number>();
-  for (const u of Object.values(s.pieces)) {
+  for (const u of allPieces(s)) {
     if (
       friendly(s, u.owner, s.active) ||
       u.naval ||

@@ -1,4 +1,4 @@
-import { expect, it, vi } from "vitest";
+import { expect, it } from "vitest";
 import { maritimeFixture } from "./maritime-fixture";
 import { piece, run, nextOwnerTurn } from "./helpers";
 import { applyCommand } from "../src/game/engine";
@@ -169,25 +169,23 @@ it("large mixed sieges index occupation once and recheck guards after an in-plac
     last: 0,
     raided: null,
   };
-  const values = vi.spyOn(Object, "values");
-  try {
-    breakSieges(s);
-    // A defending fleet prevents the batteries from besieging, but the land
-    // army can maintain the siege. Repeated naval attackers share that check.
-    expect(s.sieges[key]).toBeDefined();
-    expect(
-      values.mock.calls.filter(([value]) => value === s.pieces),
-    ).toHaveLength(1);
-    delete s.pieces[army.id];
-    values.mockClear();
-    breakSieges(s);
-    expect(s.sieges[key]).toBeUndefined();
-    expect(
-      values.mock.calls.filter(([value]) => value === s.pieces),
-    ).toHaveLength(1);
-  } finally {
-    values.mockRestore();
-  }
+  let scans = 0;
+  s.pieces = new Proxy(s.pieces, {
+    ownKeys(target) {
+      scans++;
+      return Reflect.ownKeys(target);
+    },
+  });
+  breakSieges(s);
+  // A defending fleet prevents the batteries from besieging, but the land
+  // army can maintain the siege. Repeated naval attackers share that check.
+  expect(s.sieges[key]).toBeDefined();
+  expect(scans).toBe(1);
+  delete s.pieces[army.id];
+  scans = 0;
+  breakSieges(s);
+  expect(s.sieges[key]).toBeUndefined();
+  expect(scans).toBe(1);
 });
 
 it("AI raids, holds an unfinished naval siege, and recruits batteries for exposed coasts", () => {

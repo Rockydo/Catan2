@@ -58,6 +58,7 @@ export const sumStock = (s: Stock) =>
 // drafts, so cached UI data can never leak into execution.
 interface PlanningIndex {
   source: Game;
+  units: readonly Piece[];
   towns: Map<number, Town[]>;
   vertices: Map<string, Town>;
   pieces: Map<number, Piece[]>;
@@ -80,6 +81,22 @@ function readIndex(s: Game): PlanningIndex | undefined {
     ? planningIndex
     : (viewIndexes.get(s) ?? planningIndex);
 }
+/** Own enumerable records in campaign order. Game dictionaries contain plain
+ * JSON data; enumerating keys avoids V8's slower values path on large maps. */
+function pieceValues(pieces: Game["pieces"]): Piece[] {
+  const keys = Object.keys(pieces),
+    out = new Array<Piece>(keys.length);
+  for (let i = 0; i < keys.length; i++) out[i] = pieces[keys[i]];
+  return out;
+}
+/** A shared read-only list within a planning frame or published snapshot.
+ * Unregistered transaction drafts always read their current records. */
+export function allPieces(s: Game): readonly Piece[] {
+  const index = readIndex(s);
+  return index?.source.pieces === s.pieces
+    ? index.units
+    : pieceValues(s.pieces);
+}
 /** Reuse a pure calculation within a decision or a published UI snapshot. */
 export function planningValue<T>(s: Game, key: string, calculate: () => T): T {
   const index = readIndex(s);
@@ -100,7 +117,7 @@ export const ownPieces = (s: Game, p = s.active) => {
   const index = readIndex(s);
   return index?.source.pieces === s.pieces
     ? (index.pieces.get(p) ?? []).slice()
-    : Object.values(s.pieces).filter((u) => u.owner === p);
+    : allPieces(s).filter((u) => u.owner === p);
 };
 export const inventory = (s: Game, p = s.active): Stock => {
   const index = readIndex(s);
@@ -127,7 +144,7 @@ export const piecesAt = (s: Game, tile: string, naval?: boolean) => {
   return (
     index?.source.pieces === s.pieces
       ? (index.tiles.get(tile) ?? [])
-      : Object.values(s.pieces)
+      : allPieces(s)
   ).filter(
     (u) =>
       u.tile === tile &&
@@ -603,7 +620,7 @@ export function productionSources(
   };
   // Blockades depend on the occupying factions, not their stack size. Keep
   // this index local: production also runs on mutable roll/forecast drafts.
-  const units = Object.values(s.pieces);
+  const units = allPieces(s);
   const blockades = new Map<string, Set<number>>();
   for (const u of units) {
     if (
@@ -748,7 +765,7 @@ export function productionSignature(s: Game): string {
   return planningValue(s, "production-signature", () => {
     const blockade = new Set<string>();
     const collectors = [];
-    for (const u of Object.values(s.pieces)) {
+    for (const u of allPieces(s)) {
       if (u.carrier) continue;
       if (u.naval ? !isSettler(u.kind) : points(u) > 0)
         blockade.add(`${u.owner}/${u.tile}/${u.naval}`);
@@ -789,7 +806,7 @@ function createPlanningIndex(source: Game): PlanningIndex {
   // towns. Build each immutable index on demand instead of grouping the full
   // empire for every short read scope. One unit array serves all requested views.
   let units: Piece[] | undefined;
-  const unitRecords = () => (units ??= Object.values(source.pieces));
+  const unitRecords = () => (units ??= pieceValues(source.pieces));
   let towns: PlanningIndex["towns"] | undefined;
   let vertices: PlanningIndex["vertices"] | undefined;
   let pieces: PlanningIndex["pieces"] | undefined;
@@ -798,6 +815,9 @@ function createPlanningIndex(source: Game): PlanningIndex {
   let towerSupport: PlanningIndex["towerSupport"] | undefined;
   return {
     source,
+    get units() {
+      return unitRecords();
+    },
     get towns() {
       if (!towns) {
         towns = new Map();

@@ -11,6 +11,7 @@ import {
 import { canOccupy, neighbors } from "./world";
 import { friendly } from "./relations";
 import {
+  allPieces,
   income,
   planningValue,
   fresh,
@@ -233,7 +234,7 @@ function freeBerths(s: Game, ship: Piece): number {
   let used = berthCache?.get(s.pieces);
   if (!used) {
     used = new Map();
-    for (const unit of Object.values(s.pieces))
+    for (const unit of allPieces(s))
       if (unit.carrier)
         used.set(unit.carrier, (used.get(unit.carrier) ?? 0) + 1);
     berthCache?.set(s.pieces, used);
@@ -248,7 +249,7 @@ export function seasonalRescueWaiting(s: Game, ship: Piece): boolean {
   let owners = rescueCache?.get(s.pieces);
   if (!owners) {
     owners = new Map();
-    for (const unit of Object.values(s.pieces)) {
+    for (const unit of allPieces(s)) {
       if (unit.seasonStatus !== "adrift" || unit.carrier) continue;
       let tiles = owners.get(unit.owner);
       if (!tiles) {

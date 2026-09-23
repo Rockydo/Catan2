@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { applyCommand, commandError } from "../src/game/engine";
 import {
   prepareGameView,
+  allPieces,
   inventory,
   ownTowns,
   ownPieces,
@@ -10,6 +11,7 @@ import {
   power,
   nearestTown,
   productionSources,
+  productionSignature,
   withPlanningFrame,
 } from "../src/game/selectors";
 import { previewError } from "../src/ui/command-preview";
@@ -41,22 +43,69 @@ describe("immutable UI snapshots", () => {
   it("does not index troops for a stock-only read and shares one scan across unit views", () => {
     const { s, water } = fishingFixture();
     for (let i = 0; i < 1000; i++) piece(s, water, 0, "fishing");
-    const values = vi.spyOn(Object, "values");
-    try {
-      prepareGameView(s);
-      inventory(s);
-      expect(
-        values.mock.calls.filter(([value]) => value === s.pieces),
-      ).toHaveLength(0);
-      expect(piecesAt(s, water)).toHaveLength(1000);
-      expect(ownPieces(s)).toHaveLength(1000);
-      expect(piecesAt(s, water)).toHaveLength(1000);
-      expect(
-        values.mock.calls.filter(([value]) => value === s.pieces),
-      ).toHaveLength(1);
-    } finally {
-      values.mockRestore();
-    }
+    let scans = 0;
+    s.pieces = new Proxy(s.pieces, {
+      ownKeys(target) {
+        scans++;
+        return Reflect.ownKeys(target);
+      },
+    });
+    prepareGameView(s);
+    inventory(s);
+    expect(scans).toBe(0);
+    expect(piecesAt(s, water)).toHaveLength(1000);
+    expect(ownPieces(s)).toHaveLength(1000);
+    expect(piecesAt(s, water)).toHaveLength(1000);
+    expect(allPieces(s)).toHaveLength(1000);
+    productionSources(s);
+    productionSignature(s);
+    expect(scans).toBe(1);
+  });
+  it("restores nested read scopes and never indexes an unregistered mutable draft", () => {
+    const { s, water } = fishingFixture();
+    piece(s, water, 0, "fishing");
+    const child = structuredClone(s);
+    piece(child, water, 1, "fishing");
+    const draft = { ...s, pieces: { ...s.pieces } };
+    withPlanningFrame(s, () => {
+      const original = allPieces(s);
+      expect(() =>
+        withPlanningFrame(child, () => {
+          expect(allPieces(child)).toHaveLength(2);
+          throw Error("abort read");
+        }),
+      ).toThrow("abort read");
+      expect(allPieces(s)).toBe(original);
+      expect(allPieces(draft)).toHaveLength(1);
+      piece(draft, water, 0, "fishing");
+      expect(allPieces(draft)).toHaveLength(2);
+      expect(allPieces(s)).toHaveLength(1);
+    });
+    // Mutable transactions outside a scope cannot reuse a previous read.
+    piece(s, water, 0, "fishing");
+    expect(allPieces(s)).toHaveLength(2);
+  });
+  it("keeps own-record order, including numeric keys and deletion/reinsertion", () => {
+    const { s, water } = fishingFixture();
+    const first = piece(s, water),
+      second = piece(s, water),
+      third = piece(s, water);
+    const records = Object.create({ inherited: first });
+    records.u10 = first;
+    records[3] = second;
+    records[1] = third;
+    records.u20 = second;
+    delete records.u10;
+    records.u10 = first;
+    Object.defineProperty(records, "hidden", { value: third });
+    s.pieces = records;
+    const expected = Object.values(records);
+    expect(allPieces(s)).toEqual(expected);
+    withPlanningFrame(s, () => {
+      expect(allPieces(s)).toEqual(expected);
+      expect(ownPieces(s)).toEqual(expected);
+      expect(piecesAt(s, water)).toEqual(expected);
+    });
   });
   it("matches uncached lookups and keeps transaction drafts independent", () => {
     const { s, home, water } = fishingFixture();
