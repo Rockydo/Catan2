@@ -228,6 +228,7 @@ try {
     loadStartedMs: number;
     readyMs: number;
     boardOpenMs?: number;
+    spritesReadyMs?: number;
     resourceTransferBytes?: number;
     imageTransferBytes?: number;
     resourceCount?: number;
@@ -317,6 +318,7 @@ try {
     }
     if (result.game !== expected) throw Error("Reload changed the campaign.");
     let boardOpenMs: number | undefined;
+    let spritesReadyMs: number | undefined;
     if (process.env.OPEN_BOARD) {
       const profile = process.env.PROFILE_BOARD
         ? await page.context().newCDPSession(page)
@@ -330,6 +332,26 @@ try {
         () => (window as any).boardOpenMs !== undefined,
       );
       boardOpenMs = await page.evaluate(() => (window as any).boardOpenMs);
+      if (process.env.TRACK_SPRITES) {
+        await page.waitForFunction(() => {
+          const nodes = document.querySelectorAll(
+            ".town-miniature,.production-token-art,.army-miniature-art,.guild-miniature-art,.tower-miniature-art",
+          );
+          if (
+            !nodes.length ||
+            !Array.from(nodes).every((node) =>
+              node.querySelector(":scope > image"),
+            )
+          )
+            return false;
+          const w = window as any;
+          w.spritesReadyMs ??= performance.now() - w.boardStartMs;
+          return true;
+        });
+        spritesReadyMs = await page.evaluate(
+          () => (window as any).spritesReadyMs,
+        );
+      }
       if (profile) {
         const { profile: result } = await profile.send("Profiler.stop");
         mkdirSync("test-artifacts", { recursive: true });
@@ -368,6 +390,7 @@ try {
       loadStartedMs: result.loadStartedMs,
       readyMs: result.readyMs,
       boardOpenMs,
+      spritesReadyMs,
       ...resources,
     });
   }

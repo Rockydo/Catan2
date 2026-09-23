@@ -25,6 +25,17 @@ mkdirSync("test-artifacts", { recursive: true });
 const graphics = process.env.GRAPHICS ?? "software";
 if (!["software", "hardware"].includes(graphics))
   throw Error("GRAPHICS must be software or hardware.");
+function positiveOption(name: string, fallback: number) {
+  const value = Number(process.env[name] ?? fallback);
+  if (!Number.isFinite(value) || value <= 0)
+    throw Error(`${name} must be a finite positive number.`);
+  return value;
+}
+const viewport = {
+  width: Math.round(positiveOption("WIDTH", 1920)),
+  height: Math.round(positiveOption("HEIGHT", 1080)),
+};
+const deviceScaleFactor = positiveOption("DPR", 1);
 const browser = await chromium.launch({
   executablePath: "/usr/bin/chromium",
   args: ["--no-sandbox", ...(graphics === "hardware" ? ["--enable-gpu"] : [])],
@@ -46,7 +57,8 @@ try {
       "Hardware compositing is unavailable; refusing a silently software-rendered comparison.",
     );
   const page = await browser.newPage({
-    viewport: { width: 1920, height: 1080 },
+    viewport,
+    deviceScaleFactor,
   });
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
@@ -71,6 +83,45 @@ try {
     .waitFor();
   if (process.env.PROBE_CSS)
     await page.addStyleTag({ content: process.env.PROBE_CSS });
+  const sceneState = () =>
+    page.evaluate(() => ({
+      terrainRenderer:
+        document.querySelector<HTMLCanvasElement>(".terrain-canvas")?.style
+          .display === "block"
+          ? "canvas"
+          : "svg",
+      sprites: Object.fromEntries(
+        [
+          ".town-miniature",
+          ".production-token-art",
+          ".army-miniature-art",
+          ".guild-miniature-art",
+          ".tower-miniature-art",
+        ].map((selector) => [
+          selector,
+          {
+            count: document.querySelectorAll(selector).length,
+            prepared: document.querySelectorAll(selector + " > image").length,
+          },
+        ]),
+      ),
+    }));
+  const sceneBeforePreparation = await sceneState();
+  let preparationWaitMs: number | undefined;
+  if (process.env.WAIT_SPRITES) {
+    const start = performance.now();
+    await page.waitForFunction(() => {
+      const nodes = document.querySelectorAll(
+        ".town-miniature,.production-token-art,.army-miniature-art,.guild-miniature-art,.tower-miniature-art",
+      );
+      return (
+        nodes.length > 0 &&
+        Array.from(nodes).every((node) => node.querySelector(":scope > image"))
+      );
+    });
+    preparationWaitMs = performance.now() - start;
+  }
+  const initialScene = await sceneState();
   const originalSave = await browserSave(page);
   const cdp = await page.context().newCDPSession(page);
   await cdp.send("Performance.enable");
@@ -186,6 +237,12 @@ try {
   await page.screenshot({ path: `${output}.png` });
   const result = {
     rendering,
+    viewport,
+    deviceScaleFactor,
+    preparationWaitMs,
+    sceneBeforePreparation,
+    initialScene,
+    finalScene: await sceneState(),
     tiles: Object.keys(game.tiles).length,
     towns: Object.keys(game.towns).length,
     units: Object.keys(game.pieces).length,

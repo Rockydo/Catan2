@@ -98,7 +98,7 @@ This opens a disposable Chromium profile and measures ordinary and rapid wheel z
 
 Decorative map tokens, town miniatures and force badges are prepared once as shared, lossless images at the maximum camera zoom and display density. Selection, counts, hit targets and accessible labels remain live. Unused prepared images are released from a bounded cache. Image preparation failures retain the original vectors.
 
-The report records the actual graphics renderer and acceleration status. The default headless mode uses software rendering on this machine. Set `GRAPHICS=hardware` to request GPU acceleration; the diagnostic fails if hardware compositing is unavailable. Compare results within the same graphics mode.
+The report records the actual graphics renderer and acceleration status. The default headless mode uses software rendering on this machine. Set `GRAPHICS=hardware` to request GPU acceleration; the diagnostic fails if hardware compositing is unavailable. Compare results within the same graphics mode. Use `WIDTH`, `HEIGHT` and `DPR` to match the display being tested. Reports include these settings and counts of prepared map sprites before and after navigation. `WAIT_SPRITES=1` waits for sprite preparation before sending camera input and reports that extra wait separately; omit it to include navigation during startup. This wait does not establish that every terrain artwork download has finished.
 
 To measure the rest of an AI turn from an exported campaign, run:
 
@@ -244,7 +244,7 @@ SAVE_PATH=/path/to/campaign.json GAME_URL=http://127.0.0.1:4173 \
 
 This checks the exact loaded state and measures when the campaign menu appears. It does not open or change your playing browser. Set `FORMATS=details,packed` to compare packing versions 8 and 9. Version 9 shares repeated column values. The report includes the full campaign hash.
 
-Set `OPEN_BOARD=1` to also measure the Continue button through two rendered map frames. This uses a disposable hotseat copy to prevent AI actions; it does not measure completion of every artwork download. `PROFILE_BOARD=1` additionally writes Chromium CPU profiles. `scripts/save-decode-performance.ts` isolates decompression, validation and troop restoration with three warmups and seven measured loads. Set `SAVE_PATH`, optional `SOURCE_ROOT`, `LABEL` and `EXPECT_PATH`. Use separate processes for before/after timing; the reference report checks the complete campaign hash.
+Set `OPEN_BOARD=1` to also measure the Continue button through two rendered map frames. This uses a disposable hotseat copy to prevent AI actions; it does not measure completion of every artwork download. `TRACK_SPRITES=1` additionally records the time from Continue until all decorative map sprites are prepared, separately from the first rendered frames. `PROFILE_BOARD=1` additionally writes Chromium CPU profiles. `scripts/save-decode-performance.ts` isolates decompression, validation and troop restoration with three warmups and seven measured loads. Set `SAVE_PATH`, optional `SOURCE_ROOT`, `LABEL` and `EXPECT_PATH`. Use separate processes for before/after timing; the reference report checks the complete campaign hash.
 
 Set `TRACK_RESOURCES=1` to include browser resource-transfer totals after the page becomes idle. This extra wait is excluded from menu and map timings. Compare servers using separate disposable profiles and the same built files; `DIST_DIR=/path/to/build PORT=4181 npm start` starts an isolated copy of the production server.
 
