@@ -152,8 +152,8 @@ it("indexes troops only once for final siege and coalition cleanup after peacefu
   }
   expect(result.ok, result.error).toBe(true);
   expect(result.state.sieges.active).toEqual(s.sieges.active);
-  // One read for movement validation, one shared by all post-order checks.
-  expect(scans).toBe(2);
+  // One troop list for validation and cleanup; location indexes are fresh.
+  expect(scans).toBe(1);
 });
 
 it("withdrawal breaks town and tower sieges with the same ordered notifications", () => {
@@ -210,7 +210,17 @@ it.each(["tied", "decisive", "civilian"] as const)(
       last: 9,
       raided: null,
     };
-    const next = compare(s, { type: "move", ids: [attacker.id], to: "3,0" });
+    const command: Command = { type: "move", ids: [attacker.id], to: "3,0" };
+    const next = compare(s, command);
+    const expectedReads = decisionReads(next);
+    const batch = applyCommandPlan(s, (view, done) => {
+      decisionReads(view);
+      if (!done.length) return command;
+      expect(decisionReads(view)).toEqual(expectedReads);
+      expect(JSON.stringify(view)).toBe(JSON.stringify(next));
+      return undefined;
+    });
+    expect(batch.ok, batch.error).toBe(true);
     expect(!!next.battle).toBe(outcome === "decisive");
     if (outcome === "civilian") {
       expect(next.pieces[attacker.id].tile).toBe("3,0");
@@ -310,10 +320,10 @@ it("shares finished cleanup's troop index with the next decision, but rebuilds i
   expect(result.ok, result.error).toBe(true);
   expect(JSON.stringify(result.state)).toBe(JSON.stringify(expected));
   expect(JSON.stringify(s)).toBe(before);
-  // Initial decision, two movement validations and two final cleanup reads.
-  // Each later decision reuses its immediately preceding cleanup, not an older
-  // pre-movement view. The previous implementation needed seven scans.
-  expect(scans).toBe(5);
+  // Initial decision and two movement validations. Each final cleanup keeps
+  // the validated record list but creates fresh location/production indexes.
+  // The next decision shares those current reads. Previously this took five.
+  expect(scans).toBe(3);
 });
 
 it("next decisions see current stores, new recruits and a coalition formed during cleanup", () => {
@@ -408,4 +418,64 @@ it("long plans keep a bounded execution stack and restore surrounding read scope
   });
   expect(decisions).toBe(count + 1);
   expect(JSON.stringify(s)).toBe(before);
+});
+
+it.each(["merchant", "merchantship", "fishing"] as const)(
+  "%s movement refreshes production and coverage, including embarked collectors",
+  (kind) => {
+    const { s } = maritimeFixture();
+    const naval = kind !== "merchant";
+    if (naval)
+      for (const id of ["0,0", "1,0"])
+        Object.assign(s.tiles[id], { resource: "water", fish: true });
+    const unit = piece(s, "0,0", 0, kind, 3);
+    unit.coverage = ["0,1"];
+    if (naval) {
+      // Merchant hulls have no berths; a convoy carries the dependent troops.
+      const carrier = piece(s, "0,0", 0, "convoy", 4);
+      const passenger = piece(s, "0,0", 0, "merchant", 4);
+      passenger.carrier = carrier.id;
+      passenger.coverage = ["0,1"];
+    }
+    const selected = Object.values(s.pieces).filter((u) => !u.carrier);
+    const command: Command = {
+      type: "move",
+      ids: selected.map((u) => u.id),
+      to: "1,0",
+    };
+    const expected = compare(s, command);
+    const expectedReads = decisionReads(expected);
+    const result = applyCommandPlan(s, (view, done) => {
+      decisionReads(view); // Prime every index before the movement.
+      if (!done.length) return command;
+      expect(decisionReads(view)).toEqual(expectedReads);
+      expect(JSON.stringify(view)).toBe(JSON.stringify(expected));
+      expect(view.pieces[unit.id].coverage).toBeUndefined();
+      expect(piecesAt(view, "0,0")).toEqual([]);
+      expect(Object.values(view.pieces).every((u) => u.tile === "1,0")).toBe(
+        true,
+      );
+      return undefined;
+    });
+    expect(result.ok, result.error).toBe(true);
+  },
+);
+
+it("movement cleanup drops the retained list before eliminating a faction", () => {
+  const { s, towns } = allianceFixture();
+  s.pieces = {};
+  delete s.towns[towns[2].id];
+  const eliminated = piece(s, "3,0", 2, "cavalry", 4);
+  const mover = piece(s, "-4,0", 0, "cavalry");
+  const command: Command = { type: "move", ids: [mover.id], to: "-3,0" };
+  const expected = compare(s, command);
+  const expectedReads = decisionReads(expected);
+  const result = applyCommandPlan(s, (view, done) => {
+    if (!done.length) return command;
+    expect(decisionReads(view)).toEqual(expectedReads);
+    expect(view.pieces[eliminated.id]).toBeUndefined();
+    expect(JSON.stringify(view)).toBe(JSON.stringify(expected));
+    return undefined;
+  });
+  expect(result.ok, result.error).toBe(true);
 });

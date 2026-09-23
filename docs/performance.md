@@ -806,3 +806,26 @@ A new browser regression resolves an actual losing naval attack through the casu
 All 147 staging browser scenarios passed across Chromium, Firefox and mobile. The deployed build passed all 12 production HTTP checks and 11 additional Chromium transport, worker and large-save scenarios. Type checking, formatting, the build and whitespace checks passed. Previous hashed assets were retained for already-open sessions.
 
 Validation used exported copies and disposable browser profiles. The playing campaign was not opened or modified. The save format remains unchanged in this pass, and the broader performance goal remains active.
+
+
+## Retaining troop records across uncontested movement
+
+Movement validation and final cleanup previously enumerated the whole troop dictionary separately. An uncontested move now passes its validated record list to cleanup, after leaving the validation scope and completing every movement edit. Cleanup builds fresh location, ownership, passenger and production indexes from those current records. No calculated pre-movement index survives. The following AI decision can still share the finished cleanup reads, as before.
+
+This path applies only when the move encountered no defending force and cleanup cannot eliminate a faction. Combat, recruitment, removal, replacement and other commands retain independent enumeration. The list lives only through that command and its following read; it does not accumulate a history or remain registered on mutable drafts. Failed commands and interrupted decisions preserve the caller's campaign.
+
+The dense regression now requires one full troop enumeration for movement validation plus cleanup, down from two. A two-move AI plan requires three enumerations including its initial decision, down from five. New tests prime production, occupation and passenger indexes before movement, then check refreshed merchant, merchant-ship and fishing-fleet output, cleared coverage and moved passengers against independently executed results. Combat with civilians, ties and pending casualties, faction elimination, nested errors and later recruitment also require fresh reads.
+
+| Workload | Before | After | Exact comparison |
+| --- | ---: | ---: | --- |
+| Latest Round 32 export, two browser runs | 16.64–18.17 s | 15.81–15.88 s | 485 orders and complete final state |
+| Round 31 export, AI seat 2 through a human casualty prompt | 6.59 s | 6.75 s | 153 orders and complete final state |
+| Growth map, 2,000 tiles and 1,000 towns, first 60 decisions | 12.28 s | 12.31 s | 60 orders and complete final state |
+
+The repeated latest-save comparison improved by about 5%; the first pair showed a larger, noisier difference. The older campaign and growth sample were effectively unchanged. Both latest-save runs preserved the same final-state hash, `8d2eca15ec71345f75f6fa2557ef75a1eeddb057d02d508d25935ef855254945`. The Round 31 sample uses AI seat 2 and stops at a human decision; it is not the 144-order complete-turn sample in earlier sections.
+
+A separate Node CPU profile also retained all 485 orders and the exact campaign. Troop enumeration fell from about 1.53 seconds to 1.02 seconds of sampled CPU time. Total profiled execution was 13.26 versus 12.98 seconds. Profile categories and browser timings describe different runs and must not be added together. Browser frame p95 stayed near 16.8 ms. One updated replay recorded an 81 ms main-thread task; its other replay recorded none. Main-thread work, remaining troop scans and other planning costs still warrant further investigation.
+
+All 1,593 unit tests passed. The independent planning audit retained all 13,206 projects, scores and decisions across 128 scenarios. All 96 trade comparisons also matched, including offers, aid and acceptance decisions. The build, type checking, formatting and whitespace checks passed.
+
+All 147 staging browser scenarios passed across Chromium, Firefox and mobile. After local deployment, all 12 production HTTP checks and 11 additional Chromium transport, worker and large-save checks passed. Previous hashed assets were retained for open sessions. The source save exports and playing campaign were not modified; all browser checks used disposable copies and profiles. The broader performance goal remains active.

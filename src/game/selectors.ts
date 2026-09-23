@@ -1010,11 +1010,12 @@ let incomeFrame: WeakMap<Game, Record<number, Stock>> | undefined;
 function createPlanningIndex(
   source: Game,
   shared?: PlanningIndex,
+  retainedUnits?: readonly Piece[],
 ): PlanningIndex {
   // A movement check needs tile occupancy, while a stock quote may need only
   // towns. Build each immutable index on demand instead of grouping the full
   // empire for every short read scope. One unit array serves all requested views.
-  let units: readonly Piece[] | undefined;
+  let units = retainedUnits;
   const unitRecords = () =>
     (units ??= shared?.units ?? pieceValues(source.pieces));
   let towns: PlanningIndex["towns"] | undefined;
@@ -1135,14 +1136,26 @@ export function withSharedPiecePlanningFrame<T>(source: Game, run: () => T): T {
     planningIndex?.source.pieces === source.pieces ? planningIndex : undefined,
   );
 }
+/** Start fresh derived indexes after an in-place edit that preserves every
+ * troop record and its dictionary order. Only the record list survives; tile,
+ * owner, carrier, production and other calculated indexes are rebuilt. Never
+ * use after recruitment, deletion, replacement or an unchecked command. */
+export function withPieceListPlanningFrame<T>(
+  source: Game,
+  units: readonly Piece[] | undefined,
+  run: () => T,
+): T {
+  return planningFrame(source, run, undefined, units);
+}
 function planningFrame<T>(
   source: Game,
   run: () => T,
   shared?: PlanningIndex,
+  retainedUnits?: readonly Piece[],
 ): T {
   const previous = incomeFrame;
   const previousIndex = planningIndex;
-  planningIndex = createPlanningIndex(source, shared);
+  planningIndex = createPlanningIndex(source, shared, retainedUnits);
   incomeFrame = new WeakMap();
   try {
     return run();

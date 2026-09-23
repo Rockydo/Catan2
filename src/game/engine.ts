@@ -74,6 +74,7 @@ import { addHexes, expeditionFootprint, neighbors } from "./world";
 import {
   withPlanningFrame,
   withSharedPiecePlanningFrame,
+  withPieceListPlanningFrame,
   allPieces,
   ownTowns,
   ownPieces,
@@ -672,7 +673,8 @@ function advanceCommand(
 ) {
   if (s.phase === "military") s.phase = "economy";
   s.actions++;
-  executeOrder(s, c, false, true);
+  let movedPieces: readonly Piece[] | undefined;
+  executeOrder(s, c, false, true, (units) => (movedPieces = units));
   const finish = (sharePieces: boolean) => {
     breakSieges(s, { reuseFrame: sharePieces });
     eliminate(s);
@@ -685,7 +687,7 @@ function advanceCommand(
   // Its own non-troop indexes are fresh, and execution starts outside the scope.
   const owners = new Set(Object.values(s.towns).map((town) => town.owner));
   if (s.players.every((player) => !player.alive || owners.has(player.id)))
-    withPlanningFrame(s, () => finish(true));
+    withPieceListPlanningFrame(s, movedPieces, () => finish(true));
   else finish(false);
 }
 export function execute(s: Game, c: Command, preview = false) {
@@ -699,6 +701,7 @@ function executeOrder(
   c: Command,
   preview = false,
   deferFinalSiegeCleanup = false,
+  afterPeacefulMove?: (units: readonly Piece[]) => void,
 ) {
   const p = s.players[s.active],
     actor = c.actor ?? s.active;
@@ -859,7 +862,8 @@ function executeOrder(
     return;
   }
   if (diplomacyCommand(s, c)) return;
-  if (militaryCommand(s, c, { deferFinalSiegeCleanup })) return;
+  if (militaryCommand(s, c, { deferFinalSiegeCleanup, afterPeacefulMove }))
+    return;
   if (guildCommand(s, c)) return;
   if (c.type === "road" || c.type === "route") {
     rule(c.edge, "Select an edge.");

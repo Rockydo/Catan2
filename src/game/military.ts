@@ -375,7 +375,10 @@ export function siegeArmy(s: Game, c: Command) {
 export function militaryCommand(
   s: Game,
   c: Command,
-  options?: { deferFinalSiegeCleanup: boolean },
+  options?: {
+    deferFinalSiegeCleanup: boolean;
+    afterPeacefulMove?: (units: readonly Piece[]) => void;
+  },
 ): boolean {
   if (c.type === "bombard") {
     const units = selected(s, c.ids, false, false);
@@ -456,8 +459,9 @@ export function militaryCommand(
     rule(c.to && s.tiles[c.to], "Choose a revealed destination.");
     // Validate against one read-only occupation snapshot, then leave its scope
     // before moving any pieces or resolving combat on the mutable draft.
-    const { path, defenders } = withPlanningFrame(s, () => ({
+    const { path, defenders, pieceList } = withPlanningFrame(s, () => ({
       path: moveTargets(s, c.ids!)[c.to!],
+      pieceList: options?.afterPeacefulMove ? allPieces(s) : undefined,
       defenders: combatantsAt(s, c.to!, units[0].naval).filter(
         (u) => !friendly(s, u.owner, s.active),
       ),
@@ -489,7 +493,10 @@ export function militaryCommand(
     setTiles(s, units, defenders.length ? origin : target);
     if (defenders.length) {
       engageBattle(s, units, defenders, origin, target);
-    } else
+    } else {
+      // No troops are added, removed or replaced by an uncontested move.
+      // Cleanup can reuse the list with fresh indexes after every field edit.
+      if (pieceList) options?.afterPeacefulMove?.(pieceList);
       log(
         s,
         `${s.players[s.active].name} moved ${units.length} ${units[0].naval ? "ships" : "units"}.`,
@@ -497,6 +504,7 @@ export function militaryCommand(
         s.active,
         target,
       );
+    }
     if (!options?.deferFinalSiegeCleanup) breakSieges(s);
     return true;
   }

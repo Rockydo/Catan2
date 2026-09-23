@@ -11,6 +11,8 @@ import {
   nearestTown,
   withPlanningFrame,
   withSharedPiecePlanningFrame,
+  withPieceListPlanningFrame,
+  passengersOn,
   reusePlanningFrame,
   allPieces,
   income,
@@ -285,4 +287,58 @@ it("siege support never leaks between shared troop views, drafts or published sn
   prepareGameView(next);
   expect(siegeRequirement(next, next.towns[home.id], [])).toBe(base);
   expect(siegeRequirement(s, home, [])).toBe(base + 3);
+});
+
+it("retaining only the troop list rebuilds every derived index after in-place edits", () => {
+  const { s } = maritimeFixture();
+  s.tiles["1,0"].resource = s.tiles["2,0"].resource = "water";
+  s.tiles["1,0"].fish = true;
+  const ship = piece(s, "1,0", 0, "merchantship", 3);
+  const collector = piece(s, "0,0", 0, "merchant", 3);
+  collector.coverage = ["0,1"];
+  const soldier = piece(s, "1,0", 0);
+  soldier.carrier = ship.id;
+  const read = () => ({
+    owned: s.players.map((p) => ownPieces(s, p.id)),
+    occupants: Object.keys(s.tiles).map((id) => piecesAt(s, id)),
+    passengers: passengersOn(s, [ship.id]),
+    harvest: s.players.map((p) => income(s, p.id)),
+  });
+  const list = withPlanningFrame(s, () => {
+    read();
+    return allPieces(s);
+  });
+  // The record list remains valid, but no derived map does.
+  ship.tile = "2,0";
+  collector.tile = "1,1";
+  collector.owner = 1;
+  delete collector.coverage;
+  delete soldier.carrier;
+  soldier.tile = "0,0";
+  const expected = read();
+  let scans = 0;
+  s.pieces = new Proxy(s.pieces, {
+    ownKeys(target) {
+      scans++;
+      return Reflect.ownKeys(target);
+    },
+  });
+  const outer = structuredClone({ ...s, pieces: { ...s.pieces } });
+  scans = 0;
+  withPlanningFrame(outer, () => {
+    const original = allPieces(outer);
+    expect(() =>
+      withPieceListPlanningFrame(s, list, () => {
+        expect(allPieces(s)).toBe(list);
+        expect(read()).toEqual(expected);
+        expect(scans).toBe(0);
+        throw Error("stop after fresh reads");
+      }),
+    ).toThrow("stop after fresh reads");
+    expect(allPieces(outer)).toBe(original);
+  });
+  // Ordinary mutable reads still enumerate current records outside the scope.
+  const recruit = piece(s, "0,0");
+  expect(allPieces(s)).toContain(recruit);
+  expect(scans).toBe(1);
 });
