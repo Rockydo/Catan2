@@ -2379,12 +2379,17 @@ function townOperation(s: Game): Command | null {
   return null;
 }
 function collectorMove(s: Game): Command | null {
+  const mobile = ownPieces(s).filter(
+    (u) => collector(u) && ready(s, u) && speed(u) + u.bonus - u.moved >= 1,
+  );
+  // Market valuation includes every faction's production. A turn with no
+  // mobile collectors has no harvest decision to price or threats to inspect.
+  if (!mobile.length) return null;
   const values = marketValues(s);
   const harvestScores = new Map<string, number>();
   const staying = new Set<string>();
   const threatened = collectorThreats(s);
-  for (const u of ownPieces(s).filter((u) => collector(u) && ready(s, u))) {
-    if (speed(u) + u.bonus - u.moved < 1) continue;
+  for (const u of mobile) {
     // Identical collectors on the same hex have the same legal destinations
     // and harvest choices. Keep their original order, but don't reassess a
     // stationary formation once for every individual merchant.
