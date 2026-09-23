@@ -366,6 +366,18 @@ function payload(c: Command) {
 export function applyCommand(state: Game, c: Command): Result {
   return commandResult(state, c, false);
 }
+// These orders edit only selected troops and campaign records, never terrain
+// or unselected troops. Elimination deletes keys from the private piece map.
+const LOCAL_MILITARY_COMMANDS = new Set([
+  "siege",
+  "destroy-town",
+  "destroy-tower",
+  "destroy-route",
+  "hold",
+  "load",
+  "unload",
+  "colonize",
+]);
 const LOCAL_RECORD_COMMANDS = new Set([
   "bank",
   "recruit",
@@ -380,6 +392,7 @@ const LOCAL_RECORD_COMMANDS = new Set([
   "tower",
   "guild",
   "guild-order",
+  ...LOCAL_MILITARY_COMMANDS,
 ]);
 /** Only an uncontested move can share stationary troops. Combat may displace
  * defenders, rescue passengers or trigger other mutations, so it keeps the
@@ -410,6 +423,18 @@ function detachMovingPieces(original: Game, draft: Game, command: Command) {
       )
         draft.pieces[unit.id] = { ...unit };
 }
+function detachMilitaryPieces(original: Game, draft: Game, command: Command) {
+  const ids = new Set([...(command.ids ?? []), ...(command.ships ?? [])]);
+  if (command.type === "unload" && command.ids === undefined) {
+    const carriers = new Set(command.ships);
+    for (const unit of allPieces(draft))
+      if (unit.carrier && carriers.has(unit.carrier)) ids.add(unit.id);
+  }
+  for (const id of ids) {
+    const unit = draft.pieces[id];
+    if (unit && unit === original.pieces[id]) draft.pieces[id] = { ...unit };
+  }
+}
 /** Supply IDs name a whole formation. Copy every friendly unit on that tile,
  * including unlisted soldiers, before its movement or siege bonuses change.
  * Economic guild orders have no selected formation and edit no troop records. */
@@ -435,8 +460,8 @@ export function applyCommandPlan(
   const commands: Command[] = [];
   try {
     // Routine purchases edit stores/buildings and add soldiers. Guild supply
-    // also edits one formation, copied below. Other commands detach remaining
-    // soldiers and terrain, including all unknown future command types.
+    // and local military orders copy affected troops below. Other commands
+    // detach remaining soldiers and terrain, including unknown future types.
     let detached = false;
     let view: Game = {
       ...structuredClone({
@@ -482,6 +507,8 @@ export function applyCommandPlan(
       const next = { ...view };
       if (!detached && command.type === "guild-order")
         detachSuppliedPieces(state, next, command);
+      if (!detached && LOCAL_MILITARY_COMMANDS.has(command.type))
+        detachMilitaryPieces(state, next, command);
       if (!detached && !LOCAL_RECORD_COMMANDS.has(command.type)) {
         if (moving) detachMovingPieces(state, next, command);
         else {
@@ -525,9 +552,9 @@ export function applyCommandPlan(
  * Expeditions and Woods changes retain a fully isolated world copy. End-turn
  * and surrender previews also isolate sea tiles at possible season boundaries.
  * Routine economic orders copy only the records their real rules may change.
- * Recruitment transactions also reuse immutable geometry and existing unit
- * records: deployment only adds units, and guild supply copies its selected
- * formation. Follow-up cleanup only deletes keys from the copied piece map.
+ * Recruitment and local military transactions also reuse immutable geometry
+ * and unchanged troops. Copy affected formations or passengers before editing
+ * them. Follow-up cleanup only deletes keys from the copied piece map.
  * This never publishes the preview.
  */
 export function canApplyCommand(state: Game, c: Command): boolean {
@@ -541,7 +568,9 @@ function commandResult(state: Game, c: Command, preview: boolean): Result {
     payload(c);
     const moving = peacefulMove(state, c);
     const shareUnits =
-      moving || ["recruit", "ship", "guild-order"].includes(c.type);
+      moving ||
+      ["recruit", "ship", "guild-order"].includes(c.type) ||
+      LOCAL_MILITARY_COMMANDS.has(c.type);
     const localOrder =
       preview &&
       [
@@ -585,6 +614,7 @@ function commandResult(state: Game, c: Command, preview: boolean): Result {
           }
         : structuredClone(state);
     if (moving) detachMovingPieces(state, s, c);
+    if (LOCAL_MILITARY_COMMANDS.has(c.type)) detachMilitaryPieces(state, s, c);
     if (!localOrder && c.type === "guild-order")
       detachSuppliedPieces(state, s, c);
     if (localOrder) {

@@ -1,7 +1,14 @@
-import { expect, it } from "vitest";
+import { expect, it, vi } from "vitest";
 import { applyCommand } from "../src/game/engine";
-import { militaryCommand, setTile, setTiles } from "../src/game/military";
-import type { Game, Piece } from "../src/game/types";
+import {
+  militaryCommand,
+  removePieces,
+  setTile,
+  setTiles,
+} from "../src/game/military";
+import type { Game, Piece, ShipClass } from "../src/game/types";
+import { shipStats } from "../src/game/content";
+import * as content from "../src/game/content";
 import { maritimeFixture } from "./maritime-fixture";
 import { piece } from "./helpers";
 
@@ -20,6 +27,117 @@ function countScans(s: Game) {
   });
   return () => scans;
 }
+
+// Independent direct-scan oracle: each berth checks all currently surviving
+// passengers. The optimized implementation must keep this exact rescue order.
+function referenceLosses(s: Game, ids: string[], friendly: Piece[]) {
+  const removed = new Set(ids),
+    survivors = friendly.filter((u) => !removed.has(u.id) && s.pieces[u.id]);
+  for (const unit of Object.values(s.pieces)) {
+    if (removed.has(unit.id) || !unit.carrier || !removed.has(unit.carrier))
+      continue;
+    const carrier = survivors.find(
+      (ship) =>
+        ship.naval &&
+        ship.tile === unit.tile &&
+        ship.owner === unit.owner &&
+        Object.values(s.pieces).filter(
+          (u) => u.carrier === ship.id && !removed.has(u.id),
+        ).length < shipStats(ship.kind as ShipClass, ship.tier).capacity,
+    );
+    if (carrier) {
+      unit.carrier = carrier.id;
+      unit.tile = carrier.tile;
+      survivors.push(unit);
+    } else removed.add(unit.id);
+  }
+  for (const id of removed) delete s.pieces[id];
+}
+
+it("passenger losses retain exact rescue order with mixed owners, locations, tiers and occupied berths", () => {
+  for (let scenario = 0; scenario < 32; scenario++) {
+    const s = fleet();
+    const ships = Array.from({ length: 12 }, (_, i) =>
+      piece(
+        s,
+        i % 3 ? "1,0" : "2,0",
+        i % 2,
+        i % 4 === 0 ? "galley" : i % 3 ? "convoy" : "transport",
+        1 + ((scenario + i) % 4),
+      ),
+    );
+    const passengers = ships.flatMap((ship, i) =>
+      Array.from(
+        {
+          length: Math.max(
+            0,
+            shipStats(ship.kind as ShipClass, ship.tier).capacity -
+              ((scenario + i) % 3),
+          ),
+        },
+        (_, j) => {
+          const u = piece(
+            s,
+            ship.tile,
+            ship.owner,
+            j % 2 ? "merchant" : "heavy",
+            1 + (j % 4),
+          );
+          u.carrier = ship.id;
+          return u;
+        },
+      ),
+    );
+    const removed = [
+      ...ships.filter((_, i) => (i + scenario) % 3 === 0),
+      ...passengers.filter((_, i) => (i + scenario) % 7 === 0),
+    ].map((u) => u.id);
+    // Reordered records and candidate hulls must affect both versions equally.
+    if (scenario % 2)
+      s.pieces = Object.fromEntries(Object.entries(s.pieces).reverse());
+    const friendly = scenario % 2 ? [...ships].reverse() : ships;
+    const expected = structuredClone(s);
+    referenceLosses(
+      expected,
+      removed,
+      friendly.map((u) => expected.pieces[u.id]),
+    );
+    removePieces(s, removed, friendly);
+    expect(JSON.stringify(s), `scenario ${scenario}`).toBe(
+      JSON.stringify(expected),
+    );
+  }
+});
+
+it("large passenger rescues scan the army once and keep individually selected casualties removed", () => {
+  const s = fleet(),
+    ships = Array.from({ length: 200 }, () => piece(s, "1,0", 0, "convoy", 4));
+  const passengers = ships.slice(0, 100).flatMap((ship) =>
+    Array.from({ length: 8 }, () => {
+      const u = piece(s, "1,0");
+      u.carrier = ship.id;
+      return u;
+    }),
+  );
+  for (let i = 0; i < 15000; i++) piece(s, "3,0", 1);
+  const scans = countScans(s),
+    doomed = passengers[0];
+  const capacity = vi.spyOn(content, "shipStats");
+  try {
+    removePieces(
+      s,
+      [...ships.slice(0, 100).map((u) => u.id), doomed.id],
+      ships,
+    );
+    expect(capacity.mock.calls.length).toBeLessThanOrEqual(ships.length);
+  } finally {
+    capacity.mockRestore();
+  }
+  expect(scans()).toBe(1);
+  expect(s.pieces[doomed.id]).toBeUndefined();
+  for (const [i, u] of passengers.slice(1).entries())
+    expect(s.pieces[u.id].carrier).toBe(ships[100 + Math.floor(i / 8)].id);
+});
 
 it("fills selected ships in command order, retaining occupied berths and skipping warships", () => {
   const s = fleet();

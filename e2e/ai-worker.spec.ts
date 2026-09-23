@@ -137,6 +137,7 @@ test("pausing after a reply but before presentation resends the visible snapshot
     ({ key, data }) => {
       localStorage.setItem(key, data);
       localStorage.setItem("catane-ai-pacing", "800");
+      localStorage.setItem("catane-language", "en");
       const w = window as any;
       w.posts = [];
       w.replies = [];
@@ -149,7 +150,20 @@ test("pausing after a reply but before presentation resends the visible snapshot
           this.ai = String(url).includes("ai.worker");
           if (!this.ai) return;
           w.workers.push(this);
-          this.addEventListener("message", (e) => w.replies.push(e.data));
+          this.addEventListener("message", (e) => {
+            w.replies.push(e.data);
+            if (w.replies.length === 1)
+              // Let the app receive the reply, then pause before its delayed
+              // presentation. Polling from the test runner can miss this
+              // interval when other browser/CPU work is busy.
+              setTimeout(() => {
+                const pause = document.querySelector<HTMLButtonElement>(
+                  'button[aria-label="Pause AI"]',
+                );
+                if (!pause) throw Error("Missing AI pause control");
+                pause.click();
+              }, 0);
+          });
         }
         postMessage(data: any) {
           if (this.ai)
@@ -170,7 +184,9 @@ test("pausing after a reply but before presentation resends the visible snapshot
   await expect
     .poll(() => page.evaluate(() => (window as any).replies.length))
     .toBe(1);
-  await page.getByRole("button", { name: "Pause AI", exact: true }).click();
+  await expect(
+    page.getByRole("button", { name: "Resume AI", exact: true }),
+  ).toBeVisible();
   await page.waitForTimeout(900);
   expect(
     await page.evaluate(

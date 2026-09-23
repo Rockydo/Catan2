@@ -768,3 +768,41 @@ All 1,571 unit tests passed. The planning audit retained every project, score, g
 All 144 staging browser scenarios passed across Chromium, Firefox and mobile. The deployed build passed all 12 production HTTP checks and 10 additional Chromium transport, save and worker scenarios. Type checking, formatting, the build and whitespace checks passed. The seasonal-boundary regression was also repeated after correcting its fixture to use the two-round calendar.
 
 Checks used exported copies and disposable profiles. The player's live campaign was not opened or modified. Earlier hashed assets remain available to already-open sessions. The broader performance goal remains active.
+
+
+## Passenger rescue and local military transactions
+
+Resolving a sunken transport previously recounted every unit for each possible rescue ship and each passenger. Rescue now counts occupied berths once, excluding already selected casualties. Eligible surviving hulls stay in their original order within each owner and tile. A cursor skips each full hull once. Passenger processing and final deletion retain the original campaign order. Rescued troops cannot become new hull candidates, and surviving hull occupancy can only increase during this operation. Land battles without rescue hulls skip the berth-count pass.
+
+Sieges, town and tower destruction, route demolition, holding, boarding, landing and colonization now copy only affected troop records. Boarding copies selected soldiers and ships; landing also finds all passengers when no subset is specified. Unselected troops and unchanged terrain remain shared immutable inputs. Stores, towns, routes, sieges and other campaign records keep their existing isolated copies. Eliminations delete from the private troop dictionary. Combat and unknown command types retain full isolation. Failed actions and batches still return the untouched input campaign.
+
+The fleet diagnostic now includes a pending naval casualty choice. Its default fixture has 40 tier-four convoy ships and 15,000 unrelated units. The transport cases carry 320 passengers. The loss case carries 240 passengers, sinks 20 hulls and fills the limited free berths on the survivors before losing the remaining passengers. These are complete engine transactions, including validation and cleanup, with medians of three samples:
+
+| Fleet transaction | Before | Final build |
+| --- | ---: | ---: |
+| Board 320 soldiers | 26.23 ms | 8.26 ms |
+| Sail the fleet one tile | 12.02 ms | 12.25 ms |
+| Land 320 passengers | 19.17 ms | 10.58 ms |
+| Resolve naval losses and passenger rescue | 5,036.27 ms | 18.72 ms |
+
+Every command and complete resulting campaign matched the reference checkout, including rescued passenger assignment and loss order. Inputs remained unchanged. The large casualty improvement describes this dense rescue fixture, not whole AI turns. Fleet movement was effectively unchanged.
+
+| Full AI workload | Before | Final build | Exact comparison |
+| --- | ---: | ---: | --- |
+| Latest Round 32 export, through the human casualty decision | 16.00 s | 15.26 s | 485 orders and complete final state |
+| Round 31 export, complete AI turn | 10.65 s | 10.50 s | 144 orders and complete final state |
+| Growth map, 2,000 tiles and 1,000 towns, first 60 decisions | 11.22 s | 11.27 s | 60 orders and complete final state |
+
+The latest replay improved by about 5%. The older campaign and growth-map sample were effectively unchanged. Both browser replays retained approximately 16.8 ms frame p95, with no long main-thread tasks or errors. The latest replay stops before the human casualty response, so its improvement comes from cheaper military transactions and previews, not the large rescue gain above.
+
+The follow-up CPU profile retained all 485 orders and the same final state. Sampled structured-clone time fell from about 1.28 seconds to 0.31 seconds. Troop enumeration still accounts for about 1.45 seconds, with other planning costs remaining significant. These categories are not additional wall-clock savings; the broader performance goal remains active.
+
+New frozen-input tests cover land and naval raids, prolonged siege, demolition, faction elimination, holding, colonization, transport subsets, omitted passenger selection, movement after a raid and rollback after a partially executed landing. Every complete result matches independently isolated execution. Rescue tests compare 32 mixed-owner, mixed-location and mixed-tier cases with the original direct-scan algorithm. An 800-passenger case with 15,000 unrelated soldiers checks exact assignments, one army scan and bounded hull-capacity reads.
+
+All 1,588 unit tests passed in the separate final run. During concurrent validation, one 1,200-seed rebellion test exceeded its five-second limit; the full suite passed when run without the browser suite competing for CPU. All 13,206 planning proposals across 128 scenarios and all 96 trade comparisons retained their exact reference results.
+
+A new browser regression resolves an actual losing naval attack through the casualty dialog, checks the surviving passengers against engine execution, then reloads their saved state. The pause-after-reply regression now triggers its pause directly after worker message handling, before delayed presentation, instead of depending on test-runner polling and clicking within that short interval. It still requires the original visible state, a full resynchronization request on resume, worker reuse, and the exact resulting dice and production.
+
+All 147 staging browser scenarios passed across Chromium, Firefox and mobile. The deployed build passed all 12 production HTTP checks and 11 additional Chromium transport, worker and large-save scenarios. Type checking, formatting, the build and whitespace checks passed. Previous hashed assets were retained for already-open sessions.
+
+Validation used exported copies and disposable browser profiles. The playing campaign was not opened or modified. The save format remains unchanged in this pass, and the broader performance goal remains active.

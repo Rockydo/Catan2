@@ -110,14 +110,14 @@ SOURCE_ROOT=/path/to/older/checkout npx tsx scripts/ai-planning-compare.ts
 
 Use a reference checkout with the same gameplay rules. The audit creates 128 positions, including blocked coasts, shared guild coverage, watchtower support, spent movement, mixed formations and ports sharing sea tiles. It checks exact project scores, order, guild decisions and military actions, and verifies that neither planner changes its input. Shared-port cases vary city tiers, free hull grants, passenger armies, local forces and frozen seas.
 
-To measure bulk boarding, fleet movement and unloading in a dense disposable campaign:
+To measure bulk boarding, fleet movement, unloading and passenger rescue in a dense disposable campaign:
 
 ```sh
 LABEL=before SOURCE_ROOT=/path/to/older/checkout npx tsx scripts/fleet-performance.ts
 LABEL=after EXPECT_PATH=test-artifacts/fleet-performance-before.json npx tsx scripts/fleet-performance.ts
 ```
 
-The default fixture has 40 convoy ships, 320 passengers and 15,000 other units. Each action is a complete engine transaction, including validation and cleanup, with three timing samples and an exact final-state comparison. `SHIPS`, `IDLE_UNITS` and `SAMPLES` adjust the workload. This measures transport actions, not a whole AI turn, and never opens browser storage.
+The default fixture has 40 convoy ships and 15,000 other units. Transport cases carry 320 passengers. The naval-loss case carries 240 passengers and sinks half the convoy hulls, with limited spare berths on the survivors. Each action is a complete engine transaction, including validation and cleanup, with three timing samples and an exact final-state comparison. `SHIPS`, `IDLE_UNITS` and `SAMPLES` adjust the workload. This measures transport and casualty actions, not a whole AI turn, and never opens browser storage.
 
 To measure guild supply and production with large armies:
 

@@ -106,22 +106,41 @@ export function removePieces(
   const survivors = friendly.filter(
     (u) => !removed.has(u.id) && s.pieces[u.id],
   );
-  for (const unit of Object.values(s.pieces)) {
+  const pools = new Map<
+    string,
+    { hulls: { unit: Piece; capacity: number }[]; next: number }
+  >();
+  for (const unit of survivors) {
+    if (!unit.naval) continue;
+    const capacity = shipStats(unit.kind as ShipClass, unit.tier).capacity;
+    if (!capacity) continue;
+    const key = `${unit.owner}/${unit.tile}`;
+    let pool = pools.get(key);
+    if (!pool) pools.set(key, (pool = { hulls: [], next: 0 }));
+    pool.hulls.push({ unit, capacity });
+  }
+  const units = Object.values(s.pieces),
+    occupied = new Map<string, number>();
+  if (pools.size)
+    for (const unit of units)
+      if (unit.carrier && !removed.has(unit.id))
+        occupied.set(unit.carrier, (occupied.get(unit.carrier) ?? 0) + 1);
+  // Keep passenger and eligible hull order. Selected casualties are already
+  // excluded from occupancy, so surviving hulls can only fill during rescue.
+  // Ships cannot be passengers; rescued soldiers add no new hull candidates.
+  // Each full hull is skipped once instead of retried for every later soldier.
+  for (const unit of units) {
     if (removed.has(unit.id) || !unit.carrier || !removed.has(unit.carrier))
       continue;
-    const carrier = survivors.find(
-      (ship) =>
-        ship.naval &&
-        ship.tile === unit.tile &&
-        ship.owner === unit.owner &&
-        Object.values(s.pieces).filter(
-          (u) => u.carrier === ship.id && !removed.has(u.id),
-        ).length < shipStats(ship.kind as ShipClass, ship.tier).capacity,
-    );
+    const pool = pools.get(`${unit.owner}/${unit.tile}`);
+    let hull = pool?.hulls[pool.next];
+    while (hull && (occupied.get(hull.unit.id) ?? 0) >= hull.capacity)
+      hull = pool!.hulls[++pool!.next];
+    const carrier = hull?.unit;
     if (carrier) {
       unit.carrier = carrier.id;
       unit.tile = carrier.tile;
-      survivors.push(unit);
+      occupied.set(carrier.id, (occupied.get(carrier.id) ?? 0) + 1);
     } else removed.add(unit.id);
   }
   for (const id of removed) delete s.pieces[id];

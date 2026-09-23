@@ -5,9 +5,10 @@ import { pathToFileURL } from "node:url";
 import { maritimeFixture } from "../tests/maritime-fixture";
 import { piece } from "../tests/helpers";
 import type { Command } from "../src/game/types";
+import { points, power } from "../src/game/selectors";
 
-// Disposable dense campaign: measure complete boarding, sailing and landing
-// transactions, including validation and cleanup. Never access browser storage.
+// Disposable dense campaign: measure transport and casualty transactions,
+// including validation and cleanup. Never access browser storage.
 const root = resolve(process.env.SOURCE_ROOT ?? ".");
 const { applyCommand } = await import(
   pathToFileURL(resolve(root, "src/game/engine.ts")).href
@@ -27,28 +28,56 @@ if (
 )
   throw Error("The reference must use the same fleet and campaign size.");
 const results = [];
-for (const action of ["load", "move", "unload"] as const) {
+for (const action of ["load", "move", "unload", "rescue"] as const) {
   const { s } = maritimeFixture();
   for (const tile of ["1,0", "2,0"]) s.tiles[tile].resource = "water";
   const ships = Array.from({ length: fleetSize }, () =>
     piece(s, "1,0", 0, "convoy", 4),
   );
-  const troops = Array.from({ length: fleetSize * 8 }, (_, i) => {
-    const u = piece(s, action === "load" ? "0,0" : "1,0");
-    if (action !== "load") u.carrier = ships[Math.floor(i / 8)].id;
-    return u;
-  });
+  const sunk = Math.ceil(fleetSize / 2);
+  const troops = ships.flatMap((ship, i) =>
+    Array.from({ length: action === "rescue" && i >= sunk ? 4 : 8 }, () => {
+      const u = piece(s, action === "load" ? "0,0" : "1,0");
+      if (action !== "load") u.carrier = ship.id;
+      return u;
+    }),
+  );
   for (let i = 0; i < idleUnits; i++) piece(s, "3,0", 1, "heavy", 2);
+  if (action === "rescue") {
+    const required = ships.slice(0, sunk).reduce((n, u) => n + points(u), 0),
+      attackerPower = power(s, ships, "2,0"),
+      enemies = Array.from({ length: (attackerPower + required) / 2 }, () =>
+        piece(s, "2,0", 1, "galley", 1),
+      );
+    // A pending losing-attack choice with partially occupied surviving hulls.
+    // No retreat is needed; some passengers fit and the rest are lost.
+    s.battle = {
+      attacker: 0,
+      defender: 1,
+      attackers: ships.map((u) => u.id),
+      defenders: enemies.map((u) => u.id),
+      origin: "1,0",
+      target: "2,0",
+      naval: true,
+      attackerPower,
+      defenderPower: power(s, enemies, "2,0"),
+      loser: 0,
+      loss: required,
+      required,
+    };
+  }
   const command: Command =
-    action === "move"
-      ? { type: "move", ids: ships.map((u) => u.id), to: "2,0" }
-      : {
-          type: action,
-          ships: ships.map((u) => u.id),
-          ...(action === "load"
-            ? { ids: troops.map((u) => u.id) }
-            : { to: "0,0" }),
-        };
+    action === "rescue"
+      ? { type: "resolve-battle", ids: ships.slice(0, sunk).map((u) => u.id) }
+      : action === "move"
+        ? { type: "move", ids: ships.map((u) => u.id), to: "2,0" }
+        : {
+            type: action,
+            ships: ships.map((u) => u.id),
+            ...(action === "load"
+              ? { ids: troops.map((u) => u.id) }
+              : { to: "0,0" }),
+          };
   const original = JSON.stringify(s),
     times = [];
   let finalHash = "";
@@ -79,6 +108,7 @@ for (const action of ["load", "move", "unload"] as const) {
   }
   results.push({
     action,
+    passengers: troops.length,
     command,
     medianMs: [...times].sort((a, b) => a - b)[Math.floor(times.length / 2)],
     samplesMs: times,
@@ -88,7 +118,6 @@ for (const action of ["load", "move", "unload"] as const) {
 const report = {
   source: root,
   fleetSize,
-  passengers: fleetSize * 8,
   idleUnits,
   results,
 };
