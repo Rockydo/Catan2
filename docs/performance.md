@@ -651,3 +651,30 @@ New regression tests verify ordered berth assignment, partial ships, escorts, fa
 All 1,538 unit tests and 111 browser scenarios passed. The final fleet tests were repeated after adding explicit frozen-status assertions. A final transport diagnostic retained the same complete states, with medians of 19.7 ms for boarding, 12.8 ms for movement and 18.9 ms for unloading.
 
 The local deployment passed all 12 production HTTP checks and 10 additional Chromium transport, worker and large-save scenarios. Browser coverage includes Firefox, Chromium and mobile, with guild supply, army selection, transport shortcuts, naval sieges, seasonal movement, thaw battles and storage recovery. Earlier hashed assets remain available for already-open sessions. The broader performance goal remains active.
+
+
+## Production cache validity during large-army movement
+
+Production forecasts now invalidate when a movement changes a producer's blockade, instead of whenever any military unit changes position. The cache key records hostile occupation for each affected faction and producing tile. Towns and camps retain their adjacent harvest interests. Fishing ships include every marine-resource tile within their possible range, including currently frozen lanes, so seasonal forecasts cannot reuse an obsolete blockade. Merchants retain their existing ability to harvest through blockades. Alliances, terrain, calendar, city upgrades, workshop choices and collector positions still participate in the key.
+
+Consecutive identical collectors use an ordered run in the cache key. Multiplicity and coverage selection are preserved. Actual production still processes every individual delivery in the original order, retaining floating-point forecasts and AI tie breaks. The shared occupation index exists only in read-only decisions and published UI snapshots; mutable engine drafts read current occupants. Only the latest production position is retained, so this does not add an expanding cache history. The on-disk save format is unchanged by this optimization.
+
+| Workload | Before | After | Exact comparison |
+| --- | ---: | ---: | --- |
+| Latest Round 32 export, to the human casualty decision | 19.70 s | 18.79 s | 485 orders and complete final state |
+| Round 31 export, complete AI turn | 10.90 s | 10.76 s | 144 orders and complete final state |
+| Growth map, 2,000 tiles and 1,000 towns, first 60 decisions | 11.34 s | 10.94 s | 60 orders and complete final state |
+
+The latest replay improved by about 5%, and the growth sample by about 4%. The older campaign was effectively unchanged. Both browser replays retained approximately 16.8 ms frame p95 with no long main-thread tasks or errors. These are local samples, not guaranteed gains for every campaign.
+
+The latest campaign's internal production key shrank from 207,999 to 105,244 bytes, about 49%. On the growth map it shrank from 368,417 to 349,445 bytes, about 5%. Median construction time over five independent read scopes changed from 3.24 to 2.90 ms on the latest export and from 2.38 to 2.66 ms on the growth map. Building harvest interests has a small cost; the turn-level improvement comes from avoiding unnecessary forecast recalculations. These key sizes are not save-file sizes. Dice-roll processing was effectively unchanged.
+
+The production diagnostic compares every ordered delivery in all six production modes, four forecast horizons and the complete resulting campaign for all 11 dice totals. Both the latest export and growth fixture matched exactly. All 13,206 project proposals, scores, guild decisions and military choices matched across 128 planning scenarios. All 96 trade comparisons also matched.
+
+Regression tests cover irrelevant movement, hostile entry, equivalent blockers, boarding, friendly and wrong-domain occupants, seasonal fishing range, collector order and multiplicity, and selected versus default coverage. Another 128 occupation variants verify that equal keys produce identical ordered deliveries in every season without changing the campaign. Tests also assert that unchanged harvests actually reuse forecasts across separate decisions.
+
+All 1,546 unit tests and 144 staging browser scenarios passed. Browser checks cover Chromium, Firefox and mobile, including guild orders, transport, naval sieges, army composition, all-season previews, ice transitions, forced thaw landings, worker continuation and large-save recovery. Type checking, formatting and the production build also passed.
+
+The local deployment passed all 12 production HTTP checks and 10 additional Chromium storage, transport and worker scenarios. A fresh save round trip retained the latest campaign exactly in a 36,629-byte archive. Three deployed refresh checks preserved the full campaign hash, with a median 87.4 ms from navigation to campaign-menu readiness using warm assets. This is a verification of the existing compact-save path, not a claimed improvement in map painting or a new save format.
+
+Tests used exported copies and disposable profiles. The player's live campaign was not opened or changed. Earlier hashed assets remain available for already-open sessions. The broader performance goal remains active.

@@ -19,6 +19,7 @@ import {
   withSeasonalPlanning,
 } from "../src/game/ai-seasonal";
 import type { Game, Good, Stock } from "../src/game/types";
+import { distance } from "../src/game/world";
 
 function direct(s: Game, owner: number, mode: "annual" | "current") {
   const result: Stock = {};
@@ -416,4 +417,216 @@ describe("retained production forecasts", () => {
     delete foe.carrier;
     inspect(f.s);
   });
+});
+
+describe("production blockade footprint", () => {
+  function outsideHarvests(s: Game) {
+    const used = new Set([
+      ...Object.values(s.towns).flatMap((t) => s.vertices[t.vertex].tiles),
+      ...Object.values(s.routes).flatMap((r) => Object.keys(r.camps)),
+    ]);
+    return Object.values(s.tiles)
+      .filter((t) => t.resource !== "water" && !used.has(t.id))
+      .map((t) => t.id);
+  }
+
+  it("reuses forecasts when troops move away from production, but refreshes on entering a harvest", () => {
+    const f = fixture(),
+      outside = outsideHarvests(f.s);
+    const unit = piece(f.s, outside[0], 1, "heavy", 2);
+    inspect(f.s);
+    const signature = productionSignature(f.s);
+    unit.tile = outside[1];
+    unit.moved = 1;
+    expect(productionSignature(f.s)).toBe(signature);
+    inspect(f.s);
+    unit.tile = f.land;
+    expect(productionSignature(f.s)).not.toBe(signature);
+    inspect(f.s);
+  });
+
+  it("retains the same blocked output while blockers change, until the last one leaves", () => {
+    const f = fixture();
+    const first = piece(f.s, f.land, 1, "heavy", 1);
+    const second = piece(f.s, f.land, 1, "light", 4);
+    inspect(f.s);
+    const signature = productionSignature(f.s);
+    delete f.s.pieces[first.id];
+    expect(productionSignature(f.s)).toBe(signature);
+    second.kind = "artillery";
+    second.tier = 2;
+    expect(productionSignature(f.s)).toBe(signature);
+    inspect(f.s);
+    second.carrier = f.fisher.id;
+    expect(productionSignature(f.s)).not.toBe(signature);
+    inspect(f.s);
+  });
+
+  it("ignores friendly guards and wrong-domain occupants while keeping naval blockades", () => {
+    const f = fixture(),
+      original = productionSignature(f.s);
+    piece(f.s, f.land, 0, "heavy", 4);
+    piece(f.s, f.water, 0, "galley", 4);
+    piece(f.s, f.water, 1, "heavy", 4).seasonStatus = "adrift";
+    piece(f.s, f.land, 1, "galley", 4).seasonStatus = "icebound";
+    expect(productionSignature(f.s)).toBe(original);
+    inspect(f.s);
+    const ship = piece(f.s, f.water, 1, "galley", 4);
+    expect(productionSignature(f.s)).not.toBe(original);
+    inspect(f.s);
+    delete f.s.pieces[ship.id];
+    piece(f.s, f.water, 1, "settlership", 1);
+    expect(productionSignature(f.s)).toBe(original);
+    inspect(f.s);
+  });
+
+  it("keeps remote frozen fisheries in the footprint for annual and future-season harvests", () => {
+    const f = fixture();
+    f.home.vertex = f.s.tiles["-3,0"].vertices[0];
+    f.home.extensions = {};
+    f.home.extensionGoods = {};
+    f.s.routes = {};
+    delete f.s.pieces[f.merchant.id];
+    Object.assign(f.s.tiles[f.water], { climate: "arctic", surface: "frozen" });
+    expect(
+      Object.values(f.s.towns).every(
+        (t) => !f.s.vertices[t.vertex].tiles.includes(f.water),
+      ),
+    ).toBe(true);
+    inspect(f.s);
+    const signature = productionSignature(f.s);
+    const annual = income(f.s, 0);
+    piece(f.s, f.water, 1, "galley", 2);
+    expect(productionSignature(f.s)).not.toBe(signature);
+    inspect(f.s);
+    expect(income(f.s, 0)).not.toEqual(annual);
+  });
+
+  it("does not recalculate seasonal yields for unchanged harvests in the next decision", () => {
+    const f = fixture();
+    f.s.round = 171;
+    const outside = outsideHarvests(f.s);
+    const unit = piece(f.s, outside[0], 1, "heavy", 3);
+    const read = () =>
+      withSeasonalPlanning(() =>
+        withPlanningFrame(f.s, () => ({
+          annual: f.s.players.map((p) => income(f.s, p.id)),
+          forecast: projectedIncomes(f.s, 6),
+        })),
+      );
+    const spy = vi.spyOn(seasons, "seasonalYield");
+    try {
+      const expected = read(),
+        count = spy.mock.calls.length;
+      expect(count).toBeGreaterThan(0);
+      unit.tile = outside[1];
+      expect(read()).toEqual(expected);
+      expect(spy).toHaveBeenCalledTimes(count);
+      unit.tile = f.land;
+      expect(read()).not.toEqual(expected);
+      expect(spy.mock.calls.length).toBeGreaterThan(count);
+    } finally {
+      spy.mockRestore();
+    }
+  });
+});
+
+it("keeps fishing interests within ship range without assuming today's ice is permanent", () => {
+  const f = fixture();
+  f.fisher.tier = 1;
+  const used = new Set(
+    Object.values(f.s.towns).flatMap((t) => f.s.vertices[t.vertex].tiles),
+  );
+  const remote = Object.values(f.s.tiles).find(
+    (t) => !used.has(t.id) && distance(t.id, f.fisher.tile) === 3,
+  )!;
+  remote.resource = "water";
+  remote.fish = true;
+  delete remote.biome;
+  inspect(f.s);
+  const signature = productionSignature(f.s);
+  const enemy = piece(f.s, remote.id, 1, "galley", 3);
+  expect(productionSignature(f.s)).toBe(signature);
+  inspect(f.s);
+  f.fisher.tier = 3;
+  inspect(f.s);
+  const covered = productionSignature(f.s);
+  delete f.s.pieces[enemy.id];
+  expect(productionSignature(f.s)).not.toBe(covered);
+  inspect(f.s);
+});
+
+it("compacts repeated collector inputs without losing multiplicity, selection or producer order", () => {
+  const f = fixture();
+  f.s.pieces = {};
+  const initial = piece(f.s, f.land, 0, "merchant", 3);
+  initial.coverage = [f.water];
+  const one = productionSignature(f.s);
+  for (let i = 0; i < 2000; i++)
+    piece(f.s, f.land, 0, "merchant", 3).coverage = [f.water];
+  const repeated = productionSignature(f.s);
+  expect(repeated).not.toBe(one);
+  expect(repeated.length - one.length).toBeLessThan(20);
+  inspect(f.s);
+  const fish = piece(f.s, f.water, 0, "fishing", 3);
+  piece(f.s, f.land, 0, "merchant", 3).coverage = [f.water];
+  const mixed = productionSignature(f.s);
+  inspect(f.s);
+  f.s.pieces = { [fish.id]: fish, ...f.s.pieces };
+  expect(productionSignature(f.s)).not.toBe(mixed);
+  inspect(f.s);
+  initial.coverage = [];
+  const selected = productionSignature(f.s);
+  inspect(f.s);
+  delete initial.coverage;
+  expect(productionSignature(f.s)).not.toBe(selected);
+  inspect(f.s);
+});
+
+it("equal fingerprints imply identical ordered deliveries across varied occupations and all seasons", () => {
+  const base = fixture();
+  const positions = [base.land, base.water, "-3,0", "3,-1"];
+  const seen = new Map<string, string>();
+  let reused = 0;
+  for (let i = 0; i < 128; i++) {
+    const s = structuredClone(base.s);
+    s.towns[base.home.id].level = i % 16 < 8 ? 3 : 4;
+    s.pieces[base.merchant.id].tier = i % 32 < 16 ? 2 : 3;
+    if (i % 4 === 0)
+      s.alliances = [
+        { id: "pact", members: [0, 1], threat: 2, lockedUntil: 5 },
+      ];
+    const naval = i % 5 === 0;
+    const unit = piece(
+      s,
+      positions[i % positions.length],
+      i % 2,
+      naval ? "galley" : "heavy",
+      1 + (i % 4),
+    );
+    if (i % 7 === 0) unit.carrier = base.fisher.id;
+    if (i % 3 === 0) {
+      const duplicate = piece(s, unit.tile, unit.owner, unit.kind, unit.tier);
+      duplicate.carrier = unit.carrier;
+    }
+    const original = JSON.stringify(s);
+    const { signature, deliveries } = withPlanningFrame(s, () => ({
+      signature: productionSignature(s),
+      deliveries: JSON.stringify(
+        ["current", "annual", ...seasons.SEASONS].map((mode) =>
+          productionSources(
+            s,
+            mode as "current" | "annual" | seasons.Season,
+          ).map((v) => [v.owner, v.town.id, v.tile, v.good, v.amount]),
+        ),
+      ),
+    }));
+    const previous = seen.get(signature);
+    if (previous !== undefined) {
+      expect(deliveries).toBe(previous);
+      reused++;
+    } else seen.set(signature, deliveries);
+    expect(JSON.stringify(s)).toBe(original);
+  }
+  expect(reused).toBeGreaterThan(50);
 });

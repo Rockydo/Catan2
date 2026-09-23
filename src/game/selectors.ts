@@ -16,6 +16,7 @@ import {
   tileGoods,
   harvestTiles,
   harvestYield,
+  marineResource,
   collector,
   towerPower,
   towerDefense,
@@ -672,6 +673,25 @@ interface ProductionSource {
   good: Good;
   amount: number;
 }
+/** Only matching land/naval occupants can block a producer. Read-only scopes
+ * share this occupation index; mutable rolls and transaction drafts rebuild it. */
+function productionBlockades(s: Game, units: readonly Piece[]) {
+  return planningValue(s, "production-blockades", () => {
+    const blockades = new Map<string, Set<number>>();
+    for (const u of units) {
+      if (
+        u.carrier ||
+        u.naval !== (s.tiles[u.tile]?.resource === "water") ||
+        (u.naval ? isSettler(u.kind) : points(u) <= 0)
+      )
+        continue;
+      let owners = blockades.get(u.tile);
+      if (!owners) blockades.set(u.tile, (owners = new Set()));
+      owners.add(u.owner);
+    }
+    return blockades;
+  });
+}
 export function productionSources(s: Game, mode: ProductionMode = "current") {
   const out: ProductionSource[] = [];
   forEachProduction(s, mode, (owner, town, tile, good, amount) => {
@@ -726,21 +746,10 @@ export function forEachProduction(
     }
     return output;
   };
-  // Blockades depend on the occupying factions, not their stack size. Keep
-  // this index local: production also runs on mutable roll/forecast drafts.
+  // Blockades depend on the occupying factions, not their stack size. Only
+  // read-only scopes share this index; mutable roll/forecast drafts rebuild it.
   const units = allPieces(s);
-  const blockades = new Map<string, Set<number>>();
-  for (const u of units) {
-    if (
-      u.carrier ||
-      u.naval !== (s.tiles[u.tile]?.resource === "water") ||
-      (u.naval ? isSettler(u.kind) : points(u) <= 0)
-    )
-      continue;
-    let owners = blockades.get(u.tile);
-    if (!owners) blockades.set(u.tile, (owners = new Set()));
-    owners.add(u.owner);
-  }
+  const blockades = productionBlockades(s, units);
   const blocks = new Map<string, boolean>();
   const blocked = (id: string, owner: number) => {
     const key = `${owner}/${id}`;
@@ -866,14 +875,79 @@ export function forEachProduction(
 export function productionSignature(s: Game): string {
   return planningValue(s, "production-signature", () => {
     const blockade = new Set<string>();
-    const collectors = [];
-    for (const u of allPieces(s)) {
+    // Consecutive identical collectors have an exact run representation. Keep
+    // their order and count; production still adds every delivery separately.
+    const collectors: [
+      number,
+      string,
+      Piece["kind"],
+      number,
+      Piece["coverage"],
+      number,
+    ][] = [];
+    let previousCollector: Piece | undefined;
+    const fishers = new Map<number, Map<string, number>>();
+    const units = allPieces(s);
+    for (const u of units) {
       if (u.carrier) continue;
-      if (u.naval ? !isSettler(u.kind) : points(u) > 0)
-        blockade.add(`${u.owner}/${u.tile}/${u.naval}`);
-      if (collector(u))
-        collectors.push([u.owner, u.tile, u.kind, u.tier, u.coverage]);
+      if (collector(u)) {
+        if (
+          previousCollector &&
+          previousCollector.owner === u.owner &&
+          previousCollector.tile === u.tile &&
+          previousCollector.kind === u.kind &&
+          previousCollector.tier === u.tier &&
+          (previousCollector.coverage === u.coverage ||
+            (previousCollector.coverage !== undefined &&
+              u.coverage !== undefined &&
+              previousCollector.coverage.length === u.coverage.length &&
+              previousCollector.coverage.every(
+                (tile, i) => tile === u.coverage![i],
+              )))
+        )
+          collectors[collectors.length - 1][5]++;
+        else collectors.push([u.owner, u.tile, u.kind, u.tier, u.coverage, 1]);
+        previousCollector = u;
+      }
+      if (u.kind === "fishing") {
+        if (!fishers.has(u.owner)) fishers.set(u.owner, new Map());
+        const positions = fishers.get(u.owner)!;
+        positions.set(u.tile, Math.max(positions.get(u.tile) ?? 0, u.tier));
+      }
     }
+    const towns = Object.values(s.towns);
+    const camps = Object.values(s.routes).filter(
+      (r) => Object.keys(r.camps).length,
+    );
+    const interests = new Map<string, Set<number>>();
+    const mark = (tile: string, owner: number) => {
+      if (!interests.has(tile)) interests.set(tile, new Set());
+      interests.get(tile)!.add(owner);
+    };
+    for (const town of towns)
+      for (const tile of s.vertices[town.vertex].tiles) mark(tile, town.owner);
+    for (const route of camps)
+      for (const tile of Object.keys(route.camps)) mark(tile, route.owner);
+    // Fishing coverage changes with seasonal ice. Include every fishery within
+    // geometric range, even across currently frozen or blocked sea lanes.
+    // Merchants ignore blockades, so their movement is covered by their ordered
+    // producer records above rather than adding blocked-harvest interests.
+    if (fishers.size)
+      for (const tile of Object.values(s.tiles))
+        if (marineResource(tile))
+          for (const [owner, positions] of fishers)
+            for (const [origin, tier] of positions)
+              if (distance(origin, tile.id) <= tier) {
+                mark(tile.id, owner);
+                break;
+              }
+    for (const [tile, occupants] of productionBlockades(s, units))
+      for (const owner of interests.get(tile) ?? [])
+        for (const occupant of occupants)
+          if (!friendly(s, occupant, owner)) {
+            blockade.add(`${owner}/${tile}`);
+            break;
+          }
     return JSON.stringify([
       s.round,
       s.calendar,
@@ -886,7 +960,7 @@ export function productionSignature(s: Game): string {
       }),
       s.alliances,
       s.players.map((p) => p.id),
-      Object.values(s.towns).map((t) => [
+      towns.map((t) => [
         t.id,
         t.owner,
         t.vertex,
@@ -897,9 +971,7 @@ export function productionSignature(s: Game): string {
         // vertices. Unoccupied intersections cannot affect passive output.
         s.vertices[t.vertex].tiles,
       ]),
-      Object.values(s.routes)
-        .filter((r) => Object.keys(r.camps).length)
-        .map((r) => [r.owner, r.camps]),
+      camps.map((r) => [r.owner, r.camps]),
       [...blockade].sort(),
       collectors,
     ]);

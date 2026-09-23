@@ -12,9 +12,8 @@ const moduleAt = (name: string) =>
   pathToFileURL(`${root}/src/game/${name}.ts`).href;
 const { deserialize } = await import(moduleAt("save"));
 const { production } = await import(moduleAt("economy"));
-const { productionSources, withPlanningFrame } = await import(
-  moduleAt("selectors")
-);
+const { productionSources, productionSignature, withPlanningFrame } =
+  await import(moduleAt("selectors"));
 const { projectedIncomes, withSeasonalPlanning } = await import(
   moduleAt("ai-seasonal")
 );
@@ -24,6 +23,18 @@ const digest = (value: unknown) =>
 const expected = process.env.EXPECT_PATH
   ? JSON.parse(readFileSync(process.env.EXPECT_PATH, "utf8"))
   : undefined;
+// Recreate the read-only decision each time: repeated calls within one frame
+// intentionally use a cached signature and would hide its construction cost.
+const signatureMs = [];
+let signature = "";
+for (let sample = 0; sample < 5; sample++) {
+  const started = performance.now();
+  const current = withPlanningFrame(game, () => productionSignature(game));
+  signatureMs.push(performance.now() - started);
+  if (sample && current !== signature)
+    throw Error("Unchanged production inputs changed their signature.");
+  signature = current;
+}
 const deliveries = [
   "current",
   "annual",
@@ -74,6 +85,9 @@ const report = {
   tiles: Object.keys(game.tiles).length,
   towns: Object.keys(game.towns).length,
   units: Object.keys(game.pieces).length,
+  signatureBytes: Buffer.byteLength(signature),
+  signatureMedianMs: [...signatureMs].sort((a, b) => a - b)[2],
+  signatureSamplesMs: signatureMs,
   deliveries,
   forecasts,
   rolls,

@@ -153,7 +153,7 @@ To check harvest processing and seasonal forecasts on an exported campaign:
 SAVE_PATH=/path/to/campaign.json LABEL=local npx tsx scripts/production-performance.ts
 ```
 
-This checks every dice total from 2 through 12 on independent copies, records full-state hashes and times the resource distribution. It also records ordered deliveries for all seasons and forecasts over several roll counts. `SOURCE_ROOT` selects an older checkout; `EXPECT_PATH` requires exact agreement with its report. It never writes to the campaign export or browser storage.
+This checks every dice total from 2 through 12 on independent copies, records full-state hashes and times the resource distribution. It also records ordered deliveries for all seasons and forecasts over several roll counts. Five independent read scopes measure the size and construction cost of the production cache key. `SOURCE_ROOT` selects an older checkout; `EXPECT_PATH` requires exact agreement on deliveries, forecasts and resulting campaign states, while timings and internal key formats may differ. It never writes to the campaign export or browser storage.
 
 To measure compression and exact save recovery without a browser:
 
