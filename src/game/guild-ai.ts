@@ -44,7 +44,7 @@ import {
   routeSites,
   speed,
 } from "./selectors";
-import { planningDistances, planningReachable } from "./ai-paths";
+import { planningDistances, planningReachableFrom } from "./ai-paths";
 import { warTarget } from "./ai-strategy";
 import {
   neighbors,
@@ -214,14 +214,11 @@ function suppliedFormation(s: Game, town: Town, planningConstruction = false) {
       ),
     );
     if (g.kind === "engineers") {
+      const reaches = planningReachableFrom(s, tile, false, town.owner);
       const value = maxValue([
         0,
         ...enemies
-          .filter((t) =>
-            landAtVertex(s, t.vertex).some((to) =>
-              planningReachable(s, tile, to, false, town.owner),
-            ),
-          )
+          .filter((t) => landAtVertex(s, t.vertex).some(reaches))
           .map((t) => Math.min(g.tier * 2, siegeRequirement(s, t, group)) * 8),
       ]);
       if (value > 0 && (!best || value > best.value))
@@ -237,10 +234,10 @@ function suppliedFormation(s: Game, town: Town, planningConstruction = false) {
       town.owner,
       Math.max(0, Math.floor(remaining)),
     );
+    const reaches = planningReachableFrom(s, tile, naval, town.owner);
     const needsMovement = targets.some(
       (to) =>
-        (remaining < 0 || !Number.isFinite(withinMove(to))) &&
-        planningReachable(s, tile, to, naval, town.owner),
+        (remaining < 0 || !Number.isFinite(withinMove(to))) && reaches(to),
     );
     if (!needsMovement) continue;
     const value =

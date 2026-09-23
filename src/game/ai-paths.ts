@@ -155,6 +155,49 @@ export function planningReachable(
   return false;
 }
 
+/** Transit regions join only passable, unblocked tiles. Equal labels within
+ * this position, owner and movement domain have identical unlimited reach.
+ * Hostile and invalid origins return undefined and must be assessed separately. */
+export function planningTransitRegion(
+  s: Game,
+  from: string,
+  naval: boolean,
+  owner: number,
+): number | undefined {
+  return movementNetwork(s, naval, owner).regions.get(from);
+}
+
+/** Hold the movement network once when one origin tests many destinations.
+ * Like planningReachable, enemy tiles are endpoints, never transit bridges. */
+export function planningReachableFrom(
+  s: Game,
+  from: string,
+  naval: boolean,
+  owner: number,
+): (to: string) => boolean {
+  const network = movementNetwork(s, naval, owner),
+    origin = network.regions.get(from);
+  if (origin !== undefined)
+    return (to) => {
+      if (!canOccupy(s.tiles[to], naval)) return false;
+      const target = network.regions.get(to);
+      return target !== undefined
+        ? origin === target
+        : adjacentRegions(network, to).has(origin);
+    };
+  const adjacent = new Set(neighbors(from)),
+    regions = adjacentRegions(network, from);
+  return (to) => {
+    if (!canOccupy(s.tiles[to], naval)) return false;
+    if (from === to || adjacent.has(to)) return true;
+    const target = network.regions.get(to);
+    if (target !== undefined) return regions.has(target);
+    for (const end of adjacentRegions(network, to))
+      if (regions.has(end)) return true;
+    return false;
+  };
+}
+
 function movementNetwork(s: Game, naval: boolean, owner: number): Connectivity {
   let frame = cache.get(s);
   if (!frame) {

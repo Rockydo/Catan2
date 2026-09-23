@@ -154,6 +154,8 @@ import {
   planningPath as pathTo,
   planningDistance,
   planningReachable as reachable,
+  planningReachableFrom,
+  planningTransitRegion,
   planningReachableToAny,
 } from "./ai-paths";
 import {
@@ -2269,9 +2271,15 @@ function hasLandObjective(
     cache = new Map();
     objectiveCache.set(s, cache);
   }
-  const key = `${s.active}/${origin}/local`;
+  const regions = landRegions(s),
+    region = regions.get(origin),
+    transit = planningTransitRegion(s, origin, false, s.active);
+  // Unblocked origins in the same transit region can use the same troops and
+  // reach the same targets. Geographic regions also constrain embarked troops.
+  // Never merge blocked origins, which can attack either side of a blockade.
+  const key = `${s.active}/${region}/${transit === undefined ? `tile:${origin}` : `region:${transit}`}/local`;
   if (cache.has(key)) return cache.get(key)!;
-  const region = landRegions(s).get(origin);
+  const reaches = planningReachableFrom(s, origin, false, s.active);
   const eligibility = new Map<string, boolean>();
   const available = ownPieces(s).filter((u) => {
     if (u.naval || collector(u)) return false;
@@ -2280,18 +2288,16 @@ function hasLandObjective(
       eligibility.set(
         key,
         u.carrier
-          ? neighbors(u.tile).some((id) => landRegions(s).get(id) === region)
-          : landRegions(s).get(u.tile) === region &&
-              reachable(s, origin, u.tile, false, s.active),
+          ? neighbors(u.tile).some((id) => regions.get(id) === region)
+          : regions.get(u.tile) === region && reaches(u.tile),
       );
     return eligibility.get(key)!;
   });
   const fieldGroups = fieldGroupsFor(s, available);
   const result = landObjectives(s).some(
     (objective) =>
-      objective.tiles.some((target) =>
-        reachable(s, origin, target, false, s.active),
-      ) && objectiveBeatable(s, objective, fieldGroups),
+      objective.tiles.some(reaches) &&
+      objectiveBeatable(s, objective, fieldGroups),
   );
   cache.set(key, result);
   return result;

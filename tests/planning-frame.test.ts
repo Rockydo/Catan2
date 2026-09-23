@@ -14,8 +14,17 @@ import {
   reusePlanningFrame,
   allPieces,
   income,
+  siegeRequirement,
+  siegePower,
+  prepareGameView,
 } from "../src/game/selectors";
-import { coord, distance, landAtVertex } from "../src/game/world";
+import {
+  coord,
+  distance,
+  landAtVertex,
+  vertexNeighbors,
+} from "../src/game/world";
+import { towerDefense } from "../src/game/maritime";
 
 it("AI indexes preserve selector results and ordering across player views and never leak mutable arrays", () => {
   const s = funded("planning-index");
@@ -214,4 +223,66 @@ it("related read views share troops but not changed stores or diplomacy, and res
   });
   piece(s, "1,0", 0, "cavalry");
   expect(allPieces(s)).toHaveLength(2);
+});
+
+it("siege support stays exact for every town, hypothetical owner and attacking force", () => {
+  const s = funded("siege-support-reads");
+  for (const [i, vertex] of Object.keys(s.vertices).entries())
+    if (i % 4 === 0)
+      s.towers[vertex] = {
+        id: `test-${i}`,
+        vertex,
+        owner: i % 3,
+        tier: 1 + (i % 4),
+      };
+  const cannon = piece(s, "0,0", 0, "artillery", 3),
+    ship = piece(s, "0,0", 0, "carrack", 4);
+  cannon.guildSiege = 4;
+  const armies = [[], [cannon], [ship], [cannon, ship]];
+  withPlanningFrame(s, () => {
+    for (const town of Object.values(s.towns))
+      for (const owner of [0, 1, 2])
+        for (const units of armies) {
+          const target = { ...town, owner };
+          expect(siegeRequirement(s, target, units)).toBe(
+            Math.max(
+              0,
+              target.level -
+                1 +
+                target.wall +
+                towerDefense(s, owner, target.vertex) -
+                siegePower(units),
+            ),
+          );
+        }
+  });
+});
+
+it("siege support never leaks between shared troop views, drafts or published snapshots", () => {
+  const { s, home } = maritimeFixture(),
+    vertex = vertexNeighbors(s, home.vertex)[0];
+  s.towers = {
+    [vertex]: { id: "support", vertex, owner: home.owner, tier: 2 },
+  };
+  const base = home.level - 1 + home.wall;
+  withPlanningFrame(s, () => {
+    expect(siegeRequirement(s, home, [])).toBe(base + 2);
+    const draft = { ...s, towers: {} };
+    expect(siegeRequirement(draft, home, [])).toBe(base);
+    withSharedPiecePlanningFrame(draft, () => {
+      expect(siegeRequirement(draft, home, [])).toBe(base);
+    });
+    draft.towers = { [vertex]: { ...s.towers[vertex], tier: 4 } };
+    expect(siegeRequirement(draft, home, [])).toBe(base + 4);
+    expect(siegeRequirement(s, home, [])).toBe(base + 2);
+  });
+  s.towers[vertex].tier = 3;
+  expect(siegeRequirement(s, home, [])).toBe(base + 3);
+  prepareGameView(s);
+  expect(siegeRequirement(s, home, [])).toBe(base + 3);
+  const next = structuredClone(s);
+  next.towers[vertex].owner = 1;
+  prepareGameView(next);
+  expect(siegeRequirement(next, next.towns[home.id], [])).toBe(base);
+  expect(siegeRequirement(s, home, [])).toBe(base + 3);
 });

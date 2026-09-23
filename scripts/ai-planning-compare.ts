@@ -53,6 +53,13 @@ for (let scenario = 0; scenario < 48; scenario++) {
   };
   for (let i = 0; i < 8 + (scenario % 5); i++)
     piece(s, "-4,0", 0, i % 3 === 0 ? "cavalry" : "heavy", 1 + (scenario % 4));
+  // Connected origins must share local objective results, while blocked or
+  // disconnected origins and embarked troops retain their own eligibility.
+  if (scenario % 2 === 0) {
+    piece(s, "-4,-1", 0, "heavy", 2);
+    piece(s, "0,-4", 0, "light", 3);
+  }
+  if (scenario % 3 === 0) piece(s, "3,-1", 0, "heavy", 2);
   const ship = piece(s, "-3,0", 0, "convoy", 1);
   piece(s, "-3,0", 0, "galley", 1 + (scenario % 4));
   if (scenario % 4 === 0) {

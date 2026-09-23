@@ -67,6 +67,7 @@ interface PlanningIndex {
   stocks: Map<number, Stock>;
   nearest: Map<string, Town | undefined>;
   towerSupport: Map<string, number>;
+  towerDefenses: Map<string, number>;
   memo: Map<string, unknown>;
 }
 let planningIndex: PlanningIndex | undefined;
@@ -899,6 +900,7 @@ function createPlanningIndex(
     },
     stocks: new Map(),
     nearest: new Map(),
+    towerDefenses: new Map(),
     get towerSupport() {
       if (!towerSupport) {
         towerSupport = new Map();
@@ -1104,14 +1106,15 @@ export const siegePower = (units: Piece[]) =>
     0,
   ) + maxValue([0, ...units.map((u) => u.guildSiege ?? 0)]);
 export function siegeRequirement(s: Game, town: Town, units: Piece[]) {
-  return Math.max(
-    0,
-    town.level -
-      1 +
-      town.wall +
-      towerDefense(s, town.owner, town.vertex) -
-      siegePower(units),
-  );
+  const index = readIndex(s),
+    cache = index?.source === s ? index.towerDefenses : undefined,
+    key = `${town.owner}/${town.vertex}`;
+  let support = cache?.get(key);
+  if (support === undefined) {
+    support = towerDefense(s, town.owner, town.vertex);
+    cache?.set(key, support);
+  }
+  return Math.max(0, town.level - 1 + town.wall + support - siegePower(units));
 }
 /** Towers have half their own city-defense contribution, rounded down. */
 export const towerSiegeRequirement = (tower: Watchtower, units: Piece[]) =>

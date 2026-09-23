@@ -4,6 +4,8 @@ import {
   planningDistance,
   planningDistances,
   planningReachableToAny,
+  planningReachableFrom,
+  planningTransitRegion,
 } from "../src/game/ai-paths";
 import { withPlanningFrame, pathTo } from "../src/game/selectors";
 import { funded, piece } from "./helpers";
@@ -31,13 +33,22 @@ it("component reachability exactly matches tactical paths through islands, block
     withPlanningFrame(game, () => {
       for (const naval of [false, true])
         for (const owner of [0, 1])
-          for (const from of tiles.filter((_, i) => i % 5 === 0))
+          for (const from of [
+            ...tiles.filter((_, i) => i % 5 === 0),
+            "9999,9999",
+          ]) {
+            const reaches = planningReachableFrom(game, from, naval, owner);
             for (const to of tiles) {
               expect(
                 planningReachable(game, from, to, naval, owner),
                 `${from} → ${to}; ${owner}/${naval}/${allied}`,
               ).toBe(pathTo(game, from, to, naval, owner) !== null);
+              expect(reaches(to)).toBe(
+                pathTo(game, from, to, naval, owner) !== null,
+              );
             }
+            expect(reaches("9999,9999")).toBe(false);
+          }
     });
   }
 });
@@ -51,12 +62,16 @@ it("keeps enemy hexes as endpoints and refreshes after thaw, occupation and dipl
   const enemy = piece(game, "1,0", 1);
   const check = () =>
     withPlanningFrame(game, () => {
-      for (const from of ["0,0", "1,0", "2,0", "3,0"])
+      for (const from of ["0,0", "1,0", "2,0", "3,0"]) {
+        const reaches = planningReachableFrom(game, from, false, 0);
         for (const to of ["0,0", "1,0", "2,0", "3,0"])
           for (const max of [Infinity, 1, 2])
             expect(planningReachable(game, from, to, false, 0, max)).toBe(
               Number.isFinite(planningDistance(game, from, to, false, 0, max)),
             );
+        for (const to of ["0,0", "1,0", "2,0", "3,0"])
+          expect(reaches(to)).toBe(pathTo(game, from, to, false, 0) !== null);
+      }
     });
   check();
   expect(planningReachable(game, "0,0", "1,0", false, 0)).toBe(true);
@@ -79,6 +94,53 @@ it("keeps enemy hexes as endpoints and refreshes after thaw, occupation and dipl
     { id: "pact", members: [0, 1], threat: 2, lockedUntil: 10 },
   ];
   check();
+});
+
+it("only unblocked origins with the same reach share a transit label", () => {
+  const s = funded("origin-label-blockades");
+  s.pieces = {};
+  for (const tile of Object.values(s.tiles)) tile.resource = "peaks";
+  for (const id of ["-1,0", "0,0", "1,0", "2,0", "3,0"])
+    s.tiles[id].resource = "grain";
+  piece(s, "1,0", 1);
+  const region = (id: string) => planningTransitRegion(s, id, false, 0);
+  expect(region("0,0")).toBeDefined();
+  expect(region("2,0")).toBeDefined();
+  expect(region("0,0")).toBe(region("-1,0"));
+  expect(region("2,0")).toBe(region("3,0"));
+  expect(region("0,0")).not.toBe(region("2,0"));
+  expect(region("1,0")).toBeUndefined();
+  expect(region("9999,9999")).toBeUndefined();
+  expect(planningTransitRegion(s, "0,0", true, 0)).toBeUndefined();
+  const query = planningReachableFrom(s, "1,0", false, 0);
+  expect(query("-1,0")).toBe(true);
+  expect(query("3,0")).toBe(true);
+  const ally = structuredClone(s);
+  ally.alliances = [
+    { id: "pact", members: [0, 1], threat: 2, lockedUntil: 10 },
+  ];
+  expect(planningTransitRegion(ally, "0,0", false, 0)).toBe(
+    planningTransitRegion(ally, "3,0", false, 0),
+  );
+  // The first position must not reuse the new alliance's merged component.
+  expect(region("0,0")).not.toBe(region("2,0"));
+});
+
+it("compiled origin queries retain their own position after cache eviction and weather changes", () => {
+  const s = funded("origin-query-lifetime"),
+    tiles = Object.keys(s.tiles),
+    query = planningReachableFrom(s, tiles[0], false, 0),
+    expected = tiles.map((to) => pathTo(s, tiles[0], to, false, 0) !== null);
+  for (let i = 0; i < 300; i++)
+    planningDistances(s, `${i + 10000},0`, false, 0);
+  const changed = structuredClone(s);
+  for (const tile of Object.values(changed.tiles)) {
+    tile.resource = "water";
+    delete tile.surface;
+  }
+  const noLand = planningReachableFrom(changed, tiles[0], false, 0);
+  expect(tiles.every((to) => !noLand(to))).toBe(true);
+  expect(tiles.map(query)).toEqual(expected);
 });
 
 it("compiled destination sets match individual queries for every origin, domain and alliance", () => {

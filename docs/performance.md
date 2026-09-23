@@ -364,3 +364,19 @@ The new `scripts/ai-planning-compare.ts` audit compared all 2,934 proposed proje
 Validation passed all 1,408 unit tests. The browser audit covered 87 scenarios across Firefox, Chromium and mobile. It exposed outdated guild checks that expected direct SVG markup or read storage before the asynchronous save completed. The checks now use the accessible crest label and wait for the expected saved state. All 30 guild scenarios passed on recheck; no application behavior was changed to satisfy them.
 
 The deployed build passed all 12 production HTTP checks and 13 additional Chromium checks covering guilds, worker pause/resume, large-save refresh, export/import, backup recovery and competing tabs. Tests used disposable browser profiles. The player's live campaign was not opened or changed. The broader performance goal remains active.
+
+## Connected objectives and siege support
+
+Local offensive planning now shares its objective assessment between unblocked origins in the same movement component and geographic region. The geographic check preserves which transport passengers can join that assessment. Blocked origins remain separate because an army starting on a hostile tile can reach different sides of the blockade. Single-origin reachability queries retain their movement network while checking multiple destinations, including for military guilds. Enemy positions remain attack destinations, never transit bridges.
+
+Siege calculations share a town owner's watchtower support within the current read-only planning frame or published game snapshot. Town level, walls and the attacking army are still read for every calculation. Mutable execution drafts always calculate current support. Related views that share troop indexes receive independent defense caches, so changing a tower or its owner cannot leave stale siege strength.
+
+On the 2,000-tile, 1,000-town fixture, the same 60 decisions took 18.14 seconds against a fresh 19.50-second baseline, about 7% less. Both retained all commands and final hash `01a4195300dc979a8dfedbf8c6eb48c56c80b1fd5b9952e4312a4d43ff971976`. The expanded coastal audit compared 2,924 proposed projects across 48 scenarios, including separated friendly formations, passengers and guarded corridors; every score, order and guild choice matched the prior build.
+
+All 1,412 unit tests passed. Reachability regressions compare compiled queries with tactical paths through blockades, alliances and ice, and check cache eviction and changed snapshots. Siege regressions cover different owners, mixed land/naval forces, guild equipment, mutable drafts, shared troop views and published UI snapshots.
+
+The Round 32 production-browser replay retained all 485 orders and the same human casualty decision in 21.83 seconds, effectively unchanged from 21.91 seconds. The complete Round 31 turn retained all 144 orders and its full state in 15.90 seconds versus 16.34 seconds before this pass. Both had roughly 16.8 ms frame p95, no errors and no long main-thread tasks. These timings are local samples, not guaranteed speedups for every campaign.
+
+All 81 browser scenarios passed across Firefox, Chromium and mobile. Coverage includes guild supply and saved contracts, transport invasions, coastal and tower sieges, direct raids, road demolition, bulk orders, worker pause/resume and large-save recovery. No visual or gameplay rules changed in this pass.
+
+The deployed build passed all 12 production HTTP checks and 15 additional Chromium siege, worker and large-save checks. All replays and browser checks used exported copies or disposable fixtures. The live campaign was not opened or modified. The broader performance goal remains active.
