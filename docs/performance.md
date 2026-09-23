@@ -466,3 +466,25 @@ The new `scripts/ai-trade-compare.ts` audit checks 48 stock, faction, controller
 Validation passed all 1,461 unit tests and 84 browser scenarios across Firefox, Chromium and mobile. Coverage includes trade presentation and payment, coalition and alliance behavior, transport campaigns, economic batching, worker pause/resume, seasonal resource support and large-save recovery. All testing used disposable copies; the player's live campaign was not opened or modified.
 
 The deployed build passed all 12 production HTTP checks and 15 additional Chromium trade, batching, worker and storage scenarios. Earlier hashed assets were retained for already-open sessions. The broader performance goal remains active.
+
+## Shared guild objectives and formation strength
+
+The 2,000-tile profile still spent about 8.65 seconds in economic planning during 60 decisions. Guild supply accounted for about 1.41 seconds, and local land objectives about 1.94 seconds. These inclusive costs overlap with their callers and must not be added to the total.
+
+Guild planning now records enemy town access tiles once per decision. Engineer contracts share the strongest reachable fort's defense before applying each formation's artillery and guild equipment. Commander and navigator contracts share movement-need checks for the same origin, owner, movement domain and remaining allowance. New planning frames read changed towers, blockades, alliances and movement. Construction and actual orders retain their separate readiness requirements.
+
+Land objective searches now reuse each unchanged formation's contribution by terrain family. Individual soldiers are still evaluated in their original order. Watchtower support is added separately at every destination, including support from multiple participating owners and the existing rules for civilians and icebound ships. The search still checks every previously considered objective and preserves all target and army tie breaks. The queries live only with their read-only search.
+
+| Measurement | Previous build | This pass |
+| --- | ---: | ---: |
+| 2,000 tiles and 1,000 towns: same 60 decisions | 14.83 s | 13.88 s |
+| Round 31: complete 144-order browser turn | 14.23 s | 14.21 s |
+| Round 32: 485 orders to the same human decision | 21.96 s | 21.70 s |
+
+The growth-map sample improved by about 6%. The real-save replays were broadly unchanged. All command sequences and complete final-state hashes matched. Both browser replays retained roughly 16.7 ms frame p95 with no errors or long main-thread tasks. These are local samples, not guaranteed improvements for every campaign.
+
+The coastal planning audit now compares 96 scenarios and all 7,520 proposed projects, scores, ordering and guild decisions. Added cases cover overlapping guild coverage, watchtowers, mixed formations, spent movement, fresh recruits, existing siege equipment and icebound ships. Every result matched the previous checkout. The 96 trade comparisons also retained all offers, aid and acceptance decisions. Both audits reject input mutation. New regression coverage verifies fort-defense ties after tower changes, blocked corridors, all unit classes and tiers, civilian support rules, seasonal surfaces and independent formation queries across snapshots.
+
+Validation passed all 1,463 unit tests and 111 browser scenarios across Firefox, Chromium and mobile. Browser coverage includes guild construction and contracts, army composition and splitting, worker continuation, bulk orders, coastal sieges, transport shortcuts, icebound fleets, thaw battles and large-save recovery. All replays and tests used exported copies or disposable fixtures. The player's live campaign was not opened or modified.
+
+The deployed build passed all 12 production HTTP checks and 15 additional Chromium guild, worker and storage scenarios. Earlier hashed assets were retained for already-open sessions. The broader performance goal remains active.

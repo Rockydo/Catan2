@@ -68,3 +68,38 @@ it("engineers can supply an attack destination but cannot cross a hostile corrid
     withPlanningFrame(allied, () => guildMilitaryOrder(allied, true)),
   ).toBeNull();
 });
+
+it("engineering supply compares full formations and preserves ties after tower defenses change", () => {
+  const { s, home, enemy } = guildFixture("engineers", 3);
+  s.players[0].control = "standard";
+  for (const tile of Object.values(s.tiles)) tile.resource = "peaks";
+  for (const id of ["0,-1", "0,0", "1,0", "2,0", "3,0"])
+    s.tiles[id].resource = "grain";
+  home.vertex = s.tiles["0,0"].vertices.find((vertex) =>
+    s.vertices[vertex].tiles.includes("0,-1"),
+  )!;
+  enemy.vertex = s.tiles["3,0"].vertices[0];
+  enemy.level = enemy.turnLevel = 4;
+  enemy.wall = 4;
+  const artillery = piece(s, "0,0", 0, "artillery", 4),
+    infantry = piece(s, "0,-1", 0, "heavy", 4);
+  const order = (game: typeof s) =>
+    withPlanningFrame(game, () => guildMilitaryOrder(game, true));
+  // Existing artillery leaves less siege work, so the other formation benefits
+  // more. The highest guild tier still equips the complete chosen formation.
+  expect(order(s)).toMatchObject({ tier: 3, ids: [infantry.id] });
+  const reinforced = structuredClone(s);
+  reinforced.towers[enemy.vertex] = {
+    id: "defense",
+    vertex: enemy.vertex,
+    owner: enemy.owner,
+    tier: 4,
+  };
+  // Both formations now benefit from all six siege points. Original army order
+  // breaks the tie; the older position must retain its earlier choice.
+  expect(order(reinforced)).toMatchObject({ tier: 3, ids: [artillery.id] });
+  expect(order(s)).toMatchObject({ tier: 3, ids: [infantry.id] });
+  const blocked = structuredClone(reinforced);
+  piece(blocked, "1,0", 1, "heavy");
+  expect(order(blocked)).toBeNull();
+});

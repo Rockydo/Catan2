@@ -1,4 +1,4 @@
-import { appendValues, maxValue, minValue } from "./aggregate";
+import { appendValues, minValue } from "./aggregate";
 import { isSettler } from "./content";
 import type {
   Command,
@@ -40,6 +40,7 @@ import {
   planningValue,
   points,
   recipePayment,
+  siegePower,
   siegeRequirement,
   routeSites,
   speed,
@@ -188,7 +189,9 @@ function suppliedFormation(s: Game, town: Town, planningConstruction = false) {
     groups.get(u.tile)!.push(u);
   }
   const enemies = planningValue(s, `guildEnemies/${s.active}`, () =>
-    Object.values(s.towns).filter((t) => warTarget(s, t.owner)),
+    Object.values(s.towns)
+      .filter((t) => warTarget(s, t.owner))
+      .map((town) => ({ town, tiles: landAtVertex(s, town.vertex) })),
   );
   const targets = planningValue(s, `guildTargets/${s.active}/${naval}`, () => [
     ...new Set(
@@ -198,10 +201,10 @@ function suppliedFormation(s: Game, town: Town, planningConstruction = false) {
               .filter((u) => u.naval && warTarget(s, u.owner))
               .map((u) => u.tile),
             ...enemies
-              .flatMap((t) => landAtVertex(s, t.vertex).flatMap(neighbors))
+              .flatMap((t) => t.tiles.flatMap(neighbors))
               .filter((id) => canOccupy(s.tiles[id], true)),
           ]
-        : enemies.flatMap((t) => landAtVertex(s, t.vertex)),
+        : enemies.flatMap((t) => t.tiles),
     ),
   ]);
   let best: { ids: string[]; value: number } | undefined;
@@ -214,30 +217,46 @@ function suppliedFormation(s: Game, town: Town, planningConstruction = false) {
       ),
     );
     if (g.kind === "engineers") {
-      const reaches = planningReachableFrom(s, tile, false, town.owner);
-      const value = maxValue([
-        0,
-        ...enemies
-          .filter((t) => landAtVertex(s, t.vertex).some(reaches))
-          .map((t) => Math.min(g.tier * 2, siegeRequirement(s, t, group)) * 8),
-      ]);
+      // Nearby cities and every guild tier inspect the same reachable forts.
+      // Maximizing defense before subtracting this formation's siege power is
+      // equivalent to inspecting every fort separately for each contract.
+      const defense = planningValue(
+        s,
+        `guildDefense/${s.active}/${town.owner}/${tile}`,
+        () => {
+          const reaches = planningReachableFrom(s, tile, false, town.owner);
+          let highest = 0;
+          for (const enemy of enemies)
+            if (enemy.tiles.some(reaches))
+              highest = Math.max(highest, siegeRequirement(s, enemy.town, []));
+          return highest;
+        },
+      );
+      const value =
+        Math.min(g.tier * 2, Math.max(0, defense - siegePower(group))) * 8;
       if (value > 0 && (!best || value > best.value))
         best = { ids: selected.map((u) => u.id), value };
       continue;
     }
     // Supply matters only for reachable targets beyond this turn's allowance.
     // A bounded search avoids retaining a full-world tree for every formation.
-    const withinMove = planningDistances(
+    const needsMovement = planningValue(
       s,
-      tile,
-      naval,
-      town.owner,
-      Math.max(0, Math.floor(remaining)),
-    );
-    const reaches = planningReachableFrom(s, tile, naval, town.owner);
-    const needsMovement = targets.some(
-      (to) =>
-        (remaining < 0 || !Number.isFinite(withinMove(to))) && reaches(to),
+      `guildMovement/${s.active}/${town.owner}/${naval}/${tile}/${remaining}`,
+      () => {
+        const withinMove = planningDistances(
+          s,
+          tile,
+          naval,
+          town.owner,
+          Math.max(0, Math.floor(remaining)),
+        );
+        const reaches = planningReachableFrom(s, tile, naval, town.owner);
+        return targets.some(
+          (to) =>
+            (remaining < 0 || !Number.isFinite(withinMove(to))) && reaches(to),
+        );
+      },
     );
     if (!needsMovement) continue;
     const value =

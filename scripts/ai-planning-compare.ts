@@ -34,7 +34,8 @@ const current = await planner("."),
   previous = await planner(process.env.SOURCE_ROOT);
 let projects = 0;
 const hash = createHash("sha256");
-for (let scenario = 0; scenario < 48; scenario++) {
+const scenarios = 96;
+for (let scenario = 0; scenario < scenarios; scenario++) {
   const { s, home, enemy } = crossing(scenario % 2 === 0);
   if (scenario % 8 === 7) s.active = 1;
   s.phase = "economy";
@@ -90,6 +91,36 @@ for (let scenario = 0; scenario < 48; scenario++) {
       { id: "peace", members: [0, 1], threat: 2, lockedUntil: 99 },
     ];
   else if (scenario % 6 === 1) delete s.alliances;
+  if (scenario >= 48) {
+    // Shared guild calculations must retain town/army tie order, current
+    // watchtower support and eligibility for construction versus ready orders.
+    if (scenario % 4 === 0) s.players[0].control = "human";
+    enemy.wall = scenario % 4;
+    for (const town of [home, enemy])
+      s.towers[town.vertex] = {
+        id: `watch-${town.id}`,
+        vertex: town.vertex,
+        owner: town.owner,
+        tier: 1 + (scenario % 4),
+      };
+    const artillery = piece(s, "-4,0", 0, "artillery", 4);
+    if (scenario % 2 === 0) artillery.guildSiege = 2;
+    piece(s, "-4,-1", 0, "merchant", 3);
+    piece(s, "-4,-1", 0, "settler");
+    for (const [i, u] of Object.values(s.pieces).entries()) {
+      if (i % 5 === 0) u.moved = 1;
+      if (i % 7 === 0) u.acted = true;
+      if (i % 11 === 0) u.born = s.players[u.owner].turns;
+      if (u.naval && i % 3 === 0) u.seasonStatus = "icebound";
+    }
+    const id = `t${s.nextId++}`;
+    s.towns[id] = {
+      ...structuredClone(home),
+      id,
+      name: `Neighbor ${id}`,
+      vertex: s.tiles["-4,0"].vertices[1],
+    };
+  }
   const expected = previous(s),
     actual = current(s);
   if (actual !== expected) {
@@ -105,7 +136,7 @@ for (let scenario = 0; scenario < 48; scenario++) {
 }
 console.log(
   JSON.stringify({
-    scenarios: 48,
+    scenarios,
     projects,
     exact: true,
     hash: hash.digest("hex"),

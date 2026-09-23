@@ -45,6 +45,7 @@ import {
   withSharedPiecePlanningFrame,
   reusePlanningFrame,
   planningValue,
+  formationPower,
 } from "./selectors";
 import {
   marketValues,
@@ -2194,15 +2195,15 @@ function landObjectives(s: Game) {
 function objectiveBeatable(
   s: Game,
   objective: ReturnType<typeof landObjectives>[number],
-  groups: Map<string, Piece[]>,
+  groups: ((tile: string) => number)[],
 ) {
   const { tiles, defenders, strength } = objective;
   if (!defenders.length) return true;
   return tiles.some((tile) => {
     if (!strength.has(tile))
       strength.set(tile, threatPower(s, defenders, [tile]));
-    for (const force of groups.values())
-      if (power(s, force, tile) > strength.get(tile)!) return true;
+    for (const force of groups)
+      if (force(tile) > strength.get(tile)!) return true;
     return false;
   });
 }
@@ -2215,7 +2216,7 @@ function fieldGroupsFor(s: Game, units: Piece[]) {
     if (!groups.has(key)) groups.set(key, []);
     groups.get(key)!.push(unit);
   }
-  return groups;
+  return [...groups.values()].map((group) => formationPower(s, group));
 }
 interface LandingObjectives {
   reachable: (origin: string) => boolean;

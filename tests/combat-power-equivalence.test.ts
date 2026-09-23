@@ -5,6 +5,7 @@ import { terrainFamily, towerPower } from "../src/game/maritime";
 import {
   points,
   power,
+  formationPower,
   withPlanningFrame,
   prepareGameView,
 } from "../src/game/selectors";
@@ -67,9 +68,14 @@ it("preserves full power across terrain bonuses, all tiers, icebound fleets and 
     (fn: () => void) => withPlanningFrame(s, fn),
   ])
     run(() => {
-      for (const group of cases)
+      for (const group of cases) {
+        const strengthAt = formationPower(s, group);
         for (const tile of tiles)
-          expect(power(s, group, tile)).toBe(reference(s, group, tile));
+          expect(strengthAt(tile)).toBe(reference(s, group, tile));
+        // Revisit the same terrain families with different tower support.
+        for (const tile of tiles.slice().reverse())
+          expect(strengthAt(tile)).toBe(power(s, group, tile));
+      }
     });
   prepareGameView(s);
   expect(power(s, units, tiles[0])).toBe(reference(s, units, tiles[0]));
@@ -93,4 +99,33 @@ it("retains the different tower-support rules for civilian armies and zero-power
   expect(power(s, [merchant, settler], tile)).toBe(0);
   expect(power(s, [ship, settler], tile)).toBe(4);
   expect(power(s, [ship, settler, settler], tile)).toBe(4);
+  expect(formationPower(s, [merchant, settler])(tile)).toBe(0);
+  expect(formationPower(s, [ship, settler, settler])(tile)).toBe(4);
+});
+
+it("formation queries retain their own units and still distinguish frozen and open destinations", () => {
+  const s = funded("formation-surfaces"),
+    tiles = Object.keys(s.tiles).slice(0, 3);
+  for (const [i, tile] of tiles.entries()) {
+    s.tiles[tile].resource = i ? "lumber" : "water";
+    s.tiles[tile].surface = i === 0 ? "frozen" : i === 1 ? "open" : undefined;
+  }
+  const units = [
+    piece(s, tiles[0], 0, "cavalry", 3),
+    piece(s, tiles[0], 1, "light", 2),
+    piece(s, tiles[0], 1, "galley", 4),
+  ];
+  units[2].seasonStatus = "icebound";
+  const before = formationPower(s, units),
+    expected = tiles.map((tile) => reference(s, units, tile)),
+    changed = structuredClone(s);
+  changed.pieces[units[0].id].tier = 4;
+  delete changed.pieces[units[2].id].seasonStatus;
+  changed.tiles[tiles[0]].surface = "open";
+  const afterUnits = units.map((u) => changed.pieces[u.id]),
+    after = formationPower(changed, afterUnits);
+  for (const [i, tile] of tiles.entries()) {
+    expect(before(tile)).toBe(expected[i]);
+    expect(after(tile)).toBe(reference(changed, afterUnits, tile));
+  }
 });

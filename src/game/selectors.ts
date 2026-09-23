@@ -223,6 +223,16 @@ function combatTowerPower(s: Game, owner: number, tile: string) {
     ? (index.towerSupport.get(`${owner}/${tile}`) ?? 0)
     : towerPower(s, owner, tile);
 }
+function unitCombatPower(
+  u: Piece,
+  family: ReturnType<typeof terrainFamily>,
+  value: number,
+) {
+  return (
+    (u.naval && u.seasonStatus === "icebound" ? Math.ceil(value / 4) : value) *
+    (!u.naval && UNIT_INFO[u.kind as UnitClass].family === family ? 2 : 1)
+  );
+}
 export function power(s: Game, units: Piece[], tile: string) {
   const family = terrainFamily(s.tiles[tile]);
   const owners = new Set<number>();
@@ -232,17 +242,41 @@ export function power(s: Game, units: Piece[], tile: string) {
     const value = points(u);
     supported ||= u.naval || value > 0;
     owners.add(u.owner);
-    strength +=
-      (u.naval && u.seasonStatus === "icebound"
-        ? Math.ceil(value / 4)
-        : value) *
-      (!u.naval && UNIT_INFO[u.kind as UnitClass].family === family ? 2 : 1);
+    strength += unitCombatPower(u, family, value);
   }
   // All represented owners contribute their tower support when the formation
   // contains a fighting unit or a ship, including zero-power ships as before.
   if (supported)
     for (const owner of owners) strength += combatTowerPower(s, owner, tile);
   return strength;
+}
+/** Evaluate one unchanged formation against many destinations in a read-only
+ * search. Terrain contributions keep unit order and tower support stays local
+ * to each destination. Create a new query after any change to the formation. */
+export function formationPower(
+  s: Game,
+  units: Piece[],
+): (tile: string) => number {
+  const bases = new Map<ReturnType<typeof terrainFamily>, number>(),
+    owners = new Set<number>();
+  let supported = false;
+  return (tile) => {
+    const family = terrainFamily(s.tiles[tile]);
+    let strength = bases.get(family);
+    if (strength === undefined) {
+      strength = 0;
+      for (const u of units) {
+        const value = points(u);
+        supported ||= u.naval || value > 0;
+        owners.add(u.owner);
+        strength += unitCombatPower(u, family, value);
+      }
+      bases.set(family, strength);
+    }
+    if (supported)
+      for (const owner of owners) strength += combatTowerPower(s, owner, tile);
+    return strength;
+  };
 }
 /** Land escorts on sea ice defend a stranded fleet against bombardment too. */
 export function fleetDefenders(

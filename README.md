@@ -106,7 +106,7 @@ To compare every proposed project and guild decision across varied coastal plann
 SOURCE_ROOT=/path/to/older/checkout npx tsx scripts/ai-planning-compare.ts
 ```
 
-Use a reference checkout with the same gameplay rules. The audit creates its own positions and checks that neither planner changes them.
+Use a reference checkout with the same gameplay rules. The audit creates 96 positions, including blocked coasts, shared guild coverage, watchtower support, spent movement and mixed formations. It checks exact project scores and order, and verifies that neither planner changes its input.
 
 For trade offers, coalition supplies and acceptance decisions across different stocks, factions and alliances:
 
