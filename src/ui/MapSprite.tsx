@@ -1,7 +1,9 @@
 import {
   createContext,
   useContext,
+  useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
   type ReactNode,
@@ -10,17 +12,24 @@ import {
 } from "react";
 import { useLocale } from "../i18n";
 import { retainedCache } from "./retained-cache";
+import { rasterizeSprite, spriteRasterScale } from "./sprite-raster";
 
 type Bounds = { x: number; y: number; width: number; height: number };
-type Asset = { url: string; ready: Promise<void> };
-// SVG image decoding is shared by identical miniatures. The browser can reuse
-// the painted image instead of walking dozens of paths at every wheel notch.
-// Keep vectors inside the image so high zoom and high-DPI displays stay sharp.
-const assets = retainedCache<Asset>(256);
+type Asset = { ready: Promise<string> };
+// Displayed images stay shared. Keep a smaller idle window for raster assets,
+// releasing blob storage only when no map miniature uses the image anymore.
+const assets = retainedCache<Asset>(64, (asset) => {
+  void asset.ready.then(
+    (url) => {
+      if (url.startsWith("blob:")) URL.revokeObjectURL(url);
+    },
+    () => {},
+  );
+});
 
 const Preparation = createContext<{
-  pending: Promise<void>[];
-  collecting: boolean;
+  batch: { pending: Promise<unknown>[]; collecting: boolean };
+  scale: number;
 } | null>(null);
 
 /** Prepare the initial decorative images before laying out their throwaway
@@ -28,11 +37,32 @@ const Preparation = createContext<{
 export function PreparedMapLayer({
   children,
   layerRef,
+  bounds,
+  maxZoom,
 }: {
   children: ReactNode;
   layerRef: RefObject<HTMLDivElement | null>;
+  bounds: { w: number; h: number };
+  maxZoom: number;
 }) {
-  const batch = useRef({ pending: [] as Promise<void>[], collecting: true });
+  const batch = useRef({ pending: [] as Promise<unknown>[], collecting: true });
+  const [viewport, setViewport] = useState(() => ({
+    width: typeof window === "undefined" ? 1 : window.innerWidth,
+    height: typeof window === "undefined" ? 1 : window.innerHeight,
+    dpr: typeof window === "undefined" ? 1 : window.devicePixelRatio || 1,
+  }));
+  const scale = spriteRasterScale(bounds, maxZoom, viewport);
+  const preparation = useMemo(() => ({ batch: batch.current, scale }), [scale]);
+  useEffect(() => {
+    const resize = () =>
+      setViewport({
+        width: window.innerWidth,
+        height: window.innerHeight,
+        dpr: window.devicePixelRatio || 1,
+      });
+    window.addEventListener("resize", resize);
+    return () => window.removeEventListener("resize", resize);
+  }, []);
   const [ready, setReady] = useState(false);
   useLayoutEffect(() => {
     let active = true;
@@ -53,7 +83,7 @@ export function PreparedMapLayer({
     };
   }, []);
   return (
-    <Preparation.Provider value={batch.current}>
+    <Preparation.Provider value={preparation}>
       <div
         ref={layerRef}
         className="map-camera-layer"
@@ -99,8 +129,8 @@ function encode(node: SVGGElement, bounds: Bounds): string | undefined {
   return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(markup)}`;
 }
 
-/** Cache purely decorative vectors; keep hit targets and accessible labels in
- * the live map. Until decoding succeeds, render the exact original artwork. */
+/** Cache purely decorative artwork; keep hit targets and accessible labels in
+ * the live map. Until decoding succeeds, render the exact original vectors. */
 export function MapSprite({
   assetKey,
   bounds,
@@ -111,9 +141,12 @@ export function MapSprite({
   bounds: Bounds;
   children: ReactNode;
 } & Omit<SVGProps<SVGGElement>, "children" | "ref">) {
-  const locale = useLocale(),
-    key = `${locale}/${assetKey}`;
   const preparation = useContext(Preparation);
+  const locale = useLocale(),
+    scale =
+      preparation?.scale ??
+      4 * (typeof window === "undefined" ? 1 : window.devicePixelRatio || 1),
+    key = `${locale}/${assetKey}@${scale}`;
   const node = useRef<SVGGElement>(null);
   const [decoded, setDecoded] = useState<{ key: string; url: string }>();
   const [failed, setFailed] = useState<string>();
@@ -124,18 +157,16 @@ export function MapSprite({
     const lease = assets.retain(key, () => {
       const source = encode(element, bounds);
       if (!source) return;
-      const image = new Image();
-      image.src = source;
-      return { url: source, ready: image.decode() };
+      return { ready: rasterizeSprite(source, bounds, scale) };
     });
     if (!lease) return;
     const asset = lease.value;
     let active = true;
-    const source = asset.url;
-    if (preparation?.collecting) preparation.pending.push(asset.ready);
+    if (preparation?.batch.collecting)
+      preparation.batch.pending.push(asset.ready);
     asset.ready
-      .then(() => {
-        if (active) setDecoded({ key, url: source });
+      .then((url) => {
+        if (active) setDecoded({ key, url });
       })
       .catch(() => {
         if (active) setFailed(key);

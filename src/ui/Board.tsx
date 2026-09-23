@@ -1036,7 +1036,11 @@ const BoardScene = memo(function BoardScene({
     <div
       className={`board-frame mode-${mode}${climates ? " climate-only" : ""}`}
     >
-      <PreparedMapLayer layerRef={layer}>
+      <PreparedMapLayer
+        layerRef={layer}
+        bounds={bounds}
+        maxZoom={Math.max(6, Math.sqrt(tiles.length / 100) * 4)}
+      >
         <TerrainLayer
           viewer={viewer}
           terrainRef={terrain}

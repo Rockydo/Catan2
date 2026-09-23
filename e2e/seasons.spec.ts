@@ -39,6 +39,7 @@ for (const locale of ["en", "fr"] as const) {
       name: locale === "fr" ? /Printemps Année 1/ : /Spring Year 1/,
     });
     await expect(calendar).toBeVisible();
+    await expect(page.getByTestId("hex-0,0")).toBeVisible();
     await page.getByTestId("hex-0,0").press("Enter");
     const forecast = page.getByRole("region", {
       name: locale === "fr" ? "Production saisonnière" : "Seasonal production",
@@ -152,6 +153,7 @@ test("icebound fleets and friendly land forces remain distinct and clearly label
   );
   await page.goto("/");
   await page.getByRole("button", { name: /Continue campaign/ }).click();
+  await expect(page.getByTestId("hex-0,0")).toBeVisible();
   await page.getByTestId("hex-0,0").press("Enter");
   const overview = page.getByTestId("army-overview");
   await expect(overview.getByTestId("formation-owner-0")).toHaveCount(2);
@@ -190,6 +192,7 @@ test("patchy autumn ice matches tile forecasts and summer previews", async ({
   );
   await page.goto("/");
   await page.getByRole("button", { name: /Continue campaign/ }).click();
+  await expect(page.getByTestId("hex-0,0")).toBeVisible();
   await page.getByTestId("hex-0,0").press("Enter");
   const forecast = page.getByRole("region", { name: "Seasonal production" });
   await expect(forecast.locator(".season-surface-label")).toHaveText([
@@ -207,6 +210,7 @@ test("patchy autumn ice matches tile forecasts and summer previews", async ({
   await expect(
     page.locator('image[href$="arctic-fish-autumn.webp"]'),
   ).toHaveCount(1);
+  await expect(page.getByTestId("hex-1,0")).toBeVisible();
   await page.getByTestId("hex-1,0").press("Enter");
   await expect(forecast.locator(".season-surface-label")).toHaveText([
     "Open water",
@@ -388,6 +392,7 @@ test("a generated mixed-climate campaign renders crop and livestock seasons with
     ["5,-5", "Oat fields", 6],
     ["3,-4", "Cattle pasture", 1],
   ] as const) {
+    await expect(page.getByTestId(`hex-${id}`)).toBeVisible();
     await page.getByTestId(`hex-${id}`).press("Enter");
     const forecast = page.getByRole("region", { name: "Seasonal production" });
     await expect(

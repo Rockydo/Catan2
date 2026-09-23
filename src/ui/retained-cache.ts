@@ -1,7 +1,10 @@
 /** Keep shared values while displayed, plus a bounded reuse window after the
  * last consumer leaves. Evicting a displayed value would duplicate its memory
  * and preparation work when another consumer arrives on a large map. */
-export function retainedCache<T>(idleLimit: number) {
+export function retainedCache<T>(
+  idleLimit: number,
+  dispose?: (value: T) => void,
+) {
   const entries = new Map<string, { value: T; users: number }>();
   const idle = new Set<string>();
   return {
@@ -26,7 +29,9 @@ export function retainedCache<T>(idleLimit: number) {
           while (idle.size > idleLimit) {
             const oldest = idle.values().next().value!;
             idle.delete(oldest);
+            const evicted = entries.get(oldest)!;
             entries.delete(oldest);
+            dispose?.(evicted.value);
           }
         },
       };

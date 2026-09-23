@@ -94,7 +94,9 @@ To measure camera performance on an exported late-game campaign, run:
 SAVE_PATH=/path/to/campaign.json GAME_URL=http://127.0.0.1:4173 LABEL=local npx tsx scripts/camera-performance.ts
 ```
 
-This opens a disposable Chromium profile and measures ordinary and rapid wheel zooming. Reports and a close-up screenshot go to `test-artifacts/`. It does not edit the export or connect to your playing browser. Compare the same export, browser, viewport and machine between builds; the timings are not universal frame-rate guarantees.
+This opens a disposable Chromium profile and measures ordinary and rapid wheel zooming, plus dragging at overview and close-up scales. Reports and a close-up screenshot go to `test-artifacts/`. It does not edit the export or connect to your playing browser. Compare the same export, browser, viewport and machine between builds; the timings are not universal frame-rate guarantees.
+
+Decorative map tokens, town miniatures and force badges are prepared once as shared, lossless images at the maximum camera zoom and display density. Selection, counts, hit targets and accessible labels remain live. Unused prepared images are released from a bounded cache. Image preparation failures retain the original vectors.
 
 The report records the actual graphics renderer and acceleration status. The default headless mode uses software rendering on this machine. Set `GRAPHICS=hardware` to request GPU acceleration; the diagnostic fails if hardware compositing is unavailable. Compare results within the same graphics mode.
 

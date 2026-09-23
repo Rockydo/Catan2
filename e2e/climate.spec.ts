@@ -143,6 +143,7 @@ for (const locale of ["en", "fr"] as const) {
         name: locale === "fr" ? /Reprendre/ : /Continue campaign/,
       })
       .click();
+    await expect(page.getByTestId("hex-0,0")).toBeVisible();
     await page.getByTestId("hex-0,0").press("Enter");
     const choice = page.getByRole("region", {
       name:
@@ -182,6 +183,7 @@ for (const locale of ["en", "fr"] as const) {
         name: locale === "fr" ? /Reprendre/ : /Continue campaign/,
       })
       .click();
+    await expect(page.getByTestId("hex-0,0")).toBeVisible();
     await page.getByTestId("hex-0,0").press("Enter");
     await expect(
       choice.getByRole("button", {

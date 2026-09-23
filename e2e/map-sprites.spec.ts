@@ -8,6 +8,31 @@ import { landAtVertex, neighbors } from "../src/game/world";
 import { SHIP_INFO } from "../src/game/content";
 import type { Game, ShipClass } from "../src/game/types";
 
+// Capture preparation inputs in the disposable test browser. The shipped DOM
+// contains only the finished image; source SVGs are not retained for testing.
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => {
+    const decode = HTMLImageElement.prototype.decode;
+    const sources = new WeakMap<HTMLImageElement, string>();
+    const spriteSources: Record<string, string> = {};
+    const spriteTypes: Record<string, string> = {};
+    const createURL = URL.createObjectURL;
+    URL.createObjectURL = function (value) {
+      const url = createURL.call(URL, value);
+      if (value instanceof Blob) spriteTypes[url] = value.type;
+      return url;
+    };
+    Object.assign(window, { spriteSources, spriteTypes });
+    HTMLImageElement.prototype.decode = function () {
+      if (this.src.startsWith("data:image/svg+xml"))
+        sources.set(this, this.src);
+      else if (this.src.startsWith("blob:") && sources.has(this))
+        spriteSources[this.src] = sources.get(this)!;
+      return decode.call(this);
+    };
+  });
+});
+
 async function importArmies(page: Page, game: Game) {
   await page.locator("input[type=file]").setInputFiles({
     name: "army-art.json",
@@ -67,7 +92,14 @@ test("army artwork is shared across counts, updates each class tier, and keeps c
   expect(
     await shipArt.evaluate((node) => {
       const source = decodeURIComponent(
-        node.getAttribute("href")!.split(",").slice(1).join(","),
+        (
+          (window as unknown as { spriteSources: Record<string, string> })
+            .spriteSources[node.getAttribute("href")!] ??
+          node.getAttribute("href")!
+        )
+          .split(",")
+          .slice(1)
+          .join(","),
       );
       const xml = new DOMParser().parseFromString(source, "image/svg+xml");
       return {
@@ -210,6 +242,7 @@ async function load(page: Page, level = 4) {
   );
   await page.goto("/");
   await page.getByRole("button", { name: /Continue campaign/ }).click();
+  await expect(page.locator(".world-map")).toBeVisible();
   return { s, town };
 }
 
@@ -268,7 +301,14 @@ test("cached map vectors keep complete references, labels, selection and dice to
     .evaluateAll((nodes) =>
       nodes.flatMap((node) => {
         const source = decodeURIComponent(
-          node.getAttribute("href")!.split(",").slice(1).join(","),
+          (
+            (window as unknown as { spriteSources: Record<string, string> })
+              .spriteSources[node.getAttribute("href")!] ??
+            node.getAttribute("href")!
+          )
+            .split(",")
+            .slice(1)
+            .join(","),
         );
         const xml = new DOMParser().parseFromString(source, "image/svg+xml");
         const unresolved = Array.from(xml.querySelectorAll("use")).filter(
@@ -287,11 +327,14 @@ test("cached map vectors keep complete references, labels, selection and dice to
   await townNode.press("Enter");
   await expect
     .poll(async () =>
-      decodeURIComponent(
-        (await townNode
-          .locator(".town-miniature > image")
-          .getAttribute("href")) ?? "",
-      ),
+      townNode
+        .locator(".town-miniature > image")
+        .evaluate((node) =>
+          decodeURIComponent(
+            (window as unknown as { spriteSources: Record<string, string> })
+              .spriteSources[node.getAttribute("href")!] ?? "",
+          ),
+        ),
     )
     .toContain("selection-halo");
   const label = page.locator(".production-resources").first();
@@ -339,8 +382,10 @@ test("stalled image preparation reveals playable vectors and late images preserv
   await page.addInitScript(() => {
     const decode = HTMLImageElement.prototype.decode;
     const pending: (() => void)[] = [];
+    let released = false;
     HTMLImageElement.prototype.decode = function () {
       const decoded = decode.call(this);
+      if (released) return decoded;
       return new Promise<void>((resolve, reject) => {
         // Catch decoding failures immediately while the artificial gate is held.
         const settled = decoded.then(
@@ -353,8 +398,10 @@ test("stalled image preparation reveals playable vectors and late images preserv
       });
     };
     Object.assign(window, {
-      releaseSpriteDecodes: () =>
-        pending.splice(0).forEach((finish) => finish()),
+      releaseSpriteDecodes: () => {
+        released = true;
+        pending.splice(0).forEach((finish) => finish());
+      },
     });
   });
   const { town } = await load(page);
@@ -371,8 +418,160 @@ test("stalled image preparation reveals playable vectors and late images preserv
   );
   const image = node.locator(".town-miniature > image");
   await expect(image).toHaveCount(1);
-  expect(decodeURIComponent((await image.getAttribute("href"))!)).toContain(
-    "selection-halo",
-  );
+  expect(
+    await image.evaluate((node) =>
+      decodeURIComponent(
+        (window as unknown as { spriteSources: Record<string, string> })
+          .spriteSources[node.getAttribute("href")!] ?? "",
+      ),
+    ),
+  ).toContain("selection-halo");
   expect(errors).toEqual([]);
+});
+
+test.describe("prepared sprite quality", () => {
+  test.use({ deviceScaleFactor: 2 });
+
+  test("lossless sprites cover maximum zoom at high DPI, with no regeneration on camera input", async ({
+    page,
+  }) => {
+    const { s, home, land } = armies();
+    home.level = home.turnLevel = 4;
+    home.wall = 4;
+    home.guilds = [
+      { kind: "artisans", tier: 3, born: 0, used: false, auto: false },
+    ];
+    s.towers[home.vertex] = {
+      id: `w${s.nextId++}`,
+      owner: 0,
+      vertex: home.vertex,
+      tier: 4,
+    };
+    await page.goto("/");
+    await importArmies(page, s);
+    const selector =
+      ".town-miniature > image, .production-token-art > image, .army-miniature-art > image, .guild-miniature-art > image, .tower-miniature-art > image";
+    await expect(page.locator(".guild-miniature-art > image")).toHaveCount(1);
+    await page.waitForLoadState("networkidle");
+    // Compare the prepared PNG to the exact source vectors at its full pixel
+    // resolution. This catches missing definitions, crops, shadows and glyphs.
+    const comparison = await page
+      .locator(selector)
+      .evaluateAll(async (nodes) => {
+        const sources = (
+          window as unknown as { spriteSources: Record<string, string> }
+        ).spriteSources;
+        const unique = [...new Set(nodes.map((n) => n.getAttribute("href")!))];
+        let mismatched = 0,
+          blank = 0,
+          nonPng = 0;
+        for (const url of unique) {
+          // Production CSP permits blob images, but deliberately disallows
+          // fetching blob URLs. Read the MIME captured at creation instead.
+          if (
+            (window as unknown as { spriteTypes: Record<string, string> })
+              .spriteTypes[url] !== "image/png"
+          )
+            nonPng++;
+          const actual = new Image(),
+            expected = new Image();
+          actual.src = url;
+          expected.src = sources[url];
+          await Promise.all([actual.decode(), expected.decode()]);
+          const canvas = document.createElement("canvas");
+          canvas.width = actual.naturalWidth;
+          canvas.height = actual.naturalHeight;
+          const context = canvas.getContext("2d", {
+            willReadFrequently: true,
+          })!;
+          context.drawImage(actual, 0, 0, canvas.width, canvas.height);
+          const pixels = context.getImageData(
+            0,
+            0,
+            canvas.width,
+            canvas.height,
+          ).data;
+          context.clearRect(0, 0, canvas.width, canvas.height);
+          context.drawImage(expected, 0, 0, canvas.width, canvas.height);
+          const reference = context.getImageData(
+            0,
+            0,
+            canvas.width,
+            canvas.height,
+          ).data;
+          // Canvas -> PNG -> canvas rounds premultiplied alpha twice in Firefox.
+          // Compare visible channels within two of 255 levels, not undefined RGB
+          // hidden behind transparent pixels. Chromium matches exactly.
+          if (
+            pixels.some((n, i) => {
+              if (i % 4 === 3) return Math.abs(n - reference[i]) > 2;
+              const alpha = i - (i % 4) + 3;
+              return (
+                Math.abs(
+                  (n * pixels[alpha]) / 255 -
+                    (reference[i] * reference[alpha]) / 255,
+                ) > 2
+              );
+            })
+          )
+            mismatched++;
+          if (!pixels.some((n, i) => i % 4 === 3 && n > 0)) blank++;
+        }
+        return { images: unique.length, mismatched, blank, nonPng };
+      });
+    expect(comparison.images).toBeGreaterThan(5);
+    expect(comparison).toMatchObject({ mismatched: 0, blank: 0, nonPng: 0 });
+    await page.getByTestId(`army-${land}`).press("Enter");
+    const close = page.getByRole("button", { name: "Close action panel" });
+    if (await close.isVisible()) await close.click();
+    await page
+      .getByRole("button", { name: "Center selected location" })
+      .click();
+    await expect(
+      page.getByTestId(`army-${land}`).locator(".army-miniature-art > image"),
+    ).toHaveCount(1);
+    const before = await page
+      .locator(selector)
+      .evaluateAll((nodes) => nodes.map((n) => n.getAttribute("href")));
+    await page.locator(".world-map").evaluate(async (node) => {
+      const r = node.getBoundingClientRect();
+      for (let i = 0; i < 20; i++)
+        node.dispatchEvent(
+          new WheelEvent("wheel", {
+            deltaY: -600,
+            clientX: r.x + r.width / 2,
+            clientY: r.y + r.height / 2,
+            cancelable: true,
+          }),
+        );
+      await new Promise((resolve) => setTimeout(resolve, 200));
+    });
+    expect(
+      await page
+        .locator(selector)
+        .evaluateAll((nodes) => nodes.map((n) => n.getAttribute("href"))),
+    ).toEqual(before);
+    const undersized = await page
+      .locator(selector)
+      .evaluateAll(async (nodes) => {
+        const failures: string[] = [];
+        for (const node of nodes as SVGImageElement[]) {
+          const matrix = node.getScreenCTM()!;
+          const scale = Math.hypot(matrix.a, matrix.b) * devicePixelRatio;
+          const image = new Image();
+          image.src = node.getAttribute("href")!;
+          await image.decode();
+          if (
+            image.naturalWidth + 1 < node.width.baseVal.value * scale ||
+            image.naturalHeight + 1 < node.height.baseVal.value * scale
+          )
+            failures.push(image.src);
+        }
+        return failures;
+      });
+    expect(undersized).toEqual([]);
+    await page.screenshot({
+      path: `test-artifacts/sprite-max-zoom-${test.info().project.name}.png`,
+    });
+  });
 });

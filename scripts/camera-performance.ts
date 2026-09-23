@@ -81,14 +81,24 @@ try {
       transferMode: "ReturnAsStream",
     });
   const box = (await page.locator(".board-frame").boundingBox())!;
-  await page.mouse.move(box.x + box.width * 0.48, box.y + box.height * 0.46);
+  const pointer = { x: box.x + box.width * 0.48, y: box.y + box.height * 0.46 };
+  await page.mouse.move(pointer.x, pointer.y);
   const results = [];
-  for (const [name, sign, gap, count] of [
-    ["zoom-in", -1, 120, 16],
-    ["zoom-out", 1, 120, 16],
-    ["rapid-in", -1, 16, 12],
-    ["rapid-out", 1, 16, 12],
+  for (const [name, sign, gap, count, dragging] of [
+    ["zoom-in", -1, 120, 16, false],
+    ["zoom-out", 1, 120, 16, false],
+    ["rapid-in", -1, 16, 12, false],
+    ["rapid-out", 1, 16, 12, false],
+    ["pan-right", 1, 16, 30, true],
+    ["pan-left", -1, 16, 30, true],
+    ["near-pan-right", 1, 16, 30, true],
+    ["near-pan-left", -1, 16, 30, true],
   ] as const) {
+    if (name === "near-pan-right") {
+      for (let i = 0; i < 8; i++) await page.mouse.wheel(0, -100);
+      await page.waitForTimeout(200);
+    }
+    await page.mouse.move(pointer.x, pointer.y);
     const before = await cdp.send("Performance.getMetrics");
     // Keep frame observation inside the page, separate from CDP wheel latency.
     await page.evaluate(() => {
@@ -122,10 +132,17 @@ try {
         },
       });
     });
+    if (dragging) await page.mouse.down();
     for (let i = 0; i < count; i++) {
-      await page.mouse.wheel(0, sign * 100);
+      if (dragging)
+        await page.mouse.move(
+          pointer.x + sign * (i + 1) * 10,
+          pointer.y + sign * (i + 1) * 3,
+        );
+      else await page.mouse.wheel(0, sign * 100);
       await page.waitForTimeout(gap);
     }
+    if (dragging) await page.mouse.up();
     await page.waitForTimeout(150);
     const frames = await page.evaluate(() =>
       (
@@ -165,7 +182,6 @@ try {
   if (saved !== originalSave)
     throw Error("Camera input changed the campaign save");
   // Inspect the crowded center at normal playing scale, not just the overview.
-  for (let i = 0; i < 8; i++) await page.mouse.wheel(0, -100);
   await page.waitForTimeout(200);
   await page.screenshot({ path: `${output}.png` });
   const result = {

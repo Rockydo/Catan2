@@ -49,3 +49,24 @@ describe("displayed sprite cache", () => {
     expect(cache.retain("other", () => ({}))!.value).not.toBe(c.value);
   });
 });
+
+it("disposes idle images once, never while a consumer still displays them", () => {
+  const dispose = vi.fn(),
+    cache = retainedCache<object>(1, dispose);
+  const a = cache.retain("a", () => ({}))!,
+    secondA = cache.retain("a", () => ({}))!;
+  a.release();
+  cache.retain("b", () => ({}))!.release();
+  cache.retain("c", () => ({}))!.release();
+  expect(dispose).toHaveBeenCalledTimes(1);
+  expect(dispose.mock.calls.some(([value]) => value === a.value)).toBe(false);
+  secondA.release();
+  cache.retain("d", () => ({}))!.release();
+  expect(
+    dispose.mock.calls.filter(([value]) => value === a.value),
+  ).toHaveLength(1);
+  const count = dispose.mock.calls.length;
+  a.release();
+  secondA.release();
+  expect(dispose).toHaveBeenCalledTimes(count);
+});

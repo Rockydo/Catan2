@@ -19,6 +19,7 @@ async function load(page: Page, s = funded()) {
   );
   await page.goto("/");
   await page.getByRole("button", { name: /Continue campaign/ }).click();
+  await expect(page.locator(".world-map")).toBeVisible();
   return { tile, unit };
 }
 async function closePanel(page: Page) {
