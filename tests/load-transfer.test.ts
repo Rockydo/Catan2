@@ -6,6 +6,7 @@ import {
 import { fishingFixture } from "./maritime-fixture";
 import { piece } from "./helpers";
 import { deserialize, serialize, serializePacked } from "../src/game/save";
+import { packGame } from "../src/game/save-packing";
 
 it("keeps small and missing saves on the direct path with recovery status intact", () => {
   for (const game of [null, fishingFixture().s]) {
@@ -33,6 +34,12 @@ it("transports repeated troops compactly with independent mutable units and nest
   });
   expect("gameText" in encoded).toBe(true);
   expect("unitTemplates" in encoded && encoded.unitTemplates).toBe(true);
+  expect("unitSequences" in encoded && encoded.unitSequences).toBe(true);
+  if ("gameText" in encoded) {
+    const units = JSON.parse(encoded.gameText).pieces;
+    expect(units.rows.runs.length).toBeLessThan(20);
+    expect(units.keys.deltas.runs.length).toBeLessThan(20);
+  }
   expect("gameText" in encoded && encoded.gameText.length).toBeLessThan(
     expected.length * 0.2,
   );
@@ -44,6 +51,39 @@ it("transports repeated troops compactly with independent mutable units and nest
   expect(decoded.game!.pieces[units[2].id].bonus).toBe(units[2].bonus);
   expect(JSON.stringify(s)).toBe(expected);
   expect((Object.prototype as any).value).toBeUndefined();
+  // The old worker message format remains readable without the sequence flag.
+  const old = {
+    gameText: JSON.stringify(packGame(s)),
+    unitTemplates: true as const,
+    recovered: false,
+  };
+  expect(JSON.stringify(decodeLoadedCampaign(old).game)).toBe(expected);
+});
+
+it("retains sparse unit IDs, nonconsecutive templates, future fields and status in compact transfers", () => {
+  const { s, water } = fishingFixture();
+  for (let i = 0; i < 2_200; i++) {
+    const u = piece(s, water, 0, "fishing", i % 100 < 50 ? 2 : 3);
+    if (i % 23 === 0) delete s.pieces[u.id];
+    else if (i % 100 === 0) Object.assign(u, { future: { name: "Île 雪" } });
+  }
+  const ids = Object.keys(s.pieces),
+    first = s.pieces[ids[0]];
+  delete s.pieces[first.id];
+  s.pieces[first.id] = first;
+  const expected = JSON.stringify(s);
+  const result = {
+    game: s,
+    recovered: true,
+    error: "Recovered primary",
+    needsSave: true,
+  };
+  const decoded = decodeLoadedCampaign(
+    structuredClone(encodeLoadedCampaign(result)),
+  );
+  expect(JSON.stringify(decoded.game)).toBe(expected);
+  expect(decoded).toEqual(result);
+  expect(Object.keys(decoded.game!.pieces)).toEqual(Object.keys(s.pieces));
 });
 
 it("retains native JSON transfer for a diverse large army and reads older worker results", () => {

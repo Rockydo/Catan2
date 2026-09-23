@@ -107,6 +107,7 @@ function packTable(records: Record<string, unknown>): Table {
 function unpackTable(
   table: Table,
   budget: { remaining: number },
+  measured?: { bytes: number },
 ): Record<string, unknown> {
   if (
     !table ||
@@ -118,6 +119,7 @@ function unpackTable(
   )
     throw invalid();
   const counts = new Array<number>(table.layouts.length).fill(0);
+  let size = 2;
   for (const index of table.order) {
     if (!Number.isSafeInteger(index) || index < 0 || index >= counts.length)
       throw invalid();
@@ -136,9 +138,16 @@ function unpackTable(
       new Set(layout.fields).size !== layout.fields.length
     )
       throw invalid();
-    budget.remaining -=
+    const fieldBytes = layout.fields.reduce((n, field) => n + bytes(field), 0);
+    budget.remaining -= counts[i] * (2 + fieldBytes + layout.fields.length * 2);
+    // Exact JSON size, including punctuation. Reuse measurements made for the
+    // expansion guard instead of serializing the reconstructed map again.
+    size +=
       counts[i] *
-      (2 + layout.fields.reduce((n, field) => n + bytes(field) + 2, 0));
+      (2 +
+        fieldBytes +
+        layout.fields.length +
+        Math.max(0, layout.fields.length - 1));
     if (budget.remaining < 0) throw tooLarge();
     for (let j = 0; j < layout.columns.length; j++) {
       const column = layout.columns[j];
@@ -148,7 +157,9 @@ function unpackTable(
         if (!Array.isArray(column) || column.length !== counts[i])
           throw invalid();
         for (const value of column) {
-          budget.remaining -= bytes(value);
+          const amount = bytes(value);
+          budget.remaining -= amount;
+          size += amount;
           if (budget.remaining < 0) throw tooLarge();
         }
       }
@@ -167,7 +178,9 @@ function unpackTable(
       throw invalid();
     seen.add(key);
     const ownId = table.layouts[table.order[i]].columns.includes(null);
-    budget.remaining -= bytes(key) * (ownId ? 2 : 1) + 2;
+    const keyBytes = bytes(key) * (ownId ? 2 : 1);
+    budget.remaining -= keyBytes + 2;
+    size += keyBytes + 1 + (i ? 1 : 0);
     if (budget.remaining < 0) throw tooLarge();
   }
   counts.fill(0);
@@ -192,6 +205,7 @@ function unpackTable(
     }
     records[table.keys[i]] = record;
   }
+  if (measured) measured.bytes = size;
   return records;
 }
 
@@ -199,8 +213,12 @@ export function packTables(game: PackedGame): unknown {
   const out: Record<string, unknown> = { ...game };
   for (const field of SAVE_TABLES)
     if (game[field]) out[field] = packTable(game[field]);
-  const units = game.pieces;
-  out.pieces = {
+  out.pieces = packUnitSequences(game.pieces);
+  return out;
+}
+
+export function packUnitSequences(units: PackedGame["pieces"]): unknown {
+  return {
     ...units,
     rows: packSequence(units.rows),
     keys: Array.isArray(units.keys)
@@ -210,20 +228,36 @@ export function packTables(game: PackedGame): unknown {
           deltas: packSequence(units.keys.deltas),
         },
   };
-  return out;
 }
 
-export function unpackTables(input: unknown): PackedGame {
+export function unpackTables(
+  input: unknown,
+  measured?: { baseBytes: number },
+): PackedGame {
   if (!input || typeof input !== "object" || Array.isArray(input))
     throw invalid();
   const out = { ...input } as Record<string, unknown>;
   const budget = { remaining: LIMIT };
+  if (measured) {
+    const rest = { ...out, pieces: {} } as Record<string, unknown>;
+    for (const field of SAVE_TABLES)
+      if (out[field] !== undefined) rest[field] = {};
+    measured.baseBytes = bytes(rest);
+  }
   for (const field of SAVE_TABLES)
-    if (out[field] !== undefined)
-      out[field] = unpackTable(out[field] as Table, budget);
-  const units = out.pieces as PackedGame["pieces"];
+    if (out[field] !== undefined) {
+      const tableSize = measured ? { bytes: 0 } : undefined;
+      out[field] = unpackTable(out[field] as Table, budget, tableSize);
+      if (measured) measured.baseBytes += tableSize!.bytes - 2;
+    }
+  out.pieces = unpackUnitSequences(out.pieces);
+  return out as unknown as PackedGame;
+}
+
+export function unpackUnitSequences(input: unknown): PackedGame["pieces"] {
+  const units = input as PackedGame["pieces"];
   if (!units || typeof units !== "object") throw invalid();
-  out.pieces = {
+  return {
     ...units,
     rows: unpackSequence(units.rows),
     keys: Array.isArray(units.keys)
@@ -233,5 +267,4 @@ export function unpackTables(input: unknown): PackedGame {
           deltas: unpackSequence(units.keys?.deltas),
         },
   };
-  return out as unknown as PackedGame;
 }

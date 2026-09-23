@@ -1,5 +1,6 @@
 import type { Game } from "../game/types";
-import { packGame, restoreValidatedGame } from "../game/save-packing";
+import { packValidatedGame, restoreValidatedGame } from "../game/save-packing";
+import { packUnitSequences, unpackUnitSequences } from "../game/save-tables";
 
 export interface LoadedCampaign {
   game: Game | null;
@@ -8,7 +9,10 @@ export interface LoadedCampaign {
   needsSave?: boolean;
 }
 type LoadTransfer = Omit<LoadedCampaign, "game"> &
-  ({ game: Game | null } | { gameText: string; unitTemplates?: true });
+  (
+    | { game: Game | null }
+    | { gameText: string; unitTemplates?: true; unitSequences?: true }
+  );
 
 /** Only for the trusted save worker's already validated result. Large object
  * graphs are expensive to structured-clone across threads. Transfer repeated
@@ -31,17 +35,23 @@ export function encodeLoadedCampaign(result: LoadedCampaign): LoadTransfer {
       repeated++;
   }
   if (repeated < 32) return { ...status, gameText: JSON.stringify(game) };
+  const packed = packValidatedGame(game, keys);
   return {
     ...status,
-    gameText: JSON.stringify(packGame(game)),
+    gameText: JSON.stringify({
+      ...packed,
+      pieces: packUnitSequences(packed.pieces),
+    }),
     unitTemplates: true,
+    unitSequences: true,
   };
 }
 
 export function decodeLoadedCampaign(result: LoadTransfer): LoadedCampaign {
   if ("game" in result) return result;
-  const { gameText, unitTemplates, ...status } = result;
+  const { gameText, unitTemplates, unitSequences, ...status } = result;
   const game = JSON.parse(gameText);
+  if (unitSequences) game.pieces = unpackUnitSequences(game.pieces);
   return {
     ...status,
     game: unitTemplates ? restoreValidatedGame(game) : (game as Game),

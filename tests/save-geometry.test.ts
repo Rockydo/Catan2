@@ -81,7 +81,7 @@ it("keeps noncanonical geometry, unknown fields and empty tables verbatim", () =
   );
 });
 
-it("loads packing versions 1 through 6 with exact state and shrinks the archive", async () => {
+it("loads packing versions 1 through 7 with exact state and shrinks the archive", async () => {
   const { s } = fishingFixture();
   const expected = JSON.stringify(deserialize(serialize(s)));
   const templates = packGame(s),
@@ -90,7 +90,18 @@ it("loads packing versions 1 through 6 with exact state and shrinks the archive"
   const ints = packIntegers(refs),
     spatial = packSpatial(ints);
   const current = JSON.parse(serializePacked(s));
-  const encodings = [templates, columns, refs, ints, spatial, current.game];
+  const geometry = packSpatial(
+    packIntegers(packReferences(packGeometry(columns))),
+  );
+  const encodings = [
+    templates,
+    columns,
+    refs,
+    ints,
+    spatial,
+    geometry,
+    current.game,
+  ];
   for (const [index, game] of encodings.entries()) {
     const encoded = JSON.stringify({
       ...current,

@@ -17,6 +17,39 @@ function fixture(count = 300) {
   return s;
 }
 
+it("measures exactly the expanded base JSON bytes without serializing the rebuilt world", () => {
+  const s = fixture();
+  const cases: any[] = [packGame(s)];
+  const unusual: any = packGame(s);
+  unusual.tiles = {
+    quoted: {
+      id: "quoted",
+      extra: 'a\\b\n"quoted"',
+      unicode: "Forêt 雪 🌲",
+      absent: undefined,
+    },
+    empty: {},
+    own: { id: "other", n: -123.125, flag: true, missing: null, list: [] },
+    future: JSON.parse(
+      '{"__proto__":{"x":1},"a":[false,0,null],"id":"future"}',
+    ),
+  };
+  unusual.extra = { preserved: "🌞", order: [1, 2] };
+  unusual.vertices = {};
+  cases.push(unusual);
+  for (const input of cases) {
+    const measured = { baseBytes: 0 };
+    const decoded = unpackTables(onDisk(packTables(input)), measured);
+    expect(measured.baseBytes).toBe(
+      new TextEncoder().encode(JSON.stringify({ ...decoded, pieces: {} }))
+        .length,
+    );
+    expect(JSON.stringify(unpackGame(decoded, measured.baseBytes))).toBe(
+      JSON.stringify(unpackGame(decoded)),
+    );
+  }
+});
+
 it("preserves complete map values, property order and optional future fields", () => {
   const s = fixture();
   const tiles = Object.values(s.tiles);

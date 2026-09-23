@@ -55,13 +55,23 @@ function packKeys(keys: string[]): PackedUnits["keys"] {
 }
 
 export function packGame(game: Game): PackedGame {
-  const keys = Object.keys(game.pieces),
-    packedKeys = packKeys(keys),
+  return packRecords(game, Object.keys(game.pieces), true);
+}
+
+/** Internal save-worker transfer only, after deserialize's complete validation.
+ * Reuse the current keys and avoid measuring the same expanded snapshot again.
+ * Disk/file encoders must use packGame, which enforces its expansion budget. */
+export function packValidatedGame(game: Game, keys: string[]): PackedGame {
+  return packRecords(game, keys, false);
+}
+
+function packRecords(game: Game, keys: string[], measure: boolean): PackedGame {
+  const packedKeys = packKeys(keys),
     templates: PackedUnits["templates"] = [],
     sizes: number[] = [],
     rows: number[] = [],
     lookup = new Map<string, number>();
-  let expanded = jsonBytes({ ...game, pieces: {} });
+  let expanded = measure ? jsonBytes({ ...game, pieces: {} }) : 0;
   let previous: Record<string, unknown> | undefined,
     previousIndex = -1;
   for (const key of keys) {
@@ -92,7 +102,7 @@ export function packGame(game: Game): PackedGame {
         index = templates.length;
         lookup.set(signature, index);
         templates.push(template);
-        sizes.push(textBytes(signature));
+        if (measure) sizes.push(textBytes(signature));
       }
       const fields = Object.keys(template);
       previous =
@@ -111,11 +121,13 @@ export function packGame(game: Game): PackedGame {
     }
     // Delta IDs contain only an ASCII prefix and decimal digits. Their JSON
     // byte size is exact without serializing each ID again for every soldier.
-    expanded +=
-      sizes[index] +
-      (Array.isArray(packedKeys) ? jsonBytes(key) : key.length + 2) * 2;
-    if (expanded > LIMIT)
-      throw new Error("This save exceeds the 128 MB expanded limit.");
+    if (measure) {
+      expanded +=
+        sizes[index] +
+        (Array.isArray(packedKeys) ? jsonBytes(key) : key.length + 2) * 2;
+      if (expanded > LIMIT)
+        throw new Error("This save exceeds the 128 MB expanded limit.");
+    }
     rows.push(index);
   }
   return { ...game, pieces: { keys: packedKeys, templates, rows } };
@@ -141,8 +153,9 @@ function copyValue(value: unknown, depth = 0): unknown {
   return result;
 }
 
-export function unpackGame(game: PackedGame): Game {
-  return restoreGame(game, true);
+// baseBytes may only come from unpackTables' exact, validated byte accounting.
+export function unpackGame(game: PackedGame, baseBytes?: number): Game {
+  return restoreGame(game, true, baseBytes);
 }
 
 /** Internal worker boundary only: the save worker has already checked the
@@ -153,7 +166,11 @@ export function restoreValidatedGame(game: PackedGame): Game {
   return restoreGame(game, false);
 }
 
-function restoreGame(game: PackedGame, validate: boolean): Game {
+function restoreGame(
+  game: PackedGame,
+  validate: boolean,
+  baseBytes?: number,
+): Game {
   const packed = game?.pieces;
   if (
     !packed ||
@@ -217,7 +234,9 @@ function restoreGame(game: PackedGame, validate: boolean): Game {
   });
   // Bound the reconstructed data as well as the compressed stream. A template
   // containing a large object must not be amplified into gigabytes of units.
-  let expanded = validate ? jsonBytes({ ...game, pieces: {} }) : 0;
+  let expanded = validate
+    ? (baseBytes ?? jsonBytes({ ...game, pieces: {} }))
+    : 0;
   if (validate)
     for (let i = 0; i < keys.length; i++) {
       const key = keys[i],

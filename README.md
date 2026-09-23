@@ -54,7 +54,9 @@ Drag to pan; use the wheel to zoom. Click a town, route, tile, army or fleet to 
 
 Campaigns autosave as compressed records in browser IndexedDB, with an atomic previous-save backup. Large campaigns do not use the small localStorage quota. Existing browser saves migrate automatically after a successful write. Saving, compression and load validation run in a background worker. If you refresh before the latest write completes, the browser asks you to wait or confirm leaving.
 
-Large saves also group repeated unit data and map fields before compression. Sequential unit IDs and repeated entries use compact sequences. Repeated map identifiers share a dictionary. Spatial identifiers store their exact coordinates and road endpoints as compact numeric sequences; no map geometry is regenerated. Integer columns use lossless binary differences before compression. Every unit, terrain coordinate, stored resource and individual order is preserved. Autosaves send only changes to the worker after the first snapshot; each stored save remains complete and can load independently of its backup. Existing saves use the latest format on their next save or export. Large-army reloads and imports also use troop templates during transfer from the validation worker to the interface, reducing temporary memory and reconstruction work. Diverse armies retain the regular JSON transfer when templates would not help.
+Large saves group repeated unit data and map fields before compression. Sequential unit IDs and repeated entries use compact sequences. Map identifiers share a dictionary. Matching coordinates and neighbor lists are stored once and reconstructed exactly from saved keys and tile rings, preserving their original order. Unusual layouts remain literal. The loader never rerolls terrain or uses current generation rules to rebuild the map. Every unit, stored resource and individual order is preserved.
+
+Autosaves send only changes to the worker after the first snapshot; each stored save remains complete and can load independently of its backup. Existing saves use the latest format on their next save or export. Large-army reloads and imports transfer troop templates and repeated sequences from the validation worker to the interface. The loader reuses exact byte counts from validation instead of serializing the rebuilt map again. Diverse armies retain regular JSON transfer when templates would not help. File integrity, expansion limits and complete game validation still run before a campaign opens.
 
 **Export save** in campaign settings creates a portable backup. Exports are compact, losslessly compressed `.catane` files. **Import save** accepts these files and all previous JSON exports, compressed or uncompressed, up to 128 MB after decompression. Use it to continue in another browser or computer. Export before clearing browser data, replacing a campaign or changing the server address. Different browsers, hostnames and ports have separate storage. Saves are not uploaded to GitHub or a game server.
 
@@ -150,14 +152,14 @@ To measure compression and exact save recovery without a browser:
 SAVE_PATH=/path/to/campaign.json npx tsx scripts/save-performance.ts
 ```
 
-To compare refresh loading of original JSON and all six compact formats in a disposable Chromium profile:
+To compare refresh loading of original JSON and all seven compact formats in a disposable Chromium profile:
 
 ```sh
 SAVE_PATH=/path/to/campaign.json GAME_URL=http://127.0.0.1:4173 \
   npx tsx scripts/save-load-performance.ts
 ```
 
-This checks the exact loaded state and measures when the campaign menu appears. It does not open or change your playing browser. Set `FORMATS=spatial,packed` to compare the previous spatial format with the current geometry format. The report includes the full campaign hash.
+This checks the exact loaded state and measures when the campaign menu appears. It does not open or change your playing browser. Set `FORMATS=geometry,packed` to compare the previous geometry format with the current format, which also removes duplicate neighbor lists. The report includes the full campaign hash.
 
 `scripts/save-import-performance.ts` measures importing the same compressed campaign through a fresh worker, including reconstruction in the interface thread. It takes the same `SAVE_PATH`, `GAME_URL` and `LABEL` options and verifies the complete result. This isolates import processing from map painting. It bundles the actual interface decoder used by the tested build; set `SOURCE_ROOT` to that build’s checkout when comparing a previous version.
 

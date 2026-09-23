@@ -4,9 +4,11 @@ import { createHash } from "node:crypto";
 import { compress, importSave } from "../src/storage/codec";
 import { serialize, serializePacked } from "../src/game/save";
 import { packIntegers } from "../src/game/save-integers";
+import { packGeometry } from "../src/game/save-geometry";
 import { packSpatial } from "../src/game/save-spatial";
 import { unpackGame } from "../src/game/save-packing";
 import { packGame } from "../src/game/save-packing";
+import { unpackUnitSequences } from "../src/game/save-tables";
 import { packTables } from "../src/game/save-tables";
 import { packReferences } from "../src/game/save-references";
 import { hash } from "../src/game/world";
@@ -80,6 +82,26 @@ const encodings = {
       }),
     ),
   ),
+  geometry: Array.from(
+    await compress(
+      JSON.stringify({
+        ...JSON.parse(template),
+        packing: 6,
+        game: packSpatial(
+          packIntegers(packReferences(packGeometry(packTables(templateGame)))),
+        ),
+        checksum: hash(
+          JSON.stringify(
+            packSpatial(
+              packIntegers(
+                packReferences(packGeometry(packTables(templateGame))),
+              ),
+            ),
+          ),
+        ).toString(16),
+      }),
+    ),
+  ),
   packed: Array.from(await compress(serializePacked(game))),
 };
 const formats = process.env.FORMATS?.split(",");
@@ -121,6 +143,7 @@ try {
             w.loadedGame = data.result?.game;
             w.loadedGameText = data.result?.gameText;
             w.loadedUnitTemplates = data.result?.unitTemplates;
+            w.loadedUnitSequences = data.result?.unitSequences;
           }
         });
       }
@@ -142,8 +165,10 @@ try {
     "references",
     "integers",
     "spatial",
+    "geometry",
     "packed",
     "tables",
+    "geometry",
     "packed",
     "templates",
     "references",
@@ -154,6 +179,7 @@ try {
     "references",
     "legacy",
     "integers",
+    "geometry",
     "packed",
     "spatial",
     "templates",
@@ -196,10 +222,15 @@ try {
         readyMs: w.readyMs,
         game: w.loadedGameText ?? JSON.stringify(w.loadedGame),
         unitTemplates: w.loadedUnitTemplates,
+        unitSequences: w.loadedUnitSequences,
       };
     });
-    if (result.unitTemplates)
-      result.game = JSON.stringify(unpackGame(JSON.parse(result.game)));
+    if (result.unitTemplates) {
+      const packed = JSON.parse(result.game);
+      if (result.unitSequences)
+        packed.pieces = unpackUnitSequences(packed.pieces);
+      result.game = JSON.stringify(unpackGame(packed));
+    }
     if (result.game !== expected) throw Error("Reload changed the campaign.");
     samples.push({ format, loadMs: result.loadMs, readyMs: result.readyMs });
   }
@@ -219,6 +250,7 @@ try {
     referenceBytes: encodings.references.length,
     integerBytes: encodings.integers.length,
     spatialBytes: encodings.spatial.length,
+    geometryBytes: encodings.geometry.length,
     packedBytes: encodings.packed.length,
     legacyMedianReadyMs: median("legacy"),
     templateMedianReadyMs: median("templates"),
@@ -226,6 +258,7 @@ try {
     referenceMedianReadyMs: median("references"),
     integerMedianReadyMs: median("integers"),
     spatialMedianReadyMs: median("spatial"),
+    geometryMedianReadyMs: median("geometry"),
     packedMedianReadyMs: median("packed"),
     samples,
     exactRoundTrip: true,
