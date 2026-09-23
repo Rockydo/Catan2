@@ -25,9 +25,14 @@ async function planner(root: string) {
       supply: guilds.guildMilitaryOrder(s),
       engineering: guilds.guildMilitaryOrder(s, true),
     }));
+    const military = { ...s, phase: "military" as const },
+      militaryBefore = JSON.stringify(military),
+      maneuver = ai.chooseAIAction(military);
     if (JSON.stringify(s) !== before)
       throw Error("Planning mutated its input.");
-    return JSON.stringify(result);
+    if (JSON.stringify(military) !== militaryBefore)
+      throw Error("Military planning mutated its input.");
+    return JSON.stringify({ ...result, maneuver });
   };
 }
 const current = await planner("."),

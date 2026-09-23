@@ -488,3 +488,32 @@ The coastal planning audit now compares 96 scenarios and all 7,520 proposed proj
 Validation passed all 1,463 unit tests and 111 browser scenarios across Firefox, Chromium and mobile. Browser coverage includes guild construction and contracts, army composition and splitting, worker continuation, bulk orders, coastal sieges, transport shortcuts, icebound fleets, thaw battles and large-save recovery. All replays and tests used exported copies or disposable fixtures. The player's live campaign was not opened or modified.
 
 The deployed build passed all 12 production HTTP checks and 15 additional Chromium guild, worker and storage scenarios. Earlier hashed assets were retained for already-open sessions. The broader performance goal remains active.
+
+## Route storage and growing-map memory
+
+Emergency deployment previously retained a separate complete path for every reachable destination, for every source it considered. A long corridor therefore stored the same route prefixes repeatedly. Maneuver scoring and transport rendezvous now use the shared distance tree. A formation with no candidate objectives does not start a full distance search. Paths are reconstructed when their coordinates are needed, preserving the original neighbor order and hostile endpoints. Reconstruction appends and reverses once instead of repeatedly inserting at the front of an array. Rendezvous planning also indexes occupied transports once rather than scanning every owned soldier for each ship.
+
+The shared route cache now retains at most 256 sources and 262,144 destination entries. One tree larger than that destination budget can still be used, but evicts the other retained trees. Local queries remain valid after eviction and release their references when their search ends. This bounds shared retained route data without limiting map size, search depth or the destinations an army can consider.
+
+The new `scripts/path-memory-performance.ts` diagnostic compares the former full-path implementation with the compact planner in fresh Node processes. It takes three samples per implementation and checks exact destination order and distances. The following are route-only graphs with 2,000 tiles, not complete campaigns or estimates of total game memory:
+
+| Graph | Previous retained heap | New retained heap | Reduction |
+| --- | ---: | ---: | ---: |
+| Open hex map | 906,192 bytes | 247,424 bytes | 73% |
+| Long corridor | 24,483,160 bytes | 252,280 bytes | 99% |
+
+Median route construction was 1.12 ms versus 1.44 ms for the open graph, and 10.16 ms versus 2.34 ms for the corridor. These isolated timings do not imply a comparable improvement in complete turns. The main gain is avoiding repeated route storage as maps and the number of deployed armies increase.
+
+| Full AI comparison | Previous build | This pass |
+| --- | ---: | ---: |
+| 2,000 tiles and 1,000 towns: same 60 decisions | 13.82 s | 13.85 s |
+| Round 31: complete 144-order browser turn | 14.23 s | 14.16 s |
+| Round 32: 485 orders to the same human decision | 21.65 s | 21.57 s |
+
+Full-turn timings were effectively unchanged. Every order and complete final-state hash matched. The browser replays retained about 16.7 ms frame p95 with no errors or long main-thread tasks. The planning audit now also compares military actions across all 96 scenarios, alongside all 7,520 projects and their exact scores and order. Trade comparisons remained unchanged.
+
+Regression tests cover terrain and alliance changes, blocked endpoints, stranded origins, traversal ties, cache eviction by both limits and still-live queries from older positions. A 4,000-tile corridor verifies exact long-path reconstruction and that changing a returned path cannot corrupt the retained tree.
+
+All 1,466 unit tests and 111 browser scenarios passed. After deferring unused distance searches, all unit tests and 33 affected browser scenarios were repeated on the final build. Coverage spans Firefox, Chromium and mobile, including transport shortcuts, worker continuation, economic batches, guilds, siege actions, seasonal movement, army selection and large-save recovery. Tests used exported copies and disposable fixtures; the player's live campaign was not opened or changed.
+
+The deployed build passed all 12 production HTTP checks and 10 additional Chromium transport, worker and storage scenarios. Earlier hashed assets were retained for already-open sessions. The broader performance goal remains active.

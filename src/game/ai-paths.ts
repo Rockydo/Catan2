@@ -6,11 +6,15 @@ interface RouteTree {
   previous: Map<string, string>;
   depth: Map<string, number>;
 }
+interface RouteCache {
+  trees: Map<string, RouteTree>;
+  tiles: number;
+}
 // AI planning treats its input as immutable. A new engine command produces a
 // new Game, so neither occupation nor exploration can leave a stale route tree.
-const cache = new WeakMap<Game, Map<string, RouteTree>>();
+const cache = new WeakMap<Game, RouteCache>();
 let lastNetwork: string | undefined;
-let sharedRoutes = new Map<string, RouteTree>();
+let sharedRoutes: RouteCache = { trees: new Map(), tiles: 0 };
 function networkRoutes(s: Game) {
   return planningValue(s, "path-network", () => {
     // Routes depend on passability, alliances and occupation, never on stocks,
@@ -30,7 +34,7 @@ function networkRoutes(s: Game) {
     ]);
     if (network !== lastNetwork) {
       lastNetwork = network;
-      sharedRoutes = new Map();
+      sharedRoutes = { trees: new Map(), tiles: 0 };
     }
     return sharedRoutes;
   });
@@ -48,7 +52,7 @@ function routeTree(
     cache.set(s, frame);
   }
   const key = `${from}/${naval}/${owner}/${max}`;
-  let tree = frame.get(key);
+  let tree = frame.trees.get(key);
   if (!tree) {
     const previous = new Map([[from, from]]),
       depth = new Map([[from, 0]]),
@@ -66,14 +70,35 @@ function routeTree(
       }
     }
     tree = { previous, depth };
-    // Bound retained geometry even during very large, open-ended campaigns.
-    if (frame.size >= 256) frame.delete(frame.keys().next().value!);
-    frame.set(key, tree);
+    // Bound both source count and retained destinations. A single large tree
+    // remains usable, but cannot multiply into 256 full-map copies. Local
+    // queries retain their own tree safely after it leaves this shared cache.
+    while (
+      frame.trees.size &&
+      (frame.trees.size >= 256 || frame.tiles + depth.size > 262144)
+    ) {
+      const oldest = frame.trees.keys().next().value!;
+      frame.tiles -= frame.trees.get(oldest)!.depth.size;
+      frame.trees.delete(oldest);
+    }
+    frame.trees.set(key, tree);
+    frame.tiles += depth.size;
   }
   return tree;
 }
 
 /** Cost-only queries share the same search without allocating entire paths. */
+export function planningDestinations(
+  s: Game,
+  from: string,
+  naval: boolean,
+  owner: number,
+): IterableIterator<[string, number]> {
+  // Retain breadth-first visit order, including the origin for stranded forces.
+  // Entries expose copied pairs, never the mutable shared depth map itself.
+  return routeTree(s, from, naval, owner, Infinity).depth.entries();
+}
+
 export function planningDistances(
   s: Game,
   from: string,
@@ -113,9 +138,12 @@ export function planningPath(
   const { previous } = routeTree(s, from, naval, owner, max);
   if (!previous.has(to)) return null;
   const route = [to];
-  while (previous.get(route[0]) !== from)
-    route.unshift(previous.get(route[0])!);
-  return route;
+  let at = to;
+  while (previous.get(at) !== from) {
+    at = previous.get(at)!;
+    route.push(at);
+  }
+  return route.reverse();
 }
 
 interface Connectivity {
@@ -125,10 +153,7 @@ interface Connectivity {
 // Reachability does not need a shortest-path tree for every source. A blocked
 // tile remains a legal destination (or origin), but never joins two regions.
 // The key is the same validated movement network as the distance/path cache.
-const connectivity = new WeakMap<
-  Map<string, RouteTree>,
-  Map<string, Connectivity>
->();
+const connectivity = new WeakMap<RouteCache, Map<string, Connectivity>>();
 export function planningReachable(
   s: Game,
   from: string,

@@ -154,6 +154,8 @@ import { collectorThreats } from "./ai-threats";
 import {
   planningPath as pathTo,
   planningDistance,
+  planningDistances,
+  planningDestinations,
   planningReachable as reachable,
   planningReachableFrom,
   planningTransitRegion,
@@ -2025,19 +2027,24 @@ const rendezvousCache = new WeakMap<
 function transportRendezvous(s: Game) {
   const cached = rendezvousCache.get(s);
   if (cached) return cached;
-  const troops = ownPieces(s).filter(
+  const units = ownPieces(s),
+    loaded = new Set<string>();
+  for (const unit of units) {
+    const carrier = unit.carrier && s.pieces[unit.carrier];
+    if (carrier) loaded.add(carrier.tile);
+  }
+  const troops = units.filter(
     (u) => !u.naval && !u.carrier && !collector(u) && !isSettler(u.kind),
   );
-  const fleets = ownPieces(s).filter(
+  const fleets = units.filter(
     (u) =>
       u.naval &&
       !collector(u) &&
       !isSettler(u.kind) &&
       shipStats(u.kind as ShipClass, u.tier).capacity > 0 &&
-      !ownPieces(s).some(
-        (p) => p.carrier && s.pieces[p.carrier]?.tile === u.tile,
-      ),
+      !loaded.has(u.tile),
   );
+  const fleetTiles = new Set(fleets.map((u) => u.tile));
   const pairs: {
     land: string;
     sea: string;
@@ -2047,38 +2054,36 @@ function transportRendezvous(s: Game) {
   }[] = [];
   for (const army of new Set(troops.map((u) => u.tile))) {
     if (hasLandObjective(s, army)) continue;
-    const landPaths = deploymentPaths(s, army, false);
-    const shores = [...landPaths.keys()]
-      .filter((land) => !hostileAt(s, land))
-      .flatMap((land) =>
+    const shores = [...planningDestinations(s, army, false, s.active)]
+      .filter(([land]) => !hostileAt(s, land))
+      .flatMap(([land, walk]) =>
         neighbors(land)
           .filter(
             (sea) =>
               canOccupy(s.tiles[sea], true) &&
               !hostileAt(s, sea, s.active, true),
           )
-          .map((sea) => ({ land, sea })),
+          .map((sea) => ({ land, sea, walk })),
       );
     const invasion = invasionCoasts(s, army);
     if (!invasion.length) continue;
-    for (const fleet of new Set(fleets.map((u) => u.tile))) {
-      const seaPaths = deploymentPaths(s, fleet, true);
+    for (const fleet of fleetTiles) {
+      const sailing = planningDistances(s, fleet, true, s.active);
       if (
         !invasion.some(
-          (sea) => seaPaths.has(sea) && !hostileAt(s, sea, s.active, true),
+          (sea) =>
+            Number.isFinite(sailing(sea)) && !hostileAt(s, sea, s.active, true),
         )
       )
         continue;
-      const best = shores
-        .filter(({ sea }) => seaPaths.has(sea))
-        .map(({ land, sea }) => ({
-          land,
-          sea,
-          army,
-          fleet,
-          cost: landPaths.get(land)!.length + seaPaths.get(sea)!.length / 2,
-        }))
-        .sort((a, b) => a.cost - b.cost)[0];
+      let best: (typeof pairs)[number] | undefined;
+      for (const { land, sea, walk } of shores) {
+        const voyage = sailing(sea);
+        if (!Number.isFinite(voyage)) continue;
+        const cost = walk + voyage / 2;
+        // Strict comparison retains the first shore on a tied shortest trip.
+        if (!best || cost < best.cost) best = { land, sea, army, fleet, cost };
+      }
       if (best) pairs.push(best);
     }
   }
@@ -2091,31 +2096,6 @@ function transportRendezvous(s: Game) {
   return result;
 }
 
-// One search per origin covers every strategic destination. Hostile tiles are
-// endpoints only, matching the movement rules, and can never be bypassed.
-const deploymentCache = new WeakMap<Game, Map<string, Map<string, string[]>>>();
-function deploymentPaths(s: Game, origin: string, naval: boolean) {
-  let cache = deploymentCache.get(s);
-  if (!cache) {
-    cache = new Map();
-    deploymentCache.set(s, cache);
-  }
-  const key = `${s.active}/${origin}/${naval}`;
-  const cached = cache.get(key);
-  if (cached) return cached;
-  const paths = new Map<string, string[]>([[origin, []]]);
-  const queue = [origin];
-  for (let i = 0; i < queue.length; i++) {
-    const id = queue[i];
-    for (const next of neighbors(id)) {
-      if (!canOccupy(s.tiles[next], naval) || paths.has(next)) continue;
-      paths.set(next, [...paths.get(id)!, next]);
-      if (!hostileAt(s, next, s.active, naval)) queue.push(next);
-    }
-  }
-  cache.set(key, paths);
-  return paths;
-}
 function invasionCoasts(s: Game, excludeLand?: string): readonly string[] {
   let cache = coastCache.get(s);
   if (!cache) {
@@ -3076,20 +3056,24 @@ function chooseManeuver(s: Game, emergency: boolean): Command {
         weights.set(target, value);
         return value;
       };
-      const goalPaths = objectives
+      // Armies with no candidate objectives need no full-world distance tree.
+      let originDistances: ((target: string) => number) | undefined;
+      const distanceFrom = (target: string) =>
+        (originDistances ??= planningDistances(s, origin, naval, s.active))(
+          target,
+        );
+      const goals = objectives
         .map((target) => ({
           target,
-          path: emergency
-            ? (deploymentPaths(s, origin, naval).get(target) ?? null)
-            : pathTo(s, origin, target, naval, s.active),
+          steps: distanceFrom(target),
         }))
-        .filter((v) => v.path !== null)
+        .filter((v) => Number.isFinite(v.steps))
         .sort(
           (a, b) =>
-            a.path!.length / objectiveWeight(a.target) -
-            b.path!.length / objectiveWeight(b.target),
+            a.steps / objectiveWeight(a.target) -
+            b.steps / objectiveWeight(b.target),
         );
-      let chosen = goalPaths[0];
+      let chosen = goals[0];
       // Keep marching toward an assigned front instead of changing direction
       // whenever another army moves or a town's stock changes.
       if (emergency) {
@@ -3104,7 +3088,7 @@ function chooseManeuver(s: Game, emergency: boolean): Command {
           );
         const retained = [...counts]
           .sort((a, b) => b[1] - a[1])
-          .map(([target]) => goalPaths.find((g) => g.target === target))
+          .map(([target]) => goals.find((g) => g.target === target))
           .find((g) => g !== undefined);
         if (retained) chosen = retained;
       }
@@ -3130,11 +3114,10 @@ function chooseManeuver(s: Game, emergency: boolean): Command {
         const passage = (rendezvous ? [rendezvous.land] : pickup)
           .map((target) => ({
             target,
-            path: pathTo(s, origin, target, false, s.active),
+            steps: distanceFrom(target),
           }))
-          .filter((v) => v.path !== null)
-          .filter((v) => v.path!.length > 0)
-          .sort((a, b) => a.path!.length - b.path!.length)[0];
+          .filter((v) => Number.isFinite(v.steps) && v.steps > 0)
+          .sort((a, b) => a.steps - b.steps)[0];
         if (passage) {
           chosen = passage;
           weights.set(passage.target, 4 + crisis.severity * 3);
@@ -3155,9 +3138,9 @@ function chooseManeuver(s: Game, emergency: boolean): Command {
             )
             .map((tile) => ({
               target: tile.id,
-              path: pathTo(s, origin, tile.id, false, s.active),
+              steps: distanceFrom(tile.id),
             }))
-            .filter((v) => v.path?.length)
+            .filter((v) => Number.isFinite(v.steps) && v.steps > 0)
             .sort((a, b) => {
               const proximity = (tile: string) =>
                 minValue(
@@ -3166,10 +3149,7 @@ function chooseManeuver(s: Game, emergency: boolean): Command {
                   ),
                 );
               return (
-                a.path!.length +
-                proximity(a.target) -
-                b.path!.length -
-                proximity(b.target)
+                a.steps + proximity(a.target) - b.steps - proximity(b.target)
               );
             })[0];
           if (frontier) {
@@ -3203,13 +3183,12 @@ function chooseManeuver(s: Game, emergency: boolean): Command {
         } else if (chosen) {
           for (const goal of emergency
             ? [chosen]
-            : [chosen, ...goalPaths.filter((g) => g !== chosen).slice(0, 3)]) {
-            const after = pathTo(s, to, goal.target, naval, s.active);
-            if (after && after.length < goal.path!.length)
+            : [chosen, ...goals.filter((g) => g !== chosen).slice(0, 3)]) {
+            const after = planningDistance(s, to, goal.target, naval, s.active);
+            if (after < goal.steps)
               score = Math.max(
                 score,
-                ((goal.path!.length - after.length) * 5 +
-                  (!after.length ? 8 : 0)) *
+                ((goal.steps - after) * 5 + (!after ? 8 : 0)) *
                   drive *
                   objectiveWeight(goal.target),
               );

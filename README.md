@@ -106,7 +106,15 @@ To compare every proposed project and guild decision across varied coastal plann
 SOURCE_ROOT=/path/to/older/checkout npx tsx scripts/ai-planning-compare.ts
 ```
 
-Use a reference checkout with the same gameplay rules. The audit creates 96 positions, including blocked coasts, shared guild coverage, watchtower support, spent movement and mixed formations. It checks exact project scores and order, and verifies that neither planner changes its input.
+Use a reference checkout with the same gameplay rules. The audit creates 96 positions, including blocked coasts, shared guild coverage, watchtower support, spent movement and mixed formations. It checks exact project scores, order, guild decisions and military actions, and verifies that neither planner changes its input.
+
+To compare route memory against the former full-path planner:
+
+```sh
+TILES=2000 npx tsx scripts/path-memory-performance.ts
+```
+
+This runs open and corridor graphs in separate Node processes, with three samples per implementation and explicit garbage collection. It verifies every destination's order and distance, then reports construction time and retained heap. These are route-only stress cases, not complete campaigns or AI-turn benchmarks.
 
 For trade offers, coalition supplies and acceptance decisions across different stocks, factions and alliances:
 
