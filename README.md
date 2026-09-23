@@ -108,7 +108,7 @@ To compare every proposed project and guild decision across varied coastal plann
 SOURCE_ROOT=/path/to/older/checkout npx tsx scripts/ai-planning-compare.ts
 ```
 
-Use a reference checkout with the same gameplay rules. The audit creates 96 positions, including blocked coasts, shared guild coverage, watchtower support, spent movement and mixed formations. It checks exact project scores, order, guild decisions and military actions, and verifies that neither planner changes its input.
+Use a reference checkout with the same gameplay rules. The audit creates 128 positions, including blocked coasts, shared guild coverage, watchtower support, spent movement, mixed formations and ports sharing sea tiles. It checks exact project scores, order, guild decisions and military actions, and verifies that neither planner changes its input. Shared-port cases vary city tiers, free hull grants, passenger armies, local forces and frozen seas.
 
 To compare route memory against the former full-path planner:
 

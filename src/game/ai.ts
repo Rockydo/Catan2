@@ -10,6 +10,7 @@ import {
 import { bankOrderToward } from "./ai-bank";
 import { cachedMilitaryWait } from "./ai-maneuvers";
 import { militaryObjectiveScorer } from "./ai-objectives";
+import { indexRegionalLandForces } from "./ai-regional-forces";
 import { colonistAction, colonistProjects } from "./ai-colonization";
 import {
   seasonalDestinationSafe,
@@ -689,6 +690,111 @@ export function economyProjects(s: Game): Project[] {
   // repeated soldiers without introducing the path check used by moving units.
   const collectionAtRisk = collectorThreats(s, s.active, false);
   const collectionOutput = new Map<string, number>();
+  // Ports on the same water tile assess the same fleets, threats and targets.
+  // These values live only for this read-only economic decision.
+  function assessSea(tile: string) {
+    const ships = regionalShips.get(water.get(tile)) ?? [],
+      berths = ships.reduce(
+        (n, u) => n + shipStats(u.kind as ShipClass, u.tier).capacity,
+        0,
+      );
+    const siegeTargets = vulnerableCoasts.filter((town) =>
+      waterAtVertex(s, town.vertex).some(
+        (coast) =>
+          water.get(coast) === water.get(tile) &&
+          reachable(s, tile, coast, true, s.active),
+      ),
+    );
+    const siegeNeed = siegeTargets.length
+      ? Math.max(
+          0,
+          Math.min(
+            6,
+            Math.max(
+              1,
+              minValue(
+                siegeTargets.map((town) => siegeRequirement(s, town, [])),
+              ),
+            ),
+          ) - siegePower(ships),
+        )
+      : 0;
+    const shortcutDemand = campaignTransportDemand(s, tile);
+    const threats = hostileShips.filter(
+      (u) =>
+        distance(u.tile, tile) <= 3 &&
+        reachable(s, u.tile, tile, true, u.owner, 3),
+    );
+    const enemyPower = maxValue([
+      0,
+      ...s.players.map((p) =>
+        threats
+          .filter((u) => u.owner === p.id)
+          .reduce((n, u) => n + points(u), 0),
+      ),
+    ]);
+    const escorts = ships.filter(
+        (u) => shipStats(u.kind as ShipClass, u.tier).capacity === 0,
+      ),
+      escortPower = escorts.reduce((n, u) => n + points(u), 0),
+      commerceTargets = enemyFleets.filter(
+        (water) =>
+          piecesAt(s, water, true).some(
+            (u) => warTarget(s, u.owner) && collector(u),
+          ) && reachable(s, tile, water, true, s.active),
+      ),
+      commerceGuard = commerceTargets.length
+        ? minValue(
+            commerceTargets.map((water) =>
+              power(
+                s,
+                combatantsAt(s, water, true).filter(
+                  (u) => !friendly(s, u.owner, s.active),
+                ),
+                water,
+              ),
+            ),
+          )
+        : 0,
+      commerceRaid =
+        round >= 8 &&
+        commerceTargets.length > 0 &&
+        commerceGuard < 12 + towns.length * 5,
+      blockade =
+        resistance >= 0.2 &&
+        ownTowns(s, crisis.leader).some((town) =>
+          waterAtVertex(s, town.vertex).some(
+            (water) =>
+              tileGood(s.tiles[water]) &&
+              reachable(s, tile, water, true, s.active),
+          ),
+        ),
+      escortTarget = Math.max(
+        berths > 0 ? 2 : 0,
+        Math.ceil(enemyPower * 1.25),
+        blockade ? Math.ceil(2 + resistance * 4) : 0,
+        commerceRaid ? Math.ceil(commerceGuard * 1.2 + 3) : 0,
+      );
+    return {
+      berths,
+      siegeNeed,
+      shortcutDemand,
+      enemyPower,
+      escortPower,
+      commerceRaid,
+      blockade,
+      escortTarget,
+    };
+  }
+  const seaPlans = new Map<string, ReturnType<typeof assessSea>>();
+  const strandedForces = new Map<string, number>();
+  const collectorCounts = new Map<string, number>();
+  for (const unit of units)
+    if (["merchant", "fishing", "merchantship"].includes(unit.kind))
+      collectorCounts.set(
+        unit.kind,
+        (collectorCounts.get(unit.kind) ?? 0) + unit.tier,
+      );
   function add(
     action: Command,
     cost: Stock,
@@ -1002,34 +1108,17 @@ export function economyProjects(s: Game): Project[] {
       for (const tile of waterAtVertex(s, t.vertex).filter(
         (id) => !hostileAt(s, id),
       )) {
-        const localLand = localForce,
-          ships = regionalShips.get(water.get(tile)) ?? [],
-          berths = ships.reduce(
-            (n, u) => n + shipStats(u.kind as ShipClass, u.tier).capacity,
-            0,
-          );
-        const siegeTargets = vulnerableCoasts.filter((town) =>
-          waterAtVertex(s, town.vertex).some(
-            (coast) =>
-              water.get(coast) === water.get(tile) &&
-              reachable(s, tile, coast, true, s.active),
-          ),
-        );
-        const siegeNeed = siegeTargets.length
-          ? Math.max(
-              0,
-              Math.min(
-                6,
-                Math.max(
-                  1,
-                  minValue(
-                    siegeTargets.map((town) => siegeRequirement(s, town, [])),
-                  ),
-                ),
-              ) - siegePower(ships),
-            )
-          : 0;
-        const shortcutDemand = campaignTransportDemand(s, tile);
+        if (!seaPlans.has(tile)) seaPlans.set(tile, assessSea(tile));
+        const {
+          berths,
+          siegeNeed,
+          shortcutDemand,
+          enemyPower,
+          escortPower,
+          commerceRaid,
+          blockade,
+          escortTarget,
+        } = seaPlans.get(tile)!;
         const invasion = invasionCoasts(s, tiles[0]).some((w) =>
           reachable(s, tile, w, true, s.active),
         );
@@ -1038,64 +1127,14 @@ export function economyProjects(s: Game): Project[] {
         // soldier elsewhere on the connected continent.
         const passengerDemand = Math.max(
           shortcutDemand,
-          invasion ? localLand.length : 0,
+          invasion ? localForce.length : 0,
         );
-        const stranded = localLand.filter((u) => !hasLandObjective(s, u.tile));
-        const threats = hostileShips.filter(
-          (u) =>
-            distance(u.tile, tile) <= 3 &&
-            reachable(s, u.tile, tile, true, u.owner, 3),
-        );
-        const enemyPower = maxValue([
-          0,
-          ...s.players.map((p) =>
-            threats
-              .filter((u) => u.owner === p.id)
-              .reduce((n, u) => n + points(u), 0),
-          ),
-        ]);
-        const escorts = ships.filter(
-            (u) => shipStats(u.kind as ShipClass, u.tier).capacity === 0,
-          ),
-          escortPower = escorts.reduce((n, u) => n + points(u), 0),
-          commerceTargets = enemyFleets.filter(
-            (water) =>
-              piecesAt(s, water, true).some(
-                (u) => warTarget(s, u.owner) && collector(u),
-              ) && reachable(s, tile, water, true, s.active),
-          ),
-          commerceGuard = commerceTargets.length
-            ? minValue(
-                commerceTargets.map((water) =>
-                  power(
-                    s,
-                    combatantsAt(s, water, true).filter(
-                      (u) => !friendly(s, u.owner, s.active),
-                    ),
-                    water,
-                  ),
-                ),
-              )
-            : 0,
-          commerceRaid =
-            round >= 8 &&
-            commerceTargets.length > 0 &&
-            commerceGuard < 12 + towns.length * 5,
-          blockade =
-            resistance >= 0.2 &&
-            ownTowns(s, crisis.leader).some((town) =>
-              waterAtVertex(s, town.vertex).some(
-                (water) =>
-                  tileGood(s.tiles[water]) &&
-                  reachable(s, tile, water, true, s.active),
-              ),
-            ),
-          escortTarget = Math.max(
-            berths > 0 ? 2 : 0,
-            Math.ceil(enemyPower * 1.25),
-            blockade ? Math.ceil(2 + resistance * 4) : 0,
-            commerceRaid ? Math.ceil(commerceGuard * 1.2 + 3) : 0,
+        if (!strandedForces.has(regionKey))
+          strandedForces.set(
+            regionKey,
+            localForce.filter((u) => !hasLandObjective(s, u.tile)).length,
           );
+        const stranded = strandedForces.get(regionKey)!;
         for (const kind of (Object.keys(SHIP_INFO) as ShipClass[]).filter(
           (k) => k !== "fishing" && k !== "merchantship" && !isSettler(k),
         ))
@@ -1130,7 +1169,7 @@ export function economyProjects(s: Game): Project[] {
             const urgent =
               need > 0 &&
               (info.capacity
-                ? overseas && Math.max(stranded.length, shortcutDemand) > berths
+                ? overseas && Math.max(stranded, shortcutDemand) > berths
                 : enemyPower > escortPower ||
                   (commerceRaid &&
                     resistance >= 0.3 &&
@@ -1203,9 +1242,7 @@ export function economyProjects(s: Game): Project[] {
       const deployments = naval
         ? waterAtVertex(s, town.vertex)
         : landAtVertex(s, town.vertex);
-      const count = units
-        .filter((u) => u.kind === kind)
-        .reduce((n, u) => n + u.tier, 0);
+      const count = collectorCounts.get(kind) ?? 0;
       for (let tier = 1; tier <= town.turnLevel; tier++) {
         const bonus = s.players[s.active].bonuses;
         const free = naval
@@ -2136,9 +2173,8 @@ function invasionCoasts(s: Game, excludeLand?: string): readonly string[] {
   // there, not only troops already standing on the far side of that choke.
   const reach = new Map<string, boolean>();
   const expeditionaryForce = excludeLand
-    ? ownPieces(s).filter((u) => {
-        if (u.naval || u.carrier || collector(u) || region.get(u.tile) !== home)
-          return false;
+    ? (landObjectiveForces(s, region).get(home) ?? []).filter((u) => {
+        if (u.carrier) return false;
         if (!reach.has(u.tile))
           reach.set(u.tile, reachable(s, excludeLand, u.tile, false, s.active));
         return reach.get(u.tile)!;
@@ -2159,6 +2195,11 @@ function invasionCoasts(s: Game, excludeLand?: string): readonly string[] {
     .map((shore) => shore.sea);
   cache.set(key, result);
   return result;
+}
+function landObjectiveForces(s: Game, regions: Map<string, number>) {
+  return planningValue(s, `regionalLandForces/${s.active}`, () =>
+    indexRegionalLandForces(s, regions),
+  );
 }
 function landObjectives(s: Game) {
   return planningValue(s, `landObjectives/${s.active}`, () =>
@@ -2274,16 +2315,11 @@ function hasLandObjective(
   }
   const reaches = planningReachableFrom(s, origin, false, s.active);
   const eligibility = new Map<string, boolean>();
-  const available = ownPieces(s).filter((u) => {
-    if (u.naval || collector(u)) return false;
+  const candidates = landObjectiveForces(s, regions);
+  const available = (candidates.get(region) ?? []).filter((u) => {
     const key = `${u.tile}/${!!u.carrier}`;
     if (!eligibility.has(key))
-      eligibility.set(
-        key,
-        u.carrier
-          ? neighbors(u.tile).some((id) => regions.get(id) === region)
-          : regions.get(u.tile) === region && reaches(u.tile),
-      );
+      eligibility.set(key, !!u.carrier || reaches(u.tile));
     return eligibility.get(key)!;
   });
   const fieldGroups = fieldGroupsFor(s, available);

@@ -593,3 +593,26 @@ Regression coverage includes irregular frontier additions, reversed and reordere
 All 1,525 unit tests and 51 browser scenarios passed. Browser coverage includes Firefox, Chromium and mobile, with bulk recruitment, force selection, transport passengers, worker continuation, quota fallback, refresh, compact exports and historical imports, corrupt-primary recovery, concurrent tabs, coalesced writes and stale worker bases. Tests used disposable copies; the player's live campaign was not opened or changed.
 
 The local deployment passed all 12 production HTTP checks and 10 additional Chromium save, transport and worker scenarios. A production compatibility replay also loaded all eight historical/current encodings three times each, preserving the complete campaign hash on all 24 reloads. Earlier hashed assets remain available to already-open sessions. The broader performance goal remains active.
+
+
+## Shared port assessments and regional recruitment candidates
+
+Ports that share a launch tile now reuse the same assessment of nearby fleets, transport capacity, enemy commerce and coastal siege targets during one economic decision. Each town still evaluates its own land force, invasion demand, city tier, free hull grants and recruitment scores. Counts of resource collectors and troops without land objectives are computed once for the relevant faction or region instead of being repeated for every port. These values expire when the decision ends.
+
+Land-objective searches also index troops by geographic region once per planning frame. Each search still checks tactical reachability through blockades. Passengers remain eligible for each neighboring region they could reach, in the original unit order. Same-island invasion planning reuses those candidates without changing landing choices. New snapshots rebuild the index, so movement, boarding, losses, alliances and seasonal terrain changes cannot reuse stale force membership.
+
+| Workload | Before | After | Exact comparison |
+| --- | ---: | ---: | --- |
+| Round 31 export, complete AI turn | 12.54 s | 10.80 s | 144 orders and final state |
+| Round 32 export, through the human casualty decision | 20.99 s | 21.16 s | 485 orders and final state |
+| Growth map, 2,000 tiles and 1,000 towns, first 60 decisions | 12.41 s | 11.45 s | 60 orders and final state |
+
+The older campaign improved by about 14%, and the growth-map sample by about 8%. The latest campaign was effectively unchanged. Intermediate growth measurements of 11.59 and 11.49 seconds were consistent with the final result. These are local samples, not guaranteed gains for every position. Both browser replays retained approximately 16.7 ms frame p95, with no long main-thread tasks or errors.
+
+In the sampled growth-map CPU profiles, inclusive economic-project planning fell from about 7.60 seconds to 6.71 seconds, and land-objective assessment from about 1.64 seconds to 1.15 seconds. Those categories overlap and must not be added together. Other economic and military planning remains significant, so the broader performance goal is still active.
+
+The exact planning audit now covers 128 scenarios and all 13,206 proposed projects, including their scores, ordering, guild decisions and military actions. Added cases exercise shared ports, different town tiers, free ships, transported armies, enemy trade fleets and frozen launch tiles. All results match the previous checkout, and the audit rejects campaign mutation. Regression tests also compare regional candidates with the original direct scan and verify fresh decisions after fleet capacity or free hull grants change.
+
+All 96 trade comparisons also matched, retaining the same offers, aid and acceptance decisions. All 1,530 unit tests and 111 browser scenarios passed. Browser coverage includes guilds, army composition, bulk orders, transport shortcuts, coastal sieges, frozen seas, thaw retreats and large-save recovery across Firefox, Chromium and mobile. Checks used disposable fixtures and exported copies; the player's live campaign was not opened or changed.
+
+The deployed build passed all 12 production HTTP checks and 10 additional Chromium transport, worker and save scenarios. Earlier hashed assets remain available to already-open sessions. The broader performance goal remains active.

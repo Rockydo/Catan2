@@ -39,7 +39,7 @@ const current = await planner("."),
   previous = await planner(process.env.SOURCE_ROOT);
 let projects = 0;
 const hash = createHash("sha256");
-const scenarios = 96;
+const scenarios = 128;
 for (let scenario = 0; scenario < scenarios; scenario++) {
   const { s, home, enemy } = crossing(scenario % 2 === 0);
   if (scenario % 8 === 7) s.active = 1;
@@ -125,6 +125,55 @@ for (let scenario = 0; scenario < scenarios; scenario++) {
       name: `Neighbor ${id}`,
       vertex: s.tiles["-4,0"].vertices[1],
     };
+  }
+  if (scenario >= 96) {
+    // Several ports can share a launch hex but draw on different land armies,
+    // city tiers and free hull grants. Repeated geographic facts must not merge
+    // their origin-specific invasion demand or reorder the resulting projects.
+    for (const [i, vertex] of s.tiles["-3,0"].vertices.entries()) {
+      if (Object.values(s.towns).some((t) => t.vertex === vertex)) continue;
+      const id = `t${s.nextId++}`;
+      s.towns[id] = {
+        ...structuredClone(home),
+        id,
+        name: `Shared port ${i}`,
+        vertex,
+        level: 1 + ((scenario + i) % 4),
+        turnLevel: 1 + ((scenario + i) % 4),
+      };
+      delete s.towns[id].guild;
+    }
+    s.players[0].bonuses.ships = [["convoy", "galley"], ["carrack"]];
+    s.players[0].bonuses.shipTiers = [2, 4];
+    const carriers = [
+      piece(s, ship.tile, 0, "convoy", 4),
+      piece(s, ship.tile, 0, "convoy", 4),
+    ];
+    for (let i = 0; i < 48; i++) {
+      const soldier = piece(
+        s,
+        i % 3 ? "-4,0" : "3,-1",
+        0,
+        i % 5 ? "heavy" : "artillery",
+        1 + (i % 4),
+      );
+      if (i % 4 === 0) {
+        soldier.tile = ship.tile;
+        soldier.carrier = carriers[Math.floor(i / 4) % 2].id;
+      }
+    }
+    piece(s, "-3,0", 0, "carrack", 4);
+    piece(s, "-3,0", 0, "fishing", 4);
+    piece(s, "-3,0", 0, "merchantship", 3);
+    piece(s, "-4,0", 0, "merchant", 4);
+    piece(s, "2,0", 1, "merchantship", 3);
+    if (scenario % 3 === 0) piece(s, "2,0", 1, "carrack", 4);
+    if (scenario % 4 === 0) {
+      s.tiles["-3,0"].surface = "frozen";
+      s.tiles["-3,0"].resource = "ice";
+      for (const unit of Object.values(s.pieces))
+        if (unit.naval && unit.tile === "-3,0") unit.seasonStatus = "icebound";
+    }
   }
   const expected = previous(s),
     actual = current(s);
