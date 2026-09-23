@@ -14,7 +14,12 @@ import {
   piecePlanningValue,
   speed,
 } from "./selectors";
-import { walkableAtVertex as landAtVertex, distance } from "./world";
+import {
+  walkableAtVertex as landAtVertex,
+  distance,
+  coord,
+  key,
+} from "./world";
 import { planningDistance } from "./ai-paths";
 
 export interface FactionStrength {
@@ -185,11 +190,18 @@ export function coalitionSupport(
 }
 
 const threatCache = new WeakMap<Game, Map<string, Piece[]>>();
+interface ThreatGroup {
+  owner: number;
+  tile: string;
+  speed: number;
+  units: Piece[];
+}
 const threatGroups = new WeakMap<
   Game,
   {
-    groups: { owner: number; tile: string; speed: number; units: Piece[] }[];
+    groups: ThreatGroup[];
     order: Map<string, number>;
+    nearby?: Map<string, ThreatGroup[]>;
   }
 >();
 /** Reachable land threats only; troops across water cannot threaten a land town. */
@@ -203,10 +215,7 @@ export function townThreats(s: Game, t: Town): Piece[] {
   if (cached) return cached;
   let indexed = threatGroups.get(s);
   if (!indexed) {
-    const groups = new Map<
-      string,
-      { owner: number; tile: string; speed: number; units: Piece[] }
-    >();
+    const groups = new Map<string, ThreatGroup>();
     const order = new Map<string, number>();
     for (const u of allPieces(s)) {
       if (u.naval || u.carrier || points(u) <= 0) continue;
@@ -223,10 +232,35 @@ export function townThreats(s: Game, t: Town): Piece[] {
       groups.get(key)!.units.push(u);
     }
     indexed = { groups: [...groups.values()], order };
+    // Land threats have a small fixed movement radius. Index that geometric
+    // neighborhood once instead of scanning every distant army for each town.
+    // This only narrows candidates: diplomacy, terrain and actual routes are
+    // still checked below, and final troop order remains unchanged.
+    if (groups.size >= 32) {
+      indexed.nearby = new Map();
+      for (const group of groups.values()) {
+        const [q, r] = coord(group.tile),
+          range = group.speed;
+        for (let dq = -range; dq <= range; dq++)
+          for (
+            let dr = Math.max(-range, -dq - range);
+            dr <= Math.min(range, -dq + range);
+            dr++
+          ) {
+            const id = key(q + dq, r + dr);
+            if (!s.tiles[id]) continue;
+            if (!indexed.nearby.has(id)) indexed.nearby.set(id, []);
+            indexed.nearby.get(id)!.push(group);
+          }
+      }
+    }
     threatGroups.set(s, indexed);
   }
   const tiles = landAtVertex(s, t.vertex);
-  const threats = indexed.groups
+  const candidates = indexed.nearby
+    ? [...new Set(tiles.flatMap((id) => indexed!.nearby!.get(id) ?? []))]
+    : indexed.groups;
+  const threats = candidates
     .filter(
       (g) =>
         !friendly(s, g.owner, t.owner) &&

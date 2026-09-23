@@ -176,6 +176,15 @@ This checks every dice total from 2 through 12 on independent copies, records fu
 
 The report also times 32 consecutive fingerprint reads with a protected terrain snapshot, over five samples. Every read must match that version's unscoped key. Older checkouts use ordinary reads for comparison. This isolates cache-key construction and does not execute commands or measure complete AI turns.
 
+To compare nearby army threat checks as the map grows:
+
+```sh
+SAVE_PATH=/path/to/campaign.json SOURCE_ROOT=/path/to/reference \
+  npx tsx scripts/ai-threat-performance.ts
+```
+
+This checks every town against a previous checkout with the same rules. Seven alternating samples use fresh campaign snapshots, including index construction. Threat membership, unit order and the complete source campaign must remain unchanged. The timing isolates threat detection, not a complete AI turn. `SAMPLES` and `LABEL` control the report.
+
 To compare forecast costs as merchant and fishing fleets grow:
 
 ```sh

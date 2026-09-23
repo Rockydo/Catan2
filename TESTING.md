@@ -1,5 +1,13 @@
 # Release verification
 
+## Growing-map threat checks: 2026-09-23
+
+- Land threat checks now index each army's geometric neighborhood once per immutable campaign snapshot. Towns examine nearby candidates before applying the existing diplomacy, movement and path checks. Small armies retain the direct scan. Returned units keep their original order, and the index is released with its campaign snapshot.
+- Seven alternating samples against commit `7ee87cc` reduced the median time to check every town from 9.63 to 7.90 ms in the Round 32 export (540 tiles, 322 towns, 14,695 units), and from 36.72 to 6.80 ms in the growth fixture (2,000 tiles, 1,000 towns, 5,405 units). Each sample starts with a fresh snapshot and includes index construction. These are threat-detection timings, not complete turn timings.
+- The 60-decision growth replay preserved every command and its final campaign hash. The real-save browser replay preserved all 485 commands and the exact final state, stopping at the same human casualty decision. It took 8.30 seconds with a 16.8 ms frame-time p95 and no browser errors or long tasks; this does not establish a material whole-turn improvement over the preceding 8.34-second result.
+- All 1,747 unit tests pass. New comparisons use an independent exhaustive threat scan around the index threshold and on larger armies, including negative coordinates, terrain barriers, ice, alliances, civilians, passengers, unit ordering and changed snapshots. The separate 128-position planning audit and 48-position trade audit retain identical outputs. Reproduce the isolated comparison with `scripts/ai-threat-performance.ts`; reports are `test-artifacts/ai-threat-round32.json` and `ai-threat-growth2000.json`.
+- Save recovery, large-army refresh, compact exports/imports, startup and AI worker scenarios pass in Chromium, Firefox and mobile Chromium: 45 staging checks, followed by 15 Chromium checks against the deployed build. All 12 production HTTP checks, TypeScript and formatting checks pass. Browser tests use disposable profiles; the playing campaign is untouched.
+
 ## Large-save AI turns: 2026-09-22
 
 - Reproduced the slow Purple turn from an exported Round 31 campaign with 530 tiles, 314 towns and 8,703 units. The AI was repeatedly funding and building one collector, then evaluating its full military and economic strategy again for each import. Funding a large batch could also stop prematurely as soon as one unit became affordable.
