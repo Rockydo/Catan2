@@ -223,6 +223,8 @@ EXPECT_PATH=test-artifacts/movement-performance-before.json LABEL=after \
 
 This measures 32 prescribed movement transactions amid 15,000 and 60,000 other troops, including loaded convoy ships, validation and cleanup. It checks every order, the complete resulting state and unchanged inputs. It isolates execution cost, not AI thinking or browser rendering. `UNITS`, `ORDERS` and `SAMPLES` adjust the fixtures.
 
+`SAVE_PATH=/path/to/campaign.json npx tsx scripts/woods-performance.ts` measures up to three accessible Woods resource choices, individually and in one private batch, plus their validation previews. It checks complete results and unchanged input data. Optional `AI_SEAT` selects a living faction; `SOURCE_ROOT`, `LABEL`, `EXPECT_PATH` and `SAMPLES` support separate-process build comparisons. This diagnostic measures transaction and publication costs, not a complete AI turn.
+
 To measure compression and exact save recovery without a browser:
 
 ```sh

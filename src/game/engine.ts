@@ -402,6 +402,8 @@ const STATIONARY_RECORD_COMMANDS = new Set([
 ]);
 const LOCAL_RECORD_COMMANDS = new Set([
   ...STATIONARY_RECORD_COMMANDS,
+  // This order additionally detaches its selected terrain record below.
+  "woods-choice",
   "recruit",
   "ship",
   "guild-order",
@@ -410,8 +412,19 @@ const LOCAL_RECORD_COMMANDS = new Set([
 function preservesTroopRecords(c: Command): boolean {
   return (
     STATIONARY_RECORD_COMMANDS.has(c.type) ||
+    c.type === "woods-choice" ||
     (c.type === "guild-order" && !c.ids?.length)
   );
+}
+/** Resource selection changes only this tile's per-faction choice and turn.
+ * Keep the geometry and other terrain immutable. A batch can select several
+ * tiles, revisit a private tile, then still detach the whole world for combat,
+ * seasons or expeditions. The new dictionary also invalidates terrain reads. */
+function detachWoodsTile(original: Game, draft: Game, command: Command) {
+  const tile = draft.tiles[command.tile ?? ""];
+  if (!tile || tile !== original.tiles[tile.id]) return;
+  if (draft.tiles === original.tiles) draft.tiles = copyRecords(draft.tiles);
+  draft.tiles[tile.id] = structuredClone(tile);
 }
 function survivingFactionsHaveTowns(s: Game): boolean {
   const owners = new Set(Object.values(s.towns).map((town) => town.owner));
@@ -573,6 +586,8 @@ function commandPlan(
       // before changing any draft data, just as an ordinary transaction does.
       const next = { ...view };
       let movementUnits: readonly Piece[] | undefined;
+      if (!detached && command.type === "woods-choice")
+        detachWoodsTile(state, next, command);
       if (!detached && command.type === "guild-order")
         detachSuppliedPieces(state, next, command, units);
       if (!detached && LOCAL_MILITARY_COMMANDS.has(command.type))
@@ -625,8 +640,9 @@ function commandPlan(
   }
 }
 /** Full rule validation for AI previews, without copying read-only map geometry.
- * Expeditions and Woods changes retain a fully isolated world copy. End-turn
- * and surrender previews also isolate sea tiles at possible season boundaries.
+ * Expeditions retain a fully isolated world copy; Woods changes detach only
+ * the selected tile. End-turn and surrender previews also isolate sea tiles
+ * at possible season boundaries.
  * Routine economic orders copy only the records their real rules may change.
  * Recruitment and local military transactions also reuse immutable geometry
  * and unchanged troops. Copy affected formations or passengers before editing
@@ -665,8 +681,7 @@ function commandResult(state: Game, c: Command, preview: boolean): Result {
       survivingFactionsHaveTowns(state);
     const s: Game = localOrder
       ? localOrderDraft(state, c)
-      : (preview && !["expedition", "woods-choice"].includes(c.type)) ||
-          shareUnits
+      : (preview && c.type !== "expedition") || shareUnits
         ? {
             ...structuredClone({
               ...state,
@@ -699,6 +714,7 @@ function commandResult(state: Game, c: Command, preview: boolean): Result {
             edges: state.edges,
           }
         : structuredClone(state);
+    if (c.type === "woods-choice") detachWoodsTile(state, s, c);
     if (moving) detachMovingPieces(state, s, c);
     if (LOCAL_MILITARY_COMMANDS.has(c.type)) detachMilitaryPieces(state, s, c);
     if (!localOrder && c.type === "guild-order")

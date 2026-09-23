@@ -1,5 +1,14 @@
 # Release verification
 
+## Woods choices in large campaigns: 2026-09-23
+
+- Woods resource choices now copy only their selected tile and mutable campaign records. Existing troops and map geometry stay shared and immutable. Batched choices reuse troop indexes while refreshing terrain-dependent production reads. Later combat, expedition or season commands still detach the records they can change; elimination receives a private roster dictionary before deleting troops.
+- On the 240,000-unit stress save, five measured samples reduce the median engine time for three individual Woods choices from 1,208 to 167 ms. Three validation previews fall from 1,005 to 102 ms, and a private three-choice batch from 573 to 109 ms. Every complete result and the unchanged input hash match the reference. `scripts/woods-performance.ts` reproduces this comparison in separate processes; reports use `test-artifacts/woods-performance-*`.
+- Two Chromium replays of the same five AI commands finish in 1.37 and 1.35 seconds, compared with 2.60 and 2.65 seconds on the preceding build. Worker time falls from 2.21/2.19 seconds to 0.98/0.95 seconds. Both updated runs have no long tasks or browser errors, and preserve every command and the complete campaign hash. This improvement concerns that resource-choice-heavy stress sequence, not all AI turns.
+- The real Round 32 export still produces the same 485 commands and complete final state. It reaches the same human decision in 8.24 seconds, with frame-time p95 of 16.8 ms, no long tasks and no browser errors. This does not establish a whole-turn improvement for that smaller army. Original exports and the playing browser remain untouched. Browser reports use `test-artifacts/ai-transfer-woods-*`.
+- All 1,823 unit tests in 139 files pass. Eight new cases cover frozen input records, existing faction choices, repeated selections and forecasts, recruitment, movement, combat, season changes and production, expeditions, elimination and rollback. All 57 staging browser checks pass across Chromium, Firefox and mobile Chromium, including English/French Woods controls, exact reload preservation, large-save compression/recovery, startup and AI worker operation. TypeScript, build, formatting and whitespace checks pass.
+- The deployed build passes another five Chromium Woods/save/worker checks and all 12 production HTTP checks. Earlier asset hashes remain available to open campaigns.
+
 ## Known roster order during publication: 2026-09-23
 
 - Immutable roster reads retain their discovered dictionary order. Applying an AI reply can copy that exact source without enumerating it again, then prepare fresh UI indexes using the unchanged order or the patch's new membership/order list. This shares only a flat key array, not a previous campaign or index. Unit values, positions, owners, passenger groups, production and all derived scores remain fresh. Cold inputs and full dictionary replacements still discover their own order.
