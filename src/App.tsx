@@ -1,4 +1,4 @@
-import { applySnapshotDelta } from "./game/snapshot-delta";
+import { applyPublishedDelta } from "./game/published-delta";
 import type { AIReply, AIRequest } from "./game/ai-session";
 import { uploadAIRequest } from "./ui/ai-upload";
 import { sharePublishedSnapshot } from "./ui/publish-snapshot";
@@ -426,7 +426,7 @@ export default function App({
           return;
         setBusy(false);
         const next = event.data.delta
-          ? applySnapshotDelta(snapshot, event.data.delta)
+          ? applyPublishedDelta(snapshot, event.data.delta)
           : event.data.state;
         const ok =
           commands.length > 0 &&

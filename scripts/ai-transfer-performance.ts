@@ -63,6 +63,7 @@ try {
         savePostMs: 0,
         saveFullRequests: 0,
         saveDeltaRequests: 0,
+        saveForwardedDeltas: 0,
       });
       const stringify = JSON.stringify;
       JSON.stringify = function (...args: any[]) {
@@ -75,6 +76,7 @@ try {
         return result;
       };
       const Native = window.Worker;
+      const receivedDeltas = new WeakSet<object>();
       window.Worker = class extends Native {
         ai = false;
         constructor(url: string | URL, options?: WorkerOptions) {
@@ -83,6 +85,7 @@ try {
           if (!this.ai) return;
           this.addEventListener("message", ({ data: d }) => {
             if (d.resync) return;
+            if (d.delta) receivedDeltas.add(d.delta);
             p.rows.push({ cpu: d.ms, error: d.error });
             if (d.commands) for (const c of d.commands) p.commands.push(c);
             const active = d.state?.active ?? d.delta?.values.active;
@@ -119,7 +122,10 @@ try {
             if (data.type === "save" && p.start && !p.done) {
               p.savePostMs += performance.now() - started;
               if (data.game) p.saveFullRequests++;
-              if (data.delta) p.saveDeltaRequests++;
+              if (data.delta) {
+                p.saveDeltaRequests++;
+                if (receivedDeltas.has(data.delta)) p.saveForwardedDeltas++;
+              }
             }
             return;
           }
@@ -265,6 +271,7 @@ try {
     savePostMs: probe.savePostMs,
     saveFullRequests: probe.saveFullRequests,
     saveDeltaRequests: probe.saveDeltaRequests,
+    saveForwardedDeltas: probe.saveForwardedDeltas,
     frameP95: sorted[Math.floor(sorted.length * 0.95)],
     longTasks: probe.longs,
     mainThread: {

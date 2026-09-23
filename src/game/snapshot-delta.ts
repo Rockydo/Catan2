@@ -1,7 +1,7 @@
 import type { Game } from "./types";
 import { copyRecords } from "./record-copy";
 
-const RECORD_FIELDS = new Set<keyof Game>([
+export const SNAPSHOT_RECORD_FIELDS: ReadonlySet<keyof Game> = new Set([
   "tiles",
   "vertices",
   "edges",
@@ -59,7 +59,16 @@ function recordsDelta(
     const key = keys[i];
     if (oldKeys[i] !== key) reordered = true;
     if (!Object.hasOwn(before, key) || !sameValue(before[key], after[key])) {
-      values[key] = after[key];
+      // Match copyRecords for literal own keys without invoking the legacy
+      // prototype setter. Campaign IDs normally exclude this spelling.
+      if (key === "__proto__")
+        Object.defineProperty(values, key, {
+          value: after[key],
+          enumerable: true,
+          configurable: true,
+          writable: true,
+        });
+      else values[key] = after[key];
       changed = true;
     }
   }
@@ -77,7 +86,7 @@ export function snapshotDelta(before: Game, after: Game): SnapshotDelta {
     const old = before[key],
       value = after[key];
     if (Object.hasOwn(before, key) && Object.is(old, value)) continue;
-    if (RECORD_FIELDS.has(key) && old && value) {
+    if (SNAPSHOT_RECORD_FIELDS.has(key) && old && value) {
       const change = recordsDelta(old as Records, value as Records);
       if (change) delta.records[key] = change;
     } else if (!Object.hasOwn(before, key) || !sameValue(old, value)) {
@@ -102,4 +111,38 @@ export function applySnapshotDelta(before: Game, delta: SnapshotDelta): Game {
     Object.assign(result, { [key]: value });
   }
   return result as Game;
+}
+
+/** Compose consecutive exact patches without scanning either campaign. The
+ * later key list controls deletions and order. Unused record values may remain
+ * in a patch, but copyRecords only reads values named by that final key list. */
+export function composeSnapshotDeltas(
+  first: SnapshotDelta,
+  last: SnapshotDelta,
+): SnapshotDelta {
+  const result: SnapshotDelta = { keys: last.keys, values: {}, records: {} };
+  for (const key of last.keys) {
+    if (Object.hasOwn(last.values, key)) {
+      Object.assign(result.values, { [key]: last.values[key] });
+      continue;
+    }
+    const previous = first.records[key],
+      next = last.records[key];
+    if (Object.hasOwn(first.values, key)) {
+      Object.assign(result.values, {
+        [key]: next
+          ? copyRecords(first.values[key] as Records, next)
+          : first.values[key],
+      });
+    } else if (previous && next) {
+      const keys = next.keys ?? previous.keys;
+      result.records[key] = {
+        ...(keys ? { keys } : {}),
+        values: copyRecords(previous.values, { values: next.values }),
+      };
+    } else if (next ?? previous) {
+      result.records[key] = next ?? previous;
+    }
+  }
+  return result;
 }

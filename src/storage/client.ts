@@ -1,6 +1,6 @@
 import { BACKUP_KEY, SAVE_KEY } from "../game/save-keys";
 import type { Game } from "../game/types";
-import { snapshotDelta } from "../game/snapshot-delta";
+import { publishedSnapshotDelta } from "../game/published-delta";
 import type { SaveInput } from "./codec";
 import type { SaveRequest, SaveResult, ExportResult } from "./save.worker";
 import { decodeLoadedCampaign, type LoadedCampaign } from "./load-transfer";
@@ -120,7 +120,7 @@ async function drain() {
             ? {
                 type: "save",
                 base: savedBase.token,
-                delta: snapshotDelta(savedBase.game, game),
+                delta: publishedSnapshotDelta(savedBase.game, game),
               }
             : { type: "save", game },
         );
@@ -178,7 +178,7 @@ export async function exportCampaign(
       ? {
           type: "export",
           base: savedBase.token,
-          delta: snapshotDelta(savedBase.game, game),
+          delta: publishedSnapshotDelta(savedBase.game, game),
         }
       : { type: "export", game },
   );
