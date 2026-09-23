@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { packGame, unpackGame } from "../src/game/save-packing";
+import {
+  packGame,
+  unpackGame,
+  unpackGameSnapshot,
+  restoreValidatedGame,
+} from "../src/game/save-packing";
 import { deserialize, serialize, serializePacked } from "../src/game/save";
 import {
   compress,
@@ -113,6 +118,54 @@ it("round-trips empty armies and differently ordered fields without dropping dat
   expect(packed.pieces.templates).toHaveLength(2);
   expect(JSON.stringify(unpackGame(packed))).toBe(JSON.stringify(s));
   expect(s.pieces[a.id]).toBe(a);
+});
+
+it("keeps independent optional orders, effects and future values on the normal troop layout", () => {
+  const { s, water } = fishingFixture();
+  for (let i = 0; i < 2; i++) {
+    const unit = piece(s, water);
+    Object.assign(unit, {
+      guildSupplied: true,
+      guildSiege: 4,
+      campaign: { enemy: 1, target: water },
+      future: { nested: [null, { value: "雪" }] },
+    });
+    Object.defineProperty(unit, "__proto__", {
+      value: { intact: true },
+      enumerable: true,
+    });
+  }
+  const expected = JSON.stringify(s),
+    packed = onDisk(packGame(s));
+  for (const restore of [unpackGame, restoreValidatedGame]) {
+    const restored = restore(packed);
+    expect(JSON.stringify(restored)).toBe(expected);
+    const [a, b] = Object.values(restored.pieces) as any[];
+    expect(Object.getPrototypeOf(a)).toBe(Object.prototype);
+    a.campaign.target = "changed";
+    a.future.nested[1].value = "edited";
+    a.__proto__.intact = false;
+    expect(b.campaign.target).toBe(water);
+    expect(b.future.nested[1].value).toBe("雪");
+    expect(b.__proto__.intact).toBe(true);
+    expect(JSON.stringify(s)).toBe(expected);
+    expect(JSON.stringify(restore(packed))).toBe(expected);
+  }
+});
+
+it("does not reuse literal archive IDs as dictionary order when JS sorts integer property names", () => {
+  const { s, water } = fishingFixture();
+  for (let i = 0; i < 3; i++) piece(s, water);
+  const packed = onDisk(packGame(s));
+  packed.pieces.keys = ["10", "two", "2"];
+  const result = unpackGameSnapshot(packed);
+  expect(result.keys).toBeUndefined();
+  expect(Object.keys(result.game.pieces)).toEqual(["2", "10", "two"]);
+  expect(Object.values(result.game.pieces).map((u) => u.id)).toEqual([
+    "2",
+    "10",
+    "two",
+  ]);
 });
 
 it("shrinks a large campaign further than gzip alone and loads all supported encodings", async () => {

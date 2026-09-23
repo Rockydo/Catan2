@@ -1,5 +1,11 @@
 import { expect, it, vi } from "vitest";
-import { deserialize, serialize, assertInvariants } from "../src/game/save";
+import {
+  deserialize,
+  serialize,
+  serializePacked,
+  assertInvariants,
+} from "../src/game/save";
+import * as packing from "../src/game/save-packing";
 import { allPieces, withPlanningFrame } from "../src/game/selectors";
 import { fishingFixture } from "./maritime-fixture";
 import { piece } from "./helpers";
@@ -56,4 +62,56 @@ it("does not retain loaded troop indexes or disturb an enclosing read scope", ()
     expect(() => deserialize(serialize(invalid))).toThrow(/whole-number/);
     expect(allPieces(outer.s)).toBe(before);
   });
+});
+
+it("validates every restored unit without re-enumerating the compact archive's checked keys", () => {
+  const { s, water } = fishingFixture();
+  for (let i = 0; i < 4000; i++) piece(s, water, 0, "fishing", 1);
+  const units = Object.values(s.pieces);
+  delete s.pieces[units[12].id];
+  s.pieces[units[12].id] = units[12];
+  const text = serializePacked(s),
+    expected = JSON.stringify(deserialize(serialize(s)));
+  const restore = packing.unpackGameSnapshot;
+  let scans = 0,
+    reads = 0;
+  const spy = vi
+    .spyOn(packing, "unpackGameSnapshot")
+    .mockImplementation((...args) => {
+      const result = restore(...args);
+      result.game.pieces = new Proxy(result.game.pieces, {
+        ownKeys(target) {
+          scans++;
+          return Reflect.ownKeys(target);
+        },
+        get(target, key, receiver) {
+          if (typeof key === "string" && Object.hasOwn(target, key)) reads++;
+          return Reflect.get(target, key, receiver);
+        },
+      });
+      return result;
+    });
+  let restored;
+  try {
+    restored = deserialize(text);
+    expect(scans).toBe(0);
+    expect(reads).toBeGreaterThanOrEqual(units.length);
+    // A valid checksum and correct compact structure do not bypass game rules.
+    units[2500].tier = 9;
+    expect(() => deserialize(serializePacked(s))).toThrow(/whole-number/);
+    units[2500].tier = 1;
+    const old = JSON.parse(text);
+    old.version = 13;
+    scans = 0;
+    deserialize(JSON.stringify(old));
+    expect(scans).toBe(1); // Historical migrations keep their fresh enumeration.
+  } finally {
+    spy.mockRestore();
+  }
+  expect(JSON.stringify(restored)).toBe(expected);
+  expect(Object.keys(restored.pieces)).toEqual(Object.keys(s.pieces));
+  const before = allPieces(restored).length;
+  piece(restored, water, 0, "fishing", 2);
+  expect(allPieces(restored)).toHaveLength(before + 1);
+  assertInvariants(restored);
 });

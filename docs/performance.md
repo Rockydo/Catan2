@@ -1016,3 +1016,25 @@ The loader also retains the ordered troop references collected during complete v
 Warm refresh-to-menu medians were 91.7 ms before and 91.2 ms after for the latest export, and 343.1 ms before and 350.5 ms after for the 240,000-unit copy. These load times are broadly unchanged and exclude opening and painting the map. The demonstrated gains in this pass are first-action saving and exporting, without weakening validation or changing stored state.
 
 All 1,632 unit tests and 36 staging browser scenarios passed across Chromium, Firefox and mobile. The locally published build passed all 12 production HTTP checks and 12 further Chromium storage and worker scenarios. Type checking, formatting, the build and whitespace checks passed. Earlier hashed assets were retained for open sessions. Validation used disposable profiles and exported copies; the playing campaign and source exports were not modified. The broader performance goal remains active.
+
+## Reusing restored unit IDs during compact-save validation
+
+The compact loader now retains the checked prefix/delta unit IDs it already created while rebuilding the army. The following full rule-validation pass uses that list instead of enumerating the entire dictionary again. Every unit is still read and checked, including its owner, class, terrain, movement, orders, cargo and effects. This reuse only applies to current-version archives before the loaded snapshot can be edited. Historical migrations retain a fresh enumeration. Literal IDs also keep normal enumeration, because JavaScript can reorder integer property names. No index remains attached to the loaded game.
+
+Troops with appended campaign orders, guild effects and other optional fields now use the same direct construction of their usual fields as ordinary soldiers. Optional fields are copied in their saved order, and all nested objects remain independent. Reordered or nonstandard layouts retain the generic copy path. This benefits restoration in both the storage worker and the interface without changing the archive or bypassing its checks.
+
+The existing refresh diagnostic compared the production reference and staging build in serial disposable Chromium profiles. Each figure is a median of three samples with warm assets, from refresh to the campaign menu. These timings exclude opening and painting the map.
+
+| Campaign | Previous build | Updated build |
+| --- | ---: | ---: |
+| Latest Round 32 export, 540 tiles and 14,695 units | 86.7 ms | 91.5 ms |
+| Growth map, 2,000 tiles and 1,000 towns | 129.0 ms | 139.4 ms |
+| Storage stress copy, 240,000 units | 330.8 ms | 280.1 ms |
+
+The very large army improved by about 15%. The two smaller workloads showed no loading gain. A repeat of the growth-map comparison measured 145.0 ms before and 142.7 ms after, indicating variation rather than a consistent improvement for that workload. These local results are not a fixed speed guarantee. Complete campaign JSON and hashes matched in every sample.
+
+Packing remains version 8: the latest 2,739,686-byte JSON export still produces a 33,238-byte independently loadable archive, a 98.8% reduction. No events, orders, terrain or future exploration data were removed. This pass improves reconstruction rather than file size. Original JSON and all eight compact formats each passed three refreshes, retaining the exact campaign on all 27 loads.
+
+New regressions check that compact loading reads every troop without another dictionary enumeration, rejects invalid unit rules despite a valid checksum, and retains the historical migration path. They also cover reordered unit IDs, integer-named literal IDs, optional guild effects, orders, nested future fields, prototype-named data, independent mutable units and fresh reads after a loaded game is edited. All 1,635 unit tests and 36 staging browser scenarios passed across Chromium, Firefox and mobile.
+
+The verified build was published locally with earlier hashed assets retained for open sessions. All 12 production HTTP checks and 12 Chromium storage and worker scenarios passed after publication. Type checking, formatting, the build and whitespace checks passed. Source exports and the playing campaign were not modified. The wider performance goal remains active.

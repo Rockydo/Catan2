@@ -155,6 +155,14 @@ function copyValue(value: unknown, depth = 0): unknown {
 
 // baseBytes may only come from unpackTables' exact, validated byte accounting.
 export function unpackGame(game: PackedGame, baseBytes?: number): Game {
+  return unpackGameSnapshot(game, baseBytes).game;
+}
+
+/** Prefix/delta IDs cannot be integer property names, so the fresh dictionary
+ * has exactly these checked keys in this order. A load can reuse them for its
+ * immediate rule validation. Literal IDs may need JS's integer-key ordering;
+ * those retain normal enumeration. Never reuse keys after a snapshot edit. */
+export function unpackGameSnapshot(game: PackedGame, baseBytes?: number) {
   return restoreGame(game, true, baseBytes);
 }
 
@@ -163,14 +171,10 @@ export function unpackGame(game: PackedGame, baseBytes?: number): Game {
  * ID and template validation on the UI thread; still create independent units.
  * Never use this entry point on a file or database record. */
 export function restoreValidatedGame(game: PackedGame): Game {
-  return restoreGame(game, false);
+  return restoreGame(game, false).game;
 }
 
-function restoreGame(
-  game: PackedGame,
-  validate: boolean,
-  baseBytes?: number,
-): Game {
+function restoreGame(game: PackedGame, validate: boolean, baseBytes?: number) {
   const packed = game?.pieces;
   if (
     !packed ||
@@ -220,16 +224,16 @@ function restoreGame(
     );
     // Validate nesting once, before duplicating any shared mutable values.
     if (validate) for (const key of nested) copyValue(template[key]);
+    const standard = UNIT_FIELDS.every((field, i) => fields[i] === field);
     return {
       template,
       nested,
       size: validate ? jsonBytes(template) : 0,
-      // A literal restores the normal troop layout without a generic object
-      // spread for every soldier. Any extra/reordered field takes the exact
-      // generic path, so old and future save data is never dropped or reordered.
-      standard:
-        fields.length === UNIT_FIELDS.length &&
-        fields.every((field, i) => field === UNIT_FIELDS[i]),
+      // The usual fields retain their fast literal layout even when orders or
+      // guild effects append optional fields. Restore every suffix field in its
+      // saved order; other layouts keep the generic copy path.
+      standard,
+      extra: standard ? fields.slice(UNIT_FIELDS.length) : [],
     };
   });
   // Bound the reconstructed data as well as the compressed stream. A template
@@ -259,7 +263,7 @@ function restoreGame(
   const pieces: Game["pieces"] = {};
   for (let i = 0; i < keys.length; i++) {
     const key = keys[i],
-      { template, nested, standard } = templates[packed.rows[i]];
+      { template, nested, standard, extra } = templates[packed.rows[i]];
     if (validate && Object.hasOwn(pieces, key)) throw invalid();
     const piece: Record<string, unknown> = standard
       ? {
@@ -275,10 +279,22 @@ function restoreGame(
           bonus: template.bonus,
         }
       : { ...template, id: key };
+    for (const field of extra)
+      if (field === "__proto__")
+        Object.defineProperty(piece, field, {
+          value: template[field],
+          enumerable: true,
+          configurable: true,
+          writable: true,
+        });
+      else piece[field] = template[field];
     for (const field of nested)
-      // Spread created own data properties, including any __proto__ field.
+      // Both copy paths create own data properties, including __proto__.
       piece[field] = copyValue(template[field]);
     pieces[key] = piece as unknown as Piece;
   }
-  return { ...game, pieces };
+  return {
+    game: { ...game, pieces },
+    keys: Array.isArray(rawKeys) ? undefined : keys,
+  };
 }

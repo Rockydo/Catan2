@@ -1,4 +1,4 @@
-import { packGame, unpackGame, type PackedGame } from "./save-packing";
+import { packGame, unpackGameSnapshot, type PackedGame } from "./save-packing";
 import { packTables, unpackTables } from "./save-tables";
 import { packReferences, unpackReferences } from "./save-references";
 import { packIntegers, unpackIntegers } from "./save-integers";
@@ -98,7 +98,11 @@ function replaceAndeanSnow(s: Game) {
 export function assertInvariants(s: Game) {
   validateInvariants(s);
 }
-function validateInvariants(s: Game, validatedUnits?: Piece[]) {
+function validateInvariants(
+  s: Game,
+  validatedUnits?: Piece[],
+  restoredUnitKeys?: readonly string[],
+) {
   if (s.calendar)
     rule(
       Number.isSafeInteger(s.calendar.startRound) &&
@@ -703,7 +707,7 @@ function validateInvariants(s: Game, validatedUnits?: Piece[]) {
   const tileOwners = new Map<string, Set<number>>();
   const passengerCounts = new Map<string, number>();
   // Do not allocate a [key, unit] array for every soldier in a large army.
-  for (const key of Object.keys(s.pieces)) {
+  for (const key of restoredUnitKeys ?? Object.keys(s.pieces)) {
     const u = s.pieces[key];
     object(u);
     id(key);
@@ -1246,6 +1250,7 @@ export function deserializeSnapshot(text: string): {
   units?: PackedGame["pieces"];
 } {
   let units: PackedGame["pieces"] | undefined;
+  let restoredUnitKeys: string[] | undefined;
   rule(
     text.length < 128_000_000,
     "This save exceeds the 128 MB expanded limit.",
@@ -1274,13 +1279,17 @@ export function deserializeSnapshot(text: string): {
     if (data.packing >= 6) packed = unpackGeometry(packed);
     if (data.packing >= 7) packed = unpackTopology(packed);
     if (data.packing >= 2) packed = unpackTables(packed, measured);
-    data.game = unpackGame(
+    const restored = unpackGameSnapshot(
       packed,
       data.packing >= 2 ? measured.baseBytes : undefined,
     );
+    data.game = restored.game;
     // Current-version loads perform no unit migrations. When the save version
     // advances, historical archives automatically use freshly packed troops.
-    if (data.version === CURRENT_SAVE_VERSION) units = packed.pieces;
+    if (data.version === CURRENT_SAVE_VERSION) {
+      units = packed.pieces;
+      restoredUnitKeys = restored.keys;
+    }
   }
   {
     // Replace retired/prototype crops before older migrations inspect yields.
@@ -1604,7 +1613,7 @@ export function deserializeSnapshot(text: string): {
   }
   replaceAndeanSnow(data.game);
   const validatedUnits: Piece[] = [];
-  validateInvariants(data.game, validatedUnits);
+  validateInvariants(data.game, validatedUnits, restoredUnitKeys);
   // Never silently redirect an old standing order to a different good.
   for (const town of Object.values((data.game as Game).towns))
     for (const guild of townGuilds(town)) {
