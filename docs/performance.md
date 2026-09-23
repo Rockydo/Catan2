@@ -1319,3 +1319,28 @@ Five new regressions cover successive town upgrades and ownership changes, works
 The separate 2,000-tile camera trace still shows painting, compositing preparation and layout as the main costs. Its software-rendered wheel samples had roughly 33 ms p95 frames, rising to 50 ms for rapid zoom-out. This pass does not claim a camera improvement; rendering remains part of the active performance goal.
 
 After atomic local publication, all 12 production HTTP checks and 15 additional Chromium seasonal, marine-resource and AI-worker scenarios passed. Earlier hashed assets were retained for open sessions. All validation used exported copies or disposable fixtures. Neither source exports nor the playing campaign were changed.
+
+## Saving unchanged armies and selecting crowded maps
+
+The save worker now retains one army's packed templates, keys and rows while the immutable troop dictionary is unchanged. Economic orders still encode current towns, stocks, diplomacy, logs and turn state. Recruitment, movement, losses, orders and reordered IDs replace the dictionary and rebuild its packed data. General mutable serializers do not use this cache. Each save checks the complete expanded byte budget, including the cached army and the latest nonmilitary data. The cache retains no sequence of previous campaigns.
+
+Seven alternating samples against reference checkout `8098250` measured packing after one warm snapshot. Packing fell from 11.07 to 8.69 ms on the Round 32 export and from 88.86 to 11.05 ms on the 240,000-unit stress copy. This isolates encoding rather than the whole autosave. Three serial disposable-Chromium samples then measured the actual client, worker, compression and durable storage path after warming the encoder with an export:
+
+| Campaign | Previous save | Updated save | Archive size |
+| --- | ---: | ---: | ---: |
+| Round 32, 540 tiles, 322 towns, 14,695 troops | 18.8 ms | 13.4 ms | 32,880 bytes |
+| Repeated-troop stress copy, 240,000 troops | 124.7 ms | 44.2 ms | 35,826 bytes |
+
+Loaded, exported and edited/saved state hashes matched exactly. Archive sizes remain unchanged in this pass. The real archive is about 98.8% smaller than its original 2,739,686-byte export. The stress army deliberately repeats existing soldiers; it is not a size estimate for 240,000 diverse units. New archives remain packing version 9. No resources, troops, logs, orders or explored terrain are removed.
+
+All 30 refresh checks across original JSON and nine compact versions preserved the real campaign. Current-format warm-asset menu medians were 79.2 ms for the real export, 130.1 ms for the separate 2,000-tile/1,000-town fixture, and 235.1 ms for the troop stress copy. These measure the menu becoming available, not drawing the whole map. The save-client load timings were effectively unchanged from the preceding build. A proposed allocation change to troop restoration made the largest case slower and was discarded. A nested-field packing experiment did not reliably reduce the compressed archive and was also discarded.
+
+The map now retains unchanged route markup and tile/town presentation data across selection changes. Camp upgrades, terrain and season changes, ownership, town improvements, siege state and language remain live inputs. A town-position set replaces repeated town scans for tower placement. These are rendering changes only; the camera pipeline and artwork are unchanged.
+
+Three serial browser samples measured tile selection at 1920 × 1080, after artwork settled. On the 2,000-tile map, the median selection interval fell from 50 to 34 ms; script time for 30 selections fell from 471.7 to 343.8 ms. On the real map, the interval was nearly unchanged at 34.7 versus 33.4 ms, while script time for its 12 selections fell from 206.4 to 165.5 ms. The diagnostic includes two animation frames per selection. It uses no full-document observer during measurement, and every selection is checked against the original saved state. Other disposable camera experiments gave inconsistent or worse results and were not shipped. These results do not claim a zoom improvement.
+
+The browser AI replay retained all 485 exact orders and the full final state through the human casualty prompt. It took 8.34 seconds in this sample, with no long main-thread tasks or page errors. No AI strategy, search depth or game rule changed. New regressions cover unchanged-army work counts, cache invalidation, nested values, reordered and removed units, failed-save recovery and the combined expansion budget. Browser assertions also check that camp tier badges and Woods output update immediately.
+
+All 1,743 unit tests and 132 staging browser scenarios passed across Chromium, Firefox and mobile. Checks cover large-save import/export, quota fallback, atomic backup recovery, stale worker tokens, conflicting tabs, rapid actions, startup failures, camera controls, seasonal production and map artwork. Type checking, formatting and whitespace checks passed. All diagnostics used exported copies or disposable fixtures; the source exports and playing browser were not modified.
+
+After atomic local publication, all 12 production HTTP checks and 14 additional Chromium save, startup and marine-resource scenarios passed. Earlier hashed assets remain available to open sessions. The changes are committed locally; the broader performance goal remains active.

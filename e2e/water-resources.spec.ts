@@ -95,7 +95,18 @@ test("Whales have ocean art, Hides and Oil production, camps, correct census and
   await panel(page, "Build");
   const camp = page.locator(".camp-side").filter({ hasText: "Whaling camp" });
   await camp.getByRole("button", { name: /^Build camp/ }).click();
+  const route = page.getByTestId(`road-${edge.id}`);
+  await expect(route).toHaveAttribute("aria-label", /with camps/);
+  await expect(route.getByRole("img", { name: "I", exact: true })).toHaveCount(
+    1,
+  );
   await camp.getByRole("button", { name: /Upgrade camp to II/ }).click();
+  await expect(route.getByRole("img", { name: "II", exact: true })).toHaveCount(
+    1,
+  );
+  await expect(route.getByRole("img", { name: "I", exact: true })).toHaveCount(
+    0,
+  );
   await expect(camp).toContainText("Tier II: 2 Hides + 2 Oil per roll");
   await close(page);
   await page.getByTestId(`town-${home.id}`).click();

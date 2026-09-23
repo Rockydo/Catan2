@@ -56,7 +56,7 @@ Campaigns autosave as compressed records in browser IndexedDB, with an atomic pr
 
 Large saves group repeated unit data and map fields before compression. Sequential unit IDs and repeated entries use compact sequences. Map identifiers share a dictionary. Matching coordinates and neighbor lists are stored once and reconstructed exactly from saved keys and tile rings, preserving their original order. Climate-plan coordinates and troop-template fields also use compact columns. Repeated terrain values, stocks and guild records share dictionary entries on disk and become independent records again when loaded. Unusual layouts remain literal. The loader never rerolls terrain or uses current generation rules to rebuild the map. Every unit, stored resource and individual order is preserved.
 
-Loading the campaign starts while the map and panel code is loading. The save worker reuses encoded geometry while the world is unchanged and rebuilds it after terrain or topology changes.
+Loading the campaign starts while the map and panel code is loading. The save worker reuses encoded geometry while the world is unchanged and rebuilds it after terrain or topology changes. It also reuses packed troops across economic orders that leave the army unchanged. Recruitment, losses, movement and unit orders invalidate that data. Both caches retain only their latest input, and the complete expanded save limit is checked on each write.
 
 Autosaves send only changes to the worker after the first snapshot; each stored save remains complete and can load independently of its backup. Existing saves use the latest format on their next save or export. Large-army reloads and imports transfer troop templates and repeated sequences from the validation worker to the interface. The loader reuses exact byte counts from validation instead of serializing the rebuilt map again. Current compact saves also reuse the validated troop templates for immediate transfer, avoiding another pass to repack the army. Diverse armies retain regular JSON transfer when templates would not help. File integrity, expansion limits and complete game validation still run before a campaign opens.
 
@@ -202,14 +202,16 @@ To measure compression and exact save recovery without a browser:
 SAVE_PATH=/path/to/campaign.json npx tsx scripts/save-performance.ts
 ```
 
-To compare refresh loading of original JSON and all eight compact formats in a disposable Chromium profile:
+To compare refresh loading of original JSON and all nine compact formats in a disposable Chromium profile:
 
 ```sh
 SAVE_PATH=/path/to/campaign.json GAME_URL=http://127.0.0.1:4173 \
   npx tsx scripts/save-load-performance.ts
 ```
 
-This checks the exact loaded state and measures when the campaign menu appears. It does not open or change your playing browser. Set `FORMATS=topology,packed` to compare packing versions 7 and 8. Version 8 also compresses climate plans and troop-template columns. The report includes the full campaign hash.
+This checks the exact loaded state and measures when the campaign menu appears. It does not open or change your playing browser. Set `FORMATS=details,packed` to compare packing versions 8 and 9. Version 9 shares repeated column values. The report includes the full campaign hash.
+
+`scripts/save-snapshot-performance.ts` compares repeated save packing against a reference checkout. Set `SAVE_PATH` and `SOURCE_ROOT`; `LABEL` names the report. It checks the complete archive payload and unchanged source campaign outside the measured intervals. `scripts/map-selection-performance.ts` measures tile selection on an exported copy, using `SAVE_PATH`, optional `GAME_URL` and `LABEL`. Neither script touches the playing campaign.
 
 `scripts/save-import-performance.ts` measures importing the same compressed campaign through a fresh worker, including reconstruction in the interface thread. It takes the same `SAVE_PATH`, `GAME_URL` and `LABEL` options and verifies the complete result. This isolates import processing from map painting. It bundles the actual interface decoder used by the tested build; set `SOURCE_ROOT` to that build’s checkout when comparing a previous version.
 

@@ -19,6 +19,7 @@ import { localize as tx, useLocale } from "../i18n";
 import { friendly } from "../game/relations";
 import { MapGuildCrest } from "./Guilds";
 import { MapSprite, PreparedMapLayer } from "./MapSprite";
+import { MapRoutes } from "./MapRoutes";
 import { groupMapUnits, townMapView } from "./map-scene";
 import { MapLabel, MapLabelDefinitions } from "./MapLabel";
 import { ResourceIcon } from "./ResourceIcon";
@@ -840,7 +841,7 @@ const BoardScene = memo(function BoardScene({
   seasonPreview,
   onSeasonPreviewChange,
 }: Props) {
-  useLocale();
+  const locale = useLocale();
 
   const currentSeason = seasonAt(s);
   const PreviewIcon = seasonPreview ? SEASON_ICONS[seasonPreview] : null;
@@ -897,6 +898,37 @@ const BoardScene = memo(function BoardScene({
   const besiegedTowns = useMemo(
     () => new Set(Object.values(s.sieges).map((siege) => siege.town)),
     [s.sieges],
+  );
+  const tileViews = useMemo(
+    () =>
+      tiles.map((tile) => ({
+        tile,
+        ...hexCenter(tile),
+        outputLabel:
+          currentSeason &&
+          !Object.values(seasonalYield(tile, viewer, currentSeason)).some(
+            (n) => !!n,
+          )
+            ? `${tx("No harvest this season")} · ${Object.keys(
+                tileYield(tile, viewer),
+              )
+                .map((good) => `0 ${tx(GOOD_INFO[good as Raw].name)}`)
+                .join(" + ")}`
+            : tile.biome || currentSeason
+              ? Object.entries(seasonalYield(tile, viewer, currentSeason))
+                  .map(([g, n]) => `${n} ${GOOD_INFO[g as Raw].name}`)
+                  .join(" + ")
+              : undefined,
+      })),
+    [tiles, viewer, currentSeason, locale],
+  );
+  const townViews = useMemo(
+    () => towns.map((t) => townMapView(s, t, besiegedTowns.has(t.id))),
+    [s, towns, besiegedTowns],
+  );
+  const townVertices = useMemo(
+    () => new Set(towns.map((t) => t.vertex)),
+    [towns],
   );
   const coverage = useMemo(
     () =>
@@ -1072,36 +1104,14 @@ const BoardScene = memo(function BoardScene({
             display={climates ? "none" : undefined}
           >
             {tx(
-              tiles.map((tile) => {
-                const { x, y } = hexCenter(tile);
+              tileViews.map(({ tile, x, y, outputLabel }) => {
                 return (
                   <MapHex
                     key={tile.id}
                     id={tile.id}
                     resource={tile.resource}
                     good={tileGood(tile, viewer)}
-                    outputLabel={
-                      currentSeason &&
-                      !Object.values(
-                        seasonalYield(tile, viewer, currentSeason),
-                      ).some((n) => !!n)
-                        ? `${tx("No harvest this season")} · ${Object.keys(
-                            tileYield(tile, viewer),
-                          )
-                            .map(
-                              (good) => `0 ${tx(GOOD_INFO[good as Raw].name)}`,
-                            )
-                            .join(" + ")}`
-                        : tile.biome || currentSeason
-                          ? Object.entries(
-                              seasonalYield(tile, viewer, currentSeason),
-                            )
-                              .map(
-                                ([g, n]) => `${n} ${GOOD_INFO[g as Raw].name}`,
-                              )
-                              .join(" + ")
-                          : undefined
-                    }
+                    outputLabel={outputLabel}
                     terrain={tileTerrain(tile)}
                     number={tile.number}
                     x={x}
@@ -1318,97 +1328,15 @@ const BoardScene = memo(function BoardScene({
                   );
                 }),
             )}
-            {tx(
-              Object.values(s.routes).map((r) => {
-                const e = s.edges[r.edge],
-                  a = vertexPoint(s.vertices[e.vertices[0]]),
-                  b = vertexPoint(s.vertices[e.vertices[1]]);
-                return (
-                  <g
-                    key={r.id}
-                    data-testid={`road-${r.edge}`}
-                    data-map-x={(a.x + b.x) / 2}
-                    data-map-y={(a.y + b.y) / 2}
-                    onClick={(ev) => {
-                      ev.stopPropagation();
-                      clicked(() => onSelect({ type: "edge", id: r.edge }));
-                    }}
-                    role="button"
-                    tabIndex={0}
-                    aria-label={tx(
-                      `${s.players[r.owner].name} ${r.kind === "road" ? "road" : "shipping route"}${Object.keys(r.camps).length ? ", with camps" : ""}`,
-                    )}
-                    onKeyDown={(ev) => {
-                      if (ev.key === "Enter")
-                        onSelect({ type: "edge", id: r.edge });
-                    }}
-                  >
-                    <circle
-                      cx={(a.x + b.x) / 2}
-                      cy={(a.y + b.y) / 2}
-                      r="9"
-                      fill="transparent"
-                    />
-                    <path
-                      d={`M${a.x} ${a.y}L${b.x} ${b.y}`}
-                      stroke="#ece0bb"
-                      strokeWidth="6.5"
-                      strokeLinecap="round"
-                    />
-                    <circle
-                      cx={(a.x + b.x) / 2}
-                      cy={(a.y + b.y) / 2}
-                      r="9"
-                      fill="transparent"
-                    />
-                    <path
-                      d={`M${a.x} ${a.y}L${b.x} ${b.y}`}
-                      stroke={COLORS[r.owner]}
-                      strokeWidth="4.5"
-                      strokeLinecap="round"
-                      strokeDasharray={r.kind === "route" ? "8 5" : undefined}
-                    />
-                    {tx(
-                      Object.entries(r.camps).map(([tile, tier]) => {
-                        const mid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 },
-                          center = hexCenter(s.tiles[tile]),
-                          dx = center.x - mid.x,
-                          dy = center.y - mid.y,
-                          len = Math.hypot(dx, dy);
-                        return (
-                          <g
-                            key={tile}
-                            transform={`translate(${mid.x + (dx / len) * 14} ${mid.y + (dy / len) * 14})`}
-                          >
-                            <path
-                              d="M-7 6V-3L0-10 7-3V6Z"
-                              fill="#fff1ce"
-                              stroke={COLORS[r.owner]}
-                              strokeWidth="2"
-                            />
-                            <path
-                              d="M-9-3L0-11 9-3"
-                              stroke="#66482c"
-                              strokeWidth="2"
-                              fill="none"
-                            />
-                            <MapLabel
-                              textAnchor="middle"
-                              y="4"
-                              fontSize="8"
-                              fontWeight="800"
-                              fill="#3b3529"
-                            >
-                              {tx(tier === 2 ? "II" : "I")}
-                            </MapLabel>
-                          </g>
-                        );
-                      }),
-                    )}
-                  </g>
-                );
-              }),
-            )}
+            <MapRoutes
+              routes={s.routes}
+              edges={s.edges}
+              vertices={s.vertices}
+              tiles={s.tiles}
+              playerNames={playerNames}
+              onSelect={onSelect}
+              clicked={clickAction}
+            />
             {tx(
               edges
                 .filter((e) => {
@@ -1547,7 +1475,7 @@ const BoardScene = memo(function BoardScene({
               Object.values(s.towers).map((t) => {
                 const siege = towerSiegeStatuses(s, t)[0];
                 const v = vertexPoint(s.vertices[t.vertex]);
-                const townHere = towns.some((town) => town.vertex === t.vertex);
+                const townHere = townVertices.has(t.vertex);
                 const x = v.x + (townHere ? 19 : 0),
                   y = v.y + (townHere ? 9 : 0);
                 return (
@@ -1790,10 +1718,10 @@ const BoardScene = memo(function BoardScene({
               }),
             )}
             {tx(
-              towns.map((t) => (
+              townViews.map((t) => (
                 <MapTown
                   key={t.id}
-                  {...townMapView(s, t, besiegedTowns.has(t.id))}
+                  {...t}
                   selected={
                     selection?.type === "vertex" && selection.id === t.vertex
                   }

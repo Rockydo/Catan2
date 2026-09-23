@@ -9,6 +9,7 @@ import { fishingFixture } from "./maritime-fixture";
 import { piece } from "./helpers";
 import { applySnapshotDelta, snapshotDelta } from "../src/game/snapshot-delta";
 import type { Game } from "../src/game/types";
+import { createSnapshotUnitPacker, packGame } from "../src/game/save-packing";
 
 function encoded(text: string) {
   const { savedAt: _, ...data } = JSON.parse(text);
@@ -102,4 +103,79 @@ it("retains seasonal values, noncanonical map fields, empty worlds and alternati
   const before = encoded(serializePacked(s));
   Object.values(s.tiles)[0].number = 12;
   expect(encoded(serializePacked(s))).not.toEqual(before);
+});
+
+it("does not enumerate an unchanged army again while saving changed stocks and orders", () => {
+  const { s, water, home } = fishingFixture();
+  for (let i = 0; i < 2500; i++) piece(s, water, 0, "fishing", 1);
+  let reads = 0;
+  s.pieces = new Proxy(s.pieces, {
+    ownKeys(target) {
+      reads++;
+      return Reflect.ownKeys(target);
+    },
+  });
+  const encode = createSnapshotSerializer();
+  encode(s);
+  expect(reads).toBe(1);
+  const next = {
+    ...s,
+    actions: s.actions + 1,
+    towns: {
+      ...s.towns,
+      [home.id]: { ...home, stock: { ...home.stock, gold: 9999 } },
+    },
+  };
+  const text = encode(next);
+  expect(reads).toBe(1);
+  expect(encoded(text)).toEqual(encoded(serializePacked(next)));
+});
+
+it("invalidates packed troops for recruitment, losses, reordered IDs, orders and nested changes", () => {
+  const { s, water } = fishingFixture();
+  for (let i = 0; i < 2000; i++) piece(s, water, 0, "fishing", 1);
+  const encode = createSnapshotSerializer();
+  const first = Object.values(s.pieces)[0];
+  const changed = {
+    ...s,
+    pieces: {
+      ...s.pieces,
+      [first.id]: {
+        ...first,
+        bonus: 3,
+        guildSupplied: true,
+        future: { orders: ["Forêt 雪", { preserved: true }] },
+      },
+    },
+  };
+  const recruited = structuredClone(changed);
+  piece(recruited, water, 0, "merchantship", 4);
+  const lost = { ...recruited, pieces: { ...recruited.pieces } };
+  delete lost.pieces[first.id];
+  const reordered = { ...s, pieces: { ...s.pieces } };
+  delete reordered.pieces[first.id];
+  reordered.pieces[first.id] = first;
+  for (const game of [s, changed, recruited, lost, reordered, s]) {
+    freeze(game);
+    const text = encode(game);
+    expect(encoded(text)).toEqual(encoded(serializePacked(game)));
+    expect(JSON.stringify(deserialize(text))).toBe(
+      JSON.stringify(deserialize(serializePacked(game))),
+    );
+  }
+});
+
+it("keeps the full expansion budget when cached troops are combined with a growing campaign", () => {
+  const { s, water } = fishingFixture();
+  // A few templates represent almost 120 MB of independent troop records.
+  // Their tiny packed size must never bypass the expanded snapshot budget.
+  for (let i = 0; i < 2000; i++)
+    Object.assign(piece(s, water), { future: "雪".repeat(20_000) });
+  const pack = createSnapshotUnitPacker();
+  expect(pack(s).pieces.templates).toHaveLength(1);
+  const growing = { ...s, future: "x".repeat(9_000_000) };
+  expect(() => pack(growing)).toThrow(/expanded limit/);
+  expect(() => packGame(growing)).toThrow(/expanded limit/);
+  // A rejected save does not poison the last usable snapshot.
+  expect(pack(s)).toEqual(packGame(s));
 });

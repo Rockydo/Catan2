@@ -58,6 +58,27 @@ export function packGame(game: Game): PackedGame {
   return packRecords(game, Object.keys(game.pieces), true);
 }
 
+/** Save-worker snapshots only. Retain one immutable army, not previous games.
+ * The rest of the campaign still counts against the expanded limit each time. */
+export function createSnapshotUnitPacker(): (game: Game) => PackedGame {
+  let previous: Game["pieces"] | undefined;
+  let packed: PackedUnits | undefined;
+  let unitBytes = 0;
+  return (game) => {
+    if (previous === game.pieces && packed) {
+      if (jsonBytes({ ...game, pieces: {} }) + unitBytes > LIMIT)
+        throw new Error("This save exceeds the 128 MB expanded limit.");
+      return { ...game, pieces: packed };
+    }
+    const measured = { bytes: 0 };
+    const result = packRecords(game, Object.keys(game.pieces), true, measured);
+    previous = game.pieces;
+    packed = result.pieces;
+    unitBytes = measured.bytes;
+    return result;
+  };
+}
+
 /** Internal save-worker transfer only, after deserialize's complete validation.
  * Reuse the current keys and avoid measuring the same expanded snapshot again.
  * Disk/file encoders must use packGame, which enforces its expansion budget. */
@@ -65,13 +86,21 @@ export function packValidatedGame(game: Game, keys: string[]): PackedGame {
   return packRecords(game, keys, false);
 }
 
-function packRecords(game: Game, keys: string[], measure: boolean): PackedGame {
+function packRecords(
+  game: Game,
+  keys: string[],
+  measure: boolean,
+  measuredUnits?: { bytes: number },
+): PackedGame {
   const packedKeys = packKeys(keys),
     templates: PackedUnits["templates"] = [],
     sizes: number[] = [],
     rows: number[] = [],
     lookup = new Map<string, number>();
-  let expanded = measure ? jsonBytes({ ...game, pieces: {} }) : 0;
+  const baseBytes = measure ? jsonBytes({ ...game, pieces: {} }) : 0;
+  let expanded = baseBytes;
+  if (expanded > LIMIT)
+    throw new Error("This save exceeds the 128 MB expanded limit.");
   let previous: Record<string, unknown> | undefined,
     previousIndex = -1;
   for (const key of keys) {
@@ -130,6 +159,7 @@ function packRecords(game: Game, keys: string[], measure: boolean): PackedGame {
     }
     rows.push(index);
   }
+  if (measuredUnits) measuredUnits.bytes = expanded - baseBytes;
   return { ...game, pieces: { keys: packedKeys, templates, rows } };
 }
 

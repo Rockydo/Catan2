@@ -161,6 +161,10 @@ for (const locale of ["en", "fr"] as const) {
         exact: true,
       }),
     ).toHaveAttribute("aria-pressed", "true");
+    await expect(page.getByTestId("hex-0,0")).toHaveAttribute(
+      "aria-label",
+      locale === "fr" ? /1 Peaux/ : /1 Hides/,
+    );
     expect(
       await page.evaluate(
         (key) =>

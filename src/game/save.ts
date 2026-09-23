@@ -1,4 +1,9 @@
-import { packGame, unpackGameSnapshot, type PackedGame } from "./save-packing";
+import {
+  packGame,
+  createSnapshotUnitPacker,
+  unpackGameSnapshot,
+  type PackedGame,
+} from "./save-packing";
 import {
   packTable,
   packTables,
@@ -1240,9 +1245,10 @@ export function serializePacked(s: Game): string {
   return saveEnvelope(s, true);
 }
 /** Save worker only: its acknowledged snapshots and delta records are immutable.
- * Retain one map's prepared geometry, never a campaign history. General callers
- * with mutable game objects must continue to use serializePacked. */
+ * Retain one map and army's packed records, never a campaign history. General
+ * callers with mutable game objects must continue to use serializePacked. */
 export function createSnapshotSerializer(): (s: Game) => string {
+  const packUnits = createSnapshotUnitPacker();
   let previous: Pick<Game, "tiles" | "vertices" | "edges"> | undefined;
   let world: PreparedSaveWorld | undefined;
   return (s) => {
@@ -1261,13 +1267,14 @@ export function createSnapshotSerializer(): (s: Game) => string {
       ) as PreparedSaveWorld;
       previous = { tiles: s.tiles, vertices: s.vertices, edges: s.edges };
     }
-    return saveEnvelope(s, true, world);
+    return saveEnvelope(s, true, world, packUnits(s));
   };
 }
 function saveEnvelope(
   s: Game,
   packed: boolean,
   world?: PreparedSaveWorld,
+  units?: PackedGame,
 ): string {
   const body = JSON.stringify(
     packed
@@ -1277,7 +1284,7 @@ function saveEnvelope(
               packIntegers(
                 packReferences(
                   world
-                    ? packTables(packGame(s), world)
+                    ? packTables(units ?? packGame(s), world)
                     : packGeometry(packTopology(packTables(packGame(s)))),
                 ),
               ),
