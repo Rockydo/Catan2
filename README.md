@@ -225,6 +225,8 @@ This measures 32 prescribed movement transactions amid 15,000 and 60,000 other t
 
 `SAVE_PATH=/path/to/campaign.json npx tsx scripts/woods-performance.ts` measures up to three accessible Woods resource choices, individually and in one private batch, plus their validation previews. It checks complete results and unchanged input data. Optional `AI_SEAT` selects a living faction; `SOURCE_ROOT`, `LABEL`, `EXPECT_PATH` and `SAMPLES` support separate-process build comparisons. This diagnostic measures transaction and publication costs, not a complete AI turn.
 
+`MILITARY=1` adds 100-unit recruitment, 100-ship construction and an available movement order to `scripts/order-performance.ts`. The diagnostic prepares the same roster index used by the visible board before measuring publication. It reports engine and interface-comparison time separately and checks complete results against `EXPECT_PATH` when provided.
+
 To measure compression and exact save recovery without a browser:
 
 ```sh

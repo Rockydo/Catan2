@@ -1,5 +1,12 @@
 # Release verification
 
+## Publishing player army changes: 2026-09-23
+
+- Player transactions use the already indexed source roster order when deciding whether an army layer changed. Partially shared rosters compare membership/order and unchanged record identities before encoding only changed units. The strategy probes never decide equality themselves. Fully detached snapshots and cold inputs retain the existing whole-object comparison, and no additional campaign history or unit-encoding cache is retained.
+- With 240,000 existing units, median publication time falls from 78.9 to 23.8 ms for recruiting 100 soldiers, from 84.1 to 23.2 ms for building 100 ships, and from 84.6 to 24.4 ms for a movement order. These are separate-process, three-sample comparisons with a populated source roster index. Complete results and unchanged inputs match for every economic and military command. Reports use `test-artifacts/order-performance-publication-warm-*`. This isolates publication, not total input latency or camera performance.
+- All 1,827 unit tests in 139 files pass. New checks cover shared/fully detached/cold rosters, insertions, removals, ordering, edits outside the strategy probes, optional undefined troop fields, and the absence of full-army encodings on the fast path. All 54 staging browser checks pass across Chromium, Firefox and mobile Chromium, including recruitment, army inspection, large-save refresh/export/recovery and AI workers. TypeScript and the production build pass.
+- Formatting and whitespace checks pass. The deployed build passes another three Chromium recruitment/save/worker checks and all 12 HTTP checks. Existing asset hashes remain available; the playing campaign and exported files are untouched.
+
 ## Woods choices in large campaigns: 2026-09-23
 
 - Woods resource choices now copy only their selected tile and mutable campaign records. Existing troops and map geometry stay shared and immutable. Batched choices reuse troop indexes while refreshing terrain-dependent production reads. Later combat, expedition or season commands still detach the records they can change; elimination receives a private roster dictionary before deleting troops.

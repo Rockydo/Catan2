@@ -3,7 +3,7 @@ import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { importSave } from "../src/storage/codec";
-import { GOODS, type Command, type Town } from "../src/game/types";
+import { GOODS, type Command, type Town, type Piece } from "../src/game/types";
 
 // Fund an exported copy and measure independent ordinary orders plus snapshot
 // publication. Never writes browser storage or changes the source export.
@@ -12,9 +12,15 @@ if (!process.env.SAVE_PATH)
 const root = resolve(process.env.SOURCE_ROOT ?? ".");
 const load = (file: string) => import(pathToFileURL(resolve(root, file)).href);
 const { applyCommand, canApplyCommand } = await load("src/game/engine.ts");
-const { ownTowns, prepareGameView, routeSites, withPlanningFrame } = await load(
-  "src/game/selectors.ts",
-);
+const {
+  ownTowns,
+  ownPieces,
+  moveTargets,
+  prepareGameView,
+  retainPieceRead,
+  routeSites,
+  withPlanningFrame,
+} = await load("src/game/selectors.ts");
 const { productiveAtVertex } = await load("src/game/maritime.ts");
 const { sharePublishedSnapshot } = await load("src/ui/publish-snapshot.ts");
 const { assertInvariants } = await load("src/game/save.ts");
@@ -32,6 +38,8 @@ if (!towns.length) throw Error("The diagnostic faction needs a town.");
 for (const good of GOODS)
   towns[0].stock[good] = (towns[0].stock[good] ?? 0) + 10_000;
 prepareGameView(state);
+// The visible board has already read its roster before a player clicks an order.
+ownPieces(state);
 const commands: Command[] = [];
 const pick = (choices: Command[]) => {
   const command = choices.find((c) => canApplyCommand(state, c));
@@ -67,6 +75,36 @@ withPlanningFrame(state, () => {
           .map((tile) => ({ type: "camp", edge: r.edge, tile })),
       ),
   );
+  if (process.env.MILITARY === "1") {
+    for (const [type, kind] of [
+      ["recruit", "heavy"],
+      ["ship", "galley"],
+    ])
+      pick(
+        towns.flatMap((town) =>
+          state.vertices[town.vertex].tiles.map((tile) => ({
+            type,
+            kind,
+            town: town.id,
+            tile,
+            tier: 1,
+            count: 100,
+          })),
+        ),
+      );
+    for (const unit of ownPieces(state) as Piece[]) {
+      if (unit.carrier) continue;
+      const before = commands.length;
+      pick(
+        Object.keys(moveTargets(state, [unit.id])).map((to) => ({
+          type: "move",
+          ids: [unit.id],
+          to,
+        })),
+      );
+      if (commands.length > before) break;
+    }
+  }
 });
 const samples = Number(process.env.SAMPLES ?? 3);
 if (!Number.isSafeInteger(samples) || samples < 1 || !commands.length)
@@ -93,7 +131,11 @@ for (const command of commands) {
     const engineMs = performance.now() - start;
     if (!result.ok) throw Error(result.error);
     const publishStart = performance.now();
-    const published = sharePublishedSnapshot(state, result.state);
+    const published = sharePublishedSnapshot(
+      state,
+      result.state,
+      retainPieceRead(state)?.recordKeys,
+    );
     const publishMs = performance.now() - publishStart;
     assertInvariants(published);
     const currentHash = hash(published);

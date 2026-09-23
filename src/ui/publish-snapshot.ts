@@ -28,13 +28,53 @@ const fields = [
   "calendar",
 ] as const;
 
-/** Call only on completed snapshots, never on an in-place engine draft. */
-export function sharePublishedSnapshot(previous: Game, next: Game): Game {
+/** Engine transactions usually retain untouched troop records. Use the
+ * already indexed source order to compare those rosters without encoding an
+ * entire army. Probes select the strategy only: equality still checks every
+ * key, its order and each changed value. Fully detached replies retain the
+ * faster whole-object encoding path instead of encoding every unit twice. */
+function sameRoster(
+  before: Game["pieces"],
+  after: Game["pieces"],
+  keys: readonly string[],
+): boolean | undefined {
+  if (!keys.length) return undefined;
+  const shared = [0, Math.floor(keys.length / 2), keys.length - 1].some(
+    (i) => before[keys[i]] === after[keys[i]],
+  );
+  if (!shared) return undefined;
+  const nextKeys = Object.keys(after);
+  if (keys.length !== nextKeys.length) return false;
+  for (let i = 0; i < keys.length; i++) {
+    const key = keys[i];
+    if (key !== nextKeys[i]) return false;
+    if (
+      before[key] !== after[key] &&
+      JSON.stringify(before[key]) !== JSON.stringify(after[key])
+    )
+      return false;
+  }
+  return true;
+}
+
+/** Call only on completed valid snapshots, never on an in-place engine draft.
+ * knownPieceKeys, when supplied, is the exact immutable previous roster order.
+ * Valid roster entries are defined Piece records, never omitted JSON values. */
+export function sharePublishedSnapshot(
+  previous: Game,
+  next: Game,
+  knownPieceKeys?: readonly string[],
+): Game {
   const published = { ...next };
   for (const key of fields) {
     const old = previous[key],
       value = next[key];
-    if (old && value && old !== value && encoding(old) === encoding(value)) {
+    if (!old || !value || old === value) continue;
+    const same =
+      key === "pieces" && knownPieceKeys
+        ? sameRoster(previous.pieces, next.pieces, knownPieceKeys)
+        : undefined;
+    if (same ?? encoding(old) === encoding(value)) {
       // Both fields have the same key and serialized value. The mapped Game
       // property union is wider than TS can correlate across this loop.
       Object.assign(published, { [key]: old });

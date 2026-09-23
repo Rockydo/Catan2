@@ -215,7 +215,12 @@ export default function App({
         setToast(result.error ?? "That action is unavailable.");
         return false;
       }
-      if (!shared) result.state = sharePublishedSnapshot(current, result.state);
+      if (!shared)
+        result.state = sharePublishedSnapshot(
+          current,
+          result.state,
+          retainPieceRead(current)?.recordKeys,
+        );
       setSeasonPreview(undefined);
       townAlerts.capture(current, result.state);
       if (command.type === "roll") roll.begin(result.state);
