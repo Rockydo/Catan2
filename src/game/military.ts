@@ -11,6 +11,8 @@ import { SHIP_INFO, shipStats, isSettler } from "./content";
 import { neighbors, canOccupy } from "./world";
 import { rule, log, addStock } from "./economy";
 import {
+  allPieces,
+  passengersOn,
   piecesAt,
   combatantsAt,
   ready,
@@ -65,16 +67,34 @@ export function selected(
     );
   return units;
 }
-export function setTile(s: Game, u: Piece, tile: string) {
+export function setTile(
+  s: Game,
+  u: Piece,
+  tile: string,
+  passengers?: readonly Piece[],
+) {
   if (tile !== u.tile) delete u.seasonStatus;
   if (u.tile !== tile) delete u.coverage;
   u.tile = tile;
   if (u.naval)
-    for (const v of Object.values(s.pieces))
+    for (const v of passengers ?? allPieces(s))
       if (v.carrier === u.id) {
         delete v.coverage;
         v.tile = tile;
       }
+}
+/** Move a formation in its original order, reading passenger membership once
+ * for the whole fleet. No boarding or losses occur during this operation. */
+export function setTiles(s: Game, units: Piece[], tile: string) {
+  const carriers = units.filter((u) => u.naval).map((u) => u.id);
+  const passengers = new Map<string, Piece[]>();
+  if (carriers.length)
+    for (const unit of passengersOn(s, carriers)) {
+      if (!passengers.has(unit.carrier!)) passengers.set(unit.carrier!, []);
+      passengers.get(unit.carrier!)!.push(unit);
+    }
+  for (const unit of units)
+    setTile(s, unit, tile, passengers.get(unit.id) ?? []);
 }
 export function removePieces(
   s: Game,
@@ -209,11 +229,13 @@ export function resolveBattle(s: Game, c: Command) {
     );
   removePieces(s, ids, remaining, winners);
   if (b.loser === b.defender) {
-    if (remaining.length && options.length)
-      remaining.forEach((u) => setTile(s, u, c.retreat!));
+    if (remaining.length && options.length) setTiles(s, remaining, c.retreat!);
     if (!b.bombardment && (!remaining.length || options.length))
-      for (const id of b.attackers)
-        if (s.pieces[id]) setTile(s, s.pieces[id], b.target);
+      setTiles(
+        s,
+        b.attackers.flatMap((id) => s.pieces[id] ?? []),
+        b.target,
+      );
   }
   log(
     s,
@@ -262,7 +284,7 @@ export function engageBattle(
   const a = power(s, fighting, target),
     d = power(s, defending, target);
   if (!fighting.length || !defending.length) {
-    if (!defending.length) fighting.forEach((u) => setTile(s, u, target));
+    if (!defending.length) setTiles(s, fighting, target);
     breakSieges(s);
     return;
   }
@@ -440,8 +462,8 @@ export function militaryCommand(s: Game, c: Command): boolean {
         u.campaign = { enemy, target: c.target };
       else delete u.campaign;
       u.moved += path.length;
-      setTile(s, u, defenders.length ? origin : target);
     });
+    setTiles(s, units, defenders.length ? origin : target);
     if (defenders.length) {
       engageBattle(s, units, defenders, origin, target);
     } else
@@ -651,23 +673,25 @@ export function militaryCommand(s: Game, c: Command): boolean {
           units.every((u) => u.seasonStatus === "adrift")),
       "Carriers must be on adjacent water.",
     );
-    const berths = ships.reduce(
-      (n, u) =>
-        n +
-        shipStats(u.kind as ShipClass, u.tier).capacity -
-        Object.values(s.pieces).filter((p) => p.carrier === u.id).length,
-      0,
+    const free = new Map(
+      ships.map((ship) => [
+        ship.id,
+        shipStats(ship.kind as ShipClass, ship.tier).capacity,
+      ]),
     );
+    for (const passenger of allPieces(s))
+      if (passenger.carrier && free.has(passenger.carrier))
+        free.set(passenger.carrier, free.get(passenger.carrier)! - 1);
+    const berths = [...free.values()].reduce((sum, count) => sum + count, 0);
     rule(
       berths >= units.length,
       `Need ${units.length} berths; only ${berths} are free.`,
     );
+    let nextShip = 0;
     for (const u of units) {
-      const ship = ships.find(
-        (v) =>
-          Object.values(s.pieces).filter((p) => p.carrier === v.id).length <
-          shipStats(v.kind as ShipClass, v.tier).capacity,
-      )!;
+      while (free.get(ships[nextShip].id)! <= 0) nextShip++;
+      const ship = ships[nextShip];
+      free.set(ship.id, free.get(ship.id)! - 1);
       u.carrier = ship.id;
       delete u.seasonStatus;
       delete u.coverage;
@@ -680,6 +704,7 @@ export function militaryCommand(s: Game, c: Command): boolean {
   }
   if (c.type === "unload") {
     const ships = selected(s, c.ships, true, true);
+    const carriers = new Set(ships.map((ship) => ship.id));
     rule(
       c.to &&
         neighbors(ships[0].tile).includes(c.to) &&
@@ -690,11 +715,7 @@ export function militaryCommand(s: Game, c: Command): boolean {
       s.tiles[c.to] && !hostileAt(s, c.to, s.active, false),
       "Secure an unoccupied landing beach first.",
     );
-    const ids =
-      c.ids ??
-      Object.values(s.pieces)
-        .filter((u) => u.carrier && ships.some((v) => v.id === u.carrier))
-        .map((u) => u.id);
+    const ids = c.ids ?? passengersOn(s, [...carriers]).map((u) => u.id);
     rule(
       ids.length && new Set(ids).size === ids.length,
       "Select passengers to unload.",
@@ -704,7 +725,7 @@ export function militaryCommand(s: Game, c: Command): boolean {
       rule(
         u &&
           u.carrier &&
-          ships.some((v) => v.id === u.carrier) &&
+          carriers.has(u.carrier) &&
           !u.acted &&
           u.moved === 0 &&
           u.born < s.players[s.active].turns,

@@ -1273,14 +1273,27 @@ export function researchCount(s: Game, owner: number): number {
 }
 
 export function canChooseWoods(s: Game, tile: string, owner = s.active) {
+  if (s.tiles[tile]?.biome !== "woods") return false;
+  // Several woods are considered in one AI decision. Collect the faction's
+  // harvest access once, rather than scanning every unit for each woodland.
+  // Mutable drafts retain the direct query below; published snapshots and
+  // explicit read-only planning frames receive their own access set.
+  if (readIndex(s)?.source === s)
+    return planningValue(s, `woodsAccess/${owner}`, () => {
+      const accessible = new Set<string>();
+      for (const town of ownTowns(s, owner))
+        for (const id of s.vertices[town.vertex].tiles) accessible.add(id);
+      for (const route of Object.values(s.routes))
+        if (route.owner === owner)
+          for (const [id, tier] of Object.entries(route.camps))
+            if (tier) accessible.add(id);
+      for (const unit of ownPieces(s, owner))
+        for (const id of harvestTiles(s, unit)) accessible.add(id);
+      return accessible;
+    }).has(tile);
   return (
-    s.tiles[tile]?.biome === "woods" &&
-    (ownTowns(s, owner).some((t) =>
-      s.vertices[t.vertex].tiles.includes(tile),
-    ) ||
-      Object.values(s.routes).some(
-        (r) => r.owner === owner && !!r.camps[tile],
-      ) ||
-      ownPieces(s, owner).some((u) => harvestTiles(s, u).includes(tile)))
+    ownTowns(s, owner).some((t) => s.vertices[t.vertex].tiles.includes(tile)) ||
+    Object.values(s.routes).some((r) => r.owner === owner && !!r.camps[tile]) ||
+    ownPieces(s, owner).some((u) => harvestTiles(s, u).includes(tile))
   );
 }

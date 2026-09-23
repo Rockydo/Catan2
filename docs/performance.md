@@ -616,3 +616,38 @@ The exact planning audit now covers 128 scenarios and all 13,206 proposed projec
 All 96 trade comparisons also matched, retaining the same offers, aid and acceptance decisions. All 1,530 unit tests and 111 browser scenarios passed. Browser coverage includes guilds, army composition, bulk orders, transport shortcuts, coastal sieges, frozen seas, thaw retreats and large-save recovery across Firefox, Chromium and mobile. Checks used disposable fixtures and exported copies; the player's live campaign was not opened or changed.
 
 The deployed build passed all 12 production HTTP checks and 10 additional Chromium transport, worker and save scenarios. Earlier hashed assets remain available to already-open sessions. The broader performance goal remains active.
+
+
+## Bulk fleet execution and woodland access
+
+The latest campaign's CPU profile exposed repeated full-army scans while boarding ships. For each passenger, the engine inspected ships in order and recounted their passengers by scanning every unit. Boarding now counts occupied berths once, then fills ships in the same command order using a moving index. Existing passengers, zero-capacity escorts and partially occupied ships retain their previous behavior. Capacity checks and failed-command rollback remain in place.
+
+Fleet movement now reads passenger membership once for the formation, then updates ships and passengers in the original order. This also applies when fleets advance after a battle or retreat. Unloading uses a carrier set and a single passenger lookup while retaining the original default passenger order. These changes apply to both player and AI commands. They do not limit fleet size, passenger counts or available actions.
+
+The new `scripts/fleet-performance.ts` diagnostic measures complete engine transactions in a disposable fixture with 40 tier-four convoys, 320 passengers and 15,000 other units. The following are medians of three samples:
+
+| Action | Before | After |
+| --- | ---: | ---: |
+| Board the fleet | 13,460.8 ms | 19.6 ms |
+| Move the fleet one tile | 91.3 ms | 12.3 ms |
+| Land all passengers | 22.7 ms | 19.7 ms |
+
+Each sample includes normal validation, transaction copying and cleanup. The fixture is synthetic, and these gains describe these transport operations, not whole AI turns or map rendering. Every complete resulting campaign matched the reference, including unit assignment, order and logs. Inputs remained unchanged. The diagnostic accepts a reference checkout and report, and checks both the requested command and final-state hash.
+
+Woods access is now collected once per faction within a read-only decision or published UI snapshot. Previously, inspecting each Woods tile could scan the entire army and calculate the same merchants' coverage again. The access set includes towns, camps and eligible mobile collectors, including custom merchant coverage. Unregistered mutable drafts keep direct checks; changed snapshots rebuild the set.
+
+| Full AI workload | Before | After | Exact comparison |
+| --- | ---: | ---: | --- |
+| Latest export, Round 32, to the human casualty decision | 21.16 s | 19.25 s | 485 orders and complete state |
+| Round 31 export, complete AI turn | 10.90 s | 10.71 s | 144 orders and complete state |
+| Growth map, 2,000 tiles and 1,000 towns, first 60 decisions | 11.40 s | 11.25 s | 60 orders and complete state |
+
+The latest campaign replay improved by about 9%. The older campaign and growth-map timings were effectively unchanged. Browser replays retained approximately 16.8 ms frame p95 with no long main-thread tasks or errors. All comparisons used exported copies or disposable fixtures, without opening the player's live campaign.
+
+In a second CPU profile of the latest replay, military command execution fell from about 2.41 seconds to 1.57 seconds, and woodland access checks from about 1.71 seconds to 1.02 seconds. These are sampled inclusive categories, not additional wall-clock savings. Production forecasting, snapshot enumeration and other planning remain substantial costs.
+
+New regression tests verify ordered berth assignment, partial ships, escorts, failed boarding and unloading, passenger coverage cleanup, stationary and moving fleets, and unchanged units outside the selected fleet. Scan-count assertions cover 800 passengers and a 300-ship movement case without fragile timing thresholds. Woodland tests compare all access results with direct queries and verify changed positions, owners, boarding, camps, custom coverage and mutable drafts. The planning audit retained all 13,206 projects, scores and decisions across 128 scenarios; all 96 trade comparisons also matched.
+
+All 1,538 unit tests and 111 browser scenarios passed. The final fleet tests were repeated after adding explicit frozen-status assertions. A final transport diagnostic retained the same complete states, with medians of 19.7 ms for boarding, 12.8 ms for movement and 18.9 ms for unloading.
+
+The local deployment passed all 12 production HTTP checks and 10 additional Chromium transport, worker and large-save scenarios. Browser coverage includes Firefox, Chromium and mobile, with guild supply, army selection, transport shortcuts, naval sieges, seasonal movement, thaw battles and storage recovery. Earlier hashed assets remain available for already-open sessions. The broader performance goal remains active.
