@@ -4,6 +4,7 @@ import { piece } from "../tests/helpers";
 import { deserialize, serialize, SAVE_KEY, BACKUP_KEY } from "../src/game/save";
 import { importSave, exportCompact } from "../src/storage/codec";
 import { readFile } from "node:fs/promises";
+import { snapshotDelta } from "../src/game/snapshot-delta";
 
 async function saved(page: Page, key = "primary") {
   const record = await page.evaluate(async (key) => {
@@ -456,4 +457,230 @@ test("a stale save-worker base requests a full snapshot before writing", async (
   await page.reload();
   await page.getByRole("button", { name: /Continue campaign/ }).click();
   expect(Object.keys((await saved(page))!.game.pieces)).toHaveLength(6001);
+});
+
+test("refresh reuses the loaded snapshot for export and the first autosave", async ({
+  page,
+}) => {
+  const { s, home } = fixture(true);
+  await seed(page, serialize(s));
+  await page.addInitScript(() => {
+    const w = window as any,
+      Native = window.Worker;
+    w.snapshotPosts = [];
+    window.Worker = class extends Native {
+      saving = false;
+      constructor(url: string | URL, options?: WorkerOptions) {
+        super(url, options);
+        this.saving = String(url).includes("save.worker");
+      }
+      postMessage(data: any) {
+        if (this.saving && ["save", "export"].includes(data.type))
+          w.snapshotPosts.push({
+            type: data.type,
+            full: !!data.game,
+            delta: !!data.delta,
+          });
+        super.postMessage(data);
+      }
+    };
+  });
+  await page.goto("/");
+  await page.getByRole("button", { name: /Continue campaign/ }).click();
+  await expect(page.locator(".save-status")).toHaveText("Saved locally");
+  const primary = (await saved(page))!;
+  await page.reload();
+  await page.getByRole("button", { name: /Continue campaign/ }).click();
+  await expect(page.locator(".save-status")).toHaveText("Saved locally");
+  expect(await page.evaluate(() => (window as any).snapshotPosts)).toEqual([]);
+  await page.getByRole("button", { name: "Game settings and saves" }).click();
+  const downloading = page.waitForEvent("download");
+  await page
+    .getByRole("button", { name: "Export saved game", exact: true })
+    .click();
+  const download = await downloading;
+  expect(await importSave(await readFile((await download.path())!))).toEqual(
+    primary.game,
+  );
+  expect((await saved(page))!.revision).toBe(primary.revision);
+  await page.getByRole("button", { name: "Close dialog" }).click();
+  await page.getByTestId(`town-${home.id}`).press("Enter");
+  await page.getByRole("button", { name: "Forces", exact: true }).click();
+  await page.getByLabel("Recruitment quantity").fill("100");
+  await page.locator('[data-testid="recruit-heavy"] .recruit-purchase').click();
+  await expect
+    .poll(async () => Object.keys((await saved(page))!.game.pieces).length)
+    .toBe(6100);
+  expect(await page.evaluate(() => (window as any).snapshotPosts)).toEqual([
+    { type: "export", full: false, delta: true },
+    { type: "save", full: false, delta: true },
+  ]);
+  expect((await saved(page, "backup"))!.game).toEqual(primary.game);
+  const after = (await saved(page))!.game;
+  await page.reload();
+  await page.getByRole("button", { name: /Continue campaign/ }).click();
+  expect((await saved(page))!.game).toEqual(after);
+});
+
+test("exports recover from a stale worker token without changing the autosave", async ({
+  page,
+}) => {
+  const { s } = fixture(true);
+  await seed(page, serialize(s));
+  await page.addInitScript(() => {
+    const w = window as any,
+      Native = window.Worker;
+    w.exportResyncs = 0;
+    w.exportFull = 0;
+    window.Worker = class extends Native {
+      saving = false;
+      constructor(url: string | URL, options?: WorkerOptions) {
+        super(url, options);
+        this.saving = String(url).includes("save.worker");
+        if (this.saving)
+          this.addEventListener("message", ({ data }) => {
+            if (data.type === "export" && data.result?.resync)
+              w.exportResyncs++;
+          });
+      }
+      postMessage(data: any) {
+        if (this.saving && data.type === "export") {
+          if (data.game) w.exportFull++;
+          else data = { ...data, base: -1 };
+        }
+        super.postMessage(data);
+      }
+    };
+  });
+  await page.goto("/");
+  await page.getByRole("button", { name: /Continue campaign/ }).click();
+  await expect(page.locator(".save-status")).toHaveText("Saved locally");
+  const primary = (await saved(page))!,
+    backup = (await saved(page, "backup"))!;
+  await page.getByRole("button", { name: "Game settings and saves" }).click();
+  const downloading = page.waitForEvent("download");
+  await page
+    .getByRole("button", { name: "Export saved game", exact: true })
+    .click();
+  const download = await downloading;
+  expect(await importSave(await readFile((await download.path())!))).toEqual(
+    primary.game,
+  );
+  expect(await page.evaluate(() => (window as any).exportResyncs)).toBe(1);
+  expect(await page.evaluate(() => (window as any).exportFull)).toBe(1);
+  expect((await saved(page))!.revision).toBe(primary.revision);
+  expect((await saved(page, "backup"))!.revision).toBe(backup.revision);
+});
+
+test("exporting a different visible position preserves the retained autosave base", async ({
+  page,
+}) => {
+  const { s } = fixture(true);
+  await seed(page, serialize(s));
+  await page.addInitScript(() => {
+    const Native = window.Worker;
+    window.Worker = class extends Native {
+      constructor(url: string | URL, options?: WorkerOptions) {
+        super(url, options);
+        if (String(url).includes("save.worker"))
+          (window as any).snapshotWorkerURL = String(url);
+      }
+    };
+  });
+  await page.goto("/");
+  await page.getByRole("button", { name: /Continue campaign/ }).click();
+  await expect(page.locator(".save-status")).toHaveText("Saved locally");
+  const primary = (await saved(page))!;
+  const exported = structuredClone(primary.game);
+  const unit = Object.values(exported.pieces)[0];
+  unit.bonus += 2;
+  exported.actions += 1;
+  const changed = structuredClone(primary.game);
+  Object.values(changed.towns)[0].stock.gold = 13;
+  changed.actions += 2;
+  const result = await page.evaluate(
+    async ({ exportDelta, saveDelta, unchangedDelta }) => {
+      const worker = new Worker((window as any).snapshotWorkerURL, {
+        type: "module",
+      });
+      let request = 0;
+      const call = (message: any) =>
+        new Promise<any>((resolve, reject) => {
+          worker.onmessage = ({ data }) =>
+            data.error ? reject(Error(data.error)) : resolve(data.result);
+          worker.onerror = () => reject(Error("Save worker failed"));
+          worker.postMessage({ ...message, request: ++request });
+        });
+      try {
+        const loaded = await call({ type: "load", legacy: [] });
+        const token = loaded.snapshotToken;
+        if (typeof token !== "number")
+          throw Error("Clean load did not retain a snapshot");
+        const original = await call({
+          type: "export",
+          base: token,
+          delta: unchangedDelta,
+        });
+        const archive = await call({
+          type: "export",
+          base: token,
+          delta: exportDelta,
+        });
+        const originalAgain = await call({
+          type: "export",
+          base: token,
+          delta: unchangedDelta,
+        });
+        const saved = await call({
+          type: "save",
+          base: token,
+          delta: saveDelta,
+        });
+        const current = await call({
+          type: "export",
+          base: saved.snapshotToken,
+          delta: unchangedDelta,
+        });
+        const currentAgain = await call({
+          type: "export",
+          base: saved.snapshotToken,
+          delta: unchangedDelta,
+        });
+        // A subsequent save invalidates the old export token. The request must
+        // report resync, never silently export the newer retained position.
+        const stale = await call({
+          type: "export",
+          base: token,
+          delta: exportDelta,
+        });
+        return {
+          archive: Array.from(archive) as number[],
+          original: Array.from(original) as number[],
+          originalAgain: Array.from(originalAgain) as number[],
+          current: Array.from(current) as number[],
+          currentAgain: Array.from(currentAgain) as number[],
+          saved,
+          stale,
+        };
+      } finally {
+        worker.terminate();
+      }
+    },
+    {
+      exportDelta: snapshotDelta(primary.game, exported),
+      saveDelta: snapshotDelta(primary.game, changed),
+      unchangedDelta: snapshotDelta(primary.game, primary.game),
+    },
+  );
+  expect(await importSave(new Uint8Array(result.archive))).toEqual(exported);
+  expect(await importSave(new Uint8Array(result.original))).toEqual(
+    primary.game,
+  );
+  expect(result.originalAgain).toEqual(result.original);
+  expect(await importSave(new Uint8Array(result.current))).toEqual(changed);
+  expect(result.currentAgain).toEqual(result.current);
+  expect(result.saved.resync).toBeUndefined();
+  expect(result.stale).toEqual({ resync: true });
+  expect((await saved(page))!.game).toEqual(changed);
+  expect((await saved(page, "backup"))!.game).toEqual(primary.game);
 });

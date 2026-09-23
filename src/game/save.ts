@@ -44,7 +44,7 @@ import {
 } from "./guilds";
 import { neighbors, randomAt, restoreGoldPorts, canOccupy } from "./world";
 import { shipStats } from "./content";
-import { GOODS, RAW, type Game } from "./types";
+import { GOODS, RAW, type Game, type Piece } from "./types";
 import { hash, tileVertices, edgeKey } from "./world";
 import { CARDS, SHIP_INFO, UNIT_INFO } from "./content";
 import { rule, validStock } from "./economy";
@@ -55,6 +55,7 @@ import {
   power,
   points,
   minCasualties,
+  withPieceListPlanningFrame,
 } from "./selectors";
 const CURRENT_SAVE_VERSION = 14;
 export const SAVE_KEY = "catane-frontiers-save-v1";
@@ -95,6 +96,9 @@ function replaceAndeanSnow(s: Game) {
 }
 
 export function assertInvariants(s: Game) {
+  validateInvariants(s);
+}
+function validateInvariants(s: Game, validatedUnits?: Piece[]) {
   if (s.calendar)
     rule(
       Number.isSafeInteger(s.calendar.startRound) &&
@@ -792,6 +796,7 @@ export function assertInvariants(s: Game) {
         else tileOwners.set(u.tile, new Set([u.owner]));
       }
     }
+    validatedUnits?.push(u);
   }
   // Every unit and carrier reference was validated above. Empty ships cannot
   // exceed their capacity; check the occupied carriers without enumerating a
@@ -1598,7 +1603,8 @@ export function deserializeSnapshot(text: string): {
     syncSeasonSurfaces(game);
   }
   replaceAndeanSnow(data.game);
-  assertInvariants(data.game);
+  const validatedUnits: Piece[] = [];
+  validateInvariants(data.game, validatedUnits);
   // Never silently redirect an old standing order to a different good.
   for (const town of Object.values((data.game as Game).towns))
     for (const guild of townGuilds(town)) {
@@ -1614,7 +1620,12 @@ export function deserializeSnapshot(text: string): {
     }
   restoreCoastalRoads(data.game);
   restoreGoldPorts(data.game);
-  syncEmergencyCoalition(data.game);
+  // Validation already visited the army in its exact record order. The fixes
+  // above only affect towns and routes. Reuse those troop references for the
+  // immediate coalition read; never retain an index on the mutable loaded game.
+  withPieceListPlanningFrame(data.game, validatedUnits, () =>
+    syncEmergencyCoalition(data.game, { sharePieces: true }),
+  );
   return { game: { ...data.game }, units };
 }
 export function saveLocal(s: Game) {

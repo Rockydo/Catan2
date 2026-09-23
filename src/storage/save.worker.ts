@@ -11,13 +11,12 @@ import {
 import { readRecords, writeRecord, type SaveRecord } from "./database";
 import { encodeLoadedCampaign } from "./load-transfer";
 
+type SnapshotInput = { game: Game } | { base: number; delta: SnapshotDelta };
 export type SaveRequest =
   | { type: "load"; legacy: (string | null)[] }
-  | { type: "export"; game: Game }
-  | ({ type: "save" } & (
-      { game: Game } | { base: number; delta: SnapshotDelta }
-    ))
+  | ({ type: "export" | "save" } & SnapshotInput)
   | { type: "import"; text: SaveInput };
+export type ExportResult = Uint8Array<ArrayBuffer> | { resync: true };
 export interface SaveResult {
   mirror?: string;
   fallback?: string;
@@ -27,6 +26,9 @@ export interface SaveResult {
 }
 let revision: string | undefined;
 let savedSnapshot: Game | undefined;
+// At most one archive, always for the exact retained snapshot. Loaded files may
+// need migrations, so only freshly encoded snapshots can populate this cache.
+let savedArchive: Uint8Array<ArrayBuffer> | undefined;
 let snapshotToken = 0;
 let preserveBackup = false;
 let initialBackup: string | undefined;
@@ -91,7 +93,17 @@ async function handle(request: SaveRequest) {
   switch (request.type) {
     case "load": {
       const { units, ...result } = await load(request.legacy);
-      return encodeLoadedCampaign(result, units);
+      // A refresh already reconstructed this exact snapshot here. Keep it for
+      // incremental messages rather than clone the whole army back on the first
+      // order. Recovered/legacy saves still require their normal durable write.
+      savedSnapshot =
+        result.game && !result.needsSave ? result.game : undefined;
+      savedArchive = undefined;
+      const token = ++snapshotToken;
+      return encodeLoadedCampaign(
+        savedSnapshot ? { ...result, snapshotToken: token } : result,
+        units,
+      );
     }
     case "import": {
       const { game, units } = deserializeSnapshot(
@@ -99,8 +111,33 @@ async function handle(request: SaveRequest) {
       );
       return encodeLoadedCampaign({ game, recovered: false }, units);
     }
-    case "export":
-      return exportArchive(request.game);
+    case "export": {
+      if (
+        !("game" in request) &&
+        (!savedSnapshot || request.base !== snapshotToken)
+      )
+        return { resync: true };
+      // Export the requested visible position without changing the autosave
+      // base, backup or revision. A queued save may have made this token stale.
+      const game =
+        "game" in request
+          ? request.game
+          : applySnapshotDelta(savedSnapshot!, request.delta);
+      const keys = Object.keys(game) as (keyof Game)[];
+      const baseKeys = savedSnapshot ? Object.keys(savedSnapshot) : [];
+      const unchanged =
+        !!savedSnapshot &&
+        keys.length === baseKeys.length &&
+        keys.every(
+          (key, i) =>
+            key === baseKeys[i] && Object.is(game[key], savedSnapshot![key]),
+        );
+      if (!unchanged) return exportArchive(game);
+      savedArchive ??= await exportArchive(game);
+      // The response transfers ownership of its buffer. Retain an independent
+      // copy for later exports, rather than detach our only cached archive.
+      return savedArchive.slice();
+    }
     case "save": {
       if (
         !("game" in request) &&
@@ -138,12 +175,14 @@ async function handle(request: SaveRequest) {
         if (error instanceof Error && error.message.startsWith("Another tab"))
           throw error;
         savedSnapshot = game;
+        savedArchive = small ? undefined : record.bytes;
         return { fallback: text, snapshotToken: ++snapshotToken };
       }
       initialBackup = undefined;
       revision = record.revision;
       preserveBackup = false;
       savedSnapshot = game;
+      savedArchive = small ? undefined : record.bytes;
       return {
         snapshotToken: ++snapshotToken,
         mirror: small && text.length <= 512_000 ? text : undefined,

@@ -11,6 +11,9 @@ export interface LoadedCampaign {
   recovered: boolean;
   error?: string;
   needsSave?: boolean;
+  // A clean primary can remain the worker's base for the first autosave/export
+  // after refresh. This token is internal and is never written into the game.
+  snapshotToken?: number;
 }
 type LoadTransfer = Omit<LoadedCampaign, "game"> &
   (

@@ -986,3 +986,33 @@ The separate 2,000-tile replay retained all 60 decisions and its complete final-
 All 1,630 unit tests passed. The independent planning audit retained all 13,206 proposals across 128 scenarios, and all 96 trade comparisons matched. Type checking, formatting, the production build and whitespace checks passed.
 
 All 213 staging browser scenarios passed across Chromium, Firefox and mobile. After local publication, all 12 production HTTP checks and 11 additional Chromium save, transport and worker scenarios passed. Previous hashed assets were retained for open sessions. Validation used exported copies and disposable profiles; the original exports and playing campaign were not modified. Troop enumeration, other planning work and crowded-map drawing remain measurable costs, so the broader performance goal stays active.
+
+## Retained save snapshots and immediate unchanged exports
+
+A clean autosave load now retains its fully validated snapshot in the save worker. The interface receives a matching token with the loaded campaign. The first subsequent autosave can send changed records instead of structured-cloning the entire army back to the worker. Recovered and legacy saves keep their normal durable rewrite. Missing or stale tokens still require a full snapshot, and another tab's newer revision still prevents an overwrite.
+
+Exports use the same exact snapshot protocol. An export of a different visible position does not replace the worker's autosave base or change either stored revision. The worker retains at most one compressed archive for its current snapshot. An unchanged export reuses that archive; a new save replaces it, and loading clears it because migrations may have changed the original file. Each response transfers a separate byte buffer, so repeated downloads cannot detach the cached archive. Small autosaves still export through the compact encoder.
+
+`scripts/save-transfer-performance.ts` measures the actual storage client and the corresponding built worker in disposable Chromium profiles. `SOURCE_ROOT` selects a reference client and `GAME_URL` selects its server. Each comparison uses three serial samples, checks complete loaded and exported JSON against the original, and verifies the first autosave after a small metadata edit. This isolates storage and transfer costs; it does not measure the engine or interface cost of recruiting a large army.
+
+| Workload | Previous build | Updated build |
+| --- | ---: | ---: |
+| Latest export: first autosave after refresh | 39.1 ms | 22.9 ms |
+| Latest export: first export after refresh | 60.2 ms | 26.7 ms |
+| 2,000-tile map: first autosave after refresh | 75.0 ms | 69.1 ms |
+| 2,000-tile map: first export after refresh | 101.5 ms | 62.7 ms |
+| 240,000-unit copy: first autosave after refresh | 386.9 ms | 131.4 ms |
+| 240,000-unit copy: first export after refresh | 389.3 ms | 126.4 ms |
+| 240,000-unit copy: export after the autosave | 394.9 ms | 0.2 ms |
+
+The stress copy's first save no longer blocks the interface for an 88.4 ms `postMessage` copy; the updated call measured below 0.1 ms. This is the transfer call alone, not the full command or save duration. Repeated unchanged exports took 0.1–0.3 ms across these fixtures. Measurements are local samples, not fixed timing guarantees.
+
+All complete state hashes matched. The archive format remains version 8, with no campaign data removed. The latest 2,739,686-byte JSON export compresses to 33,238 bytes, a 98.8% reduction. The 2,000-tile fixture is 67,978 bytes. The 240,000-unit storage stress copy is 36,144 bytes because it duplicates existing soldiers; this size is not representative of an equally large army with diverse orders and positions. The compact format remains independently loadable and compatible with original JSON and all previous compact formats.
+
+The new browser regressions cover the first autosave after a clean refresh, unchanged and changed exports, stale export tokens, repeated buffer transfers and retention of the exact autosave base after exporting another position. Existing coverage also checks quota failures, corrupt-primary recovery, atomic backups, competing tabs, coalesced writes, bulk recruitment and AI worker pause/resume.
+
+The loader also retains the ordered troop references collected during complete validation for its immediate coalition calculation. It avoids enumerating the army again, starts fresh indexes after town and route migrations, and discards the read scope before returning the mutable game. The new regression checks the checksum enumeration and full validation enumeration, with no third scan for coalition power; it also checks nested read-scope restoration and fresh reads after later edits.
+
+Warm refresh-to-menu medians were 91.7 ms before and 91.2 ms after for the latest export, and 343.1 ms before and 350.5 ms after for the 240,000-unit copy. These load times are broadly unchanged and exclude opening and painting the map. The demonstrated gains in this pass are first-action saving and exporting, without weakening validation or changing stored state.
+
+All 1,632 unit tests and 36 staging browser scenarios passed across Chromium, Firefox and mobile. The locally published build passed all 12 production HTTP checks and 12 further Chromium storage and worker scenarios. Type checking, formatting, the build and whitespace checks passed. Earlier hashed assets were retained for open sessions. Validation used disposable profiles and exported copies; the playing campaign and source exports were not modified. The broader performance goal remains active.

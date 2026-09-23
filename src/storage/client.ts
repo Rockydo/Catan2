@@ -2,7 +2,7 @@ import { BACKUP_KEY, SAVE_KEY, loadLocal, saveLocal } from "../game/save";
 import type { Game } from "../game/types";
 import { snapshotDelta } from "../game/snapshot-delta";
 import { exportArchive, importSave, type SaveInput } from "./codec";
-import type { SaveRequest, SaveResult } from "./save.worker";
+import type { SaveRequest, SaveResult, ExportResult } from "./save.worker";
 import { decodeLoadedCampaign, type LoadedCampaign } from "./load-transfer";
 
 export type { LoadedCampaign } from "./load-transfer";
@@ -66,8 +66,14 @@ export async function loadCampaign(): Promise<LoadedCampaign> {
     }
   });
   try {
-    return decodeLoadedCampaign(await call({ type: "load", legacy }));
+    const result = decodeLoadedCampaign(await call({ type: "load", legacy }));
+    savedBase =
+      result.game && result.snapshotToken !== undefined
+        ? { game: result.game, token: result.snapshotToken }
+        : undefined;
+    return result;
   } catch {
+    savedBase = undefined;
     return loadLocal();
   }
 }
@@ -166,8 +172,18 @@ async function drain() {
 export async function exportCampaign(
   game: Game,
 ): Promise<Uint8Array<ArrayBuffer>> {
-  return failed
-    ? exportArchive(game)
+  if (failed) return exportArchive(game);
+  const result = await call<ExportResult>(
+    savedBase && savedBase.game.seed === game.seed
+      ? {
+          type: "export",
+          base: savedBase.token,
+          delta: snapshotDelta(savedBase.game, game),
+        }
+      : { type: "export", game },
+  );
+  return result instanceof Uint8Array
+    ? result
     : call<Uint8Array<ArrayBuffer>>({ type: "export", game });
 }
 export async function importCampaign(text: SaveInput): Promise<Game> {
