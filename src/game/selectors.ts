@@ -61,6 +61,7 @@ interface PlanningIndex {
   units: readonly Piece[];
   towns: Map<number, Town[]>;
   vertices: Map<string, Town>;
+  vertexOrder: Map<string, number>;
   pieces: Map<number, Piece[]>;
   pieceOrder: Map<Piece, number>;
   tiles: Map<string, Piece[]>;
@@ -224,20 +225,24 @@ function combatTowerPower(s: Game, owner: number, tile: string) {
 }
 export function power(s: Game, units: Piece[], tile: string) {
   const family = terrainFamily(s.tiles[tile]);
-  return units.reduce(
-    (n, u) =>
-      n +
+  const owners = new Set<number>();
+  let strength = 0,
+    supported = false;
+  for (const u of units) {
+    const value = points(u);
+    supported ||= u.naval || value > 0;
+    owners.add(u.owner);
+    strength +=
       (u.naval && u.seasonStatus === "icebound"
-        ? Math.ceil(points(u) / 4)
-        : points(u)) *
-        (!u.naval && UNIT_INFO[u.kind as UnitClass].family === family ? 2 : 1),
-    units.some((u) => u.naval || points(u) > 0)
-      ? [...new Set(units.map((u) => u.owner))].reduce(
-          (n, owner) => n + combatTowerPower(s, owner, tile),
-          0,
-        )
-      : 0,
-  );
+        ? Math.ceil(value / 4)
+        : value) *
+      (!u.naval && UNIT_INFO[u.kind as UnitClass].family === family ? 2 : 1);
+  }
+  // All represented owners contribute their tower support when the formation
+  // contains a fighting unit or a ship, including zero-power ships as before.
+  if (supported)
+    for (const owner of owners) strength += combatTowerPower(s, owner, tile);
+  return strength;
 }
 /** Land escorts on sea ice defend a stranded fleet against bombardment too. */
 export function fleetDefenders(
@@ -448,15 +453,25 @@ export function colonizationSites(s: Game, unit: Piece | undefined): string[] {
     !canOccupy(s.tiles[unit.tile], unit.naval)
   )
     return [];
-  const corners = new Set(s.tiles[unit.tile].vertices);
-  // Keep map order for callers that choose the first site, but inspect only
-  // this tile's six corners. A spent settler can still found a town here.
-  return Object.keys(s.vertices).filter(
-    (v) =>
-      corners.has(v) &&
-      settlementSite(s, v, unit.owner, true) &&
-      !s.vertices[v].tiles.some((tile) => hostileAt(s, tile, unit.owner)),
-  );
+  return planningValue(s, `colonization/${unit.owner}/${unit.tile}`, () => {
+    const corners = new Set(s.tiles[unit.tile].vertices);
+    const index = readIndex(s);
+    // Preserve map insertion order, including expedition seams. Immutable
+    // decisions share its ordering index instead of enumerating the entire
+    // growing world for every settler on the same six corners.
+    const order =
+      index?.source.vertices === s.vertices ? index.vertexOrder : undefined;
+    const vertices = order
+      ? [...corners]
+          .filter((v) => order.has(v))
+          .sort((a, b) => order.get(a)! - order.get(b)!)
+      : Object.keys(s.vertices).filter((v) => corners.has(v));
+    return vertices.filter(
+      (v) =>
+        settlementSite(s, v, unit.owner, true) &&
+        !s.vertices[v].tiles.some((tile) => hostileAt(s, tile, unit.owner)),
+    );
+  }).slice();
 }
 export function canCompleteSetup(s: Game, remaining: number): boolean {
   if (remaining <= 0) return true;
@@ -843,6 +858,7 @@ function createPlanningIndex(
     (units ??= shared?.units ?? pieceValues(source.pieces));
   let towns: PlanningIndex["towns"] | undefined;
   let vertices: PlanningIndex["vertices"] | undefined;
+  let vertexOrder: PlanningIndex["vertexOrder"] | undefined;
   let pieces: PlanningIndex["pieces"] | undefined;
   let pieceOrder: PlanningIndex["pieceOrder"] | undefined;
   let tiles: PlanningIndex["tiles"] | undefined;
@@ -867,6 +883,11 @@ function createPlanningIndex(
     get vertices() {
       return (vertices ??= new Map(
         Object.values(source.towns).map((t) => [t.vertex, t]),
+      ));
+    },
+    get vertexOrder() {
+      return (vertexOrder ??= new Map(
+        Object.keys(source.vertices).map((v, i) => [v, i]),
       ));
     },
     get pieces() {

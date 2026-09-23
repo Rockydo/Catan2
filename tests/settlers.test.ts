@@ -12,6 +12,8 @@ import {
   protects,
   income,
   navalBlockAt,
+  withPlanningFrame,
+  prepareGameView,
 } from "../src/game/selectors";
 import { deserialize, serialize } from "../src/game/save";
 import { colonistAction, colonistProjects } from "../src/game/ai-colonization";
@@ -26,6 +28,46 @@ function frontier(naval = false) {
   expect(vertex).toBeTruthy();
   return { ...f, u, vertex };
 }
+
+it.each([false, true])(
+  "indexed colony queries retain map order and readiness, naval=%s",
+  (naval) => {
+    const { s, u, home } = frontier(naval);
+    s.vertices = Object.fromEntries(Object.entries(s.vertices).reverse());
+    const expected = colonizationSites(s, u);
+    expect(expected.length).toBeGreaterThan(0);
+    withPlanningFrame(s, () => {
+      expect(colonizationSites(s, u)).toEqual(expected);
+      colonizationSites(s, u).reverse().pop();
+      expect(colonizationSites(s, u)).toEqual(expected);
+      expect(colonizationSites(s, { ...u, acted: true })).toEqual([]);
+      expect(colonizationSites(s, { ...u, carrier: "ship" })).toEqual([]);
+      expect(colonizationSites(s, { ...u, owner: 1 })).toEqual([]);
+      expect(colonizationSites(s, { ...u, moved: 100 })).toEqual(expected);
+      const draft = {
+        ...s,
+        towns: { ...s.towns, [home.id]: { ...home, vertex: expected[0] } },
+      };
+      expect(colonizationSites(draft, u)).not.toContain(expected[0]);
+      expect(colonizationSites(s, u)).toEqual(expected);
+    });
+    prepareGameView(s);
+    expect(colonizationSites(s, u)).toEqual(expected);
+    const next = structuredClone(s);
+    next.towers[expected[0]] = {
+      id: "foe",
+      owner: 1,
+      tier: 1,
+      vertex: expected[0],
+    };
+    withPlanningFrame(next, () =>
+      expect(colonizationSites(next, next.pieces[u.id])).not.toContain(
+        expected[0],
+      ),
+    );
+    expect(colonizationSites(s, u)).toEqual(expected);
+  },
+);
 
 describe("settlers", () => {
   it.each([false, true])(

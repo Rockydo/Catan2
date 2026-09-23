@@ -406,3 +406,21 @@ Validation passed all 1,430 unit tests and 87 browser scenarios across Firefox, 
 ## Camera diagnostic graphics mode
 
 Camera reports now record the browser's actual renderer and acceleration status. The default automated Chromium launch on this machine uses SwiftShader software rendering. `GRAPHICS=hardware` requests acceleration and rejects a silent fallback when hardware compositing is unavailable. Hardware and software reports must not be mixed in before/after comparisons. This diagnostic change does not alter game rendering.
+
+## Repeated army and colony checks
+
+Local objective searches now remember the answer for each origin before looking up its larger movement component. Shipbuilding still evaluates the full regional force, but soldiers sharing an origin no longer repeat geographic and connectivity lookups. Recruitment danger checks group identical threats while retaining their original conservative distance rule. Moving collectors still use route-aware checks; recruitment has not been changed to use those routes.
+
+Colony queries reuse map-order indexes and inspect the settler's six corners. Readiness is checked on every query, returned arrays remain independent, and execution drafts read their current towns, towers and occupation. Expedition insertion order and settlement tie breaks are preserved. Combat strength now computes troop contributions and participating owners in one pass, retaining terrain multipliers, quarter-strength icebound ships and the existing watchtower support rules.
+
+| Measurement | Previous build | This pass |
+| --- | ---: | ---: |
+| 2,000 tiles and 1,000 towns: same 60 decisions | 18.13 s | 16.98 s |
+| Round 31: complete 144-order browser turn | 15.96 s | 14.23 s |
+| Round 32: 485 orders to the same human decision | 22.15 s | 21.77 s |
+
+The large-map sample improved by about 6%; the complete Round 31 replay improved by about 11%. Round 32 was effectively unchanged. All command sequences and full final-state hashes matched. Both browser replays retained roughly 16.8 ms frame p95 with no errors or long main-thread tasks. These are local comparisons, not a fixed speedup for every position.
+
+The planning audit retained all 2,924 projects, their scores and their order across 48 scenarios. Regression coverage compares combat results across every unit class and tier, mixed owners, civilians, tower support and seasonal surfaces. Colony coverage includes reordered maps, ships, spent movement, passengers, changed towns and towers, isolated execution drafts and immutable UI views. Recruitment checks retain the same danger result for every tile in mixed-force scenarios.
+
+Validation passed all 1,434 unit tests and 96 browser scenarios across Firefox, Chromium and mobile. The deployed build passed 12 production HTTP checks and 17 additional Chromium scenarios covering AI continuation, colonies, naval sieges and large-save recovery. All replays and browser checks used disposable copies. The live campaign was not opened or modified, and the broader performance goal remains active.

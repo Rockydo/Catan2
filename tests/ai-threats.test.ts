@@ -12,6 +12,7 @@ function check(s: Game) {
   withPlanningFrame(s, () => {
     const danger = colonistDanger(s),
       threatened = collectorThreats(s),
+      recruiting = collectorThreats(s, s.active, false),
       units = Object.values(s.pieces);
     for (const naval of [false, true]) {
       const expected = new Set(
@@ -27,7 +28,16 @@ function check(s: Game) {
           ),
       );
       expect([...danger[Number(naval)]]).toEqual([...expected]);
-      for (const tile of [...Object.keys(s.tiles), "9999,9999"])
+      for (const tile of [...Object.keys(s.tiles), "9999,9999"]) {
+        expect(recruiting(tile, naval), `recruit ${tile}/${naval}`).toBe(
+          units.some(
+            (u) =>
+              !friendly(s, u.owner, s.active) &&
+              points(u) > 0 &&
+              u.naval === naval &&
+              distance(u.tile, tile) <= speed(u),
+          ),
+        );
         expect(threatened(tile, naval), `${tile}/${naval}`).toBe(
           units.some(
             (u) =>
@@ -45,6 +55,7 @@ function check(s: Game) {
               ),
           ),
         );
+      }
     }
   });
 }

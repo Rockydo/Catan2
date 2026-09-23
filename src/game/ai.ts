@@ -679,23 +679,10 @@ export function economyProjects(s: Game): Project[] {
     (u) => u.naval && !friendly(s, u.owner, s.active),
   );
   // All tiers/towns inspect the same deployment threats during this decision.
-  const collectionDanger = new Map<string, boolean>();
+  // Recruitment keeps its conservative distance-only danger rule. Group
+  // repeated soldiers without introducing the path check used by moving units.
+  const collectionAtRisk = collectorThreats(s, s.active, false);
   const collectionOutput = new Map<string, number>();
-  const armedEnemies = allPieces(s)
-    .filter((u) => !friendly(s, u.owner, s.active) && points(u) > 0)
-    .map((u) => ({ unit: u, movement: speed(u) }));
-  function collectionAtRisk(tile: string, naval: boolean) {
-    const key = `${tile}/${naval}`;
-    if (!collectionDanger.has(key))
-      collectionDanger.set(
-        key,
-        armedEnemies.some(
-          ({ unit, movement }) =>
-            unit.naval === naval && distance(unit.tile, tile) <= movement,
-        ),
-      );
-    return collectionDanger.get(key)!;
-  }
   function add(
     action: Command,
     cost: Stock,
@@ -2271,6 +2258,10 @@ function hasLandObjective(
     cache = new Map();
     objectiveCache.set(s, cache);
   }
+  // Shipbuilding evaluates every soldier in a regional force. Once an origin
+  // is known, do not resolve its geographic/transit component for each soldier.
+  const originKey = `origin:${s.active}/${origin}`;
+  if (cache.has(originKey)) return cache.get(originKey)!;
   const regions = landRegions(s),
     region = regions.get(origin),
     transit = planningTransitRegion(s, origin, false, s.active);
@@ -2278,7 +2269,11 @@ function hasLandObjective(
   // reach the same targets. Geographic regions also constrain embarked troops.
   // Never merge blocked origins, which can attack either side of a blockade.
   const key = `${s.active}/${region}/${transit === undefined ? `tile:${origin}` : `region:${transit}`}/local`;
-  if (cache.has(key)) return cache.get(key)!;
+  if (cache.has(key)) {
+    const result = cache.get(key)!;
+    cache.set(originKey, result);
+    return result;
+  }
   const reaches = planningReachableFrom(s, origin, false, s.active);
   const eligibility = new Map<string, boolean>();
   const available = ownPieces(s).filter((u) => {
@@ -2300,6 +2295,7 @@ function hasLandObjective(
       objectiveBeatable(s, objective, fieldGroups),
   );
   cache.set(key, result);
+  cache.set(originKey, result);
   return result;
 }
 function townOperation(s: Game): Command | null {

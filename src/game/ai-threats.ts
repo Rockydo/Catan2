@@ -6,8 +6,13 @@ import { planningReachable } from "./ai-paths";
 
 /** Existence-only danger checks for collectors. Soldiers with the same owner,
  * origin, domain and speed have identical reach. Keep the first occurrence of
- * each, without combining the strength or movement of different formations. */
-export function collectorThreats(s: Game, owner = s.active) {
+ * each, without combining the strength or movement of different formations.
+ * Recruitment uses its existing conservative radius rule without route checks. */
+export function collectorThreats(
+  s: Game,
+  owner = s.active,
+  checkRoutes = true,
+) {
   type Threat = { tile: string; owner: number; movement: number };
   const threats: Threat[][] = [[], []],
     seen = [new Set<string>(), new Set<string>()],
@@ -28,14 +33,15 @@ export function collectorThreats(s: Game, owner = s.active) {
     const result = threats[domain].some(
       (threat) =>
         distance(threat.tile, tile) <= threat.movement &&
-        planningReachable(
-          s,
-          threat.tile,
-          tile,
-          naval,
-          threat.owner,
-          threat.movement,
-        ),
+        (!checkRoutes ||
+          planningReachable(
+            s,
+            threat.tile,
+            tile,
+            naval,
+            threat.owner,
+            threat.movement,
+          )),
     );
     danger[domain].set(tile, result);
     return result;
