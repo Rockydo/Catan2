@@ -1092,3 +1092,35 @@ Additional nested-column and dictionary compression experiments did not show eno
 Eighteen new regression cases verify repeated-template work counts, exact unit ordering, independent nested orders, later mutable edits, historical and literal-ID fallbacks, single damaged templates with valid checksums, occupied carriers, overloaded ships and opposing formations. All 1,657 unit tests passed.
 
 All 36 storage and worker browser scenarios passed across Firefox, Chromium and mobile. The original JSON format and all eight compact formats each passed three refreshes, with exact state on all 27 loads. After local publication, 12 production HTTP checks and 13 additional Chromium save and worker scenarios passed. Type checking, formatting, the build and whitespace checks passed. Existing hashed assets remain available to open sessions. All measurements and checks used disposable profiles and exported copies, leaving the source exports and playing campaign unchanged. The broader performance goal remains active.
+
+## Troop-only strength and civilian threat summaries
+
+Power calculations now accumulate each faction's force contribution in one ordered troop pass. The result can follow an unchanged troop index from cleanup into the next read-only decision. Town strength, production, faction survival and diplomacy still use the current view. The original per-faction addition order and all strength weights are unchanged; passengers, stranded forces and civilian production units keep their existing contributions.
+
+Merchant and settler danger checks retain the first troop of each distinct owner, origin, class, domain, tier and passenger status. Additional soldiers with that same profile cannot change these existence-only predicates. The planners still evaluate current alliances and terrain and use their original route checks. In particular, colonists still ignore passengers while the collector's conservative danger rule still includes them. Remaining movement, orders and stack size were already excluded from these predicates; combat power and battle formations are not grouped by this change.
+
+Both summaries are lazy and belong to the existing immutable troop-read scope. Related views share them only while their troop dictionary and records remain unchanged. Replacement dictionaries, recruitment, casualties and new frames rebuild them. A retained record list after an in-place movement does not retain prior summary results. Mutable, unregistered games compute fresh values. Published snapshots use weakly keyed indexes, and temporary scopes release their references after the synchronous operation, including exceptions. No campaign history or growing list of old summaries is retained.
+
+The new `scripts/troop-read-performance.ts` diagnostic compares strength and civilian-danger reads through 20 related immutable views. Its fixtures contain repeated and interleaved formations, collectors, passengers and stranded troops. These are troop-query fixtures, not playable campaigns or whole AI turns. Medians of three samples:
+
+| Troops | Previous build | Updated build |
+| --- | ---: | ---: |
+| 15,000 | 27.50 ms | 5.12 ms |
+| 60,000 | 78.30 ms | 11.99 ms |
+| 240,000 | 339.60 ms | 44.91 ms |
+
+Every ordered result matched the reference hash, and the inputs remained unchanged. The isolated query gains are larger than the complete replay gains below because other planning and engine costs remain.
+
+| AI workload | Previous build | Updated build | Exact comparison |
+| --- | ---: | ---: | --- |
+| Round 32 browser replay, through human casualty prompt | 11.29 s | 11.02 s | 485 orders and complete final state |
+| Round 31 browser replay, through human casualty prompt | 5.78 s | 5.71 s | 153 orders and complete final state |
+| 2,000-tile, 1,000-town map, first 60 decisions | 10.36 s | 10.38 s | 60 orders and complete final state |
+
+The latest browser sample improved by about 2%; the older replay changed little and the larger map sample was effectively unchanged. Both browser replays used AI seat 2 and stopped for human input. Frame p95 stayed near 16.8 ms, with no long main-thread tasks or browser/worker errors. An independent Node profile retained the same 485 orders and full state, taking 8.51 seconds before and 8.17 seconds after. These are local measurements, not fixed speed guarantees or complete-turn timings.
+
+New regressions check every troop class and tier, passengers and stranding, independent returned sets, changed diplomacy and town levels, faction elimination, record replacement, recruitment and deletion, in-place edits outside a scope, retained lists, published views, and scope restoration after an error. Work-count checks require shared views to score a 2,000-unit army only once and both civilian planners to examine representative profiles rather than all 2,000 identical troops.
+
+All 1,663 unit tests passed. Independent reference comparisons retained all 13,206 planning proposals across 128 scenarios and all 96 trade comparisons, including offers, aid and acceptance decisions. All 168 targeted staging browser scenarios passed across Firefox, Chromium and mobile, covering power displays, alliances, support gold, bulk orders, transport, settlers, naval sieges, recruitment controls and save reloads.
+
+The locally published build passed all 12 production HTTP checks and 16 additional Chromium power, save and worker scenarios. Type checking, formatting, the build and whitespace checks passed. Prior hashed assets remain available to open sessions. Validation used disposable profiles and exported copies; the source exports and playing campaign were not modified. Full troop scans, production coverage and transaction copies remain measurable planning costs, so the broader performance goal stays active.

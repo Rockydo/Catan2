@@ -76,6 +76,7 @@ interface PlanningIndex {
   towerSupport: Map<string, number>;
   towerDefenses: Map<string, number>;
   memo: Map<string, unknown>;
+  pieceMemo: Map<string, unknown>;
 }
 let planningIndex: PlanningIndex | undefined;
 const viewIndexes = new WeakMap<Game, PlanningIndex>();
@@ -112,6 +113,22 @@ export function planningValue<T>(s: Game, key: string, calculate: () => T): T {
   if (index?.source !== s) return calculate();
   const cache = index.memo;
   if (!cache.has(key)) cache.set(key, calculate());
+  return cache.get(key) as T;
+}
+/** Pure troop-only results may follow shared immutable troop indexes into a
+ * related view. The callback must depend only on the ordered supplied units,
+ * never towns, terrain, diplomacy, turn state or other mutable game data.
+ * Unregistered mutable games compute fresh. Published immutable views retain
+ * only their own weakly keyed cache; temporary scopes release it on exit. */
+export function piecePlanningValue<T>(
+  s: Game,
+  key: string,
+  calculate: (units: readonly Piece[]) => T,
+): T {
+  const index = readIndex(s);
+  if (index?.source.pieces !== s.pieces) return calculate(allPieces(s));
+  const cache = index.pieceMemo;
+  if (!cache.has(key)) cache.set(key, calculate(index.units));
   return cache.get(key) as T;
 }
 export const ownTowns = (s: Game, p = s.active) => {
@@ -1234,6 +1251,7 @@ function createPlanningIndex(
   let movement: MovementOccupation | undefined;
   let tiles: PlanningIndex["tiles"] | undefined;
   let towerSupport: PlanningIndex["towerSupport"] | undefined;
+  let pieceMemo: PlanningIndex["pieceMemo"] | undefined;
   return {
     source,
     get units() {
@@ -1325,6 +1343,9 @@ function createPlanningIndex(
       return towerSupport;
     },
     memo: new Map(),
+    get pieceMemo() {
+      return shared?.pieceMemo ?? (pieceMemo ??= new Map());
+    },
   };
 }
 /** Join an existing read-only decision for this exact view. Mutating callers

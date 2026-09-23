@@ -11,6 +11,7 @@ import {
   income,
   power,
   planningValue,
+  piecePlanningValue,
   speed,
 } from "./selectors";
 import { walkableAtVertex as landAtVertex, distance } from "./world";
@@ -24,10 +25,26 @@ export interface FactionStrength {
 }
 const strengthDetailsCache = new WeakMap<Game, FactionStrength[]>();
 const strengthsCache = new WeakMap<Game, number[]>();
+function troopStrengths(s: Game): readonly number[] {
+  return piecePlanningValue(s, "faction-force-strength", (units) => {
+    const forces: number[] = [];
+    for (const u of units)
+      forces[u.owner] =
+        (forces[u.owner] ?? 0) +
+        (points(u) * 2 +
+          (u.kind === "merchant" ||
+          u.kind === "merchantship" ||
+          u.kind === "fishing"
+            ? u.tier * 3
+            : 0));
+    return forces;
+  });
+}
 /** Public board only: no rival stockpiles, research faces, decks, RNG or unexplored tiles. */
 export function factionStrengthDetails(s: Game): FactionStrength[] {
   const cached = strengthDetailsCache.get(s);
   if (cached) return cached;
+  const troopScores = troopStrengths(s);
   const details = s.players.map((p) => {
     if (!p.alive) return { towns: 0, forces: 0, production: 0, total: 0 };
     const towns = ownTowns(s, p.id).reduce(
@@ -40,17 +57,7 @@ export function factionStrengthDetails(s: Game): FactionStrength[] {
         Object.values(t.extensions).reduce((a, b) => a + b * 2, 0),
       0,
     );
-    const forces = ownPieces(s, p.id).reduce(
-      (n, u) =>
-        n +
-        (points(u) * 2 +
-          (u.kind === "merchant" ||
-          u.kind === "merchantship" ||
-          u.kind === "fishing"
-            ? u.tier * 3
-            : 0)),
-      0,
-    );
+    const forces = troopScores[p.id] ?? 0;
     const production = Object.values(income(s, p.id)).reduce(
       (n, v) => n + (v ?? 0) * 5,
       0,
