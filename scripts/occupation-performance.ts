@@ -10,7 +10,7 @@ import { piece } from "../tests/helpers";
 // These movement-only fixtures are not playable campaigns, complete AI turns
 // or estimates of total campaign memory.
 const root = resolve(process.env.SOURCE_ROOT ?? ".");
-const { withPlanningFrame, hostileAt } = await import(
+const { withPlanningFrame, hostileAt, blockAt, navalBlockAt } = await import(
   pathToFileURL(resolve(root, "src/game/selectors.ts")).href
 );
 const { planningDistance } = await import(
@@ -63,6 +63,8 @@ for (const count of sizes) {
           out.push(
             hostileAt(view, tile, owner, false),
             hostileAt(view, tile, owner, true),
+            blockAt(view, tile, owner),
+            navalBlockAt(view, tile, owner),
           );
       }
       return out;

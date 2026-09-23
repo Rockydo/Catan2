@@ -580,41 +580,43 @@ export const SHIP_NAMES: Record<ShipClass, string[]> = {
     "Treasure Galleon",
   ],
 };
+// Shared numeric tables; each public shipStats result remains independent.
+const SHIP_STATS = {
+  settlership: { power: [0], speed: [2], capacity: [0] },
+  transport: {
+    power: [1, 2, 3, 4],
+    speed: [3, 3, 4, 4],
+    capacity: [1, 2, 3, 4],
+  },
+  convoy: {
+    power: [1, 2, 3, 4],
+    speed: [2, 2, 2, 3],
+    capacity: [2, 4, 6, 8],
+  },
+  galley: {
+    power: [2, 3, 5, 7],
+    speed: [3, 4, 4, 5],
+    capacity: [0, 0, 0, 0],
+  },
+  carrack: {
+    power: [3, 5, 7, 10],
+    speed: [1, 2, 2, 2],
+    capacity: [0, 0, 0, 0],
+  },
+  fishing: {
+    power: [0, 1, 2, 3],
+    speed: [2, 2, 3, 3],
+    capacity: [0, 0, 0, 0],
+  },
+  merchantship: {
+    power: [0, 1, 2, 3],
+    speed: [2, 2, 3, 3],
+    capacity: [0, 0, 0, 0],
+  },
+};
 export function shipStats(kind: ShipClass, tier = 1) {
   const i = Math.max(0, Math.min(3, tier - 1));
-  const stats = {
-    settlership: { power: [0], speed: [2], capacity: [0] },
-    transport: {
-      power: [1, 2, 3, 4],
-      speed: [3, 3, 4, 4],
-      capacity: [1, 2, 3, 4],
-    },
-    convoy: {
-      power: [1, 2, 3, 4],
-      speed: [2, 2, 2, 3],
-      capacity: [2, 4, 6, 8],
-    },
-    galley: {
-      power: [2, 3, 5, 7],
-      speed: [3, 4, 4, 5],
-      capacity: [0, 0, 0, 0],
-    },
-    carrack: {
-      power: [3, 5, 7, 10],
-      speed: [1, 2, 2, 2],
-      capacity: [0, 0, 0, 0],
-    },
-    fishing: {
-      power: [0, 1, 2, 3],
-      speed: [2, 2, 3, 3],
-      capacity: [0, 0, 0, 0],
-    },
-    merchantship: {
-      power: [0, 1, 2, 3],
-      speed: [2, 2, 3, 3],
-      capacity: [0, 0, 0, 0],
-    },
-  }[kind];
+  const stats = SHIP_STATS[kind];
   return {
     name: SHIP_NAMES[kind][i],
     level: i + 1,

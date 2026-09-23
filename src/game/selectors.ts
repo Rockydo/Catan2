@@ -290,14 +290,28 @@ export const combatantsAt = (s: Game, tile: string, naval?: boolean) =>
   piecesAt(s, tile).filter(
     (u) => naval === undefined || u.naval === naval || !!u.seasonStatus,
   );
+function blockadingAt(s: Game, tile: string, owner: number, naval: boolean) {
+  const index = readIndex(s);
+  if (index?.source.pieces === s.pieces) {
+    // The production index already records these exact blockade rules. Check
+    // one entry per faction instead of filtering every soldier on a crowded
+    // tile for each adjoining settlement, road and colony candidate.
+    const factions = index.producers.blockades[naval ? 1 : 0].get(tile);
+    if (factions)
+      for (const faction of factions)
+        if (!friendly(s, faction, owner)) return true;
+    return false;
+  }
+  return piecesAt(s, tile, naval).some(
+    (u) =>
+      !friendly(s, u.owner, owner) &&
+      (naval ? !isSettler(u.kind) : points(u) > 0),
+  );
+}
 export const navalBlockAt = (s: Game, tile: string, p = s.active) =>
-  piecesAt(s, tile, true).some(
-    (u) => !friendly(s, u.owner, p) && !isSettler(u.kind),
-  );
+  blockadingAt(s, tile, p, true);
 export const blockAt = (s: Game, tile: string, p = s.active) =>
-  piecesAt(s, tile, false).some(
-    (u) => !friendly(s, u.owner, p) && points(u) > 0,
-  );
+  blockadingAt(s, tile, p, false);
 export const besieged = (s: Game, town: string) =>
   Object.values(s.sieges).some((x) => x.town === town);
 export const protects = (s: Game, t: Town, naval = false) =>
@@ -585,7 +599,22 @@ export function settlementSites(
   p = s.active,
   setup = false,
 ): string[] {
-  return Object.keys(s.vertices).filter((v) => settlementSite(s, v, p, setup));
+  if (readIndex(s)?.source !== s)
+    return Object.keys(s.vertices).filter((v) =>
+      settlementSite(s, v, p, setup),
+    );
+  // Construction and colonization share all checks except road access. Their
+  // queries within one immutable decision can share the expensive map scan.
+  const candidates = planningValue(s, `settlement-sites/${p}`, () =>
+    Object.keys(s.vertices).filter((v) => settlementSite(s, v, p, true)),
+  );
+  return setup
+    ? candidates.slice()
+    : planningValue(s, `connected-settlement-sites/${p}`, () =>
+        candidates.filter((v) =>
+          s.vertices[v].edges.some((e) => s.routes[e]?.owner === p),
+        ),
+      ).slice();
 }
 /** A settler carries the settlement cost; only the road requirement is waived. */
 export function colonizationSites(s: Game, unit: Piece | undefined): string[] {

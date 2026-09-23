@@ -2,6 +2,7 @@ import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { fishingFixture } from "../tests/maritime-fixture";
 import { SAVE_KEY, serialize } from "../src/game/save";
+import { BIOMES, BIOME_INFO } from "../src/game/climate-content";
 
 test("French game uses the same save and can switch languages without a reload", async ({
   page,
@@ -219,7 +220,14 @@ test("illustrated terrain reference pairs artwork with raw and workshop outputs"
 }) => {
   for (const locale of ["en", "fr"]) {
     await page.goto(`/rules${locale === "fr" ? "-fr" : ""}.html#economy`);
-    await expect(page.locator(".terrain-row")).toHaveCount(48);
+    await expect(page.locator(".terrain-row")).toHaveCount(BIOMES.length);
+    expect(
+      await page
+        .locator(".terrain-row")
+        .evaluateAll((rows) =>
+          rows.map((row) => row.getAttribute("data-terrain")),
+        ),
+    ).toEqual(BIOMES);
     const whale = page.locator('[data-terrain="whale"]');
     for (const name of locale === "fr"
       ? ["Peaux", "Huile", "Cuir"]
@@ -232,34 +240,36 @@ test("illustrated terrain reference pairs artwork with raw and workshop outputs"
       locale === "fr" ? "Aucune" : "No production",
     );
     // Load the exact files used by CSS, not just placeholder elements.
-    const art = await page
-      .locator(".terrain-picture")
-      .evaluateAll(async (nodes) => {
-        const urls = [
-          ...new Set(
-            nodes
-              .map(
-                (n) =>
-                  getComputedStyle(n).backgroundImage.match(
-                    /url\(["']?(.*?)["']?\)/,
-                  )?.[1],
-              )
-              .filter(Boolean),
-          ),
-        ];
-        return await Promise.all(
-          urls.map(
-            (url) =>
-              new Promise<boolean>((resolve) => {
-                const image = new Image();
-                image.onload = () => resolve(image.naturalWidth > 0);
-                image.onerror = () => resolve(false);
-                image.src = url!;
-              }),
-          ),
-        );
-      });
-    expect(art).toHaveLength(41);
+    const pictures = page.locator(
+      '.terrain-row:not([data-terrain="water"]) .terrain-picture',
+    );
+    await expect(pictures).toHaveCount(BIOMES.length - 1);
+    const art = await pictures.evaluateAll(async (nodes) => {
+      const urls = [
+        ...new Set(
+          nodes.map((n) => {
+            const url = getComputedStyle(n).backgroundImage.match(
+              /url\(["']?(.*?)["']?\)/,
+            )?.[1];
+            if (!url)
+              throw new Error("A terrain reference is missing artwork.");
+            return url;
+          }),
+        ),
+      ];
+      return await Promise.all(
+        urls.map(
+          (url) =>
+            new Promise<boolean>((resolve) => {
+              const image = new Image();
+              image.onload = () => resolve(image.naturalWidth > 0);
+              image.onerror = () => resolve(false);
+              image.src = url!;
+            }),
+        ),
+      );
+    });
+    expect(art.length).toBeGreaterThan(0);
     expect(art.every(Boolean)).toBe(true);
     expect(
       await page.evaluate(
@@ -288,5 +298,5 @@ test("illustrated terrain reference pairs artwork with raw and workshop outputs"
         has: page.getByRole("heading", { name: "Huile", exact: true }),
       })
       .locator(".terrain-picture"),
-  ).toHaveCount(2);
+  ).toHaveCount(BIOMES.filter((biome) => BIOME_INFO[biome].yield.oil).length);
 });

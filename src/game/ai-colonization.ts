@@ -29,10 +29,8 @@ function createPlanner(s: Game) {
   let values: ReturnType<typeof marketValues> | undefined;
   let inc: Stock | undefined;
   const danger = colonistDanger(s);
-  const connected = new Set(settlementSites(s));
-  const sites = settlementSites(s, s.active, true).filter(
-    (v) => !s.vertices[v].tiles.some((t) => hostileAt(s, t)),
-  );
+  let connected: Set<string> | undefined;
+  let sites: string[] | undefined;
   const siteValues = new Map<string, number>();
   const siteValue = (vertex: string) => {
     if (!siteValues.has(vertex)) {
@@ -67,6 +65,12 @@ function createPlanner(s: Game) {
   ): Target => {
     const blocked = danger[naval ? 1 : 0];
     if (blocked.has(origin)) return undefined;
+    // Blocked parties cannot choose a site. Travelling parties do not need to
+    // inspect road access, which only filters prospective recruitment sites.
+    sites ??= settlementSites(s, s.active, true).filter(
+      (v) => !s.vertices[v].tiles.some((t) => hostileAt(s, t)),
+    );
+    if (recruiting) connected ??= new Set(settlementSites(s));
     const paths = new Map<string, string[]>([[origin, []]]),
       queue = [origin];
     const range = naval ? 14 : 10;
@@ -86,7 +90,7 @@ function createPlanner(s: Game) {
     }
     let best: { vertex: string; path: string[]; score: number } | undefined;
     for (const vertex of sites) {
-      if (recruiting && connected.has(vertex)) continue;
+      if (recruiting && connected!.has(vertex)) continue;
       for (const tile of s.vertices[vertex].tiles) {
         const path = paths.get(tile);
         if (!path || blocked.has(tile)) continue;

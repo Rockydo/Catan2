@@ -1038,3 +1038,35 @@ Packing remains version 8: the latest 2,739,686-byte JSON export still produces 
 New regressions check that compact loading reads every troop without another dictionary enumeration, rejects invalid unit rules despite a valid checksum, and retains the historical migration path. They also cover reordered unit IDs, integer-named literal IDs, optional guild effects, orders, nested future fields, prototype-named data, independent mutable units and fresh reads after a loaded game is edited. All 1,635 unit tests and 36 staging browser scenarios passed across Chromium, Firefox and mobile.
 
 The verified build was published locally with earlier hashed assets retained for open sessions. All 12 production HTTP checks and 12 Chromium storage and worker scenarios passed after publication. Type checking, formatting, the build and whitespace checks passed. Source exports and the playing campaign were not modified. The wider performance goal remains active.
+
+## Shared blockade and settlement checks during AI planning
+
+Read-only blockade checks now reuse the production index's exact per-faction occupation records. A query examines each occupying faction once instead of filtering every soldier on a crowded tile. Land checks still require positive power; naval checks still exclude settler ships but include zero-power fishing and merchant vessels. Passengers remain excluded. Friendship is evaluated against the current view, including related views with different alliances. Unregistered mutable drafts retain direct reads.
+
+Settlement construction and colonization share one map scan per faction within an immutable decision. Road-connected candidates are filtered from the same ordered list. Returned arrays remain independent, and later decisions or edited drafts perform fresh checks. The colonist planner also avoids scanning sites for parties whose origin is already unsafe, and checks road access only when evaluating recruitment. It retains all reachable sites, scores, route limits and tie ordering.
+
+Ship statistics previously constructed every class's numeric tables on each lookup. Those tables are now private module constants. Each public result is still a fresh object with the same values. No unit rules, strength weights, AI budgets or decision limits changed.
+
+The occupation diagnostic now includes both land and naval blockades alongside passage and route-cache queries. The fixtures contain grouped and interleaved troops, passengers and stranded units. Results below are medians of three samples, each reading 20 fresh immutable views. These are query workloads, not whole AI turns.
+
+| Units in the query fixture | Previous build | Updated build |
+| --- | ---: | ---: |
+| 15,000 | 52.67 ms | 33.25 ms |
+| 60,000 | 203.45 ms | 128.72 ms |
+| 240,000 | 909.04 ms | 598.30 ms |
+
+Every result hash matched the reference checkout and inputs remained unchanged. Regressions require repeated blockade queries to avoid rereading a 2,000-unit stack and repeated site queries to perform only one world scan per faction. Other cases compare complete ordered site lists and blockade answers across factions, alliances, passengers, civilians, stranded units, changed drafts and later edits.
+
+| AI workload | Previous build | Updated build | Exact comparison |
+| --- | ---: | ---: | --- |
+| Round 32 browser replay, through human casualty prompt | 12.67 s | 11.92 s | 485 orders and complete final state |
+| Round 31 browser replay, through human casualty prompt | 6.45 s | 6.20 s | 153 orders and complete final state |
+| Growth map, 2,000 tiles and 1,000 towns, first 60 decisions | 11.48 s | 11.27 s | 60 orders and complete final state |
+
+The latest browser replay improved by about 6%; the older replay improved by about 4%. These local samples do not establish a fixed speedup for every campaign. Both browser replays used AI seat 2 and stopped for human input. Frame p95 remained about 16.8 ms. The updated Round 32 sample recorded one 52 ms main-thread task; the other browser samples recorded none. All reported no browser or worker errors. A separate Node profile retained the same 485 orders and complete state, taking 10.10 seconds before and 9.32 seconds after.
+
+All 1,639 unit tests passed. The independent planning audit matched all 13,206 proposals across 128 scenarios, and all 96 trade comparisons matched, including offers, aid and acceptance decisions.
+
+All 615 staging browser scenarios were verified across Firefox, Chromium and mobile. The initial sweep exposed two obsolete test assumptions: large autosaves now live in IndexedDB, and the rulebook has 58 terrains and three Oil sources. The corrected tests verify durable reloads and every current terrain image; their targeted reruns passed in all three projects. No gameplay changes were needed for those failures.
+
+The local build passed 12 production HTTP checks and 13 additional Chromium save and worker scenarios. Type checking, formatting, the build and whitespace checks passed. Earlier hashed assets were retained. Tests used disposable copies and profiles; the playing campaign was not modified. The wider performance goal remains active.

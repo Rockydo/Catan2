@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { coalitionStressFixture } from "../tests/coalition-stress-fixture";
+import { browserSave } from "../scripts/browser-save";
 import {
   serialize,
   deserialize,
@@ -15,7 +16,10 @@ test("a large coalition trade completes in the real worker and survives reload",
   page.on("pageerror", (e) => errors.push(e.message));
   await page.addInitScript(
     ({ key, data }) => {
-      if (!localStorage.getItem(key)) localStorage.setItem(key, data);
+      if (!sessionStorage.getItem("coalition-seeded")) {
+        localStorage.setItem(key, data);
+        sessionStorage.setItem("coalition-seeded", "1");
+      }
       localStorage.setItem("catane-language", "en");
       localStorage.setItem("catane-ai-pacing", "20");
       const w = window as any;
@@ -49,25 +53,19 @@ test("a large coalition trade completes in the real worker and survives reload",
     w.testWorker.onmessage(new MessageEvent("message", { data: w.replies[0] }));
   });
   await expect
-    .poll(() =>
-      page.evaluate(
-        (key) => JSON.parse(localStorage.getItem(key)!).game.actions,
-        SAVE_KEY,
-      ),
-    )
+    .poll(async () => {
+      const text = await browserSave(page);
+      return text ? JSON.parse(text).game.actions : undefined;
+    })
     .toBe(state.actions + 1);
   await page.getByRole("button", { name: "Pause AI", exact: true }).click();
-  const saved = deserialize(
-    await page.evaluate((key) => localStorage.getItem(key)!, SAVE_KEY),
-  );
+  const saved = deserialize((await browserSave(page))!);
   assertInvariants(saved);
   expect(saved.trade).toBeUndefined();
   expect(Object.keys(saved.pieces)).toHaveLength(3000);
   await page.reload();
   await page.getByRole("button", { name: /Continue campaign/ }).click();
-  const reloaded = deserialize(
-    await page.evaluate((key) => localStorage.getItem(key)!, SAVE_KEY),
-  );
+  const reloaded = deserialize((await browserSave(page))!);
   expect(reloaded).toEqual(saved);
   expect(errors).toEqual([]);
 });
