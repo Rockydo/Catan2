@@ -80,6 +80,7 @@ import {
   type UnitClass,
   type Raw,
   type ShipClass,
+  type Town,
 } from "./types";
 import {
   COSTS,
@@ -872,18 +873,18 @@ export function economyProjects(s: Game): Project[] {
       coastalThreat ||
       s.players[s.active].bonuses.recruits.length
     ) {
+      // Compute each town's distance once, retaining the stable in-place sort:
+      // a tie later in this loop must keep the preceding town's target order.
+      const targetDistances = new Map<Town, number>();
+      for (const enemy of enemyTowns) {
+        let closest = Infinity;
+        for (const destination of s.vertices[enemy.vertex].tiles)
+          for (const origin of tiles)
+            closest = Math.min(closest, distance(destination, origin));
+        targetDistances.set(enemy, closest);
+      }
       const target = enemyTowns.sort(
-        (a, b) =>
-          minValue(
-            s.vertices[a.vertex].tiles.map((v) =>
-              minValue(tiles.map((k) => distance(v, k))),
-            ),
-          ) -
-          minValue(
-            s.vertices[b.vertex].tiles.map((v) =>
-              minValue(tiles.map((k) => distance(v, k))),
-            ),
-          ),
+        (a, b) => targetDistances.get(a)! - targetDistances.get(b)!,
       )[0];
       for (const tile of tiles.filter((id) => !hostileAt(s, id))) {
         const terrain = s.tiles[tile].resource;
@@ -1973,6 +1974,43 @@ function landRegions(s: Game, water = false) {
 // State objects are immutable during planning and replaced after every action.
 // Cache repeated reachability queries for a whole stack instead of each unit.
 const coastCache = new WeakMap<Game, Map<string, string[]>>();
+interface InvasionGeography {
+  shores: { sea: string; land: { tile: string; region: number }[] }[];
+  objectives: Set<number | undefined>;
+  external: Map<number | undefined, string[]>;
+}
+const invasionGeography = new WeakMap<Game, Map<number, InvasionGeography>>();
+function invasionMap(s: Game): InvasionGeography {
+  let players = invasionGeography.get(s);
+  if (!players) {
+    players = new Map();
+    invasionGeography.set(s, players);
+  }
+  const cached = players.get(s.active);
+  if (cached) return cached;
+  const region = landRegions(s);
+  const shores: InvasionGeography["shores"] = [];
+  for (const tile of Object.values(s.tiles)) {
+    if (!canOccupy(tile, true)) continue;
+    const land: InvasionGeography["shores"][number]["land"] = [];
+    for (const id of neighbors(tile.id)) {
+      const label = region.get(id);
+      if (label !== undefined) land.push({ tile: id, region: label });
+    }
+    if (land.length) shores.push({ sea: tile.id, land });
+  }
+  const result = {
+    shores,
+    external: new Map<number | undefined, string[]>(),
+    objectives: new Set(
+      Object.values(s.towns)
+        .filter((t) => warTarget(s, t.owner))
+        .flatMap((t) => landAtVertex(s, t.vertex).map((id) => region.get(id))),
+    ),
+  };
+  players.set(s.active, result);
+  return result;
+}
 const objectiveCache = new WeakMap<Game, Map<string, boolean>>();
 // Shared rendezvous plans bring inland troops and empty transports to the same
 // coast. Looking only beside their current positions makes them chase each other.
@@ -2074,7 +2112,7 @@ function deploymentPaths(s: Game, origin: string, naval: boolean) {
   cache.set(key, paths);
   return paths;
 }
-function invasionCoasts(s: Game, excludeLand?: string): string[] {
+function invasionCoasts(s: Game, excludeLand?: string): readonly string[] {
   let cache = coastCache.get(s);
   if (!cache) {
     cache = new Map();
@@ -2084,42 +2122,54 @@ function invasionCoasts(s: Game, excludeLand?: string): string[] {
   const cached = cache.get(key);
   if (cached) return cached;
   const region = landRegions(s),
-    home = excludeLand ? region.get(excludeLand) : undefined;
+    home = excludeLand ? region.get(excludeLand) : undefined,
+    geography = invasionMap(s);
+  const includeHome =
+    !!excludeLand &&
+    geography.objectives.has(home) &&
+    !hasLandObjective(s, excludeLand);
+  if (!includeHome) {
+    // With no same-island bypass to assess, every army in this geographic
+    // region has exactly the same external coasts. Keep one ordered list.
+    let result = geography.external.get(home);
+    if (!result) {
+      result = geography.shores
+        .filter((shore) =>
+          shore.land.some(
+            ({ region }) => region !== home && geography.objectives.has(region),
+          ),
+        )
+        .map((shore) => shore.sea);
+      geography.external.set(home, result);
+    }
+    cache.set(key, result);
+    return result;
+  }
   // A beach behind a choke point must be judged with the army we can ferry
   // there, not only troops already standing on the far side of that choke.
+  const reach = new Map<string, boolean>();
   const expeditionaryForce = excludeLand
-    ? ownPieces(s).filter(
-        (u) =>
-          !u.naval &&
-          !u.carrier &&
-          !collector(u) &&
-          region.get(u.tile) === home &&
-          reachable(s, excludeLand, u.tile, false, s.active),
-      )
+    ? ownPieces(s).filter((u) => {
+        if (u.naval || u.carrier || collector(u) || region.get(u.tile) !== home)
+          return false;
+        if (!reach.has(u.tile))
+          reach.set(u.tile, reachable(s, excludeLand, u.tile, false, s.active));
+        return reach.get(u.tile)!;
+      })
     : undefined;
-  const wanted = new Set(
-    Object.values(s.towns)
-      .filter((t) => warTarget(s, t.owner))
-      .flatMap((t) => landAtVertex(s, t.vertex).map((id) => region.get(id)))
-      .filter(
-        (r) => r !== home || (excludeLand && !hasLandObjective(s, excludeLand)),
+  const result = geography.shores
+    .filter((shore) =>
+      shore.land.some(
+        ({ tile, region }) =>
+          geography.objectives.has(region) &&
+          (region !== home || includeHome) &&
+          (region !== home ||
+            !excludeLand ||
+            (!hostileAt(s, tile) &&
+              hasLandObjective(s, tile, expeditionaryForce))),
       ),
-  );
-  const result = Object.values(s.tiles)
-    .filter(
-      (t) =>
-        canOccupy(t, true) &&
-        neighbors(t.id).some(
-          (id) =>
-            region.has(id) &&
-            wanted.has(region.get(id)) &&
-            (region.get(id) !== home ||
-              !excludeLand ||
-              (!hostileAt(s, id) &&
-                hasLandObjective(s, id, expeditionaryForce))),
-        ),
     )
-    .map((t) => t.id);
+    .map((shore) => shore.sea);
   cache.set(key, result);
   return result;
 }

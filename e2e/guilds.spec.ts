@@ -181,11 +181,13 @@ test("each unlocked tier has its own contract and separately saved standing reci
   await panel.getByLabel("Guild operating tier").selectOption("2");
   await expect(panel.getByLabel("Guild raw material")).toHaveValue("ore");
   await panel.getByRole("checkbox", { name: /Standing order/ }).uncheck();
-  expect(
-    (await saved(page)).towns[home.id].guild!.standingOrders?.map(
-      (o) => o.tier,
-    ),
-  ).toEqual([1, 3]);
+  await expect
+    .poll(async () =>
+      (await saved(page)).towns[home.id].guild!.standingOrders?.map(
+        (o) => o.tier,
+      ),
+    )
+    .toEqual([1, 3]);
   await page.reload();
   await page.getByRole("button", { name: /Continue campaign/ }).click();
   await page.getByTestId(`town-${home.id}`).click();

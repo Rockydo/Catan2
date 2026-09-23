@@ -51,7 +51,10 @@ test("three guild slots remain readable, founding selects the new guild and relo
   ).toHaveCount(0);
   await expect(page.getByTestId(`guild-badge-${home.id}`)).toContainText("3");
   await expect(
-    page.getByTestId(`guild-badge-${home.id}`).locator(":scope > svg"),
+    page.getByTestId(`guild-badge-${home.id}`).getByRole("img", {
+      name: "Artisans’ Guild III",
+      exact: true,
+    }),
   ).toHaveCount(1);
   await page
     .getByRole("group", { name: "City guild selector" })
@@ -60,7 +63,9 @@ test("three guild slots remain readable, founding selects the new guild and relo
   await expect(page.getByTestId("city-guild")).toContainText(
     "Artisans’ Guild III",
   );
-  expect(townGuilds((await saved(page)).towns[home.id])).toHaveLength(3);
+  await expect
+    .poll(async () => townGuilds((await saved(page)).towns[home.id]))
+    .toHaveLength(3);
   expect(
     (await new AxeBuilder({ page }).include(".city-guilds").analyze())
       .violations,
@@ -93,19 +98,23 @@ test("secondary Farmers and Scholars guilds deliver their own effects with indep
   await page.getByLabel("Guild operating tier").selectOption("3");
   await page.getByLabel("Guild deposit").selectOption(land);
   await page.getByRole("button", { name: /^Complete guild order/ }).click();
-  expect((await saved(page)).towns[home.id].stock.grain).toBe(
-    home.stock.grain! + 32,
-  );
+  await expect
+    .poll(async () => (await saved(page)).towns[home.id].stock.grain)
+    .toBe(home.stock.grain! + 32);
   await tabs.getByRole("button", { name: /Builders/ }).click();
   await page.getByRole("button", { name: /^Complete guild order/ }).click();
-  expect((await saved(page)).players[0].bonuses.routes).toBe(6);
+  await expect
+    .poll(async () => (await saved(page)).players[0].bonuses.routes)
+    .toBe(6);
   await tabs.getByRole("button", { name: /Scholars/ }).click();
   await expect(
     page.getByRole("checkbox", { name: /Standing order/ }),
   ).toHaveCount(0);
   await page.getByRole("button", { name: /^Complete guild order/ }).click();
+  await expect
+    .poll(async () => (await saved(page)).researchChoice)
+    .toHaveLength(2);
   const state = await saved(page);
-  expect(state.researchChoice).toHaveLength(2);
   expect(state.researchChoice!.every((c) => c.tier === 4)).toBe(true);
   await expect(page.getByRole("dialog")).toBeVisible();
 });

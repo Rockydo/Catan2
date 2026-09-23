@@ -44,7 +44,7 @@ import {
   routeSites,
   speed,
 } from "./selectors";
-import { planningDistance } from "./ai-paths";
+import { planningDistances, planningReachable } from "./ai-paths";
 import { warTarget } from "./ai-strategy";
 import {
   neighbors,
@@ -219,7 +219,7 @@ function suppliedFormation(s: Game, town: Town, planningConstruction = false) {
         ...enemies
           .filter((t) =>
             landAtVertex(s, t.vertex).some((to) =>
-              Number.isFinite(planningDistance(s, tile, to, false, town.owner)),
+              planningReachable(s, tile, to, false, town.owner),
             ),
           )
           .map((t) => Math.min(g.tier * 2, siegeRequirement(s, t, group)) * 8),
@@ -228,10 +228,20 @@ function suppliedFormation(s: Game, town: Town, planningConstruction = false) {
         best = { ids: selected.map((u) => u.id), value };
       continue;
     }
-    const needsMovement = targets.some((to) => {
-      const distance = planningDistance(s, tile, to, naval, town.owner);
-      return Number.isFinite(distance) && distance > remaining;
-    });
+    // Supply matters only for reachable targets beyond this turn's allowance.
+    // A bounded search avoids retaining a full-world tree for every formation.
+    const withinMove = planningDistances(
+      s,
+      tile,
+      naval,
+      town.owner,
+      Math.max(0, Math.floor(remaining)),
+    );
+    const needsMovement = targets.some(
+      (to) =>
+        (remaining < 0 || !Number.isFinite(withinMove(to))) &&
+        planningReachable(s, tile, to, naval, town.owner),
+    );
     if (!needsMovement) continue;
     const value =
       selected.reduce((n, u) => n + Math.max(1, points(u)), 0) *

@@ -98,6 +98,14 @@ Export while an AI faction is active. The script runs the normal AI batches, val
 
 For comparisons, set `SOURCE_ROOT=/path/to/older/checkout` to use an older engine. Set `EXPECT_PATH=/path/to/previous/report.json` to require identical commands and final state. Optional `DECISIONS=60` measures a fixed number of individual decisions instead of complete worker batches; use the same mode and export on both versions. Time-bounded publication batches can contain different numbers of orders. Optimization-only changes must still preserve the full order sequence and final state. Ultra Fast also groups uncontested moves into these bounded batches; other pacing settings keep individual movement presentation.
 
+To compare every proposed project and guild decision across varied coastal planning scenarios, including scores and ordering:
+
+```sh
+SOURCE_ROOT=/path/to/older/checkout npx tsx scripts/ai-planning-compare.ts
+```
+
+Use a reference checkout with the same gameplay rules. The audit creates its own positions and checks that neither planner changes them.
+
 To include the browser, worker transfers and autosaving in the AI measurement:
 
 ```sh

@@ -344,3 +344,23 @@ Landing analysis now compiles the transit regions that can reach any beatable ob
 The same 60 decisions on the 2,000-tile, 1,000-town fixture fell from 33.62 to 24.76 seconds, a 26% reduction, with every command and the complete final-state hash unchanged. The actual Round 32 browser sequence retained all 485 orders and the same human casualty decision in 21.89 seconds, effectively unchanged from 21.92 seconds. The complete Round 31 turn retained all 144 orders and its final state in 17.79 seconds, also unchanged. Neither browser replay reported errors or long main-thread tasks; frame p95 stayed around 16.8 ms. This improvement addresses dispersed large maps with many landing candidates.
 
 Validation passed all 1,405 unit tests and 63 browser scenarios across Firefox, Chromium and the mobile viewport. Coverage includes 20,000-unit refreshes, recruitment, compact exports, corrupt-primary recovery, competing tabs, queued autosaves, stale worker bases, AI pause/resume, sea transports, expeditions and forced thaw landings. The deployed build then passed all 12 production HTTP checks and nine additional Chromium save/worker checks. All browser work used disposable profiles; the player's live campaign was not opened or changed.
+
+## Coastal planning and guild route queries
+
+Invasion planning now builds its ordered coastline and hostile-town region list once per immutable position and faction. Armies in the same geographic region share the external-coast list when no local bypass needs assessment. Same-island bypasses still use the actual expeditionary force and its reachable objectives. Repeated soldiers on one tile share the same reachability check; their strength and individual orders are unchanged. Shared coast lists are exposed as read-only values inside the planner and expire with the position.
+
+Recruitment planning calculates each target town's nearest distance once before sorting. It retains the stable in-place ordering used by later towns, including ties. Engineer guilds use connectivity when only reachability matters. Commander and Navigator guilds combine a bounded movement search with a connectivity check to find reachable objectives beyond the force's remaining allowance. Hostile destinations remain attackable, but blocked corridors do not become traversable. No objective, tier, formation, scoring term or search depth was removed.
+
+| Measurement | Previous build | This pass |
+| --- | ---: | ---: |
+| 2,000 tiles and 1,000 towns: fixed 60 decisions | 24.84 s | 19.69 s |
+| Round 31: complete 144-order AI turn | 17.79 s | 16.34 s |
+| Round 32: 485 orders to the same human decision | 21.89 s | 21.91 s |
+
+The large-map replay improved by about 21%. All command sequences and full final-state hashes matched. Round 32 was effectively unchanged. Both browser replays had about 16.7 ms frame p95, no errors and no long main-thread tasks. These are local samples of different workloads, not a fixed speedup for every campaign.
+
+The new `scripts/ai-planning-compare.ts` audit compared all 2,934 proposed projects across 48 coastal scenarios against the previous checkout. Scores, ordering and guild choices matched, and neither planner mutated its input. Scenarios include different controllers and active factions, bridges, islands, blocked corridors, passengers, frozen water, alliances, target ties and all three military guilds. Regression tests also check exact movement thresholds, weather changes, reachable hostile endpoints and unreachable towns beyond blockades.
+
+Validation passed all 1,408 unit tests. The browser audit covered 87 scenarios across Firefox, Chromium and mobile. It exposed outdated guild checks that expected direct SVG markup or read storage before the asynchronous save completed. The checks now use the accessible crest label and wait for the expected saved state. All 30 guild scenarios passed on recheck; no application behavior was changed to satisfy them.
+
+The deployed build passed all 12 production HTTP checks and 13 additional Chromium checks covering guilds, worker pause/resume, large-save refresh, export/import, backup recovery and competing tabs. Tests used disposable browser profiles. The player's live campaign was not opened or changed. The broader performance goal remains active.

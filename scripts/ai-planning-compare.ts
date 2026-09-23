@@ -1,0 +1,106 @@
+import { resolve } from "node:path";
+import { pathToFileURL } from "node:url";
+import { createHash } from "node:crypto";
+import { writeFileSync, mkdirSync } from "node:fs";
+import { crossing } from "../tests/transport-fixture";
+import { piece } from "../tests/helpers";
+import { GOODS, type Game } from "../src/game/types";
+
+// Compare all proposed projects, not only the winning order. No browser or save
+// is modified. SOURCE_ROOT is a previous checkout with the same gameplay rules.
+if (!process.env.SOURCE_ROOT)
+  throw Error("Set SOURCE_ROOT to the reference checkout.");
+async function planner(root: string) {
+  const module = (file: string) =>
+    pathToFileURL(resolve(root, "src/game", `${file}.ts`)).href;
+  const ai = await import(module("ai"));
+  const guilds = await import(module("guild-ai"));
+  const { withPlanningFrame } = await import(module("selectors"));
+  return (position: Game) => {
+    const s = structuredClone(position),
+      before = JSON.stringify(s);
+    const result = withPlanningFrame(s, () => ({
+      projects: ai.economyProjects(s),
+      guilds: guilds.guildEconomyProjects(s, ai.marginalValues(s)),
+      supply: guilds.guildMilitaryOrder(s),
+      engineering: guilds.guildMilitaryOrder(s, true),
+    }));
+    if (JSON.stringify(s) !== before)
+      throw Error("Planning mutated its input.");
+    return JSON.stringify(result);
+  };
+}
+const current = await planner("."),
+  previous = await planner(process.env.SOURCE_ROOT);
+let projects = 0;
+const hash = createHash("sha256");
+for (let scenario = 0; scenario < 48; scenario++) {
+  const { s, home, enemy } = crossing(scenario % 2 === 0);
+  if (scenario % 8 === 7) s.active = 1;
+  s.phase = "economy";
+  s.players[0].control = (["easy", "standard", "hard"] as const)[scenario % 3];
+  home.level = home.turnLevel = 4;
+  for (const good of GOODS) home.stock[good] = 20;
+  const kind = (["commanders", "navigators", "engineers"] as const)[
+    Math.floor(scenario / 2) % 3
+  ];
+  home.guild = {
+    kind,
+    tier: 1 + (scenario % 3),
+    born: 0,
+    used: false,
+    auto: false,
+  };
+  for (let i = 0; i < 8 + (scenario % 5); i++)
+    piece(s, "-4,0", 0, i % 3 === 0 ? "cavalry" : "heavy", 1 + (scenario % 4));
+  const ship = piece(s, "-3,0", 0, "convoy", 1);
+  piece(s, "-3,0", 0, "galley", 1 + (scenario % 4));
+  if (scenario % 4 === 0) {
+    const passenger = piece(s, ship.tile, 0, "heavy", 3);
+    passenger.carrier = ship.id;
+  }
+  if (scenario % 3) piece(s, "4,0", 1, "heavy", 1 + (scenario % 4));
+  if (scenario % 5 === 0 && scenario % 2 === 0)
+    for (let i = 0; i < 10; i++) piece(s, "-4,-1", 1, "heavy", 4);
+  if (scenario % 4 === 1) {
+    s.tiles["0,0"].surface = "frozen";
+    s.tiles["0,0"].resource = "ice";
+  }
+  for (const tile of ["3,-2", "3,0"]) {
+    const id = `t${s.nextId++}`;
+    s.towns[id] = {
+      ...structuredClone(enemy),
+      id,
+      name: `Target ${id}`,
+      vertex: s.tiles[tile].vertices[0],
+      level: 1 + (scenario % 4),
+      turnLevel: 1 + (scenario % 4),
+      wall: scenario % 4,
+    };
+  }
+  if (scenario % 6 === 0)
+    s.alliances = [
+      { id: "peace", members: [0, 1], threat: 2, lockedUntil: 99 },
+    ];
+  else if (scenario % 6 === 1) delete s.alliances;
+  const expected = previous(s),
+    actual = current(s);
+  if (actual !== expected) {
+    mkdirSync("test-artifacts", { recursive: true });
+    writeFileSync("test-artifacts/planning-reference.json", expected);
+    writeFileSync("test-artifacts/planning-current.json", actual);
+    throw Error(
+      `Scenario ${scenario} changed projects, scores, target order or guild decisions.`,
+    );
+  }
+  projects += JSON.parse(actual).projects.length;
+  hash.update(actual);
+}
+console.log(
+  JSON.stringify({
+    scenarios: 48,
+    projects,
+    exact: true,
+    hash: hash.digest("hex"),
+  }),
+);
