@@ -75,6 +75,7 @@ import {
   withPlanningFrame,
   withSharedPiecePlanningFrame,
   withPieceListPlanningFrame,
+  withProductionTerrainRead,
   allPieces,
   ownTowns,
   ownPieces,
@@ -469,6 +470,17 @@ function detachSuppliedPieces(original: Game, draft: Game, command: Command) {
  * The draft never escapes on failure and the caller's campaign stays intact.
  * Views are temporary: the planner must not retain them after it returns. */
 export function applyCommandPlan(
+  state: Game,
+  choose: (view: Game, commands: readonly Command[]) => Command | undefined,
+): Result & { commands: Command[] } {
+  // The input terrain is never edited: routine commands share it read-only,
+  // and other orders detach it before execution. Mutable detached terrain does
+  // not match this scope and must always rebuild its production fingerprint.
+  return withProductionTerrainRead(state.tiles, () =>
+    commandPlan(state, choose),
+  );
+}
+function commandPlan(
   state: Game,
   choose: (view: Game, commands: readonly Command[]) => Command | undefined,
 ): Result & { commands: Command[] } {

@@ -172,6 +172,8 @@ SAVE_PATH=/path/to/campaign.json LABEL=local npx tsx scripts/production-performa
 
 This checks every dice total from 2 through 12 on independent copies, records full-state hashes and times the resource distribution. It also records ordered deliveries for all seasons and forecasts over several roll counts, including the time spent on each forecast. Five independent read scopes measure the size and construction cost of the production cache key. `SOURCE_ROOT` selects an older checkout; `EXPECT_PATH` requires exact agreement on deliveries, forecasts and resulting campaign states, while timings and internal key formats may differ. It never writes to the campaign export or browser storage.
 
+The report also times 32 consecutive fingerprint reads with a protected terrain snapshot, over five samples. Every read must match that version's unscoped key. Older checkouts use ordinary reads for comparison. This isolates cache-key construction and does not execute commands or measure complete AI turns.
+
 To compare forecast costs as merchant and fishing fleets grow:
 
 ```sh

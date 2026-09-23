@@ -956,3 +956,33 @@ New regressions compare complete serialized forecast results with individually w
 All 1,628 unit tests passed. The independent planning audit retained all 13,206 proposals across 128 scenarios, and all 96 trade comparisons matched, including offers, aid and acceptance decisions. Type checking, formatting, the production build and whitespace checks passed.
 
 All 213 staging browser scenarios passed across Chromium, Firefox and mobile. After local publication, all 12 production HTTP checks and 11 additional Chromium transport, worker and large-save scenarios passed. Previous hashed assets remain available to open sessions. All validation used exported copies or disposable fixtures and profiles; the playing campaign and original exports were not modified. Remaining troop enumeration, production signatures and other planning costs keep the broader performance goal active.
+
+## Protected terrain during production fingerprinting
+
+An engine batch can now reuse the serialized production fields of its input terrain while that terrain remains protected by the existing copy-on-write rules. Routine purchases and uncontested movement share the input terrain without editing it. Other commands detach the terrain before execution. The detached dictionary never matches the protected snapshot, so every later read of that mutable copy uses fresh values, including multiple Woods choices within the same batch.
+
+Only terrain fields are protected. Each production-key request still reads current calendar, town levels and extensions, town adjacency, camps, collectors, blockades, factions and alliances. If that current position matches the preceding request in the same scope, the complete key can also be reused. The scope retains one terrain string and one latest position/key pair, not a history. It is lazy, restores an enclosing scope after errors and releases its references when the synchronous batch ends. Unscoped calls and alternate weather dictionaries retain direct value reads. Unknown future tile fields remain included; no approximate hash or field whitelist is introduced.
+
+The production diagnostic now measures 32 consecutive fresh decision frames sharing the protected terrain. Each resulting key must match an ordinary unscoped read in the same version. These are fingerprint-only queries, not complete AI decisions. Medians of five samples:
+
+| Campaign | Previous build | Updated build |
+| --- | ---: | ---: |
+| Round 32 export, 540 tiles and 14,695 troops | 76.69 ms | 64.77 ms |
+| Growth map, 2,000 tiles and 1,000 towns | 85.77 ms | 55.33 ms |
+
+The full production comparison retained all six ordered delivery lists, four forecast horizons and eleven complete dice-result states for both maps. Independent single-frame construction remained around 2.5 ms on the exported campaign and 3 ms on the growth map; the benefit comes from consecutive protected reads. An earlier experiment with alternative terrain serialization layouts did not show a useful general gain and was not adopted.
+
+| Browser AI replay | Previous build | Updated build | Exact comparison |
+| --- | ---: | ---: | --- |
+| Round 32 export, through human casualty prompt | 12.79 s | 12.44 s | 485 orders and complete final state |
+| Round 31 export, through human casualty prompt | 6.13 s | 6.14 s | 153 orders and complete final state |
+
+The latest browser sample improved by about 3%; the earlier export was unchanged. Both scenarios used AI seat 2 and stopped for human input. Frame p95 remained near 16.8 ms, with no long main-thread tasks or browser/worker errors. These measurements do not establish a fixed speedup for every campaign or a full-turn improvement of the size seen in the fingerprint-only fixture.
+
+Regression coverage checks lazy creation, repeated protected reads, changed non-terrain inputs, mutable detached dictionaries, nested exceptions, fresh reads after scope exit and no retained state between calls. Engine-batch comparisons now include the full production fingerprint at every intermediate position, alongside complete state, stock, strength, income and occupation checks. A new sequence alternates bank orders and multiple Woods choices to verify correct invalidation after terrain detachment. Existing sequences cover season boundaries, dice production, recruitment, elimination, combat and transport operations.
+
+The separate 2,000-tile replay retained all 60 decisions and its complete final-state hash, taking 11.30 seconds before and 10.93 seconds after. That driver executes individual commands, so it does not exercise protected batch reuse and should not be treated as evidence of that optimization's benefit.
+
+All 1,630 unit tests passed. The independent planning audit retained all 13,206 proposals across 128 scenarios, and all 96 trade comparisons matched. Type checking, formatting, the production build and whitespace checks passed.
+
+All 213 staging browser scenarios passed across Chromium, Firefox and mobile. After local publication, all 12 production HTTP checks and 11 additional Chromium save, transport and worker scenarios passed. Previous hashed assets were retained for open sessions. Validation used exported copies and disposable profiles; the original exports and playing campaign were not modified. Troop enumeration, other planning work and crowded-map drawing remain measurable costs, so the broader performance goal stays active.

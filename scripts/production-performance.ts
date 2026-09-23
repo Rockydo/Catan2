@@ -12,8 +12,12 @@ const moduleAt = (name: string) =>
   pathToFileURL(`${root}/src/game/${name}.ts`).href;
 const { deserialize } = await import(moduleAt("save"));
 const { production } = await import(moduleAt("economy"));
-const { productionSources, productionSignature, withPlanningFrame } =
-  await import(moduleAt("selectors"));
+const {
+  productionSources,
+  productionSignature,
+  withPlanningFrame,
+  withProductionTerrainRead,
+} = await import(moduleAt("selectors"));
 const { projectedIncomes, withSeasonalPlanning } = await import(
   moduleAt("ai-seasonal")
 );
@@ -34,6 +38,24 @@ for (let sample = 0; sample < 5; sample++) {
   if (sample && current !== signature)
     throw Error("Unchanged production inputs changed their signature.");
   signature = current;
+}
+// Model consecutive immutable decisions sharing a protected terrain snapshot.
+// Older checkouts have no scope; both must return their same complete key on
+// every read. These are fingerprint queries, not executed commands or AI turns.
+const signatureBatchSamplesMs = [];
+const terrainScope =
+  withProductionTerrainRead ?? ((_tiles: unknown, run: () => void) => run());
+for (let sample = 0; sample < 5; sample++) {
+  const start = performance.now();
+  terrainScope(game.tiles, () => {
+    for (let i = 0; i < 32; i++) {
+      const view = { ...game };
+      const current = withPlanningFrame(view, () => productionSignature(view));
+      if (current !== signature)
+        throw Error("A terrain read scope changed the production signature.");
+    }
+  });
+  signatureBatchSamplesMs.push(performance.now() - start);
 }
 const deliveries = [
   "current",
@@ -89,6 +111,9 @@ const report = {
   signatureBytes: Buffer.byteLength(signature),
   signatureMedianMs: [...signatureMs].sort((a, b) => a - b)[2],
   signatureSamplesMs: signatureMs,
+  signatureBatchReads: 32,
+  signatureBatchMedianMs: [...signatureBatchSamplesMs].sort((a, b) => a - b)[2],
+  signatureBatchSamplesMs,
   deliveries,
   forecasts,
   forecastTimings,

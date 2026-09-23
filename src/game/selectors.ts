@@ -1043,9 +1043,58 @@ export function forecastProduction(
   );
   return result;
 }
+let productionTerrainRead:
+  | {
+      source: Game["tiles"];
+      terrain?: string;
+      position?: string;
+      signature?: string;
+    }
+  | undefined;
+/** The caller guarantees this terrain dictionary and all its records remain
+ * unchanged until the callback returns. Other dictionaries always read fresh,
+ * even after in-place edits. Scopes are synchronous, lazy and exception-safe. */
+export function withProductionTerrainRead<T>(
+  source: Game["tiles"],
+  run: () => T,
+): T {
+  const previous = productionTerrainRead;
+  productionTerrainRead = { source };
+  try {
+    return run();
+  } finally {
+    productionTerrainRead = previous;
+  }
+}
+function productionKey(s: Game, position: string): string {
+  const frame =
+    productionTerrainRead?.source === s.tiles
+      ? productionTerrainRead
+      : undefined;
+  if (frame?.signature !== undefined && frame.position === position)
+    return frame.signature;
+  // Keep every non-geometric field, including unknown future weather data.
+  const terrain =
+    frame?.terrain ??
+    JSON.stringify(
+      Object.entries(s.tiles).map(([id, tile]) => {
+        const { vertices: _vertices, edges: _edges, ...harvest } = tile;
+        return [id, harvest];
+      }),
+    );
+  // Join two complete JSON arrays without encoding the terrain string again.
+  // This remains an unambiguous value key, including arbitrary tile text.
+  const signature = `[${terrain},${position}]`;
+  if (frame) {
+    frame.terrain = terrain;
+    frame.position = position;
+    frame.signature = signature;
+  }
+  return signature;
+}
 /** Complete public inputs to passive production. Resource spending, movement
- * allowances, walls and guild contracts do not change a harvest. Fingerprint
- * values, not object identity: engine batches mutate a private draft in place. */
+ * allowances, walls and guild contracts do not change a harvest. Mutable inputs
+ * need fresh values; only explicitly protected terrain may reuse its fields. */
 export function productionSignature(s: Game): string {
   return planningValue(s, "production-signature", () => {
     const blockade = new Set<string>();
@@ -1106,16 +1155,9 @@ export function productionSignature(s: Game): string {
             break;
           }
     }
-    return JSON.stringify([
+    const position = JSON.stringify([
       s.round,
       s.calendar,
-      // Harvests use vertex-to-tile adjacency, not drawing coordinates or the
-      // tile's road geometry. Keep all other tile fields, including future
-      // weather/yield metadata, and read current values on mutable drafts.
-      Object.entries(s.tiles).map(([id, tile]) => {
-        const { vertices: _vertices, edges: _edges, ...harvest } = tile;
-        return [id, harvest];
-      }),
       s.alliances,
       s.players.map((p) => p.id),
       towns.map((t) => [
@@ -1133,6 +1175,7 @@ export function productionSignature(s: Game): string {
       [...blockade].sort(),
       collectors,
     ]);
+    return productionKey(s, position);
   });
 }
 // Retain only the latest production position, not a history of growing saves.

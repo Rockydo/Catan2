@@ -14,6 +14,7 @@ import {
   inventory,
   moveTargets,
   piecesAt,
+  productionSignature,
   withPlanningFrame,
 } from "../src/game/selectors";
 import { factionStrengths } from "../src/game/ai-strategy";
@@ -254,6 +255,7 @@ it("landed defenders break sieges immediately with unchanged cleanup and coaliti
 
 function decisionReads(s: Game) {
   return {
+    production: productionSignature(s),
     forces: allPieces(s),
     strengths: factionStrengths(s),
     factions: s.players.map((p) => ({
@@ -535,4 +537,25 @@ it("abandons borrowed membership after combat removes civilian defenders", () =>
   expect(result.state.pieces[civilian.id]).toBeUndefined();
   expect(result.state.pieces[attacker.id].tile).toBe("2,0");
   expect(s.pieces[civilian.id]).toBe(civilian);
+});
+
+it("refreshes terrain fingerprints after detaching a batch for repeated Woods choices", () => {
+  const { s, home } = maritimeFixture();
+  const [first, second] = s.vertices[home.vertex].tiles;
+  for (const id of [first, second])
+    Object.assign(s.tiles[id], {
+      resource: "lumber",
+      biome: "woods",
+      climate: "temperate",
+    });
+  const result = comparePlan(s, [
+    { type: "bank", give: { gold: 1 }, take: { lumber: 1 } },
+    { type: "woods-choice", tile: first, kind: "hides" },
+    { type: "bank", give: { gold: 1 }, take: { ore: 1 } },
+    { type: "woods-choice", tile: second, kind: "hides" },
+    { type: "woods-choice", tile: first, kind: "lumber" },
+  ]);
+  expect(result.state.tiles[first].woodsChoices?.[0]).toBe("lumber");
+  expect(result.state.tiles[second].woodsChoices?.[0]).toBe("hides");
+  expect(s.tiles[first].woodsChoices).toBeUndefined();
 });

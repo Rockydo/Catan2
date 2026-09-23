@@ -14,6 +14,7 @@ import {
   productionSignature,
   withPlanningFrame,
   withSharedPiecePlanningFrame,
+  withProductionTerrainRead,
 } from "../src/game/selectors";
 import {
   projectedIncome,
@@ -874,4 +875,58 @@ it("weights repeated deliveries once per collector run rather than per unit", ()
   expect(weight.mock.calls.length).toBe(calls);
   for (const player of s.players)
     expect(result[player.id]).toEqual(direct(s, player.id, "annual"));
+});
+
+it("borrows only an explicitly immutable terrain snapshot and always reads changed campaign inputs", () => {
+  const { s, home, land } = fixture();
+  s.pieces = {};
+  const terrain = s.tiles;
+  let scans = 0;
+  s.tiles = new Proxy(terrain, {
+    ownKeys(target) {
+      scans++;
+      return Reflect.ownKeys(target);
+    },
+  });
+  const fresh = () => productionSignature({ ...s, tiles: { ...terrain } });
+  withProductionTerrainRead(s.tiles, () => {});
+  expect(scans).toBe(0);
+  let initial = "";
+  withProductionTerrainRead(s.tiles, () => {
+    initial = productionSignature(s);
+    expect(initial).toBe(fresh());
+    expect(productionSignature(s)).toBe(initial);
+    expect(scans).toBe(1);
+    s.round++;
+    home.extensions[land]++;
+    s.alliances = [{ id: "new", members: [0, 1], threat: 2, lockedUntil: 5 }];
+    const changed = productionSignature(s);
+    expect(changed).not.toBe(initial);
+    expect(changed).toBe(fresh());
+    expect(scans).toBe(1);
+    const draft = { ...s, tiles: structuredClone(terrain) };
+    const before = productionSignature(draft);
+    draft.tiles[land].number = draft.tiles[land].number === 6 ? 8 : 6;
+    const after = productionSignature(draft);
+    expect(after).not.toBe(before);
+    draft.tiles[land].woodsChoices = { 0: "hides" };
+    expect(productionSignature(draft)).not.toBe(after);
+    expect(() =>
+      withProductionTerrainRead(draft.tiles, () => {
+        expect(productionSignature(draft)).toBe(
+          productionSignature({ ...draft, tiles: { ...draft.tiles } }),
+        );
+        throw Error("abort nested scope");
+      }),
+    ).toThrow("abort nested scope");
+    expect(productionSignature(s)).toBe(changed);
+    expect(scans).toBe(1);
+  });
+  terrain[land].number = terrain[land].number === 6 ? 8 : 6;
+  expect(productionSignature(s)).toBe(fresh());
+  expect(scans).toBe(2);
+  withProductionTerrainRead(s.tiles, () =>
+    expect(productionSignature(s)).toBe(fresh()),
+  );
+  expect(scans).toBe(3);
 });
