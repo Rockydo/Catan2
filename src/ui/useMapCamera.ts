@@ -6,6 +6,10 @@ export interface MapBounds {
   w: number;
   h: number;
 }
+export interface CameraPaint {
+  view: MapBounds;
+  draw?: (view: MapBounds) => void;
+}
 type Point = { x: number; y: number };
 // Covers tile corners and the largest miniature/badge, in world coordinates.
 const SPRITE_MARGIN = 80;
@@ -25,6 +29,11 @@ export function useMapCamera(
   const ocean = useRef<SVGRectElement>(null);
   const hitArea = useRef<SVGRectElement>(null);
   const camera = useRef({ zoom: 1, x: 0, y: 0 });
+  const terrainPaint = useRef<CameraPaint>({ view: bounds });
+  function paintTerrain(view: MapBounds) {
+    terrainPaint.current.view = view;
+    terrainPaint.current.draw?.(view);
+  }
   const lastWheel = useRef(-Infinity);
   const sharpFrame = useRef(false);
   const settings = useRef({ bounds, maxZoom });
@@ -125,6 +134,7 @@ export function useMapCamera(
       ocean.current.setAttribute("width", String(v.w * 3));
       ocean.current.setAttribute("height", String(v.h * 3));
     }
+    paintTerrain(v);
   }
   function apply() {
     frame.current = 0;
@@ -154,6 +164,7 @@ export function useMapCamera(
     const x = marginX * (1 - scale) + (base.x - v.x) * baseScale * scale;
     const y = marginY * (1 - scale) + (base.y - v.y) * baseScale * scale;
     layer.current!.style.transform = `translate3d(${x}px, ${y}px, 0) scale(${scale})`;
+    paintTerrain(v);
   }
   function schedule(sharp = false) {
     sharpFrame.current ||= sharp;
@@ -313,6 +324,7 @@ export function useMapCamera(
     layer,
     ocean,
     hitArea,
+    terrainPaint,
     setPan,
     setZoom,
     pointerDown,

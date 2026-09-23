@@ -575,3 +575,128 @@ test.describe("prepared sprite quality", () => {
     });
   });
 });
+
+test("shared production parts preserve the original complete badge composition", async ({
+  page,
+}) => {
+  await load(page);
+  await page.waitForFunction(() =>
+    [...document.querySelectorAll(".production-token-art")].every((node) =>
+      node.querySelector(":scope > image"),
+    ),
+  );
+  const quality = await page.evaluate(async () => {
+    const sources = (
+      window as unknown as { spriteSources: Record<string, string> }
+    ).spriteSources;
+    const parser = new DOMParser(),
+      serializer = new XMLSerializer();
+    const image = async (source: string) => {
+      const result = new Image();
+      result.src = source;
+      await result.decode();
+      return result;
+    };
+    let error = 0,
+      pixels = 0,
+      bad = 0;
+    const combinations = new Set<string>();
+    const count = document.querySelectorAll(
+      ".production-token-art > image",
+    ).length;
+    const unique = new Set(
+      [...document.querySelectorAll(".production-token-art > image")].map((n) =>
+        n.getAttribute("href"),
+      ),
+    ).size;
+    for (const token of document.querySelectorAll(".production-token")) {
+      const parts = [
+        ...token.querySelectorAll(".production-token-art > image"),
+      ];
+      const key = parts.map((n) => n.getAttribute("href")).join("|");
+      if (combinations.has(key)) continue;
+      combinations.add(key);
+      const documents = parts.map((n) =>
+        parser.parseFromString(
+          decodeURIComponent(
+            sources[n.getAttribute("href")!].split(",").slice(1).join(","),
+          ),
+          "image/svg+xml",
+        ),
+      );
+      // Rebuild the old single backing + dice + resources composition with
+      // one filter around everything, independently of the new part images.
+      const original = documents[0].documentElement;
+      const backing = original.querySelector(":scope > g")!;
+      for (let i = 1; i < documents.length; i++) {
+        original
+          .querySelector("defs")!
+          .append(...documents[i].querySelector("defs")!.children);
+        const part = documents[i].documentElement.querySelector(":scope > g")!;
+        if (i === parts.length - 1)
+          part.setAttribute(
+            "transform",
+            token
+              .querySelector(".production-token-goods")!
+              .parentElement!.getAttribute("transform")!,
+          );
+        backing.append(part);
+      }
+      const reference = await image(
+        "data:image/svg+xml;charset=utf-8," +
+          encodeURIComponent(serializer.serializeToString(original)),
+      );
+      const current = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "svg",
+      );
+      for (const attr of ["width", "height", "viewBox"])
+        current.setAttribute(attr, original.getAttribute(attr)!);
+      current.append(token.cloneNode(true));
+      for (const picture of current.querySelectorAll("image")) {
+        const decoded = await image(picture.getAttribute("href")!);
+        const raster = document.createElement("canvas");
+        raster.width = decoded.naturalWidth;
+        raster.height = decoded.naturalHeight;
+        raster.getContext("2d")!.drawImage(decoded, 0, 0);
+        picture.setAttribute("href", raster.toDataURL());
+      }
+      const actual = await image(
+        "data:image/svg+xml;charset=utf-8," +
+          encodeURIComponent(serializer.serializeToString(current)),
+      );
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.ceil(Number(original.getAttribute("width")) * 6);
+      canvas.height = Number(original.getAttribute("height")) * 6;
+      const ctx = canvas.getContext("2d", { willReadFrequently: true })!;
+      ctx.drawImage(reference, 0, 0, canvas.width, canvas.height);
+      const a = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(actual, 0, 0, canvas.width, canvas.height);
+      const b = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+      for (let i = 0; i < a.length; i += 4) {
+        let worst = Math.abs(a[i + 3] - b[i + 3]);
+        for (let c = 0; c < 3; c++) {
+          const delta = Math.abs(
+            (a[i + c] * a[i + 3]) / 255 - (b[i + c] * b[i + 3]) / 255,
+          );
+          error += delta;
+          worst = Math.max(worst, delta);
+        }
+        if (worst > 40) bad++;
+        pixels++;
+      }
+    }
+    return {
+      mean: error / (pixels * 3),
+      bad: bad / pixels,
+      unique,
+      count,
+      combinations: combinations.size,
+    };
+  });
+  expect(quality.combinations).toBeGreaterThan(10);
+  expect(quality.unique).toBeLessThan(quality.count / 2);
+  expect(quality.mean).toBeLessThan(3);
+  expect(quality.bad).toBeLessThan(0.025);
+});

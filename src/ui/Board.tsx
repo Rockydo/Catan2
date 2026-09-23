@@ -18,7 +18,8 @@ import type { TerrainKey } from "../game/content";
 import { localize as tx, useLocale } from "../i18n";
 import { friendly } from "../game/relations";
 import { MapGuildCrest } from "./Guilds";
-import { MapSprite, PreparedMapLayer } from "./MapSprite";
+import { MapSprite, PreparedMapLayer, useMapRasterScale } from "./MapSprite";
+import { useTerrainGpu } from "./useTerrainGpu";
 import { MapRoutes } from "./MapRoutes";
 import { groupMapUnits, townMapView } from "./map-scene";
 import { MapLabel, MapLabelDefinitions } from "./MapLabel";
@@ -48,7 +49,7 @@ import {
   useState,
   type RefObject,
 } from "react";
-import { useMapCamera } from "./useMapCamera";
+import { useMapCamera, type CameraPaint } from "./useMapCamera";
 import { ZoomIn, ZoomOut, Focus, Map as MapIcon, Flag } from "lucide-react";
 import { type Game, type Raw, type Piece } from "../game/types";
 import { TERRAIN, GOOD_INFO, COLORS } from "../game/content";
@@ -219,6 +220,8 @@ const TerrainArt = memo(function TerrainArt({
 });
 const TerrainLayer = memo(function TerrainLayer({
   terrainRef,
+  canvasRef,
+  terrainPaint,
   oceanRef,
   bounds,
   tiles,
@@ -232,6 +235,8 @@ const TerrainLayer = memo(function TerrainLayer({
   artworkSeason,
 }: {
   terrainRef: RefObject<SVGSVGElement | null>;
+  canvasRef: RefObject<HTMLCanvasElement | null>;
+  terrainPaint: RefObject<CameraPaint>;
   oceanRef: RefObject<SVGRectElement | null>;
   bounds: { x: number; y: number; w: number; h: number };
   tiles: Game["tiles"][string][];
@@ -245,6 +250,14 @@ const TerrainLayer = memo(function TerrainLayer({
   artworkSeason?: Season;
 }) {
   useLocale();
+  const scale = useMapRasterScale();
+  useTerrainGpu(
+    terrainRef,
+    canvasRef,
+    terrainPaint,
+    tiles.length >= 800 && !climates,
+    scale,
+  );
   const artKeys = useMemo(
     () =>
       [
@@ -330,7 +343,21 @@ const TerrainLayer = memo(function TerrainLayer({
             );
           }
           return (
-            <g key={tile.id} data-map-x={x} data-map-y={y}>
+            <g
+              key={tile.id}
+              data-map-x={x}
+              data-map-y={y}
+              data-terrain-key={[
+                seasonalTerrainPattern(tile, artworkSeason),
+                sea,
+                !!good,
+                tile.resource !== "water",
+                openWater,
+                seasonalTerrainPattern(tile, artworkSeason) === "water"
+                  ? hash(tile.id) % 3
+                  : 0,
+              ].join("/")}
+            >
               <polygon
                 points={poly}
                 transform="translate(0 1.5)"
@@ -360,6 +387,7 @@ const TerrainLayer = memo(function TerrainLayer({
                       ),
                     )}
                     <g
+                      className="terrain-production"
                       transform={`translate(${x - (small ? 12 : 0)} ${y - 12})`}
                     >
                       <ProductionToken
@@ -844,6 +872,7 @@ const BoardScene = memo(function BoardScene({
 }: Props) {
   const locale = useLocale();
 
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const currentSeason = seasonAt(s);
   const PreviewIcon = seasonPreview ? SEASON_ICONS[seasonPreview] : null;
   const [climates, setClimates] = useState(false);
@@ -989,6 +1018,7 @@ const BoardScene = memo(function BoardScene({
     layer,
     ocean,
     hitArea,
+    terrainPaint,
     setPan,
     setZoom,
     pointerDown,
@@ -1036,6 +1066,19 @@ const BoardScene = memo(function BoardScene({
     <div
       className={`board-frame mode-${mode}${climates ? " climate-only" : ""}`}
     >
+      <canvas
+        ref={canvasRef}
+        className="terrain-canvas"
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          inset: 0,
+          width: "100%",
+          height: "100%",
+          pointerEvents: "none",
+          display: "none",
+        }}
+      />
       <PreparedMapLayer
         layerRef={layer}
         bounds={bounds}
@@ -1044,6 +1087,8 @@ const BoardScene = memo(function BoardScene({
         <TerrainLayer
           viewer={viewer}
           terrainRef={terrain}
+          canvasRef={canvasRef}
+          terrainPaint={terrainPaint}
           oceanRef={ocean}
           bounds={bounds}
           tiles={tiles}

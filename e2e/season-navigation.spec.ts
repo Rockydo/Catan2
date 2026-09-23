@@ -17,6 +17,7 @@ async function open(page: Page, s: Game) {
   );
   await page.goto("/");
   await page.getByRole("button", { name: /Continue campaign/ }).click();
+  await expect(page.locator(".world-map")).toBeVisible();
 }
 async function saved(page: Page): Promise<Game> {
   return page.evaluate(

@@ -32,6 +32,10 @@ const Preparation = createContext<{
   scale: number;
 } | null>(null);
 
+export function useMapRasterScale() {
+  return useContext(Preparation)?.scale ?? 1;
+}
+
 /** Prepare the initial decorative images before laying out their throwaway
  * vector fallbacks. A failed or stalled decoder still reveals playable vectors. */
 export function PreparedMapLayer({

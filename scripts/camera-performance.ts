@@ -90,6 +90,13 @@ try {
           .display === "block"
           ? "canvas"
           : "svg",
+      terrainStatus:
+        document.querySelector<HTMLElement>(".terrain-canvas")?.dataset
+          .terrainStatus,
+      terrainTextureBytes: Number(
+        document.querySelector<HTMLElement>(".terrain-canvas")?.dataset
+          .textureBytes || 0,
+      ),
       sprites: Object.fromEntries(
         [
           ".town-miniature",
@@ -120,6 +127,13 @@ try {
       );
     });
     preparationWaitMs = performance.now() - start;
+  }
+  if (process.env.WAIT_GPU) {
+    const start = performance.now();
+    await page
+      .locator('.terrain-canvas[data-terrain-status="ready"]')
+      .waitFor({ state: "visible", timeout: 30000 });
+    preparationWaitMs = (preparationWaitMs ?? 0) + performance.now() - start;
   }
   const initialScene = await sceneState();
   const originalSave = await browserSave(page);

@@ -301,15 +301,17 @@ export const ProductionToken = memo(function ProductionToken({
       fontFamily="ui-sans-serif, system-ui, sans-serif"
     >
       <title>{tooltip}</title>
+      {/* Share the backing, dice and goods independently. Their combinations
+          otherwise duplicate hundreds of large textures on growing maps. */}
       <MapSprite
-        assetKey={`production/${resource}/${JSON.stringify(products)}/${compact}/${number}/${showNumber}/${active}/${dormant}`}
+        assetKey={`production/back/${pillWidth}/${showNumber}/${active}/${dormant}`}
         bounds={{
           x: -Math.max(pillWidth / 2, 14) - 4,
           y: showNumber ? -16 : 3,
           width: Math.max(pillWidth, 28) + 8,
           height: showNumber ? 47 : 21,
         }}
-        className="production-token-art"
+        className="production-token-art production-token-backing"
         aria-hidden="true"
         style={{
           filter: active
@@ -345,40 +347,56 @@ export const ProductionToken = memo(function ProductionToken({
                 stroke="#bcaa7c"
                 strokeWidth=".4"
               />
-              <MapLabel
-                y="5"
-                textAnchor="middle"
-                fontSize="14.5"
-                fontWeight="800"
-                fill={
-                  number === 7
-                    ? "#ae3f2f"
-                    : number === 6 || number === 8
-                      ? "#8e572d"
-                      : "#34433c"
-                }
-              >
-                {tx(number)}
-              </MapLabel>
-              {tx(
-                Array.from({ length: pips }, (_, i) => (
-                  <circle
-                    key={i}
-                    cx={(i - (pips - 1) / 2) * 2.3}
-                    cy="9"
-                    r=".72"
-                    fill={number === 7 ? "#ad4530" : "#8c754a"}
-                  />
-                )),
-              )}
             </>
           ),
         )}
-        <g>
+      </MapSprite>
+      {showNumber && (
+        <MapSprite
+          assetKey={`production/dice/${number}`}
+          bounds={{ x: -11, y: -10, width: 22, height: 21 }}
+          className="production-token-art production-token-dice"
+          aria-hidden="true"
+        >
+          <MapLabel
+            y="5"
+            textAnchor="middle"
+            fontSize="14.5"
+            fontWeight="800"
+            fill={
+              number === 7
+                ? "#ae3f2f"
+                : number === 6 || number === 8
+                  ? "#8e572d"
+                  : "#34433c"
+            }
+          >
+            {tx(number)}
+          </MapLabel>
+          {tx(
+            Array.from({ length: pips }, (_, i) => (
+              <circle
+                key={i}
+                cx={(i - (pips - 1) / 2) * 2.3}
+                cy="9"
+                r=".72"
+                fill={number === 7 ? "#ad4530" : "#8c754a"}
+              />
+            )),
+          )}
+        </MapSprite>
+      )}
+      <g transform={`translate(0 ${showNumber ? 14 : 7})`}>
+        <MapSprite
+          assetKey={`production/goods/${JSON.stringify(products)}/${compact}`}
+          bounds={{ x: -pillWidth / 2, y: 0, width: pillWidth, height: 14 }}
+          className="production-token-art production-token-goods"
+          aria-hidden="true"
+        >
           {products.map(([good, quantity], i) => (
             <g
               key={good}
-              transform={`translate(${-rowWidth / 2 + widths.slice(0, i).reduce((sum, width) => sum + width, 0) + i * productGap}, ${(showNumber ? 14 : 7) + (13 - iconSize) / 2})`}
+              transform={`translate(${-rowWidth / 2 + widths.slice(0, i).reduce((sum, width) => sum + width, 0) + i * productGap}, ${(13 - iconSize) / 2})`}
             >
               <MapResourceIcon good={good} size={iconSize} />
               <MapLabel
@@ -392,8 +410,8 @@ export const ProductionToken = memo(function ProductionToken({
               </MapLabel>
             </g>
           ))}
-        </g>
-      </MapSprite>
+        </MapSprite>
+      </g>
       <g className="production-resources" aria-label={productLabel} role="img">
         {products.map(([good, quantity]) => (
           <g key={good} data-resource={good} data-quantity={quantity} />
