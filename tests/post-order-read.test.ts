@@ -18,6 +18,7 @@ import {
   withPlanningFrame,
 } from "../src/game/selectors";
 import { factionStrengths } from "../src/game/ai-strategy";
+import { defaultCoverage, harvestTiles } from "../src/game/maritime";
 import type { Command, Game } from "../src/game/types";
 import { allianceFixture } from "./alliance-fixture";
 import { piece, run } from "./helpers";
@@ -256,6 +257,12 @@ it("landed defenders break sieges immediately with unchanged cleanup and coaliti
 function decisionReads(s: Game) {
   return {
     production: productionSignature(s),
+    collectorAreas: Object.keys(s.tiles).map((tile) => [
+      defaultCoverage(s, { tile, tier: 4 }),
+      ...(["merchant", "merchantship", "fishing"] as const).map((kind) =>
+        harvestTiles(s, { tile, tier: 4, kind }),
+      ),
+    ]),
     forces: allPieces(s),
     strengths: factionStrengths(s),
     factions: s.players.map((p) => ({

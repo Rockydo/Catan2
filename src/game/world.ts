@@ -250,9 +250,56 @@ export const vertexNeighbors = (world: World, id: string) =>
 interface WorldReadIndex {
   source: World;
   land: Map<string, string[]>;
+  terrain?: Map<string, readonly string[]>;
 }
 let worldReadIndex: WorldReadIndex | undefined;
 const worldViewIndexes = new WeakMap<World, WorldReadIndex>();
+let terrainRead:
+  | {
+      tiles: World["tiles"];
+      values: Map<string, readonly string[]>;
+    }
+  | undefined;
+
+/** Protect an unchanged terrain dictionary across consecutive decisions.
+ * Execution must detach this dictionary before editing any tile. */
+export function withTerrainRead<T>(tiles: World["tiles"], run: () => T): T {
+  const previous = terrainRead;
+  terrainRead = { tiles, values: new Map() };
+  try {
+    return run();
+  } finally {
+    terrainRead = previous;
+  }
+}
+
+/** Lists depending only on tile data and their explicit key. Never use for
+ * occupation, diplomacy, towns, routes or turn state. Returned arrays remain
+ * independent; mutable worlds outside a protected read calculate afresh. */
+export function terrainReadList(
+  world: World,
+  key: string | (() => string),
+  calculate: () => string[],
+): string[] {
+  const index =
+    worldReadIndex?.source === world
+      ? worldReadIndex
+      : (worldViewIndexes.get(world) ?? worldReadIndex);
+  const cache =
+    terrainRead?.tiles === world.tiles
+      ? terrainRead.values
+      : index?.source.tiles === world.tiles
+        ? (index.terrain ??= new Map())
+        : undefined;
+  if (!cache) return calculate();
+  const id = typeof key === "string" ? key : key();
+  let result = cache.get(id);
+  if (!result) {
+    result = calculate();
+    cache.set(id, result);
+  }
+  return result.slice();
+}
 /** Published views are immutable. Transaction drafts must not register here. */
 export function prepareWorldView(world: World): void {
   if (!worldViewIndexes.has(world))

@@ -800,6 +800,7 @@ it("indexes repeated producers once across seasons and related read-only views",
       ([value]) =>
         Array.isArray(value) &&
         value.length === 5 &&
+        typeof value[0] === "number" &&
         ["merchant", "fishing", "merchantship"].includes(value[1]),
     );
   } finally {

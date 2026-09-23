@@ -2,7 +2,13 @@ import { BIOMES, BIOME_INFO, biomeYield } from "./climate-content";
 import { TERRAIN, processedFor, type TerrainKey } from "./content";
 import { friendly } from "./relations";
 import type { Game, Hex, Piece, Raw, Stock, Watchtower } from "./types";
-import { neighbors, vertexNeighbors, solidAtVertex, canOccupy } from "./world";
+import {
+  neighbors,
+  vertexNeighbors,
+  solidAtVertex,
+  canOccupy,
+  terrainReadList,
+} from "./world";
 
 /** Per-producer output: Woods choices belong to factions, never to the shared tile owner. */
 export function tileYield(
@@ -100,31 +106,51 @@ export const collector = (u: Pick<Piece, "kind">) =>
 export const productiveAtVertex = (s: Game, vertex: string) =>
   s.vertices[vertex].tiles.filter((id) => tileGood(s.tiles[id]));
 export function defaultCoverage(s: Game, u: Pick<Piece, "tile" | "tier">) {
-  return neighbors(u.tile)
-    .filter((id) => s.tiles[id] && tileGood(s.tiles[id]))
-    .sort((a, b) => {
-      const ga = tileGood(s.tiles[a]),
-        gb = tileGood(s.tiles[b]);
-      return (
-        Number(gb === "gold") - Number(ga === "gold") ||
-        Math.abs(7 - s.tiles[a].number) - Math.abs(7 - s.tiles[b].number) ||
-        a.localeCompare(b)
-      );
-    })
-    .slice(0, u.tier);
+  return terrainReadList(s, `merchant-neighbors/${u.tile}`, () =>
+    neighbors(u.tile)
+      .filter((id) => s.tiles[id] && tileGood(s.tiles[id]))
+      .sort((a, b) => {
+        const ga = tileGood(s.tiles[a]),
+          gb = tileGood(s.tiles[b]);
+        return (
+          Number(gb === "gold") - Number(ga === "gold") ||
+          Math.abs(7 - s.tiles[a].number) - Math.abs(7 - s.tiles[b].number) ||
+          a.localeCompare(b)
+        );
+      }),
+  ).slice(0, u.tier);
 }
 export function harvestTiles(
   s: Game,
   u: Pick<Piece, "kind" | "tier" | "tile" | "coverage" | "carrier">,
 ): string[] {
   if (u.carrier || !collector(u)) return [];
-  const around = neighbors(u.tile).filter((id) => s.tiles[id]);
+  return terrainReadList(
+    s,
+    () =>
+      JSON.stringify([
+        "harvest-tiles",
+        u.kind,
+        u.tile,
+        u.tier,
+        u.kind === "merchant" ? u.coverage : null,
+      ]),
+    () => collectorTiles(s, u),
+  );
+}
+
+function collectorTiles(
+  s: Game,
+  u: Pick<Piece, "kind" | "tier" | "tile" | "coverage">,
+): string[] {
   if (u.kind === "merchant")
     return [u.tile, ...(u.coverage ?? defaultCoverage(s, u))].filter(
       (id) => s.tiles[id] && tileGood(s.tiles[id]),
     );
   if (u.kind === "merchantship")
-    return around.filter((id) => s.tiles[id].resource !== "water");
+    return neighbors(u.tile).filter(
+      (id) => s.tiles[id] && s.tiles[id].resource !== "water",
+    );
   // A fishing radius follows connected water: nets do not cross land or ice.
   if (!canOccupy(s.tiles[u.tile], true)) return [];
   const reached = new Set([u.tile]),

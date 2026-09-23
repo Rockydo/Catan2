@@ -69,6 +69,7 @@ import {
   nextRandom,
   landAtVertex,
   waterAtVertex,
+  withTerrainRead,
 } from "./world";
 import { addHexes, expeditionFootprint, neighbors } from "./world";
 import {
@@ -477,7 +478,7 @@ export function applyCommandPlan(
   // and other orders detach it before execution. Mutable detached terrain does
   // not match this scope and must always rebuild its production fingerprint.
   return withProductionTerrainRead(state.tiles, () =>
-    commandPlan(state, choose),
+    withTerrainRead(state.tiles, () => commandPlan(state, choose)),
   );
 }
 function commandPlan(

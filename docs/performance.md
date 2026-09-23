@@ -1149,3 +1149,23 @@ The four crowded-map wheel sequences retained approximately 33 ms p95 frame inte
 All 1,666 unit tests and 96 staging browser scenarios passed across Chromium, Firefox and mobile. Coverage includes cache reuse beyond its unused-entry limit, reference-counted release and eviction, delayed and failed decoding, selection changes before images finish, town upgrades, guild and troop artwork, seasonal labels, camera anchoring and culling, army selection, large-save refresh/export and localization. Type checking, formatting and the build passed. Save encoding, rules and AI decisions were not changed in this pass. Large-map painting and other planning costs remain measurable, so the broader performance goal stays active.
 
 The local deployment passed all 12 production HTTP checks and 24 further Chromium sprite, camera and large-save scenarios. Earlier hashed assets were retained for open sessions. All diagnostics and browser checks used exported copies or disposable fixtures. The source exports and playing campaign were not modified.
+
+## Reusing unchanged merchant and fishing areas
+
+The AI profile showed repeated sorting of the same merchant neighbors and repeated fishing-radius searches during consecutive orders. These terrain-only results can now share the protected terrain dictionary already retained by an engine command batch. Merchant tiers select a prefix of the same ordered neighbor list. Harvest areas retain class, origin, tier and manual coverage in their keys. Passengers are excluded before lookup, and returned arrays remain independent.
+
+Orders that change terrain detach the dictionary before execution. Detached mutable worlds calculate fresh results, and fresh read scopes rebuild their indexes. Forecast weather, sea ice, new expedition tiles, changed dice and resource types therefore cannot reuse old areas. Movement and manual coverage changes use their current query inputs. Occupation, diplomacy, warehouses, stockpiles and market values are not stored in this terrain cache. Uncached reads skip cache-key serialization. Protected entries last only for the synchronous command batch; published map views use their existing weakly keyed lifetime, with no retained campaign history.
+
+| Workload | Previous build | Updated build | Exact comparison |
+| --- | ---: | ---: | --- |
+| Round 32 browser replay, through human casualty prompt | 11.08 s | 10.02 s | 485 orders and complete final state |
+| Round 31 browser replay, through human casualty prompt | 5.62 s | 5.58 s | 153 orders and complete final state |
+| 2,000 tiles and 1,000 towns, first 60 decisions | 10.48 s | 10.41 s | 60 orders and complete final state |
+
+The latest browser replay improved by about 10%. The larger map was effectively unchanged. Both used exported copies; the browser replay ran AI seat 2 at the existing 20 ms pacing and stopped for human input, so this is not a complete-turn timing. Frame p95 remained around 16.8 ms, with no long main-thread tasks or browser errors. No search depth, candidate moves, production weights or tactical decisions were removed. A final replay of the older Round 31 export also retained all 153 orders and its full final state.
+
+The production audit matched all six ordered delivery lists, four forecast horizons and eleven complete dice-result states on both the real campaign and the larger map. The independent planning audit retained all 13,206 proposals across 128 scenarios, and all 96 trade comparisons matched across 48 scenarios, including 124 offers, 14 aid proposals and 140 acceptance decisions.
+
+All 1,674 unit tests and 132 staging browser scenarios passed across Chromium, Firefox and mobile. New coverage checks every collector class and tier, manual coverage order and duplicates, movement and passenger changes, nested exceptions, scope exit, independent arrays, published views, mutable drafts and frontier additions. Work-count checks require repeated protected reads to avoid revisiting terrain. Existing multi-command comparisons now inspect merchant and fishing areas at every intermediate position, including changed sea surfaces, production, recruitment and elimination. Browser coverage includes seasonal previews, saved ice, merchants and fishing ships, transports, unit selection, AI worker batching and large-save recovery. Type checking, formatting and the production build passed.
+
+The local deployment passed all 12 production HTTP checks and 20 additional Chromium merchant, worker and large-save scenarios. Previous hashed assets remain available for already-open sessions. The exported sources and playing campaign were not modified. Remaining full troop scans, transaction copying and large-map drawing still warrant work under the active performance goal.
