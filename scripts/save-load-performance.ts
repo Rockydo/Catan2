@@ -212,6 +212,9 @@ try {
     loadMs: number;
     readyMs: number;
     boardOpenMs?: number;
+    resourceTransferBytes?: number;
+    imageTransferBytes?: number;
+    resourceCount?: number;
   }[] = [];
   for (const format of [
     "legacy",
@@ -317,11 +320,34 @@ try {
         await profile.detach();
       }
     }
+    // Optional network diagnostic after measurement. Do not count the idle
+    // wait as load/paint time, or disable the browser cache with request routes.
+    const resources = process.env.TRACK_RESOURCES
+      ? await (async () => {
+          await page.waitForLoadState("networkidle");
+          return page.evaluate(() => {
+            const entries = performance.getEntriesByType(
+              "resource",
+            ) as PerformanceResourceTiming[];
+            return {
+              resourceCount: entries.length,
+              resourceTransferBytes: entries.reduce(
+                (n, r) => n + r.transferSize,
+                0,
+              ),
+              imageTransferBytes: entries
+                .filter((r) => /\.(?:webp|png|svg|jpe?g)(?:\?|$)/.test(r.name))
+                .reduce((n, r) => n + r.transferSize, 0),
+            };
+          });
+        })()
+      : undefined;
     samples.push({
       format,
       loadMs: result.loadMs,
       readyMs: result.readyMs,
       boardOpenMs,
+      ...resources,
     });
   }
   if (errors.length) throw Error(JSON.stringify(errors));

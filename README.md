@@ -66,6 +66,8 @@ Autosaves send only changes to the worker after the first snapshot; each stored 
 
 Once installed and built, the game runs locally without an account or an internet connection. Artwork, rules and AI are included. The server listens only on your computer by default. `HOST` and `PORT` environment variables can change its address; exposing it on a network still does not add multiplayer.
 
+The local server validates cached artwork and pages on refresh. Unchanged files return headers without another file body; updated files receive new validators. Only hashed code and stylesheet filenames are cached permanently. Large file downloads stream from disk instead of creating a full in-memory copy per request.
+
 ## Development and tests
 
 ```sh
@@ -227,6 +229,8 @@ SAVE_PATH=/path/to/campaign.json GAME_URL=http://127.0.0.1:4173 \
 This checks the exact loaded state and measures when the campaign menu appears. It does not open or change your playing browser. Set `FORMATS=details,packed` to compare packing versions 8 and 9. Version 9 shares repeated column values. The report includes the full campaign hash.
 
 Set `OPEN_BOARD=1` to also measure the Continue button through two rendered map frames. This uses a disposable hotseat copy to prevent AI actions; it does not measure completion of every artwork download. `PROFILE_BOARD=1` additionally writes Chromium CPU profiles. `scripts/save-decode-performance.ts` isolates decompression, validation and troop restoration with three warmups and seven measured loads. Set `SAVE_PATH`, optional `SOURCE_ROOT`, `LABEL` and `EXPECT_PATH`. Use separate processes for before/after timing; the reference report checks the complete campaign hash.
+
+Set `TRACK_RESOURCES=1` to include browser resource-transfer totals after the page becomes idle. This extra wait is excluded from menu and map timings. Compare servers using separate disposable profiles and the same built files; `DIST_DIR=/path/to/build PORT=4181 npm start` starts an isolated copy of the production server.
 
 `scripts/save-snapshot-performance.ts` compares repeated save packing against a reference checkout. Set `SAVE_PATH` and `SOURCE_ROOT`; `LABEL` names the report. It checks the complete archive payload and unchanged source campaign outside the measured intervals. `scripts/map-selection-performance.ts` measures tile selection on an exported copy, using `SAVE_PATH`, optional `GAME_URL` and `LABEL`. Neither script touches the playing campaign.
 

@@ -40,6 +40,9 @@ for (let sample = 0; sample < 5; sample++) {
     throw Error("Unchanged production inputs changed their signature.");
   signature = current;
 }
+const signatureHash = digest(signature);
+if (expected?.signatureHash && expected.signatureHash !== signatureHash)
+  throw Error("The production input signature changed.");
 // Model consecutive immutable decisions sharing a protected terrain snapshot.
 // Older checkouts have no scope; both must return their same complete key on
 // every read. These are fingerprint queries, not executed commands or AI turns.
@@ -149,6 +152,7 @@ const report = {
   towns: Object.keys(game.towns).length,
   units: Object.keys(game.pieces).length,
   signatureBytes: Buffer.byteLength(signature),
+  signatureHash,
   signatureMedianMs: [...signatureMs].sort((a, b) => a - b)[2],
   signatureSamplesMs: signatureMs,
   signatureBatchReads: 32,
