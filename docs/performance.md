@@ -1169,3 +1169,24 @@ The production audit matched all six ordered delivery lists, four forecast horiz
 All 1,674 unit tests and 132 staging browser scenarios passed across Chromium, Firefox and mobile. New coverage checks every collector class and tier, manual coverage order and duplicates, movement and passenger changes, nested exceptions, scope exit, independent arrays, published views, mutable drafts and frontier additions. Work-count checks require repeated protected reads to avoid revisiting terrain. Existing multi-command comparisons now inspect merchant and fishing areas at every intermediate position, including changed sea surfaces, production, recruitment and elimination. Browser coverage includes seasonal previews, saved ice, merchants and fishing ships, transports, unit selection, AI worker batching and large-save recovery. Type checking, formatting and the production build passed.
 
 The local deployment passed all 12 production HTTP checks and 20 additional Chromium merchant, worker and large-save scenarios. Previous hashed assets remain available for already-open sessions. The exported sources and playing campaign were not modified. Remaining full troop scans, transaction copying and large-map drawing still warrant work under the active performance goal.
+
+
+## Field-presence checks during military orders
+
+Siege and route-protection checks previously built a filtered troop array for each adjacent hex, even when the first defender answered the question. The shared existence query now stops at the first match. Mutable drafts scan their current troop list once across all queried hexes. Immutable read scopes use the existing tile index. Town protection, watchtower protection, siege cleanup and route destruction use the same unchanged conditions, including alliances, land versus naval protection, passengers and zero-power civilians.
+
+Guild supply transactions also reuse the planner's current troop list when detaching a formation. The list is read before any edits, and the selected formation still gets independent records before bonuses change. Economic contracts without a selected army do not enumerate troops. No new persistent cache or archive fields were added.
+
+Comparisons used exported copies and a reference checkout at `9a73cc0`. Measurements ran serially, separately from correctness tests:
+
+| Workload | Previous build | Updated build | Exact comparison |
+| --- | ---: | ---: | --- |
+| Round 32 browser replay, through human casualty prompt | 10.00 s | 9.84 s | 485 orders and complete final state |
+| Round 31 browser replay, through human casualty prompt | 5.44 s | 5.27 s | 153 orders and complete final state |
+| 2,000 tiles and 1,000 towns, first 60 decisions | 10.50 s | 10.35 s | 60 orders and complete final state |
+
+These are modest gains, about 2% and 3% in the browser samples. The larger map sample improved by about 1%. They are local samples, not complete-turn timings or fixed speed guarantees. Both browser replays retained frame p95 near 16.8 ms, with no long main-thread tasks or browser errors. Search depth, strategic weights, candidate actions and the resulting decisions are unchanged.
+
+Three new regression cases compare the former existence queries across mutable, related and published views; cover troop movement, boarding, casualties, zero-power ships, changed alliances and empty areas; and check that a three-hex query enumerates a mutable army only once. Existing guild transaction tests verify full-formation supply, subsequent movement, stacked supply, rollback and unchanged source records. All 1,677 unit tests passed. Independent audits matched all 13,206 planning proposals across 128 scenarios and all 96 trade comparisons across 48 scenarios. Type checking, formatting, the build and whitespace checks passed.
+
+All 114 staging browser scenarios passed across Chromium, Firefox and mobile, covering guilds, town and tower sieges, transports, formation selection, worker batches and large-save reloads. After atomic local publication, all 12 production HTTP checks and 18 further Chromium scenarios passed. Earlier hashed assets were retained for open sessions. Validation used disposable browser profiles and exported copies; the playing campaign and source exports were not modified. The save format and compact archive sizes are unchanged. Remaining transaction copying, troop indexing and large-map drawing keep the broader performance goal active.

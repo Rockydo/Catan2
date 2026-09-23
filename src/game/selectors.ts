@@ -208,6 +208,33 @@ export const piecesAt = (s: Game, tile: string, naval?: boolean) => {
       (naval === undefined || u.naval === naval),
   );
 };
+/** Read an existence condition across nearby hexes without creating a filtered
+ * army for each hex. The predicate must be read-only. Mutable drafts inspect
+ * their current troops once; immutable frames use their existing tile index. */
+export function someFieldPiece(
+  s: Game,
+  tiles: readonly string[],
+  accept: (unit: Piece) => boolean,
+  naval?: boolean,
+): boolean {
+  const index = readIndex(s);
+  if (index?.source.pieces === s.pieces) {
+    for (const tile of tiles)
+      for (const unit of index.tiles.get(tile) ?? [])
+        if ((naval === undefined || unit.naval === naval) && accept(unit))
+          return true;
+  } else {
+    for (const unit of allPieces(s))
+      if (
+        !unit.carrier &&
+        (naval === undefined || unit.naval === naval) &&
+        tiles.includes(unit.tile) &&
+        accept(unit)
+      )
+        return true;
+  }
+  return false;
+}
 /** Nearby field units in their original campaign order. Guilds inspect the
  * same city repeatedly; do not scan every soldier in the empire each time. */
 export function ownPiecesAtVertex(s: Game, vertex: string, owner = s.active) {
@@ -332,10 +359,11 @@ export const blockAt = (s: Game, tile: string, p = s.active) =>
 export const besieged = (s: Game, town: string) =>
   Object.values(s.sieges).some((x) => x.town === town);
 export const protects = (s: Game, t: Town, naval = false) =>
-  s.vertices[t.vertex].tiles.some((tile) =>
-    piecesAt(s, tile, naval ? undefined : false).some(
-      (u) => friendly(s, u.owner, t.owner) && points(u) > 0,
-    ),
+  someFieldPiece(
+    s,
+    s.vertices[t.vertex].tiles,
+    (u) => friendly(s, u.owner, t.owner) && points(u) > 0,
+    naval ? undefined : false,
   );
 export const ready = (s: Game, u: Piece) =>
   u.born < s.players[u.owner].turns &&
@@ -1561,10 +1589,11 @@ export function siegeRequirement(s: Game, town: Town, units: Piece[]) {
 export const towerSiegeRequirement = (tower: Watchtower, units: Piece[]) =>
   Math.max(0, Math.floor(tower.tier / 2) - siegePower(units));
 export const towerGuards = (s: Game, tower: Watchtower) =>
-  s.vertices[tower.vertex].tiles.some((tile) =>
-    piecesAt(s, tile, false).some(
-      (u) => friendly(s, u.owner, tower.owner) && points(u) > 0,
-    ),
+  someFieldPiece(
+    s,
+    s.vertices[tower.vertex].tiles,
+    (u) => friendly(s, u.owner, tower.owner) && points(u) > 0,
+    false,
   );
 export const unusedBonuses = () => ({
   routes: 0,

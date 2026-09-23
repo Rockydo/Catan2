@@ -455,10 +455,15 @@ function detachMilitaryPieces(original: Game, draft: Game, command: Command) {
 /** Supply IDs name a whole formation. Copy every friendly unit on that tile,
  * including unlisted soldiers, before its movement or siege bonuses change.
  * Economic guild orders have no selected formation and edit no troop records. */
-function detachSuppliedPieces(original: Game, draft: Game, command: Command) {
+function detachSuppliedPieces(
+  original: Game,
+  draft: Game,
+  command: Command,
+  units?: readonly Piece[],
+) {
   const tile = draft.pieces[command.ids?.[0] ?? ""]?.tile;
   if (!tile) return;
-  for (const unit of allPieces(draft))
+  for (const unit of units ?? allPieces(draft))
     if (
       unit.owner === draft.active &&
       unit.tile === tile &&
@@ -521,7 +526,19 @@ function commandPlan(
           !detached &&
           !LOCAL_RECORD_COMMANDS.has(command.type) &&
           peacefulMove(view, command);
-        return { command, moving, units: moving ? allPieces(view) : undefined };
+        return {
+          command,
+          moving,
+          // Reuse the planner's troop list when copy-on-write detaches a
+          // supplied formation. The read scope closes before any edits.
+          units:
+            moving ||
+            (!detached &&
+              command?.type === "guild-order" &&
+              command.ids?.length)
+              ? allPieces(view)
+              : undefined,
+        };
       });
     };
     let selection = select();
@@ -533,7 +550,7 @@ function commandPlan(
       const next = { ...view };
       let movementUnits: readonly Piece[] | undefined;
       if (!detached && command.type === "guild-order")
-        detachSuppliedPieces(state, next, command);
+        detachSuppliedPieces(state, next, command, units);
       if (!detached && LOCAL_MILITARY_COMMANDS.has(command.type))
         detachMilitaryPieces(state, next, command);
       if (!detached && !LOCAL_RECORD_COMMANDS.has(command.type)) {
@@ -650,7 +667,12 @@ function commandResult(state: Game, c: Command, preview: boolean): Result {
     if (moving) detachMovingPieces(state, s, c);
     if (LOCAL_MILITARY_COMMANDS.has(c.type)) detachMilitaryPieces(state, s, c);
     if (!localOrder && c.type === "guild-order")
-      detachSuppliedPieces(state, s, c);
+      detachSuppliedPieces(
+        state,
+        s,
+        c,
+        c.ids?.length ? allPieces(state) : undefined,
+      );
     if (localOrder) {
       // Use the actual order rules and payments, but do not process
       // unrelated sieges/eliminations when only checking a menu option.
@@ -695,7 +717,12 @@ function localOrderDraft(state: Game, command: Command): Game {
     events: [...state.events],
   };
   if (command.type === "guild-order")
-    detachSuppliedPieces(state, draft, command);
+    detachSuppliedPieces(
+      state,
+      draft,
+      command,
+      command.ids?.length ? allPieces(state) : undefined,
+    );
   return draft;
 }
 function advanceCommand(

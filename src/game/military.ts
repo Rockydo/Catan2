@@ -14,6 +14,7 @@ import {
   allPieces,
   passengersOn,
   piecesAt,
+  someFieldPiece,
   combatantsAt,
   ready,
   fresh,
@@ -164,10 +165,11 @@ function checkSieges(s: Game) {
       tower.id !== siege.tower ||
       friendly(s, tower.owner, siege.owner) ||
       towerGuards(s, tower) ||
-      !s.vertices[tower.vertex].tiles.some((tile) =>
-        piecesAt(s, tile, false).some(
-          (u) => u.owner === siege.owner && points(u) > 0,
-        ),
+      !someFieldPiece(
+        s,
+        s.vertices[tower.vertex].tiles,
+        (u) => u.owner === siege.owner && points(u) > 0,
+        false,
       )
     ) {
       delete s.towerSieges![id];
@@ -191,11 +193,11 @@ function checkSieges(s: Game) {
     if (
       !town ||
       friendly(s, town.owner, siege.owner) ||
-      !s.vertices[town.vertex].tiles.some((t) =>
-        piecesAt(s, t).some(
-          (u) =>
-            u.owner === siege.owner && canBesiege(s, u) && !hasGuard(u.naval),
-        ),
+      !someFieldPiece(
+        s,
+        s.vertices[town.vertex].tiles,
+        (u) =>
+          u.owner === siege.owner && canBesiege(s, u) && !hasGuard(u.naval),
       )
     ) {
       delete s.sieges[id];
@@ -680,11 +682,11 @@ export function militaryCommand(
       "Land armies destroy roads; fleets destroy shipping routes.",
     );
     rule(
-      !e.tiles.some((t) =>
-        piecesAt(s, t, units[0].naval).some(
-          (u) =>
-            friendly(s, u.owner, r.owner) && !friendly(s, u.owner, s.active),
-        ),
+      !someFieldPiece(
+        s,
+        e.tiles,
+        (u) => friendly(s, u.owner, r.owner) && !friendly(s, u.owner, s.active),
+        units[0].naval,
       ),
       "Clear the route owner’s protecting force first.",
     );
