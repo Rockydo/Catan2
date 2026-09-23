@@ -22,6 +22,14 @@ const UNIT_FIELDS = [
   "bonus",
 ];
 const invalid = () => new Error("This compact save is damaged.");
+function standardFields(value: object): boolean {
+  const fields = Object.keys(value);
+  return (
+    fields.length === UNIT_FIELDS.length &&
+    fields.every((field, i) => field === UNIT_FIELDS[i])
+  );
+}
+
 function jsonBytes(value: unknown): number {
   return textBytes(JSON.stringify(value));
 }
@@ -54,19 +62,52 @@ export function packGame(game: Game): PackedGame {
     rows: number[] = [],
     lookup = new Map<string, number>();
   let expanded = jsonBytes({ ...game, pieces: {} });
+  let previous: Record<string, unknown> | undefined,
+    previousIndex = -1;
   for (const key of keys) {
     const piece = game.pieces[key];
     if (piece.id !== key) throw invalid();
-    // Replacing an existing key retains its position. Unknown future fields and
-    // differences in property order remain part of the template identity.
-    const template = { ...piece, id: null },
-      signature = JSON.stringify(template);
-    let index = lookup.get(signature);
+    // Recruited formations usually contain consecutive identical soldiers.
+    // Compare the exact primitive layout before allocating/stringifying another
+    // description. Nested, extra or reordered fields retain the generic path.
+    let index =
+      previous &&
+      piece.owner === previous.owner &&
+      piece.kind === previous.kind &&
+      piece.naval === previous.naval &&
+      piece.tier === previous.tier &&
+      piece.tile === previous.tile &&
+      piece.born === previous.born &&
+      piece.moved === previous.moved &&
+      piece.acted === previous.acted &&
+      piece.bonus === previous.bonus &&
+      standardFields(piece)
+        ? previousIndex
+        : undefined;
     if (index === undefined) {
-      index = templates.length;
-      lookup.set(signature, index);
-      templates.push(template);
-      sizes.push(textBytes(signature));
+      const template = { ...piece, id: null },
+        signature = JSON.stringify(template);
+      index = lookup.get(signature);
+      if (index === undefined) {
+        index = templates.length;
+        lookup.set(signature, index);
+        templates.push(template);
+        sizes.push(textBytes(signature));
+      }
+      const fields = Object.keys(template);
+      previous =
+        fields.length === UNIT_FIELDS.length &&
+        fields.every(
+          (field, i) =>
+            field === UNIT_FIELDS[i] &&
+            (template[field as keyof Piece] === null ||
+              !["object", "function"].includes(
+                typeof template[field as keyof Piece],
+              )),
+        )
+          ? template
+          : undefined;
+      previousIndex = index;
     }
     // Delta IDs contain only an ASCII prefix and decimal digits. Their JSON
     // byte size is exact without serializing each ID again for every soldier.

@@ -424,3 +424,25 @@ The large-map sample improved by about 6%; the complete Round 31 replay improved
 The planning audit retained all 2,924 projects, their scores and their order across 48 scenarios. Regression coverage compares combat results across every unit class and tier, mixed owners, civilians, tower support and seasonal surfaces. Colony coverage includes reordered maps, ships, spent movement, passengers, changed towns and towers, isolated execution drafts and immutable UI views. Recruitment checks retain the same danger result for every tile in mixed-force scenarios.
 
 Validation passed all 1,434 unit tests and 96 browser scenarios across Firefox, Chromium and mobile. The deployed build passed 12 production HTTP checks and 17 additional Chromium scenarios covering AI continuation, colonies, naval sieges and large-save recovery. All replays and browser checks used disposable copies. The live campaign was not opened or modified, and the broader performance goal remains active.
+
+## Spatial save compression and large-army transfers
+
+Packing version 5 replaces canonical tile and intersection IDs with exact coordinate columns, and road IDs with references to their two saved endpoints. It preserves dictionary order and endpoint order. Unusual IDs remain literal strings. No terrain, geometry or game state is regenerated. Integer sequences retain the existing lossless encoding before gzip. Original JSON and packing versions 1 through 4 remain readable.
+
+| Campaign | Previous compressed archive | New archive | Reduction |
+| --- | ---: | ---: | ---: |
+| Latest export, 540 tiles and 14,695 units | 65,838 bytes | 59,271 bytes | 10.0% |
+| Growth map, 2,000 tiles and 1,000 towns | 198,335 bytes | 178,385 bytes | 10.1% |
+| Storage stress copy, 240,000 units | 68,924 bytes | 61,921 bytes | 10.2% |
+
+The storage stress copy duplicates troops and compresses unusually well; it is not a simulation of a naturally played 240,000-unit campaign. All comparisons restore the complete campaign, including property order, individual orders, stockpiles, nested fields and independent mutable troop records.
+
+For large armies, the validated worker result now transfers repeated soldiers as templates. In the stress case, the campaign message fell from 36.7 MB to 2.1 MB. Reconstruction still creates every individual soldier. A bounded sample selects the original JSON path for diverse armies with little adjacent repetition, avoiding a costly packing attempt. Small campaigns retain direct object transfer. Packing also reuses consecutive identical primitive troop descriptions, with the original generic path for extra, reordered or nested fields.
+
+In disposable Chromium with warm assets, median refresh-to-menu time on the 240,000-unit fixture fell from 475.7 to 439.6 ms, about 8%. The real export remained around 0.1 seconds: 99.1 ms before and 101.6 ms after. The import diagnostic used identical historical input and fresh workers: median reconstruction-ready time fell from 638 to 616.5 ms, a modest 3% improvement. Its main-thread reconstruction median fell from 99.8 to 68.7 ms. These measurements exclude opening and painting the map and are local samples, not fixed speedups for every save.
+
+The refresh diagnostic compares six historical/current encodings. The import diagnostic bundles the actual interface decoder for the tested checkout, including the template reconstruction step. Both verify the complete result. Format tests cover forward endpoint references, reordered dictionaries, arbitrary literal IDs, invalid types, cycles, missing columns, oversized expansion, exact old-format recovery and independent nested records. Integrity checks, full game validation, atomic backups, competing-tab protection and the expanded-size limits remain enabled.
+
+Validation passed all 1,458 unit tests and 45 browser scenarios across Firefox, Chromium and mobile. After a final packing allocation cleanup, the 44 affected unit tests and all 21 storage browser checks were repeated. Browser coverage includes quota fallback, bulk recruitment, large-army refresh, binary exports, historical imports, corrupted primary recovery, concurrent tabs, coalesced writes and stale worker bases. Tests used disposable profiles and exported copies; the player's live campaign was not opened or changed.
+
+The local deployment passed all 12 production HTTP checks and nine additional Chromium storage/worker scenarios. Earlier hashed assets were retained so already-open sessions can finish using their current build. Existing campaigns adopt the new archive format on their next save or export. The broader performance goal remains active.

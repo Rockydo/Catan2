@@ -8,7 +8,7 @@ const invalid = () => new Error("This compact save is damaged.");
 const tooLarge = () =>
   new Error("This save exceeds the 128 MB expanded limit.");
 
-function pack(values: unknown): unknown {
+export function packIntegerSequence(values: unknown): unknown {
   if (
     !Array.isArray(values) ||
     values.length < 32 ||
@@ -41,7 +41,10 @@ function pack(values: unknown): unknown {
     : values;
 }
 
-function unpack(value: unknown, budget: { remaining: number }): unknown {
+export function unpackIntegerSequence(
+  value: unknown,
+  budget: { remaining: number },
+): unknown {
   if (Array.isArray(value)) return value;
   if (!value || typeof value !== "object") throw invalid();
   const { length, ints } = value as { length: number; ints: string };
@@ -148,9 +151,9 @@ function mapSequences(
 }
 
 export const packIntegers = (input: unknown): unknown =>
-  mapSequences(input, pack);
+  mapSequences(input, packIntegerSequence);
 
 export function unpackIntegers(input: unknown): unknown {
   const budget = { remaining: LIMIT };
-  return mapSequences(input, (value) => unpack(value, budget));
+  return mapSequences(input, (value) => unpackIntegerSequence(value, budget));
 }

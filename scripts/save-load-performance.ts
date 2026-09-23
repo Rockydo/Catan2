@@ -2,6 +2,8 @@ import { chromium } from "@playwright/test";
 import { readFileSync, mkdirSync, writeFileSync } from "node:fs";
 import { compress, importSave } from "../src/storage/codec";
 import { serialize, serializePacked } from "../src/game/save";
+import { packIntegers } from "../src/game/save-integers";
+import { unpackGame } from "../src/game/save-packing";
 import { packGame } from "../src/game/save-packing";
 import { packTables } from "../src/game/save-tables";
 import { packReferences } from "../src/game/save-references";
@@ -46,6 +48,20 @@ const encodings = {
       }),
     ),
   ),
+  integers: Array.from(
+    await compress(
+      JSON.stringify({
+        ...JSON.parse(template),
+        packing: 4,
+        game: packIntegers(packReferences(packTables(templateGame))),
+        checksum: hash(
+          JSON.stringify(
+            packIntegers(packReferences(packTables(templateGame))),
+          ),
+        ).toString(16),
+      }),
+    ),
+  ),
   packed: Array.from(await compress(serializePacked(game))),
 };
 const browser = await chromium.launch({
@@ -81,6 +97,7 @@ try {
             w.loadMs = performance.now() - this.started;
             w.loadedGame = data.result?.game;
             w.loadedGameText = data.result?.gameText;
+            w.loadedUnitTemplates = data.result?.unitTemplates;
           }
         });
       }
@@ -100,15 +117,18 @@ try {
     "templates",
     "tables",
     "references",
+    "integers",
     "packed",
     "tables",
     "packed",
     "templates",
     "references",
+    "integers",
     "tables",
     "legacy",
     "references",
     "legacy",
+    "integers",
     "packed",
     "templates",
   ] as const) {
@@ -148,8 +168,11 @@ try {
         loadMs: w.loadMs,
         readyMs: w.readyMs,
         game: w.loadedGameText ?? JSON.stringify(w.loadedGame),
+        unitTemplates: w.loadedUnitTemplates,
       };
     });
+    if (result.unitTemplates)
+      result.game = JSON.stringify(unpackGame(JSON.parse(result.game)));
     if (result.game !== expected) throw Error("Reload changed the campaign.");
     samples.push({ format, loadMs: result.loadMs, readyMs: result.readyMs });
   }
@@ -167,11 +190,13 @@ try {
     templateBytes: encodings.templates.length,
     tableBytes: encodings.tables.length,
     referenceBytes: encodings.references.length,
+    integerBytes: encodings.integers.length,
     packedBytes: encodings.packed.length,
     legacyMedianReadyMs: median("legacy"),
     templateMedianReadyMs: median("templates"),
     tableMedianReadyMs: median("tables"),
     referenceMedianReadyMs: median("references"),
+    integerMedianReadyMs: median("integers"),
     packedMedianReadyMs: median("packed"),
     samples,
     exactRoundTrip: true,

@@ -190,3 +190,37 @@ it("bounds amplification from shared templates and rejects excessive nesting", (
   packed.pieces.templates[0].payload = nested;
   expect(() => unpackGame(packed)).toThrow(/compact/);
 });
+
+it("reuses adjacent troop descriptions without overlooking any field, order or later edit", () => {
+  const { s, water } = fishingFixture();
+  const base = piece(s, water, 0, "fishing", 3);
+  for (const [field, value] of Object.entries({
+    owner: 2,
+    kind: "transport",
+    naval: false,
+    tier: 4,
+    tile: "elsewhere",
+    born: 9,
+    moved: 1,
+    acted: true,
+    bonus: 5,
+  })) {
+    piece(s, water, 0, "fishing", 3);
+    Object.assign(piece(s, water, 0, "fishing", 3), { [field]: value });
+  }
+  const extra = piece(s, water, 0, "fishing", 3);
+  Object.assign(extra, { future: { value: 5 } });
+  const reordered = piece(s, water, 0, "fishing", 3);
+  s.pieces[reordered.id] = Object.assign({ bonus: 0 }, reordered);
+  const unknown = piece(s, water, 0, "fishing", 3);
+  delete (unknown as any).bonus;
+  Object.assign(unknown, { future: 3 });
+  const check = () =>
+    expect(JSON.stringify(unpackGame(onDisk(packGame(s))))).toBe(
+      JSON.stringify(s),
+    );
+  check();
+  base.bonus = 16;
+  (extra as any).future.value = 7;
+  check();
+});
