@@ -17,7 +17,8 @@ import { seasonalTerrainPattern, terrainArtFile } from "./terrain-art";
 import type { TerrainKey } from "../game/content";
 import { localize as tx, useLocale } from "../i18n";
 import { friendly } from "../game/relations";
-import { GuildCrest } from "./Guilds";
+import { MapGuildCrest } from "./Guilds";
+import { MapSprite } from "./MapSprite";
 import { groupMapUnits, townMapView } from "./map-scene";
 import { MapLabel, MapLabelDefinitions } from "./MapLabel";
 import { ResourceIcon } from "./ResourceIcon";
@@ -694,7 +695,7 @@ const MapTown = memo(function MapTown({
               pointerEvents="none"
               data-testid={`guild-badge-${t.id}`}
             >
-              <GuildCrest kind={t.guildKind} tier={t.guildTier} size={18} />
+              <MapGuildCrest kind={t.guildKind} tier={t.guildTier} />
               {tx(
                 t.guildCount > 1 && (
                   <g>
@@ -1606,36 +1607,50 @@ const BoardScene = memo(function BoardScene({
                         </g>
                       ),
                     )}
-                    <circle
-                      r="13"
-                      fill="#153b43"
-                      stroke={COLORS[t.owner]}
-                      strokeWidth="2"
-                    />
-                    <path
-                      d="M-7 7-5-5H-7V-11H-3V-7H3V-11H7V-5H5L7 7Z"
-                      fill={COLORS[t.owner]}
-                      stroke="#f5e6bb"
-                      strokeWidth=".8"
-                    />
-                    <path d="M-2 6V0H2V6" fill="#18383d" />
                     <rect
-                      x="-7"
-                      y="8"
-                      width="14"
-                      height="9"
-                      rx="3"
-                      fill="#f5e5b4"
+                      x="-14"
+                      y="-14"
+                      width="28"
+                      height="32"
+                      fill="transparent"
                     />
-                    <MapLabel
-                      textAnchor="middle"
-                      y="15"
-                      fontSize="8"
-                      fontWeight="900"
-                      fill="#264a4a"
+                    <MapSprite
+                      assetKey={`tower/${COLORS[t.owner]}/${t.tier}`}
+                      bounds={{ x: -16, y: -16, width: 32, height: 35 }}
+                      className="tower-miniature-art"
+                      pointerEvents="none"
                     >
-                      {tx(t.tier)}
-                    </MapLabel>
+                      <circle
+                        r="13"
+                        fill="#153b43"
+                        stroke={COLORS[t.owner]}
+                        strokeWidth="2"
+                      />
+                      <path
+                        d="M-7 7-5-5H-7V-11H-3V-7H3V-11H7V-5H5L7 7Z"
+                        fill={COLORS[t.owner]}
+                        stroke="#f5e6bb"
+                        strokeWidth=".8"
+                      />
+                      <path d="M-2 6V0H2V6" fill="#18383d" />
+                      <rect
+                        x="-7"
+                        y="8"
+                        width="14"
+                        height="9"
+                        rx="3"
+                        fill="#f5e5b4"
+                      />
+                      <MapLabel
+                        textAnchor="middle"
+                        y="15"
+                        fontSize="8"
+                        fontWeight="900"
+                        fill="#264a4a"
+                      >
+                        {tx(t.tier)}
+                      </MapLabel>
+                    </MapSprite>
                   </g>
                 );
               }),

@@ -1,6 +1,7 @@
 import { tileOptions } from "../game/maritime";
 import { extractionGoods } from "../game/guilds";
 import { localize as tx, useLocale } from "../i18n";
+import { MapSprite } from "./MapSprite";
 import { memo, useState } from "react";
 import {
   Pickaxe,
@@ -114,6 +115,30 @@ export const GuildCrest = memo(function GuildCrest({
         )),
       )}
     </svg>
+  );
+});
+/** The map repeats these crests across cities. Keep their accessible names live
+ * while sharing the decorative vectors; panel artwork remains unchanged. */
+export const MapGuildCrest = memo(function MapGuildCrest({
+  kind,
+  tier,
+}: {
+  kind: GuildKind;
+  tier: number;
+}) {
+  useLocale();
+  return (
+    <MapSprite
+      assetKey={`guild/${kind}/${tier}`}
+      bounds={{ x: 0, y: 0, width: 18, height: 18 * 1.14 }}
+      className="guild-miniature-art"
+      role="img"
+      aria-label={tx(`${GUILDS[kind].name} ${ROMAN[tier]}`)}
+    >
+      <g aria-hidden="true">
+        <GuildCrest kind={kind} tier={tier} size={18} />
+      </g>
+    </MapSprite>
   );
 });
 interface Props {

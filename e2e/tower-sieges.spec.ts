@@ -67,6 +67,15 @@ test("a tower can be besieged from a moved army and inspected from its badge/lin
     "1 completed siege steps · 2 currently required · 1 remaining",
   );
   await expect(dialog).toContainText("Already operated this turn");
+  // Audit settled colors, not a partially transparent frame of the entry fade.
+  await dialog.evaluate(async (node) => {
+    await Promise.all(
+      node
+        .closest(".modal-backdrop")!
+        .getAnimations()
+        .map((a) => a.finished),
+    );
+  });
   expect(
     (await new AxeBuilder({ page }).include('[role="dialog"]').analyze())
       .violations,

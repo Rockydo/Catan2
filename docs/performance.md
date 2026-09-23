@@ -267,3 +267,27 @@ The latest 540-tile, 322-town, 14,695-unit export measured 2,739,686 bytes as or
 In consecutive before/after disposable Chromium comparisons with warm assets, median refresh-to-menu time for current packed saves at 240,000 units fell from 611.5 ms to 532.2 ms, about 13%. Each build loaded original JSON, unit-template saves and current table saves three times, verifying the complete loaded JSON on every run. These timings cover loading, validation and worker transfer to the menu, not painting the map or running a 240,000-unit AI turn. The diagnostic accepts both `.catane` and historical JSON inputs.
 
 Validation passed all 1,366 unit tests and 78 browser scenarios across Firefox, Chromium and the mobile viewport. Storage checks cover binary round trips, legacy JSON files, renamed files, Unicode, damaged and truncated archives, worker unavailability, quota fallback, reloads, backup recovery, competing tabs, coalescing and stale worker bases. The deployed build also passed 12 production HTTP checks and six disposable Chromium storage scenarios. The playing campaign was not opened or modified.
+
+
+## Shared army, guild and watchtower artwork
+
+Army shields and class symbols, map guild crests and watchtower bodies now use the existing bounded SVG image cache. The original vector artwork stays visible until decoding succeeds and remains available if decoding fails. Army counts, civilian markers, allied faction markers, siege progress, accessible labels and hit targets stay in the live map. Cache keys include every displayed class tier, faction color and selection state. Mixed fleets retain space for every glyph. Army composition summaries are memoized by the immutable formation array, avoiding a new full-unit scan when selection changes.
+
+Guild crests retain one accessible name in both cached and fallback rendering. Watchtowers retain a separate hit target and keyboard handler. Recruitment updates live counts without generating a new decorative image when classes and tiers are unchanged. The shared cache remains bounded at 256 entries.
+
+Four fixed zoom sequences were compared in disposable Chromium at 1920 × 1080, using the deployed build as the baseline:
+
+| Campaign | Total main-thread time during the sequences, before | After | Reduction |
+| --- | ---: | ---: | ---: |
+| Latest export: 540 tiles, 322 towns, 14,695 units | 1,011 ms | 845 ms | 16.4% |
+| Growth copy: 2,000 tiles, 1,000 towns, 5,405 units | 2,945 ms | 2,625 ms | 10.9% |
+
+On the growth copy, p95 frame intervals improved from approximately 50 ms to 33 ms in three sequences; the fourth stayed around 33 ms. Long main-thread tasks fell from 32 to 3 across the four sequences. The real export stayed near 16.8 ms p95 in all four. Before/after screenshots were inspected and retained the same artwork and layout, with only small rasterization differences. No camera action changed the saved campaign.
+
+All 1,366 unit tests passed. The browser audit covered 105 scenarios across Firefox, Chromium and mobile, including mixed armies and seven-class fleets, tier changes within a mixed formation, recruitment counts, decode failure, guild labels, tower upgrades and sieges, camera anchoring and culling, movement after zoom, rival inspection and naval recruitment. The final sprite and tower checks passed in a separate 30-scenario run after correcting a test's guild-name punctuation and waiting for the existing dialog entry fade before measuring color contrast.
+
+The Round 32 browser replay retained all 485 commands and final hash `8d2eca15ec71345f75f6fa2557ef75a1eeddb057d02d508d25935ef855254945`. It stopped at the same human casualty decision after 29.60 seconds, essentially unchanged from 29.64 seconds before this pass. Its p95 frame interval was 16.8 ms with no long main-thread tasks. This is a rendering improvement, not a reduction in AI thinking work.
+
+Crowded-map zoom still has measurable drawing costs at 2,000 tiles. The broader performance goal remains active.
+
+The deployed release passed 12 production HTTP checks and 13 Chromium sprite/camera checks in a disposable browser. The live campaign was not opened or modified.

@@ -1,7 +1,8 @@
 import { maxValue } from "../game/aggregate";
 import { localize as tx, useLocale } from "../i18n";
 import { MapLabel } from "./MapLabel";
-import { memo, useId, type CSSProperties } from "react";
+import { MapSprite } from "./MapSprite";
+import { memo, useId, useMemo, type CSSProperties } from "react";
 import type { Piece, UnitClass } from "../game/types";
 import {
   COLORS,
@@ -455,84 +456,103 @@ export const ArmyMiniature = memo(function ArmyMiniature({
 }) {
   useLocale();
 
-  const kinds = [...new Set(units.map((u) => u.kind))],
-    rank = maxValue(units.map((u) => u.tier));
+  const { kinds, ranks, rank, economic, merchant, settler } = useMemo(() => {
+    const byKind = new Map<Piece["kind"], number>();
+    for (const unit of units)
+      byKind.set(unit.kind, Math.max(byKind.get(unit.kind) ?? 0, unit.tier));
+    const kinds = [...byKind.keys()],
+      ranks = [...byKind.values()];
+    const merchant = byKind.has("merchant") || byKind.has("merchantship");
+    return {
+      kinds,
+      ranks,
+      rank: maxValue(ranks),
+      merchant,
+      economic: merchant || byKind.has("fishing"),
+      settler: kinds.some(isSettler),
+    };
+  }, [units]);
   return (
     <g pointerEvents="none" data-unit-kinds={kinds.join(",")}>
-      <path
-        d="M-16-15Q0-22 16-15V10Q14 19 0 24Q-14 19-16 10Z"
-        fill="#102a31"
-        opacity=".45"
-      />
-      {tx(
-        selected && (
-          <path
-            d="M-18-19Q0-26 18-19V8Q16 19 0 24Q-16 19-18 8Z"
-            fill="#ffdf9220"
-            stroke="#ffe39b"
-            strokeWidth="1.5"
-          />
-        ),
-      )}
-      {tx(
-        kinds.length > 1 && (
-          <path
-            d="M-17-15Q-2-20 12-15V9L-2 19-17 11Z"
-            fill="#314e51"
-            stroke="#d9c390"
-            strokeWidth="1"
-          />
-        ),
-      )}
-      <path
-        d="M-14-16Q0-22 14-16V8Q12 16 0 21Q-12 16-14 8Z"
-        fill="#213f47"
-        stroke={color}
-        strokeWidth="3"
-      />
-      <path
-        d="M-12-15Q0-20 12-15"
-        fill="none"
-        stroke={RANK_METAL[rank]}
-        strokeWidth="1.3"
-      />
-      {tx(
-        kinds.length === 1 ? (
-          <svg x="-12" y="-14" width="24" height="24" viewBox="0 0 32 32">
-            <MilitaryGlyph
-              kind={kinds[0]}
-              tier={rank}
-              accent={RANK_METAL[rank]}
+      <MapSprite
+        assetKey={`army/${color}/${Number(selected)}/${kinds.map((kind, i) => `${kind}:${ranks[i]}`).join(",")}`}
+        bounds={{
+          x: -24,
+          y: -28,
+          width: 48,
+          height: Math.max(56, 28 + Math.floor((kinds.length - 1) / 2) * 12),
+        }}
+        className="army-miniature-art"
+        pointerEvents="none"
+      >
+        <path
+          d="M-16-15Q0-22 16-15V10Q14 19 0 24Q-14 19-16 10Z"
+          fill="#102a31"
+          opacity=".45"
+        />
+        {tx(
+          selected && (
+            <path
+              d="M-18-19Q0-26 18-19V8Q16 19 0 24Q-16 19-18 8Z"
+              fill="#ffdf9220"
+              stroke="#ffe39b"
+              strokeWidth="1.5"
             />
-          </svg>
-        ) : (
-          kinds.map((kind, i) => (
-            <svg
-              key={kind}
-              x={kinds.length === 2 ? -12 + i * 12 : -12 + (i % 2) * 12}
-              y={kinds.length === 2 ? -8 : -14 + Math.floor(i / 2) * 12}
-              width="12"
-              height="12"
-              viewBox="0 0 32 32"
-            >
+          ),
+        )}
+        {tx(
+          kinds.length > 1 && (
+            <path
+              d="M-17-15Q-2-20 12-15V9L-2 19-17 11Z"
+              fill="#314e51"
+              stroke="#d9c390"
+              strokeWidth="1"
+            />
+          ),
+        )}
+        <path
+          d="M-14-16Q0-22 14-16V8Q12 16 0 21Q-12 16-14 8Z"
+          fill="#213f47"
+          stroke={color}
+          strokeWidth="3"
+        />
+        <path
+          d="M-12-15Q0-20 12-15"
+          fill="none"
+          stroke={RANK_METAL[rank]}
+          strokeWidth="1.3"
+        />
+        {tx(
+          kinds.length === 1 ? (
+            <svg x="-12" y="-14" width="24" height="24" viewBox="0 0 32 32">
               <MilitaryGlyph
-                kind={kind}
-                tier={maxValue(
-                  units.filter((u) => u.kind === kind).map((u) => u.tier),
-                )}
+                kind={kinds[0]}
+                tier={rank}
                 accent={RANK_METAL[rank]}
               />
             </svg>
-          ))
-        ),
-      )}
+          ) : (
+            kinds.map((kind, i) => (
+              <svg
+                key={kind}
+                x={kinds.length === 2 ? -12 + i * 12 : -12 + (i % 2) * 12}
+                y={kinds.length === 2 ? -8 : -14 + Math.floor(i / 2) * 12}
+                width="12"
+                height="12"
+                viewBox="0 0 32 32"
+              >
+                <MilitaryGlyph
+                  kind={kind}
+                  tier={ranks[i]}
+                  accent={RANK_METAL[rank]}
+                />
+              </svg>
+            ))
+          ),
+        )}
+      </MapSprite>
       {tx(
-        units.some(
-          (u) =>
-            u.kind === "merchant" ||
-            u.kind === "merchantship" ||
-            u.kind === "fishing",
-        ) && (
+        economic && (
           <g data-testid="economic-unit-marker">
             <circle cx="17" cy="-17" r="8" fill="#f0c34d" stroke="#594722" />
             <MapLabel
@@ -543,20 +563,12 @@ export const ArmyMiniature = memo(function ArmyMiniature({
               fontWeight="900"
               fill="#403315"
             >
-              {tx(
-                units.some(
-                  (u) =>
-                    u.kind !== "fishing" &&
-                    (u.kind === "merchant" || u.kind === "merchantship"),
-                )
-                  ? "M"
-                  : "F",
-              )}
+              {tx(merchant ? "M" : "F")}
             </MapLabel>
           </g>
         ),
       )}
-      {units.some((u) => isSettler(u.kind)) && (
+      {settler && (
         <g data-testid="settler-unit-marker" transform="translate(-18 -18)">
           <circle r="9" fill="#efe0b4" stroke="#344f45" />
           <path
