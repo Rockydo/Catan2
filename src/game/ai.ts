@@ -10,6 +10,7 @@ import {
 import { bankOrderToward } from "./ai-bank";
 import { cachedMilitaryWait } from "./ai-maneuvers";
 import { militaryObjectiveScorer } from "./ai-objectives";
+import { formationCanBeat } from "./ai-formation-power";
 import { indexRegionalLandForces } from "./ai-regional-forces";
 import { colonistAction, colonistProjects } from "./ai-colonization";
 import {
@@ -47,7 +48,6 @@ import {
   withSharedPiecePlanningFrame,
   reusePlanningFrame,
   planningValue,
-  formationPower,
 } from "./selectors";
 import {
   marketValues,
@@ -1201,15 +1201,23 @@ export function economyProjects(s: Game): Project[] {
       }
     }
   }
-  for (const vertex of towerSites(s)) {
+  const towerLocations = towerSites(s);
+  const supportedTowns = new Map<string, Town[]>();
+  // A tower only supports towns at its vertex or one edge away. Build the
+  // reverse adjacency once, preserving town order, instead of comparing every
+  // possible tower site with every town in a large realm.
+  if (towerLocations.length)
+    for (const town of towns)
+      for (const vertex of new Set([
+        town.vertex,
+        ...vertexNeighbors(s, town.vertex),
+      ])) {
+        if (!supportedTowns.has(vertex)) supportedTowns.set(vertex, []);
+        supportedTowns.get(vertex)!.push(town);
+      }
+  for (const vertex of towerLocations) {
     const next = (s.towers[vertex]?.tier ?? 0) + 1;
-    const nearby = towns.filter(
-      (t) =>
-        t.vertex === vertex ||
-        s.vertices[t.vertex].edges.some((e) =>
-          s.edges[e].vertices.includes(vertex),
-        ),
-    );
+    const nearby = supportedTowns.get(vertex) ?? [];
     const threatened = nearby.some((t) => townThreats(s, t).length > 0);
     const stationed = s.vertices[vertex].tiles.some((id) =>
       piecesAt(s, id).some((u) => u.owner === s.active && points(u) > 0),
@@ -2219,19 +2227,17 @@ function landObjectives(s: Game) {
 function objectiveBeatable(
   s: Game,
   objective: ReturnType<typeof landObjectives>[number],
-  groups: ((tile: string) => number)[],
+  canBeat: (tile: string, defense: number) => boolean,
 ) {
   const { tiles, defenders, strength } = objective;
   if (!defenders.length) return true;
   return tiles.some((tile) => {
     if (!strength.has(tile))
       strength.set(tile, threatPower(s, defenders, [tile]));
-    for (const force of groups)
-      if (force(tile) > strength.get(tile)!) return true;
-    return false;
+    return canBeat(tile, strength.get(tile)!);
   });
 }
-function fieldGroupsFor(s: Game, units: Piece[]) {
+function fieldCanBeat(s: Game, units: Piece[]) {
   const groups = new Map<string, Piece[]>();
   for (const unit of units) {
     const key = unit.carrier
@@ -2240,7 +2246,7 @@ function fieldGroupsFor(s: Game, units: Piece[]) {
     if (!groups.has(key)) groups.set(key, []);
     groups.get(key)!.push(unit);
   }
-  return [...groups.values()].map((group) => formationPower(s, group));
+  return formationCanBeat(s, [...groups.values()]);
 }
 interface LandingObjectives {
   reachable: (origin: string) => boolean;
@@ -2269,12 +2275,12 @@ function landingHasObjective(
     const key = `${s.active}/${arriving.map((u) => u.id).join(",")}`;
     plan = cached.forces.get(key);
     if (!plan) {
-      const groups = fieldGroupsFor(s, arriving);
+      const canBeat = fieldCanBeat(s, arriving);
       plan = {
         reachable: planningReachableToAny(
           s,
           landObjectives(s)
-            .filter((objective) => objectiveBeatable(s, objective, groups))
+            .filter((objective) => objectiveBeatable(s, objective, canBeat))
             .flatMap((o) => o.tiles),
           false,
           s.active,
@@ -2322,11 +2328,10 @@ function hasLandObjective(
       eligibility.set(key, !!u.carrier || reaches(u.tile));
     return eligibility.get(key)!;
   });
-  const fieldGroups = fieldGroupsFor(s, available);
+  const canBeat = fieldCanBeat(s, available);
   const result = landObjectives(s).some(
     (objective) =>
-      objective.tiles.some(reaches) &&
-      objectiveBeatable(s, objective, fieldGroups),
+      objective.tiles.some(reaches) && objectiveBeatable(s, objective, canBeat),
   );
   cache.set(key, result);
   cache.set(originKey, result);

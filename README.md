@@ -179,11 +179,15 @@ The report also times 32 consecutive fingerprint reads with a protected terrain 
 To compare nearby army threat checks as the map grows:
 
 ```sh
-SAVE_PATH=/path/to/campaign.json SOURCE_ROOT=/path/to/reference \
+SAVE_PATH=/path/to/campaign.json SOURCE_ROOT=/path/to/reference LABEL=before \
+  npx tsx scripts/ai-threat-performance.ts
+SAVE_PATH=/path/to/campaign.json EXPECT_PATH=test-artifacts/ai-threat-before.json LABEL=after \
   npx tsx scripts/ai-threat-performance.ts
 ```
 
-This checks every town against a previous checkout with the same rules. Seven alternating samples use fresh campaign snapshots, including index construction. Threat membership, unit order and the complete source campaign must remain unchanged. The timing isolates threat detection, not a complete AI turn. `SAMPLES` and `LABEL` control the report.
+This checks every town against a previous checkout with the same rules. Each checkout runs in its own process, with three warmups and seven measured samples using fresh campaign snapshots, including index construction. Mixing engine copies in one process can distort timings, even with identical source. Threat membership, unit order and the complete source campaign must remain unchanged. The timing isolates threat detection, not a complete AI turn. `SAMPLES` and `LABEL` control the report.
+
+`scripts/ai-economy-performance.ts` uses the same options and separate-process workflow to compare every economic proposal, including scores, costs and order. Its reports use the `ai-economy-` prefix. `scripts/army-front-performance.ts` isolates army strength comparisons across 2,000 candidate destinations with 32, 128 and 512 separate formations. It checks easy targets, mixed defenses and unbeatable defenders against the preceding exhaustive search. Neither script advances or changes a playing campaign. `scripts/ai-performance.ts` also accepts `SOURCE_ROOT` for separate-process comparisons of complete decision and execution sequences.
 
 To compare forecast costs as merchant and fishing fleets grow:
 

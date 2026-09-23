@@ -1,10 +1,14 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { Session } from "node:inspector/promises";
-import { chooseAIAction } from "../src/game/ai";
-import { applyCommand } from "../src/game/engine";
-import { assertInvariants } from "../src/game/save";
-import { importSave } from "../src/storage/codec";
+import { resolve } from "node:path";
+import { pathToFileURL } from "node:url";
+const root = resolve(process.env.SOURCE_ROOT ?? ".");
+const module = (path: string) => pathToFileURL(resolve(root, "src", path)).href;
+const { chooseAIAction } = await import(module("game/ai.ts"));
+const { applyCommand } = await import(module("game/engine.ts"));
+const { assertInvariants } = await import(module("game/save.ts"));
+const { importSave } = await import(module("storage/codec.ts"));
 const label = process.env.LABEL ?? "grand-ai-check";
 const count = Number(process.env.STEPS ?? 100);
 let state = await importSave(
