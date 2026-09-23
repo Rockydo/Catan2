@@ -121,11 +121,11 @@ it("verifies the compact checksum and packing version before expanding units", (
   const { s, water } = fishingFixture();
   piece(s, water);
   const data = JSON.parse(serializePacked(s));
-  data.game.pieces.rows[0] = 99;
+  data.game[1].pieces.rows[0] = 99;
   expect(() => deserialize(JSON.stringify(data))).toThrow(/integrity/);
   data.checksum = hash(JSON.stringify(data.game)).toString(16);
   expect(() => deserialize(JSON.stringify(data))).toThrow(/compact/);
-  data.packing = 3;
+  data.packing = 4;
   expect(() => deserialize(JSON.stringify(data))).toThrow(/supported/);
 });
 

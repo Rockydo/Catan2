@@ -141,6 +141,21 @@ export function planningReachable(
     return Number.isFinite(planningDistance(s, from, to, naval, owner, max));
   if (!canOccupy(s.tiles[to], naval)) return false;
   if (from === to) return true;
+  const network = movementNetwork(s, naval, owner);
+  const origin = network.regions.get(from),
+    target = network.regions.get(to);
+  if (origin !== undefined && target !== undefined) return origin === target;
+  // Adjacent blocked tiles can fight without an unoccupied transit region.
+  if (neighbors(from).includes(to)) return true;
+  if (origin !== undefined) return adjacentRegions(network, to).has(origin);
+  if (target !== undefined) return adjacentRegions(network, from).has(target);
+  const end = adjacentRegions(network, to);
+  for (const region of adjacentRegions(network, from))
+    if (end.has(region)) return true;
+  return false;
+}
+
+function movementNetwork(s: Game, naval: boolean, owner: number): Connectivity {
   let frame = cache.get(s);
   if (!frame) {
     frame = networkRoutes(s);
@@ -177,27 +192,52 @@ export function planningReachable(
     network = { regions, endpoints: new Map() };
     networks.set(key, network);
   }
-  const origin = network.regions.get(from),
-    target = network.regions.get(to);
-  if (origin !== undefined && target !== undefined) return origin === target;
-  // Two adjacent blocked tiles can fight each other directly, even when no
-  // unoccupied transit tile connects them. The destination is already passable.
-  if (neighbors(from).includes(to)) return true;
-  const adjacentRegions = (tile: string) => {
-    let result = network.endpoints.get(tile);
-    if (!result) {
-      result = new Set<number>();
-      for (const id of neighbors(tile)) {
-        const region = network.regions.get(id);
-        if (region !== undefined) result.add(region);
-      }
-      network.endpoints.set(tile, result);
+  return network;
+}
+
+function adjacentRegions(network: Connectivity, tile: string): Set<number> {
+  let result = network.endpoints.get(tile);
+  if (!result) {
+    result = new Set<number>();
+    for (const id of neighbors(tile)) {
+      const region = network.regions.get(id);
+      if (region !== undefined) result.add(region);
     }
-    return result;
+    network.endpoints.set(tile, result);
+  }
+  return result;
+}
+
+/** Unlimited reach to any of a fixed set of destinations. Compile their transit
+ * regions once when many possible origins share the same strategic objectives.
+ * Hostile destinations remain endpoints, never bridges through a blockade.
+ * The returned query retains this immutable position, including after eviction. */
+export function planningReachableToAny(
+  s: Game,
+  destinations: Iterable<string>,
+  naval: boolean,
+  owner: number,
+): (from: string) => boolean {
+  const targets = new Set<string>();
+  for (const tile of destinations)
+    if (canOccupy(s.tiles[tile], naval)) targets.add(tile);
+  if (!targets.size) return () => false;
+  const network = movementNetwork(s, naval, owner),
+    goalRegions = new Set<number>();
+  for (const tile of targets) {
+    const region = network.regions.get(tile);
+    if (region !== undefined) goalRegions.add(region);
+    else
+      for (const adjacent of adjacentRegions(network, tile))
+        goalRegions.add(adjacent);
+  }
+  return (from) => {
+    if (targets.has(from)) return true;
+    const region = network.regions.get(from);
+    if (region !== undefined) return goalRegions.has(region);
+    for (const tile of neighbors(from)) if (targets.has(tile)) return true;
+    for (const adjacent of adjacentRegions(network, from))
+      if (goalRegions.has(adjacent)) return true;
+    return false;
   };
-  if (origin !== undefined) return adjacentRegions(to).has(origin);
-  if (target !== undefined) return adjacentRegions(from).has(target);
-  const end = adjacentRegions(to);
-  for (const region of adjacentRegions(from)) if (end.has(region)) return true;
-  return false;
 }

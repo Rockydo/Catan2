@@ -153,6 +153,7 @@ import {
   planningPath as pathTo,
   planningDistance,
   planningReachable as reachable,
+  planningReachableToAny,
 } from "./ai-paths";
 import {
   campaignTransportAction,
@@ -2164,8 +2165,7 @@ function fieldGroupsFor(s: Game, units: Piece[]) {
   return groups;
 }
 interface LandingObjectives {
-  targets: string[][];
-  reachable: Map<string, boolean>;
+  reachable: (origin: string) => boolean;
 }
 const landingObjectives = new WeakMap<
   Game,
@@ -2193,23 +2193,20 @@ function landingHasObjective(
     if (!plan) {
       const groups = fieldGroupsFor(s, arriving);
       plan = {
-        targets: landObjectives(s)
-          .filter((objective) => objectiveBeatable(s, objective, groups))
-          .map((o) => o.tiles),
-        reachable: new Map(),
+        reachable: planningReachableToAny(
+          s,
+          landObjectives(s)
+            .filter((objective) => objectiveBeatable(s, objective, groups))
+            .flatMap((o) => o.tiles),
+          false,
+          s.active,
+        ),
       };
       cached.forces.set(key, plan);
     }
     cached.arrays.set(arriving, plan);
   }
-  if (!plan.reachable.has(origin))
-    plan.reachable.set(
-      origin,
-      plan.targets.some((tiles) =>
-        tiles.some((target) => reachable(s, origin, target, false, s.active)),
-      ),
-    );
-  return plan.reachable.get(origin)!;
+  return plan.reachable(origin);
 }
 function hasLandObjective(
   s: Game,

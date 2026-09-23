@@ -112,6 +112,8 @@ Validation passed 1,313 unit tests and 66 browser checks across Chromium, Firefo
 - Growing armies must not repeat a complete record for every identical unit on disk. Compact representations must retain each ID, field order and individual difference, and reconstruct independent mutable objects.
 - The expanded-data limit also applies after template reconstruction, including multibyte text. Shared templates cannot bypass it.
 - Incremental worker messages must reference an acknowledged snapshot. A missing or stale base requires a full resynchronization before any write. Stored saves are complete snapshots, not a chain of deltas.
+- Large-save work must measure refresh readiness as well as file size. Comparisons must restore the complete campaign, including property order, and distinguish menu readiness from map rendering.
+- Dictionary references must preserve exact geometry and remain within the reconstructed-data budget. A smaller compressed file cannot bypass load validation or expansion limits.
 
 ## Compact army saves and refresh loading
 
@@ -317,3 +319,28 @@ The earlier complete Round 31 turn retained all 144 commands and its complete fi
 Validation passed all 1,379 unit tests. The browser audit covered 114 scenarios across Firefox, Chromium and mobile. The initial run passed 113; one mobile naval test attempted to click the map under the open force inspector. It now closes that panel through its normal button before inspecting the siege. All nine naval scenarios passed on recheck. Regression tests also compare every threat result with the original per-unit calculation, preserve ordered colonist danger sets, verify one query per distinct threat, and compare complete post-order states against independent cleanup reads, including faction elimination.
 
 The deployed build passed all 12 production HTTP checks and 12 additional Chromium scenarios covering AI batching, pause/resume, naval sieges and large-save recovery. The player's live browser campaign was not opened or modified.
+
+## Shared map references and large-army loading
+
+Packing version 3 stores repeated spatial identifiers in one dictionary before gzip compression. Tile adjacency, intersections and route endpoints reference that dictionary. Coordinates, array order, record order, optional fields and all gameplay data remain exact. Decoding checks every reference and array length and bounds dictionary amplification before constructing adjacency arrays. The previous plain JSON, compressed JSON, unit-template and map-table formats still load. Large maps use compact autosaving even when they have few troops.
+
+| Campaign | Previous compressed archive | New archive |
+| --- | ---: | ---: |
+| Latest export, 540 tiles and 14,695 units | 97,465 bytes | 86,431 bytes |
+| Storage growth copy, 240,000 units | 98,972 bytes | 87,936 bytes |
+
+These are reductions of about 11% on top of the existing compression. The growth copy duplicates units on the same map and therefore compresses unusually well. Its uncompressed JSON is 36.7 MB; it does not represent the diversity of a 240,000-unit campaign played from scratch.
+
+Loading still decompresses, checks integrity, reconstructs, migrates and validates in the save worker. For at least 20,000 units, the validated result travels to the interface as JSON text. The native parser rebuilds independent objects instead of the browser structured-cloning the entire large object graph between threads. Smaller campaigns retain direct object transfers. No validation is skipped, no persisted state is trusted without checks, and autosave acknowledgement and backup transactions are unchanged.
+
+In disposable Chromium with warm assets, median refresh-to-menu time on the 240,000-unit fixture fell from 544.7 to 491.6 ms across three samples per format. Every loaded campaign matched its complete expected JSON. The current build also loaded the previous map-table format in 490.3 ms, so this speed gain comes from the transfer change rather than the smaller archive. The 14,695-unit export took 100.4 ms with the new format versus 97.1 ms for the preceding format in the same build, effectively unchanged. These measurements end at menu readiness, not map painting.
+
+The load diagnostic now compares all four historical/current storage formats. Regression cases cover malformed references, invalid adjacency lengths, UTF-8 amplification, exact optional data and geometry, independent nested arrays, old-format imports and very large worker transfers.
+
+## Shared landing destination regions
+
+Landing analysis now compiles the transit regions that can reach any beatable objective once per arriving force. Candidate beaches query that set instead of comparing themselves against every target town. Hostile tiles remain legal destinations without joining the regions on opposite sides of a blockade. Direct attacks between adjacent blocked tiles, allied passage, frozen surfaces and impassable terrain retain their previous results.
+
+The same 60 decisions on the 2,000-tile, 1,000-town fixture fell from 33.62 to 24.76 seconds, a 26% reduction, with every command and the complete final-state hash unchanged. The actual Round 32 browser sequence retained all 485 orders and the same human casualty decision in 21.89 seconds, effectively unchanged from 21.92 seconds. The complete Round 31 turn retained all 144 orders and its final state in 17.79 seconds, also unchanged. Neither browser replay reported errors or long main-thread tasks; frame p95 stayed around 16.8 ms. This improvement addresses dispersed large maps with many landing candidates.
+
+Validation passed all 1,405 unit tests and 63 browser scenarios across Firefox, Chromium and the mobile viewport. Coverage includes 20,000-unit refreshes, recruitment, compact exports, corrupt-primary recovery, competing tabs, queued autosaves, stale worker bases, AI pause/resume, sea transports, expeditions and forced thaw landings. The deployed build then passed all 12 production HTTP checks and nine additional Chromium save/worker checks. All browser work used disposable profiles; the player's live campaign was not opened or changed.

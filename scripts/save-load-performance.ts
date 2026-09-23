@@ -3,9 +3,10 @@ import { readFileSync, mkdirSync, writeFileSync } from "node:fs";
 import { compress, importSave } from "../src/storage/codec";
 import { serialize, serializePacked } from "../src/game/save";
 import { packGame } from "../src/game/save-packing";
+import { packTables } from "../src/game/save-tables";
 import { hash } from "../src/game/world";
 
-// Compare original JSON, the first template format, and current table packing.
+// Compare original JSON, unit templates, map tables and reference dictionaries.
 // Uses a disposable browser profile, never the player's storage or export.
 if (!process.env.SAVE_PATH) throw Error("Set SAVE_PATH to a campaign export.");
 const game = await importSave(readFileSync(process.env.SAVE_PATH));
@@ -22,6 +23,16 @@ const template = JSON.stringify({
 const encodings = {
   legacy: Array.from(await compress(serialize(game))),
   templates: Array.from(await compress(template)),
+  tables: Array.from(
+    await compress(
+      JSON.stringify({
+        ...JSON.parse(template),
+        packing: 2,
+        game: packTables(templateGame),
+        checksum: hash(JSON.stringify(packTables(templateGame))).toString(16),
+      }),
+    ),
+  ),
   packed: Array.from(await compress(serializePacked(game))),
 };
 const browser = await chromium.launch({
@@ -56,6 +67,7 @@ try {
           if (data.type === "load") {
             w.loadMs = performance.now() - this.started;
             w.loadedGame = data.result?.game;
+            w.loadedGameText = data.result?.gameText;
           }
         });
       }
@@ -73,9 +85,12 @@ try {
   for (const format of [
     "legacy",
     "templates",
+    "tables",
     "packed",
+    "tables",
     "packed",
     "templates",
+    "tables",
     "legacy",
     "legacy",
     "packed",
@@ -116,7 +131,7 @@ try {
       return {
         loadMs: w.loadMs,
         readyMs: w.readyMs,
-        game: JSON.stringify(w.loadedGame),
+        game: w.loadedGameText ?? JSON.stringify(w.loadedGame),
       };
     });
     if (result.game !== expected) throw Error("Reload changed the campaign.");
@@ -134,9 +149,11 @@ try {
     units: Object.keys(game.pieces).length,
     legacyBytes: encodings.legacy.length,
     templateBytes: encodings.templates.length,
+    tableBytes: encodings.tables.length,
     packedBytes: encodings.packed.length,
     legacyMedianReadyMs: median("legacy"),
     templateMedianReadyMs: median("templates"),
+    tableMedianReadyMs: median("tables"),
     packedMedianReadyMs: median("packed"),
     samples,
     exactRoundTrip: true,

@@ -1,5 +1,6 @@
 import { packGame, unpackGame } from "./save-packing";
 import { packTables, unpackTables } from "./save-tables";
+import { packReferences, unpackReferences } from "./save-references";
 import { syncEmergencyCoalition } from "./emergency-coalition";
 import {
   SEASONS,
@@ -1198,11 +1199,13 @@ export function serializePacked(s: Game): string {
   return saveEnvelope(s, true);
 }
 function saveEnvelope(s: Game, packed: boolean): string {
-  const body = JSON.stringify(packed ? packTables(packGame(s)) : s);
+  const body = JSON.stringify(
+    packed ? packReferences(packTables(packGame(s))) : s,
+  );
   const header = JSON.stringify({
     format: packed ? "catane-frontiers-packed" : "catane-frontiers",
     version: 14,
-    ...(packed ? { packing: 2 } : {}),
+    ...(packed ? { packing: 3 } : {}),
     savedAt: new Date().toISOString(),
     checksum: hash(body).toString(16),
   });
@@ -1219,7 +1222,7 @@ export function deserialize(text: string): Game {
     data &&
       (data.format === "catane-frontiers" ||
         (data.format === "catane-frontiers-packed" &&
-          [1, 2].includes(data.packing))) &&
+          [1, 2, 3].includes(data.packing))) &&
       [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14].includes(data.version) &&
       data.game,
     "This is not a supported Catane save.",
@@ -1230,7 +1233,11 @@ export function deserialize(text: string): Game {
   );
   if (data.format === "catane-frontiers-packed")
     data.game = unpackGame(
-      data.packing === 2 ? unpackTables(data.game) : data.game,
+      data.packing === 3
+        ? unpackTables(unpackReferences(data.game))
+        : data.packing === 2
+          ? unpackTables(data.game)
+          : data.game,
     );
   {
     // Replace retired/prototype crops before older migrations inspect yields.

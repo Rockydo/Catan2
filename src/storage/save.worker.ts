@@ -9,6 +9,7 @@ import {
   type SaveInput,
 } from "./codec";
 import { readRecords, writeRecord, type SaveRecord } from "./database";
+import { encodeLoadedCampaign } from "./load-transfer";
 
 export type SaveRequest =
   | { type: "load"; legacy: (string | null)[] }
@@ -88,7 +89,7 @@ async function load(legacy: (string | null)[]) {
 async function handle(request: SaveRequest) {
   switch (request.type) {
     case "load":
-      return load(request.legacy);
+      return encodeLoadedCampaign(await load(request.legacy));
     case "import":
       return importSave(request.text);
     case "export":
@@ -103,7 +104,9 @@ async function handle(request: SaveRequest) {
         "game" in request
           ? request.game
           : applySnapshotDelta(savedSnapshot!, request.delta);
-      const small = Object.keys(game.pieces).length < 256;
+      const small =
+        Object.keys(game.pieces).length < 256 &&
+        Object.keys(game.tiles).length <= 256;
       const text = small ? serialize(game) : serializePacked(game);
       const record: SaveRecord = {
         revision: crypto.randomUUID(),

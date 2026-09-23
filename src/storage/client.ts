@@ -3,10 +3,9 @@ import type { Game } from "../game/types";
 import { snapshotDelta } from "../game/snapshot-delta";
 import { exportArchive, importSave, type SaveInput } from "./codec";
 import type { SaveRequest, SaveResult } from "./save.worker";
+import { decodeLoadedCampaign, type LoadedCampaign } from "./load-transfer";
 
-export type LoadedCampaign = ReturnType<typeof loadLocal> & {
-  needsSave?: boolean;
-};
+export type { LoadedCampaign } from "./load-transfer";
 const WARNING =
   "Automatic saving is unavailable or storage is full. Export your game to keep it safe.";
 let worker: Worker | undefined;
@@ -67,7 +66,7 @@ export async function loadCampaign(): Promise<LoadedCampaign> {
     }
   });
   try {
-    return await call<LoadedCampaign>({ type: "load", legacy });
+    return decodeLoadedCampaign(await call({ type: "load", legacy }));
   } catch {
     return loadLocal();
   }

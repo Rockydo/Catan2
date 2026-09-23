@@ -2,7 +2,7 @@ import type { PackedGame } from "./save-packing";
 
 // Keep geometry and every saved value verbatim. Column tables compress repeated
 // field names and nearby coordinates without regenerating any part of the map.
-const TABLES = [
+export const SAVE_TABLES = [
   "tiles",
   "vertices",
   "edges",
@@ -197,7 +197,7 @@ function unpackTable(
 
 export function packTables(game: PackedGame): unknown {
   const out: Record<string, unknown> = { ...game };
-  for (const field of TABLES)
+  for (const field of SAVE_TABLES)
     if (game[field]) out[field] = packTable(game[field]);
   const units = game.pieces;
   out.pieces = {
@@ -218,7 +218,7 @@ export function unpackTables(input: unknown): PackedGame {
     throw invalid();
   const out = { ...input } as Record<string, unknown>;
   const budget = { remaining: LIMIT };
-  for (const field of TABLES)
+  for (const field of SAVE_TABLES)
     if (out[field] !== undefined)
       out[field] = unpackTable(out[field] as Table, budget);
   const units = out.pieces as PackedGame["pieces"];

@@ -85,7 +85,12 @@ it("accepts original template-packed saves alongside table-packed saves", () => 
   expect(JSON.stringify(deserialize(JSON.stringify(old)))).toBe(
     JSON.stringify(deserialize(JSON.stringify(modern))),
   );
-  modern.game.tiles.order[0]++;
+  const tableFormat = { ...modern, packing: 2, game: packTables(packGame(s)) };
+  tableFormat.checksum = hash(JSON.stringify(tableFormat.game)).toString(16);
+  expect(JSON.stringify(deserialize(JSON.stringify(tableFormat)))).toBe(
+    JSON.stringify(deserialize(JSON.stringify(modern))),
+  );
+  modern.game[1].tiles.order[0]++;
   expect(() => deserialize(JSON.stringify(modern))).toThrow(/integrity/);
 });
 

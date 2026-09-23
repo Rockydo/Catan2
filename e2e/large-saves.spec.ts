@@ -180,6 +180,52 @@ test("legacy compressed imports and binary exports work when save workers are un
   expect(deserialize(stored!)).toEqual(deserialize(serialize(s)));
 });
 
+test("very large armies refresh through the validated text transfer without losing any saved state", async ({
+  page,
+}) => {
+  const { s, water } = fishingFixture();
+  for (let i = 0; i < 20_000; i++) piece(s, water, 0, "fishing", 1);
+  const text = serialize(s),
+    expected = JSON.stringify(deserialize(text));
+  await seed(page, text);
+  await page.addInitScript(() => {
+    const Native = window.Worker;
+    (window as any).largeLoad = false;
+    window.Worker = class extends Native {
+      constructor(url: string | URL, options?: WorkerOptions) {
+        super(url, options);
+        if (String(url).includes("save.worker"))
+          this.addEventListener("message", ({ data }) => {
+            if (data.type === "load")
+              (window as any).largeLoad =
+                typeof data.result?.gameText === "string";
+          });
+      }
+    };
+  });
+  await page.goto("/");
+  await expect(
+    page.getByRole("button", { name: /Continue campaign/ }),
+  ).toBeVisible();
+  expect(await page.evaluate(() => (window as any).largeLoad)).toBe(true);
+  await expect
+    .poll(async () => {
+      const value = await saved(page);
+      return value ? JSON.stringify(value.game) === expected : false;
+    })
+    .toBe(true);
+  await page.reload();
+  await expect(
+    page.getByRole("button", { name: /Continue campaign/ }),
+  ).toBeVisible();
+  expect(await page.evaluate(() => (window as any).largeLoad)).toBe(true);
+  expect(JSON.stringify((await saved(page))!.game)).toBe(expected);
+  await page.getByRole("button", { name: /Continue campaign/ }).click();
+  await expect(page.getByText(/Automatic saving is unavailable/)).toHaveCount(
+    0,
+  );
+});
+
 test("damaged compressed primary recovers the previous save and keeps the valid backup", async ({
   page,
 }) => {
