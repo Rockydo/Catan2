@@ -52,14 +52,15 @@ const deliveries = [
     ),
   };
 });
-const forecasts = [1, 6, 16, 40].map((rolls) => ({
-  rolls,
-  hash: digest(
-    withSeasonalPlanning(() =>
-      withPlanningFrame(game, () => projectedIncomes(game, rolls)),
-    ),
-  ),
-}));
+const forecastTimings: { rolls: number; ms: number }[] = [];
+const forecasts = [1, 6, 16, 40].map((rolls) => {
+  const started = performance.now();
+  const outputs = withSeasonalPlanning(() =>
+    withPlanningFrame(game, () => projectedIncomes(game, rolls)),
+  );
+  forecastTimings.push({ rolls, ms: performance.now() - started });
+  return { rolls, hash: digest(outputs) };
+});
 const rolls = [];
 for (let roll = 2; roll <= 12; roll++) {
   const state = structuredClone(game);
@@ -90,6 +91,7 @@ const report = {
   signatureSamplesMs: signatureMs,
   deliveries,
   forecasts,
+  forecastTimings,
   rolls,
   medianRollMs: rolls.map((r) => r.ms).sort((a, b) => a - b)[5],
   exactMatch: !!expected,

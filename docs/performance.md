@@ -926,3 +926,33 @@ All 1,626 unit tests passed. The independent planning audit retained all 13,206 
 The expanded browser run passed 212 of 213 scenarios initially. The remaining research test read the localStorage mirror before the background save completed, although the interface already showed the correct siege. Its assertion now waits for the persisted progression, retaining the same expected value and timeout. All 15 season-navigation scenarios then passed across Chromium, Firefox and mobile; five additional repetitions of the affected Chromium case also passed.
 
 The verified build was published locally with previous hashed assets retained. All 12 production HTTP checks and 16 Chromium save, transport, worker and seasonal-navigation scenarios passed after deployment. All checks used exported copies or disposable fixtures and profiles. The playing campaign and source exports were not modified. The broader performance goal remains active.
+
+## Reusing weighted production terms for repeated collectors
+
+Annual and seasonal income forecasts now calculate each weighted delivery once for a consecutive run of identical merchants or fishing ships. They still perform every individual addition in the original order for each faction and resource. Different resource fields can be accumulated independently, which removes repeated callback dispatch, probability calculations, weather lookups and stock-field access. The first occurrence of each resource still determines its insertion order. No run is replaced by a multiplied subtotal, which would change floating-point rounding and could change AI decisions.
+
+The existing ordered production visitor remains unchanged for dice rolls, harvest reports and other delivery consumers. The optimized accumulator is used only for forecast totals, takes a pure weighting function, and retains no new cache between calls. Temporary weighted terms grow with a collector's covered resources, not the number of duplicate troops. Carried collectors and zero-yield deliveries remain excluded; positive deliveries with zero forecast weight retain their zero-valued resource keys.
+
+The new `scripts/collector-forecast-performance.ts` diagnostic reads annual income and four seasonal horizons in fresh rounds. Each fixture contains equal groups of tier-four merchants and fishing ships. These are production-only growth fixtures, not full campaigns. Medians of three samples:
+
+| Collectors | Previous build | Updated build |
+| --- | ---: | ---: |
+| 2,000 | 8.11 ms | 3.15 ms |
+| 20,000 | 40.63 ms | 6.43 ms |
+| 60,000 | 109.39 ms | 15.71 ms |
+
+Every annual and seasonal forecast matched the reference hash exactly, and all fixture inputs remained unchanged. The independent real-save production diagnostic also retained every ordered delivery across six production modes, all four projected-income results and the complete resulting campaign state for all eleven dice totals. The same comparisons passed for the 2,000-tile growth map.
+
+| AI workload | Previous build | Updated build | Exact comparison |
+| --- | ---: | ---: | --- |
+| Round 32 browser replay, through human casualty prompt | 13.20 s | 12.38 s | 485 orders and complete final state |
+| Round 31 browser replay, through human casualty prompt | 6.15 s | 6.14 s | 153 orders and complete final state |
+| 2,000-tile, 1,000-town growth map, first 60 decisions | 10.95 s | 11.16 s | 60 orders and complete final state |
+
+The latest browser replay improved by about 6%; the older campaign was unchanged. The larger map sample was about 2% slower, with no demonstrated gain for that workload. The collector-only improvement is not a whole-turn speedup. Both browser replays used AI seat 2, stopped for human input, retained approximately 16.8 ms frame p95 and reported no long main-thread tasks or browser/worker errors. A separate Node replay retained the same 485 orders and complete state, taking 10.60 seconds before and 10.13 seconds after.
+
+New regressions compare complete serialized forecast results with individually weighted deliveries across every season. They cover repeated and separated collector groups, different factions, duplicate custom coverage, passengers, fractional weights, zero-weight resource keys, independent returned stocks and unchanged inputs. A work-count regression verifies that adding 2,000 identical merchants does not increase weighting calls while retaining exact annual income. Existing production, weather, blockade and planning tests cover the shared reader.
+
+All 1,628 unit tests passed. The independent planning audit retained all 13,206 proposals across 128 scenarios, and all 96 trade comparisons matched, including offers, aid and acceptance decisions. Type checking, formatting, the production build and whitespace checks passed.
+
+All 213 staging browser scenarios passed across Chromium, Firefox and mobile. After local publication, all 12 production HTTP checks and 11 additional Chromium transport, worker and large-save scenarios passed. Previous hashed assets remain available to open sessions. All validation used exported copies or disposable fixtures and profiles; the playing campaign and original exports were not modified. Remaining troop enumeration, production signatures and other planning costs keep the broader performance goal active.

@@ -19,7 +19,7 @@ import {
   ownPieces,
   piecesAt,
   probability,
-  forEachProduction,
+  forecastProduction,
   productionSignature,
   ready,
   speed,
@@ -84,7 +84,6 @@ function outputsIn(s: Game, season: Season, round?: number): Outputs {
   const key = `${season}/${round ?? "calendar"}`;
   const found = cache.get(key);
   if (found) return found;
-  const result: Outputs = Object.fromEntries(s.players.map((p) => [p.id, {}]));
   const forecastWeather =
     s.calendar?.iceModel === 2 && round !== undefined && round > s.round;
   const view: Game = forecastWeather
@@ -106,11 +105,10 @@ function outputsIn(s: Game, season: Season, round?: number): Outputs {
     : s;
   // Weather depends on a tile and forecast round, not the number of producers.
   const weather = new Map<string, number>();
-  forEachProduction(
+  const result = forecastProduction(
     view,
     round === s.round ? "current" : season,
-    (owner, _town, tile, good, amount) => {
-      const stock = result[owner];
+    (tile, amount) => {
       let factor = weather.get(tile);
       if (factor === undefined) {
         const terrain = s.tiles[tile];
@@ -120,9 +118,7 @@ function outputsIn(s: Game, season: Season, round?: number): Outputs {
             : 1;
         weather.set(tile, factor);
       }
-      stock[good] =
-        (stock[good] ?? 0) +
-        amount * probability(s.tiles[tile].number) * factor;
+      return amount * probability(s.tiles[tile].number) * factor;
     },
   );
   if (cache.size >= 32) cache.delete(cache.keys().next().value!);

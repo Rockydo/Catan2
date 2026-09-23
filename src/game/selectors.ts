@@ -751,6 +751,13 @@ interface ProductionSource {
   good: Good;
   amount: number;
 }
+type ProductionVisitor = (
+  owner: number,
+  town: Town,
+  tile: string,
+  good: Good,
+  amount: number,
+) => void;
 interface ProductionActors {
   // Store both domains. Which one blocks a tile depends on the current view's
   // terrain, while occupation itself depends only on unchanged troop records.
@@ -822,13 +829,15 @@ export function productionSources(s: Game, mode: ProductionMode = "current") {
 export function forEachProduction(
   s: Game,
   mode: ProductionMode,
-  visit: (
-    owner: number,
-    town: Town,
-    tile: string,
-    good: Good,
-    amount: number,
-  ) => void,
+  visit: ProductionVisitor,
+) {
+  readProduction(s, mode, visit);
+}
+function readProduction(
+  s: Game,
+  mode: ProductionMode,
+  visit: ProductionVisitor,
+  repeated?: (sources: readonly ProductionSource[], count: number) => void,
 ) {
   const deliver = (
     owner: number,
@@ -975,6 +984,10 @@ export function forEachProduction(
     }
     // Preserve producer order and individual additions exactly. Multiplying
     // an aggregate would change floating-point forecasts and AI tie breaks.
+    if (count > 1 && repeated) {
+      repeated(sources, count);
+      continue;
+    }
     for (let i = 0; i < count; i++)
       for (const source of sources)
         deliver(
@@ -985,6 +998,50 @@ export function forEachProduction(
           source.amount,
         );
   }
+}
+/** Forecast totals with a pure, per-delivery weight. Identical collectors can
+ * reuse their weighted terms, but every resource keeps its original sequence
+ * of additions. Never multiply a sum by the collector count: that changes
+ * rounding and AI decisions. No state or delivery data survives this call. */
+export function forecastProduction(
+  s: Game,
+  mode: ProductionMode,
+  weight: (tile: string, amount: number) => number,
+): Record<number, Stock> {
+  const result = Object.fromEntries(s.players.map((p) => [p.id, {}])) as Record<
+    number,
+    Stock
+  >;
+  readProduction(
+    s,
+    mode,
+    (owner, _town, tile, good, amount) => {
+      const stock = result[owner];
+      stock[good] = (stock[good] ?? 0) + weight(tile, amount);
+    },
+    (sources, count) => {
+      const terms = new Map<Stock, Map<Good, number[]>>();
+      for (const { owner, tile, good, amount } of sources) {
+        if (!(amount > 0)) continue;
+        const stock = result[owner];
+        let goods = terms.get(stock);
+        if (!goods) terms.set(stock, (goods = new Map()));
+        let values = goods.get(good);
+        if (!values) goods.set(good, (values = []));
+        values.push(weight(tile, amount));
+      }
+      // Different stock fields are independent. First-encounter order also
+      // preserves the insertion order of resource keys in each returned stock.
+      for (const [stock, goods] of terms)
+        for (const [good, values] of goods) {
+          let total = stock[good] ?? 0;
+          for (let i = 0; i < count; i++)
+            for (const value of values) total += value;
+          stock[good] = total;
+        }
+    },
+  );
+  return result;
 }
 /** Complete public inputs to passive production. Resource spending, movement
  * allowances, walls and guild contracts do not change a harvest. Fingerprint
@@ -1252,15 +1309,11 @@ export function income(s: Game, p = s.active): Stock {
     const signature = productionSignature(s);
     if (lastIncomeSignature === signature) all = lastIncome;
     if (!all) {
-      all = Object.fromEntries(s.players.map((p) => [p.id, {}])) as Record<
-        number,
-        Stock
-      >;
-      forEachProduction(s, "annual", (owner, _town, tile, good, amount) => {
-        const out = all![owner];
-        out[good] =
-          (out[good] ?? 0) + probability(s.tiles[tile].number) * amount;
-      });
+      all = forecastProduction(
+        s,
+        "annual",
+        (tile, amount) => probability(s.tiles[tile].number) * amount,
+      );
       lastIncomeSignature = signature;
       lastIncome = all;
     }

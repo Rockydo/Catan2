@@ -10,6 +10,7 @@ import {
   probability,
   productionSources,
   forEachProduction,
+  forecastProduction,
   productionSignature,
   withPlanningFrame,
   withSharedPiecePlanningFrame,
@@ -812,4 +813,65 @@ it("indexes repeated producers once across seasons and related read-only views",
   expect(orderedDeliveries(s, "annual")).not.toEqual(old);
   repeated.carrier = f.fisher.id;
   expect(orderedDeliveries(s, "annual")).not.toEqual(old);
+});
+
+it("weighted collector runs retain exact fractional additions and resource key order", () => {
+  const { s, land, water } = fixture();
+  Object.values(s.tiles).forEach((tile, i) => {
+    tile.number = 2 + (i % 11);
+  });
+  for (let group = 0; group < 8; group++) {
+    const kind = (["merchant", "merchantship", "fishing"] as const)[group % 3];
+    for (let i = 0; i < 43; i++) {
+      const u = piece(
+        s,
+        kind === "merchant" ? land : water,
+        group % 2,
+        kind,
+        4,
+      );
+      if (kind === "merchant" && group % 2 === 0) u.coverage = [water, land];
+      if (i === 21) u.carrier = "passenger-not-a-producer";
+    }
+  }
+  const before = JSON.stringify(s);
+  for (const mode of ["current", "annual", ...seasons.SEASONS] as const) {
+    const weight = (tile: string, amount: number) =>
+      amount * probability(s.tiles[tile].number) * (tile === water ? 0 : 0.37);
+    const expected = Object.fromEntries(
+      s.players.map((p) => [p.id, {}]),
+    ) as Record<number, Stock>;
+    for (const { owner, tile, good, amount } of productionSources(s, mode)) {
+      const stock = expected[owner];
+      stock[good] = (stock[good] ?? 0) + weight(tile, amount);
+    }
+    const actual = withPlanningFrame(s, () =>
+      forecastProduction(s, mode, weight),
+    );
+    expect(JSON.stringify(actual)).toBe(JSON.stringify(expected));
+    actual[0].gold = -999;
+    expect(JSON.stringify(forecastProduction(s, mode, weight))).toBe(
+      JSON.stringify(expected),
+    );
+  }
+  expect(JSON.stringify(s)).toBe(before);
+});
+
+it("weights repeated deliveries once per collector run rather than per unit", () => {
+  const { s, land } = fixture();
+  piece(s, land, 0, "merchant", 3);
+  piece(s, land, 0, "merchant", 3);
+  const weight = vi.fn(
+    (tile: string, amount: number) =>
+      probability(s.tiles[tile].number) * amount,
+  );
+  forecastProduction(s, "annual", weight);
+  const calls = weight.mock.calls.length;
+  expect(calls).toBeGreaterThan(0);
+  weight.mockClear();
+  for (let i = 0; i < 2000; i++) piece(s, land, 0, "merchant", 3);
+  const result = forecastProduction(s, "annual", weight);
+  expect(weight.mock.calls.length).toBe(calls);
+  for (const player of s.players)
+    expect(result[player.id]).toEqual(direct(s, player.id, "annual"));
 });

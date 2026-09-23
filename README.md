@@ -170,7 +170,17 @@ To check harvest processing and seasonal forecasts on an exported campaign:
 SAVE_PATH=/path/to/campaign.json LABEL=local npx tsx scripts/production-performance.ts
 ```
 
-This checks every dice total from 2 through 12 on independent copies, records full-state hashes and times the resource distribution. It also records ordered deliveries for all seasons and forecasts over several roll counts. Five independent read scopes measure the size and construction cost of the production cache key. `SOURCE_ROOT` selects an older checkout; `EXPECT_PATH` requires exact agreement on deliveries, forecasts and resulting campaign states, while timings and internal key formats may differ. It never writes to the campaign export or browser storage.
+This checks every dice total from 2 through 12 on independent copies, records full-state hashes and times the resource distribution. It also records ordered deliveries for all seasons and forecasts over several roll counts, including the time spent on each forecast. Five independent read scopes measure the size and construction cost of the production cache key. `SOURCE_ROOT` selects an older checkout; `EXPECT_PATH` requires exact agreement on deliveries, forecasts and resulting campaign states, while timings and internal key formats may differ. It never writes to the campaign export or browser storage.
+
+To compare forecast costs as merchant and fishing fleets grow:
+
+```sh
+SOURCE_ROOT=/path/to/reference LABEL=before npx tsx scripts/collector-forecast-performance.ts
+EXPECT_PATH=test-artifacts/collector-forecast-before.json LABEL=after \
+  npx tsx scripts/collector-forecast-performance.ts
+```
+
+This measures annual income and four seasonal planning horizons with 2,000, 20,000 and 60,000 collectors. Each sample uses a different round to require fresh forecasts. All forecast hashes must match and fixture inputs must stay unchanged. `COLLECTORS` and `SAMPLES` adjust the cases. These are isolated production fixtures, not whole AI turns or played campaigns.
 
 To compare dense land and fleet movement batches against a prior checkout:
 
