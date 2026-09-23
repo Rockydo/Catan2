@@ -102,6 +102,7 @@ function validateInvariants(
   s: Game,
   validatedUnits?: Piece[],
   restoredUnitKeys?: readonly string[],
+  restoredUnitRows?: readonly number[],
 ) {
   if (s.calendar)
     rule(
@@ -706,100 +707,112 @@ function validateInvariants(
 
   const tileOwners = new Map<string, Set<number>>();
   const passengerCounts = new Map<string, number>();
-  // Do not allocate a [key, unit] array for every soldier in a large army.
-  for (const key of restoredUnitKeys ?? Object.keys(s.pieces)) {
-    const u = s.pieces[key];
+  // A current compact archive restores identical templates into independent
+  // units. Validate each shared layout's rules once in this synchronous load,
+  // then check every unit ID and count every passenger separately. The decoder
+  // already checked the row indices; no unit edits or async work intervene.
+  // Historical migrations and ordinary mutable games use the full per-unit path.
+  const checkedTemplates = restoredUnitRows ? new Set<number>() : undefined;
+  const unitKeys = restoredUnitKeys ?? Object.keys(s.pieces);
+  for (let i = 0; i < unitKeys.length; i++) {
+    const key = unitKeys[i],
+      u = s.pieces[key];
     object(u);
     id(key);
     rule(u.id === key && s.tiles[u.tile], "Invalid unit reference.");
-    int(u.owner, 0, s.players.length - 1);
-    rule(s.players[u.owner].alive, "An eliminated player owns units.");
-    bool(u.naval);
-    rule(
-      Object.hasOwn(u.naval ? SHIP_INFO : UNIT_INFO, u.kind),
-      "Invalid unit class.",
-    );
-    int(u.tier, 1, ["settler", "settlership"].includes(u.kind) ? 1 : 4);
-    if (u.coverage !== undefined)
+    const template = restoredUnitRows?.[i];
+    if (!checkedTemplates || !checkedTemplates.has(template!)) {
+      int(u.owner, 0, s.players.length - 1);
+      rule(s.players[u.owner].alive, "An eliminated player owns units.");
+      bool(u.naval);
       rule(
-        u.kind === "merchant" &&
-          Array.isArray(u.coverage) &&
-          u.coverage.length <= u.tier &&
-          new Set(u.coverage).size === u.coverage.length &&
-          u.coverage.every(
-            (id) =>
-              neighbors(u.tile).includes(id) &&
-              s.tiles[id] &&
-              tileGood(s.tiles[id]),
-          ),
-        "Invalid merchant coverage.",
+        Object.hasOwn(u.naval ? SHIP_INFO : UNIT_INFO, u.kind),
+        "Invalid unit class.",
       );
-    int(u.born);
-    int(u.moved);
-    int(u.bonus);
-    if (u.campaign !== undefined) {
-      int(u.campaign.enemy, 0, s.players.length - 1);
-      rule(!!s.tiles[u.campaign.target], "Invalid campaign destination.");
-    }
-    bool(u.acted);
-    if (u.seasonStatus !== undefined)
-      rule(
-        !!s.calendar &&
-          !u.carrier &&
-          (u.seasonStatus === "icebound"
-            ? u.naval && s.tiles[u.tile].surface === "frozen"
-            : u.seasonStatus === "adrift" &&
-              !u.naval &&
-              s.tiles[u.tile].surface === "open" &&
-              ["water", "ice"].includes(s.tiles[u.tile].resource)),
-        "Invalid stranded unit state.",
-      );
-    if (u.guildSupplied !== undefined) bool(u.guildSupplied);
-    if (u.guildSiege !== undefined) {
-      // Human guild contracts stack. Transfers can leave these temporary
-      // tools on an AI-owned unit until its next turn resets them.
-      int(u.guildSiege, 2);
-      rule(
-        !u.naval &&
-          !["merchant", "settler"].includes(u.kind) &&
-          u.guildSiege % 2 === 0,
-        "Invalid guild siege tools.",
-      );
-    }
-    if (u.carrier) {
-      passengerCounts.set(u.carrier, (passengerCounts.get(u.carrier) ?? 0) + 1);
-      const carrier = s.pieces[u.carrier];
-      rule(
-        !u.naval &&
-          carrier?.naval &&
-          carrier.owner === u.owner &&
-          carrier.tile === u.tile,
-        "Invalid passenger.",
-      );
-    } else {
-      rule(
-        canOccupy(s.tiles[u.tile], u.naval) || !!u.seasonStatus,
-        "A unit is on impassable terrain.",
-      );
-      const owners = tileOwners.get(u.tile);
-      if (!owners?.has(u.owner)) {
+      int(u.tier, 1, ["settler", "settlership"].includes(u.kind) ? 1 : 4);
+      if (u.coverage !== undefined)
         rule(
-          [...(owners ?? [])].every(
-            (owner) =>
-              friendly(s, owner, u.owner) ||
-              s.withdrawals?.some(
-                (w) =>
-                  w.tile === u.tile &&
-                  w.owners.includes(owner) &&
-                  w.owners.includes(u.owner),
-              ),
-          ),
-          "Opposing armies occupy the same hex.",
+          u.kind === "merchant" &&
+            Array.isArray(u.coverage) &&
+            u.coverage.length <= u.tier &&
+            new Set(u.coverage).size === u.coverage.length &&
+            u.coverage.every(
+              (id) =>
+                neighbors(u.tile).includes(id) &&
+                s.tiles[id] &&
+                tileGood(s.tiles[id]),
+            ),
+          "Invalid merchant coverage.",
         );
-        if (owners) owners.add(u.owner);
-        else tileOwners.set(u.tile, new Set([u.owner]));
+      int(u.born);
+      int(u.moved);
+      int(u.bonus);
+      if (u.campaign !== undefined) {
+        int(u.campaign.enemy, 0, s.players.length - 1);
+        rule(!!s.tiles[u.campaign.target], "Invalid campaign destination.");
       }
+      bool(u.acted);
+      if (u.seasonStatus !== undefined)
+        rule(
+          !!s.calendar &&
+            !u.carrier &&
+            (u.seasonStatus === "icebound"
+              ? u.naval && s.tiles[u.tile].surface === "frozen"
+              : u.seasonStatus === "adrift" &&
+                !u.naval &&
+                s.tiles[u.tile].surface === "open" &&
+                ["water", "ice"].includes(s.tiles[u.tile].resource)),
+          "Invalid stranded unit state.",
+        );
+      if (u.guildSupplied !== undefined) bool(u.guildSupplied);
+      if (u.guildSiege !== undefined) {
+        // Human guild contracts stack. Transfers can leave these temporary
+        // tools on an AI-owned unit until its next turn resets them.
+        int(u.guildSiege, 2);
+        rule(
+          !u.naval &&
+            !["merchant", "settler"].includes(u.kind) &&
+            u.guildSiege % 2 === 0,
+          "Invalid guild siege tools.",
+        );
+      }
+      if (u.carrier) {
+        const carrier = s.pieces[u.carrier];
+        rule(
+          !u.naval &&
+            carrier?.naval &&
+            carrier.owner === u.owner &&
+            carrier.tile === u.tile,
+          "Invalid passenger.",
+        );
+      } else {
+        rule(
+          canOccupy(s.tiles[u.tile], u.naval) || !!u.seasonStatus,
+          "A unit is on impassable terrain.",
+        );
+        const owners = tileOwners.get(u.tile);
+        if (!owners?.has(u.owner)) {
+          rule(
+            [...(owners ?? [])].every(
+              (owner) =>
+                friendly(s, owner, u.owner) ||
+                s.withdrawals?.some(
+                  (w) =>
+                    w.tile === u.tile &&
+                    w.owners.includes(owner) &&
+                    w.owners.includes(u.owner),
+                ),
+            ),
+            "Opposing armies occupy the same hex.",
+          );
+          if (owners) owners.add(u.owner);
+          else tileOwners.set(u.tile, new Set([u.owner]));
+        }
+      }
+      checkedTemplates?.add(template!);
     }
+    if (u.carrier)
+      passengerCounts.set(u.carrier, (passengerCounts.get(u.carrier) ?? 0) + 1);
     validatedUnits?.push(u);
   }
   // Every unit and carrier reference was validated above. Empty ships cannot
@@ -1613,7 +1626,14 @@ export function deserializeSnapshot(text: string): {
   }
   replaceAndeanSnow(data.game);
   const validatedUnits: Piece[] = [];
-  validateInvariants(data.game, validatedUnits, restoredUnitKeys);
+  validateInvariants(
+    data.game,
+    validatedUnits,
+    restoredUnitKeys,
+    // Literal keys may reorder as JavaScript property names. Only prefix/delta
+    // IDs retain the decoder's exact row order through reconstruction.
+    restoredUnitKeys ? units?.rows : undefined,
+  );
   // Never silently redirect an old standing order to a different good.
   for (const town of Object.values((data.game as Game).towns))
     for (const guild of townGuilds(town)) {

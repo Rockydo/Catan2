@@ -1070,3 +1070,25 @@ All 1,639 unit tests passed. The independent planning audit matched all 13,206 p
 All 615 staging browser scenarios were verified across Firefox, Chromium and mobile. The initial sweep exposed two obsolete test assumptions: large autosaves now live in IndexedDB, and the rulebook has 58 terrains and three Oil sources. The corrected tests verify durable reloads and every current terrain image; their targeted reruns passed in all three projects. No gameplay changes were needed for those failures.
 
 The local build passed 12 production HTTP checks and 13 additional Chromium save and worker scenarios. Type checking, formatting, the build and whitespace checks passed. Earlier hashed assets were retained. Tests used disposable copies and profiles; the playing campaign was not modified. The wider performance goal remains active.
+
+## Shared troop-template validation during refresh
+
+The compact decoder already reconstructs troops from exact saved templates. Current-version loads now validate each used template's shared troop rules once, including ownership, class, tier, movement, guild effects, orders, terrain, coverage and carrier references. Every unit still has its own checked ID and independent object. Passenger counts include every soldier, and the final capacity check still rejects overloaded ships. Occupation checks retain the first occurrence of each formation and current alliance rules.
+
+This reuse exists only inside the synchronous load operation, after compact rows and IDs have been checked and before a game can be edited. Historical unit migrations, original JSON, literal IDs that JavaScript may reorder, and ordinary calls to `assertInvariants` retain individual validation. The game does not retain template-validation results after loading. No integrity, expansion-budget or game-rule checks were removed.
+
+Refresh-to-menu measurements used disposable Chromium profiles, warm assets and three serial samples per case. Reference and updated builds were measured without the test suite running alongside them. The timings exclude opening and painting the map.
+
+| Campaign | Previous build | Updated build |
+| --- | ---: | ---: |
+| Latest Round 32 export, 540 tiles and 14,695 units | 98.4 ms | 87.6 ms |
+| Growth map, 2,000 tiles and 1,000 towns | 131.3 ms | 132.4 ms |
+| Storage stress copy, 240,000 units | 280.0 ms | 243.6 ms |
+
+The large-army sample improved by about 13%. The latest export improved in this comparison, but its smaller timings varied between samples; the larger map without a huge army was effectively unchanged. Complete campaign JSON and hashes matched on every load. These local samples do not establish a universal refresh-time guarantee.
+
+Additional nested-column and dictionary compression experiments did not show enough benefit to justify another archive format. Packing remains version 8. The latest 2,739,686-byte export is still 33,238 bytes, a 98.8% reduction, with all campaign state preserved. The 2,000-tile fixture is about 68 KB. The duplicated 240,000-unit stress copy is about 36 KB; its highly repetitive army is not representative of an equally large, diverse campaign. Autosaves and exports continue using independent complete archives, compressed off the main thread, with atomic backup writes and support for previous formats.
+
+Eighteen new regression cases verify repeated-template work counts, exact unit ordering, independent nested orders, later mutable edits, historical and literal-ID fallbacks, single damaged templates with valid checksums, occupied carriers, overloaded ships and opposing formations. All 1,657 unit tests passed.
+
+All 36 storage and worker browser scenarios passed across Firefox, Chromium and mobile. The original JSON format and all eight compact formats each passed three refreshes, with exact state on all 27 loads. After local publication, 12 production HTTP checks and 13 additional Chromium save and worker scenarios passed. Type checking, formatting, the build and whitespace checks passed. Existing hashed assets remain available to open sessions. All measurements and checks used disposable profiles and exported copies, leaving the source exports and playing campaign unchanged. The broader performance goal remains active.
