@@ -4,6 +4,7 @@ import { compress, importSave } from "../src/storage/codec";
 import { serialize, serializePacked } from "../src/game/save";
 import { packGame } from "../src/game/save-packing";
 import { packTables } from "../src/game/save-tables";
+import { packReferences } from "../src/game/save-references";
 import { hash } from "../src/game/world";
 
 // Compare original JSON, unit templates, map tables and reference dictionaries.
@@ -30,6 +31,18 @@ const encodings = {
         packing: 2,
         game: packTables(templateGame),
         checksum: hash(JSON.stringify(packTables(templateGame))).toString(16),
+      }),
+    ),
+  ),
+  references: Array.from(
+    await compress(
+      JSON.stringify({
+        ...JSON.parse(template),
+        packing: 3,
+        game: packReferences(packTables(templateGame)),
+        checksum: hash(
+          JSON.stringify(packReferences(packTables(templateGame))),
+        ).toString(16),
       }),
     ),
   ),
@@ -86,12 +99,15 @@ try {
     "legacy",
     "templates",
     "tables",
+    "references",
     "packed",
     "tables",
     "packed",
     "templates",
+    "references",
     "tables",
     "legacy",
+    "references",
     "legacy",
     "packed",
     "templates",
@@ -150,10 +166,12 @@ try {
     legacyBytes: encodings.legacy.length,
     templateBytes: encodings.templates.length,
     tableBytes: encodings.tables.length,
+    referenceBytes: encodings.references.length,
     packedBytes: encodings.packed.length,
     legacyMedianReadyMs: median("legacy"),
     templateMedianReadyMs: median("templates"),
     tableMedianReadyMs: median("tables"),
+    referenceMedianReadyMs: median("references"),
     packedMedianReadyMs: median("packed"),
     samples,
     exactRoundTrip: true,

@@ -22,11 +22,29 @@ delete game.researchChoice;
 const label = (process.env.LABEL ?? "camera").replace(/[^a-z0-9_-]/gi, "-");
 const output = `test-artifacts/camera-${label}`;
 mkdirSync("test-artifacts", { recursive: true });
+const graphics = process.env.GRAPHICS ?? "software";
+if (!["software", "hardware"].includes(graphics))
+  throw Error("GRAPHICS must be software or hardware.");
 const browser = await chromium.launch({
   executablePath: "/usr/bin/chromium",
-  args: ["--no-sandbox"],
+  args: ["--no-sandbox", ...(graphics === "hardware" ? ["--enable-gpu"] : [])],
 });
 try {
+  const system = await browser.newBrowserCDPSession(),
+    { gpu } = await system.send("SystemInfo.getInfo"),
+    rendering = {
+      requested: graphics,
+      renderer: gpu.auxAttributes?.glRenderer,
+      features: gpu.featureStatus,
+    };
+  await system.detach();
+  if (
+    graphics === "hardware" &&
+    gpu.featureStatus?.gpu_compositing !== "enabled"
+  )
+    throw Error(
+      "Hardware compositing is unavailable; refusing a silently software-rendered comparison.",
+    );
   const page = await browser.newPage({
     viewport: { width: 1920, height: 1080 },
   });
@@ -151,6 +169,7 @@ try {
   await page.waitForTimeout(200);
   await page.screenshot({ path: `${output}.png` });
   const result = {
+    rendering,
     tiles: Object.keys(game.tiles).length,
     towns: Object.keys(game.towns).length,
     units: Object.keys(game.pieces).length,

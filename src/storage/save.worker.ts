@@ -91,7 +91,10 @@ async function handle(request: SaveRequest) {
     case "load":
       return encodeLoadedCampaign(await load(request.legacy));
     case "import":
-      return importSave(request.text);
+      return encodeLoadedCampaign({
+        game: await importSave(request.text),
+        recovered: false,
+      });
     case "export":
       return exportArchive(request.game);
     case "save": {

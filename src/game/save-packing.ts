@@ -9,6 +9,18 @@ interface PackedUnits {
 }
 export type PackedGame = Omit<Game, "pieces"> & { pieces: PackedUnits };
 const LIMIT = 128_000_000;
+const UNIT_FIELDS = [
+  "id",
+  "owner",
+  "kind",
+  "naval",
+  "tier",
+  "tile",
+  "born",
+  "moved",
+  "acted",
+  "bonus",
+];
 const invalid = () => new Error("This compact save is damaged.");
 function jsonBytes(value: unknown): number {
   return textBytes(JSON.stringify(value));
@@ -36,7 +48,9 @@ function packKeys(keys: string[]): PackedUnits["keys"] {
 
 export function packGame(game: Game): PackedGame {
   const keys = Object.keys(game.pieces),
+    packedKeys = packKeys(keys),
     templates: PackedUnits["templates"] = [],
+    sizes: number[] = [],
     rows: number[] = [],
     lookup = new Map<string, number>();
   let expanded = jsonBytes({ ...game, pieces: {} });
@@ -47,18 +61,23 @@ export function packGame(game: Game): PackedGame {
     // differences in property order remain part of the template identity.
     const template = { ...piece, id: null },
       signature = JSON.stringify(template);
-    expanded += textBytes(signature) + jsonBytes(key) * 2;
-    if (expanded > LIMIT)
-      throw new Error("This save exceeds the 128 MB expanded limit.");
     let index = lookup.get(signature);
     if (index === undefined) {
       index = templates.length;
       lookup.set(signature, index);
       templates.push(template);
+      sizes.push(textBytes(signature));
     }
+    // Delta IDs contain only an ASCII prefix and decimal digits. Their JSON
+    // byte size is exact without serializing each ID again for every soldier.
+    expanded +=
+      sizes[index] +
+      (Array.isArray(packedKeys) ? jsonBytes(key) : key.length + 2) * 2;
+    if (expanded > LIMIT)
+      throw new Error("This save exceeds the 128 MB expanded limit.");
     rows.push(index);
   }
-  return { ...game, pieces: { keys: packKeys(keys), templates, rows } };
+  return { ...game, pieces: { keys: packedKeys, templates, rows } };
 }
 
 function copyValue(value: unknown, depth = 0): unknown {
@@ -124,12 +143,23 @@ export function unpackGame(game: PackedGame): Game {
       template.id !== null
     )
       throw invalid();
-    const nested = Object.keys(template).filter(
+    const fields = Object.keys(template);
+    const nested = fields.filter(
       (key) => template[key] && typeof template[key] === "object",
     );
     // Validate nesting once, before duplicating any shared mutable values.
     for (const key of nested) copyValue(template[key]);
-    return { template, nested, size: jsonBytes(template) };
+    return {
+      template,
+      nested,
+      size: jsonBytes(template),
+      // A literal restores the normal troop layout without a generic object
+      // spread for every soldier. Any extra/reordered field takes the exact
+      // generic path, so old and future save data is never dropped or reordered.
+      standard:
+        fields.length === UNIT_FIELDS.length &&
+        fields.every((field, i) => field === UNIT_FIELDS[i]),
+    };
   });
   // Bound the reconstructed data as well as the compressed stream. A template
   // containing a large object must not be amplified into gigabytes of units.
@@ -146,16 +176,31 @@ export function unpackGame(game: PackedGame): Game {
       !templates[index]
     )
       throw invalid();
-    expanded += templates[index].size + jsonBytes(key) * 2;
+    expanded +=
+      templates[index].size +
+      (Array.isArray(rawKeys) ? jsonBytes(key) : key.length + 2) * 2;
     if (expanded > LIMIT)
       throw new Error("This save exceeds the 128 MB expanded limit.");
   }
   const pieces: Game["pieces"] = {};
   for (let i = 0; i < keys.length; i++) {
     const key = keys[i],
-      { template, nested } = templates[packed.rows[i]];
+      { template, nested, standard } = templates[packed.rows[i]];
     if (Object.hasOwn(pieces, key)) throw invalid();
-    const piece: Record<string, unknown> = { ...template, id: key };
+    const piece: Record<string, unknown> = standard
+      ? {
+          id: key,
+          owner: template.owner,
+          kind: template.kind,
+          naval: template.naval,
+          tier: template.tier,
+          tile: template.tile,
+          born: template.born,
+          moved: template.moved,
+          acted: template.acted,
+          bonus: template.bonus,
+        }
+      : { ...template, id: key };
     for (const field of nested)
       // Spread created own data properties, including any __proto__ field.
       piece[field] = copyValue(template[field]);

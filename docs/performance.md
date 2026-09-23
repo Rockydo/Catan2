@@ -380,3 +380,29 @@ The Round 32 production-browser replay retained all 485 orders and the same huma
 All 81 browser scenarios passed across Firefox, Chromium and mobile. Coverage includes guild supply and saved contracts, transport invasions, coastal and tower sieges, direct raids, road demolition, bulk orders, worker pause/resume and large-save recovery. No visual or gameplay rules changed in this pass.
 
 The deployed build passed all 12 production HTTP checks and 15 additional Chromium siege, worker and large-save checks. All replays and browser checks used exported copies or disposable fixtures. The live campaign was not opened or modified. The broader performance goal remains active.
+
+## Compact integer columns and large imports
+
+Packing version 4 stores integer coordinate columns and map-reference lists as signed differences in variable-length bytes before gzip. Only known sequence slots use this encoding. Mixed values, fractional coordinates, uncommon fields and values outside its integer range retain their original representation. Nothing is rounded or regenerated. Original JSON and packing versions 1 through 3 remain readable.
+
+| Campaign | Previous compressed archive | New archive | Reduction |
+| --- | ---: | ---: | ---: |
+| Latest export, 540 tiles and 14,695 units | 86,431 bytes | 65,841 bytes | 23.8% |
+| Growth map, 2,000 tiles and 1,000 towns | 276,169 bytes | 198,335 bytes | 28.2% |
+| Storage stress copy, 240,000 units | 87,937 bytes | 68,922 bytes | 21.6% |
+
+The 240,000-unit storage fixture duplicates troops on the existing map. It compresses unusually well and is not a substitute for testing diverse maps or complete AI turns. Every comparison restores the complete campaign, including property order, independent mutable records, stockpiles, orders and exact geometry.
+
+Refresh remains fast rather than materially faster in this pass. In disposable Chromium with warm assets, median refresh-to-menu time on the storage stress fixture was 481 ms, compared with 478 ms before. The latest real export took 101 ms. These measurements include validation and transfer, but end before opening and painting the map. The smaller format costs a few milliseconds to decode; full validation remains enabled.
+
+Large file imports now use the same validated JSON-text transfer already used by large autosave reloads. This avoids structured-cloning hundreds of thousands of individual objects across the worker boundary. Using an identical compressed historical input and three fresh workers per build, median import-to-reconstructed-campaign time fell from 697.3 to 635.9 ms on the 240,000-unit fixture, about 9%. The diagnostic includes the interface thread's JSON parse, not just receipt of the worker message. All results matched the complete expected campaign.
+
+The troop decoder also uses a direct object constructor for the exact standard field layout. Extra or reordered fields retain the generic decoder. Packing calculates repeated template sizes once and calculates ASCII delta-ID sizes directly. These optimizations retain the existing reconstructed-size limits. Malformed base64, truncated or overflowing integers, invalid references, duplicate records and expansion attacks still fail before a campaign is exposed.
+
+`save-load-performance.ts` now compares all five supported representations. `save-import-performance.ts` measures the import boundary independently of map painting. Both use disposable profiles and verify the complete returned state. An experiment loading the interface module concurrently with disk recovery was discarded because its gains were not repeatable.
+
+Validation passed all 1,430 unit tests and 87 browser scenarios across Firefox, Chromium and mobile. After the final decoder guard was added, all 21 storage browser checks passed again. The deployed build passed 12 production HTTP checks and nine additional Chromium storage/worker checks. All browser testing used disposable profiles; the playing campaign and exported source files were not changed. The broader performance goal remains active.
+
+## Camera diagnostic graphics mode
+
+Camera reports now record the browser's actual renderer and acceleration status. The default automated Chromium launch on this machine uses SwiftShader software rendering. `GRAPHICS=hardware` requests acceleration and rejects a silent fallback when hardware compositing is unavailable. Hardware and software reports must not be mixed in before/after comparisons. This diagnostic change does not alter game rendering.

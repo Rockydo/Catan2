@@ -199,6 +199,9 @@ test("very large armies refresh through the validated text transfer without losi
             if (data.type === "load")
               (window as any).largeLoad =
                 typeof data.result?.gameText === "string";
+            if (data.type === "import")
+              (window as any).largeImport =
+                typeof data.result?.gameText === "string";
           });
       }
     };
@@ -224,6 +227,18 @@ test("very large armies refresh through the validated text transfer without losi
   await expect(page.getByText(/Automatic saving is unavailable/)).toHaveCount(
     0,
   );
+  await page.locator("input[type=file]").setInputFiles({
+    name: "large-campaign.json",
+    mimeType: "application/json",
+    buffer: Buffer.from(text),
+  });
+  await expect(
+    page.getByText("Game imported. AI is paused until you resume."),
+  ).toBeVisible();
+  expect(await page.evaluate(() => (window as any).largeImport)).toBe(true);
+  await expect
+    .poll(async () => JSON.stringify((await saved(page))?.game))
+    .toBe(expected);
 });
 
 test("damaged compressed primary recovers the previous save and keeps the valid backup", async ({

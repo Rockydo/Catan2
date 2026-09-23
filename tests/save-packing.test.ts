@@ -57,6 +57,26 @@ it("delta-encodes non-consecutive and reordered IDs without changing unit order"
   expect(Object.keys(unpackGame(packed).pieces)).toEqual([a.id, c.id, b.id]);
 });
 
+it("does not mistake comma-containing future field names for the normal unit layout", () => {
+  const { s, water } = fishingFixture();
+  const unit = piece(s, water);
+  const packed = onDisk(packGame(s));
+  const template = packed.pieces.templates[0];
+  packed.pieces.templates[0] = Object.fromEntries(
+    Object.entries(template).flatMap(([field, value]) =>
+      field === "owner"
+        ? [["owner,kind", { preserved: value }]]
+        : field === "kind"
+          ? []
+          : [[field, value]],
+    ),
+  );
+  const restored = unpackGame(packed).pieces[unit.id] as any;
+  expect(restored["owner,kind"]).toEqual({ preserved: unit.owner });
+  expect(Object.hasOwn(restored, "owner")).toBe(false);
+  expect(Object.hasOwn(restored, "kind")).toBe(false);
+});
+
 it("copies nested prototype-named fields as independent own data", () => {
   const { s, water } = fishingFixture();
   for (let i = 0; i < 2; i++) {
@@ -125,7 +145,7 @@ it("verifies the compact checksum and packing version before expanding units", (
   expect(() => deserialize(JSON.stringify(data))).toThrow(/integrity/);
   data.checksum = hash(JSON.stringify(data.game)).toString(16);
   expect(() => deserialize(JSON.stringify(data))).toThrow(/compact/);
-  data.packing = 4;
+  data.packing = 99;
   expect(() => deserialize(JSON.stringify(data))).toThrow(/supported/);
 });
 

@@ -171,5 +171,6 @@ export async function exportCampaign(
     : call<Uint8Array<ArrayBuffer>>({ type: "export", game });
 }
 export async function importCampaign(text: SaveInput): Promise<Game> {
-  return failed ? importSave(text) : call<Game>({ type: "import", text });
+  if (failed) return importSave(text);
+  return decodeLoadedCampaign(await call({ type: "import", text })).game!;
 }
