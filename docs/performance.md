@@ -862,3 +862,32 @@ New regressions compare all land/naval/stranded combinations, passengers, civili
 All 1,603 unit tests passed. The independent planning audit retained every project, score and decision across 128 scenarios and 13,206 proposals. All 96 trade comparisons also matched, including offers, aid and acceptance decisions. Type checking, formatting, the build and whitespace checks passed.
 
 All 213 staging browser scenarios passed across Chromium, Firefox and mobile. After local deployment, all 12 production HTTP checks and 11 additional Chromium transport, worker and large-save scenarios passed. Previous hashed assets were retained for open sessions. Validation used exported copies and disposable profiles; the playing campaign was not opened or modified. The broader performance goal remains active.
+
+
+## Compact climate plans and direct validated troop transfer
+
+Packing version 8 compresses the coordinates and repeated climate values in the saved exploration plan. Troop templates use columns grouped by their exact field layout, with integer columns encoded as signed differences. Both representations retain saved values and enumeration order, including optional fields, nested objects and Unicode text. Small details stay literal when the packed representation would be larger. The loader does not reroll unexplored climates or infer unit values from the current rules. Original JSON and all seven earlier compact formats remain readable.
+
+The storage worker previously restored and validated a compact army, then enumerated and packed it again for transfer to the interface. It now retains the decoded templates within the synchronous load operation and uses them for the immediate transfer after validation and migrations finish. This applies to current-version compact archives with at least 2,000 troops and enough repeated templates. Older unit migrations and ordinary JSON loads retain the existing packing path. No template cache remains attached to mutable games. The interface still creates independent units and nested mutable values. Integrity checks, expansion budgets, complete game validation, backups and competing-tab protection remain in place.
+
+| Saved campaign | Previous archive | Version 8 | Reduction |
+| --- | ---: | ---: | ---: |
+| Latest Round 32 export, 540 tiles, 322 towns, 14,695 troops | 36,629 bytes | 33,238 bytes | 9.3% |
+| Growth map, 2,000 tiles and 1,000 towns | 78,173 bytes | 67,978 bytes | 13.0% |
+| Storage stress copy, 240,000 troops | 39,606 bytes | 36,144 bytes | 8.7% |
+
+The storage stress copy duplicates troops from the real campaign. Its small archive is not representative of an army with 240,000 distinct orders and positions. These sizes include a complete independently loadable snapshot, not a delta. The original latest JSON export is 2,739,686 bytes. Campaigns adopt version 8 on their next save or export after loading the update.
+
+| Refresh to campaign menu | Before | After |
+| --- | ---: | ---: |
+| Latest export | 93.3 ms | 92.2 ms |
+| 2,000-tile growth map | 138.5 ms | 133.8 ms |
+| 240,000-troop storage stress copy | 431.2 ms | 347.1 ms |
+
+These are medians of three serial samples in disposable Chromium with warm assets. They exclude opening and painting the map. The latest export's loading speed was effectively unchanged; the very large army improved by about 20%. Every refresh retained the exact complete campaign JSON and its hash, including property and unit ordering. Further file-size reductions did not require dropping events, orders, future exploration data or any other campaign state.
+
+New regressions cover malformed compact plans and columns, repeated-value expansion budgets, Unicode and future fields, historical format loading, field and record order, independent restored troops, migrated-unit fallback and rejected invalid archives. A validated-transfer test rejects any attempt to enumerate or read the full army again while preparing the load message. The refresh diagnostic includes all eight compact versions and the original JSON format.
+
+All 1,623 unit tests passed. After the final version-constant and historical-fixture adjustment, all 51 affected tests passed again. All 33 staging browser scenarios passed across Chromium, Firefox and mobile. A compatibility replay loaded the original JSON and all eight compact formats three times each, preserving the exact complete campaign on all 27 refreshes. Type checking, formatting, the build and whitespace checks passed.
+
+The local deployment passed all 12 production HTTP checks and 11 additional Chromium save, transport and worker scenarios. Previous hashed assets remain available to already-open sessions. Tests used exported copies and disposable browser profiles. Neither the original exports nor the playing campaign were modified. The broader performance goal remains active.

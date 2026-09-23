@@ -38,7 +38,7 @@ it("preserves full games, optional fields, record order and all previous save fo
   s.pieces[first.id] = first;
   const before = JSON.stringify(s),
     modern = JSON.parse(serializePacked(s));
-  expect(modern.packing).toBe(7);
+  expect(modern.packing).toBe(8);
   const templates = packGame(s),
     tables = packTables(templates),
     refs = packReferences(tables);

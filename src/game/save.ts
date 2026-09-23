@@ -1,10 +1,11 @@
-import { packGame, unpackGame } from "./save-packing";
+import { packGame, unpackGame, type PackedGame } from "./save-packing";
 import { packTables, unpackTables } from "./save-tables";
 import { packReferences, unpackReferences } from "./save-references";
 import { packIntegers, unpackIntegers } from "./save-integers";
 import { packSpatial, unpackSpatial } from "./save-spatial";
 import { packGeometry, unpackGeometry } from "./save-geometry";
 import { packTopology, unpackTopology } from "./save-topology";
+import { packDetails, unpackDetails } from "./save-details";
 import { syncEmergencyCoalition } from "./emergency-coalition";
 import {
   SEASONS,
@@ -55,6 +56,7 @@ import {
   points,
   minCasualties,
 } from "./selectors";
+const CURRENT_SAVE_VERSION = 14;
 export const SAVE_KEY = "catane-frontiers-save-v1";
 export const BACKUP_KEY = "catane-frontiers-backup-v1";
 
@@ -1206,17 +1208,21 @@ export function serializePacked(s: Game): string {
 function saveEnvelope(s: Game, packed: boolean): string {
   const body = JSON.stringify(
     packed
-      ? packSpatial(
-          packIntegers(
-            packReferences(packGeometry(packTopology(packTables(packGame(s))))),
+      ? packDetails(
+          packSpatial(
+            packIntegers(
+              packReferences(
+                packGeometry(packTopology(packTables(packGame(s)))),
+              ),
+            ),
           ),
         )
       : s,
   );
   const header = JSON.stringify({
     format: packed ? "catane-frontiers-packed" : "catane-frontiers",
-    version: 14,
-    ...(packed ? { packing: 7 } : {}),
+    version: CURRENT_SAVE_VERSION,
+    ...(packed ? { packing: 8 } : {}),
     savedAt: new Date().toISOString(),
     checksum: hash(body).toString(16),
   });
@@ -1224,6 +1230,17 @@ function saveEnvelope(s: Game, packed: boolean): string {
   return `${header.slice(0, -1)},"game":${body}}`;
 }
 export function deserialize(text: string): Game {
+  return deserializeSnapshot(text).game;
+}
+
+/** A one-shot result for the load worker. Current archives retain their decoded
+ * unit templates through validation for immediate transfer, before the game
+ * escapes or can be mutated. Historical unit migrations use fresh packing. */
+export function deserializeSnapshot(text: string): {
+  game: Game;
+  units?: PackedGame["pieces"];
+} {
+  let units: PackedGame["pieces"] | undefined;
   rule(
     text.length < 128_000_000,
     "This save exceeds the 128 MB expanded limit.",
@@ -1233,7 +1250,7 @@ export function deserialize(text: string): Game {
     data &&
       (data.format === "catane-frontiers" ||
         (data.format === "catane-frontiers-packed" &&
-          [1, 2, 3, 4, 5, 6, 7].includes(data.packing))) &&
+          [1, 2, 3, 4, 5, 6, 7, 8].includes(data.packing))) &&
       [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14].includes(data.version) &&
       data.game,
     "This is not a supported Catane save.",
@@ -1245,6 +1262,7 @@ export function deserialize(text: string): Game {
   if (data.format === "catane-frontiers-packed") {
     let packed = data.game;
     const measured = { baseBytes: 0 };
+    if (data.packing >= 8) packed = unpackDetails(packed);
     if (data.packing >= 5) packed = unpackSpatial(packed);
     if (data.packing >= 4) packed = unpackIntegers(packed);
     if (data.packing >= 3) packed = unpackReferences(packed);
@@ -1255,6 +1273,9 @@ export function deserialize(text: string): Game {
       packed,
       data.packing >= 2 ? measured.baseBytes : undefined,
     );
+    // Current-version loads perform no unit migrations. When the save version
+    // advances, historical archives automatically use freshly packed troops.
+    if (data.version === CURRENT_SAVE_VERSION) units = packed.pieces;
   }
   {
     // Replace retired/prototype crops before older migrations inspect yields.
@@ -1594,7 +1615,7 @@ export function deserialize(text: string): Game {
   restoreCoastalRoads(data.game);
   restoreGoldPorts(data.game);
   syncEmergencyCoalition(data.game);
-  return { ...data.game };
+  return { game: { ...data.game }, units };
 }
 export function saveLocal(s: Game) {
   const text = serialize(s),

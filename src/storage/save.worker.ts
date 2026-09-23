@@ -1,11 +1,11 @@
-import { deserialize, serialize, serializePacked } from "../game/save";
+import { deserializeSnapshot, serialize, serializePacked } from "../game/save";
 import type { Game } from "../game/types";
 import { applySnapshotDelta, type SnapshotDelta } from "../game/snapshot-delta";
 import {
   compress,
   expand,
   exportArchive,
-  importSave,
+  unpackSave,
   type SaveInput,
 } from "./codec";
 import { readRecords, writeRecord, type SaveRecord } from "./database";
@@ -71,10 +71,11 @@ async function load(legacy: (string | null)[]) {
   for (const candidate of candidates) {
     try {
       const text = await candidate.read();
-      const game = deserialize(text);
+      const { game, units } = deserializeSnapshot(text);
       if (!revision) initialBackup = text;
       return {
         game,
+        units,
         recovered: candidate.recovered || !!error,
         error,
         needsSave: !!candidate.legacy || candidate.recovered || !!error,
@@ -88,13 +89,16 @@ async function load(legacy: (string | null)[]) {
 }
 async function handle(request: SaveRequest) {
   switch (request.type) {
-    case "load":
-      return encodeLoadedCampaign(await load(request.legacy));
-    case "import":
-      return encodeLoadedCampaign({
-        game: await importSave(request.text),
-        recovered: false,
-      });
+    case "load": {
+      const { units, ...result } = await load(request.legacy);
+      return encodeLoadedCampaign(result, units);
+    }
+    case "import": {
+      const { game, units } = deserializeSnapshot(
+        await unpackSave(request.text),
+      );
+      return encodeLoadedCampaign({ game, recovered: false }, units);
+    }
     case "export":
       return exportArchive(request.game);
     case "save": {

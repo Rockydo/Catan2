@@ -4,6 +4,7 @@ import { packTables, unpackTables } from "../src/game/save-tables";
 import { packGame, unpackGame } from "../src/game/save-packing";
 import { packReferences } from "../src/game/save-references";
 import { packIntegers } from "../src/game/save-integers";
+import { packTopology } from "../src/game/save-topology";
 import { packSpatial } from "../src/game/save-spatial";
 import { serializePacked, serialize, deserialize } from "../src/game/save";
 import { compress } from "../src/storage/codec";
@@ -81,7 +82,7 @@ it("keeps noncanonical geometry, unknown fields and empty tables verbatim", () =
   );
 });
 
-it("loads packing versions 1 through 7 with exact state and shrinks the archive", async () => {
+it("loads packing versions 1 through 8 with exact state and shrinks the archive", async () => {
   const { s } = fishingFixture();
   const expected = JSON.stringify(deserialize(serialize(s)));
   const templates = packGame(s),
@@ -100,6 +101,9 @@ it("loads packing versions 1 through 7 with exact state and shrinks the archive"
     ints,
     spatial,
     geometry,
+    packSpatial(
+      packIntegers(packReferences(packGeometry(packTopology(columns)))),
+    ),
     current.game,
   ];
   for (const [index, game] of encodings.entries()) {

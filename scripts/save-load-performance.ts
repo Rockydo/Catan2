@@ -12,6 +12,7 @@ import { unpackUnitSequences } from "../src/game/save-tables";
 import { packTables } from "../src/game/save-tables";
 import { packReferences } from "../src/game/save-references";
 import { hash } from "../src/game/world";
+import { unpackDetails } from "../src/game/save-details";
 
 // Compare original JSON, unit templates, map tables and reference dictionaries.
 // Uses a disposable browser profile, never the player's storage or export.
@@ -27,6 +28,8 @@ const template = JSON.stringify({
   checksum: hash(JSON.stringify(templateGame)).toString(16),
   game: templateGame,
 });
+const latest = JSON.parse(serializePacked(game));
+const topology = unpackDetails(latest.game);
 const encodings = {
   legacy: Array.from(await compress(serialize(game))),
   templates: Array.from(await compress(template)),
@@ -102,7 +105,17 @@ const encodings = {
       }),
     ),
   ),
-  packed: Array.from(await compress(serializePacked(game))),
+  topology: Array.from(
+    await compress(
+      JSON.stringify({
+        ...latest,
+        packing: 7,
+        game: topology,
+        checksum: hash(JSON.stringify(topology)).toString(16),
+      }),
+    ),
+  ),
+  packed: Array.from(await compress(JSON.stringify(latest))),
 };
 const formats = process.env.FORMATS?.split(",");
 if (formats?.some((format) => !Object.hasOwn(encodings, format)))
@@ -166,9 +179,11 @@ try {
     "integers",
     "spatial",
     "geometry",
+    "topology",
     "packed",
     "tables",
     "geometry",
+    "topology",
     "packed",
     "templates",
     "references",
@@ -180,6 +195,7 @@ try {
     "legacy",
     "integers",
     "geometry",
+    "topology",
     "packed",
     "spatial",
     "templates",
@@ -251,6 +267,7 @@ try {
     integerBytes: encodings.integers.length,
     spatialBytes: encodings.spatial.length,
     geometryBytes: encodings.geometry.length,
+    topologyBytes: encodings.topology.length,
     packedBytes: encodings.packed.length,
     legacyMedianReadyMs: median("legacy"),
     templateMedianReadyMs: median("templates"),
@@ -259,6 +276,7 @@ try {
     integerMedianReadyMs: median("integers"),
     spatialMedianReadyMs: median("spatial"),
     geometryMedianReadyMs: median("geometry"),
+    topologyMedianReadyMs: median("topology"),
     packedMedianReadyMs: median("packed"),
     samples,
     exactRoundTrip: true,

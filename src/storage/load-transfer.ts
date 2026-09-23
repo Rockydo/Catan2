@@ -1,5 +1,9 @@
 import type { Game } from "../game/types";
-import { packValidatedGame, restoreValidatedGame } from "../game/save-packing";
+import {
+  packValidatedGame,
+  restoreValidatedGame,
+  type PackedGame,
+} from "../game/save-packing";
 import { packUnitSequences, unpackUnitSequences } from "../game/save-tables";
 
 export interface LoadedCampaign {
@@ -18,8 +22,29 @@ type LoadTransfer = Omit<LoadedCampaign, "game"> &
  * graphs are expensive to structured-clone across threads. Transfer repeated
  * troops as templates instead of a full JSON object for every soldier.
  * This changes the message, never the on-disk snapshot or validation rules. */
-export function encodeLoadedCampaign(result: LoadedCampaign): LoadTransfer {
+export function encodeLoadedCampaign(
+  result: LoadedCampaign,
+  // Only the current archive just validated by deserializeSnapshot. Consume
+  // synchronously, before any mutation of the freshly loaded game.
+  validatedUnits?: PackedGame["pieces"],
+): LoadTransfer {
   if (!result.game) return result;
+  if (
+    validatedUnits &&
+    validatedUnits.rows.length >= 2_000 &&
+    validatedUnits.templates.length * 2 <= validatedUnits.rows.length
+  ) {
+    const { game, ...status } = result;
+    return {
+      ...status,
+      gameText: JSON.stringify({
+        ...game,
+        pieces: packUnitSequences(validatedUnits),
+      }),
+      unitTemplates: true,
+      unitSequences: true,
+    };
+  }
   const keys = Object.keys(result.game.pieces);
   if (keys.length < 2_000) return result;
   const { game, ...status } = result;

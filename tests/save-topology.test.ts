@@ -102,7 +102,7 @@ it("shrinks complete archives without dropping state or changing the input", asy
     packIntegers(packReferences(packGeometry(packTables(packGame(s))))),
   );
   const current = JSON.parse(serializePacked(s));
-  expect(current.packing).toBe(7);
+  expect(current.packing).toBe(8);
   expect((await compress(JSON.stringify(current.game))).length).toBeLessThan(
     (await compress(JSON.stringify(old))).length * 0.8,
   );

@@ -75,7 +75,7 @@ function unpackSequence(value: Sequence): number[] {
   }
   return values;
 }
-function packTable(records: Record<string, unknown>): Table {
+export function packTable(records: Record<string, unknown>): Table {
   const keys = Object.keys(records),
     layouts: Layout[] = [],
     order: number[] = [];
@@ -104,7 +104,7 @@ function packTable(records: Record<string, unknown>): Table {
   }
   return { keys, layouts, order };
 }
-function unpackTable(
+export function unpackTable(
   table: Table,
   budget: { remaining: number },
   measured?: { bytes: number },
