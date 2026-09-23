@@ -1,12 +1,17 @@
-import { expect, it } from "vitest";
+import { expect, it, vi } from "vitest";
 import { applyCommand, eliminate, execute } from "../src/game/engine";
 import { breakSieges } from "../src/game/military";
 import { syncEmergencyCoalition } from "../src/game/emergency-coalition";
 import { pruneAlliances } from "../src/game/diplomacy";
-import { allPieces, withPlanningFrame } from "../src/game/selectors";
+import {
+  allPieces,
+  moveTargets,
+  withPlanningFrame,
+} from "../src/game/selectors";
 import type { Command, Game } from "../src/game/types";
 import { allianceFixture } from "./alliance-fixture";
 import { piece } from "./helpers";
+import { maritimeFixture } from "./maritime-fixture";
 
 // Compare the optimized post-order scope with the original independent reads.
 // This deliberately starts a new index for every cleanup operation.
@@ -109,4 +114,121 @@ it("withdrawal checks ignore embarked troops and reuse current occupation reads"
   second.carrier = "transport";
   pruneAlliances(s);
   expect(s.withdrawals).toEqual([]);
+});
+
+it("indexes troops only once for final siege and coalition cleanup after peaceful movement", () => {
+  const { s, enemy } = maritimeFixture();
+  const moving = piece(s, "-3,0", 0, "cavalry");
+  piece(s, "3,0", 0);
+  for (let i = 0; i < 2000; i++) piece(s, "-4,0", 0);
+  s.sieges.active = {
+    owner: 0,
+    town: enemy.id,
+    progress: 1,
+    last: 9,
+    raided: null,
+  };
+  // Form any emergency coalition before the measured order. A new treaty
+  // correctly requires another siege check against its changed friendships.
+  syncEmergencyCoalition(s);
+  const spy = vi.spyOn(Object, "keys");
+  let result: ReturnType<typeof applyCommand>, scans: number;
+  try {
+    result = applyCommand(s, { type: "move", ids: [moving.id], to: "-2,0" });
+    scans = spy.mock.calls.filter(
+      ([value]) => value === result.state.pieces,
+    ).length;
+  } finally {
+    spy.mockRestore();
+  }
+  expect(result.ok, result.error).toBe(true);
+  expect(result.state.sieges.active).toEqual(s.sieges.active);
+  // One read for movement validation, one shared by all post-order checks.
+  expect(scans).toBe(2);
+});
+
+it("withdrawal breaks town and tower sieges with the same ordered notifications", () => {
+  const { s, enemy } = maritimeFixture();
+  const unit = piece(s, "3,0", 0, "cavalry");
+  s.sieges.active = {
+    owner: 0,
+    town: enemy.id,
+    progress: 1,
+    last: 9,
+    raided: null,
+  };
+  s.towers[enemy.vertex] = {
+    id: "tower-test",
+    vertex: enemy.vertex,
+    owner: 1,
+    tier: 2,
+  };
+  s.towerSieges = {
+    active: {
+      owner: 0,
+      tower: "tower-test",
+      vertex: enemy.vertex,
+      progress: 0,
+      last: 9,
+      units: [unit.id],
+    },
+  };
+  const to = Object.keys(moveTargets(s, [unit.id])).find(
+    (tile) => !s.vertices[enemy.vertex].tiles.includes(tile),
+  )!;
+  const next = compare(s, { type: "move", ids: [unit.id], to });
+  expect(next.sieges).toEqual({});
+  expect(next.towerSieges).toEqual({});
+});
+
+it.each(["tied", "decisive", "civilian"] as const)(
+  "%s combat preserves intermediate siege cleanup and complete battle state",
+  (outcome) => {
+    const { s, enemy } = maritimeFixture();
+    const attacker = piece(
+      s,
+      "2,0",
+      0,
+      "cavalry",
+      outcome === "decisive" ? 4 : 1,
+    );
+    piece(s, "3,0", 1, outcome === "civilian" ? "merchant" : "cavalry");
+    piece(s, "2,0", 0, "merchant");
+    s.sieges.active = {
+      owner: 0,
+      town: enemy.id,
+      progress: 1,
+      last: 9,
+      raided: null,
+    };
+    const next = compare(s, { type: "move", ids: [attacker.id], to: "3,0" });
+    expect(!!next.battle).toBe(outcome === "decisive");
+    if (outcome === "civilian") {
+      expect(next.pieces[attacker.id].tile).toBe("3,0");
+      expect(next.sieges.active).toBeDefined();
+    } else expect(next.sieges).toEqual({});
+  },
+);
+
+it("landed defenders break sieges immediately with unchanged cleanup and coalition results", () => {
+  const { s, enemy } = maritimeFixture();
+  s.active = 1;
+  s.tiles["2,0"].resource = "water";
+  const ship = piece(s, "2,0", 1, "transport");
+  const guard = piece(s, "2,0", 1);
+  guard.carrier = ship.id;
+  const adjacent = s.vertices[enemy.vertex].tiles.find(
+    (tile) => tile !== "3,0" && tile !== "2,0",
+  )!;
+  piece(s, adjacent, 0);
+  s.sieges.active = {
+    owner: 0,
+    town: enemy.id,
+    progress: 1,
+    last: 9,
+    raided: null,
+  };
+  const next = compare(s, { type: "unload", ships: [ship.id], to: "3,0" });
+  expect(next.sieges).toEqual({});
+  expect(next.pieces[guard.id].carrier).toBeUndefined();
 });

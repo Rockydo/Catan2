@@ -119,6 +119,14 @@ LABEL=after EXPECT_PATH=test-artifacts/fleet-performance-before.json npx tsx scr
 
 The default fixture has 40 convoy ships, 320 passengers and 15,000 other units. Each action is a complete engine transaction, including validation and cleanup, with three timing samples and an exact final-state comparison. `SHIPS`, `IDLE_UNITS` and `SAMPLES` adjust the workload. This measures transport actions, not a whole AI turn, and never opens browser storage.
 
+To measure guild supply and production with large armies:
+
+```sh
+LABEL=local npx tsx scripts/guild-performance.ts
+```
+
+This checks single contracts and three-tier batches for Commanders, Navigators, Engineers and Artisans. The default fixture has a 200-unit formation and 15,000 other units. `FORMATION_UNITS`, `IDLE_UNITS` and `SAMPLES` adjust the workload. `SOURCE_ROOT` selects a reference checkout; `EXPECT_PATH` requires the same commands and complete final-state hashes as its report. The diagnostic verifies unchanged input campaigns and measures full engine transactions in disposable fixtures.
+
 To compare route memory against the former full-path planner:
 
 ```sh

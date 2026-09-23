@@ -353,7 +353,11 @@ export function siegeArmy(s: Game, c: Command) {
   );
   return { units, town };
 }
-export function militaryCommand(s: Game, c: Command): boolean {
+export function militaryCommand(
+  s: Game,
+  c: Command,
+  options?: { deferFinalSiegeCleanup: boolean },
+): boolean {
   if (c.type === "bombard") {
     const units = selected(s, c.ids, false, false);
     rule(
@@ -474,7 +478,7 @@ export function militaryCommand(s: Game, c: Command): boolean {
         s.active,
         target,
       );
-    breakSieges(s);
+    if (!options?.deferFinalSiegeCleanup) breakSieges(s);
     return true;
   }
   if (c.type === "siege" || c.type === "destroy-town") {
@@ -744,7 +748,7 @@ export function militaryCommand(s: Game, c: Command): boolean {
       s.active,
       c.to,
     );
-    breakSieges(s);
+    if (!options?.deferFinalSiegeCleanup) breakSieges(s);
     return true;
   }
   if (c.type === "hold") {

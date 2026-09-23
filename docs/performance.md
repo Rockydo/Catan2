@@ -678,3 +678,43 @@ All 1,546 unit tests and 144 staging browser scenarios passed. Browser checks co
 The local deployment passed all 12 production HTTP checks and 10 additional Chromium storage, transport and worker scenarios. A fresh save round trip retained the latest campaign exactly in a 36,629-byte archive. Three deployed refresh checks preserved the full campaign hash, with a median 87.4 ms from navigation to campaign-menu readiness using warm assets. This is a verification of the existing compact-save path, not a claimed improvement in map painting or a new save format.
 
 Tests used exported copies and disposable profiles. The player's live campaign was not opened or changed. Earlier hashed assets remain available for already-open sessions. The broader performance goal remains active.
+
+
+## Siege cleanup and guild transaction copies
+
+The latest replay profile showed repeated troop enumeration during siege cleanup. A military move or landing checked sieges immediately, then the engine checked them again before elimination and coalition updates. Full transactions now perform that final check once, in the scope that already shares occupation reads with coalition assessment. Standalone military execution still finishes its own cleanup. Intermediate battle and thaw checks remain in their original positions, and a changed coalition still rechecks sieges against its new friendships. Notifications and complete command results retain their original order.
+
+Guild orders no longer force a copy of every troop and terrain record. Economic contracts change stores, allowances and research state. Military supply copies the whole selected formation, including eligible soldiers omitted from the command's anchor IDs. Subsequent orders in the same private batch reuse already detached records. Ordinary player commands, AI batches and affordability previews use the same formation-copy helper. Other military actions retain their existing isolation, and a failed batch still returns the untouched input campaign.
+
+The new `scripts/guild-performance.ts` diagnostic measures complete engine transactions in a disposable fixture with 200 formation members and 15,000 other units. These are medians of three samples; every command and complete final-state hash matched the reference checkout, and inputs remained unchanged.
+
+| Guild operation | Before | After |
+| --- | ---: | ---: |
+| Commanders, one contract | 17.78 ms | 8.96 ms |
+| Commanders, three-tier batch | 27.74 ms | 18.26 ms |
+| Navigators, one contract | 17.79 ms | 8.32 ms |
+| Navigators, three-tier batch | 26.66 ms | 15.93 ms |
+| Engineers, one contract | 17.99 ms | 7.56 ms |
+| Engineers, three-tier batch | 26.00 ms | 16.70 ms |
+| Artisans, one contract | 14.77 ms | 5.07 ms |
+| Artisans, three-tier batch | 22.83 ms | 8.58 ms |
+
+The fixture is synthetic and isolates guild execution, not planning or a complete AI turn. Single military contracts took roughly half as long. Production contracts also benefit because they need no troop copies.
+
+| Full AI workload | Before | Final build | Exact comparison |
+| --- | ---: | ---: | --- |
+| Latest Round 32 export, through the human casualty decision | 18.89 s | 17.40 s | 485 orders and complete state |
+| Round 31 export, complete AI turn | 10.81 s | 10.69 s | 144 orders and complete state |
+| Growth map, 2,000 tiles and 1,000 towns, first 60 decisions | 11.03 s | 11.02 s | 60 orders and complete state |
+
+The latest replay improved by about 8%. An intermediate run measured 17.28 seconds. The older campaign and growth-map sample were effectively unchanged; the gains concentrate in positions with repeated siege maintenance and guild supply. Browser replays retained approximately 16.8 ms frame p95 with no long main-thread tasks or errors. These samples do not imply the same improvement in every campaign.
+
+New regression tests compare full cleanup results with independent execution after guard arrivals, withdrawals, tied and decisive battles, civilian losses and amphibious landings. A dense-army assertion checks that movement validation and final cleanup each enumerate troops once. Guild tests use frozen input campaigns to verify human and AI supply, unlisted formation members, ineligible units, untouched distant forces, stacked tiers, movement between contracts, economic rewards, research state and rollback after a later invalid order.
+
+All 1,563 unit tests passed. The planning audit retained all 13,206 projects, scores, guild choices and military decisions across 128 scenarios. All 96 trade comparisons matched, including aid and acceptance decisions.
+
+The follow-up CPU profile retained the same 485 orders and full final-state hash. Sampled troop-enumeration time fell from about 2.25 to 1.87 seconds, and structured cloning from 1.46 to 1.29 seconds. These are profile categories, not additional wall-clock savings. Remaining production, planning and command costs keep the broader performance goal active.
+
+All 144 staging browser scenarios passed across Chromium, Firefox and mobile. Coverage includes guild supply and production, army selection, transport, naval sieges, worker continuation, seasonal navigation, thaw battles and large-save recovery. The build, type checks, formatting and whitespace checks passed. Tests used disposable fixtures and exported copies; the player's live campaign was not opened or modified.
+
+The deployed local build passed all 12 production HTTP checks and 10 additional Chromium transport, worker and save scenarios. Earlier hashed assets were retained for already-open sessions. The broader performance goal remains active.

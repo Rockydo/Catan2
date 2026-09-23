@@ -73,6 +73,7 @@ import {
 import { addHexes, expeditionFootprint, neighbors } from "./world";
 import {
   withPlanningFrame,
+  allPieces,
   ownTowns,
   ownPieces,
   inventory,
@@ -364,7 +365,7 @@ function payload(c: Command) {
 export function applyCommand(state: Game, c: Command): Result {
   return commandResult(state, c, false);
 }
-const ECONOMIC_RECORDS_ONLY = new Set([
+const LOCAL_RECORD_COMMANDS = new Set([
   "bank",
   "recruit",
   "ship",
@@ -377,6 +378,7 @@ const ECONOMIC_RECORDS_ONLY = new Set([
   "camp",
   "tower",
   "guild",
+  "guild-order",
 ]);
 /** Only an uncontested move can share stationary troops. Combat may displace
  * defenders, rescue passengers or trigger other mutations, so it keeps the
@@ -407,6 +409,20 @@ function detachMovingPieces(original: Game, draft: Game, command: Command) {
       )
         draft.pieces[unit.id] = { ...unit };
 }
+/** Supply IDs name a whole formation. Copy every friendly unit on that tile,
+ * including unlisted soldiers, before its movement or siege bonuses change.
+ * Economic guild orders have no selected formation and edit no troop records. */
+function detachSuppliedPieces(original: Game, draft: Game, command: Command) {
+  const tile = draft.pieces[command.ids?.[0] ?? ""]?.tile;
+  if (!tile) return;
+  for (const unit of allPieces(draft))
+    if (
+      unit.owner === draft.active &&
+      unit.tile === tile &&
+      unit === original.pieces[unit.id]
+    )
+      draft.pieces[unit.id] = { ...unit };
+}
 /** Plan and execute a private sequence with one copy of the campaign. Each
  * decision sees the preceding order's complete result, including coalitions.
  * The draft never escapes on failure and the caller's campaign stays intact.
@@ -417,9 +433,9 @@ export function applyCommandPlan(
 ): Result & { commands: Command[] } {
   const commands: Command[] = [];
   try {
-    // Routine purchases change stores, buildings and the piece dictionary,
-    // but never edit existing soldiers or terrain. Detach those records only
-    // before an action that may do so, including all unknown future commands.
+    // Routine purchases edit stores/buildings and add soldiers. Guild supply
+    // also edits one formation, copied below. Other commands detach remaining
+    // soldiers and terrain, including all unknown future command types.
     let detached = false;
     let view: Game = {
       ...structuredClone({
@@ -448,7 +464,7 @@ export function applyCommandPlan(
           moving:
             !!command &&
             !detached &&
-            !ECONOMIC_RECORDS_ONLY.has(command.type) &&
+            !LOCAL_RECORD_COMMANDS.has(command.type) &&
             peacefulMove(view, command),
         };
       });
@@ -456,7 +472,9 @@ export function applyCommandPlan(
       // Planning caches are keyed by Game identity. Execution gets a fresh key
       // before changing any draft data, just as an ordinary transaction does.
       const next = { ...view };
-      if (!detached && !ECONOMIC_RECORDS_ONLY.has(command.type)) {
+      if (!detached && command.type === "guild-order")
+        detachSuppliedPieces(state, next, command);
+      if (!detached && !LOCAL_RECORD_COMMANDS.has(command.type)) {
         if (moving) detachMovingPieces(state, next, command);
         else {
           Object.assign(
@@ -494,8 +512,9 @@ export function applyCommandPlan(
  * and surrender previews also isolate sea tiles at possible season boundaries.
  * Routine economic orders copy only the records their real rules may change.
  * Recruitment transactions also reuse immutable geometry and existing unit
- * records: deployment only adds units, while follow-up cleanup only deletes
- * keys from the copied piece map. This never publishes the preview.
+ * records: deployment only adds units, and guild supply copies its selected
+ * formation. Follow-up cleanup only deletes keys from the copied piece map.
+ * This never publishes the preview.
  */
 export function canApplyCommand(state: Game, c: Command): boolean {
   return commandResult(state, c, true).ok;
@@ -507,7 +526,8 @@ function commandResult(state: Game, c: Command, preview: boolean): Result {
   try {
     payload(c);
     const moving = peacefulMove(state, c);
-    const shareUnits = moving || ["recruit", "ship"].includes(c.type);
+    const shareUnits =
+      moving || ["recruit", "ship", "guild-order"].includes(c.type);
     const localOrder =
       preview &&
       [
@@ -551,6 +571,8 @@ function commandResult(state: Game, c: Command, preview: boolean): Result {
           }
         : structuredClone(state);
     if (moving) detachMovingPieces(state, s, c);
+    if (!localOrder && c.type === "guild-order")
+      detachSuppliedPieces(state, s, c);
     if (localOrder) {
       // Use the actual order rules and payments, but do not process
       // unrelated sieges/eliminations when only checking a menu option.
@@ -574,18 +596,7 @@ function commandResult(state: Game, c: Command, preview: boolean): Result {
  * town, newly recruited or supplied pieces and log. Copy the selected town
  * deeply for guild and workshop changes. This draft is never published. */
 function localOrderDraft(state: Game, command: Command): Game {
-  let pieces = state.pieces;
-  if (command.type === "guild-order") {
-    pieces = { ...pieces };
-    // Supply applies to the entire selected formation, including soldiers not
-    // explicitly listed in the order. Only their scalar bonuses can change.
-    const tile = state.pieces[command.ids?.[0] ?? ""]?.tile;
-    if (tile)
-      for (const unit of Object.values(pieces))
-        if (unit.owner === state.active && unit.tile === tile)
-          pieces[unit.id] = { ...unit };
-  }
-  return {
+  const draft: Game = {
     ...state,
     towns: Object.fromEntries(
       Object.entries(state.towns).map(([id, town]) => [
@@ -602,14 +613,17 @@ function localOrderDraft(state: Game, command: Command): Game {
         ? { ...player, bonuses: structuredClone(player.bonuses) }
         : player,
     ),
-    pieces,
+    pieces: command.type === "guild-order" ? { ...state.pieces } : state.pieces,
     events: [...state.events],
   };
+  if (command.type === "guild-order")
+    detachSuppliedPieces(state, draft, command);
+  return draft;
 }
 function advanceCommand(s: Game, c: Command, preview: boolean) {
   if (s.phase === "military") s.phase = "economy";
   s.actions++;
-  execute(s, c);
+  executeOrder(s, c, false, true);
   const finish = (sharePieces: boolean) => {
     breakSieges(s, { reuseFrame: sharePieces });
     eliminate(s);
@@ -624,6 +638,17 @@ function advanceCommand(s: Game, c: Command, preview: boolean) {
   else finish(false);
 }
 export function execute(s: Game, c: Command, preview = false) {
+  executeOrder(s, c, preview);
+}
+/** Full transactions perform final siege cleanup in advanceCommand, where its
+ * occupation index also serves coalition checks. Standalone execution keeps
+ * military cleanup immediate; intermediate battle/thaw cleanup is unchanged. */
+function executeOrder(
+  s: Game,
+  c: Command,
+  preview = false,
+  deferFinalSiegeCleanup = false,
+) {
   const p = s.players[s.active],
     actor = c.actor ?? s.active;
   rule(
@@ -783,7 +808,7 @@ export function execute(s: Game, c: Command, preview = false) {
     return;
   }
   if (diplomacyCommand(s, c)) return;
-  if (militaryCommand(s, c)) return;
+  if (militaryCommand(s, c, { deferFinalSiegeCleanup })) return;
   if (guildCommand(s, c)) return;
   if (c.type === "road" || c.type === "route") {
     rule(c.edge, "Select an edge.");
