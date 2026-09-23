@@ -1,3 +1,4 @@
+import { planEconomicWork, type EconomicWorkQueue } from "./ai-work-queue";
 import { appendValues, maxValue, minValue } from "./aggregate";
 import {
   recruitmentBatch,
@@ -1791,6 +1792,7 @@ function acquireToward(s: Game, cost: Stock): Command | null {
 function chooseEconomy(
   s: Game,
   onRecruitment?: (intent: RecruitmentIntent) => void,
+  onEconomicWork?: (work: EconomicWorkQueue) => void,
 ): Command {
   const projects = economyProjects(s);
   for (const card of [...s.players[s.active].hand].sort(
@@ -1921,7 +1923,11 @@ function chooseEconomy(
   const affordablePriority = candidates.find(
     (p) => affordable(s, p.cost) && check(s, p.action),
   );
-  if (affordablePriority)
+  if (affordablePriority) {
+    if (onEconomicWork) {
+      const work = planEconomicWork(s, affordablePriority, projects);
+      if (work) onEconomicWork(work);
+    }
     return (
       commission(affordablePriority) ??
       recruitmentBatch(
@@ -1930,6 +1936,7 @@ function chooseEconomy(
         affordablePriority.quantity,
       )
     );
+  }
   // Research can resolve a construction shortage immediately. Do not let
   // an unaffordable expansion reserve suppress every discovery indefinitely.
   const discovery = projects.find(
@@ -1983,11 +1990,16 @@ function chooseEconomy(
       )
     )
       continue;
-    if (affordable(s, cost) && check(s, project.action))
+    if (affordable(s, cost) && check(s, project.action)) {
+      if (onEconomicWork) {
+        const work = planEconomicWork(s, project, projects, reserve);
+        if (work) onEconomicWork(work);
+      }
       return reserve
         ? project.action
         : (commission(project) ??
             recruitmentBatch(s, project.action, project.quantity));
+    }
   }
   if (reserve) return { type: "military" };
   const planned = commission(top);
@@ -3315,14 +3327,16 @@ function chooseManeuver(s: Game, emergency: boolean): Command {
 export function chooseAIAction(
   s: Game,
   onRecruitment?: (intent: RecruitmentIntent) => void,
+  onEconomicWork?: (work: EconomicWorkQueue) => void,
 ): Command {
   return withSeasonalPlanning(() =>
-    reusePlanningFrame(s, () => chooseAction(s, onRecruitment)),
+    reusePlanningFrame(s, () => chooseAction(s, onRecruitment, onEconomicWork)),
   );
 }
 function chooseAction(
   s: Game,
   onRecruitment?: (intent: RecruitmentIntent) => void,
+  onEconomicWork?: (work: EconomicWorkQueue) => void,
 ): Command {
   if (s.battle) {
     const b = s.battle,
@@ -3454,7 +3468,7 @@ function chooseAction(
     }
     const operation = chooseMilitary(s);
     if (operation.type !== "end-turn") return operation;
-    const action = chooseEconomy(s, onRecruitment);
+    const action = chooseEconomy(s, onRecruitment, onEconomicWork);
     return action.type === "military" ? { type: "end-turn" } : action;
   }
   if (s.phase === "military") return chooseMilitary(s);

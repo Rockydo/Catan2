@@ -186,3 +186,27 @@ it("a move followed by combat detaches defenders and rolls back a failing later 
   expect(failed.state).toBe(s);
   expect(s).toEqual(before);
 });
+
+it("camp previews detach the selected route and pooled payment stores", () => {
+  for (const tier of [0, 1, 2]) {
+    const { s, home, enemy } = maritimeFixture();
+    const edge = s.vertices[home.vertex].edges[0];
+    const tile = s.edges[edge].tiles[0];
+    s.routes[edge] = {
+      id: "camp-route",
+      edge,
+      owner: 0,
+      kind: "road",
+      camps: tier ? { [tile]: tier } : {},
+      born: 0,
+    };
+    const command = { type: "camp", edge, tile };
+    const poor = structuredClone(s);
+    for (const town of Object.values(poor.towns)) town.stock = {};
+    equivalent(poor, command, false);
+    const occupied = structuredClone(s);
+    piece(occupied, tile, enemy.owner, "heavy");
+    equivalent(occupied, command, false);
+    equivalent(s, command, tier < 2);
+  }
+});

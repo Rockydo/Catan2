@@ -16,6 +16,14 @@ if (
   (!Number.isInteger(batchLimit) || batchLimit < 1)
 )
   throw Error("BATCH_LIMIT must be a positive integer.");
+const orderLimit = process.env.ORDER_LIMIT
+  ? Number(process.env.ORDER_LIMIT)
+  : undefined;
+if (
+  orderLimit !== undefined &&
+  (!Number.isInteger(orderLimit) || orderLimit < 1)
+)
+  throw Error("ORDER_LIMIT must be a positive integer.");
 if (process.env.AI_SEAT !== undefined) {
   const seat = Number(process.env.AI_SEAT);
   if (
@@ -39,7 +47,7 @@ try {
     errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await page.addInitScript(
-    ({ actor, humans, batchLimit }) => {
+    ({ actor, humans, batchLimit, orderLimit }) => {
       const w = window as any;
       w.__name = (f: any) => f;
       localStorage.setItem("catane-ai-pacing", "20");
@@ -101,7 +109,8 @@ try {
               (active !== undefined && active !== actor) ||
               prompt ||
               d.error ||
-              (batchLimit !== undefined && p.rows.length >= batchLimit)
+              (batchLimit !== undefined && p.rows.length >= batchLimit) ||
+              (orderLimit !== undefined && p.commands.length >= orderLimit)
             ) {
               p.stopReason = d.error
                 ? "error"
@@ -109,7 +118,10 @@ try {
                   ? "human-decision"
                   : active !== undefined && active !== actor
                     ? "turn-boundary"
-                    : "batch-limit";
+                    : orderLimit !== undefined &&
+                        p.commands.length >= orderLimit
+                      ? "order-limit"
+                      : "batch-limit";
               p.done = performance.now();
               p.lastActions = d.state?.actions ?? d.delta?.values.actions;
             }
@@ -163,6 +175,7 @@ try {
     {
       actor: game.active,
       batchLimit,
+      orderLimit,
       humans: game.players
         .filter((p) => p.control === "human")
         .map((p) => p.id),
@@ -251,6 +264,14 @@ try {
     elapsedMs: probe.done - probe.start,
     cpuMs: probe.rows.reduce((n: number, r: any) => n + (r.cpu ?? 0), 0),
     orders: probe.commands.length,
+    orderTypes: Object.fromEntries(
+      [
+        ...new Set<string>(probe.commands.map((c: { type: string }) => c.type)),
+      ].map((type) => [
+        type,
+        probe.commands.filter((c: { type: string }) => c.type === type).length,
+      ]),
+    ),
     batches: probe.rows.length,
     fullRequests: probe.fullRequests,
     continuedRequests: probe.continuedRequests,

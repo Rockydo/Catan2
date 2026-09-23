@@ -668,6 +668,7 @@ function commandResult(state: Game, c: Command, preview: boolean): Result {
         "city",
         "wall",
         "extension",
+        "camp",
         "guild",
         "bank",
         "guild-order",
@@ -764,6 +765,13 @@ function localOrderDraft(state: Game, command: Command): Game {
         ? { ...player, bonuses: structuredClone(player.bonuses) }
         : player,
     ),
+    routes:
+      command.type === "camp" && state.routes[command.edge ?? ""]
+        ? {
+            ...state.routes,
+            [command.edge!]: structuredClone(state.routes[command.edge!]),
+          }
+        : state.routes,
     pieces:
       command.type === "guild-order" && command.ids?.length
         ? copyRecords(state.pieces)

@@ -168,6 +168,8 @@ SAVE_PATH=/path/to/campaign.json GAME_URL=http://127.0.0.1:4173 LABEL=local npx 
 
 This uses a disposable browser and stops at the turn boundary or a decision requiring the human player, such as choosing battle casualties. It reports both worker calculation time and elapsed time. `EXPECT_PATH` checks the complete command list and final state against an earlier report. Optional `AI_SEAT=2` starts that faction's action phase on a private copy for diagnosis; this skips intervening turns and dice, so it is a scenario rather than a normal turn replay.
 
+Large AI economies group similarly ranked production contracts, guild construction/upgrades and camp work into short queues. Queues contain at most 32 jobs and use up to 20% of starting materials that are not reserved for a higher-priority purchase. Costs, guild allowances and legal placement are checked for every job. Production stops for a new military supply opportunity or a newly affordable priority purchase. The AI then makes a full strategic decision again. Early economies and human autoplay retain individual planning.
+
 Initial AI uploads above 16,384 troops use chunks of at most 2,048 units. The interface yields between short groups of messages, so map input and Pause can run while the snapshot is sent. The worker plans only after the entire snapshot arrives. Published-state tokens still handle subsequent orders. The transfer diagnostic reports the longest individual posting call, upload duration and overlapping long tasks separately from AI thinking.
 
 Published snapshots also share their troop indexes when the roster has not changed. Economic orders can update towns and resources without rescanning every army. Changes to units rebuild the indexes; terrain, diplomacy, production and town calculations still use the current campaign. Mutable engine and AI planning scopes do not read this UI cache.
@@ -176,7 +178,7 @@ When an AI reply changes units, copying and rebuilding their list reuse the know
 
 Autosave and export reuse the exact received AI changes instead of comparing the whole army again. Short sequences can be combined while a save is pending. Missing history, unrelated states, human actions and larger sequences retain the full comparison path. Weak references let previous campaigns be collected. The transfer diagnostic reports how many save messages forward an existing AI patch.
 
-Set `BATCH_LIMIT=1` to isolate a slow first worker batch without playing the rest of the turn. The normal 20-second worker timeout remains enabled. The report includes autosave transfer time and counts full versus incremental save messages.
+Set `BATCH_LIMIT=1` to isolate a slow first worker batch without playing the rest of the turn. `ORDER_LIMIT=140` stops after the batch that reaches that many orders, which helps compare builds with different batch sizes. Reports include counts by action type. The normal 20-second worker timeout remains enabled. The report includes autosave transfer time and counts full versus incremental save messages.
 
 The report also separates main-thread script, layout and style work. Set `PROFILE_UI=1` to write a Chrome `.cpuprofile` alongside it. Profiling adds overhead, so use a separate run when comparing timings.
 
