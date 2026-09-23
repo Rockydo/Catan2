@@ -33,6 +33,26 @@ function field(kind: UnitClass, steps: number, city = false) {
   return { s, home, town, unit, destination };
 }
 
+it("restores large siege links in army order and retains the legacy nearby fallback", () => {
+  const { s, town, unit } = field("heavy", 0);
+  const force = [unit];
+  for (let i = 0; i < 5000; i++) force.push(piece(s, unit.tile, 0, "heavy"));
+  const linked = force.filter((_, i) => i % 2 === 0);
+  const siege = (s.sieges[`0:${town.id}`] = {
+    owner: 0,
+    town: town.id,
+    progress: 1,
+    last: 0,
+    raided: null,
+    units: [...linked].reverse().map((u) => u.id),
+  });
+  expect(siegeParticipants(s, town, 0)).toEqual(linked);
+  siege.units = ["a former participant"];
+  expect(siegeParticipants(s, town, 0)).toEqual(force);
+  delete s.sieges[`0:${town.id}`].units;
+  expect(siegeParticipants(s, town, 0)).toEqual(force);
+});
+
 describe("one action phase and one-point siege operations", () => {
   it.each([
     ["heavy", 0],

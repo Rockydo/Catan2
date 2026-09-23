@@ -6,12 +6,12 @@ import { vertexPoint } from "../game/world";
 /** Reuse formations whose ordered members have not changed. Keep only the
  * current scene, never old game snapshots or a history of moved armies. */
 export function groupMapUnits(
-  pieces: Game["pieces"],
+  units: readonly Piece[],
   previous: Record<string, Piece[]> = {},
 ) {
   const groups: Record<string, Piece[]> = {},
     counts = new Map<string, number>();
-  for (const unit of Object.values(pieces)) {
+  for (const unit of units) {
     if (unit.carrier) continue;
     const tile = unit.tile,
       index = counts.get(tile) ?? 0,

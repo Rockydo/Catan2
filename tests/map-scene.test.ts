@@ -14,16 +14,15 @@ function units() {
   passenger.carrier = ship.id;
   return { s, a, b, c, ship, passenger };
 }
-const record = (...pieces: Piece[]) =>
-  Object.fromEntries(pieces.map((u) => [u.id, u]));
+const record = (...pieces: Piece[]) => pieces;
 
 describe("map formations", () => {
   it("reuses ordered formations, excludes passengers and never mutates prior arrays", () => {
     const { s, a, b, c, ship } = units();
-    const first = groupMapUnits(s.pieces);
+    const first = groupMapUnits(Object.values(s.pieces));
     expect(first).toEqual({ "0,0": [a, b], "1,0": [c], "2,0": [ship] });
     for (const group of Object.values(first)) Object.freeze(group);
-    const second = groupMapUnits({ ...s.pieces }, first);
+    const second = groupMapUnits(Object.values({ ...s.pieces }), first);
     expect(Object.keys(second)).toEqual(Object.keys(first));
     for (const tile of Object.keys(first))
       expect(second[tile]).toBe(first[tile]);
@@ -31,19 +30,19 @@ describe("map formations", () => {
 
   it("updates both ends of moves and releases empty groups", () => {
     const { s, a, b, c, ship } = units();
-    const before = groupMapUnits(s.pieces);
+    const before = groupMapUnits(Object.values(s.pieces));
     const moved = { ...c, tile: a.tile };
     const after = groupMapUnits(record(a, b, moved, ship), before);
     expect(after).toEqual({ "0,0": [a, b, moved], "2,0": [ship] });
     expect(after[ship.tile]).toBe(before[ship.tile]);
     expect(before[a.tile]).toEqual([a, b]);
     expect(before[c.tile]).toEqual([c]);
-    expect(groupMapUnits({}, after)).toEqual({});
+    expect(groupMapUnits([], after)).toEqual({});
   });
 
   it("handles casualties, recruitment, embarking and disembarking in exact record order", () => {
     const { s, a, b, c, ship, passenger } = units();
-    const before = groupMapUnits(s.pieces),
+    const before = groupMapUnits(Object.values(s.pieces)),
       fresh = { ...b, id: "u9" },
       landed = { ...passenger, tile: a.tile, carrier: undefined },
       aboard = { ...c, carrier: ship.id };
@@ -62,7 +61,7 @@ describe("map formations", () => {
 
   it("invalidates a formation when any member changes without moving", () => {
     const { s, a, b, c, ship } = units();
-    const before = groupMapUnits(s.pieces),
+    const before = groupMapUnits(Object.values(s.pieces)),
       updated = { ...b, moved: 2, owner: 1, tier: 4, guildPower: 2 };
     const after = groupMapUnits(record(a, updated, c, ship), before);
     expect(after[a.tile]).not.toBe(before[a.tile]);

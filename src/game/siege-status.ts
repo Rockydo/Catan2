@@ -29,7 +29,8 @@ export function siegeParticipants(s: Game, town: Town, owner: number) {
   const nearby = townSiegeGroups(s, town, owner).flatMap(
     (group) => group.units,
   );
-  const linked = nearby.filter((u) => siege.units?.includes(u.id));
+  const participants = new Set(siege.units);
+  const linked = nearby.filter((u) => participants.has(u.id));
   return linked.length ? linked : nearby;
 }
 

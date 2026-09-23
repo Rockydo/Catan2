@@ -61,6 +61,7 @@ import {
   canOccupy,
 } from "../game/world";
 import {
+  allPieces,
   settlementSites,
   colonizationSites,
   canRoute,
@@ -889,7 +890,7 @@ const BoardScene = memo(function BoardScene({
 
   const previousGroups = useRef<Record<string, Piece[]>>({});
   const groupUnits = useMemo(() => {
-    const groups = groupMapUnits(s.pieces, previousGroups.current);
+    const groups = groupMapUnits(allPieces(s), previousGroups.current);
     previousGroups.current = groups;
     return groups;
   }, [s.pieces]);

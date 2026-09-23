@@ -19,6 +19,10 @@ import { unpackDetails } from "../src/game/save-details";
 // Uses a disposable browser profile, never the player's storage or export.
 if (!process.env.SAVE_PATH) throw Error("Set SAVE_PATH to a campaign export.");
 const game = await importSave(readFileSync(process.env.SAVE_PATH));
+// Optional map-open measurement uses a local hotseat copy so no AI can advance
+// the position while assets load. It never edits the source export or live save.
+if (process.env.OPEN_BOARD)
+  for (const player of game.players) player.control = "human";
 const expected = JSON.stringify(game);
 const templateGame = packGame(game);
 const template = JSON.stringify({
@@ -147,6 +151,15 @@ try {
       Native = window.Worker;
     localStorage.setItem("catane-language", "en");
     w.loadMs = 0;
+    document.addEventListener(
+      "click",
+      (event) => {
+        const button = (event.target as Element)?.closest("button");
+        if (button?.textContent?.startsWith("Continue campaign"))
+          w.boardStartMs = performance.now();
+      },
+      true,
+    );
     // Record the actual menu appearance, independent of Playwright's polling.
     new MutationObserver(() => {
       if (
@@ -156,6 +169,18 @@ try {
         )
       )
         w.readyMs = performance.now();
+      if (
+        w.boardStartMs &&
+        !w.boardScheduled &&
+        document.querySelector(".board-frame svg")
+      ) {
+        w.boardScheduled = true;
+        requestAnimationFrame(() =>
+          requestAnimationFrame(() => {
+            w.boardOpenMs = performance.now() - w.boardStartMs;
+          }),
+        );
+      }
     }).observe(document, { childList: true, subtree: true });
     window.Worker = class extends Native {
       started = 0;
@@ -182,7 +207,12 @@ try {
   await page
     .getByRole("button", { name: "New campaign", exact: true })
     .waitFor();
-  const samples: { format: string; loadMs: number; readyMs: number }[] = [];
+  const samples: {
+    format: string;
+    loadMs: number;
+    readyMs: number;
+    boardOpenMs?: number;
+  }[] = [];
   for (const format of [
     "legacy",
     "templates",
@@ -263,7 +293,36 @@ try {
       result.game = JSON.stringify(unpackGame(packed));
     }
     if (result.game !== expected) throw Error("Reload changed the campaign.");
-    samples.push({ format, loadMs: result.loadMs, readyMs: result.readyMs });
+    let boardOpenMs: number | undefined;
+    if (process.env.OPEN_BOARD) {
+      const profile = process.env.PROFILE_BOARD
+        ? await page.context().newCDPSession(page)
+        : undefined;
+      if (profile) {
+        await profile.send("Profiler.enable");
+        await profile.send("Profiler.start");
+      }
+      await page.getByRole("button", { name: /Continue campaign/ }).click();
+      await page.waitForFunction(
+        () => (window as any).boardOpenMs !== undefined,
+      );
+      boardOpenMs = await page.evaluate(() => (window as any).boardOpenMs);
+      if (profile) {
+        const { profile: result } = await profile.send("Profiler.stop");
+        mkdirSync("test-artifacts", { recursive: true });
+        writeFileSync(
+          `test-artifacts/save-board-${samples.length}.cpuprofile`,
+          JSON.stringify(result),
+        );
+        await profile.detach();
+      }
+    }
+    samples.push({
+      format,
+      loadMs: result.loadMs,
+      readyMs: result.readyMs,
+      boardOpenMs,
+    });
   }
   if (errors.length) throw Error(JSON.stringify(errors));
   const median = (format: string) =>
@@ -297,6 +356,12 @@ try {
     packedMedianReadyMs: median("packed"),
     samples,
     exactRoundTrip: true,
+    ...(process.env.OPEN_BOARD
+      ? {
+          mapMeasurement:
+            "hotseat copy; Continue click to two rendered frames, not all artwork downloads",
+        }
+      : {}),
     stateHash: createHash("sha256").update(expected).digest("hex"),
     errors,
   };

@@ -106,6 +106,39 @@ it("copies nested prototype-named fields as independent own data", () => {
   expect((Object.prototype as any).flag).toBeUndefined();
 });
 
+it("restores repeated orders with independent branches even inside mixed arrays", () => {
+  const { s, water } = fishingFixture();
+  const order = JSON.parse(
+    '{"path":[null,3,"雪",[1,{"target":"island"}]],"__proto__":{"orders":[]},"empty":{}}',
+  );
+  for (let i = 0; i < 128; i++)
+    Object.assign(piece(s, water), { futureOrder: order });
+  const packed = onDisk(packGame(s));
+  for (const restore of [unpackGame, restoreValidatedGame]) {
+    const loaded = restore(packed);
+    expect(JSON.stringify(loaded)).toBe(JSON.stringify(s));
+    const [a, b] = Object.values(loaded.pieces) as any[];
+    a.futureOrder.path[3][1].target = "changed";
+    a.futureOrder.__proto__.orders.push("move");
+    a.futureOrder.empty.created = true;
+    expect(b.futureOrder).toEqual(order);
+    expect(packed.pieces.templates[0].futureOrder).toEqual(order);
+    expect(Object.getPrototypeOf(a.futureOrder)).toBe(Object.prototype);
+  }
+});
+
+it("bounds nested template restoration before allocating an army", () => {
+  const { s, water } = fishingFixture();
+  for (let i = 0; i < 128; i++) piece(s, water);
+  const packed = onDisk(packGame(s));
+  let nested: unknown = 1;
+  for (let i = 0; i < 64; i++) nested = [nested];
+  packed.pieces.templates[0].future = nested;
+  expect(() => unpackGame(packed)).not.toThrow();
+  packed.pieces.templates[0].future = [[nested]];
+  expect(() => unpackGame(packed)).toThrow(/compact save is damaged/);
+});
+
 it("round-trips empty armies and differently ordered fields without dropping data", () => {
   const { s, water } = fishingFixture();
   expect(JSON.stringify(unpackGame(onDisk(packGame(s))))).toBe(

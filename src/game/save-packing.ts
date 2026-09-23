@@ -163,24 +163,37 @@ function packRecords(
   return { ...game, pieces: { keys: packedKeys, templates, rows } };
 }
 
-function copyValue(value: unknown, depth = 0): unknown {
+// Prepare each template's nested-copy shape once. Most orders contain only
+// primitive values, so each soldier needs a shallow copy, not another recursive
+// walk that enumerates the same keys. Every restored mutable object is separate.
+function valueCopier(value: unknown, depth = 0): () => unknown {
   if (depth > 64) throw invalid();
-  if (!value || typeof value !== "object") return value;
-  if (Array.isArray(value))
-    return value.map((item) => copyValue(item, depth + 1));
-  const result: Record<string, unknown> = {};
-  for (const key of Object.keys(value)) {
-    const item = copyValue((value as Record<string, unknown>)[key], depth + 1);
-    if (key === "__proto__")
-      Object.defineProperty(result, key, {
-        value: item,
-        enumerable: true,
-        configurable: true,
-        writable: true,
-      });
-    else result[key] = item;
+  if (!value || typeof value !== "object") return () => value;
+  if (depth === 64 && Object.keys(value).length) throw invalid();
+  if (Array.isArray(value)) {
+    const nested = value.flatMap((item, i) =>
+      item && typeof item === "object"
+        ? [[i, valueCopier(item, depth + 1)] as const]
+        : [],
+    );
+    return () => {
+      const copy = value.slice();
+      for (const [i, clone] of nested) copy[i] = clone();
+      return copy;
+    };
   }
-  return result;
+  const record = value as Record<string, unknown>;
+  const nested = Object.keys(record).flatMap((key) =>
+    record[key] && typeof record[key] === "object"
+      ? [[key, valueCopier(record[key], depth + 1)] as const]
+      : [],
+  );
+  return () => {
+    // Spread creates own data properties even for prototype-named future fields.
+    const copy = { ...record };
+    for (const [key, clone] of nested) copy[key] = clone();
+    return copy;
+  };
 }
 
 // baseBytes may only come from unpackTables' exact, validated byte accounting.
@@ -249,11 +262,11 @@ function restoreGame(game: PackedGame, validate: boolean, baseBytes?: number) {
     )
       throw invalid();
     const fields = Object.keys(template);
-    const nested = fields.filter(
-      (key) => template[key] && typeof template[key] === "object",
+    const nested = fields.flatMap((key) =>
+      template[key] && typeof template[key] === "object"
+        ? [[key, valueCopier(template[key])] as const]
+        : [],
     );
-    // Validate nesting once, before duplicating any shared mutable values.
-    if (validate) for (const key of nested) copyValue(template[key]);
     const standard = UNIT_FIELDS.every((field, i) => fields[i] === field);
     return {
       template,
@@ -318,9 +331,9 @@ function restoreGame(game: PackedGame, validate: boolean, baseBytes?: number) {
           writable: true,
         });
       else piece[field] = template[field];
-    for (const field of nested)
+    for (const [field, clone] of nested)
       // Both copy paths create own data properties, including __proto__.
-      piece[field] = copyValue(template[field]);
+      piece[field] = clone();
     pieces[key] = piece as unknown as Piece;
   }
   return {
