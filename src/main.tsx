@@ -2,7 +2,6 @@ import { loadCampaign } from "./storage/client";
 import { localize as tx, setLocale, getLocale } from "./i18n";
 import React from "react";
 import { createRoot } from "react-dom/client";
-import App from "./App";
 import "./styles.css";
 import "./polish.css";
 import "./roll.css";
@@ -43,10 +42,29 @@ root.render(
     <h1>{tx("Loading campaign…")}</h1>
   </main>,
 );
-void loadCampaign().then((initialCampaign) => {
-  root.render(
-    <ErrorBoundary>
-      <App initialCampaign={initialCampaign} />
-    </ErrorBoundary>,
-  );
-});
+// Start reading/decompressing the campaign while the browser loads the game UI.
+// Map and panel code need not delay the save worker's first request on refresh.
+void Promise.all([loadCampaign(), import("./App")])
+  .then(([initialCampaign, { default: App }]) => {
+    root.render(
+      <ErrorBoundary>
+        <App initialCampaign={initialCampaign} />
+      </ErrorBoundary>,
+    );
+  })
+  .catch((error: unknown) => {
+    root.render(
+      <main className="crash-screen">
+        <h1>{tx("The interface encountered a problem.")}</h1>
+        <p>
+          {tx(
+            "Your most recent autosave is kept in this browser. Reload to recover it.",
+          )}
+        </p>
+        <pre>{error instanceof Error ? error.message : String(error)}</pre>
+        <button onClick={() => location.reload()}>
+          {tx("Reload saved campaign")}
+        </button>
+      </main>,
+    );
+  });

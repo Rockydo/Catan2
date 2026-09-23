@@ -1,3 +1,4 @@
+import { unpackColumns } from "../src/game/save-columns";
 import { chromium } from "@playwright/test";
 import { readFileSync, mkdirSync, writeFileSync } from "node:fs";
 import { createHash } from "node:crypto";
@@ -29,7 +30,8 @@ const template = JSON.stringify({
   game: templateGame,
 });
 const latest = JSON.parse(serializePacked(game));
-const topology = unpackDetails(latest.game);
+const details = unpackColumns(latest.game);
+const topology = unpackDetails(details);
 const encodings = {
   legacy: Array.from(await compress(serialize(game))),
   templates: Array.from(await compress(template)),
@@ -115,6 +117,16 @@ const encodings = {
       }),
     ),
   ),
+  details: Array.from(
+    await compress(
+      JSON.stringify({
+        ...latest,
+        packing: 8,
+        game: details,
+        checksum: hash(JSON.stringify(details)).toString(16),
+      }),
+    ),
+  ),
   packed: Array.from(await compress(JSON.stringify(latest))),
 };
 const formats = process.env.FORMATS?.split(",");
@@ -180,10 +192,12 @@ try {
     "spatial",
     "geometry",
     "topology",
+    "details",
     "packed",
     "tables",
     "geometry",
     "topology",
+    "details",
     "packed",
     "templates",
     "references",
@@ -196,6 +210,7 @@ try {
     "integers",
     "geometry",
     "topology",
+    "details",
     "packed",
     "spatial",
     "templates",
@@ -268,6 +283,8 @@ try {
     spatialBytes: encodings.spatial.length,
     geometryBytes: encodings.geometry.length,
     topologyBytes: encodings.topology.length,
+    detailBytes: encodings.details.length,
+    detailMedianReadyMs: median("details"),
     packedBytes: encodings.packed.length,
     legacyMedianReadyMs: median("legacy"),
     templateMedianReadyMs: median("templates"),

@@ -10,6 +10,7 @@ export const SAVE_TABLES = [
   "routes",
   "towers",
 ] as const;
+export type PreparedSaveWorld = Record<"tiles" | "vertices" | "edges", unknown>;
 const LIMIT = 128_000_000;
 const MAX_UNITS = Math.floor(LIMIT / 64);
 const invalid = () => new Error("This compact save is damaged.");
@@ -209,10 +210,17 @@ export function unpackTable(
   return records;
 }
 
-export function packTables(game: PackedGame): unknown {
+export function packTables(
+  game: PackedGame,
+  world?: PreparedSaveWorld,
+): unknown {
   const out: Record<string, unknown> = { ...game };
   for (const field of SAVE_TABLES)
-    if (game[field]) out[field] = packTable(game[field]);
+    if (game[field])
+      out[field] =
+        world && Object.hasOwn(world, field)
+          ? world[field as keyof PreparedSaveWorld]
+          : packTable(game[field]);
   out.pieces = packUnitSequences(game.pieces);
   return out;
 }

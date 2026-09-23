@@ -1,3 +1,4 @@
+import { unpackColumns } from "../src/game/save-columns";
 import { expect, it } from "vitest";
 import { packGeometry, unpackGeometry } from "../src/game/save-geometry";
 import { packTables, unpackTables } from "../src/game/save-tables";
@@ -82,7 +83,7 @@ it("keeps noncanonical geometry, unknown fields and empty tables verbatim", () =
   );
 });
 
-it("loads packing versions 1 through 8 with exact state and shrinks the archive", async () => {
+it("loads packing versions 1 through 9 with exact state and shrinks the archive", async () => {
   const { s } = fishingFixture();
   const expected = JSON.stringify(deserialize(serialize(s)));
   const templates = packGame(s),
@@ -104,6 +105,7 @@ it("loads packing versions 1 through 8 with exact state and shrinks the archive"
     packSpatial(
       packIntegers(packReferences(packGeometry(packTopology(columns)))),
     ),
+    unpackColumns(current.game),
     current.game,
   ];
   for (const [index, game] of encodings.entries()) {

@@ -382,10 +382,10 @@ const LOCAL_MILITARY_COMMANDS = new Set([
   "unload",
   "colonize",
 ]);
-const LOCAL_RECORD_COMMANDS = new Set([
+// These orders cannot edit, add or remove troops. Final cleanup may still
+// eliminate a faction, so sharing the whole dictionary needs a separate check.
+const STATIONARY_RECORD_COMMANDS = new Set([
   "bank",
-  "recruit",
-  "ship",
   "road",
   "route",
   "settlement",
@@ -395,9 +395,18 @@ const LOCAL_RECORD_COMMANDS = new Set([
   "camp",
   "tower",
   "guild",
+]);
+const LOCAL_RECORD_COMMANDS = new Set([
+  ...STATIONARY_RECORD_COMMANDS,
+  "recruit",
+  "ship",
   "guild-order",
   ...LOCAL_MILITARY_COMMANDS,
 ]);
+function survivingFactionsHaveTowns(s: Game): boolean {
+  const owners = new Set(Object.values(s.towns).map((town) => town.owner));
+  return s.players.every((player) => !player.alive || owners.has(player.id));
+}
 /** Only an uncontested move can share stationary troops. Combat may displace
  * defenders, rescue passengers or trigger other mutations, so it keeps the
  * fully isolated transaction. Validation still runs through militaryCommand. */
@@ -619,10 +628,7 @@ function commandResult(state: Game, c: Command, preview: boolean): Result {
   try {
     payload(c);
     const moving = peacefulMove(state, c);
-    const shareUnits =
-      moving ||
-      ["recruit", "ship", "guild-order"].includes(c.type) ||
-      LOCAL_MILITARY_COMMANDS.has(c.type);
+    const shareUnits = moving || LOCAL_RECORD_COMMANDS.has(c.type);
     const localOrder =
       preview &&
       [
@@ -635,6 +641,14 @@ function commandResult(state: Game, c: Command, preview: boolean): Result {
         "bank",
         "guild-order",
       ].includes(c.type);
+    // Purchases leave troops unchanged, and none of these orders removes a
+    // town. If all living factions already own one, cleanup cannot delete any
+    // troops either. Keep the immutable dictionary, including its UI identity.
+    const retainUnits =
+      !localOrder &&
+      (STATIONARY_RECORD_COMMANDS.has(c.type) ||
+        (c.type === "guild-order" && !c.ids?.length)) &&
+      survivingFactionsHaveTowns(state);
     const s: Game = localOrder
       ? localOrderDraft(state, c)
       : (preview && !["expedition", "woods-choice"].includes(c.type)) ||
@@ -648,7 +662,13 @@ function commandResult(state: Game, c: Command, preview: boolean): Result {
               edges: undefined,
               ...(shareUnits ? { pieces: undefined } : {}),
             }),
-            ...(shareUnits ? { pieces: copyRecords(state.pieces) } : {}),
+            ...(shareUnits
+              ? {
+                  pieces: retainUnits
+                    ? state.pieces
+                    : copyRecords(state.pieces),
+                }
+              : {}),
             tiles:
               ["end-turn", "surrender"].includes(c.type) && state.calendar
                 ? Object.fromEntries(
@@ -757,8 +777,7 @@ function advanceCommand(
   // their indexes through that interval only when no faction can be eliminated.
   // The next decision may read these same troops after all cleanup finishes.
   // Its own non-troop indexes are fresh, and execution starts outside the scope.
-  const owners = new Set(Object.values(s.towns).map((town) => town.owner));
-  if (s.players.every((player) => !player.alive || owners.has(player.id)))
+  if (survivingFactionsHaveTowns(s))
     withPieceListPlanningFrame(s, movedPieces, () => finish(true));
   else finish(false);
 }

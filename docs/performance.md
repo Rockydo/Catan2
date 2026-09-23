@@ -1223,3 +1223,49 @@ The latest browser sample improved by about 7%; the older sample was nearly unch
 New regressions cover record ordering, insertions, deletions, undefined values, own versus inherited fields, prototype-like names, exact record identity, 5,000-unit successive worker patches, and economic guild previews that never enumerate the army. Existing transaction cases still cover frozen input, movement, supply, passengers, losses and rollback. All 1,685 unit tests passed. Independent reference audits matched all 13,206 planning proposals across 128 scenarios and all 96 trade comparisons across 48 scenarios. Type checking, formatting, the production build and whitespace checks passed.
 
 All 123 staging browser scenarios passed across Chromium, Firefox and mobile, including large-save recovery, bulk recruitment, worker continuation, guild orders, transports and coastal sieges. The local deployment then passed all 12 production HTTP checks and 18 further Chromium save, worker and guild scenarios. Previous hashed assets remain available to open sessions. All tests used disposable profiles and exported copies; the playing campaign and source exports were not modified. Broader performance work remains active, including ordinary single-order transactions that still copy unrelated campaign data.
+
+
+## Smaller campaign archives and refresh startup
+
+Packing version 9 stores repeated values in map and town columns once, with either a count or an indexed sequence. This includes repeated climate values, empty extension lists, stocks and guild configurations. Restoration creates independent mutable objects for every town. It retains field order, nested values, Unicode, explicit nulls, zero stock values and unknown saved fields. Columns remain literal when the new representation would be larger. Decoding checks indices and the total expanded byte budget before allocating repeated objects. Original JSON and all eight previous compact versions remain supported.
+
+Current compact loads also reuse the decoder's completed ID checks. Every ID, duplicate, row index and reconstructed record has already been checked before rule validation starts; there is no intervening unit migration or asynchronous work. Current-template rules, tile references, passenger counts and carrier capacity remain validated. Historical, literal-key and mutable games retain individual checks.
+
+The game UI now loads alongside the save-worker request. A stalled map/panel module no longer prevents campaign decoding from starting. A failed module presents the existing recovery screen and reload button without changing the stored campaign. The worker keeps one prepared map for successive immutable snapshots, invalidating it whenever the tile, vertex or edge dictionary changes. It retains no map history. Town and troop changes are still encoded on every save, and each stored archive remains independently loadable.
+
+Three serial disposable-Chromium samples per build used the real export and separate growth fixtures. Sizes include the complete compressed archive and checksum:
+
+| Campaign | Previous archive | Updated archive | Previous / updated refresh to menu |
+| --- | ---: | ---: | ---: |
+| Round 32, 540 tiles, 14,695 units | 33,238 bytes | 32,880 bytes | 79.8 / 80.3 ms |
+| 2,000 tiles, 1,000 towns, 5,405 units | 67,978 bytes | 64,834 bytes | 126.4 / 125.3 ms |
+| 240,000-unit storage stress copy | 36,144 bytes | 35,826 bytes | 240.7 / 230.8 ms |
+
+The latest export was originally 2,739,686 bytes, so its current archive is about 98.8% smaller. The additional saving in this pass is modest on that campaign, about 1%, and about 5% on the larger map. The intermediate decompressed representation fell by about 19% and 33%, respectively. The troop stress copy repeats existing soldiers and is not representative of an equally large army with diverse positions and orders. No history, units, orders, stockpiles, terrain or exploration plan was dropped.
+
+Refresh improved by about 4% on the largest troop fixture; the other samples were effectively unchanged. These are warm-asset menu timings, not map-paint or AI-turn timings, and not fixed guarantees. Isolated load-client timings were also mostly unchanged. The first export still requires encoding; subsequent exact-position exports reuse the existing archive cache.
+
+The save-transfer diagnostic measures a save after exporting the loaded position, so the prepared-map cache is warm. Its three-sample median was 18.4 ms instead of 23.3 ms on the real export, 36.7 instead of 65.9 ms on the 2,000-tile map, and 126.5 instead of 131.2 ms on the repeated-troop stress copy. These are representative of subsequent unchanged-map saves, not the first encoding after refresh. All loaded, exported and edited/saved state hashes matched the reference. The worker retains atomic backup writes, conflicting-tab protection and fallback storage.
+
+New regressions cover malformed dictionary indices, repeated-value amplification, independent nested stocks and guild orders, unusual field layouts, old formats, invalidated geometry, changed season values, reordered maps, alternating campaigns and mutable serializers. Browser checks hold or fail the game module and verify that saving data remains untouched and recovery works. `scripts/save-load-performance.ts` now includes all nine compact versions plus original JSON; all 30 compatibility reloads preserved the complete campaign.
+
+## Ordinary construction and trading with large armies
+
+Normal player purchases previously deep-cloned every troop and then compared those cloned records while preparing the published view. Bank trades, roads, sea routes, settlements, city upgrades, walls, extensions, camps, towers and guild construction now share the immutable troop dictionary when all surviving factions already own a town. Economic guild contracts without selected troops do the same. If cleanup can eliminate a faction, the dictionary is detached. Recruitment, combat, supply and other troop changes retain their existing isolation rules.
+
+`scripts/order-performance.ts` exercises seven independently legal purchases on a funded diagnostic copy. It compares the complete source and output against reference checkout `d555c60`, including costs, stored resources, logs, sieges and coalitions. It measures engine plus published-snapshot preparation, not the entire browser interaction:
+
+| Order | Round 32, before / after | 240,000 troops, before / after |
+| --- | ---: | ---: |
+| Bank trade | 36.30 / 5.41 ms | 468.69 / 72.27 ms |
+| City upgrade | 27.89 / 5.62 ms | 480.34 / 69.30 ms |
+| Walls | 26.79 / 5.58 ms | 468.88 / 67.84 ms |
+| Extension | 29.62 / 4.94 ms | 456.00 / 69.18 ms |
+| Road | 38.57 / 7.46 ms | 522.17 / 120.63 ms |
+| Sea route | 28.97 / 7.40 ms | 529.57 / 118.46 ms |
+| Camp | 27.65 / 6.24 ms | 483.82 / 95.67 ms |
+
+All commands and full final states matched, and source campaigns remained unchanged. Tests also cover frozen source records, rejected purchases, faction elimination and siege/coalition cleanup. The browser AI replay retained all 485 exact orders and the full final state through its human casualty prompt. Independent audits retained all 13,206 proposals across 128 planning scenarios and all 96 trade comparisons. No tactical search or gameplay rule was changed.
+
+
+Final validation passed all 1,731 unit tests and 102 targeted staging browser scenarios across Chromium, Firefox and mobile. Earlier checks in this pass also covered general gameplay, guild actions, worker cancellation and camera controls. After atomic local publication, all 12 HTTP checks and 14 production Chromium save, startup and AI-worker scenarios passed. Type checking, formatting and whitespace checks passed. Prior hashed assets were retained for open sessions. Tests used exported copies and disposable profiles; the source exports and playing campaign were not modified. Broader work on large-map rendering and AI planning remains under the active performance goal.

@@ -1,13 +1,11 @@
-import { deserializeSnapshot, serialize, serializePacked } from "../game/save";
+import {
+  deserializeSnapshot,
+  serialize,
+  createSnapshotSerializer,
+} from "../game/save";
 import type { Game } from "../game/types";
 import { applySnapshotDelta, type SnapshotDelta } from "../game/snapshot-delta";
-import {
-  compress,
-  expand,
-  exportArchive,
-  unpackSave,
-  type SaveInput,
-} from "./codec";
+import { compress, expand, unpackSave, type SaveInput } from "./codec";
 import { readRecords, writeRecord, type SaveRecord } from "./database";
 import { encodeLoadedCampaign } from "./load-transfer";
 
@@ -32,6 +30,8 @@ let savedArchive: Uint8Array<ArrayBuffer> | undefined;
 let snapshotToken = 0;
 let preserveBackup = false;
 let initialBackup: string | undefined;
+const serializeSnapshot = createSnapshotSerializer();
+const exportSnapshot = (game: Game) => compress(serializeSnapshot(game));
 async function load(legacy: (string | null)[]) {
   let records: (SaveRecord | undefined)[] = [],
     error: string | undefined;
@@ -132,8 +132,8 @@ async function handle(request: SaveRequest) {
           (key, i) =>
             key === baseKeys[i] && Object.is(game[key], savedSnapshot![key]),
         );
-      if (!unchanged) return exportArchive(game);
-      savedArchive ??= await exportArchive(game);
+      if (!unchanged) return exportSnapshot(game);
+      savedArchive ??= await exportSnapshot(game);
       // The response transfers ownership of its buffer. Retain an independent
       // copy for later exports, rather than detach our only cached archive.
       return savedArchive.slice();
@@ -151,7 +151,7 @@ async function handle(request: SaveRequest) {
       const small =
         Object.keys(game.pieces).length < 256 &&
         Object.keys(game.tiles).length <= 256;
-      const text = small ? serialize(game) : serializePacked(game);
+      const text = small ? serialize(game) : serializeSnapshot(game);
       const record: SaveRecord = {
         revision: crypto.randomUUID(),
         savedAt: Date.now(),

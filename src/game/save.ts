@@ -1,11 +1,17 @@
 import { packGame, unpackGameSnapshot, type PackedGame } from "./save-packing";
-import { packTables, unpackTables } from "./save-tables";
+import {
+  packTable,
+  packTables,
+  unpackTables,
+  type PreparedSaveWorld,
+} from "./save-tables";
 import { packReferences, unpackReferences } from "./save-references";
 import { packIntegers, unpackIntegers } from "./save-integers";
 import { packSpatial, unpackSpatial } from "./save-spatial";
 import { packGeometry, unpackGeometry } from "./save-geometry";
 import { packTopology, unpackTopology } from "./save-topology";
 import { packDetails, unpackDetails } from "./save-details";
+import { packColumns, unpackColumns } from "./save-columns";
 import { syncEmergencyCoalition } from "./emergency-coalition";
 import {
   SEASONS,
@@ -717,11 +723,17 @@ function validateInvariants(
   for (let i = 0; i < unitKeys.length; i++) {
     const key = unitKeys[i],
       u = s.pieces[key];
-    object(u);
-    id(key);
-    rule(u.id === key && s.tiles[u.tile], "Invalid unit reference.");
+    // Current compact archives already checked every ID, duplicate and record
+    // while constructing this dictionary. No unit migration can intervene.
+    // Ordinary/historical games still require the complete per-record checks.
+    if (!restoredUnitRows) {
+      object(u);
+      id(key);
+      rule(u.id === key && s.tiles[u.tile], "Invalid unit reference.");
+    }
     const template = restoredUnitRows?.[i];
     if (!checkedTemplates || !checkedTemplates.has(template!)) {
+      rule(s.tiles[u.tile], "Invalid unit reference.");
       int(u.owner, 0, s.players.length - 1);
       rule(s.players[u.owner].alive, "An eliminated player owns units.");
       bool(u.naval);
@@ -1227,14 +1239,47 @@ export function serialize(s: Game): string {
 export function serializePacked(s: Game): string {
   return saveEnvelope(s, true);
 }
-function saveEnvelope(s: Game, packed: boolean): string {
+/** Save worker only: its acknowledged snapshots and delta records are immutable.
+ * Retain one map's prepared geometry, never a campaign history. General callers
+ * with mutable game objects must continue to use serializePacked. */
+export function createSnapshotSerializer(): (s: Game) => string {
+  let previous: Pick<Game, "tiles" | "vertices" | "edges"> | undefined;
+  let world: PreparedSaveWorld | undefined;
+  return (s) => {
+    if (
+      !previous ||
+      previous.tiles !== s.tiles ||
+      previous.vertices !== s.vertices ||
+      previous.edges !== s.edges
+    ) {
+      world = packGeometry(
+        packTopology({
+          tiles: packTable(s.tiles),
+          vertices: packTable(s.vertices),
+          edges: packTable(s.edges),
+        }),
+      ) as PreparedSaveWorld;
+      previous = { tiles: s.tiles, vertices: s.vertices, edges: s.edges };
+    }
+    return saveEnvelope(s, true, world);
+  };
+}
+function saveEnvelope(
+  s: Game,
+  packed: boolean,
+  world?: PreparedSaveWorld,
+): string {
   const body = JSON.stringify(
     packed
-      ? packDetails(
-          packSpatial(
-            packIntegers(
-              packReferences(
-                packGeometry(packTopology(packTables(packGame(s)))),
+      ? packColumns(
+          packDetails(
+            packSpatial(
+              packIntegers(
+                packReferences(
+                  world
+                    ? packTables(packGame(s), world)
+                    : packGeometry(packTopology(packTables(packGame(s)))),
+                ),
               ),
             ),
           ),
@@ -1244,7 +1289,7 @@ function saveEnvelope(s: Game, packed: boolean): string {
   const header = JSON.stringify({
     format: packed ? "catane-frontiers-packed" : "catane-frontiers",
     version: CURRENT_SAVE_VERSION,
-    ...(packed ? { packing: 8 } : {}),
+    ...(packed ? { packing: 9 } : {}),
     savedAt: new Date().toISOString(),
     checksum: hash(body).toString(16),
   });
@@ -1273,7 +1318,7 @@ export function deserializeSnapshot(text: string): {
     data &&
       (data.format === "catane-frontiers" ||
         (data.format === "catane-frontiers-packed" &&
-          [1, 2, 3, 4, 5, 6, 7, 8].includes(data.packing))) &&
+          [1, 2, 3, 4, 5, 6, 7, 8, 9].includes(data.packing))) &&
       [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14].includes(data.version) &&
       data.game,
     "This is not a supported Catane save.",
@@ -1285,6 +1330,7 @@ export function deserializeSnapshot(text: string): {
   if (data.format === "catane-frontiers-packed") {
     let packed = data.game;
     const measured = { baseBytes: 0 };
+    if (data.packing >= 9) packed = unpackColumns(packed);
     if (data.packing >= 8) packed = unpackDetails(packed);
     if (data.packing >= 5) packed = unpackSpatial(packed);
     if (data.packing >= 4) packed = unpackIntegers(packed);

@@ -1,3 +1,4 @@
+import { unpackColumns } from "../src/game/save-columns";
 import { expect, it } from "vitest";
 import { packDetails, unpackDetails } from "../src/game/save-details";
 import { deserialize, serialize, serializePacked } from "../src/game/save";
@@ -46,9 +47,13 @@ it("reduces complete archives and reads version seven exactly", async () => {
   const s = fixture(),
     before = JSON.stringify(s);
   const modern = JSON.parse(serializePacked(s));
-  const old = { ...modern, packing: 7, game: unpackDetails(modern.game) };
+  const old = {
+    ...modern,
+    packing: 7,
+    game: unpackDetails(unpackColumns(modern.game)),
+  };
   old.checksum = hash(JSON.stringify(old.game)).toString(16);
-  expect(modern.packing).toBe(8);
+  expect(modern.packing).toBe(9);
   expect(Array.isArray(modern.game[1].pieces.templates)).toBe(false);
   expect((await compress(JSON.stringify(modern))).length).toBeLessThan(
     (await compress(JSON.stringify(old))).length * 0.95,
