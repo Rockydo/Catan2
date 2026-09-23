@@ -110,6 +110,14 @@ Set `BATCH_LIMIT=1` to isolate a slow first worker batch without playing the res
 
 The report also separates main-thread script, layout and style work. Set `PROFILE_UI=1` to write a Chrome `.cpuprofile` alongside it. Profiling adds overhead, so use a separate run when comparing timings.
 
+To check harvest processing and seasonal forecasts on an exported campaign:
+
+```sh
+SAVE_PATH=/path/to/campaign.json LABEL=local npx tsx scripts/production-performance.ts
+```
+
+This checks every dice total from 2 through 12 on independent copies, records full-state hashes and times the resource distribution. It also records ordered deliveries for all seasons and forecasts over several roll counts. `SOURCE_ROOT` selects an older checkout; `EXPECT_PATH` requires exact agreement with its report. It never writes to the campaign export or browser storage.
+
 To measure compression and exact save recovery without a browser:
 
 ```sh

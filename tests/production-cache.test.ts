@@ -1,15 +1,23 @@
 import { describe, expect, it, vi } from "vitest";
 import * as maritime from "../src/game/maritime";
+import * as seasons from "../src/game/seasons";
 import { fishingFixture } from "./maritime-fixture";
 import { piece } from "./helpers";
+import { production } from "../src/game/economy";
+import { dominanceSupport } from "../src/game/ai-support";
 import {
   income,
   probability,
   productionSources,
+  forEachProduction,
   productionSignature,
   withPlanningFrame,
 } from "../src/game/selectors";
-import { projectedIncome, withSeasonalPlanning } from "../src/game/ai-seasonal";
+import {
+  projectedIncome,
+  projectedIncomes,
+  withSeasonalPlanning,
+} from "../src/game/ai-seasonal";
 import type { Game, Good, Stock } from "../src/game/types";
 
 function direct(s: Game, owner: number, mode: "annual" | "current") {
@@ -68,6 +76,106 @@ function fixture() {
 }
 
 describe("retained production forecasts", () => {
+  it("streams ordered deliveries without joining fractional outputs or changing the world", () => {
+    const { s, merchant, fisher } = fixture();
+    for (let i = 0; i < 300; i++) {
+      piece(s, merchant.tile, 0, "merchant", 3);
+      piece(s, fisher.tile, 0, "fishing", 3);
+    }
+    const untouched = JSON.stringify(s);
+    for (const mode of ["current", "annual", ...seasons.SEASONS] as const) {
+      const sources = productionSources(s, mode);
+      const ordered: (number | string)[][] = [];
+      const sums: Record<string, number> = {};
+      forEachProduction(s, mode, (owner, town, tile, good, amount) => {
+        expect(town).toBe(s.towns[town.id]);
+        expect(amount).toBeGreaterThan(0);
+        ordered.push([owner, town.id, tile, good, amount]);
+        const key = `${owner}/${good}`;
+        sums[key] =
+          (sums[key] ?? 0) + probability(s.tiles[tile].number) * amount;
+      });
+      const expected: Record<string, number> = {};
+      for (const source of sources) {
+        const key = `${source.owner}/${source.good}`;
+        expected[key] =
+          (expected[key] ?? 0) +
+          probability(s.tiles[source.tile].number) * source.amount;
+      }
+      expect(ordered).toEqual(
+        sources.map((v) => [v.owner, v.town.id, v.tile, v.good, v.amount]),
+      );
+      expect(sums).toEqual(expected);
+    }
+    expect(JSON.stringify(s)).toBe(untouched);
+  });
+  it("checks future ice once per tile and round regardless of how many fishers produce there", () => {
+    const { s, fisher } = fixture();
+    // A unique position prevents a previous test's retained forecast being used.
+    s.round = 61;
+    for (let i = 0; i < 400; i++) piece(s, fisher.tile, 0, "fishing", 3);
+    const risk = vi.spyOn(seasons, "iceRisk");
+    try {
+      const forecast = withSeasonalPlanning(() => projectedIncomes(s, 40));
+      expect(Object.keys(forecast[0]).length).toBeGreaterThan(0);
+      const checks = risk.mock.calls.map(
+        ([, tile, round]) => `${tile.id}/${round}`,
+      );
+      expect(checks.length).toBeGreaterThan(0);
+      expect(new Set(checks).size).toBe(checks.length);
+    } finally {
+      risk.mockRestore();
+    }
+  });
+  it("credits every rolled delivery while preserving nonmatching stocks and current production inputs", () => {
+    const original = fixture();
+    for (let i = 0; i < 40; i++) {
+      piece(original.s, original.merchant.tile, 0, "merchant", 3);
+      piece(original.s, original.fisher.tile, 0, "fishing", 3);
+    }
+    Object.values(original.s.tiles).forEach((tile, i) => {
+      tile.number = 2 + (i % 11);
+    });
+    for (let roll = 2; roll <= 12; roll++) {
+      const s = structuredClone(original.s);
+      const home = s.towns[original.home.id];
+      // Support goes to other factions. This warehouse receives harvest only.
+      expect(dominanceSupport(s)?.leader).toBe(0);
+      const expected = { ...home.stock };
+      const receipt: Stock = {};
+      const sources = productionSources(s);
+      for (const source of sources) {
+        if (source.town.id !== home.id || s.tiles[source.tile].number !== roll)
+          continue;
+        expected[source.good] = (expected[source.good] ?? 0) + source.amount;
+        receipt[source.good] = (receipt[source.good] ?? 0) + source.amount;
+      }
+      const terrain = JSON.stringify(s.tiles),
+        units = JSON.stringify(s.pieces);
+      production(s, roll);
+      expect(home.stock).toEqual(expected);
+      expect(s.production[0]).toEqual(receipt);
+      expect(JSON.stringify(s.tiles)).toBe(terrain);
+      expect(JSON.stringify(s.pieces)).toBe(units);
+      expect(
+        productionSources(s).map(({ owner, town, tile, good, amount }) => [
+          owner,
+          town.id,
+          tile,
+          good,
+          amount,
+        ]),
+      ).toEqual(
+        sources.map(({ owner, town, tile, good, amount }) => [
+          owner,
+          town.id,
+          tile,
+          good,
+          amount,
+        ]),
+      );
+    }
+  });
   it("shares collector coverage without combining or reordering individual deliveries", () => {
     const { s, merchant, fisher } = fixture();
     const buildings = productionSources({ ...s, pieces: {} });

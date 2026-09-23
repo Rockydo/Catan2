@@ -209,6 +209,30 @@ Validation passed all 1,357 unit tests and 93 browser checks across Chromium, Fi
 
 All 12 production HTTP checks passed after deployment. The live-build Round 32 replay completed in 30.76 seconds with the same 485 orders and final hash, 139 batches, no browser errors or long tasks, and 16.8 ms frame p95.
 
+## Forecast allocation and movement checks
+
+Production can now visit individual deliveries directly. AI forecasts add each amount in its original order without constructing a full array of temporary delivery records. Dice production uses the same traversal, changing only stocks and the roll report. Its single-good credits no longer scan the complete goods list twice per delivery. The public delivery-list API still returns independent records in the original order. No producer is combined, and multiplication and addition order remain unchanged.
+
+Seasonal forecasts check future ice once per tile and forecast round, rather than once per harvesting ship. Planning, movement batch classification and copy-on-write classification now share one read-only decision frame. The scope closes before execution, and each subsequent order gets a fresh frame. Public mutable calls retain fresh reads; simulations on another game view cannot borrow the current view's cached values.
+
+A comparison against the preceding commit checked all ordered deliveries for the current season, annual averages and all four seasons, plus forecasts over 1, 6, 16 and 40 rolls. It also applied every dice total from 2 through 12 to independent campaign copies and compared the entire resulting JSON. All matched in the latest 14,695-unit export, the 2,000-tile growth fixture and the 60,000-unit storage fixture.
+
+| Campaign | Previous median harvest | Direct delivery harvest |
+| --- | ---: | ---: |
+| Latest export, 14,695 units | 15.94 ms | 13.10 ms |
+| Growth map, 2,000 tiles | 13.19 ms | 11.87 ms |
+| Growth copy, 60,000 units | 47.20 ms | 36.17 ms |
+
+These medians cover the eleven dice totals, alternating which build runs first. Copying and comparing the state are outside the timed harvest. The isolated annual forecast accumulation fell by about 8–15%. The forecast change alone did not materially shorten the full Round 32 replay. With shared movement checks added, that sequence took 29.64 seconds versus 30.76 seconds previously, retaining all 485 orders and the final state hash. Worker time was 24.57 seconds versus 25.42 seconds. Neither run reported browser errors or long tasks.
+
+The complete Round 31 turn retained all 144 commands and final hash, taking 18.71 seconds versus 18.75 seconds. The 2,000-tile fixture retained its 60 commands and final state, taking 34.33 seconds versus 34.13 seconds. These two results are effectively unchanged. This pass improves specific calculation and allocation costs; it does not claim a broad increase in late-game frame rate.
+
+`scripts/production-performance.ts` makes the delivery, forecast and complete dice-result comparisons repeatable against an older checkout. Regression tests cover nested planning scopes, exceptions, fresh occupation reads after consecutive moves, ordered fractional accumulation, one ice check per tile and round, and live warehouse crediting without changing production inputs.
+
+Validation passed all 1,362 unit tests and 111 browser scenarios across Chromium, Firefox and the mobile viewport, including actual harvest displays, seasonal previews, freeze/thaw navigation, transport, repeated raids, research choices, paused-worker continuations, recruitment and large-save recovery.
+
+After deployment, all 12 production HTTP checks and seven live-build Chromium season scenarios passed. The new production diagnostic also matched all six delivery lists, four forecasts and eleven complete dice-result states against the previous checkout.
+
 ## Changes
 
 - Guild planning looks up local formations instead of scanning every unit repeatedly. Original unit ordering is preserved.
@@ -225,6 +249,6 @@ Regression coverage includes nearby guild selection, changing garrisons, isolate
 
 ## Remaining work
 
-After sharing troop records, a fresh worker-only profile retained the first 82 original Round 32 orders and took 3.59 seconds across 24 batches. Enumerating current troop records in separate planning scopes, production fingerprints and delivery allocation remain prominent costs. Threat assessment, military planning and emergency-coalition strength updates also remain measurable; their inclusive timings overlap.
+After the forecast and movement-read changes, a fresh worker-only profile retained the first 82 original Round 32 orders and took 3.32 seconds across 24 batches, versus 3.59 seconds in the previous profile. Enumerating troops in fresh execution scopes and constructing production fingerprints remain prominent costs. Threat assessment, military planning and emergency-coalition strength updates also remain measurable; their inclusive timings overlap.
 
 The wider performance goal remains open. Production signatures, large-map military/economic planning and publication/rendering remain measurable costs. Dense-map terrain and army painting remain measurable costs even after caching town and resource artwork. Further changes must preserve complete AI decisions, game rules, visual clarity and existing saves.

@@ -40,7 +40,12 @@ import {
   towerPower,
 } from "./maritime";
 import { shipStats, shipCost, TOWER_COSTS } from "./content";
-import { recipePayment, withPlanningFrame, planningValue } from "./selectors";
+import {
+  recipePayment,
+  withPlanningFrame,
+  reusePlanningFrame,
+  planningValue,
+} from "./selectors";
 import {
   marketValues,
   marketStockValue,
@@ -3320,7 +3325,7 @@ export function chooseAIAction(
   onRecruitment?: (intent: RecruitmentIntent) => void,
 ): Command {
   return withSeasonalPlanning(() =>
-    withPlanningFrame(s, () => chooseAction(s, onRecruitment)),
+    reusePlanningFrame(s, () => chooseAction(s, onRecruitment)),
   );
 }
 function chooseAction(

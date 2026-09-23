@@ -1,5 +1,7 @@
 import { expect, it } from "vitest";
 import { funded, piece, run } from "./helpers";
+import { applyCommandPlan } from "../src/game/engine";
+import { maritimeFixture } from "./maritime-fixture";
 import {
   ownTowns,
   ownPieces,
@@ -8,6 +10,8 @@ import {
   inventory,
   nearestTown,
   withPlanningFrame,
+  reusePlanningFrame,
+  allPieces,
   income,
 } from "../src/game/selectors";
 import { coord, distance, landAtVertex } from "../src/game/world";
@@ -108,4 +112,57 @@ it("bounded coordinate reuse preserves hex distances and public coordinate tuple
   const p = coord("-5,8");
   p[0] = 100;
   expect(distance("-5,8", "2,-3")).toBe(11);
+});
+
+it("nested AI readers join only the exact active decision and restore it after errors", () => {
+  const { s } = maritimeFixture();
+  piece(s, "0,0", 0, "cavalry");
+  const other = structuredClone(s);
+  piece(other, "1,0", 0, "cavalry");
+  withPlanningFrame(s, () => {
+    const units = allPieces(s);
+    const totals = inventory(s);
+    reusePlanningFrame(s, () => {
+      expect(allPieces(s)).toBe(units);
+      expect(inventory(s)).toEqual(totals);
+    });
+    expect(() =>
+      reusePlanningFrame(other, () => {
+        expect(allPieces(other)).toHaveLength(2);
+        throw Error("stop nested read");
+      }),
+    ).toThrow("stop nested read");
+    expect(allPieces(s)).toBe(units);
+    expect(() =>
+      reusePlanningFrame(s, () => {
+        throw Error("stop shared read");
+      }),
+    ).toThrow("stop shared read");
+    expect(allPieces(s)).toBe(units);
+  });
+  piece(s, "1,0", 0, "cavalry");
+  expect(reusePlanningFrame(s, () => allPieces(s))).toHaveLength(2);
+});
+
+it("planned movement shares a read scope but creates a fresh one after every execution", () => {
+  const { s } = maritimeFixture();
+  const unit = piece(s, "0,0", 0, "cavalry");
+  const initial = JSON.stringify(s);
+  const scans: ReturnType<typeof allPieces>[] = [];
+  const result = applyCommandPlan(s, (view, done) => {
+    const tile = `${done.length},0`;
+    const units = allPieces(view);
+    expect(reusePlanningFrame(view, () => allPieces(view))).toBe(units);
+    expect(piecesAt(view, tile).map((u) => u.id)).toEqual([unit.id]);
+    if (done.length) expect(piecesAt(view, `${done.length - 1},0`)).toEqual([]);
+    scans.push(units);
+    return done.length < 2
+      ? { type: "move", ids: [unit.id], to: `${done.length + 1},0` }
+      : undefined;
+  });
+  expect(result.ok, result.error).toBe(true);
+  expect(new Set(scans).size).toBe(3);
+  expect(result.state.pieces[unit.id].tile).toBe("2,0");
+  expect(JSON.stringify(s)).toBe(initial);
+  expect(allPieces(s)).toEqual([unit]);
 });

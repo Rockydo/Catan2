@@ -583,10 +583,44 @@ export function nearestTown(
   cache?.set(key, best);
   return best;
 }
-export function productionSources(
+type ProductionMode = "current" | "annual" | Season;
+interface ProductionSource {
+  owner: number;
+  town: Town;
+  tile: string;
+  good: Good;
+  amount: number;
+}
+export function productionSources(s: Game, mode: ProductionMode = "current") {
+  const out: ProductionSource[] = [];
+  forEachProduction(s, mode, (owner, town, tile, good, amount) => {
+    out.push({ owner, town, tile, good, amount });
+  });
+  return out;
+}
+/** Read deliveries in producer order without allocating an array per forecast.
+ * The visitor may accumulate a result, but must not change production inputs.
+ * Keep every individual addition: grouping amounts changes AI rounding. */
+export function forEachProduction(
   s: Game,
-  mode: "current" | "annual" | Season = "current",
+  mode: ProductionMode,
+  visit: (
+    owner: number,
+    town: Town,
+    tile: string,
+    good: Good,
+    amount: number,
+  ) => void,
 ) {
+  const deliver = (
+    owner: number,
+    town: Town,
+    tile: string,
+    good: Good,
+    amount: number,
+  ) => {
+    if (amount > 0) visit(owner, town, tile, good, amount);
+  };
   const season =
     mode === "current" ? seasonAt(s) : mode === "annual" ? undefined : mode;
   // A migrated open sea has grace only through the actual current season.
@@ -598,13 +632,6 @@ export function productionSources(
       if (tiles === s.tiles) tiles = { ...s.tiles };
       tiles[tile.id] = { ...tile, thawGrace: undefined };
     }
-  const out: {
-    owner: number;
-    town: Town;
-    tile: string;
-    good: Good;
-    amount: number;
-  }[] = [];
   // Several towns, camps and merchants may harvest the same tile. Evaluate
   // its calendar once per owner during this read, without retaining mutable
   // game data between actions or seasons.
@@ -666,27 +693,21 @@ export function productionSources(
           yieldAt(id, town.owner),
         ),
       ))
-        out.push({
-          owner: town.owner,
-          town,
-          tile: id,
-          good: raw as Good,
-          amount: amount!,
-        });
+        deliver(town.owner, town, id, raw as Good, amount!);
       if (town.extensions[id])
-        out.push({
-          owner: town.owner,
+        deliver(
+          town.owner,
           town,
-          tile: id,
-          good: processedFor(good),
-          amount: workshopYield(
+          id,
+          processedFor(good),
+          workshopYield(
             tiles[id],
             town.owner,
             good,
             town.extensions[id],
             seasonalWorkshopBase(tiles[id], town.owner, good, season),
           ),
-        });
+        );
     }
   for (const r of Object.values(s.routes))
     for (const [id, tier] of Object.entries(r.camps)) {
@@ -694,13 +715,7 @@ export function productionSources(
         town = warehouse(id, r.owner);
       if (good && town && !blocked(id, r.owner))
         for (const [raw, amount] of Object.entries(yieldAt(id, r.owner)))
-          out.push({
-            owner: r.owner,
-            town,
-            tile: id,
-            good: raw as Raw,
-            amount: tier * amount!,
-          });
+          deliver(r.owner, town, id, raw as Raw, tier * amount!);
     }
   const harvestWorld =
     mode !== "current" && s.calendar
@@ -720,7 +735,7 @@ export function productionSources(
           ),
         })
       : s;
-  const collectors = new Map<string, typeof out>();
+  const collectors = new Map<string, ProductionSource[]>();
   for (const u of units) {
     if (u.carrier || !collector(u)) continue;
     const key = JSON.stringify([u.owner, u.kind, u.tier, u.tile, u.coverage]);
@@ -754,9 +769,15 @@ export function productionSources(
     }
     // Preserve producer order and individual additions exactly. Multiplying
     // an aggregate would change floating-point forecasts and AI tie breaks.
-    for (const source of sources) out.push({ ...source });
+    for (const source of sources)
+      deliver(
+        source.owner,
+        source.town,
+        source.tile,
+        source.good,
+        source.amount,
+      );
   }
-  return out.filter((source) => source.amount > 0);
 }
 /** Complete public inputs to passive production. Resource spending, movement
  * allowances, walls and guild contracts do not change a harvest. Fingerprint
@@ -877,6 +898,13 @@ function createPlanningIndex(source: Game): PlanningIndex {
     memo: new Map(),
   };
 }
+/** Join an existing read-only decision for this exact view. Mutating callers
+ * must leave the scope before execution and start a fresh frame afterwards. */
+export function reusePlanningFrame<T>(source: Game, run: () => T): T {
+  return planningIndex?.source === source
+    ? run()
+    : withPlanningFrame(source, run);
+}
 export function withPlanningFrame<T>(source: Game, run: () => T): T {
   const previous = incomeFrame;
   const previousIndex = planningIndex;
@@ -899,12 +927,11 @@ export function income(s: Game, p = s.active): Stock {
         number,
         Stock
       >;
-      for (const source of productionSources(s, "annual")) {
-        const out = all[source.owner];
-        out[source.good] =
-          (out[source.good] ?? 0) +
-          probability(s.tiles[source.tile].number) * source.amount;
-      }
+      forEachProduction(s, "annual", (owner, _town, tile, good, amount) => {
+        const out = all![owner];
+        out[good] =
+          (out[good] ?? 0) + probability(s.tiles[tile].number) * amount;
+      });
       lastIncomeSignature = signature;
       lastIncome = all;
     }

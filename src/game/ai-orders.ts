@@ -2,7 +2,7 @@ import {
   recruitmentIntentOrder,
   type RecruitmentIntent,
 } from "./ai-recruitment";
-import { withPlanningFrame } from "./selectors";
+import { reusePlanningFrame } from "./selectors";
 import { chooseAIAction, marginalValues } from "./ai";
 import { applyCommandPlan, peacefulMove } from "./engine";
 import type { Command, Game } from "./types";
@@ -64,7 +64,7 @@ export function createAIOrderPlanner(ownedSnapshots = false) {
         return undefined;
       let next: Command | null = null;
       if (pending) {
-        next = withPlanningFrame(view, () =>
+        next = reusePlanningFrame(view, () =>
           recruitmentIntentOrder(view, pending!, marginalValues(view)),
         );
         if (!next || next.type !== "bank") pending = undefined;

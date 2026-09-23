@@ -9,7 +9,7 @@ import {
 import {
   inventory,
   recipePayment,
-  productionSources,
+  forEachProduction,
   ownTowns,
   effectiveCost,
   sumStock,
@@ -129,12 +129,19 @@ export function production(s: Game, total: number) {
   s.production = {};
   for (const p of s.players) s.production[p.id] = {};
   function produce(owner: number, stock: Stock, g: Good, amount: number) {
-    addStock(stock, { [g]: amount });
-    addStock(s.production[owner], { [g]: amount });
+    if (!amount) return;
+    // Each delivery contains one known good. Avoid scanning every good twice
+    // for each town, camp or collector, while retaining individual additions.
+    stock[g] = (stock[g] ?? 0) + amount;
+    const report = s.production[owner];
+    report[g] = (report[g] ?? 0) + amount;
   }
-  for (const source of productionSources(s))
-    if (s.tiles[source.tile].number === total)
-      produce(source.owner, source.town.stock, source.good, source.amount);
+  // Only stores and the roll report change while consuming this read. Neither
+  // affects terrain yields, blockades, coverage or warehouse selection.
+  forEachProduction(s, "current", (owner, town, tile, good, amount) => {
+    if (s.tiles[tile].number === total)
+      produce(owner, town.stock, good, amount);
+  });
   if (support) {
     const gold: Record<number, number> = {};
     const goldbars: Record<number, number> = {};

@@ -72,6 +72,7 @@ import {
 } from "./world";
 import { addHexes, expeditionFootprint, neighbors } from "./world";
 import {
+  withPlanningFrame,
   ownTowns,
   ownPieces,
   inventory,
@@ -436,15 +437,27 @@ export function applyCommandPlan(
       pieces: { ...state.pieces },
     };
     for (;;) {
-      const command = choose(view, commands);
+      // Selection, batch boundaries and copy-on-write classification inspect
+      // the same unmodified position. Share its index, then close the scope
+      // before executing anything on the private draft.
+      const { command, moving } = withPlanningFrame(view, () => {
+        const command = choose(view, commands);
+        if (command) payload(command);
+        return {
+          command,
+          moving:
+            !!command &&
+            !detached &&
+            !ECONOMIC_RECORDS_ONLY.has(command.type) &&
+            peacefulMove(view, command),
+        };
+      });
       if (!command) break;
       // Planning caches are keyed by Game identity. Execution gets a fresh key
       // before changing any draft data, just as an ordinary transaction does.
       const next = { ...view };
-      payload(command);
       if (!detached && !ECONOMIC_RECORDS_ONLY.has(command.type)) {
-        if (peacefulMove(next, command))
-          detachMovingPieces(state, next, command);
+        if (moving) detachMovingPieces(state, next, command);
         else {
           Object.assign(
             next,

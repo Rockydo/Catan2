@@ -19,7 +19,7 @@ import {
   ownPieces,
   piecesAt,
   probability,
-  productionSources,
+  forEachProduction,
   productionSignature,
   ready,
   speed,
@@ -104,20 +104,27 @@ function outputsIn(s: Game, season: Season, round?: number): Outputs {
         ),
       })
     : s;
-  for (const source of productionSources(
+  // Weather depends on a tile and forecast round, not the number of producers.
+  const weather = new Map<string, number>();
+  forEachProduction(
     view,
     round === s.round ? "current" : season,
-  )) {
-    const stock = result[source.owner];
-    stock[source.good] =
-      (stock[source.good] ?? 0) +
-      source.amount *
-        probability(s.tiles[source.tile].number) *
-        (forecastWeather &&
-        ["water", "ice"].includes(s.tiles[source.tile].resource)
-          ? 1 - iceRisk(s, s.tiles[source.tile], round)
-          : 1);
-  }
+    (owner, _town, tile, good, amount) => {
+      const stock = result[owner];
+      let factor = weather.get(tile);
+      if (factor === undefined) {
+        const terrain = s.tiles[tile];
+        factor =
+          forecastWeather && ["water", "ice"].includes(terrain.resource)
+            ? 1 - iceRisk(s, terrain, round)
+            : 1;
+        weather.set(tile, factor);
+      }
+      stock[good] =
+        (stock[good] ?? 0) +
+        amount * probability(s.tiles[tile].number) * factor;
+    },
+  );
   if (cache.size >= 32) cache.delete(cache.keys().next().value!);
   cache.set(key, result);
   return result;
