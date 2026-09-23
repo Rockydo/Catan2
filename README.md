@@ -108,6 +108,14 @@ SOURCE_ROOT=/path/to/older/checkout npx tsx scripts/ai-planning-compare.ts
 
 Use a reference checkout with the same gameplay rules. The audit creates its own positions and checks that neither planner changes them.
 
+For trade offers, coalition supplies and acceptance decisions across different stocks, factions and alliances:
+
+```sh
+SOURCE_ROOT=/path/to/older/checkout npx tsx scripts/ai-trade-compare.ts
+```
+
+This compares 48 positions through both direct calls and the normal planning scope. It verifies exact decisions and unchanged input state.
+
 To include the browser, worker transfers and autosaving in the AI measurement:
 
 ```sh

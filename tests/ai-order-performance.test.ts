@@ -194,3 +194,28 @@ it("economic batches share unchanged units and detach them before later movement
   expect(moving.state.pieces[u.id]).not.toBe(u);
   expect(JSON.stringify(s)).toBe(before);
 });
+
+it("avoids serializing the board while military searches keep finding orders", () => {
+  const s = funded("military-action-fingerprint");
+  const action: Command = { type: "move", ids: ["test"], tile: "0,0" };
+  // Finish any earlier wait entry, as the real planner does after finding an order.
+  cachedMilitaryWait(s, () => action);
+  const stringify = vi.spyOn(JSON, "stringify");
+  try {
+    for (let i = 0; i < 3; i++)
+      expect(cachedMilitaryWait(s, () => action)).toBe(action);
+    expect(stringify).not.toHaveBeenCalled();
+    const wait = vi.fn((): Command => ({ type: "end-turn" }));
+    cachedMilitaryWait(s, wait);
+    expect(stringify).toHaveBeenCalledTimes(1);
+    cachedMilitaryWait(s, wait);
+    expect(wait).toHaveBeenCalledTimes(1);
+    expect(stringify).toHaveBeenCalledTimes(2);
+    const stock = ownTowns(s, 1)[0].stock;
+    stock.grain = (stock.grain ?? 0) + 1;
+    cachedMilitaryWait(s, wait);
+    expect(wait).toHaveBeenCalledTimes(2);
+  } finally {
+    stringify.mockRestore();
+  }
+});

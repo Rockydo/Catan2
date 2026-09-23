@@ -42,7 +42,7 @@ import {
 import { shipStats, shipCost, TOWER_COSTS } from "./content";
 import {
   recipePayment,
-  withPlanningFrame,
+  withSharedPiecePlanningFrame,
   reusePlanningFrame,
   planningValue,
 } from "./selectors";
@@ -221,7 +221,7 @@ function tradeNeeds(s: Game, player: number): Stock {
     const projects =
       view === s
         ? economyProjects(s)
-        : withPlanningFrame(view, () => economyProjects(view));
+        : withSharedPiecePlanningFrame(view, () => economyProjects(view));
     return (projects.find((p) => p.urgent) ?? projects[0])?.cost ?? {};
   });
 }
@@ -1565,15 +1565,27 @@ export function economyProjects(s: Game): Project[] {
 export function playerTradeToward(s: Game, cost: Stock): Command | null {
   if (s.players[s.active].tradeOffered || s.trade || s.phase !== "economy")
     return null;
-  const stock = inventory(s),
-    prices = marketValues(s);
+  const stock = inventory(s);
+  const wanted = GOODS.filter((g) => (cost[g] ?? 0) - (stock[g] ?? 0) >= 1),
+    spare = GOODS.filter((g) => (stock[g] ?? 0) - (cost[g] ?? 0) >= 1);
+  if (!wanted.length || !spare.length) return null;
+  const prices = marketValues(s);
   const evaluateOurs = tradeValuation(s, s.active, cost, prices);
   let best: { action: Command; score: number } | undefined;
   for (const partner of s.players.filter(
     (p) => p.alive && p.id !== s.active && p.id !== emergencyTarget(s),
   )) {
-    const theirStock = inventory(s, partner.id),
-      theirNeeds = tradeNeeds(s, partner.id);
+    const theirStock = inventory(s, partner.id);
+    // Whole-card offers cannot exist without complementary stocks. Check that
+    // before planning the partner's economy; retain all viable partners/ratios.
+    if (
+      !wanted.some(
+        (take) =>
+          (theirStock[take] ?? 0) >= 1 && spare.some((give) => give !== take),
+      )
+    )
+      continue;
+    const theirNeeds = tradeNeeds(s, partner.id);
     const evaluateTheirs = tradeValuation(s, partner.id, theirNeeds, prices);
     const support = coalitionSupport(s, partner.id);
     const theirSupport = coalitionSupport(s, s.active, partner.id);
@@ -1662,7 +1674,9 @@ export function coalitionTrade(
     if (support < 0.2) continue;
     const theirs = inventory(s, partner.id);
     const view = { ...s, active: partner.id, phase: "economy" as const };
-    const plan = economyProjects(view).filter(
+    const plan = withSharedPiecePlanningFrame(view, () =>
+      economyProjects(view),
+    ).filter(
       (p) =>
         (p.action.type === "recruit" &&
           p.action.kind !== "merchant" &&

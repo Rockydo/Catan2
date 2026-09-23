@@ -446,3 +446,23 @@ The refresh diagnostic compares six historical/current encodings. The import dia
 Validation passed all 1,458 unit tests and 45 browser scenarios across Firefox, Chromium and mobile. After a final packing allocation cleanup, the 44 affected unit tests and all 21 storage browser checks were repeated. Browser coverage includes quota fallback, bulk recruitment, large-army refresh, binary exports, historical imports, corrupted primary recovery, concurrent tabs, coalesced writes and stale worker bases. Tests used disposable profiles and exported copies; the player's live campaign was not opened or changed.
 
 The local deployment passed all 12 production HTTP checks and nine additional Chromium storage/worker scenarios. Earlier hashed assets were retained so already-open sessions can finish using their current build. Existing campaigns adopt the new archive format on their next save or export. The broader performance goal remains active.
+
+## Trade planning and military wait checks
+
+Trade proposals now check whole-card shortages, spare goods and a potential partner's complementary stock before evaluating that partner's full economy. A partner who can supply the requested good still receives the same project analysis, prices, reserves and offer search. Counterparty and coalition-supply views share the unchanged troop indexes while keeping their own faction-dependent planning caches. No viable offers, search depth or tactical options were removed.
+
+The military wait cache now creates its full board signature only when comparing against or recording a completed wait search. Successful consecutive maneuver searches no longer serialize the entire campaign for a cache with no entry. The retained signature fields and invalidation rules are unchanged, and the cache still holds only one completed wait result.
+
+| Measurement | Previous build | This pass |
+| --- | ---: | ---: |
+| 2,000 tiles and 1,000 towns: same 60 decisions | 16.00 s | 14.83 s |
+| Round 31: complete 144-order browser turn | 14.28 s | 14.48 s |
+| Round 32: 485 orders to the same human decision | 21.84 s | 21.60 s |
+
+The larger map improved by about 7%. The real-save browser replays were effectively unchanged. Every command, order count and complete final-state hash matched. Both browser replays had about 16.8 ms frame p95, no long main-thread tasks and no errors. These are local workload comparisons, not guaranteed improvements for all campaigns.
+
+The new `scripts/ai-trade-compare.ts` audit checks 48 stock, faction, controller and alliance scenarios through both direct and scoped planning calls. All 96 comparisons matched, including 124 proposed trades, 14 coalition supply offers and 140 positive acceptance decisions. The coastal planning audit retained all 2,924 projects, scores, ordering and guild decisions across its 48 scenarios. Neither audit permits input mutation. Regression tests verify that unavailable exchanges avoid expensive partner planning, viable offers remain available, reserved resources stay protected and military wait invalidation still follows enemy stores and movement.
+
+Validation passed all 1,461 unit tests and 84 browser scenarios across Firefox, Chromium and mobile. Coverage includes trade presentation and payment, coalition and alliance behavior, transport campaigns, economic batching, worker pause/resume, seasonal resource support and large-save recovery. All testing used disposable copies; the player's live campaign was not opened or modified.
+
+The deployed build passed all 12 production HTTP checks and 15 additional Chromium trade, batching, worker and storage scenarios. Earlier hashed assets were retained for already-open sessions. The broader performance goal remains active.
