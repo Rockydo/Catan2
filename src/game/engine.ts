@@ -73,6 +73,7 @@ import {
 import { addHexes, expeditionFootprint, neighbors } from "./world";
 import {
   withPlanningFrame,
+  withSharedPiecePlanningFrame,
   allPieces,
   ownTowns,
   ownPieces,
@@ -452,11 +453,14 @@ export function applyCommandPlan(
       climatePlan: state.climatePlan,
       pieces: { ...state.pieces },
     };
-    for (;;) {
+    const select = (sharePieces = false) => {
       // Selection, batch boundaries and copy-on-write classification inspect
       // the same unmodified position. Share its index, then close the scope
       // before executing anything on the private draft.
-      const { command, moving } = withPlanningFrame(view, () => {
+      const frame = sharePieces
+        ? withSharedPiecePlanningFrame
+        : withPlanningFrame;
+      return frame(view, () => {
         const command = choose(view, commands);
         if (command) payload(command);
         return {
@@ -468,6 +472,10 @@ export function applyCommandPlan(
             peacefulMove(view, command),
         };
       });
+    };
+    let selection = select();
+    for (;;) {
+      const { command, moving } = selection;
       if (!command) break;
       // Planning caches are keyed by Game identity. Execution gets a fresh key
       // before changing any draft data, just as an ordinary transaction does.
@@ -490,9 +498,15 @@ export function applyCommandPlan(
           detached = true;
         }
       }
-      advanceCommand(next, command, false);
-      view = { ...next };
-      commands.push(command);
+      advanceCommand(next, command, false, (sharePieces) => {
+        view = { ...next };
+        commands.push(command);
+        // Cleanup has finished. Reuse only its unchanged troop inputs in a
+        // fresh decision view; stores, sieges and diplomacy need new memos.
+        // Finish this read before the loop executes another order. No nested
+        // execution or retained draft index grows with the batch length.
+        selection = select(sharePieces);
+      });
     }
     return { ok: true, state: commands.length ? view : state, commands };
   } catch (error) {
@@ -620,7 +634,12 @@ function localOrderDraft(state: Game, command: Command): Game {
     detachSuppliedPieces(state, draft, command);
   return draft;
 }
-function advanceCommand(s: Game, c: Command, preview: boolean) {
+function advanceCommand(
+  s: Game,
+  c: Command,
+  preview: boolean,
+  afterCleanup?: (sharePieces: boolean) => void,
+) {
   if (s.phase === "military") s.phase = "economy";
   s.actions++;
   executeOrder(s, c, false, true);
@@ -628,10 +647,12 @@ function advanceCommand(s: Game, c: Command, preview: boolean) {
     breakSieges(s, { reuseFrame: sharePieces });
     eliminate(s);
     if (!preview) syncEmergencyCoalition(s, { sharePieces });
+    afterCleanup?.(sharePieces);
   };
   // Cleanup can edit sieges, alliances and logs without changing troops. Share
   // their indexes through that interval only when no faction can be eliminated.
-  // Execution and the next decision always start with fresh occupation data.
+  // The next decision may read these same troops after all cleanup finishes.
+  // Its own non-troop indexes are fresh, and execution starts outside the scope.
   const owners = new Set(Object.values(s.towns).map((town) => town.owner));
   if (s.players.every((player) => !player.alive || owners.has(player.id)))
     withPlanningFrame(s, () => finish(true));

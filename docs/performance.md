@@ -743,3 +743,28 @@ All 1,566 unit tests passed. The planning audit retained all 13,206 projects, sc
 All 144 staging browser scenarios passed across Chromium, Firefox and mobile. Coverage includes guild production and supply, army selection, transport, coastal sieges, seasonal previews, frozen seas, thaw retreats and large-save recovery. The local deployment then passed all 12 production HTTP checks and 10 additional Chromium save, transport and worker scenarios. Type checking, formatting, the build and whitespace checks passed.
 
 Tests used exported copies and disposable profiles. The player's live campaign was not opened or modified, and earlier hashed assets remain available to already-open sessions. The broader performance goal remains active.
+
+
+## Reusing finished cleanup reads in the next AI decision
+
+AI batches previously built a troop index during final siege and coalition cleanup, discarded it, and immediately built another while choosing the next order. The next decision now runs within that finished cleanup interval using a fresh game view. It shares only unchanged troop inputs. Stores, siege state, diplomacy, strength assessments and other decision values receive fresh scopes. The scope closes before the loop executes another command, so no occupation data survives a subsequent move, recruitment or loss.
+
+When cleanup can eliminate a faction, the next decision starts independently after those deletions. Coalition changes still complete their normal siege checks before selection. The execution loop remains iterative: each selection returns before another order begins. No chain of nested executions or retained indexes grows with batch length. A failed command or interrupted selection still rolls back the complete private batch.
+
+| Workload | Before | After | Exact comparison |
+| --- | ---: | ---: | --- |
+| Latest Round 32 export, through the human casualty decision | 17.06 s | 16.15 s | 485 orders and complete final state |
+| Round 31 export, complete AI turn | 10.81 s | 10.71 s | 144 orders and complete final state |
+| Growth map, 2,000 tiles and 1,000 towns, first 60 single-order decisions | 11.22 s | 11.34 s | 60 orders and complete final state |
+
+The latest replay improved by about 5%. The older campaign and single-order growth sample were effectively unchanged. This optimization targets batched decisions; it does not change standalone engine actions. Browser replays retained approximately 16.8 ms frame p95 with no long main-thread tasks or errors. These are local samples, not guaranteed gains for every position.
+
+The follow-up CPU profile retained the same 485 orders and complete state. Sampled troop-enumeration time fell from about 1.83 to 1.47 seconds. Structured cloning still accounts for about 1.28 seconds, and other planning costs remain significant. These profile categories are not additional wall-clock savings.
+
+New tests compare each intermediate decision and its selectors with independently executed commands. Cases cover purchases, upgrades, bulk recruitment, a newly formed emergency coalition, faction elimination, withdrawal rights, refreshed movement, seasonal thaw and dice production. A dense-army test verifies five full troop scans for two moves instead of the previous seven. A 4,096-order batch verifies bounded execution depth, current stores after every order, unchanged input state, restoration of an enclosing read scope and rollback after a later selection error.
+
+All 1,571 unit tests passed. The planning audit retained every project, score, guild choice and military decision across 128 scenarios and 13,206 proposals. All 96 trade comparisons also matched, including offers, aid and acceptance decisions.
+
+All 144 staging browser scenarios passed across Chromium, Firefox and mobile. The deployed build passed all 12 production HTTP checks and 10 additional Chromium transport, save and worker scenarios. Type checking, formatting, the build and whitespace checks passed. The seasonal-boundary regression was also repeated after correcting its fixture to use the two-round calendar.
+
+Checks used exported copies and disposable profiles. The player's live campaign was not opened or modified. Earlier hashed assets remain available to already-open sessions. The broader performance goal remains active.
