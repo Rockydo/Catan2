@@ -193,6 +193,8 @@ This checks every town against a previous checkout with the same rules. Each che
 
 `scripts/ai-economy-performance.ts` uses the same options and separate-process workflow to compare every economic proposal, including scores, costs and order. Its reports use the `ai-economy-` prefix. `scripts/army-front-performance.ts` isolates army strength comparisons across 2,000 candidate destinations with 32, 128 and 512 separate formations. It checks easy targets, mixed defenses and unbeatable defenders against the preceding exhaustive search. Neither script advances or changes a playing campaign. `scripts/ai-performance.ts` also accepts `SOURCE_ROOT` for separate-process comparisons of complete decision and execution sequences.
 
+`scripts/army-march-performance.ts` measures 24 peaceful moves and faction-strength checks with 1,000, 10,000 and 100,000 troops. It includes normal command validation and coalition cleanup, verifies campaign invariants, and checks the complete result and every reported strength against `EXPECT_PATH`. Use `SOURCE_ROOT` for a reference checkout, `LABEL` for report names and `SIZES` to select army sizes. Each process runs three warmups and five measured samples. This isolates movement processing; it does not measure AI target selection or a whole turn.
+
 To compare forecast costs as merchant and fishing fleets grow:
 
 ```sh

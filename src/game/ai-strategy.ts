@@ -11,7 +11,7 @@ import {
   income,
   power,
   planningValue,
-  piecePlanningValue,
+  pieceCompositionValue,
   speed,
 } from "./selectors";
 import {
@@ -31,7 +31,7 @@ export interface FactionStrength {
 const strengthDetailsCache = new WeakMap<Game, FactionStrength[]>();
 const strengthsCache = new WeakMap<Game, number[]>();
 function troopStrengths(s: Game): readonly number[] {
-  return piecePlanningValue(s, "faction-force-strength", (units) => {
+  return pieceCompositionValue(s, "faction-force-strength", (units) => {
     const forces: number[] = [];
     for (const u of units)
       forces[u.owner] =

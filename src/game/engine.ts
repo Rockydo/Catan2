@@ -80,6 +80,7 @@ import {
   type RetainedPieceRead,
   withSharedPiecePlanningFrame,
   withPieceListPlanningFrame,
+  withMovedPiecePlanningFrame,
   withProductionTerrainRead,
   allPieces,
   ownTowns,
@@ -795,6 +796,8 @@ function advanceCommand(
   if (survivingFactionsHaveTowns(s)) {
     if (retained && preservesTroopRecords(c))
       withRetainedPieceRead(s, retained, () => finish(true));
+    else if (movedPieces && retained)
+      withMovedPiecePlanningFrame(s, movedPieces, retained, () => finish(true));
     else withPieceListPlanningFrame(s, movedPieces, () => finish(true));
   } else finish(false);
 }

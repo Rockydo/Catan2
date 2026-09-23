@@ -69,6 +69,7 @@ interface PieceReadIndex {
   movement: MovementOccupation;
   tiles: Map<string, Piece[]>;
   memo: Map<string, unknown>;
+  compositionMemo: Map<string, unknown>;
 }
 export type RetainedPieceRead = PieceReadIndex;
 interface PlanningIndex {
@@ -141,6 +142,25 @@ export function piecePlanningValue<T>(
   const index = readIndex(s);
   if (index?.source.pieces !== s.pieces) return calculate(allPieces(s));
   const cache = index.pieceMemo;
+  if (!cache.has(key)) cache.set(key, calculate(index.units));
+  return cache.get(key) as T;
+}
+/** Aggregates of membership/order, owner, kind, domain and tier only. These
+ * fields survive peaceful movement, including carried troops. Results must
+ * contain values, never live unit references; position, orders, movement,
+ * bonuses and weather belong in piecePlanningValue instead. */
+export function pieceCompositionValue<T>(
+  s: Game,
+  key: string,
+  calculate: (
+    units: readonly Readonly<
+      Pick<Piece, "owner" | "kind" | "naval" | "tier">
+    >[],
+  ) => T,
+): T {
+  const index = readIndex(s);
+  if (index?.source.pieces !== s.pieces) return calculate(allPieces(s));
+  const cache = index.troopRead.compositionMemo;
   if (!cache.has(key)) cache.set(key, calculate(index.units));
   return cache.get(key) as T;
 }
@@ -384,7 +404,7 @@ export const ready = (s: Game, u: Piece) =>
   !u.carrier &&
   u.seasonStatus !== "icebound";
 export const fresh = (s: Game, u: Piece) => ready(s, u) && u.moved === 0;
-export const points = (u: Piece) =>
+export const points = (u: Pick<Piece, "kind" | "naval" | "tier">) =>
   u.naval
     ? shipStats(u.kind as ShipClass, u.tier).power
     : u.kind === "merchant" || isSettler(u.kind)
@@ -1342,6 +1362,7 @@ function createPieceReadIndex(
   source: Game["pieces"],
   retainedUnits?: readonly Piece[],
   occupation?: MovementOccupation,
+  compositionMemo = new Map<string, unknown>(),
 ): PieceReadIndex {
   let units = retainedUnits;
   const unitRecords = () => (units ??= pieceValues(source));
@@ -1400,6 +1421,7 @@ function createPieceReadIndex(
       return tiles;
     },
     memo: new Map(),
+    compositionMemo,
   };
 }
 function createPlanningIndex(
@@ -1553,6 +1575,28 @@ export function withPieceListPlanningFrame<T>(
   run: () => T,
 ): T {
   return planningFrame(source, run, undefined, units);
+}
+/** Only after a verified peaceful move and before elimination. No units were
+ * added, lost or converted. All position-dependent indexes are new; only pure
+ * composition aggregates can survive. Retain no previous frame or game. */
+export function withMovedPiecePlanningFrame<T>(
+  source: Game,
+  units: readonly Piece[],
+  previous: RetainedPieceRead,
+  run: () => T,
+): T {
+  return planningFrame(
+    source,
+    run,
+    undefined,
+    undefined,
+    createPieceReadIndex(
+      source.pieces,
+      units,
+      undefined,
+      previous.source === source.pieces ? previous.compositionMemo : undefined,
+    ),
+  );
 }
 function planningFrame<T>(
   source: Game,
