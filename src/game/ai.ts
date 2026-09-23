@@ -148,6 +148,7 @@ import {
   townAt,
 } from "./selectors";
 import { canApplyCommand } from "./engine";
+import { collectorThreats } from "./ai-threats";
 import {
   planningPath as pathTo,
   planningDistance,
@@ -2335,26 +2336,9 @@ function townOperation(s: Game): Command | null {
 }
 function collectorMove(s: Game): Command | null {
   const values = marketValues(s);
-  const dangerCache = new Map<string, boolean>();
   const harvestScores = new Map<string, number>();
   const staying = new Set<string>();
-  const threats = allPieces(s)
-    .filter((v) => !friendly(s, v.owner, s.active) && points(v) > 0)
-    .map((v) => ({ unit: v, movement: speed(v) }));
-  function threatened(tile: string, naval: boolean) {
-    const key = `${tile}/${naval}`;
-    if (!dangerCache.has(key))
-      dangerCache.set(
-        key,
-        threats.some(
-          ({ unit: v, movement }) =>
-            v.naval === naval &&
-            distance(v.tile, tile) <= movement &&
-            reachable(s, v.tile, tile, v.naval, v.owner, movement),
-        ),
-      );
-    return dangerCache.get(key)!;
-  }
+  const threatened = collectorThreats(s);
   for (const u of ownPieces(s).filter((u) => collector(u) && ready(s, u))) {
     if (speed(u) + u.bonus - u.moved < 1) continue;
     // Identical collectors on the same hex have the same legal destinations

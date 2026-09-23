@@ -1,19 +1,17 @@
 import type { Command, Game, Stock } from "./types";
 import { isSettler, shipCost, unitCost } from "./content";
-import { friendly } from "./relations";
 import { canOccupy, neighbors } from "./world";
 import { tileYield } from "./maritime";
 import { marketValues } from "./ai-market";
 import { seasonalDestinationSafe, seasonalDiversityBonus } from "./ai-seasonal";
+import { colonistDanger } from "./ai-threats";
 import {
-  allPieces,
   besieged,
   colonizationSites,
   hostileAt,
   income,
   ownPieces,
   ownTowns,
-  points,
   planningValue,
   probability,
   ready,
@@ -30,19 +28,7 @@ function planner(s: Game) {
 function createPlanner(s: Game) {
   let values: ReturnType<typeof marketValues> | undefined;
   let inc: Stock | undefined;
-  const foes = allPieces(s).filter(
-    (u) => !u.carrier && !friendly(s, u.owner, s.active),
-  );
-  const danger = [false, true].map(
-    (naval) =>
-      new Set(
-        foes
-          .filter((u) => u.naval === naval)
-          .flatMap((u) =>
-            points(u) > 0 ? [u.tile, ...neighbors(u.tile)] : [u.tile],
-          ),
-      ),
-  );
+  const danger = colonistDanger(s);
   const connected = new Set(settlementSites(s));
   const sites = settlementSites(s, s.active, true).filter(
     (v) => !s.vertices[v].tiles.some((t) => hostileAt(s, t)),

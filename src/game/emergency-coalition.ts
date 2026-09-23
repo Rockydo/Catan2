@@ -2,20 +2,31 @@ import type { Game } from "./types";
 import { factionStrengths } from "./ai-strategy";
 import { friendly } from "./relations";
 import { log } from "./economy";
-import { withPlanningFrame } from "./selectors";
+import {
+  allPieces,
+  withPlanningFrame,
+  withSharedPiecePlanningFrame,
+} from "./selectors";
 import { breakSieges } from "./military";
 
 export const EMERGENCY_TRIGGER = 0.4;
 export const EMERGENCY_RELEASE = 0.2;
 
 /** Refresh only committed states, never AI command previews. A fresh view avoids
- * cached production/strength values from earlier mutations in this transaction. */
-export function syncEmergencyCoalition(s: Game): void {
+ * cached production/strength values from earlier mutations in this transaction.
+ * sharePieces is only for the engine's immutable-troop cleanup scope. */
+export function syncEmergencyCoalition(
+  s: Game,
+  options?: { sharePieces: boolean },
+): void {
   if (s.phase.startsWith("setup") || s.phase === "finished" || s.battle) return;
   const alive = s.players.filter((p) => p.alive);
   if (alive.length < 2) return;
   const view = { ...s };
-  const scores = withPlanningFrame(view, () => factionStrengths(view));
+  const frame = options?.sharePieces
+    ? withSharedPiecePlanningFrame
+    : withPlanningFrame;
+  const scores = frame(view, () => factionStrengths(view));
   const total = alive.reduce((sum, p) => sum + scores[p.id], 0);
   if (total <= 0) return;
   let coalition = s.alliances?.find((a) => a.emergency === "locked");
@@ -53,7 +64,7 @@ export function syncEmergencyCoalition(s: Game): void {
   // Splitting the leader from former allies can leave opposing pieces on one
   // tile. Preserve the normal withdrawal rights without moving or deleting units.
   const shared = new Map<string, Set<number>>();
-  for (const u of Object.values(s.pieces)) {
+  for (const u of allPieces(s)) {
     if (u.carrier) continue;
     if (!shared.has(u.tile)) shared.set(u.tile, new Set());
     shared.get(u.tile)!.add(u.owner);

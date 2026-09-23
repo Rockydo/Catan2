@@ -54,6 +54,14 @@ for (const operation of ["siege", "raid", "destroy"] as const)
       await expect
         .poll(async () => (await saved()).sieges[`0:${enemy.id}`]?.progress)
         .toBe(1);
+      // On mobile the force inspector covers part of the map after the order.
+      // Close it through its normal control before inspecting the siege badge.
+      const actions = page.getByRole("button", { name: "Actions & realm" });
+      if (
+        (await actions.isVisible()) &&
+        (await actions.getAttribute("aria-expanded")) === "true"
+      )
+        await actions.click();
       await page.getByTestId(`siege-badge-${enemy.id}`).click();
       await expect(page.getByRole("dialog")).toContainText("Fleet at 3,0");
       await expect(page.getByRole("dialog")).toContainText("Battle Carrack");

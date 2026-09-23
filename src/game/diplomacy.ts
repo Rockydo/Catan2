@@ -2,7 +2,7 @@ import type { AllianceOffer, Command, Game } from "./types";
 import { allianceLock, allianceOf, friendly } from "./relations";
 import { factionStrengths } from "./ai-strategy";
 import { distance, landAtVertex } from "./world";
-import { ownTowns } from "./selectors";
+import { ownTowns, piecesAt } from "./selectors";
 import { log, rule } from "./economy";
 
 export const ALLIANCE_LIMIT = 4;
@@ -207,9 +207,7 @@ export function pruneAlliances(s: Game) {
       (w) =>
         !friendly(s, w.owners[0], w.owners[1]) &&
         w.owners.every((owner) =>
-          Object.values(s.pieces).some(
-            (u) => u.owner === owner && !u.carrier && u.tile === w.tile,
-          ),
+          piecesAt(s, w.tile).some((u) => u.owner === owner),
         ),
     );
   for (const a of s.alliances ?? [])

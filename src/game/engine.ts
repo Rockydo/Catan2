@@ -610,9 +610,18 @@ function advanceCommand(s: Game, c: Command, preview: boolean) {
   if (s.phase === "military") s.phase = "economy";
   s.actions++;
   execute(s, c);
-  breakSieges(s);
-  eliminate(s);
-  if (!preview) syncEmergencyCoalition(s);
+  const finish = (sharePieces: boolean) => {
+    breakSieges(s, { reuseFrame: sharePieces });
+    eliminate(s);
+    if (!preview) syncEmergencyCoalition(s, { sharePieces });
+  };
+  // Cleanup can edit sieges, alliances and logs without changing troops. Share
+  // their indexes through that interval only when no faction can be eliminated.
+  // Execution and the next decision always start with fresh occupation data.
+  const owners = new Set(Object.values(s.towns).map((town) => town.owner));
+  if (s.players.every((player) => !player.alive || owners.has(player.id)))
+    withPlanningFrame(s, () => finish(true));
+  else finish(false);
 }
 export function execute(s: Game, c: Command, preview = false) {
   const p = s.players[s.active],

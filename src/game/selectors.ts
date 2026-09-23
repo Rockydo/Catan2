@@ -830,12 +830,16 @@ let lastIncome: Record<number, Stock> | undefined;
 // Within a decision, immutable state and counterparty views share forecasts.
 // Outside that frame, the value signature guards the retained last result.
 let incomeFrame: WeakMap<Game, Record<number, Stock>> | undefined;
-function createPlanningIndex(source: Game): PlanningIndex {
+function createPlanningIndex(
+  source: Game,
+  shared?: PlanningIndex,
+): PlanningIndex {
   // A movement check needs tile occupancy, while a stock quote may need only
   // towns. Build each immutable index on demand instead of grouping the full
   // empire for every short read scope. One unit array serves all requested views.
-  let units: Piece[] | undefined;
-  const unitRecords = () => (units ??= pieceValues(source.pieces));
+  let units: readonly Piece[] | undefined;
+  const unitRecords = () =>
+    (units ??= shared?.units ?? pieceValues(source.pieces));
   let towns: PlanningIndex["towns"] | undefined;
   let vertices: PlanningIndex["vertices"] | undefined;
   let pieces: PlanningIndex["pieces"] | undefined;
@@ -865,6 +869,7 @@ function createPlanningIndex(source: Game): PlanningIndex {
       ));
     },
     get pieces() {
+      if (shared) return shared.pieces;
       if (!pieces) {
         pieces = new Map();
         for (const unit of unitRecords()) {
@@ -875,11 +880,13 @@ function createPlanningIndex(source: Game): PlanningIndex {
       return pieces;
     },
     get pieceOrder() {
+      if (shared) return shared.pieceOrder;
       return (pieceOrder ??= new Map(
         unitRecords().map((unit, i) => [unit, i]),
       ));
     },
     get tiles() {
+      if (shared) return shared.tiles;
       if (!tiles) {
         tiles = new Map();
         for (const unit of unitRecords()) {
@@ -914,9 +921,26 @@ export function reusePlanningFrame<T>(source: Game, run: () => T): T {
     : withPlanningFrame(source, run);
 }
 export function withPlanningFrame<T>(source: Game, run: () => T): T {
+  return planningFrame(source, run);
+}
+/** Read a related view while the enclosing frame's troop records are unchanged.
+ * Other indexes and memoized values stay fresh, including diplomacy/production.
+ * Both callers must finish before any troop is added, removed or edited. */
+export function withSharedPiecePlanningFrame<T>(source: Game, run: () => T): T {
+  return planningFrame(
+    source,
+    run,
+    planningIndex?.source.pieces === source.pieces ? planningIndex : undefined,
+  );
+}
+function planningFrame<T>(
+  source: Game,
+  run: () => T,
+  shared?: PlanningIndex,
+): T {
   const previous = incomeFrame;
   const previousIndex = planningIndex;
-  planningIndex = createPlanningIndex(source);
+  planningIndex = createPlanningIndex(source, shared);
   incomeFrame = new WeakMap();
   try {
     return run();

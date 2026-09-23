@@ -249,7 +249,7 @@ Regression coverage includes nearby guild selection, changing garrisons, isolate
 
 ## Remaining work
 
-After the forecast and movement-read changes, a fresh worker-only profile retained the first 82 original Round 32 orders and took 3.32 seconds across 24 batches, versus 3.59 seconds in the previous profile. Enumerating troops in fresh execution scopes and constructing production fingerprints remain prominent costs. Threat assessment, military planning and emergency-coalition strength updates also remain measurable; their inclusive timings overlap.
+The latest concentrated-army replay reached the same human decision in 21.92 seconds, while the 2,000-tile, 60-decision comparison remained near 33.6 seconds. The last crowded-map camera audit still measured approximately 33 ms p95 frame intervals at 2,000 tiles. Further profiling should focus on those larger distributed campaigns and remaining rendering work rather than assume the large-stack improvement applies everywhere.
 
 The wider performance goal remains open. Production signatures, large-map military/economic planning and publication/rendering remain measurable costs. Dense-map terrain and army painting remain measurable costs even after caching town and resource artwork. Further changes must preserve complete AI decisions, game rules, visual clarity and existing saves.
 
@@ -303,3 +303,17 @@ The Round 32 browser replay retained every one of its 485 orders and the complet
 All 1,372 unit tests and 66 browser scenarios passed across Firefox, Chromium and mobile. The browser checks covered large-save quota fallback, refresh and export/import, recovery from damaged primary saves, cross-tab protection, worker batching and pause/resume, recruitment beside resource-free terrain, seasonal forecasts and the illustrated rulebook.
 
 The deployed build passed all 12 production HTTP checks and 12 additional Chromium save/recruitment scenarios in a disposable profile. The player's live campaign was not opened or modified.
+
+## Post-order troop reads and duplicate threats
+
+After an order, siege cleanup, alliance pruning and coalition strength checks can now share troop indexes. This scope starts after execution and ends before the next decision. It is used only when every living faction still owns a town, so cleanup cannot remove an eliminated faction's troops. Elimination retains independent reads. Related views share troop lists and indexes only; stores, production, diplomacy and other cached values remain separate. Withdrawal checks use the same current tile occupation rather than enumerating every troop for each faction on each withdrawal tile.
+
+Collector safety groups identical movement threats by origin, owner, land/sea domain and base speed. Colonist safety expands an armed stack's neighboring tiles once. These checks ask whether a threat exists, not how strong it is. Every unit still contributes to combat power, losses, recruitment, transports and strategic strength. Threat grouping retains the original handling of civilians, embarked troops, seasonal surfaces, alliances and distinct movement ranges, and lasts only for the current calculation.
+
+The 540-tile, 14,695-unit browser replay completed the same 485 orders with the same final hash in 21.92 seconds, compared with a fresh baseline of 28.17 seconds. Worker time fell from 23.02 to 17.99 seconds, and main-thread task time from 7.96 to 6.37 seconds. Faster planning fit the same orders into 107 publications instead of 138; the existing batch limits and decision checks were unchanged. Both runs stopped at the same human casualty decision, had 16.7 ms frame p95 and reported no errors or long main-thread tasks.
+
+The earlier complete Round 31 turn retained all 144 commands and its complete final state, taking 17.78 seconds versus the previous reference's 18.71 seconds. A fresh paired 2,000-tile comparison retained all 60 commands and the final hash, taking 33.43 seconds before and 33.62 seconds after, effectively unchanged. This pass primarily benefits concentrated large armies; it does not establish a general speedup for dispersed larger maps.
+
+Validation passed all 1,379 unit tests. The browser audit covered 114 scenarios across Firefox, Chromium and mobile. The initial run passed 113; one mobile naval test attempted to click the map under the open force inspector. It now closes that panel through its normal button before inspecting the siege. All nine naval scenarios passed on recheck. Regression tests also compare every threat result with the original per-unit calculation, preserve ordered colonist danger sets, verify one query per distinct threat, and compare complete post-order states against independent cleanup reads, including faction elimination.
+
+The deployed build passed all 12 production HTTP checks and 12 additional Chromium scenarios covering AI batching, pause/resume, naval sieges and large-save recovery. The player's live browser campaign was not opened or modified.

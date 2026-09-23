@@ -34,6 +34,7 @@ import {
   hostileAt,
   ownTowns,
   withPlanningFrame,
+  reusePlanningFrame,
 } from "./selectors";
 
 export function selected(
@@ -105,13 +106,15 @@ export function removePieces(
   }
   for (const id of removed) delete s.pieces[id];
 }
-export function breakSieges(s: Game) {
+export function breakSieges(s: Game, options?: { reuseFrame: boolean }) {
   if (!Object.keys(s.sieges).length && !Object.keys(s.towerSieges ?? {}).length)
     return;
   // Movement, battles and diplomacy call this on mutable drafts. Build a
   // fresh local index once, after those mutations; only sieges and logs change
   // during this read. Never retain an occupation index across military orders.
-  withPlanningFrame(s, () => checkSieges(s));
+  // The engine may instead join its fresh, immutable-troop cleanup scope.
+  const frame = options?.reuseFrame ? reusePlanningFrame : withPlanningFrame;
+  frame(s, () => checkSieges(s));
 }
 function checkSieges(s: Game) {
   for (const [id, siege] of Object.entries(s.towerSieges ?? {})) {

@@ -10,6 +10,7 @@ import {
   inventory,
   nearestTown,
   withPlanningFrame,
+  withSharedPiecePlanningFrame,
   reusePlanningFrame,
   allPieces,
   income,
@@ -165,4 +166,52 @@ it("planned movement shares a read scope but creates a fresh one after every exe
   expect(result.state.pieces[unit.id].tile).toBe("2,0");
   expect(JSON.stringify(s)).toBe(initial);
   expect(allPieces(s)).toEqual([unit]);
+});
+
+it("related read views share troops but not changed stores or diplomacy, and restore their parent after errors", () => {
+  const { s, home } = maritimeFixture();
+  piece(s, "0,0", 0, "cavalry");
+  let scans = 0;
+  s.pieces = new Proxy(s.pieces, {
+    ownKeys(target) {
+      scans++;
+      return Reflect.ownKeys(target);
+    },
+  });
+  withPlanningFrame(s, () => {
+    const units = allPieces(s),
+      initialStock = inventory(s),
+      initialIncome = income(s);
+    const child = {
+      ...s,
+      towns: structuredClone(s.towns),
+      alliances: [
+        { id: "changed", members: [0, 1], threat: 2, lockedUntil: 10 },
+      ],
+    };
+    child.towns[home.id].stock.gold = 10;
+    expect(() =>
+      withSharedPiecePlanningFrame(child, () => {
+        expect(allPieces(child)).toBe(units);
+        expect(ownPieces(child)).toEqual(ownPieces(s));
+        expect(piecesAt(child, "0,0")).toEqual(piecesAt(s, "0,0"));
+        expect(inventory(child).gold).not.toBe(initialStock.gold);
+        expect(scans).toBe(1);
+        throw Error("stop child read");
+      }),
+    ).toThrow("stop child read");
+    expect(allPieces(s)).toBe(units);
+    expect(inventory(s)).toEqual(initialStock);
+    expect(income(s)).toEqual(initialIncome);
+
+    const changed = { ...child, pieces: { ...s.pieces } };
+    piece(changed, "1,0", 1, "heavy");
+    withSharedPiecePlanningFrame(changed, () => {
+      expect(allPieces(changed)).toHaveLength(2);
+      expect(piecesAt(changed, "1,0")).toHaveLength(1);
+    });
+    expect(piecesAt(s, "1,0")).toEqual([]);
+  });
+  piece(s, "1,0", 0, "cavalry");
+  expect(allPieces(s)).toHaveLength(2);
 });
