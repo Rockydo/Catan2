@@ -173,7 +173,11 @@ it("planned movement shares a read scope but creates a fresh one after every exe
       : undefined;
   });
   expect(result.ok, result.error).toBe(true);
-  expect(new Set(scans).size).toBe(3);
+  // The first move substitutes private records; the second already owns them.
+  // The ordered list may survive, while the location checks above must refresh.
+  expect(new Set(scans).size).toBe(2);
+  expect(scans[0]).not.toBe(scans[1]);
+  expect(scans[1]).toBe(scans[2]);
   expect(result.state.pieces[unit.id].tile).toBe("2,0");
   expect(JSON.stringify(s)).toBe(initial);
   expect(allPieces(s)).toEqual([unit]);

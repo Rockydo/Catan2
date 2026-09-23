@@ -134,5 +134,7 @@ test("siege research can select a land army standing on winter sea ice", async (
   await dialog
     .getByRole("button", { name: "Play research", exact: true })
     .click();
-  expect((await saved(page)).sieges[`0:${enemy.id}`].progress).toBe(3);
+  await expect
+    .poll(async () => (await saved(page)).sieges[`0:${enemy.id}`]?.progress)
+    .toBe(3);
 });

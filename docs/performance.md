@@ -891,3 +891,38 @@ New regressions cover malformed compact plans and columns, repeated-value expans
 All 1,623 unit tests passed. After the final version-constant and historical-fixture adjustment, all 51 affected tests passed again. All 33 staging browser scenarios passed across Chromium, Firefox and mobile. A compatibility replay loaded the original JSON and all eight compact formats three times each, preserving the exact complete campaign on all 27 refreshes. Type checking, formatting, the build and whitespace checks passed.
 
 The local deployment passed all 12 production HTTP checks and 11 additional Chromium save, transport and worker scenarios. Previous hashed assets remain available to already-open sessions. Tests used exported copies and disposable browser profiles. Neither the original exports nor the playing campaign were modified. The broader performance goal remains active.
+
+
+## Retaining ordered troops from planning through movement validation
+
+An AI movement batch now retains the troop record list already read by its planner until validation of the immediately following uncontested move. Copy-on-write still creates private records for selected units and their passengers. If any records were copied, the list's pointers are refreshed in the same order before validation; if all selected records were already private, the list is reused directly. Carrier detachment also reads this list rather than enumerating the whole dictionary again. Location, ownership, carrier, occupation and production indexes are rebuilt for the validation and post-movement scopes as before.
+
+This only crosses the narrow interval between an unchanged planning view and its classified uncontested move. Recruitment, removal, combat and other orders do not borrow that list for execution. Cleanup that can eliminate a faction still drops it. No persistent mutable-dictionary cache or history of troop arrays is added. A two-move regression now requires one full troop enumeration for the initial decision, instead of three across the decision and two movement validations.
+
+The new `scripts/movement-performance.ts` diagnostic executes 32 prescribed independent moves. Naval cases include 32 tier-four convoy ships with eight passengers each. These are complete engine batches including copying, validation and cleanup, not AI-decision or browser-rendering measurements. Medians of three samples:
+
+| Movement batch | Previous build | Updated build |
+| --- | ---: | ---: |
+| Land, 15,000 other troops | 69.29 ms | 50.77 ms |
+| Land, 60,000 other troops | 270.30 ms | 131.10 ms |
+| Fleet, 15,000 other troops | 170.36 ms | 71.48 ms |
+| Fleet, 60,000 other troops | 743.99 ms | 314.15 ms |
+
+Every order and complete final-state hash matched the reference checkout, and inputs remained unchanged. These fixture gains should not be treated as whole-turn improvements.
+
+| Browser AI replay | Previous build | Updated build | Exact comparison |
+| --- | ---: | ---: | --- |
+| Latest Round 32 export, through human casualty prompt | 13.98 s | 13.46 s | 485 orders and complete final state |
+| Round 31 export, through human casualty prompt | 6.07 s | 6.08 s | 153 orders and complete final state |
+
+The latest sample improved by about 4%; the older campaign was unchanged. Frame p95 stayed near 16.8 ms, with no long main-thread tasks or browser/worker errors in these replays. Both samples use AI seat 2 and stop before the human casualty response, not at the end of the entire turn.
+
+New tests compare complete intermediate positions and production, stock, strength and occupation reads with independently executed commands. They cover repeated moves after record copies, intervening recruitment, reordered troop IDs, boarding and landing by other transports, moved passengers, and combat removing civilian defenders. Existing frozen-input, rollback, carrier movement, alliance, season and elimination regressions also exercise this path.
+
+The separate Node replay retained all 485 orders and the same complete state, taking 10.89 seconds before and 10.24 seconds after. Sampled troop-enumeration CPU time fell from about 973 ms to 529 ms. Those profile categories are not additional savings to add to the browser results. Production-signature construction, forecasts and remaining troop reads are still measurable bottlenecks; the broader goal remains active.
+
+All 1,626 unit tests passed. The independent planning audit retained all 13,206 proposals across 128 scenarios, and all 96 trade comparisons matched. Type checking, formatting, the production build and whitespace checks passed.
+
+The expanded browser run passed 212 of 213 scenarios initially. The remaining research test read the localStorage mirror before the background save completed, although the interface already showed the correct siege. Its assertion now waits for the persisted progression, retaining the same expected value and timeout. All 15 season-navigation scenarios then passed across Chromium, Firefox and mobile; five additional repetitions of the affected Chromium case also passed.
+
+The verified build was published locally with previous hashed assets retained. All 12 production HTTP checks and 16 Chromium save, transport, worker and seasonal-navigation scenarios passed after deployment. All checks used exported copies or disposable fixtures and profiles. The playing campaign and source exports were not modified. The broader performance goal remains active.

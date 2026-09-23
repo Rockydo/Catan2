@@ -320,10 +320,10 @@ it("shares finished cleanup's troop index with the next decision, but rebuilds i
   expect(result.ok, result.error).toBe(true);
   expect(JSON.stringify(result.state)).toBe(JSON.stringify(expected));
   expect(JSON.stringify(s)).toBe(before);
-  // Initial decision and two movement validations. Each final cleanup keeps
-  // the validated record list but creates fresh location/production indexes.
-  // The next decision shares those current reads. Previously this took five.
-  expect(scans).toBe(3);
+  // The initial decision enumerates once. Both movement validations retain
+  // the ordered records with refreshed copies and fresh derived indexes.
+  // The next decision shares those current reads. Previously this took three.
+  expect(scans).toBe(1);
 });
 
 it("next decisions see current stores, new recruits and a coalition formed during cleanup", () => {
@@ -478,4 +478,61 @@ it("movement cleanup drops the retained list before eliminating a faction", () =
     return undefined;
   });
   expect(result.ok, result.error).toBe(true);
+});
+
+it("keeps copied troop references current through repeated moves and intervening recruitment", () => {
+  const { s, home } = maritimeFixture();
+  const a = piece(s, "0,0", 0, "cavalry", 4),
+    b = piece(s, "0,0", 0, "cavalry", 4);
+  // Original dictionary order is significant to both decisions and casualties.
+  delete s.pieces[a.id];
+  s.pieces[a.id] = a;
+  const result = comparePlan(s, [
+    { type: "move", ids: [a.id], to: "1,0" },
+    { type: "recruit", town: home.id, tile: "0,0", kind: "heavy", count: 4 },
+    { type: "move", ids: [b.id], to: "1,0" },
+    { type: "move", ids: [a.id, b.id], to: "2,0" },
+    { type: "move", ids: [a.id], to: "3,0" },
+  ]);
+  expect(allPieces(result.state)).toHaveLength(6);
+  expect(Object.keys(result.state.pieces).slice(0, 2)).toEqual([b.id, a.id]);
+  expect(result.state.pieces[a.id].moved).toBe(3);
+  expect(result.state.pieces[b.id].moved).toBe(2);
+  expect(s.pieces[a.id].moved).toBe(0);
+});
+it("refreshes troop lists when another transport boards or lands between fleet moves", () => {
+  const { s } = maritimeFixture();
+  for (const id of ["0,0", "1,0"]) s.tiles[id].resource = "water";
+  const moving = piece(s, "0,0", 0, "convoy", 4),
+    boarding = piece(s, "0,0", 0, "convoy", 4),
+    landing = piece(s, "1,0", 0, "convoy", 4),
+    traveler = piece(s, "0,0", 0, "merchant", 4),
+    recruit = piece(s, "-1,0", 0, "cavalry", 4),
+    arriving = piece(s, "1,0", 0, "heavy", 4);
+  traveler.carrier = moving.id;
+  arriving.carrier = landing.id;
+  const result = comparePlan(s, [
+    { type: "move", ids: [moving.id], to: "1,0" },
+    { type: "load", ids: [recruit.id], ships: [boarding.id] },
+    { type: "unload", ships: [landing.id], to: "2,0" },
+    { type: "move", ids: [moving.id], to: "0,0" },
+    { type: "move", ids: [moving.id], to: "1,0" },
+  ]);
+  expect(result.state.pieces[traveler.id].tile).toBe("1,0");
+  expect(result.state.pieces[recruit.id].carrier).toBe(boarding.id);
+  expect(result.state.pieces[arriving.id].tile).toBe("2,0");
+  expect(result.state.pieces[arriving.id].carrier).toBeUndefined();
+  expect(s.pieces[recruit.id].tile).toBe("-1,0");
+});
+it("abandons borrowed membership after combat removes civilian defenders", () => {
+  const { s } = maritimeFixture();
+  const attacker = piece(s, "0,0", 0, "cavalry", 4),
+    civilian = piece(s, "1,0", 1, "merchant", 2);
+  const result = comparePlan(s, [
+    { type: "move", ids: [attacker.id], to: "1,0" },
+    { type: "move", ids: [attacker.id], to: "2,0" },
+  ]);
+  expect(result.state.pieces[civilian.id]).toBeUndefined();
+  expect(result.state.pieces[attacker.id].tile).toBe("2,0");
+  expect(s.pieces[civilian.id]).toBe(civilian);
 });

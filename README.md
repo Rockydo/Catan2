@@ -172,6 +172,16 @@ SAVE_PATH=/path/to/campaign.json LABEL=local npx tsx scripts/production-performa
 
 This checks every dice total from 2 through 12 on independent copies, records full-state hashes and times the resource distribution. It also records ordered deliveries for all seasons and forecasts over several roll counts. Five independent read scopes measure the size and construction cost of the production cache key. `SOURCE_ROOT` selects an older checkout; `EXPECT_PATH` requires exact agreement on deliveries, forecasts and resulting campaign states, while timings and internal key formats may differ. It never writes to the campaign export or browser storage.
 
+To compare dense land and fleet movement batches against a prior checkout:
+
+```sh
+SOURCE_ROOT=/path/to/reference LABEL=before npx tsx scripts/movement-performance.ts
+EXPECT_PATH=test-artifacts/movement-performance-before.json LABEL=after \
+  npx tsx scripts/movement-performance.ts
+```
+
+This measures 32 prescribed movement transactions amid 15,000 and 60,000 other troops, including loaded convoy ships, validation and cleanup. It checks every order, the complete resulting state and unchanged inputs. It isolates execution cost, not AI thinking or browser rendering. `UNITS`, `ORDERS` and `SAMPLES` adjust the fixtures.
+
 To measure compression and exact save recovery without a browser:
 
 ```sh

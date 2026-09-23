@@ -407,22 +407,36 @@ export function peacefulMove(s: Game, c: Command): boolean {
     !hostileAt(s, c.to, first.owner, first.naval)
   );
 }
-function detachMovingPieces(original: Game, draft: Game, command: Command) {
+function detachMovingPieces(
+  original: Game,
+  draft: Game,
+  command: Command,
+  units?: readonly Piece[],
+): readonly Piece[] | undefined {
+  let replaced = false;
   const carriers = new Set<string>();
   for (const id of command.ids ?? []) {
     const unit = draft.pieces[id];
     if (!unit) continue;
     if (unit.naval) carriers.add(id);
-    if (unit === original.pieces[id]) draft.pieces[id] = { ...unit };
+    if (unit === original.pieces[id]) {
+      draft.pieces[id] = { ...unit };
+      replaced = true;
+    }
   }
   if (carriers.size)
-    for (const unit of Object.values(draft.pieces))
+    for (const unit of units ?? Object.values(draft.pieces))
       if (
         unit.carrier &&
         carriers.has(unit.carrier) &&
         unit === original.pieces[unit.id]
-      )
+      ) {
         draft.pieces[unit.id] = { ...unit };
+        replaced = true;
+      }
+  // Only references to copied records change. Membership and dictionary order
+  // are unchanged between the planner read and this uncontested move.
+  return replaced ? units?.map((unit) => draft.pieces[unit.id]) : units;
 }
 function detachMilitaryPieces(original: Game, draft: Game, command: Command) {
   const ids = new Set([...(command.ids ?? []), ...(command.ships ?? [])]);
@@ -489,29 +503,29 @@ export function applyCommandPlan(
       return frame(view, () => {
         const command = choose(view, commands);
         if (command) payload(command);
-        return {
-          command,
-          moving:
-            !!command &&
-            !detached &&
-            !LOCAL_RECORD_COMMANDS.has(command.type) &&
-            peacefulMove(view, command),
-        };
+        const moving =
+          !!command &&
+          !detached &&
+          !LOCAL_RECORD_COMMANDS.has(command.type) &&
+          peacefulMove(view, command);
+        return { command, moving, units: moving ? allPieces(view) : undefined };
       });
     };
     let selection = select();
     for (;;) {
-      const { command, moving } = selection;
+      const { command, moving, units } = selection;
       if (!command) break;
       // Planning caches are keyed by Game identity. Execution gets a fresh key
       // before changing any draft data, just as an ordinary transaction does.
       const next = { ...view };
+      let movementUnits: readonly Piece[] | undefined;
       if (!detached && command.type === "guild-order")
         detachSuppliedPieces(state, next, command);
       if (!detached && LOCAL_MILITARY_COMMANDS.has(command.type))
         detachMilitaryPieces(state, next, command);
       if (!detached && !LOCAL_RECORD_COMMANDS.has(command.type)) {
-        if (moving) detachMovingPieces(state, next, command);
+        if (moving)
+          movementUnits = detachMovingPieces(state, next, command, units);
         else {
           Object.assign(
             next,
@@ -526,15 +540,21 @@ export function applyCommandPlan(
           detached = true;
         }
       }
-      advanceCommand(next, command, false, (sharePieces) => {
-        view = { ...next };
-        commands.push(command);
-        // Cleanup has finished. Reuse only its unchanged troop inputs in a
-        // fresh decision view; stores, sieges and diplomacy need new memos.
-        // Finish this read before the loop executes another order. No nested
-        // execution or retained draft index grows with the batch length.
-        selection = select(sharePieces);
-      });
+      advanceCommand(
+        next,
+        command,
+        false,
+        (sharePieces) => {
+          view = { ...next };
+          commands.push(command);
+          // Cleanup has finished. Reuse only its unchanged troop inputs in a
+          // fresh decision view; stores, sieges and diplomacy need new memos.
+          // Finish this read before the loop executes another order. No nested
+          // execution or retained draft index grows with the batch length.
+          selection = select(sharePieces);
+        },
+        movementUnits,
+      );
     }
     return { ok: true, state: commands.length ? view : state, commands };
   } catch (error) {
@@ -670,11 +690,19 @@ function advanceCommand(
   c: Command,
   preview: boolean,
   afterCleanup?: (sharePieces: boolean) => void,
+  movementUnits?: readonly Piece[],
 ) {
   if (s.phase === "military") s.phase = "economy";
   s.actions++;
   let movedPieces: readonly Piece[] | undefined;
-  executeOrder(s, c, false, true, (units) => (movedPieces = units));
+  executeOrder(
+    s,
+    c,
+    false,
+    true,
+    (units) => (movedPieces = units),
+    movementUnits,
+  );
   const finish = (sharePieces: boolean) => {
     breakSieges(s, { reuseFrame: sharePieces });
     eliminate(s);
@@ -702,6 +730,7 @@ function executeOrder(
   preview = false,
   deferFinalSiegeCleanup = false,
   afterPeacefulMove?: (units: readonly Piece[]) => void,
+  movementUnits?: readonly Piece[],
 ) {
   const p = s.players[s.active],
     actor = c.actor ?? s.active;
@@ -862,7 +891,13 @@ function executeOrder(
     return;
   }
   if (diplomacyCommand(s, c)) return;
-  if (militaryCommand(s, c, { deferFinalSiegeCleanup, afterPeacefulMove }))
+  if (
+    militaryCommand(s, c, {
+      deferFinalSiegeCleanup,
+      afterPeacefulMove,
+      movementUnits,
+    })
+  )
     return;
   if (guildCommand(s, c)) return;
   if (c.type === "road" || c.type === "route") {
