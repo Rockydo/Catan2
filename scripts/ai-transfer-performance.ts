@@ -54,6 +54,10 @@ try {
         jsonMs: 0,
         jsonCalls: 0,
         postMs: 0,
+        maxPostMs: 0,
+        uploadChunks: 0,
+        uploads: [],
+        taskTimes: [],
         fullRequests: 0,
         continuedRequests: 0,
         savePostMs: 0,
@@ -121,16 +125,26 @@ try {
           }
           if (p.done) return;
           if (!p.start) p.start = performance.now();
-          if (data.state) p.fullRequests++;
-          else p.continuedRequests++;
           const t = performance.now();
+          if (data.state) {
+            p.fullRequests++;
+            p.uploads.push({ start: t });
+          } else if (data.upload === "pieces") p.uploadChunks++;
+          else if (!data.upload) p.continuedRequests++;
           super.postMessage(data);
-          p.postMs += performance.now() - t;
+          const elapsed = performance.now() - t;
+          p.postMs += elapsed;
+          p.maxPostMs = Math.max(p.maxPostMs, elapsed);
+          if ((data.state && !data.upload) || data.upload === "ready")
+            p.uploads.at(-1).end = performance.now();
         }
       };
       new PerformanceObserver((list) => {
         if (p.start && !p.done)
-          for (const e of list.getEntries()) p.longs.push(e.duration);
+          for (const e of list.getEntries()) {
+            p.longs.push(e.duration);
+            p.taskTimes.push({ start: e.startTime, duration: e.duration });
+          }
       }).observe({ type: "longtask" });
       let last = performance.now();
       const tick = (now: number) => {
@@ -237,6 +251,17 @@ try {
     jsonMs: probe.jsonMs,
     jsonCalls: probe.jsonCalls,
     postMs: probe.postMs,
+    maxPostMs: probe.maxPostMs,
+    uploadChunks: probe.uploadChunks,
+    uploadMs: probe.uploads.reduce(
+      (n: number, u: any) => n + (u.end - u.start),
+      0,
+    ),
+    uploadLongTasks: probe.taskTimes.filter((t: any) =>
+      probe.uploads.some(
+        (u: any) => t.start < u.end && t.start + t.duration > u.start,
+      ),
+    ),
     savePostMs: probe.savePostMs,
     saveFullRequests: probe.saveFullRequests,
     saveDeltaRequests: probe.saveDeltaRequests,

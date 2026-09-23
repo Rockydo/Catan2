@@ -1,5 +1,6 @@
 import { applySnapshotDelta } from "./game/snapshot-delta";
-import type { AIReply } from "./game/ai-session";
+import type { AIReply, AIRequest } from "./game/ai-session";
+import { uploadAIRequest } from "./ui/ai-upload";
 import { sharePublishedSnapshot } from "./ui/publish-snapshot";
 import { routineAIOrder } from "./game/ai-protocol";
 import { terrainName } from "./game/maritime";
@@ -352,14 +353,6 @@ export default function App({
     aiBase.current = null;
     // Retain a token only after publication, never merely after receipt. A pause
     // during the presentation delay therefore resends the visible snapshot.
-    worker.postMessage({
-      ...(base?.worker === worker && base.game === snapshot
-        ? { baseRequest: base.request }
-        : { state: snapshot }),
-      request,
-      delta: true,
-      batchMoves: aiSpeed <= 20,
-    });
     let resynced = false;
     const timeout = setTimeout(() => {
       if (!cancelled) {
@@ -369,6 +362,27 @@ export default function App({
         stopWorker();
       }
     }, 20000);
+    let upload = 0;
+    const send = (message: AIRequest) => {
+      const token = ++upload;
+      const active = () =>
+        !cancelled &&
+        token === upload &&
+        gameRef.current === snapshot &&
+        aiWorker.current === worker;
+      void uploadAIRequest(worker, message, active).catch((error: unknown) => {
+        if (!active()) return;
+        pending = false;
+        clearTimeout(timeout);
+        stopWorker();
+        setBusy(false);
+        setPaused(true);
+        console.error("AI snapshot transfer failed", error);
+        setToast(
+          `AI paused: ${error instanceof Error ? error.message : String(error)}`,
+        );
+      });
+    };
     worker.onmessage = (event: MessageEvent<AIReply>) => {
       if (
         cancelled ||
@@ -378,7 +392,7 @@ export default function App({
         return;
       if (event.data.resync && !resynced) {
         resynced = true;
-        worker.postMessage({
+        send({
           state: snapshot,
           request,
           delta: true,
@@ -445,6 +459,14 @@ export default function App({
         );
       }
     };
+    send({
+      ...(base?.worker === worker && base.game === snapshot
+        ? { baseRequest: base.request }
+        : { state: snapshot }),
+      request,
+      delta: true,
+      batchMoves: aiSpeed <= 20,
+    });
     return () => {
       cancelled = true;
       clearTimeout(presentationTimer);

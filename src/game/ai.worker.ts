@@ -1,5 +1,8 @@
-import { AISession, type AIRequest } from "./ai-session";
+import { AISession } from "./ai-session";
+import { AIInputQueue, type AIInput } from "./ai-input";
 const session = new AISession();
-self.onmessage = (event: MessageEvent<AIRequest>) => {
-  self.postMessage(session.handle(event.data));
+const input = new AIInputQueue((message) => session.handle(message));
+self.onmessage = (event: MessageEvent<AIInput>) => {
+  const reply = input.receive(event.data);
+  if (reply) self.postMessage(reply);
 };
