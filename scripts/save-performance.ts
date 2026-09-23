@@ -5,12 +5,13 @@ import {
   compress,
   expand,
   exportCompact,
+  exportArchive,
   importSave,
 } from "../src/storage/codec";
 
 // A disposable copy of any legacy or compressed export. No browser storage.
 if (!process.env.SAVE_PATH) throw Error("Set SAVE_PATH to a campaign export.");
-const source = readFileSync(process.env.SAVE_PATH, "utf8");
+const source = readFileSync(process.env.SAVE_PATH);
 let start = performance.now();
 const game = await importSave(source);
 const loadMs = performance.now() - start;
@@ -28,7 +29,8 @@ const compressionMs = performance.now() - start;
 start = performance.now();
 const restored = deserialize(await expand(bytes));
 const reloadMs = performance.now() - start;
-const exported = await exportCompact(game);
+const exported = await exportArchive(game);
+const textExport = await exportCompact(game);
 if (
   !isDeepStrictEqual(restored, game) ||
   JSON.stringify(restored) !== JSON.stringify(game) ||
@@ -50,7 +52,8 @@ console.log(
       packedJsonBytes: Buffer.byteLength(packed),
       legacyStoredBytes: legacyBytes.byteLength,
       storedBytes: bytes.byteLength,
-      exportBytes: Buffer.byteLength(exported),
+      textExportBytes: Buffer.byteLength(textExport),
+      exportBytes: exported.byteLength,
       exactRoundTrip: true,
     },
     null,

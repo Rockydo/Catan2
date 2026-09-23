@@ -3,6 +3,7 @@ import type { Game } from "../game/types";
 
 // Limit expanded input too: a small compressed file can conceal a huge payload.
 export const MAX_SAVE_BYTES = 128_000_000;
+export type SaveInput = string | Uint8Array<ArrayBuffer>;
 export async function compress(text: string): Promise<Uint8Array<ArrayBuffer>> {
   const blob = new Blob([text]);
   // Include the envelope and table metadata in the decompressed byte budget.
@@ -58,7 +59,23 @@ export async function exportCompact(game: Game): Promise<string> {
     data: btoa(parts.join("")),
   });
 }
-export async function unpackSave(text: string): Promise<string> {
+/** Portable binary archive. The gzip payload includes the versioned envelope
+ * and checksum; avoid base64's extra third and its intermediate text copies. */
+export async function exportArchive(
+  game: Game,
+): Promise<Uint8Array<ArrayBuffer>> {
+  return compress(serializePacked(game));
+}
+export async function unpackSave(input: SaveInput): Promise<string> {
+  if (typeof input !== "string") {
+    if (input.byteLength > MAX_SAVE_BYTES)
+      throw new Error("Save files must be under 128 MB.");
+    // Detect content, not the extension, so renamed files and old JSON exports
+    // still import through the same file picker.
+    if (input[0] === 0x1f && input[1] === 0x8b) return expand(input);
+    input = new TextDecoder("utf-8", { fatal: true }).decode(input);
+  }
+  const text = input;
   if (text.length > MAX_SAVE_BYTES)
     throw new Error("Save files must be under 128 MB.");
   // The normal legacy header avoids parsing a large game twice.
@@ -82,6 +99,6 @@ export async function unpackSave(text: string): Promise<string> {
   return expand(bytes);
 }
 
-export async function importSave(text: string): Promise<Game> {
-  return deserialize(await unpackSave(text));
+export async function importSave(input: SaveInput): Promise<Game> {
+  return deserialize(await unpackSave(input));
 }

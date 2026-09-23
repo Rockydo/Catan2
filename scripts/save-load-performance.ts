@@ -8,7 +8,7 @@ import { hash } from "../src/game/world";
 // Compare original JSON, the first template format, and current table packing.
 // Uses a disposable browser profile, never the player's storage or export.
 if (!process.env.SAVE_PATH) throw Error("Set SAVE_PATH to a campaign export.");
-const game = await importSave(readFileSync(process.env.SAVE_PATH, "utf8"));
+const game = await importSave(readFileSync(process.env.SAVE_PATH));
 const expected = JSON.stringify(game);
 const templateGame = packGame(game);
 const template = JSON.stringify({

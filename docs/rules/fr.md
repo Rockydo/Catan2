@@ -447,7 +447,7 @@ Raccourcis : B Construction, F Forces, T Échanges, R Développement, E Explorat
 
 ### Sauvegarde, langue et jeu local
 
-Le jeu sauvegarde automatiquement dans ce navigateur pour cette adresse. Exportez une sauvegarde pour une copie portable et importez-la pour continuer ailleurs. Un autre navigateur, hôte ou port utilise un stockage différent. Exportez avant d’effacer les données du navigateur ou remplacer une partie. Le jeu propose des adversaires IA et le multijoueur local sur le même écran, pas de multijoueur en ligne.
+Le jeu sauvegarde automatiquement dans ce navigateur pour cette adresse. Exportez une sauvegarde pour une copie compacte .catane et importez-la pour continuer ailleurs. Les anciennes sauvegardes JSON restent compatibles. La compression conserve toutes les données de la campagne. Un autre navigateur, hôte ou port utilise un stockage différent. Exportez avant d’effacer les données du navigateur ou remplacer une partie. Le jeu propose des adversaires IA et le multijoueur local sur le même écran, pas de multijoueur en ligne.
 Choisissez English ou Français au menu principal ou dans les paramètres de campagne. La langue ne change que l’affichage, jamais carte, tirages ou règles de sauvegarde. Ce guide existe dans les deux langues. Cherchez un terme, consultez les coûts exacts du catalogue et manipulez les exemples de production et de siège. Vous pouvez imprimer le guide complet ou l’enregistrer en PDF depuis le navigateur.
 Afficher les climats, dans les commandes de carte, colore les zones climatiques. L’inspection d’une tuile indique son climat, sa famille de terrain et sa production complète.
 

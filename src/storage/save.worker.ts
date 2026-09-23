@@ -1,7 +1,13 @@
 import { deserialize, serialize, serializePacked } from "../game/save";
 import type { Game } from "../game/types";
 import { applySnapshotDelta, type SnapshotDelta } from "../game/snapshot-delta";
-import { compress, expand, exportCompact, importSave } from "./codec";
+import {
+  compress,
+  expand,
+  exportArchive,
+  importSave,
+  type SaveInput,
+} from "./codec";
 import { readRecords, writeRecord, type SaveRecord } from "./database";
 
 export type SaveRequest =
@@ -10,7 +16,7 @@ export type SaveRequest =
   | ({ type: "save" } & (
       { game: Game } | { base: number; delta: SnapshotDelta }
     ))
-  | { type: "import"; text: string };
+  | { type: "import"; text: SaveInput };
 export interface SaveResult {
   mirror?: string;
   fallback?: string;
@@ -86,7 +92,7 @@ async function handle(request: SaveRequest) {
     case "import":
       return importSave(request.text);
     case "export":
-      return exportCompact(request.game);
+      return exportArchive(request.game);
     case "save": {
       if (
         !("game" in request) &&
@@ -141,11 +147,15 @@ let queue = Promise.resolve();
 self.onmessage = (event: MessageEvent<SaveRequest & { request: number }>) => {
   queue = queue.then(async () => {
     try {
-      self.postMessage({
-        request: event.data.request,
-        type: event.data.type,
-        result: await handle(event.data),
-      });
+      const result = await handle(event.data);
+      self.postMessage(
+        {
+          request: event.data.request,
+          type: event.data.type,
+          result,
+        },
+        { transfer: result instanceof Uint8Array ? [result.buffer] : [] },
+      );
     } catch (error) {
       self.postMessage({
         request: event.data.request,

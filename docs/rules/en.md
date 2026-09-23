@@ -445,7 +445,7 @@ Keyboard shortcuts: B Build, F Forces, T Trade, R Research, E Explore, Escape to
 
 ### Save, language and local play
 
-The game autosaves in this browser for this website address. Use Export save for a portable backup and Import save to continue elsewhere. Changing browser, host or port uses a different local store. Export before clearing browser data or replacing a campaign. The game supports single-player AI opponents and local hotseat, not online multiplayer.
+The game autosaves in this browser for this website address. Use Export save for a compact .catane backup and Import save to continue elsewhere. Older JSON saves are still supported. Compression is lossless; all campaign data is preserved. Changing browser, host or port uses a different local store. Export before clearing browser data or replacing a campaign. The game supports single-player AI opponents and local hotseat, not online multiplayer.
 Choose English or Français in the main menu or campaign settings. Language changes only presentation, never your map, random streams or save rules. This guide has the same two languages. Use search for a term, the catalogue for exact prices and the examples to understand production and sieges. You can print the full guide or save it as PDF from the browser.
 Use Show climates in the map controls to color climate regions. Tile inspection shows climate, terrain family and full base yield.
 

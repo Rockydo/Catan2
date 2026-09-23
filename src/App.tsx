@@ -127,11 +127,11 @@ const PHASE_NAMES: Record<Game["phase"], string> = {
 };
 async function downloadGame(game: Game) {
   const url = URL.createObjectURL(
-    new Blob([await exportCampaign(game)], { type: "application/json" }),
+    new Blob([await exportCampaign(game)], { type: "application/gzip" }),
   );
   const a = document.createElement("a");
   a.href = url;
-  a.download = `catane-${game.seed.replace(/[^a-zA-Z0-9_-]/g, "-")}-round-${game.round}.json`;
+  a.download = `catane-${game.seed.replace(/[^a-zA-Z0-9_-]/g, "-")}-round-${game.round}.catane`;
   a.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
@@ -636,7 +636,9 @@ export default function App({
     try {
       if (file.size > 128_000_000)
         throw new Error("Save files must be under 128 MB.");
-      const loaded = await importCampaign(await file.text());
+      const loaded = await importCampaign(
+        new Uint8Array(await file.arrayBuffer()),
+      );
       roll.reset(loaded);
       townAlerts.reset();
       setAlertFocus(null);
@@ -698,7 +700,7 @@ export default function App({
       <input
         ref={fileInput}
         type="file"
-        accept=".json,application/json"
+        accept=".catane,.json,.gz,application/json,application/gzip"
         className="sr-only"
         aria-label={tx("Import saved game file")}
         onChange={importFile}

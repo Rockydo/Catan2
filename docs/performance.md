@@ -252,3 +252,18 @@ Regression coverage includes nearby guild selection, changing garrisons, isolate
 After the forecast and movement-read changes, a fresh worker-only profile retained the first 82 original Round 32 orders and took 3.32 seconds across 24 batches, versus 3.59 seconds in the previous profile. Enumerating troops in fresh execution scopes and constructing production fingerprints remain prominent costs. Threat assessment, military planning and emergency-coalition strength updates also remain measurable; their inclusive timings overlap.
 
 The wider performance goal remains open. Production signatures, large-map military/economic planning and publication/rendering remain measurable costs. Dense-map terrain and army painting remain measurable costs even after caching town and resource artwork. Further changes must preserve complete AI decisions, game rules, visual clarity and existing saves.
+
+
+## Binary exports and large-save validation
+
+Portable exports now use `.catane` files containing the existing versioned, checksummed gzip payload directly. Removing the base64 JSON wrapper reduces exported bytes by another 25% and avoids its binary-to-text conversion and intermediate copies. The save worker transfers the finished archive buffer to the UI. Browser autosaves retain the same compressed format and atomic primary/backup transaction.
+
+The importer detects the contents, not the extension. Binary archives, compressed JSON exports and uncompressed historical JSON all remain supported. Import reads bytes and decodes old JSON in the worker. The compressed-input, decompressed-input and reconstructed-data limits remain enforced. Blocked worker construction now activates the same local fallback used after a worker runtime failure, including export and import.
+
+Loading checks passenger capacity only for occupied carriers after validating every unit and carrier reference. It no longer enumerates the entire army again to check empty ships. Reconstructing nested unit records uses fewer temporary arrays while retaining independent objects, original property order and prototype-named data fields.
+
+The latest 540-tile, 322-town, 14,695-unit export measured 2,739,686 bytes as ordinary JSON, 130,043 bytes as the previous compressed JSON export and 97,465 bytes as a binary archive. Complete state equality was checked after each round trip. A separate 240,000-unit growth copy measured 98,972 stored bytes; this synthetic copy duplicates valid units and therefore compresses especially well.
+
+In consecutive before/after disposable Chromium comparisons with warm assets, median refresh-to-menu time for current packed saves at 240,000 units fell from 611.5 ms to 532.2 ms, about 13%. Each build loaded original JSON, unit-template saves and current table saves three times, verifying the complete loaded JSON on every run. These timings cover loading, validation and worker transfer to the menu, not painting the map or running a 240,000-unit AI turn. The diagnostic accepts both `.catane` and historical JSON inputs.
+
+Validation passed all 1,366 unit tests and 78 browser scenarios across Firefox, Chromium and the mobile viewport. Storage checks cover binary round trips, legacy JSON files, renamed files, Unicode, damaged and truncated archives, worker unavailability, quota fallback, reloads, backup recovery, competing tabs, coalescing and stale worker bases. The deployed build also passed 12 production HTTP checks and six disposable Chromium storage scenarios. The playing campaign was not opened or modified.

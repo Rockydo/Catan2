@@ -18,6 +18,9 @@ async function saved(page: Page, s: Game) {
   await page.getByRole("button", { name: /Continue campaign/ }).click();
 }
 async function state(page: Page): Promise<Game> {
+  // Commands publish before their background storage transaction commits.
+  const status = page.locator(".save-status");
+  if (await status.count()) await expect(status).toHaveText("Saved locally");
   return page.evaluate(
     (key) => JSON.parse(localStorage.getItem(key)!).game,
     SAVE_KEY,
@@ -181,7 +184,7 @@ test("export imports intact and rejects a corrupted file without losing the camp
   const downloadEvent = page.waitForEvent("download");
   await page.getByRole("button", { name: "Export saved game" }).click();
   const download = await downloadEvent;
-  expect(download.suggestedFilename()).toMatch(/\.json$/);
+  expect(download.suggestedFilename()).toMatch(/\.catane$/);
   await page.locator("input[type=file]").setInputFiles({
     name: "broken.json",
     mimeType: "application/json",
@@ -501,7 +504,9 @@ test("illustrated resource guide explains production and stores and loads all ar
   });
   await saved(page, funded());
   await page.getByRole("button", { name: /^Fuel:/ }).click();
-  await expect(page.getByRole("dialog")).toContainText("Refined coal fuel");
+  await expect(page.getByRole("dialog")).toContainText(
+    "Fuel is processed from Coal or Oil",
+  );
   await page.getByText(/Used in .* recipes/).click();
   await expect(page.getByRole("dialog")).toContainText("Great Bombard");
   const audit = await new AxeBuilder({ page })

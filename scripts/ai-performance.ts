@@ -3,13 +3,13 @@ import { createHash } from "node:crypto";
 import { Session } from "node:inspector/promises";
 import { chooseAIAction } from "../src/game/ai";
 import { applyCommand } from "../src/game/engine";
-import { deserialize, assertInvariants } from "../src/game/save";
+import { assertInvariants } from "../src/game/save";
+import { importSave } from "../src/storage/codec";
 const label = process.env.LABEL ?? "grand-ai-check";
 const count = Number(process.env.STEPS ?? 100);
-let state = deserialize(
+let state = await importSave(
   readFileSync(
     process.env.SAVE ?? "test-artifacts/coalition-audit-8-save.json",
-    "utf8",
   ),
 );
 const inspector = new Session();

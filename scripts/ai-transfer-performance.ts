@@ -7,7 +7,7 @@ import { beginTurn } from "../src/game/engine";
 import { browserSave } from "./browser-save";
 if (!process.env.SAVE_PATH)
   throw Error("Set SAVE_PATH to an exported campaign.");
-const game = await importSave(readFileSync(process.env.SAVE_PATH, "utf8"));
+const game = await importSave(readFileSync(process.env.SAVE_PATH));
 const batchLimit = process.env.BATCH_LIMIT
   ? Number(process.env.BATCH_LIMIT)
   : undefined;

@@ -8,9 +8,7 @@ import { deserialize, serialize } from "../src/game/save";
 // LABEL=candidate npx tsx scripts/camera-performance.ts
 // Disposable browser only. The export and the player's browser stay untouched.
 if (!process.env.SAVE_PATH) throw Error("Set SAVE_PATH to a campaign export.");
-const game = deserialize(
-  await unpackSave(readFileSync(process.env.SAVE_PATH, "utf8")),
-);
+const game = deserialize(await unpackSave(readFileSync(process.env.SAVE_PATH)));
 const viewer =
   game.players.find((p) => p.alive && p.control === "human") ??
   game.players.find((p) => p.alive)!;

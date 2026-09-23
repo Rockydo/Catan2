@@ -15,9 +15,7 @@ const { deserialize, assertInvariants } = await import(moduleAt("save"));
 const { planAIOrders } = await import(moduleAt("ai-orders"));
 const { chooseAIAction } = await import(moduleAt("ai"));
 const { applyCommand } = await import(moduleAt("engine"));
-let state = deserialize(
-  await unpackSave(readFileSync(process.env.SAVE_PATH, "utf8")),
-);
+let state = deserialize(await unpackSave(readFileSync(process.env.SAVE_PATH)));
 const actor = state.active,
   turn = state.players[actor].turns;
 const limit = process.env.DECISIONS ? Number(process.env.DECISIONS) : undefined;

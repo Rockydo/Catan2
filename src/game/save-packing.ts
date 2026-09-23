@@ -66,12 +66,19 @@ function copyValue(value: unknown, depth = 0): unknown {
   if (!value || typeof value !== "object") return value;
   if (Array.isArray(value))
     return value.map((item) => copyValue(item, depth + 1));
-  return Object.fromEntries(
-    Object.entries(value).map(([key, item]) => [
-      key,
-      copyValue(item, depth + 1),
-    ]),
-  );
+  const result: Record<string, unknown> = {};
+  for (const key of Object.keys(value)) {
+    const item = copyValue((value as Record<string, unknown>)[key], depth + 1);
+    if (key === "__proto__")
+      Object.defineProperty(result, key, {
+        value: item,
+        enumerable: true,
+        configurable: true,
+        writable: true,
+      });
+    else result[key] = item;
+  }
+  return result;
 }
 
 export function unpackGame(game: PackedGame): Game {
@@ -148,14 +155,10 @@ export function unpackGame(game: PackedGame): Game {
     const key = keys[i],
       { template, nested } = templates[packed.rows[i]];
     if (Object.hasOwn(pieces, key)) throw invalid();
-    const piece = { ...template, id: key };
+    const piece: Record<string, unknown> = { ...template, id: key };
     for (const field of nested)
-      Object.defineProperty(piece, field, {
-        value: copyValue(template[field]),
-        enumerable: true,
-        configurable: true,
-        writable: true,
-      });
+      // Spread created own data properties, including any __proto__ field.
+      piece[field] = copyValue(template[field]);
     pieces[key] = piece as unknown as Piece;
   }
   return { ...game, pieces };

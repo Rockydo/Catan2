@@ -18,9 +18,7 @@ const { productionSources, withPlanningFrame } = await import(
 const { projectedIncomes, withSeasonalPlanning } = await import(
   moduleAt("ai-seasonal")
 );
-const game = deserialize(
-  await unpackSave(readFileSync(process.env.SAVE_PATH, "utf8")),
-);
+const game = deserialize(await unpackSave(readFileSync(process.env.SAVE_PATH)));
 const digest = (value: unknown) =>
   createHash("sha256").update(JSON.stringify(value)).digest("hex");
 const expected = process.env.EXPECT_PATH

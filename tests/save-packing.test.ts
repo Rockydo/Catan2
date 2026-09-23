@@ -57,6 +57,30 @@ it("delta-encodes non-consecutive and reordered IDs without changing unit order"
   expect(Object.keys(unpackGame(packed).pieces)).toEqual([a.id, c.id, b.id]);
 });
 
+it("copies nested prototype-named fields as independent own data", () => {
+  const { s, water } = fishingFixture();
+  for (let i = 0; i < 2; i++) {
+    const unit = piece(s, water);
+    Object.assign(unit, {
+      future: JSON.parse('{"__proto__":{"flag":true},"constructor":{"x":2}}'),
+    });
+    Object.defineProperty(unit, "__proto__", {
+      value: { value: 3 },
+      enumerable: true,
+    });
+  }
+  const restored = unpackGame(onDisk(packGame(s)));
+  expect(JSON.stringify(restored)).toBe(JSON.stringify(s));
+  const [a, b] = Object.values(restored.pieces) as any[];
+  expect(Object.getPrototypeOf(a)).toBe(Object.prototype);
+  expect(Object.getPrototypeOf(a.future)).toBe(Object.prototype);
+  a.future.__proto__.flag = false;
+  a.__proto__.value = 4;
+  expect(b.future.__proto__.flag).toBe(true);
+  expect(b.__proto__.value).toBe(3);
+  expect((Object.prototype as any).flag).toBeUndefined();
+});
+
 it("round-trips empty armies and differently ordered fields without dropping data", () => {
   const { s, water } = fishingFixture();
   expect(JSON.stringify(unpackGame(onDisk(packGame(s))))).toBe(

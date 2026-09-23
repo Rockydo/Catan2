@@ -785,13 +785,16 @@ export function assertInvariants(s: Game) {
       }
     }
   }
-  for (const u of Object.values(s.pieces))
-    if (u.naval)
-      rule(
-        (passengerCounts.get(u.id) ?? 0) <=
-          shipStats(u.kind as keyof typeof SHIP_INFO, u.tier).capacity,
-        "A ship exceeds its berths.",
-      );
+  // Every unit and carrier reference was validated above. Empty ships cannot
+  // exceed their capacity; check the occupied carriers without enumerating a
+  // second copy of the entire army.
+  for (const [id, count] of passengerCounts) {
+    const u = s.pieces[id];
+    rule(
+      count <= shipStats(u.kind as keyof typeof SHIP_INFO, u.tier).capacity,
+      "A ship exceeds its berths.",
+    );
+  }
   if (s.towerSieges !== undefined) {
     object(s.towerSieges);
     for (const [key, x] of Object.entries(s.towerSieges)) {

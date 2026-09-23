@@ -2,7 +2,7 @@ import { test, expect, type Page } from "@playwright/test";
 import { fishingFixture } from "../tests/maritime-fixture";
 import { piece } from "../tests/helpers";
 import { deserialize, serialize, SAVE_KEY, BACKUP_KEY } from "../src/game/save";
-import { importSave } from "../src/storage/codec";
+import { importSave, exportCompact } from "../src/storage/codec";
 import { readFile } from "node:fs/promises";
 
 async function saved(page: Page, key = "primary") {
@@ -102,19 +102,82 @@ test("large saves survive localStorage quota, bulk recruitment, refresh and comp
     .getByRole("button", { name: "Export saved game", exact: true })
     .click();
   const download = await downloading,
-    exported = await readFile((await download.path())!, "utf8");
+    exported = await readFile((await download.path())!);
+  expect(download.suggestedFilename()).toMatch(/\.catane$/);
+  expect([...exported.subarray(0, 2)]).toEqual([0x1f, 0x8b]);
   expect(exported.length).toBeLessThan(text.length * 0.4);
   expect(await importSave(exported)).toEqual(after);
   await page.locator("input[type=file]").setInputFiles({
-    name: "compact.json",
-    mimeType: "application/json",
+    name: "compact.catane",
+    mimeType: "application/gzip",
     buffer: Buffer.from(exported),
   });
   await expect(
     page.getByText("Game imported. AI is paused until you resume."),
   ).toBeVisible();
   await expect.poll(async () => (await saved(page))?.game).toEqual(after);
+  const damaged = Buffer.from(exported);
+  damaged[damaged.length - 8] ^= 1;
+  await page.locator("input[type=file]").setInputFiles({
+    name: "damaged.catane",
+    mimeType: "application/gzip",
+    buffer: damaged,
+  });
+  await expect(page.getByRole("alert").last()).not.toContainText(
+    "Game imported.",
+  );
+  expect((await saved(page))!.game).toEqual(after);
   expect(errors).toEqual([]);
+});
+
+test("legacy compressed imports and binary exports work when save workers are unavailable", async ({
+  page,
+}) => {
+  const { s } = fixture();
+  await seed(page, serialize(s));
+  await page.addInitScript(() => {
+    const Native = window.Worker;
+    window.Worker = class extends Native {
+      constructor(url: string | URL, options?: WorkerOptions) {
+        if (String(url).includes("save.worker"))
+          throw new DOMException("Test blocked worker", "SecurityError");
+        super(url, options);
+      }
+    };
+  });
+  await page.goto("/");
+  await page.getByRole("button", { name: /Continue campaign/ }).click();
+  await page.locator("input[type=file]").setInputFiles({
+    name: "old-compact.json",
+    mimeType: "application/json",
+    buffer: Buffer.from(await exportCompact(s)),
+  });
+  await expect(
+    page.getByText("Game imported. AI is paused until you resume."),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Game settings and saves" }).click();
+  const downloading = page.waitForEvent("download");
+  await page
+    .getByRole("button", { name: "Export saved game", exact: true })
+    .click();
+  const download = await downloading;
+  const archive = await readFile((await download.path())!);
+  expect(download.suggestedFilename()).toMatch(/\.catane$/);
+  expect(await importSave(archive)).toEqual(deserialize(serialize(s)));
+  await page.locator("input[type=file]").setInputFiles({
+    // Detection uses content, so a renamed archive remains readable.
+    name: "renamed.json",
+    mimeType: "application/json",
+    buffer: archive,
+  });
+  await expect(
+    page.getByText("Game imported. AI is paused until you resume."),
+  ).toBeVisible();
+  const stored = await page.evaluate(
+    (key) => localStorage.getItem(key),
+    SAVE_KEY,
+  );
+  expect(deserialize(stored!)).toEqual(deserialize(serialize(s)));
 });
 
 test("damaged compressed primary recovers the previous save and keeps the valid backup", async ({

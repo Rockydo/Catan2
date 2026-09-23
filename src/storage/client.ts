@@ -1,7 +1,7 @@
 import { BACKUP_KEY, SAVE_KEY, loadLocal, saveLocal } from "../game/save";
 import type { Game } from "../game/types";
 import { snapshotDelta } from "../game/snapshot-delta";
-import { exportCompact, importSave } from "./codec";
+import { exportArchive, importSave, type SaveInput } from "./codec";
 import type { SaveRequest, SaveResult } from "./save.worker";
 
 export type LoadedCampaign = ReturnType<typeof loadLocal> & {
@@ -21,9 +21,14 @@ function call<T>(message: SaveRequest): Promise<T> {
     try {
       if (failed) throw new Error("The save worker is unavailable.");
       if (!worker) {
-        worker = new Worker(new URL("./save.worker.ts", import.meta.url), {
-          type: "module",
-        });
+        try {
+          worker = new Worker(new URL("./save.worker.ts", import.meta.url), {
+            type: "module",
+          });
+        } catch (error) {
+          failed = true;
+          throw error;
+        }
         worker.onmessage = ({ data }) => {
           const job = waiting.get(data.request);
           if (!job) return;
@@ -159,9 +164,13 @@ async function drain() {
   }
   running = false;
 }
-export async function exportCampaign(game: Game): Promise<string> {
-  return failed ? exportCompact(game) : call<string>({ type: "export", game });
+export async function exportCampaign(
+  game: Game,
+): Promise<Uint8Array<ArrayBuffer>> {
+  return failed
+    ? exportArchive(game)
+    : call<Uint8Array<ArrayBuffer>>({ type: "export", game });
 }
-export async function importCampaign(text: string): Promise<Game> {
+export async function importCampaign(text: SaveInput): Promise<Game> {
   return failed ? importSave(text) : call<Game>({ type: "import", text });
 }
