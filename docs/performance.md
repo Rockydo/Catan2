@@ -1269,3 +1269,25 @@ All commands and full final states matched, and source campaigns remained unchan
 
 
 Final validation passed all 1,731 unit tests and 102 targeted staging browser scenarios across Chromium, Firefox and mobile. Earlier checks in this pass also covered general gameplay, guild actions, worker cancellation and camera controls. After atomic local publication, all 12 HTTP checks and 14 production Chromium save, startup and AI-worker scenarios passed. Type checking, formatting and whitespace checks passed. Prior hashed assets were retained for open sessions. Tests used exported copies and disposable profiles; the source exports and playing campaign were not modified. Broader work on large-map rendering and AI planning remains under the active performance goal.
+
+
+## Reusing troop indexes across unchanged economic orders
+
+A command batch now retains its troop-only indexes across purchases and economic guild contracts that cannot change soldiers. Towns, resources, terrain, diplomacy and general planning values still get fresh read scopes. Recruitment, movement, military supply, casualties and any possibility of faction elimination rebuild the relevant indexes. The retained object contains no whole campaign or chain of previous scopes, so batch length does not create a recursive lookup or keep earlier campaigns alive.
+
+Uncontested movement also reuses the planner's checked occupation flags during validation. Copied soldier records receive fresh identity-based indexes, and positions are updated only after the validation scope closes. Empty and allied destinations no longer require a second complete grouping of troops merely to find that there are no defenders. Hostile destinations still use the original ordered defender list and combat rules.
+
+Measurements ran serially against reference checkout `b4a3132`, using exported copies and disposable Chromium profiles:
+
+| Workload | Previous build | Updated build | Exact comparison |
+| --- | ---: | ---: | --- |
+| Round 32 browser replay, through human casualty prompt | 9.43 s | 8.85 s | 485 orders and complete final state |
+| 2,000 tiles and 1,000 towns, first 60 decisions | 10.12 s | 10.18 s | 60 orders and complete final state |
+
+The browser sample improved by about 6%; the larger-map sample was effectively unchanged. These are local samples, not complete-turn timings or guaranteed speedups. The larger fixture started with 5,405 troops and ended with 5,952. The browser replay retained frame p95 near 16.8 ms, with no long main-thread tasks or page errors. Search depth, candidate actions, production and strategic weights are unchanged.
+
+Four new regressions exercise 10,000 consecutive read scopes, changing stockpiles, recruitment and movement within a batch, copied troop identity, mismatched dictionaries and exception cleanup. Every intermediate batch view is compared with independent sequential commands. Pure troop computations are reused only while their inputs remain unchanged. Complete command lists and state hashes match the reference replay. Independent audits also match all 13,206 proposals across 128 planning scenarios and all 96 trade comparisons across 48 scenarios.
+
+All 1,735 unit tests and 87 staging browser scenarios passed across Chromium, Firefox and mobile. Browser checks covered AI worker continuation, large-save recovery, transports, guilds, force selection and coastal sieges. Type checking, formatting and whitespace checks passed. This pass leaves the compact save format unchanged, including compatibility with original JSON and all previous compact versions.
+
+After atomic local publication, all 12 production HTTP checks and 18 additional Chromium save, guild and AI-worker scenarios passed. Existing hashed assets remain available for open sessions. Source exports and the playing campaign were not modified. The broader performance goal remains active for remaining planning, transaction and map-rendering costs.

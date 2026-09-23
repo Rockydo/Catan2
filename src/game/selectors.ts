@@ -59,8 +59,21 @@ export const sumStock = (s: Stock) =>
   Object.values(s).reduce((a, b) => a + (b ?? 0), 0);
 // Index immutable reads. Engine transactions mutate separate, unregistered
 // drafts, so cached UI data can never leak into execution.
+interface PieceReadIndex {
+  source: Game["pieces"];
+  units: readonly Piece[];
+  pieces: Map<number, Piece[]>;
+  pieceOrder: Map<Piece, number>;
+  passengers: Map<string, Piece[]>;
+  producers: ProductionActors;
+  movement: MovementOccupation;
+  tiles: Map<string, Piece[]>;
+  memo: Map<string, unknown>;
+}
+export type RetainedPieceRead = PieceReadIndex;
 interface PlanningIndex {
   source: Game;
+  troopRead: PieceReadIndex;
   units: readonly Piece[];
   towns: Map<number, Town[]>;
   vertices: Map<string, Town>;
@@ -1258,32 +1271,112 @@ let lastIncome: Record<number, Stock> | undefined;
 // Within a decision, immutable state and counterparty views share forecasts.
 // Outside that frame, the value signature guards the retained last result.
 let incomeFrame: WeakMap<Game, Record<number, Stock>> | undefined;
-function createPlanningIndex(
-  source: Game,
-  shared?: PlanningIndex,
+// These indexes contain only troops. Sharing them never keeps a chain of prior
+// planning frames, town data or whole campaign snapshots alive.
+function createPieceReadIndex(
+  source: Game["pieces"],
   retainedUnits?: readonly Piece[],
-): PlanningIndex {
-  // A movement check needs tile occupancy, while a stock quote may need only
-  // towns. Build each immutable index on demand instead of grouping the full
-  // empire for every short read scope. One unit array serves all requested views.
+  occupation?: MovementOccupation,
+): PieceReadIndex {
   let units = retainedUnits;
-  const unitRecords = () =>
-    (units ??= shared?.units ?? pieceValues(source.pieces));
-  let towns: PlanningIndex["towns"] | undefined;
-  let vertices: PlanningIndex["vertices"] | undefined;
-  let vertexOrder: PlanningIndex["vertexOrder"] | undefined;
-  let pieces: PlanningIndex["pieces"] | undefined;
-  let pieceOrder: PlanningIndex["pieceOrder"] | undefined;
-  let passengers: PlanningIndex["passengers"] | undefined;
+  const unitRecords = () => (units ??= pieceValues(source));
+  let pieces: PieceReadIndex["pieces"] | undefined;
+  let pieceOrder: PieceReadIndex["pieceOrder"] | undefined;
+  let passengers: PieceReadIndex["passengers"] | undefined;
   let producers: ProductionActors | undefined;
-  let movement: MovementOccupation | undefined;
-  let tiles: PlanningIndex["tiles"] | undefined;
-  let towerSupport: PlanningIndex["towerSupport"] | undefined;
-  let pieceMemo: PlanningIndex["pieceMemo"] | undefined;
+  let movement = occupation;
+  let tiles: PieceReadIndex["tiles"] | undefined;
   return {
     source,
     get units() {
       return unitRecords();
+    },
+    get pieces() {
+      if (!pieces) {
+        pieces = new Map();
+        for (const unit of unitRecords()) {
+          if (!pieces.has(unit.owner)) pieces.set(unit.owner, []);
+          pieces.get(unit.owner)!.push(unit);
+        }
+      }
+      return pieces;
+    },
+    get pieceOrder() {
+      return (pieceOrder ??= new Map(
+        unitRecords().map((unit, i) => [unit, i]),
+      ));
+    },
+    get passengers() {
+      if (!passengers) {
+        passengers = new Map();
+        for (const unit of unitRecords()) {
+          if (!unit.carrier) continue;
+          if (!passengers.has(unit.carrier)) passengers.set(unit.carrier, []);
+          passengers.get(unit.carrier)!.push(unit);
+        }
+      }
+      return passengers;
+    },
+    get producers() {
+      return (producers ??= collectProductionActors(unitRecords()));
+    },
+    get movement() {
+      return (movement ??= collectMovementOccupation(unitRecords()));
+    },
+    get tiles() {
+      if (!tiles) {
+        tiles = new Map();
+        for (const unit of unitRecords()) {
+          if (unit.carrier) continue;
+          if (!tiles.has(unit.tile)) tiles.set(unit.tile, []);
+          tiles.get(unit.tile)!.push(unit);
+        }
+      }
+      return tiles;
+    },
+    memo: new Map(),
+  };
+}
+function createPlanningIndex(
+  source: Game,
+  shared?: PlanningIndex,
+  retainedUnits?: readonly Piece[],
+  retainedRead?: RetainedPieceRead,
+): PlanningIndex {
+  const troopRead =
+    retainedRead ??
+    shared?.troopRead ??
+    createPieceReadIndex(source.pieces, retainedUnits);
+  let towns: PlanningIndex["towns"] | undefined;
+  let vertices: PlanningIndex["vertices"] | undefined;
+  let vertexOrder: PlanningIndex["vertexOrder"] | undefined;
+  let towerSupport: PlanningIndex["towerSupport"] | undefined;
+  return {
+    source,
+    troopRead,
+    get units() {
+      return troopRead.units;
+    },
+    get pieces() {
+      return troopRead.pieces;
+    },
+    get pieceOrder() {
+      return troopRead.pieceOrder;
+    },
+    get passengers() {
+      return troopRead.passengers;
+    },
+    get producers() {
+      return troopRead.producers;
+    },
+    get movement() {
+      return troopRead.movement;
+    },
+    get tiles() {
+      return troopRead.tiles;
+    },
+    get pieceMemo() {
+      return troopRead.memo;
     },
     get towns() {
       if (!towns) {
@@ -1307,55 +1400,6 @@ function createPlanningIndex(
         Object.keys(source.vertices).map((v, i) => [v, i]),
       ));
     },
-    get pieces() {
-      if (shared) return shared.pieces;
-      if (!pieces) {
-        pieces = new Map();
-        for (const unit of unitRecords()) {
-          if (!pieces.has(unit.owner)) pieces.set(unit.owner, []);
-          pieces.get(unit.owner)!.push(unit);
-        }
-      }
-      return pieces;
-    },
-    get pieceOrder() {
-      if (shared) return shared.pieceOrder;
-      return (pieceOrder ??= new Map(
-        unitRecords().map((unit, i) => [unit, i]),
-      ));
-    },
-    get passengers() {
-      if (shared) return shared.passengers;
-      if (!passengers) {
-        passengers = new Map();
-        for (const unit of unitRecords()) {
-          if (!unit.carrier) continue;
-          if (!passengers.has(unit.carrier)) passengers.set(unit.carrier, []);
-          passengers.get(unit.carrier)!.push(unit);
-        }
-      }
-      return passengers;
-    },
-    get producers() {
-      if (shared) return shared.producers;
-      return (producers ??= collectProductionActors(unitRecords()));
-    },
-    get movement() {
-      if (shared) return shared.movement;
-      return (movement ??= collectMovementOccupation(unitRecords()));
-    },
-    get tiles() {
-      if (shared) return shared.tiles;
-      if (!tiles) {
-        tiles = new Map();
-        for (const unit of unitRecords()) {
-          if (unit.carrier) continue;
-          if (!tiles.has(unit.tile)) tiles.set(unit.tile, []);
-          tiles.get(unit.tile)!.push(unit);
-        }
-      }
-      return tiles;
-    },
     stocks: new Map(),
     nearest: new Map(),
     towerDefenses: new Map(),
@@ -1371,10 +1415,48 @@ function createPlanningIndex(
       return towerSupport;
     },
     memo: new Map(),
-    get pieceMemo() {
-      return shared?.pieceMemo ?? (pieceMemo ??= new Map());
-    },
   };
+}
+/** Engine batch only: retain from a read scope immediately before a command
+ * proven not to edit/add/remove troops. Discard after any troop change. The
+ * handle contains no terrain, town, diplomacy or general planning results. */
+export function retainPieceRead(s: Game): RetainedPieceRead | undefined {
+  const index = readIndex(s);
+  return index?.source.pieces === s.pieces ? index.troopRead : undefined;
+}
+/** Fresh campaign reads after a troop-preserving order. The caller must also
+ * exclude elimination. Dictionary identity alone cannot detect in-place edits. */
+export function withRetainedPieceRead<T>(
+  s: Game,
+  retained: RetainedPieceRead,
+  run: () => T,
+): T {
+  return planningFrame(
+    s,
+    run,
+    undefined,
+    undefined,
+    retained.source === s.pieces ? retained : undefined,
+  );
+}
+/** Validate an uncontested move before editing any position. Copy-on-write may
+ * replace selected records with identical clones, so lists/identity lookups
+ * are fresh; only the already checked occupancy flags can be shared. */
+export function withMovementValidationFrame<T>(
+  source: Game,
+  units: readonly Piece[] | undefined,
+  previous: RetainedPieceRead | undefined,
+  run: () => T,
+): T {
+  const occupation =
+    previous?.source === source.pieces ? previous.movement : undefined;
+  return planningFrame(
+    source,
+    run,
+    undefined,
+    undefined,
+    createPieceReadIndex(source.pieces, units, occupation),
+  );
 }
 /** Join an existing read-only decision for this exact view. Mutating callers
  * must leave the scope before execution and start a fresh frame afterwards. */
@@ -1412,10 +1494,16 @@ function planningFrame<T>(
   run: () => T,
   shared?: PlanningIndex,
   retainedUnits?: readonly Piece[],
+  retainedRead?: RetainedPieceRead,
 ): T {
   const previous = incomeFrame;
   const previousIndex = planningIndex;
-  planningIndex = createPlanningIndex(source, shared, retainedUnits);
+  planningIndex = createPlanningIndex(
+    source,
+    shared,
+    retainedUnits,
+    retainedRead,
+  );
   incomeFrame = new WeakMap();
   try {
     return withWorldReadFrame(source, run);

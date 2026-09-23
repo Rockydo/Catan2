@@ -37,7 +37,8 @@ import {
   hostileAt,
   ownTowns,
   withPlanningFrame,
-  withPieceListPlanningFrame,
+  withMovementValidationFrame,
+  type RetainedPieceRead,
   reusePlanningFrame,
 } from "./selectors";
 
@@ -384,6 +385,7 @@ export function militaryCommand(
     // Private batch only, refreshed after copying affected records. No troop
     // addition, deletion or edit may occur before this validation read.
     movementUnits?: readonly Piece[];
+    movementRead?: RetainedPieceRead;
   },
 ): boolean {
   if (c.type === "bombard") {
@@ -465,15 +467,21 @@ export function militaryCommand(
     rule(c.to && s.tiles[c.to], "Choose a revealed destination.");
     // Validate against one read-only occupation snapshot, then leave its scope
     // before moving any pieces or resolving combat on the mutable draft.
-    const { path, defenders, pieceList } = withPieceListPlanningFrame(
+    const { path, defenders, pieceList } = withMovementValidationFrame(
       s,
       options?.movementUnits,
+      options?.movementRead,
       () => ({
         path: moveTargets(s, c.ids!)[c.to!],
         pieceList: options?.afterPeacefulMove ? allPieces(s) : undefined,
-        defenders: combatantsAt(s, c.to!, units[0].naval).filter(
-          (u) => !friendly(s, u.owner, s.active),
-        ),
+        // The path read already has exact occupation flags. Only a hostile
+        // target needs an ordered defender list; empty/allied destinations do
+        // not need another empire-wide tile grouping.
+        defenders: hostileAt(s, c.to!, s.active, units[0].naval)
+          ? combatantsAt(s, c.to!, units[0].naval).filter(
+              (u) => !friendly(s, u.owner, s.active),
+            )
+          : [],
       }),
     );
     rule(

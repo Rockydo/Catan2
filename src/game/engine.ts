@@ -75,6 +75,9 @@ import {
 import { addHexes, expeditionFootprint, neighbors } from "./world";
 import {
   withPlanningFrame,
+  retainPieceRead,
+  withRetainedPieceRead,
+  type RetainedPieceRead,
   withSharedPiecePlanningFrame,
   withPieceListPlanningFrame,
   withProductionTerrainRead,
@@ -403,6 +406,12 @@ const LOCAL_RECORD_COMMANDS = new Set([
   "guild-order",
   ...LOCAL_MILITARY_COMMANDS,
 ]);
+function preservesTroopRecords(c: Command): boolean {
+  return (
+    STATIONARY_RECORD_COMMANDS.has(c.type) ||
+    (c.type === "guild-order" && !c.ids?.length)
+  );
+}
 function survivingFactionsHaveTowns(s: Game): boolean {
   const owners = new Set(Object.values(s.towns).map((town) => town.owner));
   return s.players.every((player) => !player.alive || owners.has(player.id));
@@ -539,6 +548,10 @@ function commandPlan(
         return {
           command,
           moving,
+          retained:
+            command && (preservesTroopRecords(command) || moving)
+              ? retainPieceRead(view)
+              : undefined,
           // Reuse the planner's troop list when copy-on-write detaches a
           // supplied formation. The read scope closes before any edits.
           units:
@@ -553,7 +566,7 @@ function commandPlan(
     };
     let selection = select();
     for (;;) {
-      const { command, moving, units } = selection;
+      const { command, moving, units, retained } = selection;
       if (!command) break;
       // Planning caches are keyed by Game identity. Execution gets a fresh key
       // before changing any draft data, just as an ordinary transaction does.
@@ -594,6 +607,7 @@ function commandPlan(
           selection = select(sharePieces);
         },
         movementUnits,
+        retained,
       );
     }
     return { ok: true, state: commands.length ? view : state, commands };
@@ -646,8 +660,7 @@ function commandResult(state: Game, c: Command, preview: boolean): Result {
     // troops either. Keep the immutable dictionary, including its UI identity.
     const retainUnits =
       !localOrder &&
-      (STATIONARY_RECORD_COMMANDS.has(c.type) ||
-        (c.type === "guild-order" && !c.ids?.length)) &&
+      preservesTroopRecords(c) &&
       survivingFactionsHaveTowns(state);
     const s: Game = localOrder
       ? localOrderDraft(state, c)
@@ -755,6 +768,7 @@ function advanceCommand(
   preview: boolean,
   afterCleanup?: (sharePieces: boolean) => void,
   movementUnits?: readonly Piece[],
+  retained?: RetainedPieceRead,
 ) {
   if (s.phase === "military") s.phase = "economy";
   s.actions++;
@@ -766,6 +780,7 @@ function advanceCommand(
     true,
     (units) => (movedPieces = units),
     movementUnits,
+    c.type === "move" ? retained : undefined,
   );
   const finish = (sharePieces: boolean) => {
     breakSieges(s, { reuseFrame: sharePieces });
@@ -777,9 +792,11 @@ function advanceCommand(
   // their indexes through that interval only when no faction can be eliminated.
   // The next decision may read these same troops after all cleanup finishes.
   // Its own non-troop indexes are fresh, and execution starts outside the scope.
-  if (survivingFactionsHaveTowns(s))
-    withPieceListPlanningFrame(s, movedPieces, () => finish(true));
-  else finish(false);
+  if (survivingFactionsHaveTowns(s)) {
+    if (retained && preservesTroopRecords(c))
+      withRetainedPieceRead(s, retained, () => finish(true));
+    else withPieceListPlanningFrame(s, movedPieces, () => finish(true));
+  } else finish(false);
 }
 export function execute(s: Game, c: Command, preview = false) {
   executeOrder(s, c, preview);
@@ -794,6 +811,7 @@ function executeOrder(
   deferFinalSiegeCleanup = false,
   afterPeacefulMove?: (units: readonly Piece[]) => void,
   movementUnits?: readonly Piece[],
+  movementRead?: RetainedPieceRead,
 ) {
   const p = s.players[s.active],
     actor = c.actor ?? s.active;
@@ -959,6 +977,7 @@ function executeOrder(
       deferFinalSiegeCleanup,
       afterPeacefulMove,
       movementUnits,
+      movementRead,
     })
   )
     return;
