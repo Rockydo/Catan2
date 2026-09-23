@@ -1,7 +1,7 @@
-import { BACKUP_KEY, SAVE_KEY, loadLocal, saveLocal } from "../game/save";
+import { BACKUP_KEY, SAVE_KEY } from "../game/save-keys";
 import type { Game } from "../game/types";
 import { snapshotDelta } from "../game/snapshot-delta";
-import { exportArchive, importSave, type SaveInput } from "./codec";
+import type { SaveInput } from "./codec";
 import type { SaveRequest, SaveResult, ExportResult } from "./save.worker";
 import { decodeLoadedCampaign, type LoadedCampaign } from "./load-transfer";
 
@@ -74,7 +74,7 @@ export async function loadCampaign(): Promise<LoadedCampaign> {
     return result;
   } catch {
     savedBase = undefined;
-    return loadLocal();
+    return (await import("../game/save")).loadLocal();
   }
 }
 let pending: Game | undefined,
@@ -111,7 +111,7 @@ async function drain() {
     const game = pending;
     pending = undefined;
     try {
-      if (failed) saveLocal(game);
+      if (failed) (await import("../game/save")).saveLocal(game);
       else {
         // Retain just the last acknowledged immutable snapshot. Small changes
         // no longer copy the entire army through the main-thread message port.
@@ -172,7 +172,7 @@ async function drain() {
 export async function exportCampaign(
   game: Game,
 ): Promise<Uint8Array<ArrayBuffer>> {
-  if (failed) return exportArchive(game);
+  if (failed) return (await import("./codec")).exportArchive(game);
   const result = await call<ExportResult>(
     savedBase && savedBase.game.seed === game.seed
       ? {
@@ -187,6 +187,6 @@ export async function exportCampaign(
     : call<Uint8Array<ArrayBuffer>>({ type: "export", game });
 }
 export async function importCampaign(text: SaveInput): Promise<Game> {
-  if (failed) return importSave(text);
+  if (failed) return (await import("./codec")).importSave(text);
   return decodeLoadedCampaign(await call({ type: "import", text })).game!;
 }

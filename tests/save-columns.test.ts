@@ -84,7 +84,7 @@ it("loads the previous archive and current archive with exact full campaign stat
   };
   previous.checksum = hash(JSON.stringify(previous.game)).toString(16);
   const expected = JSON.stringify(deserialize(serialize(s)));
-  expect(current.packing).toBe(9);
+  expect(current.packing).toBe(10);
   expect(JSON.stringify(deserialize(JSON.stringify(previous)))).toBe(expected);
   expect(JSON.stringify(deserialize(JSON.stringify(current)))).toBe(expected);
 });

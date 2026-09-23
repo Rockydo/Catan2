@@ -81,6 +81,9 @@ it("imports binary archives and historical JSON bytes with identical complete st
     archive,
     new TextEncoder().encode(compact),
     new TextEncoder().encode(serialize(s)),
+    new Blob([archive]),
+    new File([compact], "old-save.catane", { type: "application/gzip" }),
+    new File([serialize(s)], "legacy.json"),
   ])
     expect(JSON.stringify(await importSave(input))).toBe(expected);
   // Import only the view, not unrelated bytes in its underlying buffer.
@@ -101,6 +104,24 @@ it("rejects corrupt or truncated binary archives and malformed UTF-8 JSON", asyn
   await expect(
     importSave(new Uint8Array([0x7b, 0xff, 0x7d])),
   ).rejects.toThrow();
+  await expect(
+    importSave(new Blob([new Uint8Array([0x7b, 0xff, 0x7d])])),
+  ).rejects.toThrow();
+  await expect(importSave(new Blob([archive]))).rejects.toThrow();
+});
+
+it("streams imported JSON without allocating the entire file's byte buffer", async () => {
+  const text = serialize(fishingFixture().s),
+    file = new Blob([text]);
+  file.arrayBuffer = () => {
+    throw Error("Whole file read");
+  };
+  file.text = () => {
+    throw Error("Whole file read");
+  };
+  expect(JSON.stringify(await importSave(file))).toBe(
+    JSON.stringify(deserialize(text)),
+  );
 });
 
 it("validates empty ships and carrier capacity regardless of unit ordering", () => {

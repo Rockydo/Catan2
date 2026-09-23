@@ -108,6 +108,16 @@ test("large saves survive localStorage quota, bulk recruitment, refresh and comp
   expect([...exported.subarray(0, 2)]).toEqual([0x1f, 0x8b]);
   expect(exported.length).toBeLessThan(text.length * 0.4);
   expect(await importSave(exported)).toEqual(after);
+  await page.evaluate(() => {
+    // File data must be read in the worker, not copied through the UI thread.
+    for (const method of ["arrayBuffer", "text", "stream"])
+      Object.defineProperty(File.prototype, method, {
+        value() {
+          throw Error("Unexpected main-thread import read");
+        },
+        configurable: true,
+      });
+  });
   await page.locator("input[type=file]").setInputFiles({
     name: "compact.catane",
     mimeType: "application/gzip",

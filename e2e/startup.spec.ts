@@ -4,6 +4,31 @@ import { serialize, SAVE_KEY } from "../src/game/save";
 
 const appModule = /\/(?:assets\/App-[^/]+\.js|src\/App\.tsx)(?:\?.*)?$/;
 
+test("normal startup does not wait for the main-thread fallback save engine", async ({
+  page,
+}) => {
+  const text = serialize(fishingFixture().s);
+  await page.addInitScript(
+    ({ text, key }) => {
+      localStorage.setItem(key, text);
+      localStorage.setItem("catane-language", "en");
+    },
+    { text, key: SAVE_KEY },
+  );
+  const errors: string[] = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  // The regular load is validated inside the worker. Failure of the optional
+  // main-thread fallback module must not delay or break a normal refresh.
+  await page.route(
+    /\/(?:assets\/save-[^/]+\.js|src\/game\/save\.ts)(?:\?.*)?$/,
+    (route) => route.abort("failed"),
+  );
+  await page.goto("/");
+  await page.getByRole("button", { name: /Continue campaign/ }).click();
+  await expect(page.locator(".board-frame")).toBeVisible();
+  expect(errors).toEqual([]);
+});
+
 test("reads the saved campaign while the map and panel module is still loading", async ({
   page,
 }) => {

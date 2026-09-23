@@ -1,3 +1,4 @@
+import { unpackMembers } from "../src/game/save-members";
 import { unpackColumns } from "../src/game/save-columns";
 import { chromium } from "@playwright/test";
 import { readFileSync, mkdirSync, writeFileSync } from "node:fs";
@@ -34,7 +35,8 @@ const template = JSON.stringify({
   game: templateGame,
 });
 const latest = JSON.parse(serializePacked(game));
-const details = unpackColumns(latest.game);
+const columns = unpackMembers(latest.game);
+const details = unpackColumns(columns);
 const topology = unpackDetails(details);
 const encodings = {
   legacy: Array.from(await compress(serialize(game))),
@@ -132,6 +134,16 @@ const encodings = {
     ),
   ),
   packed: Array.from(await compress(JSON.stringify(latest))),
+  columns: Array.from(
+    await compress(
+      JSON.stringify({
+        ...latest,
+        packing: 9,
+        game: columns,
+        checksum: hash(JSON.stringify(columns)).toString(16),
+      }),
+    ),
+  ),
 };
 const formats = process.env.FORMATS?.split(",");
 if (formats?.some((format) => !Object.hasOwn(encodings, format)))
@@ -198,7 +210,10 @@ try {
         });
       }
       postMessage(data: any) {
-        if (data.type === "load") this.started = performance.now();
+        if (data.type === "load") {
+          this.started = performance.now();
+          (window as any).loadStartedMs = this.started;
+        }
         super.postMessage(data);
       }
     };
@@ -210,6 +225,7 @@ try {
   const samples: {
     format: string;
     loadMs: number;
+    loadStartedMs: number;
     readyMs: number;
     boardOpenMs?: number;
     resourceTransferBytes?: number;
@@ -227,11 +243,13 @@ try {
     "topology",
     "details",
     "packed",
+    "columns",
     "tables",
     "geometry",
     "topology",
     "details",
     "packed",
+    "columns",
     "templates",
     "references",
     "spatial",
@@ -245,6 +263,7 @@ try {
     "topology",
     "details",
     "packed",
+    "columns",
     "spatial",
     "templates",
   ] as const) {
@@ -283,6 +302,7 @@ try {
       const w = window as any;
       return {
         loadMs: w.loadMs,
+        loadStartedMs: w.loadStartedMs,
         readyMs: w.readyMs,
         game: w.loadedGameText ?? JSON.stringify(w.loadedGame),
         unitTemplates: w.loadedUnitTemplates,
@@ -345,6 +365,7 @@ try {
     samples.push({
       format,
       loadMs: result.loadMs,
+      loadStartedMs: result.loadStartedMs,
       readyMs: result.readyMs,
       boardOpenMs,
       ...resources,
@@ -371,6 +392,8 @@ try {
     detailBytes: encodings.details.length,
     detailMedianReadyMs: median("details"),
     packedBytes: encodings.packed.length,
+    columnBytes: encodings.columns.length,
+    columnMedianReadyMs: median("columns"),
     legacyMedianReadyMs: median("legacy"),
     templateMedianReadyMs: median("templates"),
     tableMedianReadyMs: median("tables"),

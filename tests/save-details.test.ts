@@ -53,7 +53,7 @@ it("reduces complete archives and reads version seven exactly", async () => {
     game: unpackDetails(unpackColumns(modern.game)),
   };
   old.checksum = hash(JSON.stringify(old.game)).toString(16);
-  expect(modern.packing).toBe(9);
+  expect(modern.packing).toBe(10);
   expect(Array.isArray(modern.game[1].pieces.templates)).toBe(false);
   expect((await compress(JSON.stringify(modern))).length).toBeLessThan(
     (await compress(JSON.stringify(old))).length * 0.95,

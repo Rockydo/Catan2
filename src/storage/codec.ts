@@ -3,7 +3,7 @@ import type { Game } from "../game/types";
 
 // Limit expanded input too: a small compressed file can conceal a huge payload.
 export const MAX_SAVE_BYTES = 128_000_000;
-export type SaveInput = string | Uint8Array<ArrayBuffer>;
+export type SaveInput = string | Uint8Array<ArrayBuffer> | Blob;
 export async function compress(text: string): Promise<Uint8Array<ArrayBuffer>> {
   const blob = new Blob([text]);
   // Include the envelope and table metadata in the decompressed byte budget.
@@ -17,13 +17,20 @@ export async function compress(text: string): Promise<Uint8Array<ArrayBuffer>> {
   );
 }
 export async function expand(
-  bytes: Uint8Array<ArrayBuffer>,
+  bytes: Uint8Array<ArrayBuffer> | Blob,
   maxBytes = MAX_SAVE_BYTES,
 ): Promise<string> {
-  const reader = new Blob([bytes])
-    .stream()
-    .pipeThrough(new DecompressionStream("gzip"))
-    .getReader();
+  const blob = bytes instanceof Blob ? bytes : new Blob([bytes]);
+  return readText(
+    blob.stream().pipeThrough(new DecompressionStream("gzip")),
+    maxBytes,
+  );
+}
+async function readText(
+  stream: ReadableStream<Uint8Array>,
+  maxBytes: number,
+): Promise<string> {
+  const reader = stream.getReader();
   const decoder = new TextDecoder("utf-8", { fatal: true });
   const parts: string[] = [];
   let size = 0;
@@ -67,6 +74,16 @@ export async function exportArchive(
   return compress(serializePacked(game));
 }
 export async function unpackSave(input: SaveInput): Promise<string> {
+  if (input instanceof Blob) {
+    if (input.size > MAX_SAVE_BYTES)
+      throw new Error("Save files must be under 128 MB.");
+    // File handles can be cloned to the worker without reading or copying the
+    // whole export on the UI thread. Stream decoding also avoids allocating a
+    // second full-sized ArrayBuffer for historical JSON campaigns.
+    const header = new Uint8Array(await input.slice(0, 2).arrayBuffer());
+    if (header[0] === 0x1f && header[1] === 0x8b) return expand(input);
+    input = await readText(input.stream(), MAX_SAVE_BYTES);
+  }
   if (typeof input !== "string") {
     if (input.byteLength > MAX_SAVE_BYTES)
       throw new Error("Save files must be under 128 MB.");

@@ -17,6 +17,9 @@ import { packGeometry, unpackGeometry } from "./save-geometry";
 import { packTopology, unpackTopology } from "./save-topology";
 import { packDetails, unpackDetails } from "./save-details";
 import { packColumns, unpackColumns } from "./save-columns";
+import { packMembers, unpackMembers } from "./save-members";
+import { SAVE_KEY, BACKUP_KEY } from "./save-keys";
+export { SAVE_KEY, BACKUP_KEY } from "./save-keys";
 import { syncEmergencyCoalition } from "./emergency-coalition";
 import {
   SEASONS,
@@ -69,8 +72,6 @@ import {
   withPieceListPlanningFrame,
 } from "./selectors";
 const CURRENT_SAVE_VERSION = 14;
-export const SAVE_KEY = "catane-frontiers-save-v1";
-export const BACKUP_KEY = "catane-frontiers-backup-v1";
 
 /** Retired Andean snow becomes Iron/Gold/Peaks in 1:1:3 proportions.
  * Keep occupied ground habitable and use an independent, stable random draw. */
@@ -1278,14 +1279,16 @@ function saveEnvelope(
 ): string {
   const body = JSON.stringify(
     packed
-      ? packColumns(
-          packDetails(
-            packSpatial(
-              packIntegers(
-                packReferences(
-                  world
-                    ? packTables(units ?? packGame(s), world)
-                    : packGeometry(packTopology(packTables(packGame(s)))),
+      ? packMembers(
+          packColumns(
+            packDetails(
+              packSpatial(
+                packIntegers(
+                  packReferences(
+                    world
+                      ? packTables(units ?? packGame(s), world)
+                      : packGeometry(packTopology(packTables(packGame(s)))),
+                  ),
                 ),
               ),
             ),
@@ -1296,7 +1299,7 @@ function saveEnvelope(
   const header = JSON.stringify({
     format: packed ? "catane-frontiers-packed" : "catane-frontiers",
     version: CURRENT_SAVE_VERSION,
-    ...(packed ? { packing: 9 } : {}),
+    ...(packed ? { packing: 10 } : {}),
     savedAt: new Date().toISOString(),
     checksum: hash(body).toString(16),
   });
@@ -1325,7 +1328,7 @@ export function deserializeSnapshot(text: string): {
     data &&
       (data.format === "catane-frontiers" ||
         (data.format === "catane-frontiers-packed" &&
-          [1, 2, 3, 4, 5, 6, 7, 8, 9].includes(data.packing))) &&
+          [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].includes(data.packing))) &&
       [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14].includes(data.version) &&
       data.game,
     "This is not a supported Catane save.",
@@ -1337,6 +1340,7 @@ export function deserializeSnapshot(text: string): {
   if (data.format === "catane-frontiers-packed") {
     let packed = data.game;
     const measured = { baseBytes: 0 };
+    if (data.packing >= 10) packed = unpackMembers(packed);
     if (data.packing >= 9) packed = unpackColumns(packed);
     if (data.packing >= 8) packed = unpackDetails(packed);
     if (data.packing >= 5) packed = unpackSpatial(packed);

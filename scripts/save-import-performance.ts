@@ -11,7 +11,9 @@ import { build } from "vite";
 if (!process.env.SAVE_PATH) throw Error("Set SAVE_PATH to a campaign export.");
 const game = await importSave(readFileSync(process.env.SAVE_PATH));
 const expected = JSON.stringify(game);
-const bytes = Array.from(await compress(serialize(game)));
+const bytes = process.env.RAW_INPUT
+  ? new TextEncoder().encode(serialize(game))
+  : await compress(serialize(game));
 // Bundle the actual main-thread decoder, rather than approximate its work in
 // the diagnostic. SOURCE_ROOT can select a prior checkout for comparisons.
 const bundle = await build({
@@ -40,6 +42,12 @@ const browser = await chromium.launch({
 });
 try {
   const page = await browser.newPage();
+  await page.route("**/__save_import_fixture", (route) =>
+    route.fulfill({
+      body: Buffer.from(bytes),
+      contentType: "application/octet-stream",
+    }),
+  );
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await page.addInitScript(() => {
@@ -61,43 +69,68 @@ globalThis.saveTransfer = saveTransfer;`,
   await page
     .getByRole("button", { name: "New campaign", exact: true })
     .waitFor();
+  await page.evaluate(async () => {
+    (window as any).importFile = await (
+      await fetch("/__save_import_fixture")
+    ).blob();
+  });
   const samples = [];
   for (let i = 0; i < 3; i++) {
-    const result = await page.evaluate(async (bytes) => {
+    const result = await page.evaluate(async (fileInput) => {
       const worker = new Worker((window as any).saveWorkerURL, {
         type: "module",
       });
       const start = performance.now();
       try {
+        const input = fileInput
+          ? (window as any).importFile
+          : new Uint8Array(await (window as any).importFile.arrayBuffer());
+        const preparationMs = performance.now() - start;
+        let postMs = 0;
         const data: any = await new Promise((resolve, reject) => {
           worker.onmessage = ({ data }) =>
             data.error ? reject(Error(data.error)) : resolve(data.result);
           worker.onerror = () => reject(Error("Import worker failed."));
+          const posting = performance.now();
           worker.postMessage({
             type: "import",
             request: 1,
-            text: new Uint8Array(bytes),
+            text: input,
           });
+          postMs = performance.now() - posting;
         });
         const receivedMs = performance.now() - start;
         const campaign = (window as any).saveTransfer.decodeLoadedCampaign(
           data,
         ).game;
         const readyMs = performance.now() - start;
-        return { receivedMs, readyMs, game: JSON.stringify(campaign) };
+        return {
+          receivedMs,
+          readyMs,
+          preparationMs,
+          postMs,
+          game: JSON.stringify(campaign),
+        };
       } finally {
         worker.terminate();
       }
-    }, bytes);
+    }, !!process.env.FILE_INPUT);
     if (result.game !== expected)
       throw Error("Import changed the complete campaign.");
-    samples.push({ receivedMs: result.receivedMs, readyMs: result.readyMs });
+    samples.push({
+      receivedMs: result.receivedMs,
+      readyMs: result.readyMs,
+      preparationMs: result.preparationMs,
+      postMs: result.postMs,
+    });
   }
   if (errors.length) throw Error(JSON.stringify(errors));
   const report = {
     units: Object.keys(game.pieces).length,
     tiles: Object.keys(game.tiles).length,
     inputBytes: bytes.length,
+    input: process.env.FILE_INPUT ? "file handle" : "copied bytes",
+    encoding: process.env.RAW_INPUT ? "historical JSON" : "gzip",
     medianReadyMs: samples.map((s) => s.readyMs).sort((a, b) => a - b)[1],
     samples,
     exactRoundTrip: true,

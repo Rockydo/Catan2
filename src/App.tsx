@@ -636,9 +636,7 @@ export default function App({
     try {
       if (file.size > 128_000_000)
         throw new Error("Save files must be under 128 MB.");
-      const loaded = await importCampaign(
-        new Uint8Array(await file.arrayBuffer()),
-      );
+      const loaded = await importCampaign(file);
       roll.reset(loaded);
       townAlerts.reset();
       setAlertFocus(null);
