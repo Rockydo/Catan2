@@ -210,6 +210,28 @@ describe("retained production forecasts", () => {
   });
   const changes: [string, (f: ReturnType<typeof fixture>) => void][] = [
     [
+      "vertex harvest adjacency",
+      (f) => {
+        f.s.vertices[f.home.vertex].tiles = [f.land];
+      },
+    ],
+    [
+      "local freeze probability",
+      (f) => {
+        f.s.tiles[f.water].freezeRoll = 0.01;
+      },
+    ],
+    [
+      "resolved half-season weather",
+      (f) => {
+        f.s.tiles[f.water].iceWeather = {
+          round: 1,
+          season: "summer",
+          half: "late",
+        };
+      },
+    ],
+    [
       "dice number",
       (f) => {
         f.s.tiles[f.land].number = 2;
@@ -362,6 +384,22 @@ describe("retained production forecasts", () => {
     expect(productionSignature(f.s)).toBe(signature);
     const output = income(f.s);
     for (const g of Object.keys(output) as Good[]) output[g] = -100;
+    inspect(f.s);
+  });
+  it("excludes drawing geometry without changing town, camp or collector forecasts", () => {
+    const f = fixture();
+    inspect(f.s);
+    const signature = productionSignature(f.s);
+    for (const vertex of Object.values(f.s.vertices)) {
+      vertex.x += 10;
+      vertex.y -= 20;
+      vertex.edges.reverse();
+    }
+    for (const tile of Object.values(f.s.tiles)) {
+      tile.vertices.reverse();
+      tile.edges.reverse();
+    }
+    expect(productionSignature(f.s)).toBe(signature);
     inspect(f.s);
   });
   it("does not reuse blocked harvests after a pact or disembarkation changes access", () => {

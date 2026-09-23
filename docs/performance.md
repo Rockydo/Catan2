@@ -291,3 +291,15 @@ The Round 32 browser replay retained all 485 commands and final hash `8d2eca15ec
 Crowded-map zoom still has measurable drawing costs at 2,000 tiles. The broader performance goal remains active.
 
 The deployed release passed 12 production HTTP checks and 13 Chromium sprite/camera checks in a disposable browser. The live campaign was not opened or modified.
+
+## Terrain reads and production cache keys
+
+Terrain checks now read a biome's first resource directly, without allocating a harvest stock and key array for each lookup. Woods choices remain faction-specific and are read at the time of the check. The lookup is derived from the same biome definitions as production. Regression coverage compares it with actual harvest output for every biome and climate, legacy marine flags, barren terrain and changing Woods choices.
+
+Production cache keys retain all tile weather and yield metadata, town adjacency, producers and blockades. They omit drawing geometry and unoccupied map intersections, which passive production does not read. The key still uses current values rather than mutable object identities. On the exported 540-tile campaign it shrank from 435,285 to 207,999 bytes. Spending and fortification retain forecasts; changed town adjacency, weather, Woods products and producer inputs invalidate them.
+
+The Round 32 browser replay retained every one of its 485 orders and the complete final state hash. It reached the same human casualty decision in 28.28 seconds versus the preceding build's 29.60 seconds. Worker time fell from 24.55 to 23.23 seconds. Frame p95 was 16.7 ms, with no browser errors or long main-thread tasks. These are local measurements of this sequence, not a fixed speedup for every campaign. The full production comparison also retained all six ordered delivery lists, four forecast horizons and eleven complete dice-result states.
+
+All 1,372 unit tests and 66 browser scenarios passed across Firefox, Chromium and mobile. The browser checks covered large-save quota fallback, refresh and export/import, recovery from damaged primary saves, cross-tab protection, worker batching and pause/resume, recruitment beside resource-free terrain, seasonal forecasts and the illustrated rulebook.
+
+The deployed build passed all 12 production HTTP checks and 12 additional Chromium save/recruitment scenarios in a disposable profile. The player's live campaign was not opened or modified.

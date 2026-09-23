@@ -1,4 +1,4 @@
-import { biomeYield } from "./climate-content";
+import { BIOMES, BIOME_INFO, biomeYield } from "./climate-content";
 import { TERRAIN, processedFor, type TerrainKey } from "./content";
 import { friendly } from "./relations";
 import type { Game, Hex, Piece, Raw, Stock, Watchtower } from "./types";
@@ -54,8 +54,26 @@ export function workshopYield(
       : (tileYield(tile, owner)[raw] ?? 0);
   return (seasonalBase ?? base) * tier;
 }
-export const tileGood = (tile: Hex, owner?: number): Raw | undefined =>
-  tileGoods(tile, owner)[0];
+// Climate-specific yields change quantities, never the first product. Most AI
+// terrain checks need only that product, not a freshly allocated harvest stock.
+const primaryGoods = Object.fromEntries(
+  BIOMES.map((biome) => [biome, Object.keys(BIOME_INFO[biome].yield)[0]]),
+) as Partial<Record<(typeof BIOMES)[number], Raw>>;
+export function tileGood(tile: Hex, owner?: number): Raw | undefined {
+  if (tile.biome === "woods")
+    return tile.woodsChoices?.[owner ?? -1] ?? "lumber";
+  if (tile.biome) return primaryGoods[tile.biome];
+  if (tile.resource === "water")
+    return tile.fish ? "fish" : tile.whale ? "hides" : undefined;
+  if (
+    tile.resource === "snow" ||
+    tile.resource === "ice" ||
+    tile.resource === "desert" ||
+    tile.resource === "peaks"
+  )
+    return undefined;
+  return tile.resource;
+}
 export const tileOptions = (tile: Hex): Raw[] =>
   tile.biome === "woods" ? ["lumber", "hides"] : tileGoods(tile);
 export const tileTerrain = (tile: Hex): TerrainKey =>

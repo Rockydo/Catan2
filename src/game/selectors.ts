@@ -796,8 +796,13 @@ export function productionSignature(s: Game): string {
     return JSON.stringify([
       s.round,
       s.calendar,
-      s.tiles,
-      s.vertices,
+      // Harvests use vertex-to-tile adjacency, not drawing coordinates or the
+      // tile's road geometry. Keep all other tile fields, including future
+      // weather/yield metadata, and read current values on mutable drafts.
+      Object.entries(s.tiles).map(([id, tile]) => {
+        const { vertices: _vertices, edges: _edges, ...harvest } = tile;
+        return [id, harvest];
+      }),
       s.alliances,
       s.players.map((p) => p.id),
       Object.values(s.towns).map((t) => [
@@ -807,6 +812,9 @@ export function productionSignature(s: Game): string {
         t.level,
         t.extensions,
         t.extensionGoods,
+        // Both direct harvests and nearest-warehouse lookup read only town
+        // vertices. Unoccupied intersections cannot affect passive output.
+        s.vertices[t.vertex].tiles,
       ]),
       Object.values(s.routes)
         .filter((r) => Object.keys(r.camps).length)
