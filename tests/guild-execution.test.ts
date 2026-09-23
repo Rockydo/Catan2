@@ -1,7 +1,8 @@
-import { expect, it } from "vitest";
+import { expect, it, vi } from "vitest";
 import {
   applyCommand,
   applyCommandPlan,
+  canApplyCommand,
   eliminate,
   execute,
 } from "../src/game/engine";
@@ -137,6 +138,31 @@ it.each(["artisans", "builders", "scholars"] as const)(
       expect(JSON.stringify(result.state)).toBe(JSON.stringify(expected));
       expect(result.state.pieces[unit.id]).toBe(unit);
       expect(JSON.stringify(s)).toBe(original);
+    }
+  },
+);
+
+it.each(["artisans", "builders", "scholars"] as const)(
+  "%s purchase previews do not enumerate the army",
+  (kind) => {
+    const { s, home } = guildFixture(kind, 3);
+    for (let i = 0; i < 2000; i++) piece(s, "3,0", 1);
+    freeze(s);
+    const keys = vi.spyOn(Object, "keys");
+    try {
+      expect(
+        canApplyCommand(s, {
+          type: "guild-order",
+          town: home.id,
+          tier: 3,
+          ...(kind === "artisans" ? { kind: "coal" } : {}),
+        }),
+      ).toBe(true);
+      expect(
+        keys.mock.calls.filter(([value]) => value === s.pieces),
+      ).toHaveLength(0);
+    } finally {
+      keys.mockRestore();
     }
   },
 );

@@ -1,4 +1,5 @@
 import type { Game } from "./types";
+import { copyRecords } from "./record-copy";
 
 const RECORD_FIELDS = new Set<keyof Game>([
   "tiles",
@@ -93,16 +94,7 @@ export function applySnapshotDelta(before: Game, delta: SnapshotDelta): Game {
     let value: unknown;
     if (record) {
       const previous = before[key] as Records;
-      value = record.keys
-        ? Object.fromEntries(
-            record.keys.map((id) => [
-              id,
-              Object.hasOwn(record.values, id)
-                ? record.values[id]
-                : previous[id],
-            ]),
-          )
-        : { ...previous, ...record.values };
+      value = copyRecords(previous, record);
     } else
       value = Object.hasOwn(delta.values, key)
         ? delta.values[key]

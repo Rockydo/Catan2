@@ -1,4 +1,5 @@
 import { syncEmergencyCoalition } from "./emergency-coalition";
+import { copyRecords } from "./record-copy";
 import { startThawRetreats, continueThawRetreats } from "./thaw-retreats";
 import {
   SEASONS,
@@ -509,7 +510,7 @@ function commandPlan(
       vertices: state.vertices,
       edges: state.edges,
       climatePlan: state.climatePlan,
-      pieces: { ...state.pieces },
+      pieces: copyRecords(state.pieces),
     };
     const select = (sharePieces = false) => {
       // Selection, batch boundaries and copy-on-write classification inspect
@@ -647,7 +648,7 @@ function commandResult(state: Game, c: Command, preview: boolean): Result {
               edges: undefined,
               ...(shareUnits ? { pieces: undefined } : {}),
             }),
-            ...(shareUnits ? { pieces: { ...state.pieces } } : {}),
+            ...(shareUnits ? { pieces: copyRecords(state.pieces) } : {}),
             tiles:
               ["end-turn", "surrender"].includes(c.type) && state.calendar
                 ? Object.fromEntries(
@@ -713,7 +714,10 @@ function localOrderDraft(state: Game, command: Command): Game {
         ? { ...player, bonuses: structuredClone(player.bonuses) }
         : player,
     ),
-    pieces: command.type === "guild-order" ? { ...state.pieces } : state.pieces,
+    pieces:
+      command.type === "guild-order" && command.ids?.length
+        ? copyRecords(state.pieces)
+        : state.pieces,
     events: [...state.events],
   };
   if (command.type === "guild-order")

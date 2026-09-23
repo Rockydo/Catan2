@@ -44,6 +44,35 @@ it("preserves inserted/deleted records, record iteration order and absent versus
   expect(Object.hasOwn(result, "productionSupport")).toBe(true);
   expect(Object.hasOwn(result, "towerSieges")).toBe(false);
 });
+it("preserves large-army updates, recruitment and losses across successive worker patches", () => {
+  let visible = funded();
+  visible.pieces = {};
+  for (let i = 0; i < 5000; i++) piece(visible, "0,0", i % 4);
+  for (const operation of ["move", "recruit", "losses"] as const) {
+    const next = { ...visible, pieces: { ...visible.pieces } };
+    const keys = Object.keys(visible.pieces);
+    if (operation === "move")
+      for (const id of keys.slice(0, 100))
+        next.pieces[id] = { ...next.pieces[id], moved: 1, tile: "1,0" };
+    else if (operation === "recruit")
+      for (let i = 0; i < 100; i++) piece(next, "2,0", 1);
+    else {
+      for (const id of keys.slice(0, 100)) delete next.pieces[id];
+      // A retained literal identifier can change iteration position too.
+      const moved = keys[200];
+      delete next.pieces[moved];
+      next.pieces[moved] = visible.pieces[moved];
+    }
+    const { delta, result } = roundTrip(visible, next);
+    if (operation === "move")
+      expect(delta.records.pieces?.keys).toBeUndefined();
+    else expect(delta.records.pieces?.keys).toEqual(Object.keys(next.pieces));
+    for (const id of keys.slice(300))
+      if (next.pieces[id] === visible.pieces[id])
+        expect(result.pieces[id]).toBe(visible.pieces[id]);
+    visible = result;
+  }
+});
 it("includes world expansion, climate choices, freezing, diplomacy and removed optional maps", () => {
   const s = funded();
   const u = piece(s, "0,0");

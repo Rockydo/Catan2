@@ -12,6 +12,23 @@ import { serializePacked } from "../src/game/save";
 if (!process.env.SAVE_PATH) throw Error("Set SAVE_PATH to a campaign export.");
 const game = await importSave(readFileSync(process.env.SAVE_PATH));
 const expected = JSON.stringify(game);
+const editTroops = Number(process.env.EDIT_TROOPS ?? 0);
+if (
+  !Number.isSafeInteger(editTroops) ||
+  editTroops < 0 ||
+  editTroops > Object.keys(game.pieces).length
+)
+  throw Error("EDIT_TROOPS must be a valid count within the exported army.");
+const changed = { ...game, actions: game.actions + 1 };
+if (editTroops) {
+  changed.pieces = { ...game.pieces };
+  for (const id of Object.keys(game.pieces).slice(0, editTroops))
+    changed.pieces[id] = {
+      ...game.pieces[id],
+      bonus: game.pieces[id].bonus + 1,
+    };
+}
+const expectedSaved = JSON.stringify(changed);
 const bytes = Array.from(await compress(serializePacked(game)));
 const entry = resolve(process.env.SOURCE_ROOT ?? ".", "src/storage/client.ts");
 // Use the worker URL from the tested build, while bundling its corresponding
@@ -109,7 +126,7 @@ try {
         db.close();
       }
     }, bytes);
-    const result = await page.evaluate(async () => {
+    const result = await page.evaluate(async (editTroops) => {
       const w = window as any,
         client = w.saveClient;
       w.measureTransfers = true;
@@ -124,6 +141,16 @@ try {
       const repeated = await client.exportCampaign(loaded.game);
       const repeatExportMs = performance.now() - repeatStart;
       const game = { ...loaded.game, actions: loaded.game.actions + 1 };
+      // Exercise a real record patch as well as the scalar-only default. This
+      // synthetic supply change is not a played turn or an AI decision.
+      if (editTroops) {
+        game.pieces = { ...loaded.game.pieces };
+        for (const id of Object.keys(game.pieces).slice(0, editTroops))
+          game.pieces[id] = {
+            ...game.pieces[id],
+            bonus: game.pieces[id].bonus + 1,
+          };
+      }
       const saveStart = performance.now();
       let sawPending = false;
       const done = new Promise<void>((resolve, reject) => {
@@ -173,7 +200,7 @@ try {
         savedExport: Array.from(savedExport) as number[],
         stored,
       };
-    });
+    }, editTroops);
     if (
       result.loadedText !== expected ||
       JSON.stringify(await importSave(new Uint8Array(result.archive))) !==
@@ -181,9 +208,9 @@ try {
       JSON.stringify(await importSave(new Uint8Array(result.repeated))) !==
         expected ||
       JSON.stringify(await importSave(new Uint8Array(result.savedExport))) !==
-        JSON.stringify({ ...game, actions: game.actions + 1 }) ||
+        expectedSaved ||
       JSON.stringify(await importSave(new Uint8Array(result.stored))) !==
-        JSON.stringify({ ...game, actions: game.actions + 1 })
+        expectedSaved
     )
       throw Error(
         "Load, export or first autosave changed the complete campaign.",
@@ -204,6 +231,7 @@ try {
   const report = {
     tiles: Object.keys(game.tiles).length,
     units: Object.keys(game.pieces).length,
+    editedTroops: editTroops,
     archiveBytes: bytes.length,
     medianLoadMs: median(samples.map((s) => s.loadMs)),
     medianExportMs: median(samples.map((s) => s.exportMs)),
@@ -223,6 +251,7 @@ try {
     samples,
     exactRoundTrip: true,
     stateHash: createHash("sha256").update(expected).digest("hex"),
+    savedStateHash: createHash("sha256").update(expectedSaved).digest("hex"),
     errors,
   };
   const label = (process.env.LABEL ?? "campaign").replace(/[^a-z0-9_-]/gi, "-");

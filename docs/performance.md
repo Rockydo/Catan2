@@ -1190,3 +1190,36 @@ These are modest gains, about 2% and 3% in the browser samples. The larger map s
 Three new regression cases compare the former existence queries across mutable, related and published views; cover troop movement, boarding, casualties, zero-power ships, changed alliances and empty areas; and check that a three-hex query enumerates a mutable army only once. Existing guild transaction tests verify full-formation supply, subsequent movement, stacked supply, rollback and unchanged source records. All 1,677 unit tests passed. Independent audits matched all 13,206 planning proposals across 128 scenarios and all 96 trade comparisons across 48 scenarios. Type checking, formatting, the build and whitespace checks passed.
 
 All 114 staging browser scenarios passed across Chromium, Firefox and mobile, covering guilds, town and tower sieges, transports, formation selection, worker batches and large-save reloads. After atomic local publication, all 12 production HTTP checks and 18 further Chromium scenarios passed. Earlier hashed assets were retained for open sessions. Validation used disposable browser profiles and exported copies; the playing campaign and source exports were not modified. The save format and compact archive sizes are unchanged. Remaining transaction copying, troop indexing and large-map drawing keep the broader performance goal active.
+
+
+## Copying large troop dictionaries and worker updates
+
+Engine transactions now copy plain record dictionaries directly instead of using object spread. Worker updates use the same path and reconstruct an explicitly supplied key order without allocating an entry tuple for every troop. Record order, inserted/deleted keys, explicit undefined values and references to unchanged records are preserved. Changed troops are still detached before edits, and completed snapshots remain independent. Prototype-like property names remain own data properties; the helper never invokes the prototype setter. No record history or new persistent cache is retained.
+
+Economic guild previews without selected units also stop copying the entire troop dictionary. Their actual rules and payments still run on the existing isolated preview records. Military supply retains full formation isolation, including units omitted from an anchor selection.
+
+The new `scripts/record-copy-performance.ts` diagnostic compares these operations with the former implementations on dictionaries built from exported troop records. It alternates reference/candidate order and reports three-sample medians. Complete output hashes, record order and value identities match; the source dictionaries remain unchanged. These are isolated dictionary costs, not whole action or turn timings:
+
+| Units | Dictionary copy, before / after | Recruitment update, before / after |
+| --- | ---: | ---: |
+| 15,000 | 2.81 / 1.70 ms | 1.56 / 0.91 ms |
+| 60,000 | 12.69 / 7.54 ms | 6.78 / 3.94 ms |
+| 240,000 | 55.92 / 35.20 ms | 39.45 / 16.69 ms |
+
+The movement-update case also retained exact data and improved at all three sizes. At 240,000 units it took 35.57 ms instead of 55.74 ms. The helper copies only own string-keyed campaign records, matching the serialized data model.
+
+Whole replay measurements used reference checkout `e04b51d`, exported copies and serial runs without correctness tests alongside them:
+
+| Workload | Previous build | Updated build | Exact comparison |
+| --- | ---: | ---: | --- |
+| Round 32 browser replay, through human casualty prompt | 9.72 s | 9.09 s | 485 orders and complete final state |
+| Round 31 browser replay, through human casualty prompt | 5.24 s | 5.17 s | 153 orders and complete final state |
+| 2,000 tiles and 1,000 towns, first 60 decisions | 11.03 s | 10.43 s | 60 orders and complete final state |
+
+The latest browser sample improved by about 7%; the older sample was nearly unchanged, and the larger-map sample improved by about 5%. These local results are not fixed speed guarantees or complete-turn timings. Frame p95 stayed near 16.8 ms without long main-thread tasks or browser errors. No strategic work or candidate actions were removed.
+
+`scripts/save-transfer-performance.ts` now accepts `EDIT_TROOPS` to exercise a record update after loading. With `EDIT_TROOPS=100`, the 240,000-unit stress copy's first autosave took 197.1 ms instead of 217.6 ms, using three serial browser samples per build. Load, original export, repeated export, changed autosave and changed export all preserved their complete expected campaign state. Saved-state hashes matched between builds. Refresh/load timing was effectively unchanged, as expected. The 36,144-byte archive is highly repetitive storage stress data, not a representative army of that size; the format and compression are unchanged.
+
+New regressions cover record ordering, insertions, deletions, undefined values, own versus inherited fields, prototype-like names, exact record identity, 5,000-unit successive worker patches, and economic guild previews that never enumerate the army. Existing transaction cases still cover frozen input, movement, supply, passengers, losses and rollback. All 1,685 unit tests passed. Independent reference audits matched all 13,206 planning proposals across 128 scenarios and all 96 trade comparisons across 48 scenarios. Type checking, formatting, the production build and whitespace checks passed.
+
+All 123 staging browser scenarios passed across Chromium, Firefox and mobile, including large-save recovery, bulk recruitment, worker continuation, guild orders, transports and coastal sieges. The local deployment then passed all 12 production HTTP checks and 18 further Chromium save, worker and guild scenarios. Previous hashed assets remain available to open sessions. All tests used disposable profiles and exported copies; the playing campaign and source exports were not modified. Broader performance work remains active, including ordinary single-order transactions that still copy unrelated campaign data.
