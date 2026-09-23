@@ -1291,3 +1291,31 @@ Four new regressions exercise 10,000 consecutive read scopes, changing stockpile
 All 1,735 unit tests and 87 staging browser scenarios passed across Chromium, Firefox and mobile. Browser checks covered AI worker continuation, large-save recovery, transports, guilds, force selection and coastal sieges. Type checking, formatting and whitespace checks passed. This pass leaves the compact save format unchanged, including compatibility with original JSON and all previous compact versions.
 
 After atomic local publication, all 12 production HTTP checks and 18 additional Chromium save, guild and AI-worker scenarios passed. Existing hashed assets remain available for open sessions. Source exports and the playing campaign were not modified. The broader performance goal remains active for remaining planning, transaction and map-rendering costs.
+
+
+## Reusing terrain harvest calculations during AI batches
+
+A production forecast was recalculating unchanged terrain yields and fishing areas after each army move. Protected command batches now reuse seasonal tile yields, city and merchant refinement terms, workshop output and collector coverage. Forecast sea surfaces are constructed lazily and reused for the same calendar context. The key distinguishes current output, annual output, future ice and temporary thaw grace. Changed or detached terrain calculates fresh results.
+
+Only terrain-derived values survive the batch. Blockades, alliances, current towns, warehouse destinations, camp tiers, collector order and each individual resource addition are still evaluated from the current position. Stored arrays contain no towns, units or campaign snapshots. Scope exit releases the batch cache; nested scopes restore the enclosing context even after an exception. Unprotected one-off reads skip the added cache keys and lookups.
+
+Comparisons used reference checkout `5131482` and exported copies. Timings ran serially, separately from correctness tests:
+
+| Workload | Previous build | Updated build | Exact comparison |
+| --- | ---: | ---: | --- |
+| Round 32 browser replay, through human casualty prompt | 8.93 s | 8.57 s | 485 orders and complete final state |
+| 2,000 tiles and 1,000 towns, first 60 individual decisions | 10.18 s | 10.01 s | 60 orders and complete final state |
+| 32 protected harvest forecasts, Round 32 | 113.13 ms | 104.10 ms | All faction stocks and field order |
+| 32 protected harvest forecasts, 2,000 tiles | 145.99 ms | 109.02 ms | All faction stocks and field order |
+
+The real browser replay improved by about 4%. Its frame p95 stayed near 16.7 ms with no long main-thread tasks or page errors. The larger-map individual-decision sample was nearly unchanged; it does not exercise a shared multi-command batch. The isolated forecast batch improved by about 8% and 25%, respectively, using five-sample medians across all six production modes. These are local samples, not complete-turn timings or fixed speed guarantees.
+
+One-off dice-production timings varied in the initial serial runs. An additional alternating-order comparison measured seven samples, each containing independent rolls 2 through 12 on the real export. The summed median was 105.38 ms versus 111.54 ms before, with identical complete state hashes for every roll. This found no regression in ordinary production. Cloning and hashing ran outside the measured interval.
+
+The durable production diagnostic now reports protected harvest batches. Its reference audit also retained all six ordered delivery lists, four forecast horizons and eleven complete dice-result states on both maps. Independent AI audits matched all 13,206 planning proposals across 128 scenarios and all 96 trade comparisons across 48 scenarios. No strategy, search depth, candidate action, resource amount or dice rule changed.
+
+Five new regressions cover successive town upgrades and ownership changes, workshop selection, changing camps, collectors and manual coverage, passengers, blockade and alliance changes, all seasons, absent calendars, thaw grace, detached terrain, nested exceptions, fresh warehouse references and independent returned deliveries. Work-count checks require repeated protected queries to reuse the unchanged yields and fishing areas. All 1,740 unit tests and 90 staging browser scenarios passed across Chromium, Firefox and mobile. The build, type checking, formatting and whitespace checks passed.
+
+The separate 2,000-tile camera trace still shows painting, compositing preparation and layout as the main costs. Its software-rendered wheel samples had roughly 33 ms p95 frames, rising to 50 ms for rapid zoom-out. This pass does not claim a camera improvement; rendering remains part of the active performance goal.
+
+After atomic local publication, all 12 production HTTP checks and 15 additional Chromium seasonal, marine-resource and AI-worker scenarios passed. Earlier hashed assets were retained for open sessions. All validation used exported copies or disposable fixtures. Neither source exports nor the playing campaign were changed.

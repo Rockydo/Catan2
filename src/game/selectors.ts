@@ -935,21 +935,10 @@ function readProduction(
   ) => {
     if (amount > 0) visit(owner, town, tile, good, amount);
   };
-  const season =
-    mode === "current" ? seasonAt(s) : mode === "annual" ? undefined : mode;
-  // A migrated open sea has grace only through the actual current season.
-  // Future production previews must use the post-boundary local ice pattern.
-  let tiles = s.tiles;
-  if (season && mode !== "current" && season !== seasonAt(s))
-    for (const tile of Object.values(s.tiles)) {
-      if (!tile.thawGrace) continue;
-      if (tiles === s.tiles) tiles = { ...s.tiles };
-      tiles[tile.id] = { ...tile, thawGrace: undefined };
-    }
-  // Several towns, camps and merchants may harvest the same tile. Evaluate
-  // its calendar once per owner during this read, without retaining mutable
-  // game data between actions or seasons.
-  const yields = new Map<string, Stock>();
+  const terrain = productionHarvestRead(s, mode),
+    { season, tiles, yields } = terrain;
+  // Only terrain-derived yields survive a protected command batch. Occupation,
+  // warehouses, producer order and faction relationships stay current below.
   const yieldAt = (id: string, owner: number): Stock => {
     const key = `${owner}/${id}`;
     let output = yields.get(key);
@@ -958,6 +947,37 @@ function readProduction(
       yields.set(key, output);
     }
     return output;
+  };
+  const harvestAt = (
+    id: string,
+    owner: number,
+    tier: number,
+    refines: boolean,
+  ) => {
+    const key = terrain.shared ? `${owner}/${id}/${tier}/${refines}` : "";
+    let output = terrain.shared ? terrain.harvests.get(key) : undefined;
+    if (!output) {
+      output = Object.entries(
+        harvestYield(tiles[id], owner, tier, refines, yieldAt(id, owner)),
+      ) as [Good, number][];
+      if (terrain.shared) terrain.harvests.set(key, output);
+    }
+    return output;
+  };
+  const workshopAt = (id: string, owner: number, raw: Raw, tier: number) => {
+    const key = terrain.shared ? `${owner}/${id}/${raw}/${tier}` : "";
+    let amount = terrain.shared ? terrain.workshops.get(key) : undefined;
+    if (amount === undefined) {
+      amount = workshopYield(
+        tiles[id],
+        owner,
+        raw,
+        tier,
+        seasonalWorkshopBase(tiles[id], owner, raw, season),
+      );
+      if (terrain.shared) terrain.workshops.set(key, amount);
+    }
+    return amount;
   };
   // Blockades depend on the occupying factions, not their stack size. Only
   // read-only scopes share this index; mutable roll/forecast drafts rebuild it.
@@ -988,29 +1008,15 @@ function readProduction(
     for (const id of s.vertices[town.vertex].tiles) {
       const good = town.extensionGoods?.[id] ?? tileGood(tiles[id], town.owner);
       if (!good || blocked(id, town.owner)) continue;
-      for (const [raw, amount] of Object.entries(
-        harvestYield(
-          tiles[id],
-          town.owner,
-          town.level,
-          true,
-          yieldAt(id, town.owner),
-        ),
-      ))
-        deliver(town.owner, town, id, raw as Good, amount!);
+      for (const [raw, amount] of harvestAt(id, town.owner, town.level, true))
+        deliver(town.owner, town, id, raw, amount);
       if (town.extensions[id])
         deliver(
           town.owner,
           town,
           id,
           processedFor(good),
-          workshopYield(
-            tiles[id],
-            town.owner,
-            good,
-            town.extensions[id],
-            seasonalWorkshopBase(tiles[id], town.owner, good, season),
-          ),
+          workshopAt(id, town.owner, good, town.extensions[id]),
         );
     }
   for (const r of Object.values(s.routes))
@@ -1021,10 +1027,13 @@ function readProduction(
         for (const [raw, amount] of Object.entries(yieldAt(id, r.owner)))
           deliver(r.owner, town, id, raw as Raw, tier * amount!);
     }
-  const harvestWorld =
-    mode !== "current" && s.calendar
-      ? Object.assign(Object.create(s), {
-          tiles: Object.fromEntries(
+  let harvestWorld: Game | undefined;
+  const coveredBy = (unit: Piece, key: string) => {
+    let covered = terrain.shared ? terrain.coverage.get(key) : undefined;
+    if (!covered) {
+      if (!harvestWorld) {
+        if (terrain.forecastIce) {
+          terrain.coverageTiles ??= Object.fromEntries(
             Object.entries(tiles).map(([id, tile]) => [
               id,
               tile.resource === "water" || tile.resource === "ice"
@@ -1036,28 +1045,33 @@ function readProduction(
                   }
                 : tile,
             ]),
-          ),
-        })
-      : s;
+          );
+          harvestWorld = Object.assign(Object.create(s), {
+            tiles: terrain.coverageTiles,
+          });
+        } else harvestWorld = s;
+      }
+      covered = harvestTiles(harvestWorld!, unit);
+      if (terrain.shared) terrain.coverage.set(key, covered);
+    }
+    return covered;
+  };
   const collectors = new Map<string, ProductionSource[]>();
   for (const { unit: u, count, key } of actors.collectors) {
     let sources = collectors.get(key);
     if (!sources) {
       sources = [];
-      const covered = harvestTiles(harvestWorld, u);
+      const covered = coveredBy(u, key);
       const town = covered.length ? warehouse(u.tile, u.owner) : undefined;
       if (town)
         for (const id of covered) {
           const good = tileGood(tiles[id]);
           if (good && (u.kind !== "fishing" || !blocked(id, u.owner)))
-            for (const [raw, amount] of Object.entries(
-              harvestYield(
-                tiles[id],
-                u.owner,
-                u.tier,
-                u.kind !== "fishing",
-                yieldAt(id, u.owner),
-              ),
+            for (const [raw, amount] of harvestAt(
+              id,
+              u.owner,
+              u.tier,
+              u.kind !== "fishing",
             ))
               sources.push({
                 owner: u.owner,
@@ -1130,12 +1144,63 @@ export function forecastProduction(
   );
   return result;
 }
+interface ProductionHarvestRead {
+  shared: boolean;
+  season: Season | undefined;
+  tiles: Game["tiles"];
+  forecastIce: boolean;
+  coverageTiles?: Game["tiles"];
+  yields: Map<string, Stock>;
+  harvests: Map<string, readonly [Good, number][]>;
+  workshops: Map<string, number>;
+  coverage: Map<string, readonly string[]>;
+}
+// A harvest context depends only on protected tile records and these calendar
+// choices. It retains no towns, units, campaign views or producer deliveries.
+function productionHarvestRead(
+  s: Game,
+  mode: ProductionMode,
+): ProductionHarvestRead {
+  const current = seasonAt(s),
+    season =
+      mode === "current" ? current : mode === "annual" ? undefined : mode,
+    clearGrace = !!season && mode !== "current" && season !== current,
+    forecastIce = mode !== "current" && !!s.calendar;
+  const frame =
+      productionTerrainRead?.source === s.tiles
+        ? productionTerrainRead
+        : undefined,
+    key = `${season ?? "annual"}/${clearGrace}/${forecastIce}`;
+  const cached = frame?.harvests?.get(key);
+  if (cached) return cached;
+  let tiles = s.tiles;
+  // A migrated open sea has grace only through the actual current season.
+  if (clearGrace)
+    for (const tile of Object.values(tiles)) {
+      if (!tile.thawGrace) continue;
+      if (tiles === s.tiles) tiles = { ...s.tiles };
+      tiles[tile.id] = { ...tile, thawGrace: undefined };
+    }
+  const read: ProductionHarvestRead = {
+    shared: !!frame,
+    season,
+    tiles,
+    forecastIce,
+    yields: new Map(),
+    harvests: new Map(),
+    workshops: new Map(),
+    coverage: new Map(),
+  };
+  if (frame) (frame.harvests ??= new Map()).set(key, read);
+  return read;
+}
 let productionTerrainRead:
   | {
       source: Game["tiles"];
       terrain?: string;
       position?: string;
       signature?: string;
+      harvests?: Map<string, ProductionHarvestRead>;
     }
   | undefined;
 /** The caller guarantees this terrain dictionary and all its records remain

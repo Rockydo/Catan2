@@ -14,6 +14,7 @@ const { deserialize } = await import(moduleAt("save"));
 const { production } = await import(moduleAt("economy"));
 const {
   productionSources,
+  forecastProduction,
   productionSignature,
   withPlanningFrame,
   withProductionTerrainRead,
@@ -56,6 +57,45 @@ for (let sample = 0; sample < 5; sample++) {
     }
   });
   signatureBatchSamplesMs.push(performance.now() - start);
+}
+// Repeated terrain-derived output queries across changing decision views.
+// This isolates harvest reuse; it is not a whole AI-turn measurement.
+const harvestModes = [
+  "current",
+  "annual",
+  "spring",
+  "summer",
+  "autumn",
+  "winter",
+];
+const harvestBatchSamplesMs: number[] = [];
+let harvestBatchHash = "";
+for (let sample = 0; sample < 5; sample++) {
+  const outputs: unknown[] = [];
+  const start = performance.now();
+  terrainScope(game.tiles, () => {
+    for (let i = 0; i < 32; i++) {
+      const view = { ...game, actions: game.actions + i };
+      outputs.push(
+        withPlanningFrame(view, () =>
+          forecastProduction(
+            view,
+            harvestModes[i % harvestModes.length],
+            (tile: string, amount: number) =>
+              ((6 - Math.abs(7 - view.tiles[tile].number)) / 36) * amount,
+          ),
+        ),
+      );
+    }
+  });
+  harvestBatchSamplesMs.push(performance.now() - start);
+  const hash = digest(outputs);
+  if (
+    (harvestBatchHash && hash !== harvestBatchHash) ||
+    (expected?.harvestBatchHash && hash !== expected.harvestBatchHash)
+  )
+    throw Error("Protected harvest forecasts changed their ordered result.");
+  harvestBatchHash = hash;
 }
 const deliveries = [
   "current",
@@ -114,6 +154,10 @@ const report = {
   signatureBatchReads: 32,
   signatureBatchMedianMs: [...signatureBatchSamplesMs].sort((a, b) => a - b)[2],
   signatureBatchSamplesMs,
+  harvestBatchReads: 32,
+  harvestBatchMedianMs: [...harvestBatchSamplesMs].sort((a, b) => a - b)[2],
+  harvestBatchSamplesMs,
+  harvestBatchHash,
   deliveries,
   forecasts,
   forecastTimings,
