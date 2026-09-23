@@ -1,5 +1,14 @@
 # Release verification
 
+## Known roster order during publication: 2026-09-23
+
+- Immutable roster reads retain their discovered dictionary order. Applying an AI reply can copy that exact source without enumerating it again, then prepare fresh UI indexes using the unchanged order or the patch's new membership/order list. This shares only a flat key array, not a previous campaign or index. Unit values, positions, owners, passenger groups, production and all derived scores remain fresh. Cold inputs and full dictionary replacements still discover their own order.
+- Four additional tests cover copies with known source order, successive value changes without repeated enumeration, lazy cold reads, literal/numeric keys, full replacements and empty rosters. Existing worker-patch tests now exercise order reuse during movement, loss, recruitment and changed passenger/owner/production data. All 1,815 unit tests in 138 files pass. Frozen inputs and exact comparisons verify no snapshot is mutated.
+- Two unprofiled 240,000-unit Chromium replays reduce main-thread JavaScript time from 720/721 ms to 672/673 ms. Both preceding-build runs have one long task; both updated runs have none during the measured five-order sequence. A separate profiled run also has none and reduces dictionary-copy and roster-enumeration hotspots. This is a bounded stress scenario, not a claim that every late-game action is stall-free or that worker thinking is faster. Every order and complete campaign hash match.
+- The Round 32 replay preserves all 485 commands and its complete final-state hash. It reaches the same human decision in 7.95 seconds, with no long tasks or browser errors and frame-time p95 of 16.7 ms. Reports use `ai-transfer-patched-roster-*` and the existing transfer diagnostic. The original exported file and playing browser save are unchanged.
+- All 90 focused browser checks pass across Chromium, Firefox and mobile Chromium. They cover army selection and movement, faction scores, camera zoom/pan, large-save reload/export/recovery, concurrent tabs, delayed-save coalescing, bulk AI orders and worker upload/pause/retry. TypeScript, production build, formatting and whitespace checks pass.
+- The deployed build passes another nine Chromium army/save/worker checks and all 12 HTTP checks. Previously deployed asset hashes remain available to open games.
+
 ## Reuse of received AI changes for saving: 2026-09-23
 
 - The interface registers immutable AI patches with a weak reference to their exact originating snapshot. Autosave and export forward a matching patch directly. Up to 32 consecutive patches with at most 4,096 changed record entries can be composed while a save is pending. Missing or collected history, unrelated branches, human transactions, full dictionary replacements and larger sequences fall back to the ordinary exact comparison. No full campaign history is retained, and mutable engine transactions do not register here.

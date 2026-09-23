@@ -95,15 +95,24 @@ export function snapshotDelta(before: Game, after: Game): SnapshotDelta {
   }
   return delta;
 }
-/** Apply only to the exact immutable snapshot that originated this request. */
-export function applySnapshotDelta(before: Game, delta: SnapshotDelta): Game {
+/** Apply only to the exact immutable snapshot that originated this request.
+ * knownPieceKeys must belong to that source's unchanged piece dictionary. */
+export function applySnapshotDelta(
+  before: Game,
+  delta: SnapshotDelta,
+  knownPieceKeys?: readonly string[],
+): Game {
   const result: Partial<Game> = {};
   for (const key of delta.keys) {
     const record = delta.records[key];
     let value: unknown;
     if (record) {
       const previous = before[key] as Records;
-      value = copyRecords(previous, record);
+      value = copyRecords(
+        previous,
+        record,
+        key === "pieces" ? knownPieceKeys : undefined,
+      );
     } else
       value = Object.hasOwn(delta.values, key)
         ? delta.values[key]

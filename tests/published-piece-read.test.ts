@@ -14,11 +14,13 @@ import {
   piecesAt,
   planningValue,
   prepareGameView,
+  preparePatchedGameView,
   productionSources,
   retainPieceRead,
   withPlanningFrame,
 } from "../src/game/selectors";
 import { applySnapshotDelta, snapshotDelta } from "../src/game/snapshot-delta";
+import { applyPublishedDelta } from "../src/game/published-delta";
 import type { Game } from "../src/game/types";
 import { piece } from "./helpers";
 import { fishingFixture } from "./maritime-fixture";
@@ -153,12 +155,134 @@ it("invalidates every troop index when a worker delta changes the roster", () =>
   delete changed.pieces[ship.id];
   changed.pieces[ship.id] = units[0];
   const expected = readings(structuredClone(changed));
-  const received = applySnapshotDelta(s, snapshotDelta(s, changed));
+  const delta = snapshotDelta(s, changed);
+  const received = applyPublishedDelta(
+    s,
+    delta,
+    retainPieceRead(s)?.recordKeys,
+  );
   freeze(received);
-  prepareGameView(received);
+  preparePatchedGameView(s, received, delta);
   expect(retainPieceRead(received)).not.toBe(retainPieceRead(s));
+  expect(retainPieceRead(received)?.recordKeys).toBe(
+    delta.records.pieces!.keys,
+  );
   expect(readings(received)).toEqual(expected);
   expect(readings(s)).toEqual(initial);
+});
+
+it("reuses source key order for copying and fresh reads through successive value-only patches", () => {
+  const { s, water } = fixture();
+  for (let i = 0; i < 1000; i++) piece(s, water, i % 2, "fishing");
+  prepareGameView(s);
+  const original = readings(s),
+    sourceKeys = retainPieceRead(s)!.recordKeys;
+  expect(sourceKeys).toBeDefined();
+  const snapshots = [s];
+  for (let turn = 1; turn <= 4; turn++) {
+    const before = snapshots.at(-1)!,
+      changed = structuredClone(before),
+      unit = changed.pieces[sourceKeys![turn]];
+    unit.owner = (unit.owner + 1) % s.players.length;
+    unit.tile = "0,1";
+    unit.tier = 1 + (turn % 4);
+    unit.bonus = turn;
+    changed.actions++;
+    const expected = readings(structuredClone(changed));
+    const delta = snapshotDelta(before, changed);
+    expect(delta.records.pieces?.keys).toBeUndefined();
+    freeze(before);
+    freeze(delta);
+    const keys = vi.spyOn(Object, "keys");
+    let received: Game;
+    try {
+      received = applyPublishedDelta(
+        before,
+        delta,
+        retainPieceRead(before)!.recordKeys,
+      );
+      preparePatchedGameView(before, received, delta);
+      allPieces(received);
+      ownPieces(received);
+      piecesAt(received, water);
+      expect(
+        keys.mock.calls.some(
+          ([value]) => value === before.pieces || value === received.pieces,
+        ),
+      ).toBe(false);
+      expect(retainPieceRead(received)!.recordKeys).toBe(sourceKeys);
+    } finally {
+      keys.mockRestore();
+    }
+    expect(readings(received!)).toEqual(expected);
+    snapshots.push(received!);
+  }
+  expect(readings(s)).toEqual(original);
+});
+
+it("keeps patch preparation lazy and discovers order when the source was never indexed", () => {
+  const { s, water } = fixture();
+  prepareGameView(s);
+  expect(retainPieceRead(s)!.recordKeys).toBeUndefined();
+  const next = structuredClone(s);
+  Object.values(next.pieces)[0].tile = "0,1";
+  const delta = snapshotDelta(s, next);
+  const received = applyPublishedDelta(s, delta);
+  preparePatchedGameView(s, received, delta);
+  inventory(received);
+  expect(retainPieceRead(s)!.recordKeys).toBeUndefined();
+  expect(retainPieceRead(received)!.recordKeys).toBeUndefined();
+  const spy = vi.spyOn(Object, "keys");
+  try {
+    allPieces(received);
+    piecesAt(received, water);
+    expect(
+      spy.mock.calls.filter(([value]) => value === received.pieces),
+    ).toHaveLength(1);
+  } finally {
+    spy.mockRestore();
+  }
+  expect(readings(received)).toEqual(readings(structuredClone(next)));
+});
+
+it("uses actual dictionary keys and fresh order after replacement or deletion", () => {
+  const { s } = fixture();
+  const units = Object.values(s.pieces);
+  // Literal aliases and numeric keys must never be inferred from unit.id.
+  s.pieces = { 9: units[0], alias: units[1], 2: units[2] };
+  prepareGameView(s);
+  allPieces(s);
+  const next = {
+    ...s,
+    pieces: { ...s.pieces, alias: { ...units[1], moved: 2 } },
+  };
+  const patch = snapshotDelta(s, next);
+  const updated = applyPublishedDelta(s, patch, retainPieceRead(s)!.recordKeys);
+  preparePatchedGameView(s, updated, patch);
+  expect(allPieces(updated)).toEqual(Object.values(next.pieces));
+  const replacement = { ...next, pieces: { completely: units[5] } };
+  const full = {
+    keys: Object.keys(replacement) as (keyof Game)[],
+    values: { pieces: replacement.pieces },
+    records: {},
+  };
+  const restored = applyPublishedDelta(
+    updated,
+    full,
+    retainPieceRead(updated)!.recordKeys,
+  );
+  preparePatchedGameView(updated, restored, full);
+  expect(allPieces(restored)).toEqual(Object.values(replacement.pieces));
+  const empty = { ...restored, pieces: {} },
+    removed = snapshotDelta(restored, empty),
+    last = applyPublishedDelta(
+      restored,
+      removed,
+      retainPieceRead(restored)!.recordKeys,
+    );
+  preparePatchedGameView(restored, last, removed);
+  expect(allPieces(last)).toEqual([]);
+  expect(retainPieceRead(last)!.recordKeys).toEqual([]);
 });
 
 it("keeps mutable planning scopes and unregistered drafts outside published caches", () => {

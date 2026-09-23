@@ -1,4 +1,5 @@
 import { maxValue, minValue } from "./aggregate";
+import type { SnapshotDelta } from "./snapshot-delta";
 import {
   seasonAt,
   seasonalYield,
@@ -61,6 +62,7 @@ export const sumStock = (s: Stock) =>
 // drafts, so cached UI data can never leak into execution.
 interface PieceReadIndex {
   source: Game["pieces"];
+  recordKeys: readonly string[] | undefined;
   units: readonly Piece[];
   pieces: Map<number, Piece[]>;
   pieceOrder: Map<Piece, number>;
@@ -112,6 +114,33 @@ export function prepareGameView(s: Game): void {
   }
   prepareWorldView(s);
 }
+/** Only for the exact immutable result of applying this worker patch. Record
+ * order is already known for insertions/deletions, and survives value-only
+ * changes. Retain that array, never the previous index or campaign. All troop
+ * values and derived position/owner/production indexes are still read fresh. */
+export function preparePatchedGameView(
+  before: Game,
+  after: Game,
+  delta: SnapshotDelta,
+): void {
+  const patch = delta.records.pieces;
+  if (patch && !publishedPieceReads.has(after.pieces)) {
+    const keys =
+      patch.keys ?? publishedPieceReads.get(before.pieces)?.recordKeys;
+    if (keys)
+      publishedPieceReads.set(
+        after.pieces,
+        createPieceReadIndex(
+          after.pieces,
+          undefined,
+          undefined,
+          undefined,
+          keys,
+        ),
+      );
+  }
+  prepareGameView(after);
+}
 function readIndex(s: Game): PlanningIndex | undefined {
   return planningIndex?.source === s
     ? planningIndex
@@ -119,9 +148,11 @@ function readIndex(s: Game): PlanningIndex | undefined {
 }
 /** Own enumerable records in campaign order. Game dictionaries contain plain
  * JSON data; enumerating keys avoids V8's slower values path on large maps. */
-function pieceValues(pieces: Game["pieces"]): Piece[] {
-  const keys = Object.keys(pieces),
-    out = new Array<Piece>(keys.length);
+function pieceValues(
+  pieces: Game["pieces"],
+  keys: readonly string[] = Object.keys(pieces),
+): Piece[] {
+  const out = new Array<Piece>(keys.length);
   for (let i = 0; i < keys.length; i++) out[i] = pieces[keys[i]];
   return out;
 }
@@ -1375,9 +1406,12 @@ function createPieceReadIndex(
   retainedUnits?: readonly Piece[],
   occupation?: MovementOccupation,
   compositionMemo = new Map<string, unknown>(),
+  retainedKeys?: readonly string[],
 ): PieceReadIndex {
   let units = retainedUnits;
-  const unitRecords = () => (units ??= pieceValues(source));
+  let keys = retainedKeys;
+  const unitRecords = () =>
+    (units ??= pieceValues(source, (keys ??= Object.keys(source))));
   let pieces: PieceReadIndex["pieces"] | undefined;
   let pieceOrder: PieceReadIndex["pieceOrder"] | undefined;
   let passengers: PieceReadIndex["passengers"] | undefined;
@@ -1386,6 +1420,9 @@ function createPieceReadIndex(
   let tiles: PieceReadIndex["tiles"] | undefined;
   return {
     source,
+    get recordKeys() {
+      return keys;
+    },
     get units() {
       return unitRecords();
     },
@@ -1516,9 +1553,10 @@ function createPlanningIndex(
     memo: new Map(),
   };
 }
-/** Engine batch only: retain from a read scope immediately before a command
- * proven not to edit/add/remove troops. Discard after any troop change. The
- * handle contains no terrain, town, diplomacy or general planning results. */
+/** A troop-only handle for an exact read scope or immutable UI snapshot. Engine
+ * batches may retain it only across commands proven not to edit/add/remove
+ * troops. Published patches may reuse its known source key order for copying,
+ * then build fresh indexes. No campaign, terrain or general planning results. */
 export function retainPieceRead(s: Game): RetainedPieceRead | undefined {
   const index = readIndex(s);
   return index?.source.pieces === s.pieces ? index.troopRead : undefined;

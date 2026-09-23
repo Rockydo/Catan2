@@ -170,6 +170,8 @@ Initial AI uploads above 16,384 troops use chunks of at most 2,048 units. The in
 
 Published snapshots also share their troop indexes when the roster has not changed. Economic orders can update towns and resources without rescanning every army. Changes to units rebuild the indexes; terrain, diplomacy, production and town calculations still use the current campaign. Mutable engine and AI planning scopes do not read this UI cache.
 
+When an AI reply changes units, copying and rebuilding their list reuse the known dictionary order. Moves keep the preceding order; recruitment, losses and reordering use the exact order supplied by the patch. Every unit value and derived index is read fresh. Unindexed inputs and full replacements keep the ordinary discovery path.
+
 Autosave and export reuse the exact received AI changes instead of comparing the whole army again. Short sequences can be combined while a save is pending. Missing history, unrelated states, human actions and larger sequences retain the full comparison path. Weak references let previous campaigns be collected. The transfer diagnostic reports how many save messages forward an existing AI patch.
 
 Set `BATCH_LIMIT=1` to isolate a slow first worker batch without playing the rest of the turn. The normal 20-second worker timeout remains enabled. The report includes autosave transfer time and counts full versus incremental save messages.

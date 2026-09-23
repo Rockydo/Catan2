@@ -16,8 +16,12 @@ const received = new WeakMap<
 >();
 
 /** Both the source snapshot and received patch must remain immutable. */
-export function applyPublishedDelta(before: Game, delta: SnapshotDelta): Game {
-  const after = applySnapshotDelta(before, delta);
+export function applyPublishedDelta(
+  before: Game,
+  delta: SnapshotDelta,
+  knownPieceKeys?: readonly string[],
+): Game {
+  const after = applySnapshotDelta(before, delta, knownPieceKeys);
   received.set(after, { before: new WeakRef(before), delta });
   return after;
 }

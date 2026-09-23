@@ -1,4 +1,4 @@
-import { expect, it } from "vitest";
+import { expect, it, vi } from "vitest";
 import { copyRecords } from "../src/game/record-copy";
 
 it("copies own string records with the original ordering and value identities", () => {
@@ -80,4 +80,30 @@ it("keeps prototype-like names as ordinary own data without invoking setters", (
     });
   }
   expect(Object.hasOwn(Object.prototype, "polluted")).toBe(false);
+});
+
+it("uses known immutable source order without enumerating the dictionary again", () => {
+  const source: Record<string, unknown> = Object.freeze(
+    JSON.parse('{"u8":{"id":"u8"},"2":2,"__proto__":{"x":1},"u4":4}'),
+  );
+  const keys = Object.freeze(Object.keys(source));
+  for (const patch of [
+    undefined,
+    { values: { u4: undefined, u9: 9, 1: 1 } },
+    { values: { u9: 9, u4: undefined }, keys: ["u9", "u4", "u8"] },
+    { values: {}, keys: [] },
+  ]) {
+    const expected = copyRecords<unknown>(source, patch);
+    const spy = vi.spyOn(Object, "keys");
+    let actual;
+    try {
+      actual = copyRecords<unknown>(source, patch, keys);
+      expect(spy.mock.calls.some(([value]) => value === source)).toBe(false);
+    } finally {
+      spy.mockRestore();
+    }
+    expect(actual).toStrictEqual(expected);
+    expect(Object.keys(actual!)).toEqual(Object.keys(expected));
+    expect(Object.getPrototypeOf(actual)).toBe(Object.prototype);
+  }
 });

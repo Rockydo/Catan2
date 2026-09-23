@@ -72,6 +72,8 @@ import { newGame, applyCommand } from "./game/engine";
 import {
   inventory,
   prepareGameView,
+  preparePatchedGameView,
+  retainPieceRead,
   ownTowns,
   ownPieces,
   income,
@@ -426,8 +428,14 @@ export default function App({
           return;
         setBusy(false);
         const next = event.data.delta
-          ? applyPublishedDelta(snapshot, event.data.delta)
+          ? applyPublishedDelta(
+              snapshot,
+              event.data.delta,
+              retainPieceRead(snapshot)?.recordKeys,
+            )
           : event.data.state;
+        if (next && event.data.delta)
+          preparePatchedGameView(snapshot, next, event.data.delta);
         const ok =
           commands.length > 0 &&
           (next
