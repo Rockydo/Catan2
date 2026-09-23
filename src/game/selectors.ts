@@ -49,6 +49,8 @@ import {
   distance,
   vertexNeighbors,
   landAtVertex,
+  prepareWorldView,
+  withWorldReadFrame,
   walkableAtVertex,
   waterAtVertex,
   unknownAtVertex,
@@ -67,6 +69,7 @@ interface PlanningIndex {
   pieceOrder: Map<Piece, number>;
   passengers: Map<string, Piece[]>;
   producers: ProductionActors;
+  movement: MovementOccupation;
   tiles: Map<string, Piece[]>;
   stocks: Map<number, Stock>;
   nearest: Map<string, Town | undefined>;
@@ -80,6 +83,7 @@ const viewIndexes = new WeakMap<Game, PlanningIndex>();
  * mutated afterwards. New engine results and imported saves have new identities. */
 export function prepareGameView(s: Game): void {
   if (!viewIndexes.has(s)) viewIndexes.set(s, createPlanningIndex(s));
+  prepareWorldView(s);
 }
 function readIndex(s: Game): PlanningIndex | undefined {
   return planningIndex?.source === s
@@ -202,12 +206,85 @@ export function ownPiecesAtVertex(s: Game, vertex: string, owner = s.active) {
       .sort((a, b) => index.pieceOrder.get(a)! - index.pieceOrder.get(b)!),
   ).slice();
 }
-export const hostileAt = (
+interface MovementOccupation {
+  // Per owner: land, stranded land, naval, stranded naval. Count and power do
+  // not affect passage. Passengers are absent until they disembark.
+  tiles: Map<string, Map<number, number>>;
+  keys?: readonly string[];
+}
+function collectMovementOccupation(
+  units: readonly Piece[],
+): MovementOccupation {
+  const tiles = new Map<string, Map<number, number>>();
+  let previous: Piece | undefined;
+  let previousFlag = 0;
+  for (const unit of units) {
+    if (unit.carrier) continue;
+    const flag = (unit.naval ? 4 : 1) << Number(!!unit.seasonStatus);
+    // Recruitment commonly puts identical occupation records consecutively.
+    // Skip their repeated map lookups as well as their former string creation.
+    if (
+      previous?.tile === unit.tile &&
+      previous.owner === unit.owner &&
+      previousFlag === flag
+    )
+      continue;
+    previous = unit;
+    previousFlag = flag;
+    let owners = tiles.get(unit.tile);
+    if (!owners) tiles.set(unit.tile, (owners = new Map()));
+    owners.set(unit.owner, (owners.get(unit.owner) ?? 0) | flag);
+  }
+  return { tiles };
+}
+function movementOccupation(s: Game): MovementOccupation {
+  const index = readIndex(s);
+  return index?.source.pieces === s.pieces
+    ? index.movement
+    : collectMovementOccupation(allPieces(s));
+}
+/** Exact canonical route-cache keys, one per occupied faction/domain/status.
+ * The readonly result may be shared only within immutable troop read scopes. */
+export function movementOccupationKeys(s: Game): readonly string[] {
+  const occupation = movementOccupation(s);
+  if (!occupation.keys) {
+    const keys: string[] = [];
+    for (const [tile, owners] of occupation.tiles)
+      for (const [owner, flags] of owners)
+        for (let mode = 0; mode < 4; mode++)
+          if (flags & (1 << mode))
+            keys.push(`${tile}/${owner}/${mode >= 2}/${!!(mode & 1)}`);
+    occupation.keys = keys.sort();
+  }
+  return occupation.keys;
+}
+export function hostileAt(
   s: Game,
   tile: string,
   p = s.active,
   naval?: boolean,
-) => combatantsAt(s, tile, naval).some((u) => !friendly(s, u.owner, p));
+): boolean {
+  const index = readIndex(s);
+  if (index?.source.pieces === s.pieces) {
+    const owners = index.movement.tiles.get(tile);
+    // Stranded troops can be attacked from either movement domain.
+    const mask = naval === undefined ? 15 : naval ? 14 : 11;
+    if (owners)
+      for (const [owner, flags] of owners)
+        if (flags & mask && !friendly(s, owner, p)) return true;
+  } else {
+    // Mutable drafts must read current records; avoid intermediate unit arrays.
+    for (const unit of allPieces(s))
+      if (
+        unit.tile === tile &&
+        !unit.carrier &&
+        (naval === undefined || unit.naval === naval || !!unit.seasonStatus) &&
+        !friendly(s, unit.owner, p)
+      )
+        return true;
+  }
+  return false;
+}
 /** A stranded force can be engaged from the tile's current movement surface. */
 export const combatantsAt = (s: Game, tile: string, naval?: boolean) =>
   piecesAt(s, tile).filter(
@@ -1025,6 +1102,7 @@ function createPlanningIndex(
   let pieceOrder: PlanningIndex["pieceOrder"] | undefined;
   let passengers: PlanningIndex["passengers"] | undefined;
   let producers: ProductionActors | undefined;
+  let movement: MovementOccupation | undefined;
   let tiles: PlanningIndex["tiles"] | undefined;
   let towerSupport: PlanningIndex["towerSupport"] | undefined;
   return {
@@ -1086,6 +1164,10 @@ function createPlanningIndex(
     get producers() {
       if (shared) return shared.producers;
       return (producers ??= collectProductionActors(unitRecords()));
+    },
+    get movement() {
+      if (shared) return shared.movement;
+      return (movement ??= collectMovementOccupation(unitRecords()));
     },
     get tiles() {
       if (shared) return shared.tiles;
@@ -1158,7 +1240,7 @@ function planningFrame<T>(
   planningIndex = createPlanningIndex(source, shared, retainedUnits);
   incomeFrame = new WeakMap();
   try {
-    return run();
+    return withWorldReadFrame(source, run);
   } finally {
     incomeFrame = previous;
     planningIndex = previousIndex;

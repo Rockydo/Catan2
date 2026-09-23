@@ -110,6 +110,15 @@ SOURCE_ROOT=/path/to/older/checkout npx tsx scripts/ai-planning-compare.ts
 
 Use a reference checkout with the same gameplay rules. The audit creates 128 positions, including blocked coasts, shared guild coverage, watchtower support, spent movement, mixed formations and ports sharing sea tiles. It checks exact project scores, order, guild decisions and military actions, and verifies that neither planner changes its input. Shared-port cases vary city tiers, free hull grants, passenger armies, local forces and frozen seas.
 
+To compare route-cache maintenance and hostility queries with dense troop stacks:
+
+```sh
+SOURCE_ROOT=/path/to/older/checkout LABEL=before npx tsx scripts/occupation-performance.ts
+LABEL=after EXPECT_PATH=test-artifacts/occupation-performance-before.json npx tsx scripts/occupation-performance.ts
+```
+
+This read-only diagnostic uses 15,000, 60,000 and 240,000 units across 20 successive immutable views, with three timing samples. It compares every query result and checks that the input remains unchanged. `UNITS`, `VIEWS` and `SAMPLES` adjust the workload. This isolates occupation and route-cache reads; it does not measure complete AI turns.
+
 To measure bulk boarding, fleet movement, unloading and passenger rescue in a dense disposable campaign:
 
 ```sh

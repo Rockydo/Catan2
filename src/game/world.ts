@@ -247,9 +247,49 @@ export const vertexNeighbors = (world: World, id: string) =>
   world.vertices[id].edges.map((e) =>
     world.edges[e].vertices.find((v) => v !== id)!,
   );
-export const landAtVertex = (world: World, v: string) =>
-  world.vertices[v]?.tiles.filter((t) => world.tiles[t].resource !== "water") ??
-  [];
+interface WorldReadIndex {
+  source: World;
+  land: Map<string, string[]>;
+}
+let worldReadIndex: WorldReadIndex | undefined;
+const worldViewIndexes = new WeakMap<World, WorldReadIndex>();
+/** Published views are immutable. Transaction drafts must not register here. */
+export function prepareWorldView(world: World): void {
+  if (!worldViewIndexes.has(world))
+    worldViewIndexes.set(world, { source: world, land: new Map() });
+}
+/** Related read views may reuse geometry while both dictionaries are unchanged.
+ * Every new scope starts fresh; mutable execution runs outside this interval. */
+export function withWorldReadFrame<T>(world: World, run: () => T): T {
+  const previous = worldReadIndex;
+  worldReadIndex = { source: world, land: new Map() };
+  try {
+    return run();
+  } finally {
+    worldReadIndex = previous;
+  }
+}
+export function landAtVertex(world: World, v: string): string[] {
+  const index =
+    worldReadIndex?.source === world
+      ? worldReadIndex
+      : (worldViewIndexes.get(world) ?? worldReadIndex);
+  const cache =
+    index?.source.tiles === world.tiles &&
+    index.source.vertices === world.vertices
+      ? index.land
+      : undefined;
+  let land = cache?.get(v);
+  if (!land) {
+    land =
+      world.vertices[v]?.tiles.filter(
+        (t) => world.tiles[t].resource !== "water",
+      ) ?? [];
+    cache?.set(v, land);
+  }
+  // Existing callers receive independent, mutable arrays in adjacency order.
+  return cache ? land.slice() : land;
+}
 /** Unit occupancy is separate from edge construction: roads can skirt peaks. */
 export const canOccupy = (tile: Hex | undefined, naval = false): boolean =>
   !!tile &&

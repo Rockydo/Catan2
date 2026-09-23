@@ -829,3 +829,36 @@ A separate Node CPU profile also retained all 485 orders and the exact campaign.
 All 1,593 unit tests passed. The independent planning audit retained all 13,206 projects, scores and decisions across 128 scenarios. All 96 trade comparisons also matched, including offers, aid and acceptance decisions. The build, type checking, formatting and whitespace checks passed.
 
 All 147 staging browser scenarios passed across Chromium, Firefox and mobile. After local deployment, all 12 production HTTP checks and 11 additional Chromium transport, worker and large-save checks passed. Previous hashed assets were retained for open sessions. The source save exports and playing campaign were not modified; all browser checks used disposable copies and profiles. The broader performance goal remains active.
+
+
+## Occupation summaries and land-adjacency reads
+
+Movement checks now keep one four-flag occupation entry for each faction on each occupied tile: ordinary land forces, stranded land forces, ordinary fleets and stranded fleets. Passengers remain excluded. Consecutive troops with identical occupation skip duplicate map lookups. Hostility queries check those entries against the current alliance list, so civilian blockers, allied passage and stranded forces keep their existing rules. Actual battles still read the full formations. The strategic route cache builds its original sorted signature from these entries, producing the same keys without creating a temporary string for every soldier.
+
+The summary is lazy within the existing immutable read scope or published game view. Related views may share it only while their troop records are unchanged. Mutable drafts read current troops directly. Reusing a troop list after movement creates fresh occupation data; recruitment, capture, boarding, casualties and stranding do not retain an older summary. Its additional storage grows with occupied faction/tile combinations, not the number of soldiers in a stack.
+
+Land tiles adjacent to a town or intersection are also reused during a read-only calculation. This removes repeated tile filtering from economic and strategic queries. Each call still returns an independent array in the original adjacency order. Geometry or terrain drafts with different dictionaries bypass the current cache. Each new decision starts a new scope, nested errors restore their parent, and published views use weak keys.
+
+The new `scripts/occupation-performance.ts` diagnostic repeats route-cache maintenance and hostility checks through 20 immutable views. These are movement-only fixtures, not complete playable campaigns. Medians of three samples:
+
+| Units in the read fixture | Before | After |
+| --- | ---: | ---: |
+| 15,000 | 84.21 ms | 27.33 ms |
+| 60,000 | 301.71 ms | 116.65 ms |
+| 240,000 | 1,189.18 ms | 529.06 ms |
+
+Every query result matched the reference checkout and the complete input remained unchanged. These numbers isolate occupation reads; they do not describe total AI-turn speed or total memory usage.
+
+| AI workload | Before | Final build | Exact comparison |
+| --- | ---: | ---: | --- |
+| Latest Round 32 browser replay, through a human casualty prompt | 15.07 s | 14.27 s | 485 orders and full final state |
+| Round 31 browser replay, AI seat 2 through a human casualty prompt | 6.55 s | 6.41 s | 153 orders and full final state |
+| Growth map, 2,000 tiles and 1,000 towns, first 60 decisions | 11.72 s | 11.44 s | 60 orders and full final state |
+
+The latest browser sample improved by about 5%, with smaller gains in the other two samples. These are local comparisons, not guaranteed gains in every campaign. Both browser replays retained approximately 16.8 ms frame p95 with no long main-thread tasks or errors. The independent Node profile retained the same 485 orders and exact state, taking 12.15 seconds before and 11.01 seconds after. Profile timing is separate from the browser measurements. Full troop enumeration and production calculations remain significant costs, so the broader performance goal remains active.
+
+New regressions compare all land/naval/stranded combinations, passengers, civilians, alliances and reversed troop order against direct scans. They check current results after movement, capture, boarding, stranding and deletion, plus restored outer scopes and shared related views. A 6,000-unit case requires one enumeration and two occupation keys for two colocated factions. Land-adjacency regressions verify independent arrays, ordered results, bounded repeated resource reads, terrain and topology drafts, nested errors, new expedition land and preserved earlier published maps.
+
+All 1,603 unit tests passed. The independent planning audit retained every project, score and decision across 128 scenarios and 13,206 proposals. All 96 trade comparisons also matched, including offers, aid and acceptance decisions. Type checking, formatting, the build and whitespace checks passed.
+
+All 213 staging browser scenarios passed across Chromium, Firefox and mobile. After local deployment, all 12 production HTTP checks and 11 additional Chromium transport, worker and large-save scenarios passed. Previous hashed assets were retained for open sessions. Validation used exported copies and disposable profiles; the playing campaign was not opened or modified. The broader performance goal remains active.
