@@ -3,6 +3,7 @@ import { packTables, unpackTables } from "./save-tables";
 import { packReferences, unpackReferences } from "./save-references";
 import { packIntegers, unpackIntegers } from "./save-integers";
 import { packSpatial, unpackSpatial } from "./save-spatial";
+import { packGeometry, unpackGeometry } from "./save-geometry";
 import { syncEmergencyCoalition } from "./emergency-coalition";
 import {
   SEASONS,
@@ -698,6 +699,7 @@ export function assertInvariants(s: Game) {
   for (const key of Object.keys(s.pieces)) {
     const u = s.pieces[key];
     object(u);
+    id(key);
     rule(u.id === key && s.tiles[u.tile], "Invalid unit reference.");
     int(u.owner, 0, s.players.length - 1);
     rule(s.players[u.owner].alive, "An eliminated player owns units.");
@@ -1203,13 +1205,15 @@ export function serializePacked(s: Game): string {
 function saveEnvelope(s: Game, packed: boolean): string {
   const body = JSON.stringify(
     packed
-      ? packSpatial(packIntegers(packReferences(packTables(packGame(s)))))
+      ? packSpatial(
+          packIntegers(packReferences(packGeometry(packTables(packGame(s))))),
+        )
       : s,
   );
   const header = JSON.stringify({
     format: packed ? "catane-frontiers-packed" : "catane-frontiers",
     version: 14,
-    ...(packed ? { packing: 5 } : {}),
+    ...(packed ? { packing: 6 } : {}),
     savedAt: new Date().toISOString(),
     checksum: hash(body).toString(16),
   });
@@ -1226,7 +1230,7 @@ export function deserialize(text: string): Game {
     data &&
       (data.format === "catane-frontiers" ||
         (data.format === "catane-frontiers-packed" &&
-          [1, 2, 3, 4, 5].includes(data.packing))) &&
+          [1, 2, 3, 4, 5, 6].includes(data.packing))) &&
       [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14].includes(data.version) &&
       data.game,
     "This is not a supported Catane save.",
@@ -1235,22 +1239,15 @@ export function deserialize(text: string): Game {
     hash(JSON.stringify(data.game)).toString(16) === data.checksum,
     "This save is damaged: its integrity check failed.",
   );
-  if (data.format === "catane-frontiers-packed")
-    data.game = unpackGame(
-      data.packing >= 3
-        ? unpackTables(
-            unpackReferences(
-              data.packing >= 4
-                ? unpackIntegers(
-                    data.packing === 5 ? unpackSpatial(data.game) : data.game,
-                  )
-                : data.game,
-            ),
-          )
-        : data.packing === 2
-          ? unpackTables(data.game)
-          : data.game,
-    );
+  if (data.format === "catane-frontiers-packed") {
+    let packed = data.game;
+    if (data.packing >= 5) packed = unpackSpatial(packed);
+    if (data.packing >= 4) packed = unpackIntegers(packed);
+    if (data.packing >= 3) packed = unpackReferences(packed);
+    if (data.packing >= 6) packed = unpackGeometry(packed);
+    if (data.packing >= 2) packed = unpackTables(packed);
+    data.game = unpackGame(packed);
+  }
   {
     // Replace retired/prototype crops before older migrations inspect yields.
     // Unreleased v12 prototypes also placed American crops in Old World climates.

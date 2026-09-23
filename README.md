@@ -150,14 +150,14 @@ To measure compression and exact save recovery without a browser:
 SAVE_PATH=/path/to/campaign.json npx tsx scripts/save-performance.ts
 ```
 
-To compare refresh loading of original JSON, unit-template saves, map tables, reference dictionaries, integer columns and the current spatial format in a disposable Chromium profile:
+To compare refresh loading of original JSON and all six compact formats in a disposable Chromium profile:
 
 ```sh
 SAVE_PATH=/path/to/campaign.json GAME_URL=http://127.0.0.1:4173 \
   npx tsx scripts/save-load-performance.ts
 ```
 
-This checks the exact loaded state and measures when the campaign menu appears. It does not open or change your playing browser.
+This checks the exact loaded state and measures when the campaign menu appears. It does not open or change your playing browser. Set `FORMATS=spatial,packed` to compare the previous spatial format with the current geometry format. The report includes the full campaign hash.
 
 `scripts/save-import-performance.ts` measures importing the same compressed campaign through a fresh worker, including reconstruction in the interface thread. It takes the same `SAVE_PATH`, `GAME_URL` and `LABEL` options and verifies the complete result. This isolates import processing from map painting. It bundles the actual interface decoder used by the tested build; set `SOURCE_ROOT` to that build’s checkout when comparing a previous version.
 

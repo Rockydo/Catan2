@@ -1,5 +1,5 @@
 import type { Game } from "../game/types";
-import { packGame, unpackGame } from "../game/save-packing";
+import { packGame, restoreValidatedGame } from "../game/save-packing";
 
 export interface LoadedCampaign {
   game: Game | null;
@@ -17,7 +17,7 @@ type LoadTransfer = Omit<LoadedCampaign, "game"> &
 export function encodeLoadedCampaign(result: LoadedCampaign): LoadTransfer {
   if (!result.game) return result;
   const keys = Object.keys(result.game.pieces);
-  if (keys.length < 20_000) return result;
+  if (keys.length < 2_000) return result;
   const { game, ...status } = result;
   // A diverse army may not benefit from templates. A small, evenly spaced
   // sample of neighboring records avoids an expensive failed packing attempt.
@@ -42,5 +42,8 @@ export function decodeLoadedCampaign(result: LoadTransfer): LoadedCampaign {
   if ("game" in result) return result;
   const { gameText, unitTemplates, ...status } = result;
   const game = JSON.parse(gameText);
-  return { ...status, game: unitTemplates ? unpackGame(game) : (game as Game) };
+  return {
+    ...status,
+    game: unitTemplates ? restoreValidatedGame(game) : (game as Game),
+  };
 }

@@ -3,6 +3,7 @@ import { packIntegers, unpackIntegers } from "../src/game/save-integers";
 import { packGame } from "../src/game/save-packing";
 import { packTables } from "../src/game/save-tables";
 import { packReferences } from "../src/game/save-references";
+import { packSpatial } from "../src/game/save-spatial";
 import { deserialize, serialize, serializePacked } from "../src/game/save";
 import { compress } from "../src/storage/codec";
 import { hash } from "../src/game/world";
@@ -37,7 +38,7 @@ it("preserves full games, optional fields, record order and all previous save fo
   s.pieces[first.id] = first;
   const before = JSON.stringify(s),
     modern = JSON.parse(serializePacked(s));
-  expect(modern.packing).toBe(5);
+  expect(modern.packing).toBe(6);
   const templates = packGame(s),
     tables = packTables(templates),
     refs = packReferences(tables);
@@ -50,7 +51,8 @@ it("preserves full games, optional fields, record order and all previous save fo
     [2, tables],
     [3, refs],
     [4, packIntegers(refs)],
-    [5, modern.game],
+    [5, packSpatial(packIntegers(refs))],
+    [6, modern.game],
   ]) {
     const text = JSON.stringify({
       ...modern,

@@ -114,6 +114,7 @@ Validation passed 1,313 unit tests and 66 browser checks across Chromium, Firefo
 - Incremental worker messages must reference an acknowledged snapshot. A missing or stale base requires a full resynchronization before any write. Stored saves are complete snapshots, not a chain of deltas.
 - Large-save work must measure refresh readiness as well as file size. Comparisons must restore the complete campaign, including property order, and distinguish menu readiness from map rendering.
 - Dictionary references must preserve exact geometry and remain within the reconstructed-data budget. A smaller compressed file cannot bypass load validation or expansion limits.
+- A derived geometry column may be omitted only after checking every saved value against the archive's fixed coordinate formula. Field order, adjacency order and noncanonical values must survive exactly. Loading must not rerun terrain generation or use the current world seed to reconstruct revealed terrain.
 
 ## Compact army saves and refresh loading
 
@@ -517,3 +518,27 @@ Regression tests cover terrain and alliance changes, blocked endpoints, stranded
 All 1,466 unit tests and 111 browser scenarios passed. After deferring unused distance searches, all unit tests and 33 affected browser scenarios were repeated on the final build. Coverage spans Firefox, Chromium and mobile, including transport shortcuts, worker continuation, economic batches, guilds, siege actions, seasonal movement, army selection and large-save recovery. Tests used exported copies and disposable fixtures; the player's live campaign was not opened or changed.
 
 The deployed build passed all 12 production HTTP checks and 10 additional Chromium transport, worker and storage scenarios. Earlier hashed assets were retained for already-open sessions. The broader performance goal remains active.
+
+## Exact geometry compression and medium-army refresh
+
+Packing version 6 removes duplicate coordinate and geometry columns only when every value matches a fixed archive formula. Tile corners and edges are restored from saved coordinates; edge endpoints are restored from the saved edge key. Original field and record order are retained. Reversed endpoints, noncanonical values and future fields keep their literal representation. Terrain, weather, resources, orders and random state are never regenerated. Original JSON and packing versions 1 through 5 still load.
+
+| Campaign | Previous archive | New archive | Reduction |
+| --- | ---: | ---: | ---: |
+| Latest export, 540 tiles and 14,695 units | 59,271 bytes | 49,677 bytes | 16.2% |
+| Growth map, 2,000 tiles and 1,000 towns | 178,385 bytes | 136,171 bytes | 23.7% |
+| Storage stress copy, 240,000 units | 61,921 bytes | 52,675 bytes | 14.9% |
+
+The storage stress copy repeats existing troops and is not a naturally played campaign. Every comparison restores the complete JSON, including insertion order and independent mutable records. Compression remains lossless and saves remain complete snapshots with atomic backup writes.
+
+The compact worker transfer now applies from 2,000 units instead of 20,000. Large repeated formations use templates; diverse armies use native JSON transfer. Files and database records still receive full validation in the worker. The interface reconstructs that validated result without repeating the full expansion-budget and ID audit. Historical JSON now also rejects unsafe unit keys before this boundary.
+
+With warm assets in disposable Chromium, median refresh-to-menu time on the latest export fell from 104.8 ms to 90.2 ms, about 14%. The 240,000-unit stress copy took 445.2 ms versus 434.2 ms before, effectively unchanged at around 0.45 seconds. The new geometry format itself adds a small reconstruction cost; the improvement on the real export comes from transferring medium-sized armies more efficiently. These measurements stop at menu readiness, not map painting, and do not promise fixed timings for every machine or campaign.
+
+The refresh diagnostic now covers original JSON and all six compact encodings, records the full campaign hash, and accepts `FORMATS` to select a comparison. Regression tests cover omitted-column reconstruction, exact order, alternate geometry, unknown and prototype-named fields, malformed metadata, expansion limits, independent objects, medium-army transfer and every historical packing version.
+
+The accompanying AI cleanup skips market analysis when no collector can move. A 96-scenario audit retained all 7,520 projects and all military decisions. The latest export retained all 485 replayed orders and the same full final-state hash. It took 21.69 seconds versus 21.57 seconds previously, so this change does not claim a measurable whole-turn speedup on that position. Frame p95 was 16.7 ms with no long tasks or browser errors.
+
+All 1,494 unit tests and 33 browser scenarios passed. After the final validation change, all unit tests and all 21 storage browser scenarios passed again. Browser checks cover Chromium, Firefox and the mobile viewport, including bulk recruitment, refresh, compact exports, old imports, storage quota fallback, corrupt-primary recovery, competing tabs, coalesced writes and stale worker bases. All checks used disposable copies. The playing campaign was not opened or modified.
+
+The local deployment passed all 12 production HTTP checks and nine additional Chromium storage/worker scenarios. Earlier hashed assets remain available to already-open sessions. Campaigns adopt the smaller format on their next save or export after loading the update. The broader performance goal remains active.

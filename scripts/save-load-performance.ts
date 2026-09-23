@@ -1,8 +1,10 @@
 import { chromium } from "@playwright/test";
 import { readFileSync, mkdirSync, writeFileSync } from "node:fs";
+import { createHash } from "node:crypto";
 import { compress, importSave } from "../src/storage/codec";
 import { serialize, serializePacked } from "../src/game/save";
 import { packIntegers } from "../src/game/save-integers";
+import { packSpatial } from "../src/game/save-spatial";
 import { unpackGame } from "../src/game/save-packing";
 import { packGame } from "../src/game/save-packing";
 import { packTables } from "../src/game/save-tables";
@@ -62,8 +64,29 @@ const encodings = {
       }),
     ),
   ),
+  spatial: Array.from(
+    await compress(
+      JSON.stringify({
+        ...JSON.parse(template),
+        packing: 5,
+        game: packSpatial(
+          packIntegers(packReferences(packTables(templateGame))),
+        ),
+        checksum: hash(
+          JSON.stringify(
+            packSpatial(packIntegers(packReferences(packTables(templateGame)))),
+          ),
+        ).toString(16),
+      }),
+    ),
+  ),
   packed: Array.from(await compress(serializePacked(game))),
 };
+const formats = process.env.FORMATS?.split(",");
+if (formats?.some((format) => !Object.hasOwn(encodings, format)))
+  throw Error(
+    `Unknown format. Choose from ${Object.keys(encodings).join(", ")}.`,
+  );
 const browser = await chromium.launch({
   executablePath: "/usr/bin/chromium",
   args: ["--no-sandbox"],
@@ -118,11 +141,13 @@ try {
     "tables",
     "references",
     "integers",
+    "spatial",
     "packed",
     "tables",
     "packed",
     "templates",
     "references",
+    "spatial",
     "integers",
     "tables",
     "legacy",
@@ -130,8 +155,10 @@ try {
     "legacy",
     "integers",
     "packed",
+    "spatial",
     "templates",
   ] as const) {
+    if (formats && !formats.includes(format)) continue;
     await page.evaluate(async (bytes) => {
       localStorage.removeItem("catane-frontiers-save-v1");
       localStorage.removeItem("catane-frontiers-backup-v1");
@@ -191,15 +218,18 @@ try {
     tableBytes: encodings.tables.length,
     referenceBytes: encodings.references.length,
     integerBytes: encodings.integers.length,
+    spatialBytes: encodings.spatial.length,
     packedBytes: encodings.packed.length,
     legacyMedianReadyMs: median("legacy"),
     templateMedianReadyMs: median("templates"),
     tableMedianReadyMs: median("tables"),
     referenceMedianReadyMs: median("references"),
     integerMedianReadyMs: median("integers"),
+    spatialMedianReadyMs: median("spatial"),
     packedMedianReadyMs: median("packed"),
     samples,
     exactRoundTrip: true,
+    stateHash: createHash("sha256").update(expected).digest("hex"),
     errors,
   };
   const label = (process.env.LABEL ?? "campaign").replace(/[^a-z0-9_-]/gi, "-");

@@ -142,6 +142,18 @@ function copyValue(value: unknown, depth = 0): unknown {
 }
 
 export function unpackGame(game: PackedGame): Game {
+  return restoreGame(game, true);
+}
+
+/** Internal worker boundary only: the save worker has already checked the
+ * archive, migrated it and validated every game rule. Avoid repeating size,
+ * ID and template validation on the UI thread; still create independent units.
+ * Never use this entry point on a file or database record. */
+export function restoreValidatedGame(game: PackedGame): Game {
+  return restoreGame(game, false);
+}
+
+function restoreGame(game: PackedGame, validate: boolean): Game {
   const packed = game?.pieces;
   if (
     !packed ||
@@ -169,9 +181,10 @@ export function unpackGame(game: PackedGame): Game {
       throw invalid();
     let previous = 0;
     keys = rawKeys.deltas.map((delta) => {
-      if (!Number.isSafeInteger(delta)) throw invalid();
+      if (validate && !Number.isSafeInteger(delta)) throw invalid();
       previous += delta;
-      if (!Number.isSafeInteger(previous) || previous < 0) throw invalid();
+      if (validate && (!Number.isSafeInteger(previous) || previous < 0))
+        throw invalid();
       return rawKeys.prefix + previous;
     });
   }
@@ -189,11 +202,11 @@ export function unpackGame(game: PackedGame): Game {
       (key) => template[key] && typeof template[key] === "object",
     );
     // Validate nesting once, before duplicating any shared mutable values.
-    for (const key of nested) copyValue(template[key]);
+    if (validate) for (const key of nested) copyValue(template[key]);
     return {
       template,
       nested,
-      size: jsonBytes(template),
+      size: validate ? jsonBytes(template) : 0,
       // A literal restores the normal troop layout without a generic object
       // spread for every soldier. Any extra/reordered field takes the exact
       // generic path, so old and future save data is never dropped or reordered.
@@ -204,30 +217,31 @@ export function unpackGame(game: PackedGame): Game {
   });
   // Bound the reconstructed data as well as the compressed stream. A template
   // containing a large object must not be amplified into gigabytes of units.
-  let expanded = jsonBytes({ ...game, pieces: {} });
-  for (let i = 0; i < keys.length; i++) {
-    const key = keys[i],
-      index = packed.rows[i];
-    if (
-      typeof key !== "string" ||
-      key.length === 0 ||
-      key.length >= 160 ||
-      ["__proto__", "constructor", "prototype"].includes(key) ||
-      !Number.isSafeInteger(index) ||
-      !templates[index]
-    )
-      throw invalid();
-    expanded +=
-      templates[index].size +
-      (Array.isArray(rawKeys) ? jsonBytes(key) : key.length + 2) * 2;
-    if (expanded > LIMIT)
-      throw new Error("This save exceeds the 128 MB expanded limit.");
-  }
+  let expanded = validate ? jsonBytes({ ...game, pieces: {} }) : 0;
+  if (validate)
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i],
+        index = packed.rows[i];
+      if (
+        typeof key !== "string" ||
+        key.length === 0 ||
+        key.length >= 160 ||
+        ["__proto__", "constructor", "prototype"].includes(key) ||
+        !Number.isSafeInteger(index) ||
+        !templates[index]
+      )
+        throw invalid();
+      expanded +=
+        templates[index].size +
+        (Array.isArray(rawKeys) ? jsonBytes(key) : key.length + 2) * 2;
+      if (expanded > LIMIT)
+        throw new Error("This save exceeds the 128 MB expanded limit.");
+    }
   const pieces: Game["pieces"] = {};
   for (let i = 0; i < keys.length; i++) {
     const key = keys[i],
       { template, nested, standard } = templates[packed.rows[i]];
-    if (Object.hasOwn(pieces, key)) throw invalid();
+    if (validate && Object.hasOwn(pieces, key)) throw invalid();
     const piece: Record<string, unknown> = standard
       ? {
           id: key,

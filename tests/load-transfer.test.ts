@@ -5,6 +5,7 @@ import {
 } from "../src/storage/load-transfer";
 import { fishingFixture } from "./maritime-fixture";
 import { piece } from "./helpers";
+import { deserialize, serialize, serializePacked } from "../src/game/save";
 
 it("keeps small and missing saves on the direct path with recovery status intact", () => {
   for (const game of [null, fishingFixture().s]) {
@@ -63,3 +64,33 @@ it("retains native JSON transfer for a diverse large army and reads older worker
     ),
   ).toBe(expected);
 });
+
+it("uses compact worker transfer for medium armies only after complete archive validation", () => {
+  const { s, water } = fishingFixture();
+  for (let i = 0; i < 2_000; i++) piece(s, water, 0, "fishing", 3);
+  const units = Object.values(s.pieces);
+  for (const u of units.slice(0, 2))
+    Object.assign(u, { future: { nested: [1, 2] } });
+  const before = JSON.stringify(s);
+  const validated = deserialize(serializePacked(s));
+  const transfer = encodeLoadedCampaign({ game: validated, recovered: false });
+  expect("unitTemplates" in transfer && transfer.unitTemplates).toBe(true);
+  const decoded = decodeLoadedCampaign(structuredClone(transfer)).game!;
+  expect(JSON.stringify(decoded)).toBe(JSON.stringify(validated));
+  const [a, b] = Object.values(decoded.pieces) as any[];
+  a.future.nested.push(3);
+  expect(b.future.nested).toEqual([1, 2]);
+  expect(JSON.stringify(s)).toBe(before);
+  units[10].tier = 9;
+  expect(() => deserialize(serializePacked(s))).toThrow(/whole-number/);
+});
+
+it.each(["__proto__", "prototype", "constructor", "", "u".repeat(160)])(
+  "rejects unsafe unit keys in historical JSON before trusted transfer: %s",
+  (key) => {
+    const { s, water } = fishingFixture();
+    const unit = piece(s, water, 0, "fishing", 1);
+    s.pieces = JSON.parse(JSON.stringify({ [key]: { ...unit, id: key } }));
+    expect(() => deserialize(serialize(s))).toThrow(/identifier/);
+  },
+);
