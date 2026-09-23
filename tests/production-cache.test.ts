@@ -12,13 +12,14 @@ import {
   forEachProduction,
   productionSignature,
   withPlanningFrame,
+  withSharedPiecePlanningFrame,
 } from "../src/game/selectors";
 import {
   projectedIncome,
   projectedIncomes,
   withSeasonalPlanning,
 } from "../src/game/ai-seasonal";
-import type { Game, Good, Stock } from "../src/game/types";
+import type { Game, Good, Stock, Piece } from "../src/game/types";
 import { distance } from "../src/game/world";
 
 function direct(s: Game, owner: number, mode: "annual" | "current") {
@@ -629,4 +630,186 @@ it("equal fingerprints imply identical ordered deliveries across varied occupati
     expect(JSON.stringify(s)).toBe(original);
   }
   expect(reused).toBeGreaterThan(50);
+});
+
+function orderedDeliveries(
+  s: Game,
+  mode: "current" | "annual" | seasons.Season,
+) {
+  return productionSources(s, mode).map(
+    ({ owner, town, tile, good, amount }) => [
+      owner,
+      town.id,
+      tile,
+      good,
+      amount,
+    ],
+  );
+}
+
+it("repeated collectors retain each individual delivery, custom coverage and exact producer order", () => {
+  const f = fixture(),
+    s = f.s;
+  s.pieces = {};
+  // Constant guards make blockades identical in the isolated-producer oracle.
+  piece(s, f.land, 1, "heavy");
+  const carrier = piece(s, f.water, 0, "convoy", 4);
+  const guards = { ...s.pieces },
+    units: Piece[] = [];
+  for (let group = 0; group < 12; group++) {
+    const kind = (["merchant", "fishing", "merchantship"] as const)[group % 3];
+    for (let i = 0; i < 7; i++) {
+      const u = piece(
+        s,
+        kind === "merchant" ? f.land : f.water,
+        kind === "merchant" && group % 2 ? 1 : 0,
+        kind,
+        1 + (group % 4),
+      );
+      if (kind === "merchant" && group % 2 === 0)
+        u.coverage = group % 4 === 0 ? [] : [f.water];
+      if (i === 3) u.carrier = carrier.id;
+      units.push(u);
+      // Nonproducers do not change the order of harvested deliveries.
+      if (i === 4) piece(s, "-3,0", 0, "heavy");
+    }
+  }
+  const before = JSON.stringify(s);
+  for (const mode of ["current", "annual", ...seasons.SEASONS] as const) {
+    const prefix = orderedDeliveries({ ...s, pieces: guards }, mode);
+    const expected = [...prefix];
+    for (const u of units) {
+      const single = orderedDeliveries(
+        { ...s, pieces: { ...guards, [u.id]: u } },
+        mode,
+      );
+      expect(single.slice(0, prefix.length)).toEqual(prefix);
+      expected.push(...single.slice(prefix.length));
+    }
+    const actual = withPlanningFrame(s, () => orderedDeliveries(s, mode));
+    expect(actual).toEqual(expected);
+    const sum = (rows: typeof actual) =>
+      rows.reduce(
+        (n, row) =>
+          n + Number(row[4]) * probability(s.tiles[String(row[2])].number),
+        0,
+      );
+    expect(sum(actual)).toBe(sum(expected));
+  }
+  expect(JSON.stringify(s)).toBe(before);
+});
+
+it("shared troop reads still use each view's terrain, alliances, season and warehouses", () => {
+  const f = fixture(),
+    s = f.s;
+  piece(s, f.land, 1, "heavy");
+  piece(s, f.land, 0, "galley");
+  piece(s, f.water, 1, "galley");
+  piece(s, f.water, 0, "heavy");
+  const terrain = {
+    ...s.tiles,
+    [f.land]: {
+      ...s.tiles[f.land],
+      resource: "water" as const,
+      biome: "cod" as const,
+      fish: true,
+    },
+    [f.water]: {
+      ...s.tiles[f.water],
+      resource: "lumber" as const,
+      biome: "woods" as const,
+      fish: false,
+    },
+  };
+  const views: Game[] = [
+    { ...s, tiles: terrain },
+    {
+      ...s,
+      alliances: [{ id: "pact", members: [0, 1], threat: 2, lockedUntil: 5 }],
+    },
+    {
+      ...s,
+      round: 3,
+      tiles: {
+        ...s.tiles,
+        [f.water]: {
+          ...s.tiles[f.water],
+          climate: "arctic",
+          surface: "frozen",
+        },
+      },
+    },
+    {
+      ...s,
+      towns: {
+        ...s.towns,
+        [f.home.id]: {
+          ...f.home,
+          vertex: s.tiles["-3,0"].vertices[0],
+          extensions: {},
+          extensionGoods: {},
+        },
+      },
+    },
+    Object.assign(Object.create(s), { round: 4, tiles: terrain }),
+  ];
+  const modes = ["current", "annual", ...seasons.SEASONS] as const;
+  // These copies cannot see the enclosing frame's troop index.
+  const expected = views.map((view) =>
+    modes.map((mode) =>
+      orderedDeliveries(structuredClone({ ...s, ...view }), mode),
+    ),
+  );
+  const before = JSON.stringify(s);
+  withPlanningFrame(s, () => {
+    productionSignature(s);
+    for (let i = 0; i < views.length; i++) {
+      expect(modes.map((mode) => orderedDeliveries(views[i], mode))).toEqual(
+        expected[i],
+      );
+      withSharedPiecePlanningFrame(views[i], () => {
+        expect(modes.map((mode) => orderedDeliveries(views[i], mode))).toEqual(
+          expected[i],
+        );
+      });
+    }
+  });
+  expect(JSON.stringify(s)).toBe(before);
+});
+
+it("indexes repeated producers once across seasons and related read-only views", () => {
+  const f = fixture(),
+    s = f.s;
+  for (let i = 0; i < 2000; i++) piece(s, f.land, 0, "merchant", 3);
+  const spy = vi.spyOn(JSON, "stringify");
+  let keys: unknown[];
+  try {
+    withPlanningFrame(s, () => {
+      productionSignature(s);
+      for (const mode of ["current", "annual", ...seasons.SEASONS] as const)
+        forEachProduction(s, mode, () => {});
+      const view = { ...s, round: 2 };
+      forEachProduction(view, "spring", () => {});
+      withSharedPiecePlanningFrame(view, () =>
+        forEachProduction(view, "summer", () => {}),
+      );
+    });
+    keys = spy.mock.calls.filter(
+      ([value]) =>
+        Array.isArray(value) &&
+        value.length === 5 &&
+        ["merchant", "fishing", "merchantship"].includes(value[1]),
+    );
+  } finally {
+    spy.mockRestore();
+  }
+  // Merchant, fisher, then the repeated merchant group. No per-season or
+  // per-soldier serialization of these production keys.
+  expect(keys).toHaveLength(3);
+  const repeated = Object.values(s.pieces).at(-1)!;
+  const old = orderedDeliveries(s, "annual");
+  repeated.tier = 4;
+  expect(orderedDeliveries(s, "annual")).not.toEqual(old);
+  repeated.carrier = f.fisher.id;
+  expect(orderedDeliveries(s, "annual")).not.toEqual(old);
 });

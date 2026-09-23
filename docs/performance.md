@@ -718,3 +718,28 @@ The follow-up CPU profile retained the same 485 orders and full final-state hash
 All 144 staging browser scenarios passed across Chromium, Firefox and mobile. Coverage includes guild supply and production, army selection, transport, naval sieges, worker continuation, seasonal navigation, thaw battles and large-save recovery. The build, type checks, formatting and whitespace checks passed. Tests used disposable fixtures and exported copies; the player's live campaign was not opened or modified.
 
 The deployed local build passed all 12 production HTTP checks and 10 additional Chromium transport, worker and save scenarios. Earlier hashed assets were retained for already-open sessions. The broader performance goal remains active.
+
+
+## Shared troop inputs for seasonal production
+
+Seasonal forecasts previously inspected the full troop list and serialized every collector's production key again for each season. Production now has a lazy troop index within the existing read-only planning scope. It records occupying factions separately for land and naval forces, and consecutive equivalent merchants, merchant ships and fishing ships as ordered runs. Related seasonal and faction views can reuse those inputs while their troop records remain unchanged.
+
+The shared index contains no calculated yields, warehouse choices, alliances or terrain decisions. Each view still reads its own season, tile types, friendships, town locations and coverage. Mutable engine drafts without a matching read-only scope build fresh inputs. Actual production repeats every individual delivery in its original order, preserving floating-point forecasts and AI tie breaks. No unit is merged or removed from the campaign, and the save format is unchanged.
+
+| Workload | Before | After | Exact comparison |
+| --- | ---: | ---: | --- |
+| Latest Round 32 export, through the human casualty decision | 17.69 s | 16.70 s | 485 orders and complete final state |
+| Round 31 export, complete AI turn | 10.96 s | 10.81 s | 144 orders and complete final state |
+| Growth map, 2,000 tiles and 1,000 towns, first 60 decisions | 11.06 s | 11.03 s | 60 orders and complete final state |
+
+The latest replay improved by about 6%. The older campaign and growth-map sample were effectively unchanged. Browser replays retained approximately 16.7 ms frame p95 with no long main-thread tasks or errors. These are local samples, not guaranteed gains for every campaign. A follow-up CPU profile also retained all 485 orders and the complete final-state hash. Full troop enumeration and structured cloning still account for about 1.83 and 1.33 seconds of sampled CPU time, respectively, so further performance work remains.
+
+The production diagnostic matched every ordered delivery across all six production modes, four forecast horizons, and the complete resulting campaign for every dice total from 2 through 12. Both the latest export and the growth fixture matched. Their production key sizes remain 105,244 and 349,445 bytes. These are internal cache keys, not archive sizes.
+
+Regression tests compare mixed collector groups with independent one-unit production, including embarked units, custom and empty coverage, multiple tiers and interleaved nonproducers. Related-view tests change terrain, ice, alliances and warehouse positions, checking shared and independent reads against the same reference. A 2,000-merchant case verifies that equivalent collector keys are built once per read scope instead of once per unit per season. Mutations outside that scope must produce fresh results.
+
+All 1,566 unit tests passed. The planning audit retained all 13,206 projects, scores, guild choices and military decisions across 128 scenarios. All 96 trade comparisons matched, including offers, aid and acceptance decisions.
+
+All 144 staging browser scenarios passed across Chromium, Firefox and mobile. Coverage includes guild production and supply, army selection, transport, coastal sieges, seasonal previews, frozen seas, thaw retreats and large-save recovery. The local deployment then passed all 12 production HTTP checks and 10 additional Chromium save, transport and worker scenarios. Type checking, formatting, the build and whitespace checks passed.
+
+Tests used exported copies and disposable profiles. The player's live campaign was not opened or modified, and earlier hashed assets remain available to already-open sessions. The broader performance goal remains active.

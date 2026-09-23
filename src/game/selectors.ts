@@ -66,6 +66,7 @@ interface PlanningIndex {
   pieces: Map<number, Piece[]>;
   pieceOrder: Map<Piece, number>;
   passengers: Map<string, Piece[]>;
+  producers: ProductionActors;
   tiles: Map<string, Piece[]>;
   stocks: Map<number, Stock>;
   nearest: Map<string, Town | undefined>;
@@ -673,24 +674,63 @@ interface ProductionSource {
   good: Good;
   amount: number;
 }
-/** Only matching land/naval occupants can block a producer. Read-only scopes
- * share this occupation index; mutable rolls and transaction drafts rebuild it. */
-function productionBlockades(s: Game, units: readonly Piece[]) {
-  return planningValue(s, "production-blockades", () => {
-    const blockades = new Map<string, Set<number>>();
-    for (const u of units) {
-      if (
-        u.carrier ||
-        u.naval !== (s.tiles[u.tile]?.resource === "water") ||
-        (u.naval ? isSettler(u.kind) : points(u) <= 0)
-      )
-        continue;
-      let owners = blockades.get(u.tile);
-      if (!owners) blockades.set(u.tile, (owners = new Set()));
-      owners.add(u.owner);
+interface ProductionActors {
+  // Store both domains. Which one blocks a tile depends on the current view's
+  // terrain, while occupation itself depends only on unchanged troop records.
+  blockades: [Map<string, Set<number>>, Map<string, Set<number>>];
+  collectors: { unit: Piece; count: number; key: string }[];
+}
+function sameCollector(a: Piece, b: Piece): boolean {
+  return (
+    a.owner === b.owner &&
+    a.kind === b.kind &&
+    a.tier === b.tier &&
+    a.tile === b.tile &&
+    (a.coverage === b.coverage ||
+      (a.coverage !== undefined &&
+        b.coverage !== undefined &&
+        a.coverage.length === b.coverage.length &&
+        a.coverage.every((tile, i) => tile === b.coverage![i])))
+  );
+}
+function collectProductionActors(units: readonly Piece[]): ProductionActors {
+  const blockades: ProductionActors["blockades"] = [new Map(), new Map()];
+  const collectors: ProductionActors["collectors"] = [];
+  let previous: ProductionActors["collectors"][number] | undefined;
+  for (const unit of units) {
+    if (unit.carrier) continue;
+    if (unit.naval ? !isSettler(unit.kind) : points(unit) > 0) {
+      const map = blockades[unit.naval ? 1 : 0];
+      let owners = map.get(unit.tile);
+      if (!owners) map.set(unit.tile, (owners = new Set()));
+      owners.add(unit.owner);
     }
-    return blockades;
-  });
+    if (!collector(unit)) continue;
+    if (previous && sameCollector(previous.unit, unit)) previous.count++;
+    else {
+      previous = {
+        unit,
+        count: 1,
+        key: JSON.stringify([
+          unit.owner,
+          unit.kind,
+          unit.tier,
+          unit.tile,
+          unit.coverage,
+        ]),
+      };
+      collectors.push(previous);
+    }
+  }
+  return { blockades, collectors };
+}
+/** Related weather and faction views can share this troop-only index. Mutable
+ * transactions without a matching read-only scope always inspect current units. */
+function productionActors(s: Game): ProductionActors {
+  const index = readIndex(s);
+  return index?.source.pieces === s.pieces
+    ? index.producers
+    : collectProductionActors(allPieces(s));
 }
 export function productionSources(s: Game, mode: ProductionMode = "current") {
   const out: ProductionSource[] = [];
@@ -748,14 +788,15 @@ export function forEachProduction(
   };
   // Blockades depend on the occupying factions, not their stack size. Only
   // read-only scopes share this index; mutable roll/forecast drafts rebuild it.
-  const units = allPieces(s);
-  const blockades = productionBlockades(s, units);
+  const actors = productionActors(s);
   const blocks = new Map<string, boolean>();
   const blocked = (id: string, owner: number) => {
     const key = `${owner}/${id}`;
     if (!blocks.has(key)) {
       let result = false;
-      for (const faction of blockades.get(id) ?? [])
+      for (const faction of actors.blockades[
+        s.tiles[id]?.resource === "water" ? 1 : 0
+      ].get(id) ?? [])
         if (!friendly(s, faction, owner)) {
           result = true;
           break;
@@ -826,9 +867,7 @@ export function forEachProduction(
         })
       : s;
   const collectors = new Map<string, ProductionSource[]>();
-  for (const u of units) {
-    if (u.carrier || !collector(u)) continue;
-    const key = JSON.stringify([u.owner, u.kind, u.tier, u.tile, u.coverage]);
+  for (const { unit: u, count, key } of actors.collectors) {
     let sources = collectors.get(key);
     if (!sources) {
       sources = [];
@@ -859,14 +898,15 @@ export function forEachProduction(
     }
     // Preserve producer order and individual additions exactly. Multiplying
     // an aggregate would change floating-point forecasts and AI tie breaks.
-    for (const source of sources)
-      deliver(
-        source.owner,
-        source.town,
-        source.tile,
-        source.good,
-        source.amount,
-      );
+    for (let i = 0; i < count; i++)
+      for (const source of sources)
+        deliver(
+          source.owner,
+          source.town,
+          source.tile,
+          source.good,
+          source.amount,
+        );
   }
 }
 /** Complete public inputs to passive production. Resource spending, movement
@@ -877,38 +917,17 @@ export function productionSignature(s: Game): string {
     const blockade = new Set<string>();
     // Consecutive identical collectors have an exact run representation. Keep
     // their order and count; production still adds every delivery separately.
-    const collectors: [
-      number,
-      string,
-      Piece["kind"],
-      number,
-      Piece["coverage"],
-      number,
-    ][] = [];
-    let previousCollector: Piece | undefined;
+    const actors = productionActors(s);
+    const collectors = actors.collectors.map(({ unit: u, count }) => [
+      u.owner,
+      u.tile,
+      u.kind,
+      u.tier,
+      u.coverage,
+      count,
+    ]);
     const fishers = new Map<number, Map<string, number>>();
-    const units = allPieces(s);
-    for (const u of units) {
-      if (u.carrier) continue;
-      if (collector(u)) {
-        if (
-          previousCollector &&
-          previousCollector.owner === u.owner &&
-          previousCollector.tile === u.tile &&
-          previousCollector.kind === u.kind &&
-          previousCollector.tier === u.tier &&
-          (previousCollector.coverage === u.coverage ||
-            (previousCollector.coverage !== undefined &&
-              u.coverage !== undefined &&
-              previousCollector.coverage.length === u.coverage.length &&
-              previousCollector.coverage.every(
-                (tile, i) => tile === u.coverage![i],
-              )))
-        )
-          collectors[collectors.length - 1][5]++;
-        else collectors.push([u.owner, u.tile, u.kind, u.tier, u.coverage, 1]);
-        previousCollector = u;
-      }
+    for (const { unit: u } of actors.collectors) {
       if (u.kind === "fishing") {
         if (!fishers.has(u.owner)) fishers.set(u.owner, new Map());
         const positions = fishers.get(u.owner)!;
@@ -941,13 +960,18 @@ export function productionSignature(s: Game): string {
                 mark(tile.id, owner);
                 break;
               }
-    for (const [tile, occupants] of productionBlockades(s, units))
-      for (const owner of interests.get(tile) ?? [])
+    for (const [tile, owners] of interests) {
+      const occupants =
+        actors.blockades[s.tiles[tile]?.resource === "water" ? 1 : 0].get(
+          tile,
+        ) ?? [];
+      for (const owner of owners)
         for (const occupant of occupants)
           if (!friendly(s, occupant, owner)) {
             blockade.add(`${owner}/${tile}`);
             break;
           }
+    }
     return JSON.stringify([
       s.round,
       s.calendar,
@@ -999,6 +1023,7 @@ function createPlanningIndex(
   let pieces: PlanningIndex["pieces"] | undefined;
   let pieceOrder: PlanningIndex["pieceOrder"] | undefined;
   let passengers: PlanningIndex["passengers"] | undefined;
+  let producers: ProductionActors | undefined;
   let tiles: PlanningIndex["tiles"] | undefined;
   let towerSupport: PlanningIndex["towerSupport"] | undefined;
   return {
@@ -1056,6 +1081,10 @@ function createPlanningIndex(
         }
       }
       return passengers;
+    },
+    get producers() {
+      if (shared) return shared.producers;
+      return (producers ??= collectProductionActors(unitRecords()));
     },
     get tiles() {
       if (shared) return shared.tiles;
