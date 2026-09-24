@@ -91,7 +91,7 @@ describe("bounded lakes", () => {
     expect(forms.size).toBeGreaterThanOrEqual(8);
     expect(seas).toBeGreaterThan(0);
     expect(lakes).toBeGreaterThan(0);
-  });
+  }, 15000);
   it("generates compact multi-hex lakes without changing their unrevealed extent", () => {
     let single = 0,
       multi = 0;

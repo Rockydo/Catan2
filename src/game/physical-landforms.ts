@@ -18,13 +18,17 @@ export const LANDFORMS = [
   "volcanic-arcs",
   "basin-ranges",
   "dissected-plateaus",
+  "great-river-basins",
+  "cuesta-belts",
+  "lake-districts",
+  "badlands",
 ] as const;
 export type PhysicalLandform = (typeof LANDFORMS)[number];
-export const worldLandform = (seed: string, version = 5): PhysicalLandform =>
+export const worldLandform = (seed: string, version = 8): PhysicalLandform =>
   LANDFORMS[
     Math.floor(
       randomAt(seed, "world", "landform") *
-        (version >= 5 ? LANDFORMS.length : 10),
+        (version >= 8 ? LANDFORMS.length : version >= 5 ? 14 : 10),
     )
   ];
 const provinceCache = new Map<string, PhysicalLandform>();
@@ -40,9 +44,15 @@ function province(
     cacheKey = `${seed}/${id}/${version}`,
     cached = provinceCache.get(cacheKey);
   if (cached) return cached;
-  const c = regionalClimateFields(seed, key(q * 16, r * 16));
+  const span = version >= 8 ? 24 : 16;
+  const c = regionalClimateFields(seed, key(q * span, r * span));
   const weights: [PhysicalLandform, number][] = [
-    [worldLandform(seed, version), 5],
+    [
+      worldLandform(seed, version),
+      version >= 8 && worldLandform(seed, version) === "great-river-basins"
+        ? 16
+        : 5,
+    ],
     ["continent", 1],
     ["archipelago", 1],
     ["peninsulas", 1],
@@ -71,6 +81,15 @@ function province(
       weights.push(["drowned-valleys", 4], ["dissected-plateaus", 1.5]);
     else weights.push(["dissected-plateaus", 1]);
   }
+  if (version >= 8) {
+    weights.push(
+      ["great-river-basins", c.moisture > 0.38 ? 7 : 2],
+      ["cuesta-belts", 2],
+    );
+    if (c.temperature < 0.45 && c.moisture > 0.35)
+      weights.push(["lake-districts", 5]);
+    if (c.moisture < 0.42) weights.push(["badlands", 5]);
+  }
   let roll =
     randomAt(seed, id, "landform-province") *
     weights.reduce((s, [, w]) => s + w, 0);
@@ -89,10 +108,11 @@ function province(
 export function regionalLandform(
   seed: string,
   id: string,
-  version = 5,
+  version = 8,
 ): PhysicalLandform {
   const [q, r] = coord(id);
-  return province(seed, Math.round(q / 16), Math.round(r / 16), version);
+  const span = version >= 8 ? 24 : 16;
+  return province(seed, Math.round(q / span), Math.round(r / span), version);
 }
 function height(
   seed: string,
@@ -110,6 +130,35 @@ function height(
     warp = (field(seed, q, r, 8, "coast-warp") - 0.5) * 5;
   const climate = regionalClimateFields(seed, key(q, r));
   switch (form) {
+    case "great-river-basins": {
+      // Long, gently graded catchments: small-scale relief cannot repeatedly
+      // trap the trunk in a puddle. Broad valley shoulders still divide basins.
+      const phase = randomAt(seed, "world", "alluvial-divide") * 48;
+      const long = Math.abs(Math.sin(((u + phase) * Math.PI) / 48));
+      const valley = (Math.cos((v + warp * 0.4) * 0.19) + 1) / 2;
+      return 0.23 + long * 0.36 + valley * 0.12 + fine * 0.003;
+    }
+    case "cuesta-belts": {
+      // Tilted resistant strata: long gentle dip slopes oppose abrupt scarps.
+      const phase = ((((v + warp * 0.45) / 15) % 1) + 1) % 1;
+      const dip = phase < 0.82 ? phase / 0.82 : (1 - phase) / 0.18;
+      return 0.27 + broad * 0.25 + dip * 0.24 + fine * 0.025;
+    }
+    case "lake-districts": {
+      // Low, rounded shield relief with scattered glacial hollows. Drainage
+      // applies the ordinary compact-lake cap; these are not inland seas.
+      const rolling = field(seed, q - 37, r + 15, 15, "shield-upland");
+      const hollows = field(seed, q + 19, r - 43, 3.2, "shield-hollows");
+      return 0.28 + rolling * 0.29 + broad * 0.08 + hollows * 0.08;
+    }
+    case "badlands": {
+      // Soft sediment eroded into close gullies between irregular low ribs.
+      const ribs = Math.pow(
+        (Math.cos((v + warp + Math.sin(u * 0.65)) * 1.45) + 1) / 2,
+        3,
+      );
+      return 0.3 + broad * 0.25 + ribs * 0.12 + fine * 0.06;
+    }
     case "drowned-valleys": {
       // Branching valleys cut an uneven coastal platform, rather than the
       // straight parallel cuts of glacial fjords. Sea level floods their ends.
@@ -244,11 +293,12 @@ function height(
 export function physicalElevation(
   seed: string,
   id: string,
-  version = 5,
+  version = 8,
 ): number {
   const [q, r] = coord(id),
-    x = q / 16,
-    y = r / 16,
+    span = version >= 8 ? 24 : 16,
+    x = q / span,
+    y = r / span,
     a = Math.floor(x),
     b = Math.floor(y),
     smooth = (n: number) => n * n * (3 - 2 * n),

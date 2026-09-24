@@ -226,7 +226,7 @@ Un col exige au moins deux Pics nus adjacents. Deux cols ne peuvent jamais être
 
 ### Formes de relief supplémentaires
 
-Les nouvelles parties utilisent la géographie version 7. Quatre formes régionales supplémentaires se combinent aux reliefs existants avant la sélection des climats, des cours d’eau et des ressources. Elles n’ajoutent aucune règle de déplacement ni aucune ressource garantie.
+Les nouvelles parties utilisent la géographie version 8. Quatre formes régionales supplémentaires se combinent aux reliefs existants avant la sélection des climats, des cours d’eau et des ressources. Elles n’ajoutent aucune règle de déplacement ni aucune ressource garantie.
 
 - **Vallées ennoyées :** des bras de mer ramifiés entaillent un socle bas. Ce relief est favorisé dans les régions tempérées humides et océaniques. Les baies séparent les colonies proches et créent des routes abritées et plusieurs points de débarquement. Il se distingue des fjords glaciaires parallèles.
 - **Arcs volcaniques :** des chaînes courbes d’îles inégales aux pentes fortes, parfois avec un sommet affaissé. Les bassins insulaires ont des rivières courtes. Les hauteurs utilisent les montagnes et minerais existants, adaptés au climat. Un cratère ne garantit ni lac ni ressource particulière.
@@ -247,15 +247,31 @@ Un col exige au moins deux Pics nus voisins et ne peut toucher aucun autre col. 
 
 ### Effet sur une sauvegarde
 
-Le chargement retire les anciennes crues des terrains accidentés et applique les seuils actuels sans effectuer un nouveau tirage météo, avancer le temps ni modifier les stocks. Une ancienne plaine sans seuil enregistré utilise 4. Les aménagements existants sont conservés. Les nouvelles sources et formes physiques nécessitent une campagne de version 7 ; les anciens mondes conservent leur drainage versionné et leurs terrains révélés.
+Le chargement retire les anciennes crues des terrains accidentés et applique les seuils actuels sans effectuer un nouveau tirage météo, avancer le temps ni modifier les stocks. Une ancienne plaine sans seuil enregistré utilise 4. Les aménagements existants sont conservés. Les nouvelles sources et formes physiques nécessitent une campagne de version 8 ; les anciens mondes conservent leur drainage versionné et leurs terrains révélés.
 
 ### Convergence des rivières
 
-La version 7 raccourcit les détours qui doublent un même tracé et raccorde les affluents à un chenal existant plus bas dès leur premier contact. Chaque liaison reste voisine et descendante. Une embouchure bordée par au moins deux tuiles de mer ou de lac apparaît comme un estuaire ouvert, avec des berges uniquement contre les terres réelles. Ces corrections visuelles s’appliquent aux sauvegardes sans modifier terrain, navigation ni production. Les anciens mondes conservent leur version de génération.
+La version 8 raccourcit les détours qui doublent un même tracé et raccorde les affluents à un chenal existant plus bas dès leur premier contact. Chaque liaison reste voisine et descendante. Une embouchure bordée par au moins deux tuiles de mer ou de lac apparaît comme un estuaire ouvert, avec des berges uniquement contre les terres réelles. Ces corrections visuelles s’appliquent aux sauvegardes sans modifier terrain, navigation ni production. Les anciens mondes conservent leur version de génération.
 
 ### Plaines inondables en hiver
 
 Les plaines inondables des climats Steppe, Prairie, Froid, Alpin, Andin, Arctique, Glaciaire et Toundra ne peuvent pas être inondées en hiver, quelle que soit la météo locale. Les règles habituelles de niveau d’eau et de hauteur des berges reprennent aux autres saisons. Les crues hivernales méditerranéennes et océaniques restent possibles. Le sorgho de décrue est enneigé en hiver dans les régions froides et reste sec dans les régions chaudes ; les champs et prairies riverains des climats côtiers doux restent sans neige.
+
+### Grands bassins et nouveaux reliefs régionaux
+
+Les nouvelles parties utilisent la géographie version 8. Les rivières continentales examinent jusqu’à six pas en aval pour éviter les petites dépressions sans issue lorsqu’un trajet descendant plus long existe. Elles ne remontent jamais le terrain. Les limites restent de 36 pas sur continent humide, 24 sur continent sec et 12 sur les petites îles. Les lacs restent limités à 12 hexagones. Une rivière peut continuer au-delà de la carte découverte.
+Quatre nouveaux reliefs interviennent avant le choix des climats et ressources :
+
+- **Grands bassins fluviaux :** larges vallées à pente douce entre des lignes de partage éloignées, propices aux longs cours principaux. Des sources peu escarpées peuvent les alimenter. Ils sont favorisés dans les régions humides, sans garantir une rivière ni une culture particulière.
+- **Ceintures de cuestas :** bandes rocheuses asymétriques, avec un versant doux et un escarpement opposé. Elles dessinent de longues approches et des obstacles transversaux. Les règles des pics et cols restent inchangées.
+- **Régions de lacs glaciaires :** reliefs arrondis creusés de petites dépressions dans les régions fraîches et assez humides. Certains creux deviennent des lacs compacts ; les grands bassins submergés restent des mers. Les tourbières admissibles ont un poids de 1,5×, sans apparaître dans de nouveaux climats. Le nom n’implique pas une glace permanente.
+- **Terres ravinées :** crêtes basses et ravins irréguliers dans les intérieurs secs, créant des approches fragmentées et de petits couloirs de drainage. Le tirage terrestre pondère les terrains accidentés admissibles à 1,45×, les forêts à 0,8× et les autres terrains alimentaires ou lainiers à 0,75×, avant normalisation. Les ressources riveraines conservent leurs règles climatiques.
+  Les provinces de relief sont plus étendues en version 8, pour prolonger bassins et crêtes, tout en conservant le détail des côtes. La sélection d’une tuile indique le paysage régional : il ne s’agit pas d’un nouveau modificateur de mouvement ou de production. Les anciennes sauvegardes conservent leur version, y compris pour les futures expéditions. Commencez une nouvelle partie pour profiter de cette génération.
+
+### Catalogue des reliefs existants
+
+Intérieurs continentaux ; archipels ; mers intérieures ; côtes à péninsules ; chapelets d’îles ; îlots rocheux ; fjords ; cordons littoraux et lagunes ; atolls ; vallées de rift ; rias ; arcs volcaniques ; bassins et chaînes parallèles ; plateaux entaillés.
+Les rivières et affluents, lacs compacts, deltas, plaines inondables, hauts-fonds, récifs, pics et cols saisonniers s’intègrent à ces reliefs. Les sources thermales, ports naturels, bassins fertiles, filons minéraux et bosquets anciens restent des sites rares soumis à leurs règles habituelles.
 
 ## Saisons et récoltes
 

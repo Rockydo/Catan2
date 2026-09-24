@@ -1,3 +1,5 @@
+import { regionalLandform } from "../game/physical-landforms";
+import { LANDFORM_LABELS } from "./landform-labels";
 import { FloodplainStatus } from "./FloodplainStatus";
 import type { Game, Hex, Command } from "../game/types";
 import {
@@ -216,7 +218,7 @@ export function GeographyPanel({
   onAction: (c: Command) => void;
   ids?: string[];
 }) {
-  useLocale();
+  const locale = useLocale();
   const g = tile.geography;
   if (!g) return null;
   const sites = (Object.keys(PROJECTS) as Project[]).filter((kind) =>
@@ -257,6 +259,18 @@ export function GeographyPanel({
   return (
     <section className="geography-panel" aria-label={tx("Local geography")}>
       <h3>{tx(geographicName(tile) ?? "Local geography")}</h3>
+      {s.geographyVersion && s.geographyVersion >= 3 ? (
+        <p className="landform-label">
+          {locale === "fr" ? "Paysage régional : " : "Regional landscape: "}
+          <strong>
+            {
+              LANDFORM_LABELS[
+                regionalLandform(s.seed, tile.id, s.geographyVersion)
+              ][locale]
+            }
+          </strong>
+        </p>
+      ) : null}
       <div className="geography-status">
         {environmentSummary(tile, s.tiles).map((text) => (
           <span key={text}>{tx(text)}</span>

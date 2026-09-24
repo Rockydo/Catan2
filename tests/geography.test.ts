@@ -537,7 +537,9 @@ describe("crossings, local projects and ships", () => {
     const s = started(),
       town = ownTowns(s)[0],
       id = s.vertices[town.vertex].tiles.find(
-        (id) => !["water", "ice", "peaks"].includes(s.tiles[id].resource),
+        (id) =>
+          !["water", "ice", "peaks"].includes(s.tiles[id].resource) &&
+          !ownTowns(s, 1).some((t) => s.vertices[t.vertex].tiles.includes(id)),
       )!;
     Object.assign(s.tiles[id], { resource: "grain", biome: "flood-wheat" });
     s.tiles[id].geography!.floodplain = true;

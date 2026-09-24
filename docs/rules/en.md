@@ -227,7 +227,7 @@ A mountain pass needs at least two adjacent Bare Peaks. Two mountain passes can 
 
 ### Additional landforms
 
-New campaigns use geography version 7. Four additional regional patterns are blended with the existing landforms before climate, drainage and resources are selected. No new movement rules or guaranteed resources are introduced.
+Earlier geography updates introduced four additional regional patterns, blended with the existing landforms before climate, drainage and resources are selected. No new movement rules or guaranteed resources are introduced.
 
 - **Drowned valleys:** branching coastal inlets cut into a low platform. Humid temperate and oceanic regions favor this pattern. Bays divide nearby settlements and create sheltered routes and several landing points. These are irregular branching valleys, distinct from the existing parallel glacial fjords.
 - **Volcanic arcs:** curved chains of unequal, steep-sided islands, occasionally with a depressed summit. They have short island catchments rather than long mainland rivers. High ground uses existing climate-appropriate mountains and minerals; a crater is not a promise of a lake or a new resource.
@@ -248,7 +248,7 @@ Passes need at least two adjacent Bare Peaks and cannot touch another pass. New 
 
 ### Applying these changes to a saved game
 
-Loading a geographic save clears obsolete flooding from rugged ground and applies the current flood thresholds without rerolling weather, advancing time or changing stored resources. Older floodplains without a stored threshold use 4. Existing improvements are retained. New headwater placement and physical landforms require a new version 7 campaign; existing worlds retain their versioned drainage and revealed terrain.
+Loading a geographic save clears obsolete flooding from rugged ground and applies the current flood thresholds without rerolling weather, advancing time or changing stored resources. Older floodplains without a stored threshold use 4. Existing improvements are retained. New headwater placement and physical landforms require a new version 8 campaign; existing worlds retain their versioned drainage and revealed terrain.
 
 ### River convergence
 
@@ -257,6 +257,36 @@ Version 7 removes side-by-side hairpins from a traced course and joins tributari
 ### Cold-season floodplains
 
 Steppe, Prairie, Cold, Alpine, Andean, Arctic, Glacial and Tundra floodplains cannot flood in winter, regardless of local weather. The ordinary water-level and bank-height rules resume in the other seasons. Mediterranean and oceanic winter rain floods remain possible. Recession sorghum uses snow-covered winter stubble in cold regions and dry stubble in hot regions; mild coastal river fields and meadows stay snow-free.
+
+### Large catchments and new regional landforms
+
+New campaigns use geography version 8. Mainland rivers inspect up to six downhill steps ahead before choosing a branch, avoiding short dead-end hollows when a longer downhill route exists. They never climb terrain, and the existing 36-step wet-mainland, 24-step dry-mainland and 12-step small-island limits remain. Lake sizes still cannot exceed 12 hexes. A river may continue outside the initially revealed map.
+Four new patterns are blended into physical relief before climate and resources are chosen:
+
+- **Great river basins:** broad, gently graded valleys between distant divides. Low local relief supports longer connected trunks. Their gentle headwaters can supply a river without a nearby steep mountain. Moist regions favor these basins, but neither a long river nor a particular crop is guaranteed. Bridges, fords, floodplain farming and river craft become useful over a longer corridor.
+- **Cuesta belts:** asymmetric bands of tilted rock, with gentle dip slopes on one side and abrupt escarpments on the other. They create long approaches, transverse obstacles and valley routes rather than uniformly steep mountains. Ordinary peak and pass rules remain in force.
+- **Glacial lake districts:** broad rounded uplands interrupted by small hollows, favored in cool, reasonably moist regions. They create pockets of sheltered water and overland links between separate catchments. Some hollows become small lakes; larger submerged basins remain sea. Eligible peat bogs receive 1.5× their usual land-draw weight before normalization; this never introduces bogs into climates without them. This does not imply year-round ice.
+- **Badlands:** close, irregular ribs and gullies in exposed sedimentary terrain, favored in dry interiors. Their broken relief makes more intricate approaches and small drainage corridors. The land-resource draw gives eligible rugged terrain 1.45× its usual weight, forests 0.8× and other food/wool terrain 0.75×, before normalization. Riparian draws keep their usual climate rules. Existing climate-appropriate artwork and eligibility still apply; no resource is guaranteed.
+  Regional landform provinces are broader in version 8, allowing coherent catchments and ridges to extend farther while coastlines retain their finer detail. Select a tile to see the regional landscape name. The name describes the surrounding formation, not a new movement or production modifier.
+  Existing saves keep their original geography version, including undiscovered terrain, so expeditions cannot create seams against established coasts and rivers. Start a new campaign for the new generation.
+
+### Existing formation catalogue
+
+- **Continental interiors:** broad connected land masses.
+- **Archipelagos:** scattered islands separated by channels.
+- **Inland seas:** large water basins surrounded by land.
+- **Peninsular coasts:** long projections, bays and narrow necks of land.
+- **Island chains:** aligned island groups with intervening straits.
+- **Skerries:** small, irregular rocky islands, favored in cold regions.
+- **Fjords:** long narrow coastal cuts through higher ground.
+- **Barrier coasts:** coastal ridges, offshore strips and sheltered lagoons.
+- **Atolls:** ring-like island formations around lagoons in warm maritime regions.
+- **Rift valleys:** elongated depressions flanked by higher ground.
+- **Drowned valleys:** branching coastal inlets.
+- **Volcanic arcs:** curved island chains with unequal massifs and occasional summit depressions.
+- **Basin and range:** alternating narrow uplifts and broader interior valleys.
+- **Dissected plateaus:** raised tablelands cut by lower corridors.
+  Rivers and tributaries, compact lakes, deltas, floodplains, coastal shelves, reefs, bare peaks and seasonal mountain passes are local features within these regional formations. Rare thermal springs, natural harbors, fertile basins, mineral veins and ancient groves remain available under their existing rules.
 
 ## Seasons and harvests
 

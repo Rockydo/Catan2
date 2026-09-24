@@ -72,7 +72,7 @@ export interface Wildlife {
   lastRound: number;
   dormant?: true;
 }
-export const GEOGRAPHY_VERSION = 7;
+export const GEOGRAPHY_VERSION = 8;
 export const landform = (
   seed: string,
   version = GEOGRAPHY_VERSION,
@@ -181,6 +181,10 @@ export function seaLevel(seed: string, version = GEOGRAPHY_VERSION) {
     "volcanic-arcs": 0.58,
     "basin-ranges": 0.3,
     "dissected-plateaus": 0.32,
+    "great-river-basins": 0.27,
+    "cuesta-belts": 0.32,
+    "lake-districts": 0.32,
+    badlands: 0.28,
   }[landform(seed, version)];
   const level =
     heights[Math.floor(heights.length * water * (version >= 3 ? 0.75 : 1))];
@@ -227,6 +231,29 @@ function fillLakeBasin(
   return basin;
 }
 const drainageCache = new Map<string, Drainage>();
+const runoutCache = new Map<string, number>();
+/** A bounded downhill lookahead avoids choosing a tempting branch that ends
+ * in a one-hex hollow. This is shared across headwaters, not a world flood fill. */
+function downhillRunout(
+  seed: string,
+  id: string,
+  version: number,
+  depth = 6,
+): number {
+  if (!depth || elevationAt(seed, id, version) < seaLevel(seed, version))
+    return 0;
+  const k = `${seed}/${id}/${version}/${depth}`;
+  const cached = runoutCache.get(k);
+  if (cached !== undefined) return cached;
+  const h = elevationAt(seed, id, version);
+  let best = 0;
+  for (const n of neighbors(id))
+    if (elevationAt(seed, n, version) < h)
+      best = Math.max(best, 1 + downhillRunout(seed, n, version, depth - 1));
+  if (runoutCache.size >= 60000) runoutCache.clear();
+  runoutCache.set(k, best);
+  return best;
+}
 /** Each watershed source owns a bounded downhill trace. Queries never depend on
  * revealed tiles; expeditions cannot reroll coasts, rivers or their mouths. */
 function watershed(
@@ -258,15 +285,21 @@ function watershed(
   }
   const rain =
     version >= 2 ? climateSetting(seed, source, version).moisture : 1;
+  const longBasin =
+    version >= 8 &&
+    regionalLandform(seed, source, version) === "great-river-basins";
   const supplied =
     version < 2 ||
-    (randomAt(seed, source, "watershed-rain") < 0.18 + rain * 0.82 &&
+    (randomAt(seed, source, "watershed-rain") <
+      (longBasin ? 0.4 + rain * 0.6 : 0.18 + rain * 0.82) &&
       (version < 6 ||
+        longBasin ||
         elevationAt(seed, source, version) > seaLevel(seed, version) + 0.12 ||
         randomAt(seed, source, "lowland-spring") < 0.25));
   if (
     supplied &&
-    elevationAt(seed, source, version) > seaLevel(seed, version) + 0.06
+    elevationAt(seed, source, version) >
+      seaLevel(seed, version) + (longBasin ? 0.025 : 0.06)
   ) {
     const form =
       version >= 3 ? regionalLandform(seed, source, version) : "continent";
@@ -351,6 +384,14 @@ function watershed(
           if (flowing.length && randomAt(seed, at, "river-meander") < 0.65)
             next = flowing.sort(
               (a, b) =>
+                elevationAt(seed, b, version) - elevationAt(seed, a, version) ||
+                a.localeCompare(b),
+            )[0];
+          if (version >= 8 && flowing.length && !smallIslands)
+            next = flowing.sort(
+              (a, b) =>
+                downhillRunout(seed, b, version) -
+                  downhillRunout(seed, a, version) ||
                 elevationAt(seed, b, version) - elevationAt(seed, a, version) ||
                 a.localeCompare(b),
             )[0];
@@ -838,6 +879,25 @@ export function geographicLandChoices(
     )
       continue;
     let w = original;
+    if (version >= 8 && setting.landform === "badlands") {
+      // Eroded sediment favors the climate's own exposed hills/minerals,
+      // without importing warm clay or farmland into inappropriate biomes.
+      const family = BIOME_INFO[b].family;
+      if (family === "rugged") w *= 1.45;
+      else if (family === "forest") w *= 0.8;
+      else if (
+        BIOME_INFO[b].yield.grain ||
+        BIOME_INFO[b].yield.wool ||
+        BIOME_INFO[b].yield.meat
+      )
+        w *= 0.75;
+    }
+    if (
+      version >= 8 &&
+      setting.landform === "lake-districts" &&
+      b === "peat-bog"
+    )
+      w *= 1.5;
     if (mountains) {
       if (BIOME_INFO[b].yield.grain || BIOME_INFO[b].yield.wool) w *= 0.3;
       if (["iron", "stone", "gold", "coal"].includes(b)) w *= 1.5;

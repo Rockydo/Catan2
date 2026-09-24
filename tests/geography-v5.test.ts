@@ -1,6 +1,11 @@
 import { expect, it } from "vitest";
 import reference from "./geography-v4-reference.json";
-import { elevationAt, geographyAt, landform } from "../src/game/geography";
+import {
+  elevationAt,
+  geographyAt,
+  landform,
+  GEOGRAPHY_VERSION,
+} from "../src/game/geography";
 import { climateSetting } from "../src/game/geographic-climate";
 import {
   LANDFORMS,
@@ -23,7 +28,7 @@ it("preserves original version 4 elevations, drainage and climate settings exact
   }
 });
 it("supports all four new formations with legal land, water, drainage and expedition seams", () => {
-  for (const form of LANDFORMS.slice(10)) {
+  for (const form of LANDFORMS.slice(10, 14)) {
     let seed = "";
     for (let i = 0; i < 1000; i++)
       if (worldLandform(`formation-${i}`) === form) {
@@ -32,7 +37,7 @@ it("supports all four new formations with legal land, water, drainage and expedi
       }
     expect(seed).not.toBe("");
     const world = generateWorld(seed, 320, true);
-    expect(world.geographyVersion).toBe(7);
+    expect(world.geographyVersion).toBe(GEOGRAPHY_VERSION);
     const land = Object.values(world.tiles).filter(
       (t) => !["water", "ice", "peaks"].includes(t.resource),
     );
@@ -81,7 +86,7 @@ it("retains variety well beyond the initial map and reloads new geography", () =
       expect(h).toBeGreaterThan(0);
       expect(h).toBeLessThan(1);
     }
-  for (const f of LANDFORMS.slice(10)) expect(forms.has(f)).toBe(true);
+  for (const f of LANDFORMS.slice(10, 14)) expect(forms.has(f)).toBe(true);
   const s = newGame("formation-save");
   assertInvariants(s);
   expect(deserialize(serializePacked(s))).toEqual(s);

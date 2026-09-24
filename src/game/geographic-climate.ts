@@ -130,6 +130,9 @@ export function geographicClimateWeight(
               "rift-valleys",
               "basin-ranges",
               "dissected-plateaus",
+              "great-river-basins",
+              "cuesta-belts",
+              "badlands",
             ].includes(setting.landform)
           ? 2.5
           : 1;
@@ -162,5 +165,15 @@ export function geographicClimateWeight(
       (island ? 3 : 0.25) *
       (1 - setting.altitude * 0.7);
   }
+  if (
+    setting.landform === "lake-districts" &&
+    ["cold", "tundra", "temperate"].includes(climate)
+  )
+    weight *= 1.5;
+  if (
+    setting.landform === "badlands" &&
+    ["semiarid", "steppe", "prairie", "desert"].includes(climate)
+  )
+    weight *= 1.5;
   return weight;
 }
