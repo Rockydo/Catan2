@@ -510,6 +510,7 @@ interface MapHexProps {
   outputLabel?: string;
   terrain: TerrainKey;
   terrainLabel: string;
+  impassable: boolean;
   number: number;
   x: number;
   y: number;
@@ -532,6 +533,7 @@ const MapHex = memo(function MapHex({
   outputLabel,
   terrain,
   terrainLabel,
+  impassable,
   number,
   x,
   y,
@@ -550,14 +552,14 @@ const MapHex = memo(function MapHex({
   useLocale();
 
   const description = tx(
-    `${terrainLabel}, ${good ? `${outputLabel ?? (terrain === "whale" ? "Hides + Oil" : GOOD_INFO[good].name)}, roll ${number}` : resource === "water" ? "water" : resource === "peaks" ? tx("Impassable") : "No resources"}, hex ${id}${movable ? ", reachable" : ""}`,
+    `${terrainLabel}, ${good ? `${outputLabel ?? (terrain === "whale" ? "Hides + Oil" : GOOD_INFO[good].name)}, roll ${number}` : resource === "water" ? "water" : impassable ? tx("Impassable") : "No resources"}, hex ${id}${movable ? ", reachable" : ""}`,
   );
   return (
     <g
       key={id}
       className={`map-tile ${resource === "water" ? "sea-tile" : "land-tile"} ${selected ? "selected" : ""} ${movable ? "reachable" : ""}`}
       data-testid={`hex-${id}`}
-      data-impassable={resource === "peaks" || undefined}
+      data-impassable={impassable || undefined}
       data-map-x={x}
       data-map-y={y}
       role="button"
@@ -573,7 +575,7 @@ const MapHex = memo(function MapHex({
     >
       <title>{description}</title>
       <polygon points={poly} fill="transparent" stroke="transparent" />
-      {resource === "peaks" && (
+      {impassable && (
         <g
           transform={`translate(${x},${y + 30})`}
           pointerEvents="none"
@@ -1242,6 +1244,10 @@ const BoardScene = memo(function BoardScene({
                     outputLabel={outputLabel}
                     terrain={tileTerrain(tile)}
                     terrainLabel={terrainName(tile)}
+                    impassable={
+                      tile.resource === "peaks" ||
+                      tile.geography?.access === "closed"
+                    }
                     number={tile.number}
                     x={x}
                     y={y}

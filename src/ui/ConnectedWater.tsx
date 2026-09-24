@@ -107,7 +107,8 @@ export function ConnectedWater({
   const line = river
     ? riverGeometry(channel, connections.basin).line
     : shoreGeometry(shore).line;
-  const shallow = ["shoal", "reef"].includes(tile.geography?.waterway ?? "");
+  const shallow =
+    river || ["shoal", "reef"].includes(tile.geography?.waterway ?? "");
   return (
     <g
       className="connected-water"
@@ -140,13 +141,21 @@ export function ConnectedWater({
         !river &&
         tile.geography?.waterway === "reef" &&
         texture("geography/submerged-reef.webp", "water-full-hex", 0.38)}
-      {!frozen && !river && shallow && (
-        <polygon
-          points={WATER_HEX}
-          fill={tile.geography?.waterway === "reef" ? "#5da99b" : "#92b9a5"}
-          opacity=".2"
-        />
-      )}
+      {!frozen &&
+        shallow &&
+        (river ? (
+          <path
+            d={riverGeometry(channel, connections.basin).water}
+            fill="#92b9a5"
+            opacity=".2"
+          />
+        ) : (
+          <polygon
+            points={WATER_HEX}
+            fill={tile.geography?.waterway === "reef" ? "#5da99b" : "#92b9a5"}
+            opacity=".2"
+          />
+        ))}
       {!river && shore
         ? texture(bankArt(tile, season), `water-shore-${shore}`)
         : null}
