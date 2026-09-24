@@ -1,3 +1,4 @@
+import { shallowDraft } from "../game/geography";
 import { GoldPaymentNotice } from "./components";
 import { localize as tx, useLocale } from "../i18n";
 import { affordable, recipePayment } from "../game/selectors";
@@ -359,6 +360,20 @@ export function Recruitment({
                   {(kind === "merchant" || kind === "merchantship") &&
                     tier >= 3 && <span>{tx(`×${tier - 2} processed`)}</span>}
                 </div>
+                {naval && s.geographyVersion && (
+                  <small
+                    className="ship-navigation"
+                    title={tx(
+                      "A mixed fleet can enter only where every ship can go.",
+                    )}
+                  >
+                    {tx(
+                      shallowDraft(kind as ShipClass, tier)
+                        ? "Rivers, shallows and open water"
+                        : "Deep water only · no rivers, shoals or reefs",
+                    )}
+                  </small>
+                )}
                 <button
                   className="action-button recruit-purchase"
                   disabled={!available}

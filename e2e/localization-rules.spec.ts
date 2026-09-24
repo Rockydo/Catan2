@@ -133,8 +133,8 @@ test("catalogue exposes every tier of cards, ships and guilds in French", async 
     );
   }
   await page.getByRole("tab", { name: "Navires", exact: true }).click();
-  await expect(page.locator(".unit-card")).toHaveCount(6);
-  await expect(page.locator('.unit-card [data-unit-tier="4"]')).toHaveCount(6);
+  await expect(page.locator(".unit-card")).toHaveCount(7);
+  await expect(page.locator('.unit-card [data-unit-tier="4"]')).toHaveCount(7);
   await page.getByRole("tab", { name: "Guildes", exact: true }).click();
   await expect(page.locator(".guild-card")).toHaveCount(10);
   await expect(page.locator(".guild-card")).not.toHaveCount(0);
@@ -291,12 +291,8 @@ test("illustrated terrain reference pairs artwork with raw and workshop outputs"
   });
   await page.goto("/rules-fr.html#catalog");
   await expect(page.locator(".good-card")).toHaveCount(23);
-  await expect(
-    page
-      .locator(".good-card")
-      .filter({
-        has: page.getByRole("heading", { name: "Huile", exact: true }),
-      })
-      .locator(".terrain-picture"),
-  ).toHaveCount(BIOMES.filter((biome) => BIOME_INFO[biome].yield.oil).length);
+  const oil = page
+    .locator(".good-card")
+    .filter({ has: page.getByRole("heading", { name: "Huile", exact: true }) });
+  await expect(oil.locator(".terrain-picture")).toHaveCount(7); // Marine habitat plus permanent seal grounds.
 });

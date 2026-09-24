@@ -124,7 +124,7 @@ export function GeographyLegend({ view }: { view: GeographyView }) {
       <small>
         {tx(
           view === "weather"
-            ? "Weather is shared across broad climate regions. Rain raises rivers; cold spells close passes and strengthen ice."
+            ? "Weather affects whole regions. Dry spells reduce sensitive crops and improve salt; rain helps rice but slows logging and salt. Cold reduces crops and pasture. Select a tile for exact harvest changes."
             : view === "wildlife"
               ? "Populations migrate at the start of each season. Farms remain fixed."
               : "Access changes with floods, fords, ice and mountain passes. Select a tile for its calendar.",

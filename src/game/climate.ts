@@ -11,6 +11,8 @@ import {
 import type { World, Hex } from "./types";
 import { neighbors, coord, key, randomAt } from "./world";
 
+import { climateSetting, geographicClimateWeight } from "./geographic-climate";
+
 export const CLIMATE_CONTINUITY = 0.88;
 
 const climateDistances = CLIMATES.map((start) => {
@@ -41,9 +43,11 @@ export function chooseClimateTransition(
   from: Climate,
   choices: Climate[],
   roll: number,
+  fitness: (to: Climate) => number = () => 1,
 ): Climate {
   if (!choices.length) return from;
-  const weight = (to: Climate) => climateTransitionWeight(from, to);
+  const weight = (to: Climate) =>
+    climateTransitionWeight(from, to) * fitness(to);
   let remaining = roll * choices.reduce((sum, to) => sum + weight(to), 0);
   for (const candidate of choices) {
     remaining -= weight(candidate);
@@ -128,9 +132,23 @@ export function planClimates(world: World, seed: string, revealed: string[]) {
     (a, b) =>
       randomAt(seed, a, "climate-start") - randomAt(seed, b, "climate-start"),
   )[0];
+  const geographic = (world.geographyVersion ?? 0) >= 2;
+  const fitnessAt = (id: string) => {
+    const setting = geographic ? climateSetting(seed, id) : undefined;
+    return (c: Climate) => (setting ? geographicClimateWeight(setting, c) : 1);
+  };
   const initial = Object.keys(world.tiles).length
     ? "temperate"
-    : chooseInitialClimate(randomAt(seed, seedTile, "climate-initial"));
+    : geographic
+      ? chooseClimateTransition(
+          "temperate",
+          [...CLIMATES],
+          randomAt(seed, seedTile, "climate-initial"),
+          (c) =>
+            (fitnessAt(seedTile)(c) * climateInitialWeight(c)) /
+            climateTransitionWeight("temperate", c),
+        )
+      : chooseInitialClimate(randomAt(seed, seedTile, "climate-initial"));
   const oldBounds = oldIds.length ? bounds(oldIds) : undefined;
   const baseline: Record<string, Climate> = { ...previous },
     assigned: Record<string, Climate> = { ...previous };
@@ -191,6 +209,7 @@ export function planClimates(world: World, seed: string, revealed: string[]) {
             base,
             choices,
             randomAt(seed, id, "climate-switch"),
+            fitnessAt(id),
           );
       }
       assigned[id] = climate;

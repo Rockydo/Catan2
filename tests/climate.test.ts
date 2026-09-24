@@ -212,12 +212,12 @@ it("uses the approved four-climate land tables and land/water ratios", () => {
     savanna: {
       land: 0.7,
       terrain: [
-        ["wildlife-grassland", 30],
+        ["wildlife-grassland", 42],
         ["cattle-savanna", 5],
-        ["millet-fields", 20],
+        ["millet-fields", 14],
         ["dry-woodland", 10],
-        ["rough-pasture", 10],
-        ["iron", 10],
+        ["rough-pasture", 7],
+        ["iron", 7],
         ["clay", 5],
         ["stone", 5],
         ["gold", 3],
@@ -404,7 +404,17 @@ it("keeps compatible climate buffers through seeded games, saves and successive 
       addHexes(s, s.seed, expeditionFootprint(s, vertex, 1, step));
       syncSeasonSurfaces(s);
       for (const [id, t] of Object.entries(before))
-        expect(s.tiles[id]).toEqual(t);
+        expect({
+          ...s.tiles[id],
+          geography: {
+            ...s.tiles[id].geography,
+            fauna: undefined,
+            animals: undefined,
+          },
+        }).toEqual({
+          ...t,
+          geography: { ...t.geography, fauna: undefined, animals: undefined },
+        });
       for (const [id, c] of Object.entries(reserved))
         expect(s.climatePlan![id]).toBe(c);
       s = deserialize(serialize(s));

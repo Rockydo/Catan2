@@ -20,3 +20,6 @@ __pycache__/
 test-results-*/
 PROGRESS.md
 TROUBLESHOOTING-CODEX.md
+
+# Generated reference atlases and local art review sheets
+output/

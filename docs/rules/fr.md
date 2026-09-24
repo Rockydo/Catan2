@@ -89,13 +89,16 @@ Une carte extrême peut manquer d’emplacements initiaux légaux. Le jeu signal
 
 ## Géographie et faune
 
-### Géographie vivante : nouvelles campagnes
+### Formation du monde
 
-Les nouvelles campagnes à cinq ou douze factions utilisent des continents cohérents, des cours d’eau, une météo régionale et une faune migratrice. Les sauvegardes existantes conservent leur génération et leurs ressources animales fixes. Le chargement ne supprime aucune production ni aucun terrain occupé. La carte initiale compte toujours 125 ou 300 hexagones. Les expéditions prolongent cette géographie. Aucune nouvelle carte Ressource, aucun entretien, vent ni ouvrage permanent de franchissement des montagnes.
+Les nouvelles campagnes utilisent une génération physique avant le choix des ressources. Relief, niveau marin, température et humidité sont calculés en premier. L’altitude refroidit le climat ; la mer modère les températures ; les versants exposés au vent et les zones abritées modifient l’humidité. Les régions climatiques suivent ces affinités et les règles de voisinage. Les rivières descendent le relief ; les régions sèches ont moins de sources.
+Chaque terre effectue un seul tirage parmi les terrains admis par son climat et sa position. Les hauteurs favorisent minerais, pics et cols. Les basses rives utilisent une liste propre à chaque climat. Falaises côtières, pâturages côtiers et mangroves exigent une côte ; la tourbe exige un terrain humide et peu pentu ; les salines intérieures exigent des conditions sèches. Aucun terrain déjà choisi n’est remplacé par un second tirage générique.
+Les lacs ne dépassent pas 12 hexagones connectés, hors rivières. Les bassins plus grands sont des mers. Le contrôle inclut les terres non révélées. Les cours d’eau rejoignent une mer, un lac ou une dépression terminale ; leurs raccords restent identiques lors des expéditions. Les chiffres des dés restent aléatoires, sans ressource garantie. Les anciens pourcentages terre/eau concernent les cartes historiques.
+Les sauvegardes géographiques conservent leurs terrains révélés et leur version du réseau hydrographique. Leurs futures découvertes utilisent les mêmes restrictions climatiques sur les ressources. Les campagnes antérieures à la géographie conservent leur ancien générateur.
 
 ### Reliefs et cours d’eau
 
-La graine choisit une géographie continentale, insulaire, à mers intérieures ou à péninsules. Des altitudes corrélées forment côtes et massifs. Les mers intérieures sont de grands bassins fermés ; les péninsules favorisent les reliefs allongés. Un lac contient au plus 12 hexagones d’eau connectés, hors rivière. Au-delà, le bassin est une mer, avec une faune marine. Le calcul inclut la géographie non révélée : une expédition ne change pas cette classification. Les rives suivent la terre voisine et les rivières se raccordent par leurs côtés amont et aval. Une zone d’étude fixe autour du départ détermine le niveau côtier. Le climat reste attribué en premier et détermine les ressources admissibles. Terre et eau suivent désormais relief et drainage, au lieu d’un tirage indépendant par hexagone. Les anciens pourcentages terre/eau ne concernent que les campagnes historiques.
+La graine choisit une géographie continentale, insulaire, à mers intérieures ou à péninsules. Des altitudes corrélées forment côtes et massifs. Les mers intérieures sont de grands bassins fermés ; les péninsules favorisent les reliefs allongés. Un lac contient au plus 12 hexagones d’eau connectés, hors rivière. Au-delà, le bassin est une mer, avec une faune marine. Le calcul inclut la géographie non révélée : une expédition ne change pas cette classification. Les rives suivent la terre voisine et les rivières se raccordent par leurs côtés amont et aval. Une zone d’étude fixe autour du départ détermine le niveau côtier. Le climat est choisi à partir des conditions physiques avant le tirage des ressources. Terre et eau suivent désormais relief et drainage, au lieu d’un tirage indépendant par hexagone. Les anciens pourcentages terre/eau ne concernent que les campagnes historiques.
 Chaque bassin descend vers la mer ou une dépression intérieure. Les rivières occupent des hexagones d’eau ; les dépressions peuvent devenir des lacs. Altitudes et cours sont fixés par la graine et les coordonnées, même hors de la carte révélée. Une expédition ne redessine aucune côte existante ni aucune rivière. Ressources et numéros restent aléatoires. Aucune ressource brute n’est garantie.
 
 ### Traversées et cols
@@ -108,26 +111,38 @@ Quand la glace fond, qu’un gué ou un col ferme, ou qu’une crue submerge une
 
 La météo concerne de larges secteurs d’un même climat. Elle change au début d’une saison et reste identique pendant ses deux moitiés. La vue Météo montre ces secteurs ; la vue Passages montre les gués, crues et fermetures. La formation et la fonte de la glace restent probabilistes par hexagone, sous cette météo commune.
 Niveaux de base, Printemps / Été / Automne / Hiver : Froid, Arctique, Glaciaire, Alpin, Toundra et Prairie 3 / 2 / 1 / 0 ; Tropical, Subtropical, Savane, Mousson, Mésoaméricain et Zones humides équatoriales 1 / 3 / 2 / 0 ; Méditerranéen 1 / 0 / 1 / 3 ; Désert et Hyperaride 0 / 0 / 0 / 1 ; Andin 2 / 3 / 1 / 0 ; Océanique et Forêt pluviale tempérée 2 / 1 / 2 / 3 ; autres climats 3 / 1 / 1 / 2.
-Une saison humide ajoute 1 au niveau d’eau ; une période sèche retranche 1, dans une plage de 0 à 4. Groupe tropical : 55 % ordinaire, 30 % humide, 15 % sec. Groupe désertique : 60 % ordinaire, 30 % sec, 10 % humide. Groupe froid hors Été : 50 % ordinaire, 30 % froid, 20 % doux. Autres cas : 55 % ordinaire, 20 % humide, 15 % sec, 10 % doux. Une vague de froid multiplie la probabilité de gel par 1,5 et divise celle de fonte par deux ; une saison douce divise le gel par deux et multiplie la fonte par 1,4. Les probabilités sont plafonnées à 100 %.
+Une saison humide ajoute 1 au niveau d’eau ; une période sèche retranche 1, dans une plage de 0 à 4. Groupe tropical : 55 % ordinaire, 30 % humide, 15 % sec. Groupe désertique : 60 % ordinaire, 30 % sec, 10 % humide. Groupe froid hors Été : 50 % ordinaire, 30 % froid, 20 % doux. Autres cas : 55 % ordinaire, 20 % humide, 15 % sec, 10 % doux. Une vague de froid multiplie la probabilité de gel par 1,5 et divise les probabilités incertaines de fonte par deux, sans réduire une fonte saisonnière garantie à 100 % ; une saison douce divise le gel par deux et multiplie la fonte par 1,4. Les probabilités sont plafonnées à 100 %.
+
+### Météo et production
+
+La météo modifie une récolte saisonnière productive avant les multiplicateurs des villes, camps et collecteurs. Elle ne crée aucune récolte hors saison. Arrondissez à la carte entière la plus proche ; les bois naturels conservent au moins 1 Bois lorsqu’ils produisent. Les biens transformés suivent le rendement brut final. Les animaux sauvages réagissent par migration, sans multiplicateur météo. Les mines ne subissent aucun multiplicateur météorologique ordinaire.
+
+- Sécheresse : riz, riz fluvial, jardins du delta, pommes de terre, chinampas et sagoutiers perdent 50 % de Blé. Les autres céréales perdent 25 %, sauf millet, sorgho et olives, inchangés. L’irrigation divise la perte par deux. Produits d’élevage : −25 %. Sel : +50 %.
+- Humide : riz, riz fluvial, jardins du delta, chinampas et sagoutiers gagnent 25 % de Blé. Les autres cultures gagnent 25 % en Désert, Hyperaride, Steppe et Savane ; ailleurs elles perdent 25 %. Bois : −25 %. Sel : −50 %. Produits d’élevage : +25 % dans ces climats secs et en Méditerranéen.
+- Vague de froid : Blé −50 % dans les climats chauds et pour les cultures sensibles à l’eau citées ci-dessus ; sinon −25 %. Élevage et Sel : −25 %. Bois : −25 % dans les climats frais.
+- Doux : les récoltes productives de Blé et d’élevage gagnent 25 % au Printemps et en Automne dans les climats Froid, Arctique, Glaciaire, Toundra, Alpin, Prairie et Andin. Autres rendements inchangés.
+  Le panneau du terrain montre les quantités exactes avant et après météo. La vue Météo montre les conditions régionales. L’arrondi peut neutraliser une variation sur une petite récolte. Le sens des effets suit des sources agronomiques ; les pourcentages sont des valeurs d’équilibrage. L’IA utilise les probabilités publiques pour ses prévisions, sans lire les futurs tirages.
 
 ### Plaines inondables et deltas
 
 Les basses terres riveraines peuvent devenir inondables. Les terres voisines d’une embouchure peuvent former un delta. Aux niveaux d’eau 3 et 4, une plaine sans digue devient une eau peu profonde : les armées ne passent plus et la production s’arrête. Bâtiments, routes et cartes stockées survivent. Une digue évite ces effets sur son hexagone. Les règles de construction des arêtes suivent toujours le terrain permanent ; les ouvrages ne changent pas l’identité des ressources.
-Une partie du tirage local est remplacée par des terrains fertiles : Argile alluviale, Bois riverains, cultures fluviales et Prairie inondable. Jardins chinampas et Sagoutiers nécessitent une rivière ou un lac voisin. Les plaines Arctiques, Glaciaires et de Toundra ne créent pas de céréales. L’agriculture riveraine Mésoaméricaine utilise les Chinampas ; l’agriculture Andine utilise les Pommes de terre. Aucune pomme de terre ni aucun maïs n’est introduit hors des Amériques.
+Les poids des terrains ordinaires sont divisés par quatre sur une basse rive, puis complétés par une liste riveraine propre au climat avant le tirage unique. Argile alluviale et Bois riverains appartiennent aux régions chaudes et humides. Les rives froides utilisent argile locale, pins et orge ; les rives Arctiques et Glaciaires utilisent neige et roches polaires ; la Toundra utilise tourbe, lande et habitats de bœufs musqués. Aucun champ céréalier ni bois chaud dans les listes polaires. Les Jardins du delta sont réservés aux embouchures Tropicales, Subtropicales et de Mousson. Jardins chinampas et Sagoutiers nécessitent une basse rive. Pommes de terre et maïs restent américains.
 Le Blé alluvial a une base de 3 Blés et donne 12 en Été. Le Sorgho de décrue a une base de 3 et donne 12 en Automne. La Rizière fluviale a une base de 4 et donne 4 / 0 / 4 / 8 : sa grande récolte suit la crue de la saison humide. Les Jardins du delta ont une base de 4, avec 4 / 4 / 8 / 0 en région fraîche et 4 / 0 / 4 / 8 en région chaude humide. La Prairie inondable a une base de 2 Laines et suit le calendrier local d’élevage. Ces quantités précèdent les multiplicateurs des producteurs. Les crues peuvent réduire le rendement réel ; les protections coûtent des ressources et ne suppriment pas le risque des dés.
 
 ### Faune migratrice
 
 Prairies sauvages, bovins sauvages, rennes, bœufs musqués, phoques et autres terrains de chasse n’ont plus de production animale fixe. Une prairie sauvage sans animaux est vide. Forêts et jungles conservent au moins 1 Bois par saison avant multiplicateurs. Les meilleurs bois conservent leur base supérieure. Les moutons, bovins domestiques, alpagas et autres élevages restent fixes avec leur calendrier existant.
-Un nouvel hexagone terrestre admissible a 13 % de chances de créer une population. L’eau a une probabilité de 18 %, sauf la haute mer à 11 %. Une population côtière a 22 % de chances d’être composée de baleines, contre 72 % en haute mer : leur fréquence totale y est environ doublée. Les rivières et lacs ont des poissons, jamais de baleines. Les morues préfèrent les climats marins froids et frais. Aucune population n’est garantie.
+Un nouvel hexagone terrestre admissible a 22 % de chances de créer une population. L’eau a une probabilité de 18 %, sauf la haute mer à 11 %. Une population côtière a 22 % de chances d’être composée de baleines, contre 72 % en haute mer : leur fréquence totale y est environ doublée. Les rivières et lacs ont des poissons, jamais de baleines. Les morues préfèrent les climats marins froids et frais. Aucune population n’est garantie.
 Sur son numéro, chaque population présente ajoute : Poissons 3 Poissons ; Morues 5 Poissons ; Baleines 3 Peaux + 3 Huiles ; Cerfs 2 Peaux + 2 Viandes ; Bovins sauvages 2 Peaux + 3 Viandes ; Rennes 2 Peaux + 2 Viandes ; Bœufs musqués 2 Laines + 2 Viandes ; Phoques 2 Peaux + 2 Huiles ; Gibier forestier 3 Peaux + 1 Viande ; Dindons sauvages 3 Viandes. Chaque composante reçoit les multiplicateurs habituels et la transformation avancée des villes ou marchands. Gel et crue restent soumis aux règles normales d’accès et de récolte.
 Au début de chaque saison, les populations marines cherchent des eaux connectées à quatre hexagones au plus ; les animaux terrestres cherchent un habitat accessible à trois hexagones au plus. Climat et habitat doivent convenir : les baleines ne traversent pas les rivières, les phoques restent sur les côtes froides et les espèces froides ou tropicales gardent des milieux adaptés. Elles peuvent rester ou migrer. Villes, routes, camps et tours réduisent l’attrait d’une destination, y compris dans le voisinage. Densité animale, gel, crues et abris saisonniers comptent aussi. La chasse ne supprime jamais une population. Les groupes restent sur la carte révélée ; les expéditions peuvent en découvrir de nouveaux. Plusieurs groupes peuvent partager une tuile. La vue Faune sauvage et les icônes de ressources montrent leur position et leur rendement.
+La faune ne peut pas occuper cultures, oliveraies, vergers, oasis ou pâturages domestiques. Lors du gel, poissons, morues et baleines cherchent d’abord une eau libre accessible à quatre hexagones au plus, y compris entre début et fin de saison. Sans issue adaptée, ils restent pris dans la glace. Les positions invalides des anciennes sauvegardes sont déplacées vers un habitat adapté au chargement ; sans habitat, la population est conservée en sommeil jusqu’à une nouvelle découverte.
 Camps et ateliers restent construits après le départ des animaux. Ils reprennent leur production si une population adaptée revient. Un atelier conserve sa ressource choisie à la construction. La migration n’accorde aucune ressource et ne change aucun numéro.
 
 ### Chasseurs et navigation fluviale
 
 Les chasseurs se déplacent de 2 hexagones par tour. Leurs quatre paliers ont une puissance de 0 / 1 / 2 / 3, un rayon de chasse de 1 / 2 / 3 / 4 par terres accessibles et un multiplicateur de 1 / 2 / 3 / 4. Ils récoltent uniquement les produits animaux, y compris toutes les composantes d’une même tuile. Ils ne coupent pas de bois et ne transforment rien. Les armées ennemies bloquent la chasse. Les chasseurs de palier I sont détruits dès que leur force combat. Coûts et portraits figurent au catalogue de recrutement.
 Rivières, hauts-fonds, récifs et terrains inondés admettent Bateaux fluviaux, Navires de pêche, Transports, Navires de colons et Galères I–II. Galères supérieures, Caraques, Convois et Navires marchands nécessitent des eaux profondes. Lacs et eaux côtières ou hauturières ordinaires admettent toutes les classes sans glace. Une flotte mixte suit son membre le plus contraignant. Les Bateaux fluviaux ont puissance 1 / 2 / 3 / 5, vitesse 3 / 3 / 4 / 4 et capacité 1 / 2 / 3 / 4. Ils n’ont aucune puissance de siège. Les grands navires gardent leurs avantages de vitesse, capacité, combat ou siège côtier.
+Les hauts-fonds suivent les fonds peu profonds près des terres. Les embouchures étendent ce plateau par leurs sédiments. Les récifs exigent une mer chaude peu profonde, hors embouchure boueuse. Le recrutement indique les eaux accessibles à chaque navire. Les ports commerciaux automatiques exigent une rive terre/eau ; aucun sur les chenaux fluviaux ou la glace permanente.
 
 ### Aménagements locaux
 
@@ -154,7 +169,7 @@ L’IA évalue les récoltes mobiles visibles, déplace chasseurs et pêcheurs v
 
 ### Lire l’eau et la faune
 
-Les rives suivent la terre voisine. Les rivières se raccordent par leurs côtés amont et aval. Les animaux sont dessinés sur leur habitat actuel, y compris poissons, morues et baleines. Un habitat vide ne montre aucun animal. Une population mixte montre chaque espèce ; sélectionnez la case pour connaître les effectifs exacts. Les animaux d’élevage restent fixes. Les lacs trop grands des anciennes sauvegardes géographiques deviennent des mers au chargement ; positions, dés, stocks, constructions et populations sont conservés.
+Les rives suivent les terres voisines ; les rivières raccordent leurs côtés amont et aval. Le gel respecte la forme du chenal. Les habitats terrestres naturels ont des peintures saisonnières distinctes, occupées ou vides, avec les animaux intégrés au paysage. Une case mixte montre une espèce représentative sur le terrain ; la vue Faune et le panneau détaillent toutes les populations. Les animaux d’élevage restent fixes. Poissons, morues et baleines sont intégrés à l’eau et découpés aux limites du chenal ou de la rive. Les lacs trop grands des sauvegardes géographiques deviennent des mers au chargement ; positions, dés, stocks, constructions et populations sont conservés.
 
 ## Saisons et récoltes
 
@@ -593,15 +608,15 @@ Poids des transitions : Forêt pluviale tempérée ×0,75, Toundra ×0,75, Temp�
 | -------------------- | -------------------------- | ----------------------- |
 | Forêt                | 30%                        | 2 Bois                  |
 | Forêt de chasse      | 6%                         | 2 Peaux                 |
-| Pâturage de rennes   | 4%                         | 1 Viande + 1 Peaux      |
+| Pâturage de rennes   | 14%                        | 1 Viande + 1 Peaux      |
 | Champs d’orge        | 7%                         | 1 Blé                   |
 | Champs de navets     | 3%                         | 1 Blé                   |
 | Pâturage pauvre      | 5%                         | 1 Laine                 |
 | Montagnes d'or       | 5%                         | 1 Or                    |
-| Collines de charbon  | 10%                        | 1 Charbon               |
-| Montagnes de minerai | 10%                        | 1 Minerai               |
-| Carrière de pierre   | 10%                        | 1 Pierre                |
-| Collines d'argile    | 10%                        | 1 Argile                |
+| Collines de charbon  | 7%                         | 1 Charbon               |
+| Montagnes de minerai | 8%                         | 1 Minerai               |
+| Carrière de pierre   | 8%                         | 1 Pierre                |
+| Collines d'argile    | 7%                         | 1 Argile                |
 | Terrain aquatique    | Tirage successif           | Part effective de l’eau |
 | ---                  | ---                        | ---                     |
 | Zone de pêche        | 20%                        | 20%                     |
@@ -647,13 +662,13 @@ Poids des transitions : Froid ×1,5, Tempéré ×1, Méditerranéen ×1, Désert
 
 | Terrain terrestre    | Probabilité conditionnelle | Base annuelle           |
 | -------------------- | -------------------------- | ----------------------- |
-| Plaine de steppe     | 25%                        | 1 Peaux + 1 Laine       |
+| Plaine de steppe     | 37%                        | 1 Peaux + 1 Laine       |
 | Blé sur terre noire  | 4%                         | 3 Blé                   |
-| Élevage de savane    | 16%                        | 1 Viande + 1 Peaux      |
-| Champs de millet     | 10%                        | 1 Blé                   |
-| Pré                  | 10%                        | 2 Laine                 |
+| Élevage de savane    | 12%                        | 1 Viande + 1 Peaux      |
+| Champs de millet     | 7%                         | 1 Blé                   |
+| Pré                  | 7%                         | 2 Laine                 |
 | Bois clairsemés      | 7%                         | 1 Bois OU 1 Peau        |
-| Carrière de pierre   | 10%                        | 1 Pierre                |
+| Carrière de pierre   | 8%                         | 1 Pierre                |
 | Montagnes de minerai | 5%                         | 1 Minerai               |
 | Collines de charbon  | 5%                         | 1 Charbon               |
 | Collines d'argile    | 5%                         | 1 Argile                |
@@ -847,12 +862,12 @@ Poids des transitions : Tropical ×2, Désert ×1, Steppe ×1, Subtropical ×1, 
 
 | Terrain terrestre    | Probabilité conditionnelle | Base annuelle           |
 | -------------------- | -------------------------- | ----------------------- |
-| Prairie à gibier     | 30%                        | 2 Peaux                 |
+| Prairie à gibier     | 42%                        | 2 Peaux                 |
 | Élevage de savane    | 5%                         | 1 Viande + 1 Peaux      |
-| Champs de millet     | 20%                        | 1 Blé                   |
+| Champs de millet     | 14%                        | 1 Blé                   |
 | Bois secs            | 10%                        | 1 Bois                  |
-| Pâturage pauvre      | 10%                        | 1 Laine                 |
-| Montagnes de minerai | 10%                        | 1 Minerai               |
+| Pâturage pauvre      | 7%                         | 1 Laine                 |
+| Montagnes de minerai | 7%                         | 1 Minerai               |
 | Collines d'argile    | 5%                         | 1 Argile                |
 | Carrière de pierre   | 5%                         | 1 Pierre                |
 | Montagnes d'or       | 3%                         | 1 Or                    |
@@ -981,13 +996,13 @@ Poids des transitions : Froid ×1, Tempéré ×1, Steppe ×2, Désert ×1, Méso
 
 | Terrain terrestre    | Probabilité conditionnelle | Base annuelle           |
 | -------------------- | -------------------------- | ----------------------- |
-| Plaine de steppe     | 32%                        | 1 Peaux + 1 Laine       |
-| Champs de maïs       | 12%                        | 2 Blé                   |
-| Champs de tournesols | 6%                         | 1 Huile                 |
+| Plaine de steppe     | 40%                        | 1 Peaux + 1 Laine       |
+| Champs de maïs       | 9%                         | 2 Blé                   |
+| Champs de tournesols | 4%                         | 1 Huile                 |
 | Prairie à bisons     | 16%                        | 1 Viande + 1 Peaux      |
 | Bois riverains       | 8%                         | 1 Bois                  |
-| Collines d'argile    | 8%                         | 1 Argile                |
-| Carrière de pierre   | 6%                         | 1 Pierre                |
+| Collines d'argile    | 6%                         | 1 Argile                |
+| Carrière de pierre   | 5%                         | 1 Pierre                |
 | Collines de charbon  | 5%                         | 1 Charbon               |
 | Montagnes de minerai | 4%                         | 1 Minerai               |
 | Montagnes d'or       | 1%                         | 1 Or                    |
@@ -1108,6 +1123,190 @@ Poids des transitions : Tropical ×2, Subtropical ×1
 
 Haute mer (sans terre adjacente) : tirage Baleines 6 % ; part effective 4.2 %. Tableau ci-dessus : eau côtière.
 
+## Poids des terrains riverains
+
+Les basses rives peu pentues conservent un quart des poids ordinaires admissibles et ajoutent les poids ci-dessous avant un seul tirage. Ce sont des poids relatifs, pas des pourcentages de carte. Les deltas rizicoles chauds ajoutent 25 aux Jardins du delta.
+
+### Tempéré
+
+- Blé alluvial: 39
+
+- Collines d'argile: 17
+
+- Bois clairsemés: 13
+
+- Prairie inondable: 11
+
+### Froid
+
+- Champs d’orge: 24
+
+- Collines d'argile: 17
+
+- Forêt: 25
+
+- Pâturage de rennes: 14
+
+### Arctique
+
+- Crête rocheuse arctique: 25
+
+- Plaine enneigée: 40
+
+- Montagnes de minerai arctiques: 15
+
+### Steppe
+
+- Sorgho de décrue: 35
+
+- Collines d'argile: 17
+
+- Bois clairsemés: 13
+
+- Plaine de steppe: 15
+
+### Méditerranéen
+
+- Blé alluvial: 35
+
+- Collines d'argile: 17
+
+- Bois clairsemés: 13
+
+- Prairie inondable: 15
+
+### Tropical
+
+- Rizière fluviale: 39
+
+- Berges argileuses: 17
+
+- Bois riverains: 24
+
+### Désert
+
+- Sorgho de décrue: 35
+
+- Collines d'argile: 20
+
+- Oasis: 25
+
+### Océanique
+
+- Blé alluvial: 30
+
+- Collines d'argile: 17
+
+- Bois clairsemés: 18
+
+- Prairie inondable: 15
+
+### Alpin
+
+- Champs d’orge: 25
+
+- Carrière de montagne: 20
+
+- Forêt: 20
+
+- Pâturage alpin: 15
+
+### Subtropical
+
+- Rizière fluviale: 39
+
+- Berges argileuses: 17
+
+- Bois riverains: 24
+
+### Savane
+
+- Sorgho de décrue: 35
+
+- Collines d'argile: 20
+
+- Bois secs: 10
+
+- Prairie à gibier: 15
+
+### Glacial
+
+- Crête rocheuse arctique: 20
+
+- Plaine enneigée: 60
+
+### Hyperaride
+
+- Sorgho de décrue: 20
+
+- Collines d'argile: 20
+
+- Oasis: 40
+
+### Mousson
+
+- Rizière fluviale: 45
+
+- Berges argileuses: 17
+
+- Bois riverains: 18
+
+### Andin
+
+- Champs de pommes de terre: 35
+
+- Carrière volcanique: 15
+
+- Forêt de nuages: 15
+
+- Pâturage d’alpagas: 15
+
+### Prairie
+
+- Champs de maïs: 35
+
+- Collines d'argile: 17
+
+- Bois clairsemés: 13
+
+- Plaine de steppe: 15
+
+### Mésoaméricain
+
+- Jardins chinampas: 35
+
+- Berges argileuses: 20
+
+- Bois riverains: 25
+
+### Toundra
+
+- Tourbière: 25
+
+- Pâturage de bœufs musqués: 35
+
+- Lande à baies: 5
+
+- Carrière de pierre: 15
+
+### Forêt pluviale tempérée
+
+- Forêt ancienne: 35
+
+- Collines d'argile: 15
+
+- Prairie inondable: 20
+
+- Champs d’avoine: 10
+
+### Marais équatoriaux
+
+- Palmeraie de sagoutiers: 30
+
+- Berges argileuses: 20
+
+- Bois riverains: 30
+
 ## Production des terrains
 
 Campagnes géographiques : terrain permanent uniquement. Les animaux migrateurs ajoutent les rendements du chapitre Géographie vivante. Les probabilités climatiques précédentes décrivent les anciennes cartes.
@@ -1135,7 +1334,7 @@ Les bases annuelles actuelles incluent la productivité des cultures propre au c
 | Crête rocheuse arctique        | Arctique / Glacial / Toundra                                                                                                                                                                                                                   | 1 Pierre            | terrain accidenté |
 | Montagnes aurifères arctiques  | Arctique / Glacial / Toundra                                                                                                                                                                                                                   | 1 Or                | terrain accidenté |
 | Plaine de steppe               | Steppe / Prairie                                                                                                                                                                                                                               | 0                   | plaine            |
-| Oliveraie                      | Méditerranéen                                                                                                                                                                                                                                  | 1 Blé + 1 Bois      | forêt             |
+| Oliveraie                      | Méditerranéen                                                                                                                                                                                                                                  | 1 Blé               | forêt             |
 | Escarpement                    | Méditerranéen                                                                                                                                                                                                                                  | 1 Pierre            | terrain accidenté |
 | Jungle                         | Tropical / Subtropical / Mousson                                                                                                                                                                                                               | 1 Bois              | forêt             |
 | Bois tropicaux                 | Tropical / Mousson / Mésoaméricain                                                                                                                                                                                                             | 1 Bois              | forêt             |
@@ -1170,7 +1369,7 @@ Les bases annuelles actuelles incluent la productivité des cultures propre au c
 | Prairie à bisons               | Prairie                                                                                                                                                                                                                                        | 0                   | plaine            |
 | Jardins chinampas              | Mésoaméricain                                                                                                                                                                                                                                  | 3 Blé               | plaine            |
 | Terrains à dindons             | Mésoaméricain                                                                                                                                                                                                                                  | 1 Bois              | forêt             |
-| Forêt de nuages                | Mésoaméricain                                                                                                                                                                                                                                  | 1 Bois              | forêt             |
+| Forêt de nuages                | Mésoaméricain                                                                                                                                                                                                                                  | 1 Bois + 1 Peaux    | forêt             |
 | Carrière volcanique            | Mésoaméricain                                                                                                                                                                                                                                  | 2 Pierre            | terrain accidenté |
 | Champs de millet               | Steppe / Savane                                                                                                                                                                                                                                | 1 Blé               | plaine            |
 | Champs de maïs                 | Prairie / Mésoaméricain                                                                                                                                                                                                                        | 2 Blé               | plaine            |
@@ -1184,7 +1383,7 @@ Les bases annuelles actuelles incluent la productivité des cultures propre au c
 | Forêt ancienne                 | Forêt pluviale tempérée                                                                                                                                                                                                                        | 3 Bois              | forêt             |
 | Sous-bois de chasse            | Forêt pluviale tempérée                                                                                                                                                                                                                        | 1 Bois              | forêt             |
 | Mangrove                       | Marais équatoriaux                                                                                                                                                                                                                             | 1 Bois + 1 Poissons | forêt             |
-| Palmeraie de sagoutiers        | Marais équatoriaux                                                                                                                                                                                                                             | 1 Blé + 1 Bois      | forêt             |
+| Palmeraie de sagoutiers        | Marais équatoriaux                                                                                                                                                                                                                             | 1 Blé               | forêt             |
 
 Pics rocheux : aucune production et aucune entrée d’unité, y compris par recrutement, repli ou débarquement. Les routes peuvent suivre leurs arêtes ; une agglomération exige une terre ferme praticable adjacente.
 
@@ -1266,21 +1465,21 @@ Chaque saison dure deux manches complètes, début et fin, avec le même rendeme
 
 ### Méditerranéen
 
-| Terrain              | Printemps | Été       | Automne        | Hiver          |
-| -------------------- | --------- | --------- | -------------- | -------------- |
-| Champs               | 0         | 8 Blé     | 0              | 0              |
-| Champs d’orge        | 0         | 4 Blé     | 0              | 0              |
-| Oliveraie            | 1 Bois    | 1 Bois    | 2 Blé + 1 Bois | 2 Blé + 1 Bois |
-| Escarpement          | 1 Pierre  | 1 Pierre  | 1 Pierre       | 1 Pierre       |
-| Bois clairsemés      | 1 Bois    | 1 Bois    | 1 Bois         | 1 Bois         |
-| Pâturage pauvre      | 2 Laine   | 2 Laine   | 0              | 0              |
-| Pâturage de chèvres  | 1 Viande  | 0         | 2 Viande       | 1 Viande       |
-| Marais salants       | 1 Sel     | 2 Sel     | 1 Sel          | 0              |
-| Montagnes d'or       | 1 Or      | 1 Or      | 1 Or           | 1 Or           |
-| Collines de charbon  | 1 Charbon | 1 Charbon | 1 Charbon      | 1 Charbon      |
-| Montagnes de minerai | 1 Minerai | 1 Minerai | 1 Minerai      | 1 Minerai      |
-| Zone de pêche        | 0         | 0         | 0              | 0              |
-| Zone de Baleines     | 0         | 0         | 0              | 0              |
+| Terrain              | Printemps | Été       | Automne   | Hiver     |
+| -------------------- | --------- | --------- | --------- | --------- |
+| Champs               | 0         | 8 Blé     | 0         | 0         |
+| Champs d’orge        | 0         | 4 Blé     | 0         | 0         |
+| Oliveraie            | 0         | 0         | 2 Blé     | 2 Blé     |
+| Escarpement          | 1 Pierre  | 1 Pierre  | 1 Pierre  | 1 Pierre  |
+| Bois clairsemés      | 1 Bois    | 1 Bois    | 1 Bois    | 1 Bois    |
+| Pâturage pauvre      | 2 Laine   | 2 Laine   | 0         | 0         |
+| Pâturage de chèvres  | 1 Viande  | 0         | 2 Viande  | 1 Viande  |
+| Marais salants       | 1 Sel     | 2 Sel     | 1 Sel     | 0         |
+| Montagnes d'or       | 1 Or      | 1 Or      | 1 Or      | 1 Or      |
+| Collines de charbon  | 1 Charbon | 1 Charbon | 1 Charbon | 1 Charbon |
+| Montagnes de minerai | 1 Minerai | 1 Minerai | 1 Minerai | 1 Minerai |
+| Zone de pêche        | 0         | 0         | 0         | 0         |
+| Zone de Baleines     | 0         | 0         | 0         | 0         |
 
 ### Tropical
 
@@ -1467,21 +1666,21 @@ Chaque saison dure deux manches complètes, début et fin, avec le même rendeme
 
 ### Mésoaméricain
 
-| Terrain              | Printemps | Été       | Automne   | Hiver     |
-| -------------------- | --------- | --------- | --------- | --------- |
-| Champs de maïs       | 0         | 0         | 8 Blé     | 0         |
-| Jardins chinampas    | 4 Blé     | 4 Blé     | 4 Blé     | 0         |
-| Terrains à dindons   | 1 Bois    | 1 Bois    | 1 Bois    | 1 Bois    |
-| Forêt de nuages      | 1 Bois    | 1 Bois    | 1 Bois    | 1 Bois    |
-| Bois tropicaux       | 1 Bois    | 1 Bois    | 1 Bois    | 1 Bois    |
-| Collines d'argile    | 1 Argile  | 1 Argile  | 1 Argile  | 1 Argile  |
-| Carrière volcanique  | 2 Pierre  | 2 Pierre  | 2 Pierre  | 2 Pierre  |
-| Montagnes de minerai | 1 Minerai | 1 Minerai | 1 Minerai | 1 Minerai |
-| Montagnes d'or       | 1 Or      | 1 Or      | 1 Or      | 1 Or      |
-| Marais salants       | 1 Sel     | 0         | 1 Sel     | 2 Sel     |
-| Collines de charbon  | 1 Charbon | 1 Charbon | 1 Charbon | 1 Charbon |
-| Zone de pêche        | 0         | 0         | 0         | 0         |
-| Zone de Baleines     | 0         | 0         | 0         | 0         |
+| Terrain              | Printemps        | Été              | Automne          | Hiver            |
+| -------------------- | ---------------- | ---------------- | ---------------- | ---------------- |
+| Champs de maïs       | 0                | 0                | 8 Blé            | 0                |
+| Jardins chinampas    | 4 Blé            | 4 Blé            | 4 Blé            | 0                |
+| Terrains à dindons   | 1 Bois           | 1 Bois           | 1 Bois           | 1 Bois           |
+| Forêt de nuages      | 1 Bois + 1 Peaux | 1 Bois + 1 Peaux | 1 Bois + 1 Peaux | 1 Bois + 1 Peaux |
+| Bois tropicaux       | 1 Bois           | 1 Bois           | 1 Bois           | 1 Bois           |
+| Collines d'argile    | 1 Argile         | 1 Argile         | 1 Argile         | 1 Argile         |
+| Carrière volcanique  | 2 Pierre         | 2 Pierre         | 2 Pierre         | 2 Pierre         |
+| Montagnes de minerai | 1 Minerai        | 1 Minerai        | 1 Minerai        | 1 Minerai        |
+| Montagnes d'or       | 1 Or             | 1 Or             | 1 Or             | 1 Or             |
+| Marais salants       | 1 Sel            | 0                | 1 Sel            | 2 Sel            |
+| Collines de charbon  | 1 Charbon        | 1 Charbon        | 1 Charbon        | 1 Charbon        |
+| Zone de pêche        | 0                | 0                | 0                | 0                |
+| Zone de Baleines     | 0                | 0                | 0                | 0                |
 
 ### Toundra
 
@@ -1520,7 +1719,7 @@ Chaque saison dure deux manches complètes, début et fin, avec le même rendeme
 | Terrain                 | Printemps           | Été                 | Automne             | Hiver               |
 | ----------------------- | ------------------- | ------------------- | ------------------- | ------------------- |
 | Mangrove                | 1 Bois + 1 Poissons | 1 Bois + 1 Poissons | 1 Bois + 1 Poissons | 1 Bois + 1 Poissons |
-| Palmeraie de sagoutiers | 1 Blé + 1 Bois      | 1 Blé + 1 Bois      | 1 Blé + 1 Bois      | 1 Blé + 1 Bois      |
+| Palmeraie de sagoutiers | 1 Blé               | 1 Blé               | 1 Blé               | 1 Blé               |
 | Bois riverains          | 1 Bois              | 1 Bois              | 1 Bois              | 1 Bois              |
 | Berges argileuses       | 2 Argile            | 1 Argile            | 2 Argile            | 3 Argile            |
 | Tourbière               | 1 Charbon           | 1 Charbon           | 1 Charbon           | 1 Charbon           |

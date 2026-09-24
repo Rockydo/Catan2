@@ -1,4 +1,6 @@
-import seasonalManifest from "./season-art-manifest.json";
+import wildlifeManifest from "./wildlife-terrain-manifest.json" with { type: "json" };
+import { wildHabitat } from "../game/geography";
+import seasonalManifest from "./season-art-manifest.json" with { type: "json" };
 import { frozenInSeason, type Season } from "../game/seasons";
 import type { Hex } from "../game/types";
 import { tileTerrain } from "../game/maritime";
@@ -76,7 +78,25 @@ export const REGIONAL_ART_KEYS = Object.values(regionalArt).flatMap(
   Object.values,
 );
 /** Use the tile's forecast, including patchy ice, for actual and preview art. */
+const wildlifeTiles: Record<string, string> = wildlifeManifest;
 export function seasonalTerrainPattern(tile: Hex, season?: Season): string {
+  const base = baseSeasonalTerrainPattern(tile, season);
+  if (
+    !tile.geography ||
+    !wildHabitat(tile) ||
+    tile.geography.access === "flooded"
+  )
+    return base;
+  const file = terrainArtFile(base);
+  const animals = tile.geography.animals ?? [];
+  for (const kind of animals) {
+    const art = wildlifeTiles[`${kind}/${file}`];
+    if (art) return `wild-${art}`;
+  }
+  const empty = wildlifeTiles[`empty/${file}`];
+  return empty ? `wild-${empty}` : base;
+}
+export function baseSeasonalTerrainPattern(tile: Hex, season?: Season): string {
   if (tile.geography && !frozenInSeason(tile, season)) {
     let image: string | undefined = tile.biome;
     const warmRegion = [
@@ -102,6 +122,23 @@ export function seasonalTerrainPattern(tile: Hex, season?: Season): string {
       return "geo-desert-pass";
     if (image === "lake" && warmRegion) return "geo-warm-lake";
     if (image === "flood-meadow" && warmRegion) return "geo-warm-meadow";
+    if (
+      image === "river-woods" &&
+      !seasonalTiles[`${tile.climate}/river-woods/${season ?? "summer"}`]
+    ) {
+      const forestClimate = ["cold", "arctic", "glacial", "tundra"].includes(
+        tile.climate ?? "",
+      )
+        ? "cold"
+        : tile.climate === "alpine"
+          ? "alpine"
+          : undefined;
+      return terrainPatternKey(
+        forestClimate ? "forest" : "woods",
+        forestClimate ?? tile.climate,
+        season ?? "summer",
+      );
+    }
     const coldSnow =
       tile.climate === "glacial" ||
       (["arctic", "tundra"].includes(tile.climate ?? "") &&
@@ -243,6 +280,7 @@ export function terrainPatternKey(
   );
 }
 export function terrainArtFile(art: string): string {
+  if (art.startsWith("wild-")) return `wildlife-terrain/${art.slice(5)}.webp`;
   if (art.startsWith("geo-")) return `geography/${art.slice(4)}.webp`;
   if (seasonalFiles[art]) return seasonalFiles[art];
   if (["gold", "fish", "whale"].includes(art))

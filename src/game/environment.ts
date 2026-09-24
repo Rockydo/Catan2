@@ -1,5 +1,5 @@
 import type { Game, Hex, Stock } from "./types";
-import { randomAt, neighbors, canOccupy } from "./world";
+import { randomAt, neighbors, canOccupy, distance } from "./world";
 import {
   seasonAt,
   seasonHalf,
@@ -147,7 +147,7 @@ export function environmentRisk(tile: Hex, season: Season): number {
   );
 }
 const marine = (kind: WildlifeKind) => ["fish", "cod", "whale"].includes(kind);
-function suitable(tile: Hex, kind: WildlifeKind) {
+export function suitableWildlifeHabitat(tile: Hex, kind: WildlifeKind) {
   if (!tile.geography) return false;
   if (marine(kind))
     return (
@@ -169,7 +169,8 @@ function suitable(tile: Hex, kind: WildlifeKind) {
     tile.resource === "water" ||
     tile.resource === "ice" ||
     tile.resource === "peaks" ||
-    tile.geography.pass
+    tile.geography.pass ||
+    !wildHabitat(tile)
   )
     return false;
   if (kind === "turkey")
@@ -179,10 +180,22 @@ function suitable(tile: Hex, kind: WildlifeKind) {
     );
   if (kind === "seal")
     return (
+      BIOME_INFO[tile.biome!].family !== "forest" &&
       !!tile.geography.coastal &&
       ["arctic", "glacial", "tundra"].includes(tile.climate ?? "")
     );
   if (kind === "jungle-game" && !tropical.has(tile.climate ?? "temperate"))
+    return false;
+  if (
+    (kind === "bison" || kind === "musk-ox") &&
+    BIOME_INFO[tile.biome!].family === "forest"
+  )
+    return false;
+  if (
+    kind === "deer" &&
+    (tropical.has(tile.climate ?? "temperate") ||
+      ["arctic", "glacial", "tundra"].includes(tile.climate ?? ""))
+  )
     return false;
   if (
     kind === "bison" &&
@@ -192,7 +205,11 @@ function suitable(tile: Hex, kind: WildlifeKind) {
   )
     return false;
   if (kind === "reindeer" || kind === "musk-ox")
-    return cold.has(tile.climate ?? "temperate") && wildHabitat(tile);
+    return (
+      tile.climate !== "prairie" &&
+      cold.has(tile.climate ?? "temperate") &&
+      wildHabitat(tile)
+    );
   return wildHabitat(tile);
 }
 function development(s: Game) {
@@ -231,8 +248,83 @@ function migrationCandidates(s: Game, population: Wildlife) {
       queue.push({ id: next, depth: depth + 1 });
     }
   }
-  return [...found].filter((id) => suitable(s.tiles[id], population.kind));
+  return [...found].filter((id) =>
+    suitableWildlifeHabitat(s.tiles[id], population.kind),
+  );
 }
+/** One-time repair of herds on formerly over-broad habitats. Keep IDs and
+ * populations, and never reroll weather or advance the season during loading.
+ * A population with no suitable revealed habitat waits dormant until one exists. */
+export function restoreWildlifeHabitats(s: Game): void {
+  if (!s.geographyVersion || !s.wildlife) return;
+  const invalid = s.wildlife.filter(
+    (h) => h.dormant || !suitableWildlifeHabitat(s.tiles[h.tile], h.kind),
+  );
+  if (!invalid.length) return;
+  const choices = new Map<WildlifeKind, string[]>();
+  for (const herd of invalid) {
+    let candidates = choices.get(herd.kind);
+    if (!candidates) {
+      candidates = Object.values(s.tiles)
+        .filter((t) => suitableWildlifeHabitat(t, herd.kind))
+        .map((t) => t.id);
+      choices.set(herd.kind, candidates);
+    }
+    let best: string | undefined,
+      nearest = Infinity;
+    for (const id of candidates) {
+      const d = distance(herd.tile, id);
+      if (d < nearest || (d === nearest && id < best!)) {
+        best = id;
+        nearest = d;
+      }
+    }
+    if (best) {
+      herd.tile = best;
+      delete herd.dormant;
+    } else herd.dormant = true;
+  }
+  for (const tile of Object.values(s.tiles))
+    if (tile.geography) {
+      tile.geography.fauna = {};
+      tile.geography.animals = [];
+    }
+  for (const herd of s.wildlife) {
+    if (herd.dormant) continue;
+    const g = s.tiles[herd.tile].geography!;
+    g.animals!.push(herd.kind);
+    for (const [raw, n] of Object.entries(WILDLIFE_GOODS[herd.kind]))
+      g.fauna![raw as keyof Stock] = (g.fauna![raw as keyof Stock] ?? 0) + n!;
+  }
+}
+
+/** Newly forming ice triggers a short escape even in a late half-season.
+ * Choose the nearest reachable open water, with seed-stable ties. Marine
+ * populations stay under ice only if that search finds no open refuge. */
+export function escapeFormingIce(s: Game): void {
+  for (const herd of s.wildlife ?? []) {
+    if (
+      herd.dormant ||
+      !marine(herd.kind) ||
+      s.tiles[herd.tile]?.surface !== "frozen"
+    )
+      continue;
+    const candidates = migrationCandidates(s, herd).filter(
+      (id) => s.tiles[id].surface !== "frozen",
+    );
+    candidates.sort(
+      (a, b) =>
+        distance(herd.tile, a) - distance(herd.tile, b) ||
+        randomAt(s.seed, herd.id, `ice-refuge-${s.round}-${a}`) -
+          randomAt(s.seed, herd.id, `ice-refuge-${s.round}-${b}`),
+    );
+    if (candidates.length) {
+      herd.tile = candidates[0];
+      herd.lastRound = s.round;
+    }
+  }
+}
+
 /** Population is conserved. Hunting affects receipts, never animal counts.
  * Migration uses a bounded local search once per season, independent of armies. */
 export function syncEnvironment(s: Game): void {
@@ -249,6 +341,7 @@ export function syncEnvironment(s: Game): void {
       delete geo.nextHarvestMode;
     }
     geo.weather = regionalWeather(s, tile);
+    geo.weatherSeason = season;
     geo.access = passClosed(tile, season)
       ? "closed"
       : geo.floodplain && !geo.projects?.levee && riverLevel(tile, season) >= 3
@@ -280,8 +373,12 @@ export function syncEnvironment(s: Game): void {
         ? geo.waterway === "deep"
           ? 0.11
           : 0.18
-        : 0.13;
-    if (kind && randomAt(s.seed, tile.id, "wildlife-density") < chance) {
+        : 0.22;
+    if (
+      kind &&
+      suitableWildlifeHabitat(tile, kind) &&
+      randomAt(s.seed, tile.id, "wildlife-density") < chance
+    ) {
       if (
         tile.resource === "water" &&
         !["river", "lake"].includes(geo.waterway ?? "")
@@ -311,12 +408,21 @@ export function syncEnvironment(s: Game): void {
     }
     delete geo.newlyRevealed;
   }
+  restoreWildlifeHabitats(s);
+  escapeFormingIce(s);
   if (advance && seasonHalf(s) === "early") {
     const developed = development(s),
       crowding = new Map<string, number>();
     for (const herd of s.wildlife) {
+      if (herd.dormant) continue;
       if (herd.lastRound === s.round) continue;
-      const candidates = migrationCandidates(s, herd);
+      let candidates = migrationCandidates(s, herd);
+      if (marine(herd.kind)) {
+        const open = candidates.filter(
+          (id) => s.tiles[id].surface !== "frozen",
+        );
+        if (open.length) candidates = open;
+      }
       const weights = candidates.map((id) => {
         const tile = s.tiles[id],
           g = tile.geography!;
@@ -351,9 +457,14 @@ export function syncEnvironment(s: Game): void {
       crowding.set(herd.tile, (crowding.get(herd.tile) ?? 0) + 1);
     }
   }
+  for (const tile of Object.values(s.tiles))
+    if (tile.geography) {
+      tile.geography.fauna = {};
+      tile.geography.animals = [];
+    }
   for (const herd of s.wildlife) {
     const geo = s.tiles[herd.tile]?.geography;
-    if (!geo) continue;
+    if (!geo || herd.dormant) continue;
     geo.animals!.push(herd.kind);
     for (const [raw, n] of Object.entries(WILDLIFE_GOODS[herd.kind]))
       geo.fauna![raw as keyof Stock] =
@@ -366,6 +477,15 @@ export function environmentSummary(tile: Hex): string[] {
   if (!g) return [];
   return [
     WEATHER_NAMES[g.weather ?? "normal"],
+    g.waterway === "shoal"
+      ? "Coastal shelf: shallow-draft vessels only"
+      : g.waterway === "reef"
+        ? "Coral reef: shallow-draft vessels only"
+        : g.waterway === "lake"
+          ? "Lake: all vessel classes when ice-free"
+          : ["coast", "deep"].includes(g.waterway ?? "")
+            ? "Navigable sea: all vessel classes when ice-free"
+            : "",
     g.access === "flooded"
       ? "Flooded: shallow vessels only"
       : g.access === "closed"

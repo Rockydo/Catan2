@@ -45,6 +45,27 @@ const fmt = (p: number[]) => p.map((n) => n.toFixed(3)).join(",");
 export const WATER_HEX = Array.from({ length: 6 }, (_, i) =>
   fmt(point(((i * 60 - 90) * Math.PI) / 180, R)),
 ).join(" ");
+function shoreEdge(i: number) {
+  const angle = (i * Math.PI) / 3;
+  const a = point(angle - Math.PI / 6, R),
+    b = point(angle + Math.PI / 6, R);
+  const inward = point(angle, 1);
+  const along = (f: number, depth: number) =>
+    a.map((v, axis) => v + (b[axis] - v) * f - inward[axis] * depth);
+  // A narrow irregular shelf, rather than a circular scallop per land hex.
+  const curve = `M${fmt(a)}C${fmt(along(0.16, 2.8))} ${fmt(along(0.31, 5.2))} ${fmt(along(0.5, 3.4))}S${fmt(along(0.81, 2.5))} ${fmt(b)}`;
+  return { a, b, curve };
+}
+/** The wet side of exactly the same shoreline curves used to paint banks. */
+export function waterSurfacePath(mask: number) {
+  let d = "";
+  for (let i = 0; i < 6; i++) {
+    const { a, b, curve } = shoreEdge(i);
+    if (i === 0) d = `M${fmt(a)}`;
+    d += mask & (1 << i) ? curve.slice(curve.indexOf("C")) : `L${fmt(b)}`;
+  }
+  return `${d}Z`;
+}
 /** Closed textured bank strips and separate waterlines. Nothing is painted
  * along water-to-water edges, including the interior of a large sea. */
 export function shoreGeometry(mask: number) {
@@ -52,14 +73,7 @@ export function shoreGeometry(mask: number) {
     line = "";
   for (let i = 0; i < 6; i++) {
     if (!(mask & (1 << i))) continue;
-    const angle = (i * Math.PI) / 3;
-    const a = point(angle - Math.PI / 6, R),
-      b = point(angle + Math.PI / 6, R);
-    const inward = point(angle, 1);
-    const along = (f: number, depth: number) =>
-      a.map((v, axis) => v + (b[axis] - v) * f - inward[axis] * depth);
-    // A narrow irregular shelf, rather than a circular scallop per land hex.
-    const curve = `M${fmt(a)}C${fmt(along(0.16, 2.8))} ${fmt(along(0.31, 5.2))} ${fmt(along(0.5, 3.4))}S${fmt(along(0.81, 2.5))} ${fmt(b)}`;
+    const { a, curve } = shoreEdge(i);
     line += curve;
     banks += `${curve}L${fmt(a)}Z`;
   }
@@ -94,6 +108,22 @@ export function riverGeometry(mask: number) {
     line += `M${fmt(b)}${curve}`;
   }
   return { water: `${water}Z`, line };
+}
+/** Keep schools inside the channel, including off-centre river sources and bends. */
+export function riverWildlifeAnchor(mask: number) {
+  const sides = Array.from({ length: 6 }, (_, i) => i).filter(
+    (i) => mask & (1 << i),
+  );
+  if (!sides.length) return { x: 0, y: 0 };
+  const radius = sides.length === 1 ? 28 : 21;
+  return {
+    x:
+      sides.reduce((sum, i) => sum + Math.cos((i * Math.PI) / 3) * radius, 0) /
+      sides.length,
+    y:
+      sides.reduce((sum, i) => sum + Math.sin((i * Math.PI) / 3) * radius, 0) /
+      sides.length,
+  };
 }
 export function bankArt(tile: Hex, season?: Season) {
   // Climate-appropriate ground, kept free of baked-in water or wildlife.

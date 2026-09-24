@@ -1,3 +1,4 @@
+import { weatherAdjustedYield } from "./weather-yields";
 import {
   syncEnvironment,
   regionalWeather,
@@ -192,7 +193,7 @@ export function iceRisk(
             : baseFreeze);
       melt +=
         chance *
-        (kind === "cold"
+        (kind === "cold" && baseMelt < 1
           ? baseMelt * 0.5
           : kind === "mild"
             ? Math.min(1, baseMelt * 1.4)
@@ -205,7 +206,16 @@ export function iceRisk(
 function resolveWeather(s: Game, tile: Hex) {
   const current = seasonAt(s);
   if (!current) return;
-  if (tile.iceWeather?.round === s.round) return;
+  if (tile.iceWeather?.round === s.round) {
+    // Repair pre-fix summer saves without rerolling any probabilistic ice.
+    if (
+      tile.geography &&
+      !tile.geography.weatherSeason &&
+      iceOdds(tile, current, seasonHalf(s))[1] === 1
+    )
+      tile.surface = "open";
+    return;
+  }
   // Reconstruct newly discovered tiles from the last guaranteed Summer reset.
   // This is at most eight cheap hash draws, even in a very old campaign.
   let first = tile.iceWeather ? tile.iceWeather.round + 1 : s.round - 7;
@@ -239,7 +249,11 @@ function resolveWeather(s: Game, tile: Hex) {
     if (tile.geography) {
       const weather = regionalWeather({ ...s, round }, tile);
       if (weather === "cold")
-        chance = iced ? melt * 0.5 : Math.min(1, freeze * 1.5);
+        chance = iced
+          ? melt === 1
+            ? 1
+            : melt * 0.5
+          : Math.min(1, freeze * 1.5);
       if (weather === "mild")
         chance = iced ? Math.min(1, melt * 1.4) : freeze * 0.5;
     }
@@ -427,6 +441,8 @@ export function seasonalProfile(
         }
     SEASONS.forEach((season, i) => {
       if (amounts[i]) result[season][raw as Raw] = amounts[i];
+      if (tile.geography && raw === "lumber" && base! > 0)
+        result[season].lumber = Math.max(1, amounts[i]);
     });
   }
   if (tile.geography) {
@@ -460,7 +476,9 @@ export function seasonalYield(
     return {};
   if (season && tile.iceWeather?.season === season && tile.surface === "frozen")
     return {};
-  return season ? seasonalProfile(tile, owner)[season] : tileYield(tile, owner);
+  return season
+    ? weatherAdjustedYield(tile, seasonalProfile(tile, owner)[season], season)
+    : tileYield(tile, owner);
 }
 /** Woods workshops keep their chosen product, independently of the raw choice. */
 export function seasonalWorkshopBase(

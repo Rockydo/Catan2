@@ -1,3 +1,4 @@
+import { execFileSync } from "node:child_process";
 import { test, expect } from "@playwright/test";
 import { newGame } from "../src/game/engine";
 import { generateWorld } from "../src/game/world";
@@ -76,6 +77,30 @@ for (const size of [300, 850]) {
         return urls.length;
       });
     expect(decoded).toBeGreaterThan(3);
+    const clips = await page
+      .locator(".connected-water")
+      .evaluateAll((nodes) => {
+        const result = { rivers: 0, seas: 0, errors: [] as string[] };
+        for (const water of nodes) {
+          const river = water.getAttribute("data-channel-mask");
+          const expected =
+            river !== null
+              ? `url(#water-river-${river})`
+              : `url(#water-surface-${water.getAttribute("data-shore-mask")})`;
+          for (const animal of water.parentElement!.querySelectorAll(
+            ".wildlife-art image",
+          )) {
+            result[river !== null ? "rivers" : "seas"]++;
+            if (animal.getAttribute("clip-path") !== expected)
+              result.errors.push(animal.outerHTML);
+          }
+        }
+        return result;
+      });
+    expect(clips.rivers).toBeGreaterThan(0);
+    expect(clips.seas).toBeGreaterThan(0);
+    expect(clips.errors).toEqual([]);
+
     await page.screenshot({
       path: `test-artifacts/connected-water-${size}-${test.info().project.name}.png`,
     });
@@ -108,3 +133,68 @@ for (const size of [300, 850]) {
     expect(errors).toEqual([]);
   });
 }
+
+test("marine artwork cannot paint dry pixels in any river or coastline shape", async ({
+  page,
+}) => {
+  const cases: { river: boolean; mask: number; path: string; svg: string }[] =
+    JSON.parse(
+      execFileSync(
+        process.execPath,
+        ["--import", "tsx", "scripts/water-clip-fixtures.ts"],
+        { encoding: "utf8" },
+      ),
+    );
+  await page.goto("/");
+  const failures = await page.evaluate(async (cases) => {
+    const assets = new Map<string, string>();
+    for (const kind of ["fish", "whale"]) {
+      const url = `./assets/geography/wildlife-${kind}.webp`,
+        blob = await (await fetch(url)).blob();
+      const data = await new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result));
+        reader.readAsDataURL(blob);
+      });
+      assets.set(url, data);
+    }
+    const failures = [];
+    for (const fixture of cases) {
+      let source = fixture.svg;
+      for (const [url, data] of assets) source = source.replaceAll(url, data);
+      const image = new Image();
+      image.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(source)}`;
+      await image.decode();
+      const canvas = document.createElement("canvas");
+      canvas.width = canvas.height = 368;
+      const ctx = canvas.getContext("2d")!;
+      ctx.drawImage(image, 0, 0);
+      const pixels = ctx.getImageData(0, 0, 368, 368).data,
+        wet = new Path2D(fixture.path);
+      let painted = 0,
+        dry = 0;
+      ctx.lineWidth = 0.6;
+      for (let y = 0; y < 368; y++)
+        for (let x = 0; x < 368; x++) {
+          if (pixels[(y * 368 + x) * 4 + 3] <= 10) continue;
+          painted++;
+          const px = (x + 0.5) / 4 - 46,
+            py = (y + 0.5) / 4 - 46;
+          if (
+            !ctx.isPointInPath(wet, px, py) &&
+            !ctx.isPointInStroke(wet, px, py)
+          )
+            dry++;
+        }
+      if (!painted || dry)
+        failures.push({
+          river: fixture.river,
+          mask: fixture.mask,
+          painted,
+          dry,
+        });
+    }
+    return failures;
+  }, cases);
+  expect(failures).toEqual([]);
+});

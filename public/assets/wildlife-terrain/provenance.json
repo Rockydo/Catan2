@@ -1,0 +1,2579 @@
+{
+  "method": "ImageGen reference edits, 4x4 atlases, cropped to individual full terrain paintings. No animal sprite compositing.",
+  "constraints": "Retain each base landscape, season and perspective; natural ground contact, shadows and foreground occlusion. Empty variants remove all wildlife.",
+  "assets": [
+    {
+      "asset": "deer-38bc7780b87b.webp",
+      "base": "seasons/temperate-woods-spring.webp",
+      "kind": "deer",
+      "atlas": "deer-1",
+      "cell": 0,
+      "habitats": [
+        "temperate/woods/spring",
+        "temperate/river-woods/spring",
+        "desert/river-woods/spring",
+        "hyperarid/river-woods/spring",
+        "temperate-rainforest/river-woods/spring"
+      ]
+    },
+    {
+      "asset": "deer-99de1a0cf871.webp",
+      "base": "seasons/temperate-woods-summer.webp",
+      "kind": "deer",
+      "atlas": "deer-1",
+      "cell": 1,
+      "habitats": [
+        "temperate/woods/summer",
+        "temperate/river-woods/summer",
+        "desert/river-woods/summer",
+        "hyperarid/river-woods/summer",
+        "temperate-rainforest/river-woods/summer"
+      ]
+    },
+    {
+      "asset": "deer-456f3275bc46.webp",
+      "base": "seasons/temperate-woods-autumn.webp",
+      "kind": "deer",
+      "atlas": "deer-1",
+      "cell": 2,
+      "habitats": [
+        "temperate/woods/autumn",
+        "temperate/river-woods/autumn",
+        "desert/river-woods/autumn",
+        "hyperarid/river-woods/autumn",
+        "temperate-rainforest/river-woods/autumn"
+      ]
+    },
+    {
+      "asset": "deer-0d9b2fed03ed.webp",
+      "base": "seasons/temperate-woods-winter.webp",
+      "kind": "deer",
+      "atlas": "deer-1",
+      "cell": 3,
+      "habitats": [
+        "temperate/woods/winter",
+        "temperate/river-woods/winter",
+        "desert/river-woods/winter",
+        "hyperarid/river-woods/winter",
+        "temperate-rainforest/river-woods/winter"
+      ]
+    },
+    {
+      "asset": "deer-43cce8893bce.webp",
+      "base": "seasons/cold-forest-spring.webp",
+      "kind": "deer",
+      "atlas": "deer-1",
+      "cell": 4,
+      "habitats": [
+        "cold/forest/spring",
+        "cold/hunting-forest/spring",
+        "cold/river-woods/spring",
+        "temperate-rainforest/fern-hunting-grounds/spring"
+      ]
+    },
+    {
+      "asset": "deer-7e2911ed5356.webp",
+      "base": "seasons/cold-forest-summer.webp",
+      "kind": "deer",
+      "atlas": "deer-1",
+      "cell": 5,
+      "habitats": [
+        "cold/forest/summer",
+        "cold/hunting-forest/summer",
+        "cold/river-woods/summer",
+        "temperate-rainforest/fern-hunting-grounds/summer"
+      ]
+    },
+    {
+      "asset": "deer-8fbcd8768eca.webp",
+      "base": "seasons/cold-forest-autumn.webp",
+      "kind": "deer",
+      "atlas": "deer-1",
+      "cell": 6,
+      "habitats": [
+        "cold/forest/autumn",
+        "cold/hunting-forest/autumn",
+        "cold/river-woods/autumn",
+        "temperate-rainforest/fern-hunting-grounds/autumn"
+      ]
+    },
+    {
+      "asset": "deer-c397819587f3.webp",
+      "base": "seasons/cold-forest-winter.webp",
+      "kind": "deer",
+      "atlas": "deer-1",
+      "cell": 7,
+      "habitats": [
+        "cold/forest/winter",
+        "cold/hunting-forest/winter",
+        "cold/river-woods/winter",
+        "temperate-rainforest/fern-hunting-grounds/winter"
+      ]
+    },
+    {
+      "asset": "deer-bc9a9981b899.webp",
+      "base": "geography/wild-grassland-spring.webp",
+      "kind": "deer",
+      "atlas": "deer-1",
+      "cell": 8,
+      "habitats": [
+        "cold/reindeer-range/spring",
+        "steppe/steppe-plain/spring",
+        "prairie/steppe-plain/spring",
+        "prairie/bison-range/spring"
+      ]
+    },
+    {
+      "asset": "deer-03a823f15cec.webp",
+      "base": "geography/wild-grassland-summer.webp",
+      "kind": "deer",
+      "atlas": "deer-1",
+      "cell": 9,
+      "habitats": [
+        "cold/reindeer-range/summer",
+        "steppe/steppe-plain/summer",
+        "prairie/steppe-plain/summer",
+        "prairie/bison-range/summer"
+      ]
+    },
+    {
+      "asset": "deer-cb74efc3433d.webp",
+      "base": "geography/wild-grassland-autumn.webp",
+      "kind": "deer",
+      "atlas": "deer-1",
+      "cell": 10,
+      "habitats": [
+        "cold/reindeer-range/autumn",
+        "steppe/steppe-plain/autumn",
+        "prairie/steppe-plain/autumn",
+        "prairie/bison-range/autumn"
+      ]
+    },
+    {
+      "asset": "deer-b79da531f175.webp",
+      "base": "geography/wild-grassland-winter.webp",
+      "kind": "deer",
+      "atlas": "deer-1",
+      "cell": 11,
+      "habitats": [
+        "cold/reindeer-range/winter",
+        "steppe/steppe-plain/winter",
+        "prairie/steppe-plain/winter",
+        "prairie/bison-range/winter"
+      ]
+    },
+    {
+      "asset": "deer-e575fcff7341.webp",
+      "base": "seasons/steppe-woods-spring.webp",
+      "kind": "deer",
+      "atlas": "deer-1",
+      "cell": 12,
+      "habitats": [
+        "steppe/woods/spring",
+        "steppe/river-woods/spring"
+      ]
+    },
+    {
+      "asset": "deer-59c5e2bde5c7.webp",
+      "base": "seasons/steppe-woods-summer.webp",
+      "kind": "deer",
+      "atlas": "deer-1",
+      "cell": 13,
+      "habitats": [
+        "steppe/woods/summer",
+        "steppe/river-woods/summer"
+      ]
+    },
+    {
+      "asset": "deer-1c3a33e11e47.webp",
+      "base": "seasons/steppe-woods-autumn.webp",
+      "kind": "deer",
+      "atlas": "deer-1",
+      "cell": 14,
+      "habitats": [
+        "steppe/woods/autumn",
+        "steppe/river-woods/autumn"
+      ]
+    },
+    {
+      "asset": "deer-3e32016f04ca.webp",
+      "base": "seasons/steppe-woods-winter.webp",
+      "kind": "deer",
+      "atlas": "deer-1",
+      "cell": 15,
+      "habitats": [
+        "steppe/woods/winter",
+        "steppe/river-woods/winter"
+      ]
+    },
+    {
+      "asset": "deer-1ddc9a16d73e.webp",
+      "base": "seasons/mediterranean-woods-spring.webp",
+      "kind": "deer",
+      "atlas": "deer-2",
+      "cell": 0,
+      "habitats": [
+        "mediterranean/woods/spring",
+        "mediterranean/river-woods/spring"
+      ]
+    },
+    {
+      "asset": "deer-56d387f71f41.webp",
+      "base": "seasons/mediterranean-woods-summer.webp",
+      "kind": "deer",
+      "atlas": "deer-2",
+      "cell": 1,
+      "habitats": [
+        "mediterranean/woods/summer",
+        "mediterranean/river-woods/summer"
+      ]
+    },
+    {
+      "asset": "deer-366b06f7c80a.webp",
+      "base": "seasons/mediterranean-woods-autumn.webp",
+      "kind": "deer",
+      "atlas": "deer-2",
+      "cell": 2,
+      "habitats": [
+        "mediterranean/woods/autumn",
+        "mediterranean/river-woods/autumn"
+      ]
+    },
+    {
+      "asset": "deer-6fb8901da0f0.webp",
+      "base": "seasons/mediterranean-woods-winter.webp",
+      "kind": "deer",
+      "atlas": "deer-2",
+      "cell": 3,
+      "habitats": [
+        "mediterranean/woods/winter",
+        "mediterranean/river-woods/winter"
+      ]
+    },
+    {
+      "asset": "deer-a82eb8724c91.webp",
+      "base": "seasons/oceanic-woods-spring.webp",
+      "kind": "deer",
+      "atlas": "deer-2",
+      "cell": 4,
+      "habitats": [
+        "oceanic/woods/spring",
+        "oceanic/river-woods/spring"
+      ]
+    },
+    {
+      "asset": "deer-c781cd201fc4.webp",
+      "base": "seasons/oceanic-woods-summer.webp",
+      "kind": "deer",
+      "atlas": "deer-2",
+      "cell": 5,
+      "habitats": [
+        "oceanic/woods/summer",
+        "oceanic/river-woods/summer"
+      ]
+    },
+    {
+      "asset": "deer-7004f7c2acce.webp",
+      "base": "seasons/oceanic-woods-autumn.webp",
+      "kind": "deer",
+      "atlas": "deer-2",
+      "cell": 6,
+      "habitats": [
+        "oceanic/woods/autumn",
+        "oceanic/river-woods/autumn"
+      ]
+    },
+    {
+      "asset": "deer-69afb9923dc6.webp",
+      "base": "seasons/oceanic-woods-winter.webp",
+      "kind": "deer",
+      "atlas": "deer-2",
+      "cell": 7,
+      "habitats": [
+        "oceanic/woods/winter",
+        "oceanic/river-woods/winter"
+      ]
+    },
+    {
+      "asset": "deer-dd95279a73ec.webp",
+      "base": "seasons/alpine-forest-spring.webp",
+      "kind": "deer",
+      "atlas": "deer-2",
+      "cell": 8,
+      "habitats": [
+        "alpine/forest/spring",
+        "alpine/river-woods/spring"
+      ]
+    },
+    {
+      "asset": "deer-57baaa0640f4.webp",
+      "base": "seasons/alpine-forest-summer.webp",
+      "kind": "deer",
+      "atlas": "deer-2",
+      "cell": 9,
+      "habitats": [
+        "alpine/forest/summer",
+        "alpine/river-woods/summer"
+      ]
+    },
+    {
+      "asset": "deer-f561b0730607.webp",
+      "base": "seasons/alpine-forest-autumn.webp",
+      "kind": "deer",
+      "atlas": "deer-2",
+      "cell": 10,
+      "habitats": [
+        "alpine/forest/autumn",
+        "alpine/river-woods/autumn"
+      ]
+    },
+    {
+      "asset": "deer-2ecb7f3c42fa.webp",
+      "base": "seasons/alpine-forest-winter.webp",
+      "kind": "deer",
+      "atlas": "deer-2",
+      "cell": 11,
+      "habitats": [
+        "alpine/forest/winter",
+        "alpine/river-woods/winter"
+      ]
+    },
+    {
+      "asset": "deer-aa7d710d951f.webp",
+      "base": "seasons/andean-river-woods-spring.webp",
+      "kind": "deer",
+      "atlas": "deer-2",
+      "cell": 12,
+      "habitats": [
+        "andean/river-woods/spring"
+      ]
+    },
+    {
+      "asset": "deer-91a116dcc5be.webp",
+      "base": "seasons/andean-river-woods-summer.webp",
+      "kind": "deer",
+      "atlas": "deer-2",
+      "cell": 13,
+      "habitats": [
+        "andean/river-woods/summer"
+      ]
+    },
+    {
+      "asset": "deer-3e51f09ddb4e.webp",
+      "base": "seasons/andean-river-woods-autumn.webp",
+      "kind": "deer",
+      "atlas": "deer-2",
+      "cell": 14,
+      "habitats": [
+        "andean/river-woods/autumn"
+      ]
+    },
+    {
+      "asset": "deer-dfadb59c030c.webp",
+      "base": "seasons/andean-river-woods-winter.webp",
+      "kind": "deer",
+      "atlas": "deer-2",
+      "cell": 15,
+      "habitats": [
+        "andean/river-woods/winter"
+      ]
+    },
+    {
+      "asset": "deer-a40389481fcc.webp",
+      "base": "seasons/prairie-river-woods-spring.webp",
+      "kind": "deer",
+      "atlas": "deer-3",
+      "cell": 0,
+      "habitats": [
+        "prairie/river-woods/spring"
+      ]
+    },
+    {
+      "asset": "deer-7fa154856563.webp",
+      "base": "seasons/prairie-river-woods-summer.webp",
+      "kind": "deer",
+      "atlas": "deer-3",
+      "cell": 1,
+      "habitats": [
+        "prairie/river-woods/summer"
+      ]
+    },
+    {
+      "asset": "deer-da52af2990cd.webp",
+      "base": "seasons/prairie-river-woods-autumn.webp",
+      "kind": "deer",
+      "atlas": "deer-3",
+      "cell": 2,
+      "habitats": [
+        "prairie/river-woods/autumn"
+      ]
+    },
+    {
+      "asset": "deer-828bb3363264.webp",
+      "base": "seasons/prairie-river-woods-winter.webp",
+      "kind": "deer",
+      "atlas": "deer-3",
+      "cell": 3,
+      "habitats": [
+        "prairie/river-woods/winter"
+      ]
+    },
+    {
+      "asset": "deer-bf73a3955a3c.webp",
+      "base": "seasons/temperate-rainforest-old-growth-forest-spring.webp",
+      "kind": "deer",
+      "atlas": "deer-3",
+      "cell": 4,
+      "habitats": [
+        "temperate-rainforest/old-growth-forest/spring"
+      ]
+    },
+    {
+      "asset": "deer-dd5c27fac172.webp",
+      "base": "seasons/temperate-rainforest-old-growth-forest-summer.webp",
+      "kind": "deer",
+      "atlas": "deer-3",
+      "cell": 5,
+      "habitats": [
+        "temperate-rainforest/old-growth-forest/summer"
+      ]
+    },
+    {
+      "asset": "deer-2888b183409a.webp",
+      "base": "seasons/temperate-rainforest-old-growth-forest-autumn.webp",
+      "kind": "deer",
+      "atlas": "deer-3",
+      "cell": 6,
+      "habitats": [
+        "temperate-rainforest/old-growth-forest/autumn"
+      ]
+    },
+    {
+      "asset": "deer-3885fb01998a.webp",
+      "base": "seasons/temperate-rainforest-old-growth-forest-winter.webp",
+      "kind": "deer",
+      "atlas": "deer-3",
+      "cell": 7,
+      "habitats": [
+        "temperate-rainforest/old-growth-forest/winter"
+      ]
+    },
+    {
+      "asset": "reindeer-43cce8893bce.webp",
+      "base": "seasons/cold-forest-spring.webp",
+      "kind": "reindeer",
+      "atlas": "reindeer-1",
+      "cell": 0,
+      "habitats": [
+        "cold/forest/spring",
+        "cold/hunting-forest/spring",
+        "cold/river-woods/spring",
+        "arctic/river-woods/spring",
+        "glacial/river-woods/spring",
+        "tundra/river-woods/spring"
+      ]
+    },
+    {
+      "asset": "reindeer-7e2911ed5356.webp",
+      "base": "seasons/cold-forest-summer.webp",
+      "kind": "reindeer",
+      "atlas": "reindeer-1",
+      "cell": 1,
+      "habitats": [
+        "cold/forest/summer",
+        "cold/hunting-forest/summer",
+        "cold/river-woods/summer",
+        "arctic/river-woods/summer",
+        "glacial/river-woods/summer",
+        "tundra/river-woods/summer"
+      ]
+    },
+    {
+      "asset": "reindeer-8fbcd8768eca.webp",
+      "base": "seasons/cold-forest-autumn.webp",
+      "kind": "reindeer",
+      "atlas": "reindeer-1",
+      "cell": 2,
+      "habitats": [
+        "cold/forest/autumn",
+        "cold/hunting-forest/autumn",
+        "cold/river-woods/autumn",
+        "arctic/river-woods/autumn",
+        "glacial/river-woods/autumn",
+        "tundra/river-woods/autumn"
+      ]
+    },
+    {
+      "asset": "reindeer-c397819587f3.webp",
+      "base": "seasons/cold-forest-winter.webp",
+      "kind": "reindeer",
+      "atlas": "reindeer-1",
+      "cell": 3,
+      "habitats": [
+        "cold/forest/winter",
+        "cold/hunting-forest/winter",
+        "cold/river-woods/winter",
+        "arctic/river-woods/winter",
+        "glacial/river-woods/winter",
+        "tundra/river-woods/winter"
+      ]
+    },
+    {
+      "asset": "reindeer-bc9a9981b899.webp",
+      "base": "geography/wild-grassland-spring.webp",
+      "kind": "reindeer",
+      "atlas": "reindeer-1",
+      "cell": 4,
+      "habitats": [
+        "cold/reindeer-range/spring",
+        "prairie/steppe-plain/spring",
+        "prairie/bison-range/spring"
+      ]
+    },
+    {
+      "asset": "reindeer-03a823f15cec.webp",
+      "base": "geography/wild-grassland-summer.webp",
+      "kind": "reindeer",
+      "atlas": "reindeer-1",
+      "cell": 5,
+      "habitats": [
+        "cold/reindeer-range/summer",
+        "arctic/seal-grounds/summer",
+        "arctic/reindeer-range/summer",
+        "prairie/steppe-plain/summer",
+        "prairie/bison-range/summer",
+        "tundra/reindeer-range/summer",
+        "tundra/musk-ox-range/summer"
+      ]
+    },
+    {
+      "asset": "reindeer-cb74efc3433d.webp",
+      "base": "geography/wild-grassland-autumn.webp",
+      "kind": "reindeer",
+      "atlas": "reindeer-1",
+      "cell": 6,
+      "habitats": [
+        "cold/reindeer-range/autumn",
+        "prairie/steppe-plain/autumn",
+        "prairie/bison-range/autumn"
+      ]
+    },
+    {
+      "asset": "reindeer-b79da531f175.webp",
+      "base": "geography/wild-grassland-winter.webp",
+      "kind": "reindeer",
+      "atlas": "reindeer-1",
+      "cell": 7,
+      "habitats": [
+        "cold/reindeer-range/winter",
+        "arctic/seal-grounds/spring",
+        "arctic/seal-grounds/autumn",
+        "arctic/seal-grounds/winter",
+        "arctic/reindeer-range/spring",
+        "arctic/reindeer-range/autumn",
+        "arctic/reindeer-range/winter",
+        "glacial/seal-grounds/spring",
+        "glacial/seal-grounds/summer",
+        "glacial/seal-grounds/autumn",
+        "glacial/seal-grounds/winter",
+        "prairie/steppe-plain/winter",
+        "prairie/bison-range/winter",
+        "tundra/reindeer-range/spring",
+        "tundra/reindeer-range/autumn",
+        "tundra/reindeer-range/winter",
+        "tundra/musk-ox-range/spring",
+        "tundra/musk-ox-range/autumn",
+        "tundra/musk-ox-range/winter"
+      ]
+    },
+    {
+      "asset": "reindeer-de04306d2094.webp",
+      "base": "seasons/arctic-snow-plain-spring.webp",
+      "kind": "reindeer",
+      "atlas": "reindeer-1",
+      "cell": 8,
+      "habitats": [
+        "arctic/snow-plain/spring"
+      ]
+    },
+    {
+      "asset": "reindeer-daabca041ee9.webp",
+      "base": "seasons/arctic-snow-plain-summer.webp",
+      "kind": "reindeer",
+      "atlas": "reindeer-1",
+      "cell": 9,
+      "habitats": [
+        "arctic/snow-plain/summer"
+      ]
+    },
+    {
+      "asset": "reindeer-d331dbfc3fba.webp",
+      "base": "seasons/arctic-snow-plain-autumn-v2.webp",
+      "kind": "reindeer",
+      "atlas": "reindeer-1",
+      "cell": 10,
+      "habitats": [
+        "arctic/snow-plain/autumn"
+      ]
+    },
+    {
+      "asset": "reindeer-0b5873ccec5d.webp",
+      "base": "seasons/arctic-snow-plain-winter.webp",
+      "kind": "reindeer",
+      "atlas": "reindeer-1",
+      "cell": 11,
+      "habitats": [
+        "arctic/snow-plain/winter"
+      ]
+    },
+    {
+      "asset": "reindeer-dd95279a73ec.webp",
+      "base": "seasons/alpine-forest-spring.webp",
+      "kind": "reindeer",
+      "atlas": "reindeer-1",
+      "cell": 12,
+      "habitats": [
+        "alpine/forest/spring",
+        "alpine/river-woods/spring"
+      ]
+    },
+    {
+      "asset": "reindeer-57baaa0640f4.webp",
+      "base": "seasons/alpine-forest-summer.webp",
+      "kind": "reindeer",
+      "atlas": "reindeer-1",
+      "cell": 13,
+      "habitats": [
+        "alpine/forest/summer",
+        "alpine/river-woods/summer"
+      ]
+    },
+    {
+      "asset": "reindeer-f561b0730607.webp",
+      "base": "seasons/alpine-forest-autumn.webp",
+      "kind": "reindeer",
+      "atlas": "reindeer-1",
+      "cell": 14,
+      "habitats": [
+        "alpine/forest/autumn",
+        "alpine/river-woods/autumn"
+      ]
+    },
+    {
+      "asset": "reindeer-2ecb7f3c42fa.webp",
+      "base": "seasons/alpine-forest-winter.webp",
+      "kind": "reindeer",
+      "atlas": "reindeer-1",
+      "cell": 15,
+      "habitats": [
+        "alpine/forest/winter",
+        "alpine/river-woods/winter"
+      ]
+    },
+    {
+      "asset": "reindeer-d6aa71eff276.webp",
+      "base": "seasons/glacial-snow-plain-spring.webp",
+      "kind": "reindeer",
+      "atlas": "reindeer-2",
+      "cell": 0,
+      "habitats": [
+        "glacial/snow-plain/spring"
+      ]
+    },
+    {
+      "asset": "reindeer-b86524538bd8.webp",
+      "base": "seasons/glacial-snow-plain-summer.webp",
+      "kind": "reindeer",
+      "atlas": "reindeer-2",
+      "cell": 1,
+      "habitats": [
+        "glacial/snow-plain/summer"
+      ]
+    },
+    {
+      "asset": "reindeer-ff9dcb1504c0.webp",
+      "base": "seasons/glacial-snow-plain-autumn.webp",
+      "kind": "reindeer",
+      "atlas": "reindeer-2",
+      "cell": 2,
+      "habitats": [
+        "glacial/snow-plain/autumn"
+      ]
+    },
+    {
+      "asset": "reindeer-e7d0802559a1.webp",
+      "base": "seasons/glacial-snow-plain-winter.webp",
+      "kind": "reindeer",
+      "atlas": "reindeer-2",
+      "cell": 3,
+      "habitats": [
+        "glacial/snow-plain/winter"
+      ]
+    },
+    {
+      "asset": "reindeer-a40389481fcc.webp",
+      "base": "seasons/prairie-river-woods-spring.webp",
+      "kind": "reindeer",
+      "atlas": "reindeer-2",
+      "cell": 4,
+      "habitats": [
+        "prairie/river-woods/spring"
+      ]
+    },
+    {
+      "asset": "reindeer-7fa154856563.webp",
+      "base": "seasons/prairie-river-woods-summer.webp",
+      "kind": "reindeer",
+      "atlas": "reindeer-2",
+      "cell": 5,
+      "habitats": [
+        "prairie/river-woods/summer"
+      ]
+    },
+    {
+      "asset": "reindeer-da52af2990cd.webp",
+      "base": "seasons/prairie-river-woods-autumn.webp",
+      "kind": "reindeer",
+      "atlas": "reindeer-2",
+      "cell": 6,
+      "habitats": [
+        "prairie/river-woods/autumn"
+      ]
+    },
+    {
+      "asset": "reindeer-828bb3363264.webp",
+      "base": "seasons/prairie-river-woods-winter.webp",
+      "kind": "reindeer",
+      "atlas": "reindeer-2",
+      "cell": 7,
+      "habitats": [
+        "prairie/river-woods/winter"
+      ]
+    },
+    {
+      "asset": "reindeer-b9b4393b2962.webp",
+      "base": "seasons/tundra-snow-plain-spring.webp",
+      "kind": "reindeer",
+      "atlas": "reindeer-2",
+      "cell": 8,
+      "habitats": [
+        "tundra/snow-plain/spring"
+      ]
+    },
+    {
+      "asset": "reindeer-a875d7cb711c.webp",
+      "base": "seasons/tundra-snow-plain-summer.webp",
+      "kind": "reindeer",
+      "atlas": "reindeer-2",
+      "cell": 9,
+      "habitats": [
+        "tundra/snow-plain/summer"
+      ]
+    },
+    {
+      "asset": "reindeer-045e953f044c.webp",
+      "base": "seasons/tundra-snow-plain-autumn.webp",
+      "kind": "reindeer",
+      "atlas": "reindeer-2",
+      "cell": 10,
+      "habitats": [
+        "tundra/snow-plain/autumn"
+      ]
+    },
+    {
+      "asset": "reindeer-8f79505eb256.webp",
+      "base": "seasons/tundra-snow-plain-winter.webp",
+      "kind": "reindeer",
+      "atlas": "reindeer-2",
+      "cell": 11,
+      "habitats": [
+        "tundra/snow-plain/winter"
+      ]
+    },
+    {
+      "asset": "musk-ox-bc9a9981b899.webp",
+      "base": "geography/wild-grassland-spring.webp",
+      "kind": "musk-ox",
+      "atlas": "musk-ox-1",
+      "cell": 0,
+      "habitats": [
+        "cold/reindeer-range/spring",
+        "prairie/steppe-plain/spring",
+        "prairie/bison-range/spring"
+      ]
+    },
+    {
+      "asset": "musk-ox-03a823f15cec.webp",
+      "base": "geography/wild-grassland-summer.webp",
+      "kind": "musk-ox",
+      "atlas": "musk-ox-1",
+      "cell": 1,
+      "habitats": [
+        "cold/reindeer-range/summer",
+        "arctic/seal-grounds/summer",
+        "arctic/reindeer-range/summer",
+        "prairie/steppe-plain/summer",
+        "prairie/bison-range/summer",
+        "tundra/reindeer-range/summer",
+        "tundra/musk-ox-range/summer"
+      ]
+    },
+    {
+      "asset": "musk-ox-cb74efc3433d.webp",
+      "base": "geography/wild-grassland-autumn.webp",
+      "kind": "musk-ox",
+      "atlas": "musk-ox-1",
+      "cell": 2,
+      "habitats": [
+        "cold/reindeer-range/autumn",
+        "prairie/steppe-plain/autumn",
+        "prairie/bison-range/autumn"
+      ]
+    },
+    {
+      "asset": "musk-ox-b79da531f175.webp",
+      "base": "geography/wild-grassland-winter.webp",
+      "kind": "musk-ox",
+      "atlas": "musk-ox-1",
+      "cell": 3,
+      "habitats": [
+        "cold/reindeer-range/winter",
+        "arctic/seal-grounds/spring",
+        "arctic/seal-grounds/autumn",
+        "arctic/seal-grounds/winter",
+        "arctic/reindeer-range/spring",
+        "arctic/reindeer-range/autumn",
+        "arctic/reindeer-range/winter",
+        "glacial/seal-grounds/spring",
+        "glacial/seal-grounds/summer",
+        "glacial/seal-grounds/autumn",
+        "glacial/seal-grounds/winter",
+        "prairie/steppe-plain/winter",
+        "prairie/bison-range/winter",
+        "tundra/reindeer-range/spring",
+        "tundra/reindeer-range/autumn",
+        "tundra/reindeer-range/winter",
+        "tundra/musk-ox-range/spring",
+        "tundra/musk-ox-range/autumn",
+        "tundra/musk-ox-range/winter"
+      ]
+    },
+    {
+      "asset": "musk-ox-de04306d2094.webp",
+      "base": "seasons/arctic-snow-plain-spring.webp",
+      "kind": "musk-ox",
+      "atlas": "musk-ox-1",
+      "cell": 4,
+      "habitats": [
+        "arctic/snow-plain/spring"
+      ]
+    },
+    {
+      "asset": "musk-ox-daabca041ee9.webp",
+      "base": "seasons/arctic-snow-plain-summer.webp",
+      "kind": "musk-ox",
+      "atlas": "musk-ox-1",
+      "cell": 5,
+      "habitats": [
+        "arctic/snow-plain/summer"
+      ]
+    },
+    {
+      "asset": "musk-ox-d331dbfc3fba.webp",
+      "base": "seasons/arctic-snow-plain-autumn-v2.webp",
+      "kind": "musk-ox",
+      "atlas": "musk-ox-1",
+      "cell": 6,
+      "habitats": [
+        "arctic/snow-plain/autumn"
+      ]
+    },
+    {
+      "asset": "musk-ox-0b5873ccec5d.webp",
+      "base": "seasons/arctic-snow-plain-winter.webp",
+      "kind": "musk-ox",
+      "atlas": "musk-ox-1",
+      "cell": 7,
+      "habitats": [
+        "arctic/snow-plain/winter"
+      ]
+    },
+    {
+      "asset": "musk-ox-d6aa71eff276.webp",
+      "base": "seasons/glacial-snow-plain-spring.webp",
+      "kind": "musk-ox",
+      "atlas": "musk-ox-1",
+      "cell": 8,
+      "habitats": [
+        "glacial/snow-plain/spring"
+      ]
+    },
+    {
+      "asset": "musk-ox-b86524538bd8.webp",
+      "base": "seasons/glacial-snow-plain-summer.webp",
+      "kind": "musk-ox",
+      "atlas": "musk-ox-1",
+      "cell": 9,
+      "habitats": [
+        "glacial/snow-plain/summer"
+      ]
+    },
+    {
+      "asset": "musk-ox-ff9dcb1504c0.webp",
+      "base": "seasons/glacial-snow-plain-autumn.webp",
+      "kind": "musk-ox",
+      "atlas": "musk-ox-1",
+      "cell": 10,
+      "habitats": [
+        "glacial/snow-plain/autumn"
+      ]
+    },
+    {
+      "asset": "musk-ox-e7d0802559a1.webp",
+      "base": "seasons/glacial-snow-plain-winter.webp",
+      "kind": "musk-ox",
+      "atlas": "musk-ox-1",
+      "cell": 11,
+      "habitats": [
+        "glacial/snow-plain/winter"
+      ]
+    },
+    {
+      "asset": "musk-ox-b9b4393b2962.webp",
+      "base": "seasons/tundra-snow-plain-spring.webp",
+      "kind": "musk-ox",
+      "atlas": "musk-ox-1",
+      "cell": 12,
+      "habitats": [
+        "tundra/snow-plain/spring"
+      ]
+    },
+    {
+      "asset": "musk-ox-a875d7cb711c.webp",
+      "base": "seasons/tundra-snow-plain-summer.webp",
+      "kind": "musk-ox",
+      "atlas": "musk-ox-1",
+      "cell": 13,
+      "habitats": [
+        "tundra/snow-plain/summer"
+      ]
+    },
+    {
+      "asset": "musk-ox-045e953f044c.webp",
+      "base": "seasons/tundra-snow-plain-autumn.webp",
+      "kind": "musk-ox",
+      "atlas": "musk-ox-1",
+      "cell": 14,
+      "habitats": [
+        "tundra/snow-plain/autumn"
+      ]
+    },
+    {
+      "asset": "musk-ox-8f79505eb256.webp",
+      "base": "seasons/tundra-snow-plain-winter.webp",
+      "kind": "musk-ox",
+      "atlas": "musk-ox-1",
+      "cell": 15,
+      "habitats": [
+        "tundra/snow-plain/winter"
+      ]
+    },
+    {
+      "asset": "seal-de04306d2094.webp",
+      "base": "seasons/arctic-snow-plain-spring.webp",
+      "kind": "seal",
+      "atlas": "seal-1",
+      "cell": 0,
+      "habitats": [
+        "arctic/snow-plain/spring"
+      ]
+    },
+    {
+      "asset": "seal-daabca041ee9.webp",
+      "base": "seasons/arctic-snow-plain-summer.webp",
+      "kind": "seal",
+      "atlas": "seal-1",
+      "cell": 1,
+      "habitats": [
+        "arctic/snow-plain/summer"
+      ]
+    },
+    {
+      "asset": "seal-d331dbfc3fba.webp",
+      "base": "seasons/arctic-snow-plain-autumn-v2.webp",
+      "kind": "seal",
+      "atlas": "seal-1",
+      "cell": 2,
+      "habitats": [
+        "arctic/snow-plain/autumn"
+      ]
+    },
+    {
+      "asset": "seal-0b5873ccec5d.webp",
+      "base": "seasons/arctic-snow-plain-winter.webp",
+      "kind": "seal",
+      "atlas": "seal-1",
+      "cell": 3,
+      "habitats": [
+        "arctic/snow-plain/winter"
+      ]
+    },
+    {
+      "asset": "seal-b79da531f175.webp",
+      "base": "geography/wild-grassland-winter.webp",
+      "kind": "seal",
+      "atlas": "seal-1",
+      "cell": 4,
+      "habitats": [
+        "arctic/seal-grounds/spring",
+        "arctic/seal-grounds/autumn",
+        "arctic/seal-grounds/winter",
+        "arctic/reindeer-range/spring",
+        "arctic/reindeer-range/autumn",
+        "arctic/reindeer-range/winter",
+        "glacial/seal-grounds/spring",
+        "glacial/seal-grounds/summer",
+        "glacial/seal-grounds/autumn",
+        "glacial/seal-grounds/winter",
+        "tundra/reindeer-range/spring",
+        "tundra/reindeer-range/autumn",
+        "tundra/reindeer-range/winter",
+        "tundra/musk-ox-range/spring",
+        "tundra/musk-ox-range/autumn",
+        "tundra/musk-ox-range/winter"
+      ]
+    },
+    {
+      "asset": "seal-03a823f15cec.webp",
+      "base": "geography/wild-grassland-summer.webp",
+      "kind": "seal",
+      "atlas": "seal-1",
+      "cell": 5,
+      "habitats": [
+        "arctic/seal-grounds/summer",
+        "arctic/reindeer-range/summer",
+        "tundra/reindeer-range/summer",
+        "tundra/musk-ox-range/summer"
+      ]
+    },
+    {
+      "asset": "seal-d6aa71eff276.webp",
+      "base": "seasons/glacial-snow-plain-spring.webp",
+      "kind": "seal",
+      "atlas": "seal-1",
+      "cell": 6,
+      "habitats": [
+        "glacial/snow-plain/spring"
+      ]
+    },
+    {
+      "asset": "seal-b86524538bd8.webp",
+      "base": "seasons/glacial-snow-plain-summer.webp",
+      "kind": "seal",
+      "atlas": "seal-1",
+      "cell": 7,
+      "habitats": [
+        "glacial/snow-plain/summer"
+      ]
+    },
+    {
+      "asset": "seal-ff9dcb1504c0.webp",
+      "base": "seasons/glacial-snow-plain-autumn.webp",
+      "kind": "seal",
+      "atlas": "seal-1",
+      "cell": 8,
+      "habitats": [
+        "glacial/snow-plain/autumn"
+      ]
+    },
+    {
+      "asset": "seal-e7d0802559a1.webp",
+      "base": "seasons/glacial-snow-plain-winter.webp",
+      "kind": "seal",
+      "atlas": "seal-1",
+      "cell": 9,
+      "habitats": [
+        "glacial/snow-plain/winter"
+      ]
+    },
+    {
+      "asset": "seal-b9b4393b2962.webp",
+      "base": "seasons/tundra-snow-plain-spring.webp",
+      "kind": "seal",
+      "atlas": "seal-1",
+      "cell": 10,
+      "habitats": [
+        "tundra/snow-plain/spring"
+      ]
+    },
+    {
+      "asset": "seal-a875d7cb711c.webp",
+      "base": "seasons/tundra-snow-plain-summer.webp",
+      "kind": "seal",
+      "atlas": "seal-1",
+      "cell": 11,
+      "habitats": [
+        "tundra/snow-plain/summer"
+      ]
+    },
+    {
+      "asset": "seal-045e953f044c.webp",
+      "base": "seasons/tundra-snow-plain-autumn.webp",
+      "kind": "seal",
+      "atlas": "seal-1",
+      "cell": 12,
+      "habitats": [
+        "tundra/snow-plain/autumn"
+      ]
+    },
+    {
+      "asset": "seal-8f79505eb256.webp",
+      "base": "seasons/tundra-snow-plain-winter.webp",
+      "kind": "seal",
+      "atlas": "seal-1",
+      "cell": 13,
+      "habitats": [
+        "tundra/snow-plain/winter"
+      ]
+    },
+    {
+      "asset": "bison-bc9a9981b899.webp",
+      "base": "geography/wild-grassland-spring.webp",
+      "kind": "bison",
+      "atlas": "bison-1",
+      "cell": 0,
+      "habitats": [
+        "steppe/steppe-plain/spring",
+        "savanna/wildlife-grassland/spring",
+        "prairie/steppe-plain/spring",
+        "prairie/bison-range/spring"
+      ]
+    },
+    {
+      "asset": "bison-03a823f15cec.webp",
+      "base": "geography/wild-grassland-summer.webp",
+      "kind": "bison",
+      "atlas": "bison-1",
+      "cell": 1,
+      "habitats": [
+        "steppe/steppe-plain/summer",
+        "savanna/wildlife-grassland/summer",
+        "savanna/wildlife-grassland/winter",
+        "prairie/steppe-plain/summer",
+        "prairie/bison-range/summer"
+      ]
+    },
+    {
+      "asset": "bison-cb74efc3433d.webp",
+      "base": "geography/wild-grassland-autumn.webp",
+      "kind": "bison",
+      "atlas": "bison-1",
+      "cell": 2,
+      "habitats": [
+        "steppe/steppe-plain/autumn",
+        "savanna/wildlife-grassland/autumn",
+        "prairie/steppe-plain/autumn",
+        "prairie/bison-range/autumn"
+      ]
+    },
+    {
+      "asset": "bison-b79da531f175.webp",
+      "base": "geography/wild-grassland-winter.webp",
+      "kind": "bison",
+      "atlas": "bison-1",
+      "cell": 3,
+      "habitats": [
+        "steppe/steppe-plain/winter",
+        "prairie/steppe-plain/winter",
+        "prairie/bison-range/winter"
+      ]
+    },
+    {
+      "asset": "jungle-game-7dff85d02ebf.webp",
+      "base": "seasons/tropical-jungle-spring.webp",
+      "kind": "jungle-game",
+      "atlas": "jungle-game-1",
+      "cell": 0,
+      "habitats": [
+        "tropical/jungle/spring"
+      ]
+    },
+    {
+      "asset": "jungle-game-62067daedd84.webp",
+      "base": "seasons/tropical-jungle-summer.webp",
+      "kind": "jungle-game",
+      "atlas": "jungle-game-1",
+      "cell": 1,
+      "habitats": [
+        "tropical/jungle/summer"
+      ]
+    },
+    {
+      "asset": "jungle-game-77022cc8b2ed.webp",
+      "base": "seasons/tropical-jungle-autumn.webp",
+      "kind": "jungle-game",
+      "atlas": "jungle-game-1",
+      "cell": 2,
+      "habitats": [
+        "tropical/jungle/autumn"
+      ]
+    },
+    {
+      "asset": "jungle-game-f8319f67dc70.webp",
+      "base": "seasons/tropical-jungle-winter.webp",
+      "kind": "jungle-game",
+      "atlas": "jungle-game-1",
+      "cell": 3,
+      "habitats": [
+        "tropical/jungle/winter"
+      ]
+    },
+    {
+      "asset": "jungle-game-0cd8cb72e746.webp",
+      "base": "seasons/tropical-tropical-woods-spring.webp",
+      "kind": "jungle-game",
+      "atlas": "jungle-game-1",
+      "cell": 4,
+      "habitats": [
+        "tropical/tropical-woods/spring"
+      ]
+    },
+    {
+      "asset": "jungle-game-8bb0b7f6914d.webp",
+      "base": "seasons/tropical-tropical-woods-summer.webp",
+      "kind": "jungle-game",
+      "atlas": "jungle-game-1",
+      "cell": 5,
+      "habitats": [
+        "tropical/tropical-woods/summer"
+      ]
+    },
+    {
+      "asset": "jungle-game-aef38c439773.webp",
+      "base": "seasons/tropical-tropical-woods-autumn.webp",
+      "kind": "jungle-game",
+      "atlas": "jungle-game-1",
+      "cell": 6,
+      "habitats": [
+        "tropical/tropical-woods/autumn"
+      ]
+    },
+    {
+      "asset": "jungle-game-3a3085dae260.webp",
+      "base": "seasons/tropical-tropical-woods-winter.webp",
+      "kind": "jungle-game",
+      "atlas": "jungle-game-1",
+      "cell": 7,
+      "habitats": [
+        "tropical/tropical-woods/winter"
+      ]
+    },
+    {
+      "asset": "jungle-game-38bc7780b87b.webp",
+      "base": "seasons/temperate-woods-spring.webp",
+      "kind": "jungle-game",
+      "atlas": "jungle-game-1",
+      "cell": 8,
+      "habitats": [
+        "tropical/river-woods/spring",
+        "savanna/river-woods/spring",
+        "mesoamerican/river-woods/spring"
+      ]
+    },
+    {
+      "asset": "jungle-game-99de1a0cf871.webp",
+      "base": "seasons/temperate-woods-summer.webp",
+      "kind": "jungle-game",
+      "atlas": "jungle-game-1",
+      "cell": 9,
+      "habitats": [
+        "tropical/river-woods/summer",
+        "savanna/river-woods/summer",
+        "mesoamerican/river-woods/summer"
+      ]
+    },
+    {
+      "asset": "jungle-game-456f3275bc46.webp",
+      "base": "seasons/temperate-woods-autumn.webp",
+      "kind": "jungle-game",
+      "atlas": "jungle-game-1",
+      "cell": 10,
+      "habitats": [
+        "tropical/river-woods/autumn",
+        "savanna/river-woods/autumn",
+        "mesoamerican/river-woods/autumn"
+      ]
+    },
+    {
+      "asset": "jungle-game-0d9b2fed03ed.webp",
+      "base": "seasons/temperate-woods-winter.webp",
+      "kind": "jungle-game",
+      "atlas": "jungle-game-1",
+      "cell": 11,
+      "habitats": [
+        "tropical/river-woods/winter",
+        "savanna/river-woods/winter",
+        "mesoamerican/river-woods/winter"
+      ]
+    },
+    {
+      "asset": "jungle-game-3393bf36d5c6.webp",
+      "base": "seasons/subtropical-jungle-spring.webp",
+      "kind": "jungle-game",
+      "atlas": "jungle-game-1",
+      "cell": 12,
+      "habitats": [
+        "subtropical/jungle/spring"
+      ]
+    },
+    {
+      "asset": "jungle-game-48e7f281b43c.webp",
+      "base": "seasons/subtropical-jungle-summer.webp",
+      "kind": "jungle-game",
+      "atlas": "jungle-game-1",
+      "cell": 13,
+      "habitats": [
+        "subtropical/jungle/summer"
+      ]
+    },
+    {
+      "asset": "jungle-game-543e10bc50ee.webp",
+      "base": "seasons/subtropical-jungle-autumn.webp",
+      "kind": "jungle-game",
+      "atlas": "jungle-game-1",
+      "cell": 14,
+      "habitats": [
+        "subtropical/jungle/autumn"
+      ]
+    },
+    {
+      "asset": "jungle-game-e696cd8a752c.webp",
+      "base": "seasons/subtropical-jungle-winter.webp",
+      "kind": "jungle-game",
+      "atlas": "jungle-game-1",
+      "cell": 15,
+      "habitats": [
+        "subtropical/jungle/winter"
+      ]
+    },
+    {
+      "asset": "jungle-game-718f1b8f6bcd.webp",
+      "base": "seasons/subtropical-river-woods-spring.webp",
+      "kind": "jungle-game",
+      "atlas": "jungle-game-2",
+      "cell": 0,
+      "habitats": [
+        "subtropical/river-woods/spring"
+      ]
+    },
+    {
+      "asset": "jungle-game-a757628b4ed4.webp",
+      "base": "seasons/subtropical-river-woods-summer.webp",
+      "kind": "jungle-game",
+      "atlas": "jungle-game-2",
+      "cell": 1,
+      "habitats": [
+        "subtropical/river-woods/summer"
+      ]
+    },
+    {
+      "asset": "jungle-game-c1a6bf65becf.webp",
+      "base": "seasons/subtropical-river-woods-autumn.webp",
+      "kind": "jungle-game",
+      "atlas": "jungle-game-2",
+      "cell": 2,
+      "habitats": [
+        "subtropical/river-woods/autumn"
+      ]
+    },
+    {
+      "asset": "jungle-game-ae9854722fe5.webp",
+      "base": "seasons/subtropical-river-woods-winter.webp",
+      "kind": "jungle-game",
+      "atlas": "jungle-game-2",
+      "cell": 3,
+      "habitats": [
+        "subtropical/river-woods/winter"
+      ]
+    },
+    {
+      "asset": "jungle-game-bc9a9981b899.webp",
+      "base": "geography/wild-grassland-spring.webp",
+      "kind": "jungle-game",
+      "atlas": "jungle-game-2",
+      "cell": 4,
+      "habitats": [
+        "savanna/wildlife-grassland/spring",
+        "mesoamerican/turkey-grounds/spring"
+      ]
+    },
+    {
+      "asset": "jungle-game-03a823f15cec.webp",
+      "base": "geography/wild-grassland-summer.webp",
+      "kind": "jungle-game",
+      "atlas": "jungle-game-2",
+      "cell": 5,
+      "habitats": [
+        "savanna/wildlife-grassland/summer",
+        "savanna/wildlife-grassland/winter",
+        "mesoamerican/turkey-grounds/summer",
+        "mesoamerican/turkey-grounds/winter"
+      ]
+    },
+    {
+      "asset": "jungle-game-cb74efc3433d.webp",
+      "base": "geography/wild-grassland-autumn.webp",
+      "kind": "jungle-game",
+      "atlas": "jungle-game-2",
+      "cell": 6,
+      "habitats": [
+        "savanna/wildlife-grassland/autumn",
+        "mesoamerican/turkey-grounds/autumn"
+      ]
+    },
+    {
+      "asset": "jungle-game-b8935de11939.webp",
+      "base": "seasons/savanna-dry-woodland-spring.webp",
+      "kind": "jungle-game",
+      "atlas": "jungle-game-2",
+      "cell": 7,
+      "habitats": [
+        "savanna/dry-woodland/spring"
+      ]
+    },
+    {
+      "asset": "jungle-game-f98a2bc17a9a.webp",
+      "base": "seasons/savanna-dry-woodland-summer.webp",
+      "kind": "jungle-game",
+      "atlas": "jungle-game-2",
+      "cell": 8,
+      "habitats": [
+        "savanna/dry-woodland/summer"
+      ]
+    },
+    {
+      "asset": "jungle-game-09abad80527a.webp",
+      "base": "seasons/savanna-dry-woodland-autumn.webp",
+      "kind": "jungle-game",
+      "atlas": "jungle-game-2",
+      "cell": 9,
+      "habitats": [
+        "savanna/dry-woodland/autumn"
+      ]
+    },
+    {
+      "asset": "jungle-game-1bafa5575ca8.webp",
+      "base": "seasons/savanna-dry-woodland-winter.webp",
+      "kind": "jungle-game",
+      "atlas": "jungle-game-2",
+      "cell": 10,
+      "habitats": [
+        "savanna/dry-woodland/winter"
+      ]
+    },
+    {
+      "asset": "jungle-game-629901f77804.webp",
+      "base": "seasons/monsoon-jungle-spring.webp",
+      "kind": "jungle-game",
+      "atlas": "jungle-game-2",
+      "cell": 11,
+      "habitats": [
+        "monsoon/jungle/spring"
+      ]
+    },
+    {
+      "asset": "jungle-game-16e126c6256f.webp",
+      "base": "seasons/monsoon-jungle-summer.webp",
+      "kind": "jungle-game",
+      "atlas": "jungle-game-2",
+      "cell": 12,
+      "habitats": [
+        "monsoon/jungle/summer"
+      ]
+    },
+    {
+      "asset": "jungle-game-6dc450134f82.webp",
+      "base": "seasons/monsoon-jungle-autumn.webp",
+      "kind": "jungle-game",
+      "atlas": "jungle-game-2",
+      "cell": 13,
+      "habitats": [
+        "monsoon/jungle/autumn"
+      ]
+    },
+    {
+      "asset": "jungle-game-b4356eb9ee18.webp",
+      "base": "seasons/monsoon-jungle-winter.webp",
+      "kind": "jungle-game",
+      "atlas": "jungle-game-2",
+      "cell": 14,
+      "habitats": [
+        "monsoon/jungle/winter"
+      ]
+    },
+    {
+      "asset": "jungle-game-041048f302c2.webp",
+      "base": "seasons/monsoon-tropical-woods-spring.webp",
+      "kind": "jungle-game",
+      "atlas": "jungle-game-2",
+      "cell": 15,
+      "habitats": [
+        "monsoon/tropical-woods/spring"
+      ]
+    },
+    {
+      "asset": "jungle-game-97525eada5b3.webp",
+      "base": "seasons/monsoon-tropical-woods-summer.webp",
+      "kind": "jungle-game",
+      "atlas": "jungle-game-3",
+      "cell": 0,
+      "habitats": [
+        "monsoon/tropical-woods/summer"
+      ]
+    },
+    {
+      "asset": "jungle-game-6f7597a5e4db.webp",
+      "base": "seasons/monsoon-tropical-woods-autumn.webp",
+      "kind": "jungle-game",
+      "atlas": "jungle-game-3",
+      "cell": 1,
+      "habitats": [
+        "monsoon/tropical-woods/autumn"
+      ]
+    },
+    {
+      "asset": "jungle-game-1820358441c9.webp",
+      "base": "seasons/monsoon-tropical-woods-winter.webp",
+      "kind": "jungle-game",
+      "atlas": "jungle-game-3",
+      "cell": 2,
+      "habitats": [
+        "monsoon/tropical-woods/winter"
+      ]
+    },
+    {
+      "asset": "jungle-game-f6555aef16c3.webp",
+      "base": "seasons/monsoon-river-woods-spring.webp",
+      "kind": "jungle-game",
+      "atlas": "jungle-game-3",
+      "cell": 3,
+      "habitats": [
+        "monsoon/river-woods/spring"
+      ]
+    },
+    {
+      "asset": "jungle-game-0b3ea7bb8f02.webp",
+      "base": "seasons/monsoon-river-woods-summer.webp",
+      "kind": "jungle-game",
+      "atlas": "jungle-game-3",
+      "cell": 4,
+      "habitats": [
+        "monsoon/river-woods/summer"
+      ]
+    },
+    {
+      "asset": "jungle-game-4e5b237e4464.webp",
+      "base": "seasons/monsoon-river-woods-autumn.webp",
+      "kind": "jungle-game",
+      "atlas": "jungle-game-3",
+      "cell": 5,
+      "habitats": [
+        "monsoon/river-woods/autumn"
+      ]
+    },
+    {
+      "asset": "jungle-game-65f8a4f061aa.webp",
+      "base": "seasons/monsoon-river-woods-winter.webp",
+      "kind": "jungle-game",
+      "atlas": "jungle-game-3",
+      "cell": 6,
+      "habitats": [
+        "monsoon/river-woods/winter"
+      ]
+    },
+    {
+      "asset": "jungle-game-95992bbf0ef9.webp",
+      "base": "seasons/mesoamerican-tropical-woods-spring.webp",
+      "kind": "jungle-game",
+      "atlas": "jungle-game-3",
+      "cell": 7,
+      "habitats": [
+        "mesoamerican/tropical-woods/spring"
+      ]
+    },
+    {
+      "asset": "jungle-game-334e736a2907.webp",
+      "base": "seasons/mesoamerican-tropical-woods-summer.webp",
+      "kind": "jungle-game",
+      "atlas": "jungle-game-3",
+      "cell": 8,
+      "habitats": [
+        "mesoamerican/tropical-woods/summer"
+      ]
+    },
+    {
+      "asset": "jungle-game-529b0bccad58.webp",
+      "base": "seasons/mesoamerican-tropical-woods-autumn.webp",
+      "kind": "jungle-game",
+      "atlas": "jungle-game-3",
+      "cell": 9,
+      "habitats": [
+        "mesoamerican/tropical-woods/autumn"
+      ]
+    },
+    {
+      "asset": "jungle-game-fc1c4e820fb7.webp",
+      "base": "seasons/mesoamerican-tropical-woods-winter.webp",
+      "kind": "jungle-game",
+      "atlas": "jungle-game-3",
+      "cell": 10,
+      "habitats": [
+        "mesoamerican/tropical-woods/winter"
+      ]
+    },
+    {
+      "asset": "jungle-game-5a0015b1e61a.webp",
+      "base": "seasons/equatorial-wetlands-river-woods-spring.webp",
+      "kind": "jungle-game",
+      "atlas": "jungle-game-3",
+      "cell": 11,
+      "habitats": [
+        "equatorial-wetlands/river-woods/spring"
+      ]
+    },
+    {
+      "asset": "jungle-game-3538cf6ffb5e.webp",
+      "base": "seasons/equatorial-wetlands-river-woods-summer.webp",
+      "kind": "jungle-game",
+      "atlas": "jungle-game-3",
+      "cell": 12,
+      "habitats": [
+        "equatorial-wetlands/river-woods/summer"
+      ]
+    },
+    {
+      "asset": "jungle-game-10fb4dcffec7.webp",
+      "base": "seasons/equatorial-wetlands-river-woods-autumn.webp",
+      "kind": "jungle-game",
+      "atlas": "jungle-game-3",
+      "cell": 13,
+      "habitats": [
+        "equatorial-wetlands/river-woods/autumn"
+      ]
+    },
+    {
+      "asset": "jungle-game-366b79c3a70b.webp",
+      "base": "seasons/equatorial-wetlands-river-woods-winter.webp",
+      "kind": "jungle-game",
+      "atlas": "jungle-game-3",
+      "cell": 14,
+      "habitats": [
+        "equatorial-wetlands/river-woods/winter"
+      ]
+    },
+    {
+      "asset": "turkey-bc9a9981b899.webp",
+      "base": "geography/wild-grassland-spring.webp",
+      "kind": "turkey",
+      "atlas": "turkey-1",
+      "cell": 0,
+      "habitats": [
+        "prairie/steppe-plain/spring",
+        "prairie/bison-range/spring",
+        "mesoamerican/turkey-grounds/spring"
+      ]
+    },
+    {
+      "asset": "turkey-03a823f15cec.webp",
+      "base": "geography/wild-grassland-summer.webp",
+      "kind": "turkey",
+      "atlas": "turkey-1",
+      "cell": 1,
+      "habitats": [
+        "prairie/steppe-plain/summer",
+        "prairie/bison-range/summer",
+        "mesoamerican/turkey-grounds/summer",
+        "mesoamerican/turkey-grounds/winter"
+      ]
+    },
+    {
+      "asset": "turkey-cb74efc3433d.webp",
+      "base": "geography/wild-grassland-autumn.webp",
+      "kind": "turkey",
+      "atlas": "turkey-1",
+      "cell": 2,
+      "habitats": [
+        "prairie/steppe-plain/autumn",
+        "prairie/bison-range/autumn",
+        "mesoamerican/turkey-grounds/autumn"
+      ]
+    },
+    {
+      "asset": "turkey-b79da531f175.webp",
+      "base": "geography/wild-grassland-winter.webp",
+      "kind": "turkey",
+      "atlas": "turkey-1",
+      "cell": 3,
+      "habitats": [
+        "prairie/steppe-plain/winter",
+        "prairie/bison-range/winter"
+      ]
+    },
+    {
+      "asset": "turkey-a40389481fcc.webp",
+      "base": "seasons/prairie-river-woods-spring.webp",
+      "kind": "turkey",
+      "atlas": "turkey-1",
+      "cell": 4,
+      "habitats": [
+        "prairie/river-woods/spring"
+      ]
+    },
+    {
+      "asset": "turkey-7fa154856563.webp",
+      "base": "seasons/prairie-river-woods-summer.webp",
+      "kind": "turkey",
+      "atlas": "turkey-1",
+      "cell": 5,
+      "habitats": [
+        "prairie/river-woods/summer"
+      ]
+    },
+    {
+      "asset": "turkey-da52af2990cd.webp",
+      "base": "seasons/prairie-river-woods-autumn.webp",
+      "kind": "turkey",
+      "atlas": "turkey-1",
+      "cell": 6,
+      "habitats": [
+        "prairie/river-woods/autumn"
+      ]
+    },
+    {
+      "asset": "turkey-828bb3363264.webp",
+      "base": "seasons/prairie-river-woods-winter.webp",
+      "kind": "turkey",
+      "atlas": "turkey-1",
+      "cell": 7,
+      "habitats": [
+        "prairie/river-woods/winter"
+      ]
+    },
+    {
+      "asset": "turkey-95992bbf0ef9.webp",
+      "base": "seasons/mesoamerican-tropical-woods-spring.webp",
+      "kind": "turkey",
+      "atlas": "turkey-1",
+      "cell": 8,
+      "habitats": [
+        "mesoamerican/tropical-woods/spring"
+      ]
+    },
+    {
+      "asset": "turkey-334e736a2907.webp",
+      "base": "seasons/mesoamerican-tropical-woods-summer.webp",
+      "kind": "turkey",
+      "atlas": "turkey-1",
+      "cell": 9,
+      "habitats": [
+        "mesoamerican/tropical-woods/summer"
+      ]
+    },
+    {
+      "asset": "turkey-529b0bccad58.webp",
+      "base": "seasons/mesoamerican-tropical-woods-autumn.webp",
+      "kind": "turkey",
+      "atlas": "turkey-1",
+      "cell": 10,
+      "habitats": [
+        "mesoamerican/tropical-woods/autumn"
+      ]
+    },
+    {
+      "asset": "turkey-fc1c4e820fb7.webp",
+      "base": "seasons/mesoamerican-tropical-woods-winter.webp",
+      "kind": "turkey",
+      "atlas": "turkey-1",
+      "cell": 11,
+      "habitats": [
+        "mesoamerican/tropical-woods/winter"
+      ]
+    },
+    {
+      "asset": "turkey-38bc7780b87b.webp",
+      "base": "seasons/temperate-woods-spring.webp",
+      "kind": "turkey",
+      "atlas": "turkey-1",
+      "cell": 12,
+      "habitats": [
+        "mesoamerican/river-woods/spring"
+      ]
+    },
+    {
+      "asset": "turkey-99de1a0cf871.webp",
+      "base": "seasons/temperate-woods-summer.webp",
+      "kind": "turkey",
+      "atlas": "turkey-1",
+      "cell": 13,
+      "habitats": [
+        "mesoamerican/river-woods/summer"
+      ]
+    },
+    {
+      "asset": "turkey-456f3275bc46.webp",
+      "base": "seasons/temperate-woods-autumn.webp",
+      "kind": "turkey",
+      "atlas": "turkey-1",
+      "cell": 14,
+      "habitats": [
+        "mesoamerican/river-woods/autumn"
+      ]
+    },
+    {
+      "asset": "turkey-0d9b2fed03ed.webp",
+      "base": "seasons/temperate-woods-winter.webp",
+      "kind": "turkey",
+      "atlas": "turkey-1",
+      "cell": 15,
+      "habitats": [
+        "mesoamerican/river-woods/winter"
+      ]
+    },
+    {
+      "asset": "empty-38bc7780b87b.webp",
+      "base": "seasons/temperate-woods-spring.webp",
+      "kind": "empty",
+      "atlas": "empty-1",
+      "cell": 0,
+      "habitats": []
+    },
+    {
+      "asset": "empty-99de1a0cf871.webp",
+      "base": "seasons/temperate-woods-summer.webp",
+      "kind": "empty",
+      "atlas": "empty-1",
+      "cell": 1,
+      "habitats": []
+    },
+    {
+      "asset": "empty-456f3275bc46.webp",
+      "base": "seasons/temperate-woods-autumn.webp",
+      "kind": "empty",
+      "atlas": "empty-1",
+      "cell": 2,
+      "habitats": []
+    },
+    {
+      "asset": "empty-0d9b2fed03ed.webp",
+      "base": "seasons/temperate-woods-winter.webp",
+      "kind": "empty",
+      "atlas": "empty-1",
+      "cell": 3,
+      "habitats": []
+    },
+    {
+      "asset": "empty-43cce8893bce.webp",
+      "base": "seasons/cold-forest-spring.webp",
+      "kind": "empty",
+      "atlas": "empty-1",
+      "cell": 4,
+      "habitats": []
+    },
+    {
+      "asset": "empty-7e2911ed5356.webp",
+      "base": "seasons/cold-forest-summer.webp",
+      "kind": "empty",
+      "atlas": "empty-1",
+      "cell": 5,
+      "habitats": []
+    },
+    {
+      "asset": "empty-8fbcd8768eca.webp",
+      "base": "seasons/cold-forest-autumn.webp",
+      "kind": "empty",
+      "atlas": "empty-1",
+      "cell": 6,
+      "habitats": []
+    },
+    {
+      "asset": "empty-c397819587f3.webp",
+      "base": "seasons/cold-forest-winter.webp",
+      "kind": "empty",
+      "atlas": "empty-1",
+      "cell": 7,
+      "habitats": []
+    },
+    {
+      "asset": "empty-bc9a9981b899.webp",
+      "base": "geography/wild-grassland-spring.webp",
+      "kind": "empty",
+      "atlas": "empty-1",
+      "cell": 8,
+      "habitats": []
+    },
+    {
+      "asset": "empty-03a823f15cec.webp",
+      "base": "geography/wild-grassland-summer.webp",
+      "kind": "empty",
+      "atlas": "empty-1",
+      "cell": 9,
+      "habitats": []
+    },
+    {
+      "asset": "empty-cb74efc3433d.webp",
+      "base": "geography/wild-grassland-autumn.webp",
+      "kind": "empty",
+      "atlas": "empty-1",
+      "cell": 10,
+      "habitats": []
+    },
+    {
+      "asset": "empty-b79da531f175.webp",
+      "base": "geography/wild-grassland-winter.webp",
+      "kind": "empty",
+      "atlas": "empty-1",
+      "cell": 11,
+      "habitats": []
+    },
+    {
+      "asset": "empty-e575fcff7341.webp",
+      "base": "seasons/steppe-woods-spring.webp",
+      "kind": "empty",
+      "atlas": "empty-1",
+      "cell": 12,
+      "habitats": []
+    },
+    {
+      "asset": "empty-59c5e2bde5c7.webp",
+      "base": "seasons/steppe-woods-summer.webp",
+      "kind": "empty",
+      "atlas": "empty-1",
+      "cell": 13,
+      "habitats": []
+    },
+    {
+      "asset": "empty-1c3a33e11e47.webp",
+      "base": "seasons/steppe-woods-autumn.webp",
+      "kind": "empty",
+      "atlas": "empty-1",
+      "cell": 14,
+      "habitats": []
+    },
+    {
+      "asset": "empty-3e32016f04ca.webp",
+      "base": "seasons/steppe-woods-winter.webp",
+      "kind": "empty",
+      "atlas": "empty-1",
+      "cell": 15,
+      "habitats": []
+    },
+    {
+      "asset": "empty-1ddc9a16d73e.webp",
+      "base": "seasons/mediterranean-woods-spring.webp",
+      "kind": "empty",
+      "atlas": "empty-2",
+      "cell": 0,
+      "habitats": []
+    },
+    {
+      "asset": "empty-56d387f71f41.webp",
+      "base": "seasons/mediterranean-woods-summer.webp",
+      "kind": "empty",
+      "atlas": "empty-2",
+      "cell": 1,
+      "habitats": []
+    },
+    {
+      "asset": "empty-366b06f7c80a.webp",
+      "base": "seasons/mediterranean-woods-autumn.webp",
+      "kind": "empty",
+      "atlas": "empty-2",
+      "cell": 2,
+      "habitats": []
+    },
+    {
+      "asset": "empty-6fb8901da0f0.webp",
+      "base": "seasons/mediterranean-woods-winter.webp",
+      "kind": "empty",
+      "atlas": "empty-2",
+      "cell": 3,
+      "habitats": []
+    },
+    {
+      "asset": "empty-a82eb8724c91.webp",
+      "base": "seasons/oceanic-woods-spring.webp",
+      "kind": "empty",
+      "atlas": "empty-2",
+      "cell": 4,
+      "habitats": []
+    },
+    {
+      "asset": "empty-c781cd201fc4.webp",
+      "base": "seasons/oceanic-woods-summer.webp",
+      "kind": "empty",
+      "atlas": "empty-2",
+      "cell": 5,
+      "habitats": []
+    },
+    {
+      "asset": "empty-7004f7c2acce.webp",
+      "base": "seasons/oceanic-woods-autumn.webp",
+      "kind": "empty",
+      "atlas": "empty-2",
+      "cell": 6,
+      "habitats": []
+    },
+    {
+      "asset": "empty-69afb9923dc6.webp",
+      "base": "seasons/oceanic-woods-winter.webp",
+      "kind": "empty",
+      "atlas": "empty-2",
+      "cell": 7,
+      "habitats": []
+    },
+    {
+      "asset": "empty-dd95279a73ec.webp",
+      "base": "seasons/alpine-forest-spring.webp",
+      "kind": "empty",
+      "atlas": "empty-2",
+      "cell": 8,
+      "habitats": []
+    },
+    {
+      "asset": "empty-57baaa0640f4.webp",
+      "base": "seasons/alpine-forest-summer.webp",
+      "kind": "empty",
+      "atlas": "empty-2",
+      "cell": 9,
+      "habitats": []
+    },
+    {
+      "asset": "empty-f561b0730607.webp",
+      "base": "seasons/alpine-forest-autumn.webp",
+      "kind": "empty",
+      "atlas": "empty-2",
+      "cell": 10,
+      "habitats": []
+    },
+    {
+      "asset": "empty-2ecb7f3c42fa.webp",
+      "base": "seasons/alpine-forest-winter.webp",
+      "kind": "empty",
+      "atlas": "empty-2",
+      "cell": 11,
+      "habitats": []
+    },
+    {
+      "asset": "empty-aa7d710d951f.webp",
+      "base": "seasons/andean-river-woods-spring.webp",
+      "kind": "empty",
+      "atlas": "empty-2",
+      "cell": 12,
+      "habitats": []
+    },
+    {
+      "asset": "empty-91a116dcc5be.webp",
+      "base": "seasons/andean-river-woods-summer.webp",
+      "kind": "empty",
+      "atlas": "empty-2",
+      "cell": 13,
+      "habitats": []
+    },
+    {
+      "asset": "empty-3e51f09ddb4e.webp",
+      "base": "seasons/andean-river-woods-autumn.webp",
+      "kind": "empty",
+      "atlas": "empty-2",
+      "cell": 14,
+      "habitats": []
+    },
+    {
+      "asset": "empty-dfadb59c030c.webp",
+      "base": "seasons/andean-river-woods-winter.webp",
+      "kind": "empty",
+      "atlas": "empty-2",
+      "cell": 15,
+      "habitats": []
+    },
+    {
+      "asset": "empty-a40389481fcc.webp",
+      "base": "seasons/prairie-river-woods-spring.webp",
+      "kind": "empty",
+      "atlas": "empty-3",
+      "cell": 0,
+      "habitats": []
+    },
+    {
+      "asset": "empty-7fa154856563.webp",
+      "base": "seasons/prairie-river-woods-summer.webp",
+      "kind": "empty",
+      "atlas": "empty-3",
+      "cell": 1,
+      "habitats": []
+    },
+    {
+      "asset": "empty-da52af2990cd.webp",
+      "base": "seasons/prairie-river-woods-autumn.webp",
+      "kind": "empty",
+      "atlas": "empty-3",
+      "cell": 2,
+      "habitats": []
+    },
+    {
+      "asset": "empty-828bb3363264.webp",
+      "base": "seasons/prairie-river-woods-winter.webp",
+      "kind": "empty",
+      "atlas": "empty-3",
+      "cell": 3,
+      "habitats": []
+    },
+    {
+      "asset": "empty-bf73a3955a3c.webp",
+      "base": "seasons/temperate-rainforest-old-growth-forest-spring.webp",
+      "kind": "empty",
+      "atlas": "empty-3",
+      "cell": 4,
+      "habitats": []
+    },
+    {
+      "asset": "empty-dd5c27fac172.webp",
+      "base": "seasons/temperate-rainforest-old-growth-forest-summer.webp",
+      "kind": "empty",
+      "atlas": "empty-3",
+      "cell": 5,
+      "habitats": []
+    },
+    {
+      "asset": "empty-2888b183409a.webp",
+      "base": "seasons/temperate-rainforest-old-growth-forest-autumn.webp",
+      "kind": "empty",
+      "atlas": "empty-3",
+      "cell": 6,
+      "habitats": []
+    },
+    {
+      "asset": "empty-3885fb01998a.webp",
+      "base": "seasons/temperate-rainforest-old-growth-forest-winter.webp",
+      "kind": "empty",
+      "atlas": "empty-3",
+      "cell": 7,
+      "habitats": []
+    },
+    {
+      "asset": "empty-de04306d2094.webp",
+      "base": "seasons/arctic-snow-plain-spring.webp",
+      "kind": "empty",
+      "atlas": "empty-3",
+      "cell": 8,
+      "habitats": []
+    },
+    {
+      "asset": "empty-daabca041ee9.webp",
+      "base": "seasons/arctic-snow-plain-summer.webp",
+      "kind": "empty",
+      "atlas": "empty-3",
+      "cell": 9,
+      "habitats": []
+    },
+    {
+      "asset": "empty-d331dbfc3fba.webp",
+      "base": "seasons/arctic-snow-plain-autumn-v2.webp",
+      "kind": "empty",
+      "atlas": "empty-3",
+      "cell": 10,
+      "habitats": []
+    },
+    {
+      "asset": "empty-0b5873ccec5d.webp",
+      "base": "seasons/arctic-snow-plain-winter.webp",
+      "kind": "empty",
+      "atlas": "empty-3",
+      "cell": 11,
+      "habitats": []
+    },
+    {
+      "asset": "empty-d6aa71eff276.webp",
+      "base": "seasons/glacial-snow-plain-spring.webp",
+      "kind": "empty",
+      "atlas": "empty-3",
+      "cell": 12,
+      "habitats": []
+    },
+    {
+      "asset": "empty-b86524538bd8.webp",
+      "base": "seasons/glacial-snow-plain-summer.webp",
+      "kind": "empty",
+      "atlas": "empty-3",
+      "cell": 13,
+      "habitats": []
+    },
+    {
+      "asset": "empty-ff9dcb1504c0.webp",
+      "base": "seasons/glacial-snow-plain-autumn.webp",
+      "kind": "empty",
+      "atlas": "empty-3",
+      "cell": 14,
+      "habitats": []
+    },
+    {
+      "asset": "empty-e7d0802559a1.webp",
+      "base": "seasons/glacial-snow-plain-winter.webp",
+      "kind": "empty",
+      "atlas": "empty-3",
+      "cell": 15,
+      "habitats": []
+    },
+    {
+      "asset": "empty-b9b4393b2962.webp",
+      "base": "seasons/tundra-snow-plain-spring.webp",
+      "kind": "empty",
+      "atlas": "empty-4",
+      "cell": 0,
+      "habitats": []
+    },
+    {
+      "asset": "empty-a875d7cb711c.webp",
+      "base": "seasons/tundra-snow-plain-summer.webp",
+      "kind": "empty",
+      "atlas": "empty-4",
+      "cell": 1,
+      "habitats": []
+    },
+    {
+      "asset": "empty-045e953f044c.webp",
+      "base": "seasons/tundra-snow-plain-autumn.webp",
+      "kind": "empty",
+      "atlas": "empty-4",
+      "cell": 2,
+      "habitats": []
+    },
+    {
+      "asset": "empty-8f79505eb256.webp",
+      "base": "seasons/tundra-snow-plain-winter.webp",
+      "kind": "empty",
+      "atlas": "empty-4",
+      "cell": 3,
+      "habitats": []
+    },
+    {
+      "asset": "empty-7dff85d02ebf.webp",
+      "base": "seasons/tropical-jungle-spring.webp",
+      "kind": "empty",
+      "atlas": "empty-4",
+      "cell": 4,
+      "habitats": []
+    },
+    {
+      "asset": "empty-62067daedd84.webp",
+      "base": "seasons/tropical-jungle-summer.webp",
+      "kind": "empty",
+      "atlas": "empty-4",
+      "cell": 5,
+      "habitats": []
+    },
+    {
+      "asset": "empty-77022cc8b2ed.webp",
+      "base": "seasons/tropical-jungle-autumn.webp",
+      "kind": "empty",
+      "atlas": "empty-4",
+      "cell": 6,
+      "habitats": []
+    },
+    {
+      "asset": "empty-f8319f67dc70.webp",
+      "base": "seasons/tropical-jungle-winter.webp",
+      "kind": "empty",
+      "atlas": "empty-4",
+      "cell": 7,
+      "habitats": []
+    },
+    {
+      "asset": "empty-0cd8cb72e746.webp",
+      "base": "seasons/tropical-tropical-woods-spring.webp",
+      "kind": "empty",
+      "atlas": "empty-4",
+      "cell": 8,
+      "habitats": []
+    },
+    {
+      "asset": "empty-8bb0b7f6914d.webp",
+      "base": "seasons/tropical-tropical-woods-summer.webp",
+      "kind": "empty",
+      "atlas": "empty-4",
+      "cell": 9,
+      "habitats": []
+    },
+    {
+      "asset": "empty-aef38c439773.webp",
+      "base": "seasons/tropical-tropical-woods-autumn.webp",
+      "kind": "empty",
+      "atlas": "empty-4",
+      "cell": 10,
+      "habitats": []
+    },
+    {
+      "asset": "empty-3a3085dae260.webp",
+      "base": "seasons/tropical-tropical-woods-winter.webp",
+      "kind": "empty",
+      "atlas": "empty-4",
+      "cell": 11,
+      "habitats": []
+    },
+    {
+      "asset": "empty-3393bf36d5c6.webp",
+      "base": "seasons/subtropical-jungle-spring.webp",
+      "kind": "empty",
+      "atlas": "empty-4",
+      "cell": 12,
+      "habitats": []
+    },
+    {
+      "asset": "empty-48e7f281b43c.webp",
+      "base": "seasons/subtropical-jungle-summer.webp",
+      "kind": "empty",
+      "atlas": "empty-4",
+      "cell": 13,
+      "habitats": []
+    },
+    {
+      "asset": "empty-543e10bc50ee.webp",
+      "base": "seasons/subtropical-jungle-autumn.webp",
+      "kind": "empty",
+      "atlas": "empty-4",
+      "cell": 14,
+      "habitats": []
+    },
+    {
+      "asset": "empty-e696cd8a752c.webp",
+      "base": "seasons/subtropical-jungle-winter.webp",
+      "kind": "empty",
+      "atlas": "empty-4",
+      "cell": 15,
+      "habitats": []
+    },
+    {
+      "asset": "empty-718f1b8f6bcd.webp",
+      "base": "seasons/subtropical-river-woods-spring.webp",
+      "kind": "empty",
+      "atlas": "empty-5",
+      "cell": 0,
+      "habitats": []
+    },
+    {
+      "asset": "empty-a757628b4ed4.webp",
+      "base": "seasons/subtropical-river-woods-summer.webp",
+      "kind": "empty",
+      "atlas": "empty-5",
+      "cell": 1,
+      "habitats": []
+    },
+    {
+      "asset": "empty-c1a6bf65becf.webp",
+      "base": "seasons/subtropical-river-woods-autumn.webp",
+      "kind": "empty",
+      "atlas": "empty-5",
+      "cell": 2,
+      "habitats": []
+    },
+    {
+      "asset": "empty-ae9854722fe5.webp",
+      "base": "seasons/subtropical-river-woods-winter.webp",
+      "kind": "empty",
+      "atlas": "empty-5",
+      "cell": 3,
+      "habitats": []
+    },
+    {
+      "asset": "empty-b8935de11939.webp",
+      "base": "seasons/savanna-dry-woodland-spring.webp",
+      "kind": "empty",
+      "atlas": "empty-5",
+      "cell": 4,
+      "habitats": []
+    },
+    {
+      "asset": "empty-f98a2bc17a9a.webp",
+      "base": "seasons/savanna-dry-woodland-summer.webp",
+      "kind": "empty",
+      "atlas": "empty-5",
+      "cell": 5,
+      "habitats": []
+    },
+    {
+      "asset": "empty-09abad80527a.webp",
+      "base": "seasons/savanna-dry-woodland-autumn.webp",
+      "kind": "empty",
+      "atlas": "empty-5",
+      "cell": 6,
+      "habitats": []
+    },
+    {
+      "asset": "empty-1bafa5575ca8.webp",
+      "base": "seasons/savanna-dry-woodland-winter.webp",
+      "kind": "empty",
+      "atlas": "empty-5",
+      "cell": 7,
+      "habitats": []
+    },
+    {
+      "asset": "empty-629901f77804.webp",
+      "base": "seasons/monsoon-jungle-spring.webp",
+      "kind": "empty",
+      "atlas": "empty-5",
+      "cell": 8,
+      "habitats": []
+    },
+    {
+      "asset": "empty-16e126c6256f.webp",
+      "base": "seasons/monsoon-jungle-summer.webp",
+      "kind": "empty",
+      "atlas": "empty-5",
+      "cell": 9,
+      "habitats": []
+    },
+    {
+      "asset": "empty-6dc450134f82.webp",
+      "base": "seasons/monsoon-jungle-autumn.webp",
+      "kind": "empty",
+      "atlas": "empty-5",
+      "cell": 10,
+      "habitats": []
+    },
+    {
+      "asset": "empty-b4356eb9ee18.webp",
+      "base": "seasons/monsoon-jungle-winter.webp",
+      "kind": "empty",
+      "atlas": "empty-5",
+      "cell": 11,
+      "habitats": []
+    },
+    {
+      "asset": "empty-041048f302c2.webp",
+      "base": "seasons/monsoon-tropical-woods-spring.webp",
+      "kind": "empty",
+      "atlas": "empty-5",
+      "cell": 12,
+      "habitats": []
+    },
+    {
+      "asset": "empty-97525eada5b3.webp",
+      "base": "seasons/monsoon-tropical-woods-summer.webp",
+      "kind": "empty",
+      "atlas": "empty-5",
+      "cell": 13,
+      "habitats": []
+    },
+    {
+      "asset": "empty-6f7597a5e4db.webp",
+      "base": "seasons/monsoon-tropical-woods-autumn.webp",
+      "kind": "empty",
+      "atlas": "empty-5",
+      "cell": 14,
+      "habitats": []
+    },
+    {
+      "asset": "empty-1820358441c9.webp",
+      "base": "seasons/monsoon-tropical-woods-winter.webp",
+      "kind": "empty",
+      "atlas": "empty-5",
+      "cell": 15,
+      "habitats": []
+    },
+    {
+      "asset": "empty-f6555aef16c3.webp",
+      "base": "seasons/monsoon-river-woods-spring.webp",
+      "kind": "empty",
+      "atlas": "empty-6",
+      "cell": 0,
+      "habitats": []
+    },
+    {
+      "asset": "empty-0b3ea7bb8f02.webp",
+      "base": "seasons/monsoon-river-woods-summer.webp",
+      "kind": "empty",
+      "atlas": "empty-6",
+      "cell": 1,
+      "habitats": []
+    },
+    {
+      "asset": "empty-4e5b237e4464.webp",
+      "base": "seasons/monsoon-river-woods-autumn.webp",
+      "kind": "empty",
+      "atlas": "empty-6",
+      "cell": 2,
+      "habitats": []
+    },
+    {
+      "asset": "empty-65f8a4f061aa.webp",
+      "base": "seasons/monsoon-river-woods-winter.webp",
+      "kind": "empty",
+      "atlas": "empty-6",
+      "cell": 3,
+      "habitats": []
+    },
+    {
+      "asset": "empty-95992bbf0ef9.webp",
+      "base": "seasons/mesoamerican-tropical-woods-spring.webp",
+      "kind": "empty",
+      "atlas": "empty-6",
+      "cell": 4,
+      "habitats": []
+    },
+    {
+      "asset": "empty-334e736a2907.webp",
+      "base": "seasons/mesoamerican-tropical-woods-summer.webp",
+      "kind": "empty",
+      "atlas": "empty-6",
+      "cell": 5,
+      "habitats": []
+    },
+    {
+      "asset": "empty-529b0bccad58.webp",
+      "base": "seasons/mesoamerican-tropical-woods-autumn.webp",
+      "kind": "empty",
+      "atlas": "empty-6",
+      "cell": 6,
+      "habitats": []
+    },
+    {
+      "asset": "empty-fc1c4e820fb7.webp",
+      "base": "seasons/mesoamerican-tropical-woods-winter.webp",
+      "kind": "empty",
+      "atlas": "empty-6",
+      "cell": 7,
+      "habitats": []
+    },
+    {
+      "asset": "empty-5a0015b1e61a.webp",
+      "base": "seasons/equatorial-wetlands-river-woods-spring.webp",
+      "kind": "empty",
+      "atlas": "empty-6",
+      "cell": 8,
+      "habitats": []
+    },
+    {
+      "asset": "empty-3538cf6ffb5e.webp",
+      "base": "seasons/equatorial-wetlands-river-woods-summer.webp",
+      "kind": "empty",
+      "atlas": "empty-6",
+      "cell": 9,
+      "habitats": []
+    },
+    {
+      "asset": "empty-10fb4dcffec7.webp",
+      "base": "seasons/equatorial-wetlands-river-woods-autumn.webp",
+      "kind": "empty",
+      "atlas": "empty-6",
+      "cell": 10,
+      "habitats": []
+    },
+    {
+      "asset": "empty-366b79c3a70b.webp",
+      "base": "seasons/equatorial-wetlands-river-woods-winter.webp",
+      "kind": "empty",
+      "atlas": "empty-6",
+      "cell": 11,
+      "habitats": []
+    }
+  ]
+}

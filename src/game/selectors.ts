@@ -1206,7 +1206,7 @@ function readProduction(
 export function forecastProduction(
   s: Game,
   mode: ProductionMode,
-  weight: (tile: string, amount: number) => number,
+  weight: (tile: string, amount: number, good: Good) => number,
 ): Record<number, Stock> {
   const result = Object.fromEntries(s.players.map((p) => [p.id, {}])) as Record<
     number,
@@ -1217,7 +1217,7 @@ export function forecastProduction(
     mode,
     (owner, _town, tile, good, amount) => {
       const stock = result[owner];
-      stock[good] = (stock[good] ?? 0) + weight(tile, amount);
+      stock[good] = (stock[good] ?? 0) + weight(tile, amount, good);
     },
     (sources, count) => {
       const terms = new Map<Stock, Map<Good, number[]>>();
@@ -1228,7 +1228,7 @@ export function forecastProduction(
         if (!goods) terms.set(stock, (goods = new Map()));
         let values = goods.get(good);
         if (!values) goods.set(good, (values = []));
-        values.push(weight(tile, amount));
+        values.push(weight(tile, amount, good));
       }
       // Different stock fields are independent. First-encounter order also
       // preserves the insertion order of resource keys in each returned stock.

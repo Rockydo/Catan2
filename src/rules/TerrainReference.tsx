@@ -1,3 +1,4 @@
+import { RIPARIAN_TERRAIN, WILDLIFE_GOODS } from "../game/geography";
 import { baseGeographicYield, wildHabitat } from "../game/geography";
 import type { Hex } from "../game/types";
 import type { Season } from "../game/seasons";
@@ -108,24 +109,18 @@ function yields(tile: Biome, climate?: Climate): Stock {
   return baseGeographicYield(sample(tile, climate));
 }
 function potential(tile: Biome): Stock {
+  if (tile === "river" || tile === "lake") return { fish: 1 };
   return {
     ...yields(tile),
     ...(wildHabitat(sample(tile)) ? { hides: 1, meat: 1, wool: 1 } : {}),
-    ...([
-      "water",
-      "river",
-      "lake",
-      "shoal",
-      "reef",
-      "fish",
-      "cod",
-      "whale",
-    ].includes(tile)
+    ...(["water", "shoal", "reef", "fish", "cod", "whale"].includes(tile)
       ? { fish: 1, hides: 1, oil: 1 }
       : {}),
   };
 }
 function yieldVariants(tile: Biome) {
+  if (tile === "fish" || tile === "cod" || tile === "whale")
+    return [{ climates: [], raw: WILDLIFE_GOODS[tile] }];
   const groups = new Map<string, { climates: Climate[]; raw: Stock }>();
   for (const climate of CLIMATES) {
     const info = CLIMATE_INFO[climate];
@@ -142,6 +137,8 @@ function yieldVariants(tile: Biome) {
     : [{ climates: [], raw: yields(tile) }];
 }
 function workshopGoods(tile: Biome): Raw[] {
+  if (tile === "fish" || tile === "cod" || tile === "whale")
+    return Object.keys(WILDLIFE_GOODS[tile]) as Raw[];
   return tile === "woods"
     ? ["lumber", "hides"]
     : (Object.keys(BIOME_INFO[tile].yield).slice(0, 1) as Raw[]);
@@ -184,8 +181,8 @@ export function TerrainReference({ seaOnly = false }: { seaOnly?: boolean }) {
       </p>
       <p>
         {l(
-          "Permanent terrain yields only. Wild grasslands and water produce nothing without migrating animals; forests retain timber. Animal yields are added while populations are present. See Living geography for their outputs and river crops.",
-          "Rendements du terrain permanent uniquement. Les plaines sauvages et l’eau ne produisent rien sans animaux migrateurs ; les forêts conservent leur bois. Les populations présentes ajoutent leurs rendements. Consultez Géographie vivante pour ces productions et les cultures riveraines.",
+          "Permanent terrain yields, except the Fish, Cod and Whale entries which show one present population. Wild grasslands and water produce nothing without migrating animals; forests retain timber. Animal yields are added while populations are present. See Living geography for their outputs and river crops.",
+          "Rendements du terrain permanent, sauf les entrées Poissons, Morues et Baleines qui indiquent une population présente. Les plaines sauvages et l’eau ne produisent rien sans animaux migrateurs ; les forêts conservent leur bois. Les populations présentes ajoutent leurs rendements. Consultez Géographie vivante pour ces productions et les cultures riveraines.",
         )}
       </p>
       <div className="terrain-reference-grid">
@@ -215,10 +212,15 @@ export function TerrainReference({ seaOnly = false }: { seaOnly?: boolean }) {
               </div>
               <div className="terrain-yields">
                 <span className="output-label">
-                  {l(
-                    "Annual average per matching roll",
-                    "Moyenne annuelle par jet correspondant",
-                  )}
+                  {["fish", "cod", "whale"].includes(tile)
+                    ? l(
+                        "Per matching roll while one population is present",
+                        "Par jet correspondant avec une population présente",
+                      )
+                    : l(
+                        "Annual average per matching roll",
+                        "Moyenne annuelle par jet correspondant",
+                      )}
                 </span>
                 {variants.map(({ climates, raw }, index) => (
                   <div key={index} data-yield-climates={climates.join(" ")}>
@@ -305,8 +307,8 @@ export function ClimateReference({
       </h2>
       <p>
         {l(
-          "In geography campaigns, these land weights are the starting resource distribution before relief, rivers and coasts replace eligible terrain. Land/water percentages and fixed marine rolls below describe legacy maps only. New maps use connected elevation and drainage; fish and whales migrate.",
-          "Dans les campagnes géographiques, les poids terrestres constituent la distribution initiale, avant les remplacements liés au relief, aux cours d’eau et au littoral. Les pourcentages terre/eau et les tirages marins fixes ci-dessous décrivent uniquement les anciennes cartes. Les nouvelles cartes utilisent relief et drainage continus ; poissons et baleines migrent.",
+          "New geography is built from relief, moisture, temperature and drainage before choosing climate and terrain. These are conditional resource weights, not map percentages. A single terrain draw accounts for ridges, riverbanks and coast. Historical land/water ratios and marine rolls apply only to legacy maps.",
+          "La nouvelle géographie part du relief, de l’humidité, de la température et du drainage avant de choisir climat et terrain. Ces poids conditionnels ne sont pas des pourcentages de carte. Un seul tirage tient compte des crêtes, berges et côtes. Les ratios terre/eau et tirages marins historiques concernent uniquement les anciennes cartes.",
         )}
       </p>
       {!readOnly && (
@@ -328,8 +330,9 @@ export function ClimateReference({
         </div>
       )}
       <h3>
-        {tx(info.name)} · {pct(info.land)} {l("land", "terre")} /{" "}
-        {pct(1 - info.land)} {l("water", "eau")}
+        {tx(info.name)} · {l("Legacy ratio: ", "Ancien ratio : ")}
+        {pct(info.land)} {l("land", "terre")} / {pct(1 - info.land)}{" "}
+        {l("water", "eau")}
       </h3>
       <p>
         {l("Initial climate weight: ", "Poids du climat initial : ")}
@@ -356,9 +359,31 @@ export function ClimateReference({
           ". Appliqués seulement lors d’un changement de climat, parmi les destinations compatibles avec tous les voisins immédiats. La continuité reste de 88 %.",
         )}
       </p>
+      <p>
+        {l(
+          "Climate weights also depend on local temperature, moisture, altitude and distance from the sea. The compatibility rules remain mandatory.",
+          "Les poids des climats dépendent aussi de la température locale, de l’humidité, de l’altitude et de la proximité de la mer. Les compatibilités restent obligatoires.",
+        )}
+      </p>
+      <h4>{l("Riverbank additions", "Apports des berges")}</h4>
+      <p>
+        {l(
+          "On low, gently sloping riverbanks, ordinary weights are quartered and these options are added. Warm rice deltas also add Delta gardens at weight 25. Polar banks receive no warm crops or tropical clay banks.",
+          "Sur les berges basses à pente douce, les poids ordinaires sont divisés par quatre et les options suivantes sont ajoutées. Les deltas rizicoles chauds ajoutent les Jardins du delta avec un poids de 25. Les berges polaires ne reçoivent ni cultures chaudes ni argilières tropicales.",
+        )}
+      </p>
+      <div className="climate-columns">
+        {RIPARIAN_TERRAIN[climate].map(([biome, weight]) => (
+          <div className="climate-terrain" key={biome}>
+            <TerrainImage tile={biome} climate={climate} />
+            <span>{tx(BIOME_INFO[biome].name)}</span>
+            <strong>{weight}</strong>
+          </div>
+        ))}
+      </div>
       <div className="climate-columns">
         <div>
-          <h4>{l("If land is rolled", "Si le tirage donne une terre")}</h4>
+          <h4>{l("Ordinary land weights", "Poids des terres ordinaires")}</h4>
           {info.terrain.map(([t, n]) => (
             <div className="climate-terrain" key={t}>
               <TerrainImage tile={t} climate={climate} />
@@ -377,12 +402,12 @@ export function ClimateReference({
                   )}
                 </small>
               </span>
-              <strong>{n}%</strong>
+              <strong>{n}</strong>
             </div>
           ))}
         </div>
         <div>
-          <h4>{l("If water is rolled", "Si le tirage donne de l’eau")}</h4>
+          <h4>{l("Legacy water rolls", "Anciens tirages marins")}</h4>
           <p>
             {l(
               "Coastal probabilities below. Checks run in this order on the remaining water only. The first success ends the sequence.",

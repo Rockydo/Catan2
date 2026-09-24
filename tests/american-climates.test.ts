@@ -63,13 +63,13 @@ const expected = {
   prairie: {
     land: 0.7,
     terrain: [
-      ["steppe-plain", 32],
-      ["maize-field", 12],
-      ["sunflower-fields", 6],
+      ["steppe-plain", 40],
+      ["maize-field", 9],
+      ["sunflower-fields", 4],
       ["bison-range", 16],
       ["river-woods", 8],
-      ["clay", 8],
-      ["stone", 6],
+      ["clay", 6],
+      ["stone", 5],
       ["coal", 5],
       ["iron", 4],
       ["gold", 1],

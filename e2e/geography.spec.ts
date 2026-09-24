@@ -50,6 +50,7 @@ for (const locale of ["en", "fr"] as const) {
     )!;
     await page.getByTestId(`hex-${river.id}`).press("Enter");
     await expect(page.locator(".geography-panel")).toBeVisible();
+    await expect(page.locator(".weather-impact")).toBeVisible();
     await page.screenshot({
       path: `test-artifacts/geography-map-${locale}-${test.info().project.name}.png`,
     });

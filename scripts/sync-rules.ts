@@ -1,4 +1,4 @@
-import { baseGeographicYield } from "../src/game/geography";
+import { baseGeographicYield, RIPARIAN_TERRAIN } from "../src/game/geography";
 import {
   SEASONS,
   seasonalProfile,
@@ -82,6 +82,21 @@ for (const locale of ["en", "fr"] as const) {
             `Haute mer (sans terre adjacente) : tirage Baleines ${Math.min(1, whaleChance * 2) * 100} % ; part effective ${Number(((waterProbabilities(climate, true).find(([b]) => b === "whale")?.[1] ?? 0) * 100).toFixed(3))} %. Tableau ci-dessus : eau côtière.`,
           )
         : text("No whales in this climate.", "Aucune baleine dans ce climat."),
+    );
+  }
+  lines.push(
+    `## ${text("Geographic riverbank weights", "Poids des terrains riverains")}`,
+    text(
+      "Low gentle riverbanks retain one quarter of ordinary eligible weights and add the weights below before a single draw. These are relative weights, not map percentages. Warm rice deltas add 25 for Delta gardens.",
+      "Les basses rives peu pentues conservent un quart des poids ordinaires admissibles et ajoutent les poids ci-dessous avant un seul tirage. Ce sont des poids relatifs, pas des pourcentages de carte. Les deltas rizicoles chauds ajoutent 25 aux Jardins du delta.",
+    ),
+  );
+  for (const climate of CLIMATES) {
+    lines.push(
+      `### ${tx(CLIMATE_INFO[climate].name)}`,
+      ...RIPARIAN_TERRAIN[climate].map(
+        ([b, w]) => `- ${tx(BIOME_INFO[b].name)}: ${w}`,
+      ),
     );
   }
   lines.push(

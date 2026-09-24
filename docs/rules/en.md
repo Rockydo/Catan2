@@ -95,8 +95,8 @@ New five-player and twelve-player campaigns use connected landforms, river cours
 
 ### Landforms and river courses
 
-A seed selects continental, archipelago, inland-sea or peninsula geography. Correlated height fields create coastlines and mountain belts. Inland-sea worlds have broad enclosed seas; peninsulas favor elongated landforms. Lakes contain at most 12 connected non-river water hexes. Larger basins are seas, with marine wildlife. The size check includes unrevealed geography, so expeditions do not change this classification. Shorelines appear only beside land; rivers connect through their actual upstream and downstream edges. A fixed survey around the starting area sets a usable coast level. Climate is still assigned first and determines eligible resources. Land and water now follow height and drainage instead of independent per-hex water rolls. The historical climate land/water percentages describe older campaigns only.
-Each watershed follows downhill neighbors toward sea or an inland depression. Rivers reserve water hexes; depressions can form lakes. River courses and heights are fixed by seed and coordinates, even beyond the revealed map. Revealing another frontier cannot reroll an existing coast or redirect a river. Resources and dice numbers remain random. No raw resource is guaranteed.
+A seed selects continental, archipelago, inland-sea or peninsula geography. Correlated height fields create coastlines and mountain belts. Inland-sea worlds have broad enclosed seas; peninsulas favor elongated landforms. Lakes contain at most 12 connected non-river water hexes. Larger basins are seas, with marine wildlife. The size check includes unrevealed geography, so expeditions do not turn a lake into a sea by exposing its hidden extent. Banks follow adjacent land and river artwork connects through the actual upstream and downstream edges. A fixed survey around the starting area sets a usable coast level. Height, sea level and broad temperature/moisture fields are calculated first. Altitude cools the climate; distance from the sea moderates temperature, and windward slopes and rain shadows affect moisture. Climate regions grow using these physical affinities and the existing compatibility rules. Drainage follows height, with fewer river sources in dry regions. Land and water follow height and drainage instead of independent per-hex water rolls. The historical climate land/water percentages describe older campaigns only.
+Each watershed follows downhill neighbors toward sea or an inland depression. Rivers reserve water hexes; depressions can form lakes. River courses and heights are fixed by seed and coordinates, even beyond the revealed map. Revealing another frontier cannot reroll an existing coast or redirect a river. Each land hex makes one resource draw from choices allowed by its climate and physical location. Highlands favor minerals, peaks and passes. Gentle low riverbanks use a climate-specific riparian pool. Coastal pasture, cliffs and mangroves need a coast; peat needs damp gentle terrain; inland salt flats need dry conditions. Dice numbers remain random. No raw resource is guaranteed. Existing geography campaigns keep their revealed terrain and original drainage version; future land discoveries use the same climate-specific eligibility rules. Original campaigns without geography keep their old generator.
 
 ### River crossings and mountain passes
 
@@ -108,26 +108,40 @@ When ice melts, a ford closes, a flood rises or a pass closes under an army, it 
 
 Weather covers broad areas of the same climate, not isolated hex rolls. It changes at the start of a season and remains through its early and late halves. The Weather view shows these regions; the Access view shows the resulting crossings and closures. Individual ice transitions remain probabilistic within a shared weather region.
 Baseline water levels, Spring / Summer / Autumn / Winter: Cold, Arctic, Glacial, Alpine, Tundra and Prairie 3 / 2 / 1 / 0; Tropical, Subtropical, Savanna, Monsoon, Mesoamerican and Equatorial Wetlands 1 / 3 / 2 / 0; Mediterranean 1 / 0 / 1 / 3; Desert and Hyperarid 0 / 0 / 0 / 1; Andean 2 / 3 / 1 / 0; Oceanic and Temperate Rainforest 2 / 1 / 2 / 3; other climates 3 / 1 / 1 / 2.
-A wet season adds 1 to water level; a dry spell subtracts 1, with a 0–4 range. Tropical-group weather is 55% ordinary, 30% wet and 15% dry. Desert-group weather is 60% ordinary, 30% dry and 10% wet. Cold-group weather outside Summer is 50% ordinary, 30% cold and 20% mild. Other cases are 55% ordinary, 20% wet, 15% dry and 10% mild. Cold spells multiply freezing chances by 1.5 and halve thaw chances; mild seasons halve freezing chances and multiply thaw chances by 1.4. Probabilities are capped at 100%.
+A wet season adds 1 to water level; a dry spell subtracts 1, with a 0–4 range. Tropical-group weather is 55% ordinary, 30% wet and 15% dry. Desert-group weather is 60% ordinary, 30% dry and 10% wet. Cold-group weather outside Summer is 50% ordinary, 30% cold and 20% mild. Other cases are 55% ordinary, 20% wet, 15% dry and 10% mild. Cold spells multiply freezing chances by 1.5 and halve uncertain thaw chances. A seasonal 100% thaw remains guaranteed, including during a cold spell; mild seasons halve freezing chances and multiply thaw chances by 1.4. Probabilities are capped at 100%.
+
+### Weather and production
+
+Weather modifies a productive seasonal yield before city, camp and collector multipliers. It cannot create an off-season harvest. Round to the nearest whole card; natural woodland retains at least 1 Wood when productive. Processed goods follow the resulting raw yield. Animal populations respond through migration, not a weather multiplier. Ordinary weather does not modify mines.
+
+- Dry: Rice, river rice, delta gardens, potatoes, chinampas and sago lose 50% Grain. Other cereals lose 25%, except millet, sorghum and olives, which are unchanged. Irrigation halves the loss. Farm animal products lose 25%; Salt gains 50%.
+- Wet: Rice, river rice, delta gardens, chinampas and sago gain 25% Grain. Other grain gains 25% in Desert, Hyperarid, Steppe and Savanna; elsewhere it loses 25%. Logging loses 25%; Salt loses 50%. Farm animal products gain 25% in these dry climates and Mediterranean.
+- Cold spell: Grain loses 50% in warm climates and for the water-sensitive crop group listed above; otherwise 25%. Farm animal products and Salt lose 25%. Logging loses 25% in cool climates.
+- Mild: Productive Spring and Autumn grain and farm animal yields gain 25% in Cold, Arctic, Glacial, Tundra, Alpine, Prairie and Andean climates. Other yields are unchanged.
+
+The tile forecast shows the exact before/after quantities; the Weather view shows regional conditions. Percentage changes can disappear after rounding a small yield. Directions follow published crop, grassland, forestry and salt-production evidence; percentages are game balance values, not measured field yields. The AI uses public weather probabilities when evaluating future production, without reading future draws.
 
 ### Floodplains and deltas
 
 Low river-adjacent land can become a floodplain. Land beside a river mouth can become a delta. At water level 3 or 4, an unprotected floodplain becomes shallow navigable water: land movement and production stop. Buildings, routes and stored cards survive. A levee prevents these effects on its hex. Existing road-edge construction still follows the underlying solid terrain; engineering never changes the resource identity.
-Fertile river resources replace part of the local ordinary resource roll: Alluvial clay, Riverside woods, river crops and Water meadow. Chinampa gardens and Sago groves require river or lake adjacency. Arctic, Glacial and Tundra floodplains do not create cereal fields. Mesoamerican river agriculture uses Chinampa gardens; Andean agriculture uses Potato fields. This does not introduce potatoes or maize outside the Americas.
+Riverbank resources join the eligible pool before its single draw. Ordinary terrain weights are reduced to one quarter; each climate adds its own riverbank weights. There is no second roll that overwrites an already selected land tile. Warm wet climates can have Alluvial clay and Riverside woods. Cold banks use local clay, pines and barley; Arctic and Glacial banks use snow and polar rock; Tundra banks use peat, heath and musk-ox habitat. Warm fertile terrain cannot leak into these polar pools. Chinampa gardens and Sago groves require river or lake adjacency. Arctic, Glacial and Tundra floodplains do not create cereal fields. Mesoamerican river agriculture uses Chinampa gardens; Andean agriculture uses Potato fields. This does not introduce potatoes or maize outside the Americas.
 Alluvial wheat has a baseline of 3 Grain and harvests 12 in Summer. Recession sorghum has a baseline of 3 and harvests 12 in Autumn. River rice has a baseline of 4 and yields 4 / 0 / 4 / 8: its large harvest follows the wet-season flood. Delta gardens have a baseline of 4, yielding 4 / 4 / 8 / 0 in cool regions and 4 / 0 / 4 / 8 in warm wet regions. Water meadow has baseline 2 Wool and follows the local livestock calendar. These amounts are per producer before town/camp/collector multipliers. Floods can reduce realized output. Protection costs resources and does not remove the dice risk.
 
 ### Mobile wildlife
 
 Wild grasslands, wild cattle ranges, reindeer and musk-ox ranges, seal grounds and other wild hunting terrain have no fixed animal output. Without animals, open wild terrain is empty. Forests and jungles retain timber: at least 1 Wood each season before producer multipliers. Better timber retains its higher baseline. Domestic sheep, cattle, alpacas and other farm livestock stay on their tiles and use their existing harvest calendars.
-A suitable new wild land hex has a 13% chance to originate one population. Water has an 18% population chance except deep water at 11%. Coastal populations have a 22% chance to be whales; deep-water populations have a 72% chance, giving about twice the overall whale occurrence. Rivers and lakes have fish, never whales. Cod favor cold and cool marine climates. No population is guaranteed on a particular map.
+A suitable new wild land hex has a 22% chance to originate one population. Water has an 18% population chance except deep water at 11%. Coastal populations have a 22% chance to be whales; deep-water populations have a 72% chance, giving about twice the overall whale occurrence. Rivers and lakes have fish, never whales. Cod favor cold and cool marine climates. No population is guaranteed on a particular map.
 On its matching roll, each present population adds: Fish 3 Fish; Cod 5 Fish; Whales 3 Hides + 3 Oil; Deer 2 Hides + 2 Meat; Wild cattle 2 Hides + 3 Meat; Reindeer 2 Hides + 2 Meat; Musk ox 2 Wool + 2 Meat; Seals 2 Hides + 2 Oil; Forest game 3 Hides + 1 Meat; Wild turkeys 3 Meat. Every listed component receives ordinary producer multipliers and advanced city/merchant processing. Frozen or flooded harvesting remains subject to the normal access and production rules.
 At the start of each season, marine populations consider connected water within four hexes and land animals consider connected traversable habitat within three. Species stay in suitable climate and habitat: whales cannot travel through rivers, seals require cold coastlines, and cold or tropical species keep appropriate ranges. They may stay or move. Development at cities, roads, camps and towers lowers destination preference; nearby development also matters. Crowding, freezing, floods and seasonal shelter affect preference. Hunting never deletes a population. Existing groups remain somewhere on the revealed map; expeditions can reveal new populations. Several groups can share a hex. The Wildlife view and resource icons show their current location and output.
+Wildlife cannot occupy crops, olive groves, orchards, oases or domestic pastures. Fish, cod and whales on newly frozen water first seek reachable ice-free water within four hexes, including at the early/late season boundary. They remain trapped only when no suitable open water is reachable. Invalid animal positions in older geography saves are moved to suitable habitat on load; if none exists, the population is retained dormant until habitat is revealed.
 Camps and workshops remain built when animals migrate away. They resume production if a suitable population returns. A workshop keeps the product chosen at construction. Migration never grants resources by itself or changes a tile's dice number.
 
 ### Hunters and shallow-draft ships
 
 Hunters move 2 hexes per turn. Their four tiers have power 0 / 1 / 2 / 3, hunting radius 1 / 2 / 3 / 4 through connected accessible land, and output multipliers 1 / 2 / 3 / 4. They collect animal products only, including multiple animal resources from one tile. They do not cut timber or process goods. Enemy armies block hunting. Tier I hunters are destroyed when their force enters battle, as other unarmed civilians are. Costs and portraits are in the recruitment catalogue.
 Rivers, shoals, reefs and flooded ground admit Riverboats, Fishing ships, Transports, Settler ships and Galley tiers I–II. Higher Galleys, Carracks, Convoys and Merchant ships need deeper water. Lakes and ordinary coastal/deep sea accept all classes when ice-free. A mixed fleet follows its most restrictive member. Riverboats have power 1 / 2 / 3 / 5, speed 3 / 3 / 4 / 4 and capacity 1 / 2 / 3 / 4. They have no siege power. Large transports and warships retain their existing advantages in speed, capacity, fighting power or coastal siege.
+
+Shallows follow shallow seabed close to land, with wider sediment shelves at river mouths. Warm clear shallow sea can have reefs; muddy river mouths cannot. These are connected geographic conditions, not independent ocean decoration rolls. Recruitment lists each ship’s allowed waters. Automatic trading ports require a land/water shore and do not appear on narrow river channels or permanent ice.
 
 ### Local improvements
 
@@ -152,9 +166,11 @@ Eligible land has a 1.2% landmark-candidate chance. Sites must suit their effect
 
 The AI values current mobile harvest locations, sends hunters and fishing ships toward useful reachable populations, avoids forecast seasonal closures, chooses legal vessel drafts, and evaluates bridges, irrigation, levees, harbors, granaries and crop repairs against their cost and local benefit. It can disrupt enemy crops during military operations. It uses visible geography and public seasonal probabilities; it does not inspect future migration or weather draws. No weather system adds an AI resource subsidy.
 
-### Reading water and wildlife
+### Water and wildlife artwork
 
-Shorelines follow adjacent land. Rivers connect through their upstream and downstream edges. Animals are painted directly onto their current habitats, including fish, cod and whales. An empty habitat has no animal artwork. Mixed populations show each species; select the tile for exact counts. Farm animals remain fixed. Oversized lakes from earlier geography saves become seas on load; positions, dice, stocks, structures and populations are preserved.
+Water surfaces share a world-aligned texture. River channels use their actual downstream links and tributaries; shorelines are drawn only beside known land. The map retains separate shallow-water and submerged-reef treatments. Lakes are limited to 12 connected non-river hexes; larger basins are seas. Oversized lakes in geography saves are reclassified on load without moving terrain, changing dice, or removing stocks, buildings, troops or wildlife.
+
+Natural land habitats have separate occupied and empty seasonal paintings, with animals integrated into the landscape. The terrain view shows a representative species when several share a hex; the Wildlife view and tile panel show every species and population count. Domestic livestock remain in their farm artwork. Fish, cod and whales are blended into the water and clipped to the actual river channel or wet shoreline interior, including frozen channels.
 
 ## Seasons and harvests
 
@@ -591,15 +607,15 @@ Transition weights : Temperate Rainforest ×0.75, Tundra ×0.75, Temperate ×1, 
 | --------------- | ------------------ | --------------------- |
 | Forest          | 30%                | 2 Wood                |
 | Hunting forest  | 6%                 | 2 Hides               |
-| Reindeer range  | 4%                 | 1 Meat + 1 Hides      |
+| Reindeer range  | 14%                | 1 Meat + 1 Hides      |
 | Barley fields   | 7%                 | 1 Grain               |
 | Turnip fields   | 3%                 | 1 Grain               |
 | Rough pasture   | 5%                 | 1 Wool                |
 | Gold mountains  | 5%                 | 1 Gold                |
-| Coal hills      | 10%                | 1 Coal                |
-| Iron mountains  | 10%                | 1 Iron ore            |
-| Stone quarry    | 10%                | 1 Stone               |
-| Clay hills      | 10%                | 1 Clay                |
+| Coal hills      | 7%                 | 1 Coal                |
+| Iron mountains  | 8%                 | 1 Iron ore            |
+| Stone quarry    | 8%                 | 1 Stone               |
+| Clay hills      | 7%                 | 1 Clay                |
 | Water terrain   | Sequential check   | Effective water share |
 | ---             | ---                | ---                   |
 | Fishing grounds | 20%                | 20%                   |
@@ -645,13 +661,13 @@ Transition weights : Cold ×1.5, Temperate ×1, Mediterranean ×1, Desert ×1, A
 
 | Land terrain     | Conditional chance | Annual baseline       |
 | ---------------- | ------------------ | --------------------- |
-| Steppe plain     | 25%                | 1 Hides + 1 Wool      |
+| Steppe plain     | 37%                | 1 Hides + 1 Wool      |
 | Black-soil wheat | 4%                 | 3 Grain               |
-| Cattle range     | 16%                | 1 Meat + 1 Hides      |
-| Millet fields    | 10%                | 1 Grain               |
-| Pasture          | 10%                | 2 Wool                |
+| Cattle range     | 12%                | 1 Meat + 1 Hides      |
+| Millet fields    | 7%                 | 1 Grain               |
+| Pasture          | 7%                 | 2 Wool                |
 | Woods            | 7%                 | 1 Wood OR 1 Hides     |
-| Stone quarry     | 10%                | 1 Stone               |
+| Stone quarry     | 8%                 | 1 Stone               |
 | Iron mountains   | 5%                 | 1 Iron ore            |
 | Coal hills       | 5%                 | 1 Coal                |
 | Clay hills       | 5%                 | 1 Clay                |
@@ -845,12 +861,12 @@ Transition weights : Tropical ×2, Desert ×1, Steppe ×1, Subtropical ×1, Mons
 
 | Land terrain       | Conditional chance | Annual baseline       |
 | ------------------ | ------------------ | --------------------- |
-| Wildlife grassland | 30%                | 2 Hides               |
+| Wildlife grassland | 42%                | 2 Hides               |
 | Cattle range       | 5%                 | 1 Meat + 1 Hides      |
-| Millet fields      | 20%                | 1 Grain               |
+| Millet fields      | 14%                | 1 Grain               |
 | Dry woodland       | 10%                | 1 Wood                |
-| Rough pasture      | 10%                | 1 Wool                |
-| Iron mountains     | 10%                | 1 Iron ore            |
+| Rough pasture      | 7%                 | 1 Wool                |
+| Iron mountains     | 7%                 | 1 Iron ore            |
 | Clay hills         | 5%                 | 1 Clay                |
 | Stone quarry       | 5%                 | 1 Stone               |
 | Gold mountains     | 3%                 | 1 Gold                |
@@ -979,13 +995,13 @@ Transition weights : Cold ×1, Temperate ×1, Steppe ×2, Desert ×1, Mesoameric
 
 | Land terrain     | Conditional chance | Annual baseline       |
 | ---------------- | ------------------ | --------------------- |
-| Steppe plain     | 32%                | 1 Hides + 1 Wool      |
-| Maize fields     | 12%                | 2 Grain               |
-| Sunflower fields | 6%                 | 1 Oil                 |
+| Steppe plain     | 40%                | 1 Hides + 1 Wool      |
+| Maize fields     | 9%                 | 2 Grain               |
+| Sunflower fields | 4%                 | 1 Oil                 |
 | Bison range      | 16%                | 1 Meat + 1 Hides      |
 | River woods      | 8%                 | 1 Wood                |
-| Clay hills       | 8%                 | 1 Clay                |
-| Stone quarry     | 6%                 | 1 Stone               |
+| Clay hills       | 6%                 | 1 Clay                |
+| Stone quarry     | 5%                 | 1 Stone               |
 | Coal hills       | 5%                 | 1 Coal                |
 | Iron mountains   | 4%                 | 1 Iron ore            |
 | Gold mountains   | 1%                 | 1 Gold                |
@@ -1106,6 +1122,190 @@ Transition weights : Tropical ×2, Subtropical ×1
 
 Open water (no adjacent land): Whale check 6%; effective share 4.2%. Table above: coastal water.
 
+## Geographic riverbank weights
+
+Low gentle riverbanks retain one quarter of ordinary eligible weights and add the weights below before a single draw. These are relative weights, not map percentages. Warm rice deltas add 25 for Delta gardens.
+
+### Temperate
+
+- Alluvial wheat: 39
+
+- Clay hills: 17
+
+- Woods: 13
+
+- Water meadow: 11
+
+### Cold
+
+- Barley fields: 24
+
+- Clay hills: 17
+
+- Forest: 25
+
+- Reindeer range: 14
+
+### Arctic
+
+- Arctic stone ridge: 25
+
+- Snow plain: 40
+
+- Arctic iron mountains: 15
+
+### Steppe
+
+- Recession sorghum: 35
+
+- Clay hills: 17
+
+- Woods: 13
+
+- Steppe plain: 15
+
+### Mediterranean
+
+- Alluvial wheat: 35
+
+- Clay hills: 17
+
+- Woods: 13
+
+- Water meadow: 15
+
+### Tropical
+
+- River rice: 39
+
+- Alluvial clay banks: 17
+
+- River woods: 24
+
+### Desert
+
+- Recession sorghum: 35
+
+- Clay hills: 20
+
+- Oasis: 25
+
+### Oceanic
+
+- Alluvial wheat: 30
+
+- Clay hills: 17
+
+- Woods: 18
+
+- Water meadow: 15
+
+### Alpine
+
+- Barley fields: 25
+
+- Mountain quarry: 20
+
+- Forest: 20
+
+- Alpine pasture: 15
+
+### Subtropical
+
+- River rice: 39
+
+- Alluvial clay banks: 17
+
+- River woods: 24
+
+### Savanna
+
+- Recession sorghum: 35
+
+- Clay hills: 20
+
+- Dry woodland: 10
+
+- Wildlife grassland: 15
+
+### Glacial
+
+- Arctic stone ridge: 20
+
+- Snow plain: 60
+
+### Hyperarid
+
+- Recession sorghum: 20
+
+- Clay hills: 20
+
+- Oasis: 40
+
+### Monsoon
+
+- River rice: 45
+
+- Alluvial clay banks: 17
+
+- River woods: 18
+
+### Andean
+
+- Potato fields: 35
+
+- Volcanic quarry: 15
+
+- Cloud forest: 15
+
+- Alpaca pasture: 15
+
+### Prairie
+
+- Maize fields: 35
+
+- Clay hills: 17
+
+- Woods: 13
+
+- Steppe plain: 15
+
+### Mesoamerican
+
+- Chinampa gardens: 35
+
+- Alluvial clay banks: 20
+
+- River woods: 25
+
+### Tundra
+
+- Peat bog: 25
+
+- Musk ox range: 35
+
+- Berry heath: 5
+
+- Stone quarry: 15
+
+### Temperate Rainforest
+
+- Old-growth forest: 35
+
+- Clay hills: 15
+
+- Water meadow: 20
+
+- Oat fields: 10
+
+### Equatorial Wetlands
+
+- Sago grove: 30
+
+- Alluvial clay banks: 20
+
+- River woods: 30
+
 ## Terrain yields
 
 Geography campaigns: permanent terrain only. Migrating animals add the yields in the Living geography chapter. Earlier climate probabilities describe legacy maps.
@@ -1133,7 +1333,7 @@ Current annual baselines include climate-specific crop productivity. Each season
 | Arctic stone ridge    | Arctic / Glacial / Tundra                                                                                                                                                                                                                 | 1 Stone          | rugged |
 | Arctic gold mountains | Arctic / Glacial / Tundra                                                                                                                                                                                                                 | 1 Gold           | rugged |
 | Steppe plain          | Steppe / Prairie                                                                                                                                                                                                                          | 0                | flat   |
-| Olive grove           | Mediterranean                                                                                                                                                                                                                             | 1 Grain + 1 Wood | forest |
+| Olive grove           | Mediterranean                                                                                                                                                                                                                             | 1 Grain          | forest |
 | Escarpment            | Mediterranean                                                                                                                                                                                                                             | 1 Stone          | rugged |
 | Jungle                | Tropical / Subtropical / Monsoon                                                                                                                                                                                                          | 1 Wood           | forest |
 | Tropical woods        | Tropical / Monsoon / Mesoamerican                                                                                                                                                                                                         | 1 Wood           | forest |
@@ -1168,7 +1368,7 @@ Current annual baselines include climate-specific crop productivity. Each season
 | Bison range           | Prairie                                                                                                                                                                                                                                   | 0                | flat   |
 | Chinampa gardens      | Mesoamerican                                                                                                                                                                                                                              | 3 Grain          | flat   |
 | Turkey grounds        | Mesoamerican                                                                                                                                                                                                                              | 1 Wood           | forest |
-| Cloud forest          | Mesoamerican                                                                                                                                                                                                                              | 1 Wood           | forest |
+| Cloud forest          | Mesoamerican                                                                                                                                                                                                                              | 1 Wood + 1 Hides | forest |
 | Volcanic quarry       | Mesoamerican                                                                                                                                                                                                                              | 2 Stone          | rugged |
 | Millet fields         | Steppe / Savanna                                                                                                                                                                                                                          | 1 Grain          | flat   |
 | Maize fields          | Prairie / Mesoamerican                                                                                                                                                                                                                    | 2 Grain          | flat   |
@@ -1182,7 +1382,7 @@ Current annual baselines include climate-specific crop productivity. Each season
 | Old-growth forest     | Temperate Rainforest                                                                                                                                                                                                                      | 3 Wood           | forest |
 | Fern hunting grounds  | Temperate Rainforest                                                                                                                                                                                                                      | 1 Wood           | forest |
 | Mangroves             | Equatorial Wetlands                                                                                                                                                                                                                       | 1 Wood + 1 Fish  | forest |
-| Sago grove            | Equatorial Wetlands                                                                                                                                                                                                                       | 1 Grain + 1 Wood | forest |
+| Sago grove            | Equatorial Wetlands                                                                                                                                                                                                                       | 1 Grain          | forest |
 
 Bare Peaks: no production and no unit entry, including recruitment, retreat or disembarkation. Roads may follow their edges; towns need adjacent walkable solid land.
 
@@ -1264,21 +1464,21 @@ Each season lasts two full rounds, early and late, with the same scheduled yield
 
 ### Mediterranean
 
-| Terrain         | Spring     | Summer     | Autumn           | Winter           |
-| --------------- | ---------- | ---------- | ---------------- | ---------------- |
-| Golden fields   | 0          | 8 Grain    | 0                | 0                |
-| Barley fields   | 0          | 4 Grain    | 0                | 0                |
-| Olive grove     | 1 Wood     | 1 Wood     | 2 Grain + 1 Wood | 2 Grain + 1 Wood |
-| Escarpment      | 1 Stone    | 1 Stone    | 1 Stone          | 1 Stone          |
-| Woods           | 1 Wood     | 1 Wood     | 1 Wood           | 1 Wood           |
-| Rough pasture   | 2 Wool     | 2 Wool     | 0                | 0                |
-| Goat pasture    | 1 Meat     | 0          | 2 Meat           | 1 Meat           |
-| Salt flats      | 1 Salt     | 2 Salt     | 1 Salt           | 0                |
-| Gold mountains  | 1 Gold     | 1 Gold     | 1 Gold           | 1 Gold           |
-| Coal hills      | 1 Coal     | 1 Coal     | 1 Coal           | 1 Coal           |
-| Iron mountains  | 1 Iron ore | 1 Iron ore | 1 Iron ore       | 1 Iron ore       |
-| Fishing grounds | 0          | 0          | 0                | 0                |
-| Whale grounds   | 0          | 0          | 0                | 0                |
+| Terrain         | Spring     | Summer     | Autumn     | Winter     |
+| --------------- | ---------- | ---------- | ---------- | ---------- |
+| Golden fields   | 0          | 8 Grain    | 0          | 0          |
+| Barley fields   | 0          | 4 Grain    | 0          | 0          |
+| Olive grove     | 0          | 0          | 2 Grain    | 2 Grain    |
+| Escarpment      | 1 Stone    | 1 Stone    | 1 Stone    | 1 Stone    |
+| Woods           | 1 Wood     | 1 Wood     | 1 Wood     | 1 Wood     |
+| Rough pasture   | 2 Wool     | 2 Wool     | 0          | 0          |
+| Goat pasture    | 1 Meat     | 0          | 2 Meat     | 1 Meat     |
+| Salt flats      | 1 Salt     | 2 Salt     | 1 Salt     | 0          |
+| Gold mountains  | 1 Gold     | 1 Gold     | 1 Gold     | 1 Gold     |
+| Coal hills      | 1 Coal     | 1 Coal     | 1 Coal     | 1 Coal     |
+| Iron mountains  | 1 Iron ore | 1 Iron ore | 1 Iron ore | 1 Iron ore |
+| Fishing grounds | 0          | 0          | 0          | 0          |
+| Whale grounds   | 0          | 0          | 0          | 0          |
 
 ### Tropical
 
@@ -1465,21 +1665,21 @@ Each season lasts two full rounds, early and late, with the same scheduled yield
 
 ### Mesoamerican
 
-| Terrain          | Spring     | Summer     | Autumn     | Winter     |
-| ---------------- | ---------- | ---------- | ---------- | ---------- |
-| Maize fields     | 0          | 0          | 8 Grain    | 0          |
-| Chinampa gardens | 4 Grain    | 4 Grain    | 4 Grain    | 0          |
-| Turkey grounds   | 1 Wood     | 1 Wood     | 1 Wood     | 1 Wood     |
-| Cloud forest     | 1 Wood     | 1 Wood     | 1 Wood     | 1 Wood     |
-| Tropical woods   | 1 Wood     | 1 Wood     | 1 Wood     | 1 Wood     |
-| Clay hills       | 1 Clay     | 1 Clay     | 1 Clay     | 1 Clay     |
-| Volcanic quarry  | 2 Stone    | 2 Stone    | 2 Stone    | 2 Stone    |
-| Iron mountains   | 1 Iron ore | 1 Iron ore | 1 Iron ore | 1 Iron ore |
-| Gold mountains   | 1 Gold     | 1 Gold     | 1 Gold     | 1 Gold     |
-| Salt flats       | 1 Salt     | 0          | 1 Salt     | 2 Salt     |
-| Coal hills       | 1 Coal     | 1 Coal     | 1 Coal     | 1 Coal     |
-| Fishing grounds  | 0          | 0          | 0          | 0          |
-| Whale grounds    | 0          | 0          | 0          | 0          |
+| Terrain          | Spring           | Summer           | Autumn           | Winter           |
+| ---------------- | ---------------- | ---------------- | ---------------- | ---------------- |
+| Maize fields     | 0                | 0                | 8 Grain          | 0                |
+| Chinampa gardens | 4 Grain          | 4 Grain          | 4 Grain          | 0                |
+| Turkey grounds   | 1 Wood           | 1 Wood           | 1 Wood           | 1 Wood           |
+| Cloud forest     | 1 Wood + 1 Hides | 1 Wood + 1 Hides | 1 Wood + 1 Hides | 1 Wood + 1 Hides |
+| Tropical woods   | 1 Wood           | 1 Wood           | 1 Wood           | 1 Wood           |
+| Clay hills       | 1 Clay           | 1 Clay           | 1 Clay           | 1 Clay           |
+| Volcanic quarry  | 2 Stone          | 2 Stone          | 2 Stone          | 2 Stone          |
+| Iron mountains   | 1 Iron ore       | 1 Iron ore       | 1 Iron ore       | 1 Iron ore       |
+| Gold mountains   | 1 Gold           | 1 Gold           | 1 Gold           | 1 Gold           |
+| Salt flats       | 1 Salt           | 0                | 1 Salt           | 2 Salt           |
+| Coal hills       | 1 Coal           | 1 Coal           | 1 Coal           | 1 Coal           |
+| Fishing grounds  | 0                | 0                | 0                | 0                |
+| Whale grounds    | 0                | 0                | 0                | 0                |
 
 ### Tundra
 
@@ -1515,18 +1715,18 @@ Each season lasts two full rounds, early and late, with the same scheduled yield
 
 ### Equatorial Wetlands
 
-| Terrain             | Spring           | Summer           | Autumn           | Winter           |
-| ------------------- | ---------------- | ---------------- | ---------------- | ---------------- |
-| Mangroves           | 1 Wood + 1 Fish  | 1 Wood + 1 Fish  | 1 Wood + 1 Fish  | 1 Wood + 1 Fish  |
-| Sago grove          | 1 Grain + 1 Wood | 1 Grain + 1 Wood | 1 Grain + 1 Wood | 1 Grain + 1 Wood |
-| River woods         | 1 Wood           | 1 Wood           | 1 Wood           | 1 Wood           |
-| Alluvial clay banks | 2 Clay           | 1 Clay           | 2 Clay           | 3 Clay           |
-| Peat bog            | 1 Coal           | 1 Coal           | 1 Coal           | 1 Coal           |
-| Stone quarry        | 1 Stone          | 1 Stone          | 1 Stone          | 1 Stone          |
-| Iron mountains      | 1 Iron ore       | 1 Iron ore       | 1 Iron ore       | 1 Iron ore       |
-| Gold mountains      | 1 Gold           | 1 Gold           | 1 Gold           | 1 Gold           |
-| Fishing grounds     | 0                | 0                | 0                | 0                |
-| Whale grounds       | 0                | 0                | 0                | 0                |
+| Terrain             | Spring          | Summer          | Autumn          | Winter          |
+| ------------------- | --------------- | --------------- | --------------- | --------------- |
+| Mangroves           | 1 Wood + 1 Fish | 1 Wood + 1 Fish | 1 Wood + 1 Fish | 1 Wood + 1 Fish |
+| Sago grove          | 1 Grain         | 1 Grain         | 1 Grain         | 1 Grain         |
+| River woods         | 1 Wood          | 1 Wood          | 1 Wood          | 1 Wood          |
+| Alluvial clay banks | 2 Clay          | 1 Clay          | 2 Clay          | 3 Clay          |
+| Peat bog            | 1 Coal          | 1 Coal          | 1 Coal          | 1 Coal          |
+| Stone quarry        | 1 Stone         | 1 Stone         | 1 Stone         | 1 Stone         |
+| Iron mountains      | 1 Iron ore      | 1 Iron ore      | 1 Iron ore      | 1 Iron ore      |
+| Gold mountains      | 1 Gold          | 1 Gold          | 1 Gold          | 1 Gold          |
+| Fishing grounds     | 0               | 0               | 0               | 0               |
+| Whale grounds       | 0               | 0               | 0               | 0               |
 
 ## Half-season freeze and thaw chances
 

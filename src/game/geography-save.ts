@@ -11,7 +11,7 @@ export function validateGeography(s: Game): void {
     );
     return;
   }
-  rule(s.geographyVersion === 1, "Unsupported geography version.");
+  rule([1, 2].includes(s.geographyVersion), "Unsupported geography version.");
   rule(
     Number.isSafeInteger(s.environmentRound) &&
       s.environmentRound! >= 1 &&
@@ -43,7 +43,12 @@ export function validateGeography(s: Game): void {
         herd.lastRound <= s.round,
       "Invalid migration round.",
     );
+    rule(
+      herd.dormant === undefined || herd.dormant === true,
+      "Invalid dormant wildlife.",
+    );
     ids.add(herd.id);
+    if (herd.dormant) continue;
     const stock = fauna.get(herd.tile) ?? {};
     for (const [good, n] of Object.entries(WILDLIFE_GOODS[herd.kind]))
       stock[good as Good] = (stock[good as Good] ?? 0) + n!;
@@ -61,6 +66,16 @@ export function validateGeography(s: Game): void {
         typeof g.region === "string" &&
         g.region.length < 100,
       "Invalid tile geography.",
+    );
+    rule(
+      g.weatherSeason === undefined ||
+        ["spring", "summer", "autumn", "winter"].includes(g.weatherSeason),
+      "Invalid weather season.",
+    );
+    rule(
+      g.depth === undefined ||
+        (Number.isFinite(g.depth) && g.depth >= 0 && g.depth <= 1),
+      "Invalid water depth.",
     );
     rule(
       g.waterway === undefined ||

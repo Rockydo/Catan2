@@ -1,10 +1,12 @@
 import type { Hex } from "../game/types";
-import type { Season } from "../game/seasons";
+import { frozenInSeason, type Season } from "../game/seasons";
+import { terrainArtFile, terrainPatternKey } from "./terrain-art";
 import {
   bankArt,
   WATER_HEX,
   shoreGeometry,
   riverGeometry,
+  waterSurfacePath,
   type WaterConnections,
 } from "./water-connectivity";
 
@@ -24,6 +26,15 @@ export function WaterDefinitions({
       <clipPath id="water-full-hex" clipPathUnits="userSpaceOnUse">
         <polygon points={WATER_HEX} />
       </clipPath>
+      {[...shores].map((mask) => (
+        <clipPath
+          key={`surface${mask}`}
+          id={`water-surface-${mask}`}
+          clipPathUnits="userSpaceOnUse"
+        >
+          <path d={waterSurfacePath(mask)} />
+        </clipPath>
+      ))}
       {[...shores].filter(Boolean).map((mask) => (
         <clipPath
           key={`s${mask}`}
@@ -95,6 +106,7 @@ export function ConnectedWater({
   season?: Season;
 }) {
   const { shore, channel, river } = connections;
+  const frozen = frozenInSeason(tile, season);
   const line = river ? riverGeometry(channel).line : shoreGeometry(shore).line;
   const shallow = ["shoal", "reef"].includes(tile.geography?.waterway ?? "");
   return (
@@ -111,11 +123,21 @@ export function ConnectedWater({
       ) : (
         <polygon points={WATER_HEX} fill="#326b7c" />
       )}
-      {waterTexture(x, y, river ? `water-river-${channel}` : "water-full-hex")}
-      {!river &&
+      {frozen
+        ? texture(
+            terrainArtFile(terrainPatternKey("ice", tile.climate, season)),
+            river ? `water-river-${channel}` : "water-full-hex",
+          )
+        : waterTexture(
+            x,
+            y,
+            river ? `water-river-${channel}` : "water-full-hex",
+          )}
+      {!frozen &&
+        !river &&
         tile.geography?.waterway === "reef" &&
         texture("geography/submerged-reef.webp", "water-full-hex", 0.38)}
-      {!river && shallow && (
+      {!frozen && !river && shallow && (
         <polygon
           points={WATER_HEX}
           fill={tile.geography?.waterway === "reef" ? "#5da99b" : "#92b9a5"}

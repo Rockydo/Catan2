@@ -226,7 +226,17 @@ describe("stable shoulder-season sea ice", () => {
     addHexes(saved, saved.seed, revealed);
     syncSeasonSurfaces(saved);
     for (const [id, tile] of Object.entries(before))
-      expect(saved.tiles[id]).toEqual(tile);
+      expect({
+        ...saved.tiles[id],
+        geography: {
+          ...saved.tiles[id].geography,
+          fauna: undefined,
+          animals: undefined,
+        },
+      }).toEqual({
+        ...tile,
+        geography: { ...tile.geography, fauna: undefined, animals: undefined },
+      });
     const addedWater = revealed
       .map((id) => saved.tiles[id])
       .filter(

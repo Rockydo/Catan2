@@ -1,3 +1,4 @@
+import { climateSetting } from "./geographic-climate";
 import type { Game, Hex, World, Stock, ShipClass, Piece } from "./types";
 import {
   BIOME_INFO,
@@ -34,6 +35,7 @@ export interface Geography {
   elevation: number;
   region: string;
   waterway?: Waterway;
+  depth?: number;
   coastal?: boolean;
   warmed?: boolean;
   downstream?: string;
@@ -43,6 +45,7 @@ export interface Geography {
   pass?: boolean;
   landmark?: Landmark;
   weather?: Weather;
+  weatherSeason?: import("./seasons").Season;
   access?: "normal" | "ford" | "flooded" | "closed";
   fauna?: Stock;
   animals?: WildlifeKind[];
@@ -58,8 +61,9 @@ export interface Wildlife {
   kind: WildlifeKind;
   tile: string;
   lastRound: number;
+  dormant?: true;
 }
-export const GEOGRAPHY_VERSION = 1;
+export const GEOGRAPHY_VERSION = 2;
 export const landform = (seed: string): Landform =>
   (["continent", "archipelago", "inland-seas", "peninsulas"] as const)[
     Math.floor(randomAt(seed, "world", "landform") * 4)
@@ -155,8 +159,14 @@ interface Drainage {
 const drainageCache = new Map<string, Drainage>();
 /** Each watershed source owns a bounded downhill trace. Queries never depend on
  * revealed tiles; expeditions cannot reroll coasts, rivers or their mouths. */
-function watershed(seed: string, q: number, r: number): Drainage {
-  const cacheKey = `${seed}/${q}/${r}`;
+function watershed(
+  seed: string,
+  q: number,
+  r: number,
+  version: number,
+): Drainage {
+  const cacheKey = `${seed}/${q}/${r}/${version}`;
+  const sourceKey = `${seed}/${q}/${r}`;
   const cached = drainageCache.get(cacheKey);
   if (cached) return cached;
   const result: Drainage = {
@@ -167,13 +177,17 @@ function watershed(seed: string, q: number, r: number): Drainage {
   let source = key(q * 8 + 4, r * 8 + 4);
   for (let i = 0; i < 12; i++) {
     const candidate = key(
-      q * 8 + Math.floor(randomAt(seed, cacheKey, `source-q-${i}`) * 8),
-      r * 8 + Math.floor(randomAt(seed, cacheKey, `source-r-${i}`) * 8),
+      q * 8 + Math.floor(randomAt(seed, sourceKey, `source-q-${i}`) * 8),
+      r * 8 + Math.floor(randomAt(seed, sourceKey, `source-r-${i}`) * 8),
     );
     if (elevationAt(seed, candidate) > elevationAt(seed, source))
       source = candidate;
   }
-  if (elevationAt(seed, source) > seaLevel(seed) + 0.06) {
+  const rain = version >= 2 ? climateSetting(seed, source).moisture : 1;
+  const supplied =
+    version < 2 ||
+    randomAt(seed, source, "watershed-rain") < 0.18 + rain * 0.82;
+  if (supplied && elevationAt(seed, source) > seaLevel(seed) + 0.06) {
     let at = source;
     const visited = new Set([source]);
     for (let step = 0; step < 16; step++) {
@@ -195,6 +209,8 @@ function watershed(seed: string, q: number, r: number): Drainage {
       }
       visited.add(next);
       at = next;
+      // The bounded trace must finish in water, never point into a dry tile.
+      if (step === 15) result.lakes.add(at);
     }
     if (result.rivers.size < 2) {
       result.rivers.clear();
@@ -206,7 +222,7 @@ function watershed(seed: string, q: number, r: number): Drainage {
   drainageCache.set(cacheKey, result);
   return result;
 }
-function drainageAt(seed: string, id: string) {
+function drainageAt(seed: string, id: string, version: number) {
   const [q, r] = coord(id),
     x = Math.floor(q / 8),
     y = Math.floor(r / 8);
@@ -215,7 +231,7 @@ function drainageAt(seed: string, id: string) {
     mouth = false;
   for (let a = x - 3; a <= x + 3; a++)
     for (let b = y - 3; b <= y + 3; b++) {
-      const d = watershed(seed, a, b);
+      const d = watershed(seed, a, b, version);
       const candidate = d.rivers.get(id);
       if (
         candidate &&
@@ -228,9 +244,13 @@ function drainageAt(seed: string, id: string) {
     }
   return { downstream, lake, mouth };
 }
-export function geographyAt(seed: string, id: string) {
+export function geographyAt(
+  seed: string,
+  id: string,
+  version = GEOGRAPHY_VERSION,
+) {
   const elevation = elevationAt(seed, id),
-    drainage = drainageAt(seed, id);
+    drainage = drainageAt(seed, id, version);
   const water =
     elevation < seaLevel(seed) || !!drainage.downstream || drainage.lake;
   return { elevation, water, ...drainage };
@@ -240,12 +260,16 @@ const lakeCache = new Map<string, boolean>();
 /** Bounded basin search on the underlying world, including unrevealed tiles.
  * Rivers are outlets, not part of a lake's area. Thirteen tiles prove a sea;
  * no unbounded ocean flood fill or dependency on expedition reveal order. */
-export function isSmallLake(seed: string, id: string): boolean {
-  const cacheKey = `${seed}/${id}`;
+export function isSmallLake(
+  seed: string,
+  id: string,
+  version = GEOGRAPHY_VERSION,
+): boolean {
+  const cacheKey = `${seed}/${id}/${version}`;
   const known = lakeCache.get(cacheKey);
   if (known !== undefined) return known;
   const basin = (at: string) => {
-    const g = geographyAt(seed, at);
+    const g = geographyAt(seed, at, version);
     return g.water && !g.downstream;
   };
   if (!basin(id)) return false;
@@ -264,7 +288,7 @@ export function isSmallLake(seed: string, id: string): boolean {
     }
   }
   if (lakeCache.size > 60000) lakeCache.clear();
-  for (const tile of found) lakeCache.set(`${seed}/${tile}`, small);
+  for (const tile of found) lakeCache.set(`${seed}/${tile}/${version}`, small);
   return small;
 }
 /** Repair oversized lakes in already saved geography worlds. Preserve every
@@ -328,9 +352,22 @@ const WILD_BIOMES = new Set<Biome>([
   "jungle",
   "turkey-grounds",
 ]);
-export const wildHabitat = (tile: Hex) =>
-  !!tile.biome &&
-  (WILD_BIOMES.has(tile.biome) || BIOME_INFO[tile.biome].family === "forest");
+/** Only natural timber or unproductive habitat supports wild herds. Tree crops
+ * are agriculture even though their combat terrain is forested. */
+export const wildHabitat = (tile: Hex) => {
+  if (
+    !tile.biome ||
+    ["water", "ice", "peaks"].includes(tile.resource) ||
+    tile.geography?.pass
+  )
+    return false;
+  if (WILD_BIOMES.has(tile.biome)) return true;
+  const info = BIOME_INFO[tile.biome];
+  return (
+    (info.family === "forest" || tile.biome === "snow-plain") &&
+    Object.entries(info.yield).every(([raw, n]) => !n || raw === "lumber")
+  );
+};
 export function habitatKind(tile: Hex): WildlifeKind | undefined {
   if (tile.resource === "water") {
     if (
@@ -409,15 +446,246 @@ export const PROJECTS: Record<
       "Protects up to 8 food cards per town level from a raid. Destruction still captures everything.",
   },
 };
+/** Riparian terrain is explicitly climate-specific. Sediment alone does not
+ * imply farmland or warm vegetation. These are conditional weights, not quotas. */
+export const RIPARIAN_TERRAIN: Record<
+  Climate,
+  readonly (readonly [Biome, number])[]
+> = {
+  temperate: [
+    ["flood-wheat", 39],
+    ["clay", 17],
+    ["woods", 13],
+    ["flood-meadow", 11],
+  ],
+  cold: [
+    ["barley-fields", 24],
+    ["clay", 17],
+    ["forest", 25],
+    ["reindeer-range", 14],
+  ],
+  arctic: [
+    ["arctic-stone", 25],
+    ["snow-plain", 40],
+    ["arctic-iron", 15],
+  ],
+  glacial: [
+    ["arctic-stone", 20],
+    ["snow-plain", 60],
+  ],
+  tundra: [
+    ["peat-bog", 25],
+    ["musk-ox-range", 35],
+    ["tundra-heath", 5],
+    ["stone", 15],
+  ],
+  alpine: [
+    ["barley-fields", 25],
+    ["mountain-quarry", 20],
+    ["forest", 20],
+    ["alpine-pasture", 15],
+  ],
+  andean: [
+    ["potato-fields", 35],
+    ["volcanic-quarry", 15],
+    ["cloud-forest", 15],
+    ["alpaca-pasture", 15],
+  ],
+  steppe: [
+    ["flood-sorghum", 35],
+    ["clay", 17],
+    ["woods", 13],
+    ["steppe-plain", 15],
+  ],
+  prairie: [
+    ["maize-field", 35],
+    ["clay", 17],
+    ["woods", 13],
+    ["steppe-plain", 15],
+  ],
+  mediterranean: [
+    ["flood-wheat", 35],
+    ["clay", 17],
+    ["woods", 13],
+    ["flood-meadow", 15],
+  ],
+  oceanic: [
+    ["flood-wheat", 30],
+    ["clay", 17],
+    ["woods", 18],
+    ["flood-meadow", 15],
+  ],
+  "temperate-rainforest": [
+    ["old-growth-forest", 35],
+    ["clay", 15],
+    ["flood-meadow", 20],
+    ["oat-fields", 10],
+  ],
+  tropical: [
+    ["flood-rice", 39],
+    ["alluvial-clay", 17],
+    ["river-woods", 24],
+  ],
+  subtropical: [
+    ["flood-rice", 39],
+    ["alluvial-clay", 17],
+    ["river-woods", 24],
+  ],
+  monsoon: [
+    ["flood-rice", 45],
+    ["alluvial-clay", 17],
+    ["river-woods", 18],
+  ],
+  "equatorial-wetlands": [
+    ["sago-grove", 30],
+    ["alluvial-clay", 20],
+    ["river-woods", 30],
+  ],
+  mesoamerican: [
+    ["chinampa-gardens", 35],
+    ["alluvial-clay", 20],
+    ["river-woods", 25],
+  ],
+  savanna: [
+    ["flood-sorghum", 35],
+    ["clay", 20],
+    ["dry-woodland", 10],
+    ["wildlife-grassland", 15],
+  ],
+  desert: [
+    ["flood-sorghum", 35],
+    ["clay", 20],
+    ["oasis", 25],
+  ],
+  hyperarid: [
+    ["flood-sorghum", 20],
+    ["clay", 20],
+    ["oasis", 40],
+  ],
+};
+/** One conditional draw, not a normal tile replaced by special geography.
+ * Weights describe availability given physical conditions, not fixed map quotas. */
+export function geographicLandChoices(
+  seed: string,
+  tile: Pick<Hex, "id" | "climate">,
+  at = geographyAt(seed, tile.id),
+  around = neighbors(tile.id).map((n) => ({ id: n, ...geographyAt(seed, n) })),
+  version = GEOGRAPHY_VERSION,
+): { choices: [Biome, number][]; floodplain: boolean; delta: boolean } {
+  const climate = tile.climate ?? "temperate",
+    sea = seaLevel(seed);
+  const relative = at.elevation - sea;
+  const river = around.some((n) => n.downstream || n.lake);
+  const coast = around.some(
+    (n) => n.water && !n.downstream && !isSmallLake(seed, n.id, version),
+  );
+  const slope = around.reduce(
+    (max, n) => Math.max(max, Math.abs(n.elevation - at.elevation)),
+    0,
+  );
+  const mountains =
+    relative > 0.15 ||
+    (["alpine", "andean"].includes(climate) && relative > 0.04);
+  const floodplain = river && relative < 0.19 && slope < 0.13;
+  const delta = floodplain && around.some((n) => n.mouth);
+  const setting = climateSetting(seed, tile.id);
+  const weights = new Map<Biome, number>();
+  const add = (b: Biome, w: number) => {
+    if (w > 0) weights.set(b, (weights.get(b) ?? 0) + w);
+  };
+  const riverOnly = new Set<Biome>([
+    ...RIVER_ONLY,
+    "flood-wheat",
+    "flood-rice",
+    "flood-sorghum",
+    "delta-gardens",
+    "flood-meadow",
+  ]);
+  for (const [b, original] of CLIMATE_INFO[climate].terrain) {
+    if (
+      (riverOnly.has(b) && !floodplain) ||
+      (b === "bare-peaks" && !mountains) ||
+      (b === "seal-grounds" && !coast) ||
+      (b === "mangrove" && !coast) ||
+      (["coastal-cliffs", "coastal-pasture"].includes(b) && !coast) ||
+      (["mountain-quarry", "alpine-pasture"].includes(b) && !mountains) ||
+      (b === "peat-bog" && (slope > 0.13 || setting.moisture < 0.3)) ||
+      (b === "oasis" && !river && setting.moisture < 0.18) ||
+      (b === "salt-flats" && !coast && setting.moisture > 0.5)
+    )
+      continue;
+    let w = original;
+    if (mountains) {
+      if (BIOME_INFO[b].yield.grain || BIOME_INFO[b].yield.wool) w *= 0.3;
+      if (["iron", "stone", "gold", "coal"].includes(b)) w *= 1.5;
+    }
+    add(b, w);
+  }
+  // High ridges contain minerals, impassable summits and a smaller pass share.
+  if (mountains) {
+    const total = [...weights.values()].reduce((a, b) => a + b, 0);
+    add("bare-peaks", total * 0.32);
+    add("mountain-pass", total * 0.11);
+  }
+  if (floodplain) {
+    // Wet alluvium changes the full draw, while leaving ordinary nearby terrain possible.
+    for (const [b, w] of weights) weights.set(b, w * 0.25);
+    for (const [biome, weight] of RIPARIAN_TERRAIN[climate]) add(biome, weight);
+    // Productive rice deltas belong only to warm rice-growing river basins.
+    if (delta && ["tropical", "subtropical", "monsoon"].includes(climate))
+      add("delta-gardens", 25);
+  }
+  if (!weights.size) add("stone", 1);
+  return { choices: [...weights], floodplain, delta };
+}
+
+/** Shallow shelves follow the height field rather than independent tile dice.
+ * Sediment extends the shelf at river mouths. Reefs require warm, shallow sea
+ * away from muddy outlets; their correlated distribution follows the seabed. */
+export function seaShelf(seed: string, id: string, climate: Climate) {
+  const at = geographyAt(seed, id),
+    around = neighbors(id).map((n) => geographyAt(seed, n));
+  const depth = Math.max(0, seaLevel(seed) - at.elevation);
+  const mouth = around.some((n) => n.mouth);
+  const nearLand =
+    around.some((n) => !n.water) ||
+    neighbors(id).some((n) =>
+      neighbors(n).some((m) => !geographyAt(seed, m).water),
+    );
+  const shallow = nearLand && depth <= (mouth ? 0.065 : 0.035);
+  const [q, r] = coord(id);
+  return {
+    depth: Math.round(depth * 1000) / 1000,
+    shallow,
+    reef:
+      shallow &&
+      !mouth &&
+      HOT.has(climate) &&
+      noise(seed, q, r, 4, "reef-shelf") > 0.5,
+  };
+}
+
 /** Geographic constraints select from existing resource cards. River specialization
  * never creates a new fungible currency or changes vanilla construction costs. */
-export function geographicTerrain(seed: string, tile: Hex): void {
+export function geographicTerrain(
+  seed: string,
+  tile: Hex,
+  version = GEOGRAPHY_VERSION,
+): void {
   const id = tile.id,
     climate = tile.climate ?? "temperate",
-    at = geographyAt(seed, id),
-    around = neighbors(id).map((n) => ({ id: n, ...geographyAt(seed, n) }));
+    at = geographyAt(seed, id, version),
+    around = neighbors(id).map((n) => ({
+      id: n,
+      ...geographyAt(seed, n, version),
+    }));
   const river = around.some((n) => n.downstream || n.lake),
-    coast = around.some((n) => n.water && !n.downstream),
+    coast = around.some(
+      (n) =>
+        n.water &&
+        !n.downstream &&
+        (version < 2 || !isSmallLake(seed, n.id, version)),
+    ),
     delta = around.some((n) => n.mouth);
   const geo: Geography = {
     elevation: Math.round(at.elevation * 1000) / 1000,
@@ -429,14 +697,22 @@ export function geographicTerrain(seed: string, tile: Hex): void {
   if (at.water) {
     geo.waterway = at.downstream
       ? "river"
-      : isSmallLake(seed, id)
+      : isSmallLake(seed, id, version)
         ? "lake"
         : around.some((n) => !n.water)
           ? "coast"
           : "deep";
     geo.downstream = at.downstream;
     geo.ford = geo.waterway === "river" && randomAt(seed, id, "ford") < 0.3;
-    if (geo.waterway === "coast" && randomAt(seed, id, "shoal") < 0.28)
+    if (version >= 2 && !["river", "lake"].includes(geo.waterway)) {
+      const shelf = seaShelf(seed, id, climate);
+      geo.depth = shelf.depth;
+      if (shelf.shallow) geo.waterway = shelf.reef ? "reef" : "shoal";
+    } else if (
+      version < 2 &&
+      geo.waterway === "coast" &&
+      randomAt(seed, id, "shoal") < 0.28
+    )
       geo.waterway =
         HOT.has(climate) && randomAt(seed, id, "reef") < 0.5 ? "reef" : "shoal";
     biome =
@@ -449,63 +725,32 @@ export function geographicTerrain(seed: string, tile: Hex): void {
             : geo.waterway === "shoal"
               ? "shoal"
               : "water";
-    if (climate === "glacial" && randomAt(seed, id, "pack-ice") < 0.22)
+    if (
+      climate === "glacial" &&
+      (version < 2 || !["river", "lake"].includes(geo.waterway)) &&
+      randomAt(seed, id, "pack-ice") < 0.22
+    )
       biome = "ice";
   } else {
-    const choices = CLIMATE_INFO[climate].terrain.filter(
-      ([b]) => !RIVER_ONLY.has(b) || river,
-    );
+    const selection = geographicLandChoices(seed, tile, at, around, version);
+    geo.floodplain = selection.floodplain;
+    geo.delta = selection.delta;
     let roll =
       randomAt(seed, id, "resource") *
-      choices.reduce((sum, [, w]) => sum + w, 0);
-    biome = choices.at(-1)![0];
-    for (const [b, w] of choices) {
+      selection.choices.reduce((sum, [, w]) => sum + w, 0);
+    biome = selection.choices.at(-1)![0];
+    for (const [b, w] of selection.choices) {
       roll -= w;
       if (roll < 0) {
         biome = b;
         break;
       }
     }
-    const mountains =
-      at.elevation > seaLevel(seed) + 0.15 ||
-      (["alpine", "andean"].includes(climate) &&
-        at.elevation > seaLevel(seed) + 0.04);
-    if (biome === "bare-peaks" && !mountains) biome = "stone";
-    if (biome === "seal-grounds" && !coast) biome = "snow-plain";
-    if (mountains && randomAt(seed, id, "ridge") < 0.38) biome = "bare-peaks";
-    if (biome === "bare-peaks" && randomAt(seed, id, "pass") < 0.25) {
-      biome = "mountain-pass";
-      geo.pass = true;
+    geo.pass = biome === "mountain-pass";
+    if (biome === "bare-peaks" || geo.pass) {
+      geo.floodplain = false;
+      geo.delta = false;
     }
-    if (
-      river &&
-      at.elevation < seaLevel(seed) + 0.19 &&
-      !["bare-peaks", "mountain-pass"].includes(biome)
-    ) {
-      geo.floodplain = true;
-      geo.delta = delta;
-      const pick = randomAt(seed, id, "river-field");
-      if (pick < 0.17) biome = "alluvial-clay";
-      else if (pick < 0.3) biome = "river-woods";
-      else if (
-        pick < 0.69 &&
-        !["arctic", "glacial", "tundra"].includes(climate)
-      )
-        biome =
-          climate === "mesoamerican"
-            ? "chinampa-gardens"
-            : climate === "andean"
-              ? "potato-fields"
-              : delta
-                ? "delta-gardens"
-                : HOT.has(climate)
-                  ? "flood-rice"
-                  : DRY.has(climate) || climate === "steppe"
-                    ? "flood-sorghum"
-                    : "flood-wheat";
-      else if (pick < 0.8) biome = "flood-meadow";
-    }
-    if (biome === "mangrove" && !coast && !river) biome = "jungle";
     if (
       randomAt(seed, id, "landmark") < 0.012 &&
       biome !== "bare-peaks" &&
@@ -543,7 +788,7 @@ export function baseGeographicYield(tile: Hex): Stock {
       BIOME_INFO[biome].family === "forest"
         ? { lumber: biome === "hunting-forest" ? 2 : 1 }
         : {};
-  if (BIOME_INFO[biome].family === "forest") {
+  if (BIOME_INFO[biome].family === "forest" && wildHabitat(tile)) {
     delete output.hides;
     delete output.meat;
     output.lumber = Math.max(1, output.lumber ?? 0);
@@ -558,6 +803,15 @@ export function baseGeographicYield(tile: Hex): Stock {
     if (raw) output[raw as keyof Stock]! += 1;
   }
   return output;
+}
+export function shallowDraft(kind: ShipClass, tier = 1): boolean {
+  return (
+    kind === "riverboat" ||
+    kind === "fishing" ||
+    kind === "transport" ||
+    kind === "settlership" ||
+    (kind === "galley" && tier <= 2)
+  );
 }
 export function canSail(
   tile: Hex | undefined,
@@ -577,14 +831,7 @@ export function canSail(
   const shallow =
     ["river", "shoal", "reef"].includes(geo.waterway ?? "") ||
     geo.access === "flooded";
-  return (
-    !shallow ||
-    kind === "riverboat" ||
-    kind === "fishing" ||
-    kind === "transport" ||
-    (kind === "galley" && tier <= 2) ||
-    kind === "settlership"
-  );
+  return !shallow || shallowDraft(kind, tier);
 }
 export function pieceAccess(
   tile: Hex | undefined,

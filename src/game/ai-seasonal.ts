@@ -1,4 +1,7 @@
-import { environmentRisk } from "./environment";
+import { weatherAdjustedYield } from "./weather-yields";
+import { processedFor } from "./content";
+import type { Raw } from "./types";
+import { environmentRisk, weatherChoices } from "./environment";
 import { pieceAccess } from "./geography";
 import type { Command, Game, Good, Piece, ShipClass, Stock } from "./types";
 import { shipStats } from "./content";
@@ -115,7 +118,12 @@ function outputsIn(s: Game, season: Season, round?: number): Outputs {
                   ? {
                       geography: {
                         ...tile.geography,
-                        ...(futureSeason ? { access: "normal" as const } : {}),
+                        ...(futureSeason
+                          ? {
+                              access: "normal" as const,
+                              weather: "normal" as const,
+                            }
+                          : {}),
                         ...(tile.geography.damagedUntil &&
                         round !== undefined &&
                         round >= tile.geography.damagedUntil
@@ -131,10 +139,54 @@ function outputsIn(s: Game, season: Season, round?: number): Outputs {
       : s;
   // Weather depends on a tile and forecast round, not the number of producers.
   const weather = new Map<string, number>();
+  const harvestFactors = new Map<string, Stock>();
+  function expectedFactor(id: string, good: Good): number {
+    if (!futureSeason || !s.tiles[id].geography) return 1;
+    let factors = harvestFactors.get(id);
+    if (!factors) {
+      const tile = s.tiles[id],
+        base = seasonalProfile(tile)[season];
+      const ordinary: Stock = {},
+        expected: Stock = {};
+      const include = (stock: Stock, target: Stock, weight: number) => {
+        for (const [key, value] of Object.entries(stock)) {
+          const raw = key as Raw,
+            processed = processedFor(raw);
+          target[raw] = (target[raw] ?? 0) + value! * weight;
+          if (processed)
+            target[processed] = (target[processed] ?? 0) + value! * weight;
+        }
+      };
+      include(base, ordinary, 1);
+      for (const [weather, chance] of weatherChoices(
+        tile.climate ?? "temperate",
+        season,
+      ))
+        include(
+          weatherAdjustedYield(
+            {
+              ...tile,
+              geography: { ...tile.geography!, weather, weatherSeason: season },
+            },
+            base,
+            season,
+          ),
+          expected,
+          chance,
+        );
+      factors = {};
+      for (const key of Object.keys(ordinary) as Good[])
+        factors[key] = ordinary[key]
+          ? (expected[key] ?? 0) / ordinary[key]!
+          : 1;
+      harvestFactors.set(id, factors);
+    }
+    return factors[good] ?? 1;
+  }
   const result = forecastProduction(
     view,
     round === s.round ? "current" : season,
-    (tile, amount) => {
+    (tile, amount, good) => {
       let factor = weather.get(tile);
       if (factor === undefined) {
         const terrain = s.tiles[tile];
@@ -150,7 +202,12 @@ function outputsIn(s: Game, season: Season, round?: number): Outputs {
           factor *= 1 - environmentRisk(terrain, season);
         weather.set(tile, factor);
       }
-      return amount * probability(s.tiles[tile].number) * factor;
+      return (
+        amount *
+        probability(s.tiles[tile].number) *
+        factor *
+        expectedFactor(tile, good)
+      );
     },
   );
   if (cache.size >= 32) cache.delete(cache.keys().next().value!);

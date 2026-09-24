@@ -5,11 +5,25 @@ import generation from "./generation.json" with { type: "json" };
 import { RAW, type World, type Hex, type Vertex, type Edge } from "./types";
 export const WATER_PROBABILITY = generation.waterProbability;
 export const PORT_RESOURCES = RAW.filter((g) => g !== "gold" && g !== "oil");
+/** Automatic trading ports need an open shoreline, not a narrow river bank. */
+export function portCoast(world: World, ids: string[]): boolean {
+  const tiles = ids.map((id) => world.tiles[id]);
+  if (tiles.length !== 2 || tiles.some((t) => !t || t.resource === "ice"))
+    return false;
+  const water = tiles.filter((t) => t.resource === "water");
+  return water.length === 1 && water[0].geography?.waterway !== "river";
+}
 export function restoreGoldPorts(world: World) {
   for (const edge of Object.values(world.edges)) {
     if (
       edge.harbor &&
-      edge.tiles.some((id) => world.tiles[id]?.resource === "ice")
+      edge.tiles.some((id) => {
+        const t = world.tiles[id];
+        return (
+          t?.resource === "ice" ||
+          (t?.resource === "water" && t.geography?.waterway === "river")
+        );
+      })
     ) {
       delete edge.harbor;
       continue;
@@ -148,20 +162,36 @@ export function addHexes(world: World, seed: string, ids: string[]) {
   const added = new Set<string>();
   for (const id of ids) {
     if (world.tiles[id]) continue;
-    // Use actual revealed terrain and reserved climate land rolls for hidden
-    // neighbors. Map edges are not automatically open sea, and ice is not land.
-    const openWater = neighbors(id).every((n) => {
-      const existing = world.tiles[n];
-      if (existing)
-        return existing.resource === "water" || existing.resource === "ice";
-      const climate = world.climatePlan?.[n];
-      return (
-        climate !== undefined &&
-        randomAt(seed, n, "terrain") >= CLIMATE_INFO[climate].land
-      );
-    });
-    const hex = generateHex(seed, id, world.climatePlan?.[id], openWater);
-    if (world.geographyVersion) geographicTerrain(seed, hex);
+    let hex: Hex;
+    if (world.geographyVersion) {
+      const [q, r] = coord(id),
+        vertices = tileVertices(q, r);
+      hex = {
+        id,
+        q,
+        r,
+        vertices,
+        edges: vertices.map((a, i) => edgeKey(a, vertices[(i + 1) % 6])),
+        resource: "water",
+        climate: world.climatePlan?.[id],
+        number: 2 + Math.floor(randomAt(seed, id, "number") * 11),
+      };
+      geographicTerrain(seed, hex, world.geographyVersion);
+    } else {
+      // Use actual revealed terrain and reserved climate land rolls for hidden
+      // neighbors. Map edges are not automatically open sea, and ice is not land.
+      const openWater = neighbors(id).every((n) => {
+        const existing = world.tiles[n];
+        if (existing)
+          return existing.resource === "water" || existing.resource === "ice";
+        const climate = world.climatePlan?.[n];
+        return (
+          climate !== undefined &&
+          randomAt(seed, n, "terrain") >= CLIMATE_INFO[climate].land
+        );
+      });
+      hex = generateHex(seed, id, world.climatePlan?.[id], openWater);
+    }
     added.add(id);
     world.tiles[id] = hex;
     for (const v of hex.vertices) {
@@ -211,7 +241,7 @@ export function addHexes(world: World, seed: string, ids: string[]) {
     if (
       e.harbor ||
       e.tiles.length !== 2 ||
-      e.tiles.some((id) => world.tiles[id].resource === "ice") ||
+      !portCoast(world, e.tiles) ||
       used.has(e.vertices[0]) ||
       used.has(e.vertices[1])
     )

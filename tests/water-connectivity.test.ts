@@ -215,14 +215,29 @@ it("paints every wildlife species and removes it when the population leaves", ()
     t.geography!.animals = [kind];
     for (const season of SEASONS) {
       const html = renderToStaticMarkup(
-        createElement(WildlifeArt, { tile: t, x: 0, y: 0, season }),
+        createElement(WildlifeArt, {
+          tile: t,
+          x: 0,
+          y: 0,
+          season,
+          connections: undefined,
+          schematic: true,
+        }),
       );
       expect(html).toContain(`data-wildlife-kind="${kind}"`);
       expect(html).toContain(WILDLIFE_ART[kind]);
     }
     t.geography!.animals = [];
     expect(
-      renderToStaticMarkup(createElement(WildlifeArt, { tile: t, x: 0, y: 0 })),
+      renderToStaticMarkup(
+        createElement(WildlifeArt, {
+          tile: t,
+          x: 0,
+          y: 0,
+          connections: undefined,
+          schematic: true,
+        }),
+      ),
     ).toBe("");
   }
 });
@@ -230,7 +245,7 @@ it("keeps mixed populations visible without multiplying identical painted groups
   const t = water("0,0");
   t.geography!.animals = ["fish", "whale", "fish", "cod"];
   const html = renderToStaticMarkup(
-    createElement(WildlifeArt, { tile: t, x: 0, y: 0 }),
+    createElement(WildlifeArt, { tile: t, x: 0, y: 0, connections: undefined }),
   );
   expect((html.match(/data-wildlife-kind/g) ?? []).length).toBe(3);
 });

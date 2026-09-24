@@ -502,3 +502,37 @@
   background: #fff9e9;
   border: 1px solid #b6c4b8;
 }
+
+.weather-impact {
+  margin: 0.65rem 0;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid #c6cfb6;
+  border-radius: 8px;
+  background: #eef1e7;
+  display: grid;
+  gap: 0.35rem;
+}
+.weather-impact-row {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.weather-impact-row strong {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+}
+.weather-impact small {
+  font-size: 0.72rem;
+  line-height: 1.4;
+  color: #52604d;
+}
+.weather-impact-row small {
+  min-width: 2.7rem;
+  text-align: right;
+}
+.ship-navigation {
+  display: block;
+  color: #486866;
+  font-size: 0.72rem;
+  margin: 0.3rem 0;
+}

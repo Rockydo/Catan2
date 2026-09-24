@@ -15,11 +15,11 @@ import { maritimeFixture } from "./maritime-fixture";
 import { piece } from "./helpers";
 
 const replacements = [
-  ["cold", "barley-fields", 7, 40, 42, "autumn", 10],
+  ["cold", "barley-fields", 7, 50, 57, "autumn", 10],
   ["alpine", "barley-fields", 7, 60, 62, "autumn", 10],
   ["oceanic", "barley-fields", 8, 45, 49, "summer", 30],
-  ["steppe", "millet-fields", 10, 45, 50, "autumn", 22],
-  ["savanna", "millet-fields", 20, 35, 40, "autumn", 20],
+  ["steppe", "millet-fields", 7, 53, 60, "autumn", 19],
+  ["savanna", "millet-fields", 14, 47, 61, "autumn", 14],
 ] as const;
 
 function oldSave(game: Game, version = 10) {
@@ -68,8 +68,7 @@ describe("retired generic crop", () => {
         ),
       ).toBe(baseline);
 
-      // Exercise the exact seeded interval formerly occupied by Rough fields.
-      // Keeping this interval prevents the removal from rerolling other terrain.
+      // Exercise the current interval after the requested natural-habitat rebalance.
       let replaced = 0;
       for (let i = 0; i < 2000; i++) {
         const id = `${i},0`;

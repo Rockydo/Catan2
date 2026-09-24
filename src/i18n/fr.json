@@ -2091,5 +2091,17 @@
   " · Stranded ships fight at one-quarter power (rounded up) and cannot move or retreat. Friendly land armies on this hex defend them at full strength. Passengers remain aboard.": " · Les navires immobilisés combattent au quart de leur puissance, arrondi au supérieur, sans déplacement ni repli possible. Les armées amies sur cet hexagone les défendent à pleine puissance. Les passagers restent à bord.",
   "Stranded ships: one-quarter power per ship, rounded up. Watchtower support is added normally.": "Navires immobilisés : un quart de puissance par navire, arrondi au supérieur. Le soutien des tours s’ajoute normalement.",
   "Artillery stays on land. Stranded ships cannot retreat; land escorts on their hex defend them. Other defeated ships retreat if a water exit is available.": "L’artillerie reste sur terre. Les navires immobilisés ne peuvent pas se replier ; les escortes terrestres sur leur hexagone les défendent. Les autres navires vaincus se replient si une sortie maritime est disponible.",
-  "Wild turkey flock": "Groupe de dindons sauvages"
+  "Wild turkey flock": "Groupe de dindons sauvages",
+  "A mixed fleet can enter only where every ship can go.": "Une flotte mixte ne peut entrer que là où chaque navire peut naviguer.",
+  "Rivers, shallows and open water": "Rivières, hauts-fonds et pleine eau",
+  "Deep water only · no rivers, shoals or reefs": "Eaux profondes · sans rivières, hauts-fonds ni récifs",
+  "Coastal shelf: shallow-draft vessels only": "Plateau côtier : navires à faible tirant d’eau uniquement",
+  "Coral reef: shallow-draft vessels only": "Récif corallien : navires à faible tirant d’eau uniquement",
+  "Lake: all vessel classes when ice-free": "Lac : tous les navires en l’absence de glace",
+  "Navigable sea: all vessel classes when ice-free": "Mer navigable : tous les navires en l’absence de glace",
+  "Access or disruption currently prevents this harvest.": "L’accès ou une perturbation empêche actuellement cette récolte.",
+  "Per producer before city and camp multipliers. Rounded to whole resources; timber keeps a minimum of 1. Wildlife yields do not change.": "Par producteur, avant les multiplicateurs des villes et camps. Arrondi à la ressource entière ; le bois conserve un minimum de 1. Le gibier ne change pas de rendement.",
+  "No weather adjustment to this tile’s current harvest.": "La météo ne modifie pas la récolte actuelle de cette tuile.",
+  "Irrigation halves the drought penalty.": "L’irrigation réduit de moitié la pénalité de sécheresse.",
+  "Weather affects whole regions. Dry spells reduce sensitive crops and improve salt; rain helps rice but slows logging and salt. Cold reduces crops and pasture. Select a tile for exact harvest changes.": "La météo touche des régions entières. La sécheresse pénalise les cultures sensibles et favorise le sel ; la pluie favorise le riz mais freine le bois et le sel. Le froid pénalise cultures et pâturages. Sélectionnez une tuile pour voir les variations exactes."
 }

@@ -38,7 +38,7 @@ describe("Turnip fields replace Rye", () => {
   it.each([
     ["temperate", 4, 13, 17],
     ["oceanic", 2, 53, 55],
-    ["cold", 3, 47, 50],
+    ["cold", 3, 57, 60],
     ["alpine", 3, 67, 70],
   ] as const)(
     "keeps the exact %s land-generation interval",

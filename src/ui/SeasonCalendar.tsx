@@ -1,3 +1,4 @@
+import { WeatherImpact } from "./WeatherImpact";
 import { useEffect, useRef, useState } from "react";
 import {
   Sprout,
@@ -342,6 +343,7 @@ export function TileSeasonForecast({
           {tx(weather)}
         </p>
       )}
+      <WeatherImpact tile={tile} season={current} owner={owner} />
       {coldSea && (
         <p className="season-note">
           {tx(

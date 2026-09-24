@@ -153,6 +153,7 @@ describe("extreme climate generation", () => {
           name: `Faction ${i}`,
           control: "standard" as const,
         })),
+        { geography: false },
       );
       expect(Object.keys(s.tiles)).toHaveLength(size * 25);
       const seedTile = Object.keys(s.tiles).sort(

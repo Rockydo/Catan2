@@ -1,3 +1,4 @@
+import { restoreWildlifeHabitats } from "./environment";
 import { restoreLakeSizes } from "./geography";
 import {
   packGame,
@@ -1717,6 +1718,7 @@ export function deserializeSnapshot(text: string): {
       if (guild.auto && !guildStandingOrders(guild).length) guild.auto = false;
     }
   restoreLakeSizes(data.game);
+  restoreWildlifeHabitats(data.game);
   restoreCoastalRoads(data.game);
   restoreGoldPorts(data.game);
   // Validation already visited the army in its exact record order. The fixes

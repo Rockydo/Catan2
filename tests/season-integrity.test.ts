@@ -382,7 +382,9 @@ describe("season transaction and production integrity", () => {
   });
 
   it("uses the current season on new expedition seas and keeps both preview and save roundtrip isolated", () => {
-    let baseline = newGame("season-validation-0");
+    let baseline = newGame("season-validation-0", undefined, {
+      geography: false,
+    });
     while (baseline.phase.startsWith("setup"))
       baseline = run(baseline, chooseAIAction(baseline));
     for (const round of [2, 4])

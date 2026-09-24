@@ -189,7 +189,11 @@ const TerrainArt = memo(function TerrainArt({
 
   // Direct images share a single hex clip. Pattern fills force expensive
   // texture resampling when Chromium scales a large seasonal scene.
-  if (resource.startsWith("season-") || resource.startsWith("geo-"))
+  if (
+    resource.startsWith("season-") ||
+    resource.startsWith("geo-") ||
+    resource.startsWith("wild-")
+  )
     return (
       <g transform={`translate(${x} ${y})`} pointerEvents="none">
         <image
@@ -351,7 +355,7 @@ const TerrainLayer = memo(function TerrainLayer({
             small = !!compact[tile.id]?.length,
             sea = tile.resource === "water" || tile.resource === "ice",
             openWater = sea && !frozenInSeason(tile, artworkSeason),
-            connected = openWater ? connections.get(tile.id) : undefined;
+            connected = sea ? connections.get(tile.id) : undefined;
           if (climates) {
             const climate = tile.climate ?? "temperate";
             return (
@@ -374,6 +378,8 @@ const TerrainLayer = memo(function TerrainLayer({
                     x={x}
                     y={y - 16}
                     season={artworkSeason}
+                    connections={undefined}
+                    schematic
                   />
                 )}
               </g>
@@ -392,6 +398,7 @@ const TerrainLayer = memo(function TerrainLayer({
                 openWater,
                 // Frozen river wildlife still uses its channel clip.
                 connections.get(tile.id)?.channel,
+                connections.get(tile.id)?.shore,
                 connected
                   ? `${connected.river}/${connected.shore}/${connected.channel}/${bankArt(tile, artworkSeason)}/${x % 512}/${y % 512}`
                   : "",
@@ -434,7 +441,13 @@ const TerrainLayer = memo(function TerrainLayer({
                   seed={hash(tile.id)}
                 />
               )}
-              <WildlifeArt tile={tile} x={x} y={y} season={artworkSeason} />
+              <WildlifeArt
+                tile={tile}
+                x={x}
+                y={y}
+                season={artworkSeason}
+                connections={connections.get(tile.id)}
+              />
               <GeographyMarker tile={tile} x={x} y={y} />
               {tx(
                 good && (
