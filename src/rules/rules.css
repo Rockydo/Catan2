@@ -1685,3 +1685,28 @@ a svg {
     grid-template-columns: 1fr;
   }
 }
+
+.geography-reference .flood-art-comparison {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  max-width: 560px;
+  margin: 20px 0;
+}
+.geography-reference .flood-art-comparison figure {
+  margin: 0;
+  padding: 10px;
+  border: 1px solid var(--line, #d5d7c7);
+  border-radius: 12px;
+  background: #faf8ef;
+  text-align: center;
+}
+.geography-reference .flood-art-comparison svg {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+}
+.geography-reference .flood-art-comparison figcaption {
+  font-size: 13px;
+  line-height: 1.4;
+}

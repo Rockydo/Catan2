@@ -16,7 +16,6 @@ import {
   seasonYear,
   seasonHalf,
   seasonLabel,
-  iceOdds,
   iceRisk,
   seasonalProfile,
   seasonalYield,
@@ -369,7 +368,7 @@ export function TileSeasonForecast({
 
 function IceForecast({ game, tile }: { game: Game; tile: Hex }) {
   const next = { calendar: game.calendar, round: game.round + 1 };
-  const [freeze, melt] = iceOdds(tile, seasonAt(next)!, seasonHalf(next));
+  const frozenRisk = iceRisk(game, tile, next.round);
   const iced = tile.surface === "frozen";
   const permanent = tile.resource === "ice" && tile.climate === "glacial";
   return (
@@ -383,7 +382,7 @@ function IceForecast({ game, tile }: { game: Game; tile: Hex }) {
             tx("Permanent pack ice")
           ) : (
             <>
-              {Math.round((iced ? melt : freeze) * 100)}%{" "}
+              {Math.round((iced ? 1 - frozenRisk : frozenRisk) * 100)}%{" "}
               {tx(iced ? "chance to thaw" : "chance to freeze")}
             </>
           )}

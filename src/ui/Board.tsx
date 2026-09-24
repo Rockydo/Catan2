@@ -1,3 +1,4 @@
+import { FloodArt, FloodDefinitions } from "./FloodArt";
 import { WildlifeArt } from "./WildlifeArt";
 import { ConnectedWater, WaterDefinitions } from "./ConnectedWater";
 import { bankArt, waterConnections } from "./water-connectivity";
@@ -37,6 +38,7 @@ import { ResourceIcon } from "./ResourceIcon";
 import {
   marineResource,
   tileTerrain,
+  terrainName,
   tileGood,
   tileYield,
   harvestTiles,
@@ -62,7 +64,7 @@ import {
 import { useMapCamera, type CameraPaint } from "./useMapCamera";
 import { ZoomIn, ZoomOut, Focus, Map as MapIcon, Flag } from "lucide-react";
 import { type Game, type Raw, type Piece } from "../game/types";
-import { TERRAIN, GOOD_INFO, COLORS } from "../game/content";
+import { GOOD_INFO, COLORS } from "../game/content";
 import {
   hexCenter,
   vertexPoint,
@@ -304,6 +306,7 @@ const TerrainLayer = memo(function TerrainLayer({
       <defs>
         <TerrainPatterns resources={artKeys} />
         <WaterDefinitions connections={[...connections.values()]} />
+        <FloodDefinitions />
         <clipPath id="season-terrain-hex" clipPathUnits="userSpaceOnUse">
           <polygon points="0,-43 37.2,-21.5 37.2,21.5 0,43 -37.2,21.5 -37.2,-21.5" />
         </clipPath>
@@ -400,7 +403,7 @@ const TerrainLayer = memo(function TerrainLayer({
                 connections.get(tile.id)?.channel,
                 connections.get(tile.id)?.shore,
                 connected
-                  ? `${connected.river}/${connected.shore}/${connected.channel}/${bankArt(tile, artworkSeason)}/${x % 512}/${y % 512}`
+                  ? `${connected.river}/${connected.shore}/${connected.channel}/${connected.basin}/${bankArt(tile, artworkSeason)}/${x % 512}/${y % 512}`
                   : "",
                 tile.geography?.access,
                 tile.geography?.landmark,
@@ -448,6 +451,7 @@ const TerrainLayer = memo(function TerrainLayer({
                 season={artworkSeason}
                 connections={connections.get(tile.id)}
               />
+              <FloodArt tile={tile} x={x} y={y} />
               <GeographyMarker tile={tile} x={x} y={y} />
               {tx(
                 good && (
@@ -505,6 +509,7 @@ interface MapHexProps {
   good: Raw | undefined;
   outputLabel?: string;
   terrain: TerrainKey;
+  terrainLabel: string;
   number: number;
   x: number;
   y: number;
@@ -526,6 +531,7 @@ const MapHex = memo(function MapHex({
   good,
   outputLabel,
   terrain,
+  terrainLabel,
   number,
   x,
   y,
@@ -543,9 +549,8 @@ const MapHex = memo(function MapHex({
 }: MapHexProps) {
   useLocale();
 
-  const style = TERRAIN[terrain];
   const description = tx(
-    `${style.name}, ${good ? `${outputLabel ?? (terrain === "whale" ? "Hides + Oil" : GOOD_INFO[good].name)}, roll ${number}` : resource === "water" ? "water" : resource === "peaks" ? tx("Impassable") : "No resources"}, hex ${id}${movable ? ", reachable" : ""}`,
+    `${terrainLabel}, ${good ? `${outputLabel ?? (terrain === "whale" ? "Hides + Oil" : GOOD_INFO[good].name)}, roll ${number}` : resource === "water" ? "water" : resource === "peaks" ? tx("Impassable") : "No resources"}, hex ${id}${movable ? ", reachable" : ""}`,
   );
   return (
     <g
@@ -1236,6 +1241,7 @@ const BoardScene = memo(function BoardScene({
                     good={tileGood(tile, viewer)}
                     outputLabel={outputLabel}
                     terrain={tileTerrain(tile)}
+                    terrainLabel={terrainName(tile)}
                     number={tile.number}
                     x={x}
                     y={y}

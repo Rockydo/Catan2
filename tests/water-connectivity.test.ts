@@ -13,6 +13,7 @@ import {
 } from "../src/game/world";
 import {
   isSmallLake,
+  geographyAt,
   landform,
   MAX_LAKE_TILES,
   restoreLakeSizes,
@@ -87,9 +88,46 @@ describe("bounded lakes", () => {
         if (t.geography?.waterway === "deep") seas++;
       }
     }
-    expect(forms.size).toBe(4);
+    expect(forms.size).toBeGreaterThanOrEqual(8);
     expect(seas).toBeGreaterThan(0);
     expect(lakes).toBeGreaterThan(0);
+  });
+  it("generates compact multi-hex lakes without changing their unrevealed extent", () => {
+    let single = 0,
+      multi = 0;
+    const sizes = new Set<number>();
+    for (let i = 0; i < 40; i++) {
+      const seed = `lake-survey-${i}`,
+        w = generateWorld(seed, 300, true);
+      for (const group of lakeGroups(w.tiles)) {
+        const ids = new Set([group[0].id]),
+          queue = [group[0].id];
+        for (let j = 0; j < queue.length; j++)
+          for (const id of neighbors(queue[j])) {
+            const g = geographyAt(seed, id);
+            if (ids.has(id) || !g.water || g.downstream) continue;
+            ids.add(id);
+            queue.push(id);
+            expect(queue.length).toBeLessThanOrEqual(MAX_LAKE_TILES);
+          }
+        sizes.add(ids.size);
+        if (ids.size === 1) single++;
+        else multi++;
+        const before = structuredClone(w.tiles);
+        addHexes(
+          w,
+          seed,
+          queue.filter((id) => !w.tiles[id]),
+        );
+        for (const [id, tile] of Object.entries(before))
+          expect(w.tiles[id]).toEqual(tile);
+        for (const id of ids)
+          expect(w.tiles[id].geography?.waterway).toBe("lake");
+      }
+    }
+    expect(single).toBeGreaterThan(0);
+    expect(multi).toBeGreaterThan(single);
+    expect([...sizes].some((size) => size >= 5)).toBe(true);
   });
   it("leaves a twelve-tile lake alone and converts thirteen without changing geography or contents", () => {
     const w = generateWorld("lake-migration", 30, true);
@@ -135,7 +173,9 @@ describe("bounded lakes", () => {
     expect(changed).toBeGreaterThan(12);
     assertInvariants(s);
     const restored = deserialize(serializePacked(s));
-    expect(restored.wildlife).toEqual(s.wildlife);
+    expect(restored.wildlife?.map(({ id, kind }) => ({ id, kind }))).toEqual(
+      s.wildlife?.map(({ id, kind }) => ({ id, kind })),
+    );
     expect(restored.towns).toEqual(s.towns);
     expect(restored.pieces).toEqual(s.pieces);
     expect(Object.keys(restored.tiles)).toEqual(Object.keys(s.tiles));

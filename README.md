@@ -35,7 +35,7 @@ Choose **English** or **Français** on the main menu or in campaign settings. Th
 
 ## What to expect
 
-- Classic: 5 factions on 125 initial tiles. Grand campaign: 12 factions on 300 tiles.
+- Classic: 5 factions on 125 initial tiles. Grand campaign: 12 factions on 320 tiles.
 - Seventeen climate zones determine terrain and water probabilities. Terrain numbers and shortages vary by seed. Expeditions extend the map without changing existing tiles.
 - Thirteen raw resources and ten processed goods. Cities, camps, collectors and guilds provide different ways to grow.
 - Four seasons change harvests, landscapes and sea ice. Crop calendars and livestock provide different ways to manage food supply.

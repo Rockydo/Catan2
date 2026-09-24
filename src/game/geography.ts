@@ -1,3 +1,9 @@
+import {
+  physicalElevation,
+  regionalLandform,
+  worldLandform,
+  type PhysicalLandform,
+} from "./physical-landforms";
 import { climateSetting } from "./geographic-climate";
 import type { Game, Hex, World, Stock, ShipClass, Piece } from "./types";
 import {
@@ -9,8 +15,7 @@ import {
 } from "./climate-content";
 import { randomAt, neighbors, coord, key, distance } from "./world";
 
-export type Landform =
-  "continent" | "archipelago" | "inland-seas" | "peninsulas";
+export type Landform = PhysicalLandform;
 export type Waterway = "river" | "lake" | "coast" | "deep" | "shoal" | "reef";
 export type Landmark =
   | "thermal-spring"
@@ -63,11 +68,16 @@ export interface Wildlife {
   lastRound: number;
   dormant?: true;
 }
-export const GEOGRAPHY_VERSION = 2;
-export const landform = (seed: string): Landform =>
-  (["continent", "archipelago", "inland-seas", "peninsulas"] as const)[
-    Math.floor(randomAt(seed, "world", "landform") * 4)
-  ];
+export const GEOGRAPHY_VERSION = 3;
+export const landform = (
+  seed: string,
+  version = GEOGRAPHY_VERSION,
+): Landform =>
+  version >= 3
+    ? worldLandform(seed)
+    : (["continent", "archipelago", "inland-seas", "peninsulas"] as const)[
+        Math.floor(randomAt(seed, "world", "landform") * 4)
+      ];
 const smooth = (n: number) => n * n * (3 - 2 * n);
 function noise(
   seed: string,
@@ -89,12 +99,22 @@ function noise(
   );
 }
 const heightCache = new Map<string, number>();
-export function elevationAt(seed: string, id: string): number {
-  const cacheKey = seed + "/" + id;
+export function elevationAt(
+  seed: string,
+  id: string,
+  version = GEOGRAPHY_VERSION,
+): number {
+  const cacheKey = seed + "/" + id + "/" + version;
   const saved = heightCache.get(cacheKey);
   if (saved !== undefined) return saved;
+  if (version >= 3) {
+    const height = physicalElevation(seed, id);
+    if (heightCache.size >= 60000) heightCache.clear();
+    heightCache.set(cacheKey, height);
+    return height;
+  }
   const [q, r] = coord(id),
-    form = landform(seed);
+    form = landform(seed, version);
   const scale = form === "archipelago" ? 4 : form === "continent" ? 11 : 7;
   const large = noise(seed, q + 51, r - 29, scale, "continental-height");
   const small = noise(seed, q - 19, r + 73, 2.4, "coastal-height");
@@ -129,8 +149,9 @@ export function elevationAt(seed: string, id: string): number {
   return value;
 }
 const seaLevels = new Map<string, number>();
-export function seaLevel(seed: string) {
-  const cached = seaLevels.get(seed);
+export function seaLevel(seed: string, version = GEOGRAPHY_VERSION) {
+  const levelKey = `${seed}/${version}`;
+  const cached = seaLevels.get(levelKey);
   if (cached !== undefined) return cached;
   // Select a coherent coastline level over a fixed survey area. This reserves
   // the same geography for every campaign size and expedition reveal order.
@@ -138,23 +159,59 @@ export function seaLevel(seed: string) {
   const heights: number[] = [];
   for (let q = -8; q <= 8; q++)
     for (let r = -8; r <= 8; r++)
-      if (Math.abs(q + r) <= 8) heights.push(elevationAt(seed, key(q, r)));
+      if (Math.abs(q + r) <= 8)
+        heights.push(elevationAt(seed, key(q, r), version));
   heights.sort((a, b) => a - b);
   const water = {
     continent: 0.38,
     archipelago: 0.57,
     "inland-seas": 0.4,
     peninsulas: 0.48,
-  }[landform(seed)];
-  const level = heights[Math.floor(heights.length * water)];
+    "island-chains": 0.58,
+    skerries: 0.57,
+    fjords: 0.43,
+    "barrier-coasts": 0.5,
+    atolls: 0.61,
+    "rift-valleys": 0.38,
+  }[landform(seed, version)];
+  const level =
+    heights[Math.floor(heights.length * water * (version >= 3 ? 0.75 : 1))];
   if (seaLevels.size > 256) seaLevels.clear();
-  seaLevels.set(seed, level);
+  seaLevels.set(levelKey, level);
   return level;
 }
 interface Drainage {
   rivers: Map<string, string>;
   lakes: Set<string>;
   mouths: Set<string>;
+}
+/** Fill a local river depression from its lowest neighbouring ground. A
+ * bounded footprint and spill-height limit keep lakes compact and avoid
+ * flooding mountain ridges. Coordinates alone determine the complete basin. */
+function fillLakeBasin(seed: string, sink: string, rain: number): Set<string> {
+  const basin = new Set([sink]);
+  const target = 3 + Math.floor(randomAt(seed, sink, "lake-area") * 8);
+  const level = elevationAt(seed, sink) + 0.055 + rain * 0.045;
+  const frontier = new Set(neighbors(sink));
+  while (basin.size < target && frontier.size) {
+    let next: string | undefined,
+      lowest = Infinity;
+    for (const id of frontier) {
+      const h = elevationAt(seed, id);
+      if (h < lowest || (h === lowest && id < next!)) {
+        next = id;
+        lowest = h;
+      }
+    }
+    if (!next || lowest > level) break;
+    frontier.delete(next);
+    // Reaching sea level gives this basin an outlet. Do not grow into sea.
+    if (lowest < seaLevel(seed)) break;
+    basin.add(next);
+    for (const id of neighbors(next))
+      if (!basin.has(id) && distance(sink, id) <= 3) frontier.add(id);
+  }
+  return basin;
 }
 const drainageCache = new Map<string, Drainage>();
 /** Each watershed source owns a bounded downhill trace. Queries never depend on
@@ -180,42 +237,100 @@ function watershed(
       q * 8 + Math.floor(randomAt(seed, sourceKey, `source-q-${i}`) * 8),
       r * 8 + Math.floor(randomAt(seed, sourceKey, `source-r-${i}`) * 8),
     );
-    if (elevationAt(seed, candidate) > elevationAt(seed, source))
+    if (
+      elevationAt(seed, candidate, version) > elevationAt(seed, source, version)
+    )
       source = candidate;
   }
-  const rain = version >= 2 ? climateSetting(seed, source).moisture : 1;
+  const rain =
+    version >= 2 ? climateSetting(seed, source, version).moisture : 1;
   const supplied =
     version < 2 ||
     randomAt(seed, source, "watershed-rain") < 0.18 + rain * 0.82;
-  if (supplied && elevationAt(seed, source) > seaLevel(seed) + 0.06) {
-    let at = source;
-    const visited = new Set([source]);
-    for (let step = 0; step < 16; step++) {
-      const next = neighbors(at)
-        .filter((n) => !visited.has(n))
+  if (
+    supplied &&
+    elevationAt(seed, source, version) > seaLevel(seed, version) + 0.06
+  ) {
+    const form = version >= 3 ? regionalLandform(seed, source) : "continent";
+    const smallIslands = [
+      "island-chains",
+      "archipelago",
+      "skerries",
+      "atolls",
+    ].includes(form);
+    const maxSteps = version < 3 ? 16 : smallIslands ? 8 : rain < 0.3 ? 10 : 16;
+    const sources = [source];
+    // Wet mainland catchments have additional headwaters. They merge by
+    // following the same downhill terrain, rather than drawing random branches.
+    if (
+      version >= 3 &&
+      !smallIslands &&
+      rain > 0.55 &&
+      randomAt(seed, source, "tributary") < 0.75
+    ) {
+      const candidates = Array.from({ length: 8 }, (_, i) =>
+        key(
+          q * 8 + Math.floor(randomAt(seed, sourceKey, `tributary-q-${i}`) * 8),
+          r * 8 + Math.floor(randomAt(seed, sourceKey, `tributary-r-${i}`) * 8),
+        ),
+      )
+        .filter((id) => distance(id, source) >= 3)
         .sort(
           (a, b) =>
-            elevationAt(seed, a) - elevationAt(seed, b) || a.localeCompare(b),
-        )[0];
-      if (!next) break;
-      if (elevationAt(seed, next) >= elevationAt(seed, at)) {
-        if (step >= 2) result.lakes.add(at);
-        break;
-      }
-      result.rivers.set(at, next);
-      if (elevationAt(seed, next) < seaLevel(seed)) {
-        result.mouths.add(at);
-        break;
-      }
-      visited.add(next);
-      at = next;
-      // The bounded trace must finish in water, never point into a dry tile.
-      if (step === 15) result.lakes.add(at);
+            elevationAt(seed, b, version) - elevationAt(seed, a, version),
+        );
+      if (
+        candidates[0] &&
+        elevationAt(seed, candidates[0], version) >
+          seaLevel(seed, version) + 0.06
+      )
+        sources.push(candidates[0]);
     }
-    if (result.rivers.size < 2) {
-      result.rivers.clear();
-      result.lakes.clear();
-      result.mouths.clear();
+    for (const from of sources) {
+      let at = from;
+      const visited = new Set([from]),
+        course = new Map<string, string>(),
+        lakes = new Set<string>(),
+        mouths = new Set<string>();
+      for (let step = 0; step < maxSteps; step++) {
+        const next = neighbors(at)
+          .filter((n) => !visited.has(n))
+          .sort(
+            (a, b) =>
+              elevationAt(seed, a, version) - elevationAt(seed, b, version) ||
+              a.localeCompare(b),
+          )[0];
+        if (!next) break;
+        if (
+          elevationAt(seed, next, version) >= elevationAt(seed, at, version)
+        ) {
+          if (step >= 2) lakes.add(at);
+          break;
+        }
+        course.set(at, next);
+        if (elevationAt(seed, next, version) < seaLevel(seed, version)) {
+          mouths.add(at);
+          break;
+        }
+        visited.add(next);
+        at = next;
+        if (step === maxSteps - 1) lakes.add(at);
+      }
+      if (course.size >= 2) {
+        for (const [id, next] of course) result.rivers.set(id, next);
+        for (const id of lakes) result.lakes.add(id);
+        for (const id of mouths) result.mouths.add(id);
+      }
+    }
+  }
+  if (version >= 3 && result.lakes.size) {
+    const sinks = [...result.lakes];
+    for (const sink of sinks)
+      for (const id of fillLakeBasin(seed, sink, rain)) result.lakes.add(id);
+    // Submerged river sections become part of the lake, not narrow channels.
+    for (const id of result.lakes) {
+      result.rivers.delete(id);
+      result.mouths.delete(id);
     }
   }
   if (drainageCache.size >= 512) drainageCache.clear();
@@ -236,12 +351,17 @@ function drainageAt(seed: string, id: string, version: number) {
       if (
         candidate &&
         (!downstream ||
-          elevationAt(seed, candidate) < elevationAt(seed, downstream))
+          elevationAt(seed, candidate, version) <
+            elevationAt(seed, downstream, version))
       )
         downstream = candidate;
       lake ||= d.lakes.has(id);
       mouth ||= d.mouths.has(id);
     }
+  if (version >= 3 && lake) {
+    downstream = undefined;
+    mouth = false;
+  }
   return { downstream, lake, mouth };
 }
 export function geographyAt(
@@ -249,10 +369,12 @@ export function geographyAt(
   id: string,
   version = GEOGRAPHY_VERSION,
 ) {
-  const elevation = elevationAt(seed, id),
+  const elevation = elevationAt(seed, id, version),
     drainage = drainageAt(seed, id, version);
   const water =
-    elevation < seaLevel(seed) || !!drainage.downstream || drainage.lake;
+    elevation < seaLevel(seed, version) ||
+    !!drainage.downstream ||
+    drainage.lake;
   return { elevation, water, ...drainage };
 }
 export const MAX_LAKE_TILES = 12;
@@ -573,7 +695,7 @@ export function geographicLandChoices(
   version = GEOGRAPHY_VERSION,
 ): { choices: [Biome, number][]; floodplain: boolean; delta: boolean } {
   const climate = tile.climate ?? "temperate",
-    sea = seaLevel(seed);
+    sea = seaLevel(seed, version);
   const relative = at.elevation - sea;
   const river = around.some((n) => n.downstream || n.lake);
   const coast = around.some(
@@ -588,7 +710,7 @@ export function geographicLandChoices(
     (["alpine", "andean"].includes(climate) && relative > 0.04);
   const floodplain = river && relative < 0.19 && slope < 0.13;
   const delta = floodplain && around.some((n) => n.mouth);
-  const setting = climateSetting(seed, tile.id);
+  const setting = climateSetting(seed, tile.id, version);
   const weights = new Map<Biome, number>();
   const add = (b: Biome, w: number) => {
     if (w > 0) weights.set(b, (weights.get(b) ?? 0) + w);
@@ -642,15 +764,20 @@ export function geographicLandChoices(
 /** Shallow shelves follow the height field rather than independent tile dice.
  * Sediment extends the shelf at river mouths. Reefs require warm, shallow sea
  * away from muddy outlets; their correlated distribution follows the seabed. */
-export function seaShelf(seed: string, id: string, climate: Climate) {
-  const at = geographyAt(seed, id),
-    around = neighbors(id).map((n) => geographyAt(seed, n));
-  const depth = Math.max(0, seaLevel(seed) - at.elevation);
+export function seaShelf(
+  seed: string,
+  id: string,
+  climate: Climate,
+  version = GEOGRAPHY_VERSION,
+) {
+  const at = geographyAt(seed, id, version),
+    around = neighbors(id).map((n) => geographyAt(seed, n, version));
+  const depth = Math.max(0, seaLevel(seed, version) - at.elevation);
   const mouth = around.some((n) => n.mouth);
   const nearLand =
     around.some((n) => !n.water) ||
     neighbors(id).some((n) =>
-      neighbors(n).some((m) => !geographyAt(seed, m).water),
+      neighbors(n).some((m) => !geographyAt(seed, m, version).water),
     );
   const shallow = nearLand && depth <= (mouth ? 0.065 : 0.035);
   const [q, r] = coord(id);
@@ -703,9 +830,18 @@ export function geographicTerrain(
           ? "coast"
           : "deep";
     geo.downstream = at.downstream;
-    geo.ford = geo.waterway === "river" && randomAt(seed, id, "ford") < 0.3;
+    geo.ford =
+      geo.waterway === "river" &&
+      randomAt(seed, id, "ford") <
+        (version < 3
+          ? 0.3
+          : climateSetting(seed, id, version).moisture < 0.35
+            ? 0.5
+            : climateSetting(seed, id, version).moisture > 0.65
+              ? 0.15
+              : 0.3);
     if (version >= 2 && !["river", "lake"].includes(geo.waterway)) {
-      const shelf = seaShelf(seed, id, climate);
+      const shelf = seaShelf(seed, id, climate, version);
       geo.depth = shelf.depth;
       if (shelf.shallow) geo.waterway = shelf.reef ? "reef" : "shoal";
     } else if (

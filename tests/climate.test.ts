@@ -410,10 +410,16 @@ it("keeps compatible climate buffers through seeded games, saves and successive 
             ...s.tiles[id].geography,
             fauna: undefined,
             animals: undefined,
+            warmed: undefined,
           },
         }).toEqual({
           ...t,
-          geography: { ...t.geography, fauna: undefined, animals: undefined },
+          geography: {
+            ...t.geography,
+            fauna: undefined,
+            animals: undefined,
+            warmed: undefined,
+          },
         });
       for (const [id, c] of Object.entries(reserved))
         expect(s.climatePlan![id]).toBe(c);

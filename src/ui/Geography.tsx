@@ -1,3 +1,4 @@
+import { FloodplainStatus } from "./FloodplainStatus";
 import type { Game, Hex, Command } from "../game/types";
 import {
   PROJECTS,
@@ -19,13 +20,14 @@ import { Cost, GoodsList } from "./components";
 import { localize as tx, useLocale } from "../i18n";
 import { MapSprite } from "./MapSprite";
 export type GeographyView =
-  "normal" | "climate" | "weather" | "wildlife" | "access";
+  "normal" | "climate" | "weather" | "wildlife" | "access" | "flooding";
 export const GEOGRAPHY_VIEWS: Record<GeographyView, string> = {
   normal: "Terrain",
   climate: "Climates",
   weather: "Weather",
   wildlife: "Wildlife",
   access: "Access",
+  flooding: "Floodplains",
 };
 export const LANDMARKS = {
   "thermal-spring": {
@@ -53,6 +55,16 @@ export const LANDMARKS = {
 } as const;
 export function geographyColor(tile: Hex, view: GeographyView): string {
   const g = tile.geography;
+  if (view === "flooding")
+    return g?.floodplain
+      ? g.projects?.levee
+        ? "#65a56e"
+        : g.access === "flooded"
+          ? "#459dcc"
+          : "#dfb65c"
+      : tile.resource === "water" || tile.resource === "ice"
+        ? "#315d7b"
+        : "#777d72";
   if (view === "weather")
     return {
       normal: "#93a791",
@@ -81,34 +93,42 @@ export function geographyColor(tile: Hex, view: GeographyView): string {
 }
 export function GeographyLegend({ view }: { view: GeographyView }) {
   const rows =
-    view === "weather"
-      ? Object.entries(WEATHER_NAMES).map(([k, label]) => [
-          label,
-          (
-            {
-              normal: "#93a791",
-              wet: "#488dab",
-              dry: "#d2af62",
-              cold: "#b5d6e3",
-              mild: "#aaba6b",
-            } as Record<string, string>
-          )[k],
-        ])
-      : view === "wildlife"
-        ? [
-            ["Land herds", "#bf8c4d"],
-            ["Fish and whales", "#4ba7b8"],
-            ["No animals present", "#6d7960"],
-          ]
-        : [
-            ["Land access", "#91a275"],
-            ["Ford or bridge", "#e3c578"],
-            ["Frozen water", "#cde3e8"],
-            ["Flooded ground", "#6496a6"],
-            ["Shallow vessels only", "#4c919a"],
-            ["All vessels", "#315d7b"],
-            ["Impassable / closed pass", "#535561"],
-          ];
+    view === "flooding"
+      ? [
+          ["Flooded now", "#459dcc"],
+          ["Dry floodplain", "#dfb65c"],
+          ["Protected by levee", "#65a56e"],
+          ["Permanent water", "#315d7b"],
+          ["Not a floodplain", "#777d72"],
+        ]
+      : view === "weather"
+        ? Object.entries(WEATHER_NAMES).map(([k, label]) => [
+            label,
+            (
+              {
+                normal: "#93a791",
+                wet: "#488dab",
+                dry: "#d2af62",
+                cold: "#b5d6e3",
+                mild: "#aaba6b",
+              } as Record<string, string>
+            )[k],
+          ])
+        : view === "wildlife"
+          ? [
+              ["Land herds", "#bf8c4d"],
+              ["Fish and whales", "#4ba7b8"],
+              ["No animals present", "#6d7960"],
+            ]
+          : [
+              ["Land access", "#91a275"],
+              ["Ford or bridge", "#e3c578"],
+              ["Frozen water", "#cde3e8"],
+              ["Flooded ground", "#6496a6"],
+              ["Shallow vessels only", "#4c919a"],
+              ["All vessels", "#315d7b"],
+              ["Impassable / closed pass", "#535561"],
+            ];
   return (
     <div
       className="climate-map-legend geography-legend"
@@ -123,11 +143,13 @@ export function GeographyLegend({ view }: { view: GeographyView }) {
       ))}
       <small>
         {tx(
-          view === "weather"
-            ? "Weather affects whole regions. Dry spells reduce sensitive crops and improve salt; rain helps rice but slows logging and salt. Cold reduces crops and pasture. Select a tile for exact harvest changes."
-            : view === "wildlife"
-              ? "Populations migrate at the start of each season. Farms remain fixed."
-              : "Access changes with floods, fords, ice and mountain passes. Select a tile for its calendar.",
+          view === "flooding"
+            ? "Only floodplains flood. Water level 3 or 4 floods an unprotected tile and stops all its production. A levee keeps it dry."
+            : view === "weather"
+              ? "Weather affects whole regions. Dry spells reduce sensitive crops and improve salt; rain helps rice but slows logging and salt. Cold reduces crops and pasture. Select a tile for exact harvest changes."
+              : view === "wildlife"
+                ? "Populations migrate at the start of each season. Farms remain fixed."
+                : "Access changes with floods, fords, ice and mountain passes. Select a tile for its calendar.",
         )}
       </small>
     </div>
@@ -240,6 +262,9 @@ export function GeographyPanel({
           <span key={text}>{tx(text)}</span>
         ))}
       </div>
+      {g.floodplain && (
+        <FloodplainStatus tile={tile} game={s} viewer={viewer} />
+      )}
       {(g.floodplain || g.pass || g.ford) && (
         <div
           className="geography-calendar"
@@ -260,7 +285,7 @@ export function GeographyPanel({
                 ? "Chance of pass closure"
                 : g.ford
                   ? "Chance the ford is closed"
-                  : "Chance of flooding without a levee",
+                  : "Flood risk with current protection",
             )}
           </small>
         </div>

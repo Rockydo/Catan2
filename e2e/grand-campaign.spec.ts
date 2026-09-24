@@ -6,7 +6,7 @@ import { chooseAIAction } from "../src/game/ai";
 import { run } from "../tests/helpers";
 import { serialize, SAVE_KEY } from "../src/game/save";
 
-test("grand campaign choice exposes twelve configurable factions and creates 300 tiles", async ({
+test("grand campaign choice exposes twelve configurable factions and creates 320 tiles", async ({
   page,
 }) => {
   const errors: string[] = [];
@@ -27,7 +27,7 @@ test("grand campaign choice exposes twelve configurable factions and creates 300
   await expect.poll(async () => Boolean(await browserSave(page))).toBe(true);
   const s = JSON.parse((await browserSave(page))!).game;
   expect(s.players).toHaveLength(12);
-  expect(Object.keys(s.tiles)).toHaveLength(300);
+  expect(Object.keys(s.tiles)).toHaveLength(320);
   await expect(page.getByText(/FOUNDING THE REALM/)).toContainText("24");
   expect(errors).toEqual([]);
 });

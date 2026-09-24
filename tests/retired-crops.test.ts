@@ -18,7 +18,7 @@ const replacements = [
   ["cold", "barley-fields", 7, 50, 57, "autumn", 10],
   ["alpine", "barley-fields", 7, 60, 62, "autumn", 10],
   ["oceanic", "barley-fields", 8, 45, 49, "summer", 30],
-  ["steppe", "millet-fields", 7, 53, 60, "autumn", 19],
+  ["steppe", "millet-fields", 7, 59, 66, "autumn", 19],
   ["savanna", "millet-fields", 14, 47, 61, "autumn", 14],
 ] as const;
 

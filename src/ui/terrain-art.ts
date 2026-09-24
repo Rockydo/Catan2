@@ -81,14 +81,10 @@ export const REGIONAL_ART_KEYS = Object.values(regionalArt).flatMap(
 const wildlifeTiles: Record<string, string> = wildlifeManifest;
 export function seasonalTerrainPattern(tile: Hex, season?: Season): string {
   const base = baseSeasonalTerrainPattern(tile, season);
-  if (
-    !tile.geography ||
-    !wildHabitat(tile) ||
-    tile.geography.access === "flooded"
-  )
-    return base;
+  if (!tile.geography || !wildHabitat(tile)) return base;
   const file = terrainArtFile(base);
-  const animals = tile.geography.animals ?? [];
+  const animals =
+    tile.geography.access === "flooded" ? [] : (tile.geography.animals ?? []);
   for (const kind of animals) {
     const art = wildlifeTiles[`${kind}/${file}`];
     if (art) return `wild-${art}`;
@@ -143,7 +139,6 @@ export function baseSeasonalTerrainPattern(tile: Hex, season?: Season): string {
       tile.climate === "glacial" ||
       (["arctic", "tundra"].includes(tile.climate ?? "") &&
         season !== "summer");
-    if (tile.geography.access === "flooded") return "geo-flooded";
     if (
       [
         "steppe-plain",

@@ -93,6 +93,7 @@ import {
   colonizationSites,
   canCompleteSetup,
   canRoute,
+  roadBlockedByMountains,
   restoreCoastalRoads,
   besieged,
   hostileAt,
@@ -154,7 +155,7 @@ export function newGame(
   const s: Game = {
     ...generateWorld(
       seed,
-      config.length * 25,
+      config.length === 12 ? 320 : config.length * 25,
       options.geography !== false &&
         (config.length === 5 || config.length === 12),
     ),
@@ -343,6 +344,10 @@ function buildRoute(
   kind: "road" | "route",
   free = false,
 ) {
+  rule(
+    kind !== "road" || !roadBlockedByMountains(s, edge),
+    "Roads must go around mountains, not between two mountain or mountain-pass tiles.",
+  );
   rule(
     canRoute(s, edge, kind),
     "This route must connect to your own road, sea route or town, and cannot cross an enemy position.",

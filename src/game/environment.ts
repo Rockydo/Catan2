@@ -43,6 +43,7 @@ const cold = new Set<Climate>([
 /** Baseline water level, spring through winter. Weather changes a whole region,
  * not independent tile rolls. Flood peaks follow snowmelt or local wet seasons. */
 export function waterCalendar(climate: Climate): readonly number[] {
+  if (climate === "glacial") return [1, 3, 1, 0];
   if (tropical.has(climate)) return [1, 3, 2, 0];
   if (["desert", "hyperarid"].includes(climate)) return [0, 0, 0, 1];
   if (climate === "mediterranean") return [1, 0, 1, 3];
@@ -95,6 +96,20 @@ export function regionalWeather(s: Game, tile: Hex): Weather {
   }
   return "normal";
 }
+export function waterLevelModifier(
+  tile: Hex,
+  season: Season,
+  weather: Weather,
+): number {
+  if (weather === "wet") return 1;
+  if (weather === "dry") return -1;
+  if (
+    ["arctic", "glacial", "tundra"].includes(tile.climate ?? "") &&
+    ["spring", "summer"].includes(season)
+  )
+    return weather === "cold" ? -1 : weather === "mild" ? 1 : 0;
+  return 0;
+}
 export function riverLevel(
   tile: Hex,
   season: Season,
@@ -105,7 +120,7 @@ export function riverLevel(
     Math.min(
       4,
       waterCalendar(tile.climate ?? "temperate")[SEASONS.indexOf(season)] +
-        (weather === "wet" ? 1 : weather === "dry" ? -1 : 0),
+        waterLevelModifier(tile, season, weather),
     ),
   );
 }
@@ -212,6 +227,49 @@ export function suitableWildlifeHabitat(tile: Hex, kind: WildlifeKind) {
     );
   return wildHabitat(tile);
 }
+/** Species are selected from the habitat, not the historical resource tile name. */
+export function nativeWildlifeKind(
+  seed: string,
+  tile: Hex,
+): WildlifeKind | undefined {
+  if (tile.resource === "water") return habitatKind(tile);
+  const choices = (Object.keys(WILDLIFE_GOODS) as WildlifeKind[])
+    .filter((kind) => !marine(kind) && suitableWildlifeHabitat(tile, kind))
+    .map((kind) => ({
+      kind,
+      weight:
+        kind === "seal"
+          ? 4
+          : kind === "musk-ox" || kind === "reindeer"
+            ? 3
+            : kind === habitatKind(tile)
+              ? 3
+              : 1,
+    }));
+  let roll =
+    randomAt(seed, tile.id, "land-wildlife-species") *
+    choices.reduce((sum, c) => sum + c.weight, 0);
+  return choices.find((c) => (roll -= c.weight) < 0)?.kind;
+}
+/** Ocean area is 75% of the previous target; compensate per-water-hex density.
+ * Freshwater populations are unchanged. */
+export function wildlifeSpawnChance(tile: Hex, geographyVersion = 0): number {
+  if (tile.resource !== "water") return 0.22;
+  const freshwater = ["river", "lake"].includes(tile.geography?.waterway ?? "");
+  return (
+    (tile.geography?.waterway === "deep" ? 0.11 : 0.18) *
+    (geographyVersion >= 3 && !freshwater ? 4 / 3 : 1)
+  );
+}
+function nearSolidLand(s: Game, id: string): boolean {
+  const nearby = new Set(neighbors(id));
+  for (const next of [...nearby])
+    for (const other of neighbors(next)) nearby.add(other);
+  return [...nearby].some((next) => {
+    const t = s.tiles[next];
+    return t && t.resource !== "water" && t.resource !== "ice";
+  });
+}
 function development(s: Game) {
   const result = new Map<string, number>();
   const add = (id: string, n: number) => {
@@ -228,7 +286,7 @@ function development(s: Game) {
       add(id, 1 + (route.camps[id] ?? 0) * 2);
   return result;
 }
-function migrationCandidates(s: Game, population: Wildlife) {
+export function migrationCandidates(s: Game, population: Wildlife) {
   const found = new Set([population.tile]),
     queue = [{ id: population.tile, depth: 0 }],
     max = marine(population.kind) ? 4 : 3;
@@ -242,7 +300,9 @@ function migrationCandidates(s: Game, population: Wildlife) {
         ? tile.resource === "water" &&
           (!["whale", "cod"].includes(population.kind) ||
             !["river", "lake"].includes(tile.geography?.waterway ?? ""))
-        : canOccupy(tile) && tile.resource !== "water";
+        : ["water", "ice"].includes(tile.resource)
+          ? tile.surface === "frozen" && nearSolidLand(s, tile.id)
+          : canOccupy(tile);
       if (!traverse) continue;
       found.add(next);
       queue.push({ id: next, depth: depth + 1 });
@@ -367,13 +427,8 @@ export function syncEnvironment(s: Game): void {
       (s.environmentRound !== undefined && !geo.newlyRevealed)
     )
       continue;
-    let kind = habitatKind(tile);
-    const chance =
-      tile.resource === "water"
-        ? geo.waterway === "deep"
-          ? 0.11
-          : 0.18
-        : 0.22;
+    let kind = nativeWildlifeKind(s.seed, tile);
+    const chance = wildlifeSpawnChance(tile, s.geographyVersion);
     if (
       kind &&
       suitableWildlifeHabitat(tile, kind) &&

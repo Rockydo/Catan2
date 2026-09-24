@@ -1,5 +1,6 @@
 import {
   riverWildlifeAnchor,
+  riverClipId,
   type WaterConnections,
 } from "./water-connectivity";
 import type { Hex } from "../game/types";
@@ -45,7 +46,7 @@ export function WildlifeArt({
   const columns = kinds.length === 1 ? 1 : Math.ceil(Math.sqrt(kinds.length));
   const river = connections?.river;
   const anchor = river
-    ? riverWildlifeAnchor(connections.channel)
+    ? riverWildlifeAnchor(connections.channel, connections.basin)
     : { x: 0, y: 19 };
   const rows = Math.ceil(kinds.length / columns),
     width = (river ? 24 : 64) / columns,
@@ -71,7 +72,7 @@ export function WildlifeArt({
           preserveAspectRatio="xMidYMid meet"
           clipPath={
             river
-              ? `url(#water-river-${connections.channel})`
+              ? `url(#${riverClipId(connections)})`
               : connections
                 ? `url(#water-surface-${connections.shore})`
                 : "url(#season-terrain-hex)"

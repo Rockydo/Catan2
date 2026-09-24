@@ -11,7 +11,10 @@ export function validateGeography(s: Game): void {
     );
     return;
   }
-  rule([1, 2].includes(s.geographyVersion), "Unsupported geography version.");
+  rule(
+    [1, 2, 3].includes(s.geographyVersion),
+    "Unsupported geography version.",
+  );
   rule(
     Number.isSafeInteger(s.environmentRound) &&
       s.environmentRound! >= 1 &&

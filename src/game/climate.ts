@@ -134,7 +134,9 @@ export function planClimates(world: World, seed: string, revealed: string[]) {
   )[0];
   const geographic = (world.geographyVersion ?? 0) >= 2;
   const fitnessAt = (id: string) => {
-    const setting = geographic ? climateSetting(seed, id) : undefined;
+    const setting = geographic
+      ? climateSetting(seed, id, world.geographyVersion)
+      : undefined;
     return (c: Climate) => (setting ? geographicClimateWeight(setting, c) : 1);
   };
   const initial = Object.keys(world.tiles).length

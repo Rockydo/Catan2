@@ -829,6 +829,23 @@ export function restoreCoastalRoads(s: Game) {
   for (const r of Object.values(s.routes))
     if (r.kind === "route" && routeKind(s, r.edge) === "road") r.kind = "road";
 }
+/** Edges inside a mountain area are impassable to construction. Its outer
+ * perimeter remains road terrain, including the edge beside open water. */
+export function roadBlockedByMountains(s: Game, edge: string): boolean {
+  const tiles = s.edges[edge]?.tiles;
+  return (
+    !!tiles &&
+    tiles.length === 2 &&
+    tiles.every((id) => {
+      const t = s.tiles[id];
+      return (
+        t.resource === "peaks" ||
+        t.biome === "mountain-pass" ||
+        t.geography?.pass
+      );
+    })
+  );
+}
 export function canRoute(
   s: Game,
   edge: string,
@@ -840,6 +857,7 @@ export function canRoute(
   if (!e || (s.routes[edge] && edge !== ignore)) return false;
   if (
     routeKind(s, edge) !== kind ||
+    (kind === "road" && roadBlockedByMountains(s, edge)) ||
     e.tiles.every((t) => s.tiles[t].resource === "ice")
   )
     return false;

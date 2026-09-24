@@ -14,12 +14,12 @@ export function grandSetup() {
   while (s.phase.startsWith("setup")) s = run(s, chooseAIAction(s));
   return s;
 }
-it("generates 300 tiles with twelve distinct factions and a full twenty-four-town snake draft", () => {
+it("generates 320 tiles with twelve distinct factions and a full twenty-four-town snake draft", () => {
   let s = newGame(
     "grand-campaign-test",
     REALM_NAMES.map((name) => ({ name, control: "standard" })),
   );
-  expect(Object.keys(s.tiles)).toHaveLength(300);
+  expect(Object.keys(s.tiles)).toHaveLength(320);
   expect(s.players).toHaveLength(12);
   expect(new Set(s.players.map((p) => p.color)).size).toBe(12);
   expect(setupOrder(12)).toEqual([

@@ -6,6 +6,7 @@ import {
   WATER_HEX,
   shoreGeometry,
   riverGeometry,
+  riverClipId,
   waterSurfacePath,
   type WaterConnections,
 } from "./water-connectivity";
@@ -18,8 +19,8 @@ export function WaterDefinitions({
   const shores = new Set(
     connections.filter((c) => !c.river).map((c) => c.shore),
   );
-  const rivers = new Set(
-    connections.filter((c) => c.river).map((c) => c.channel),
+  const rivers = new Map(
+    connections.filter((c) => c.river).map((c) => [riverClipId(c), c]),
   );
   return (
     <>
@@ -44,13 +45,9 @@ export function WaterDefinitions({
           <path d={shoreGeometry(mask).banks} />
         </clipPath>
       ))}
-      {[...rivers].map((mask) => (
-        <clipPath
-          key={`r${mask}`}
-          id={`water-river-${mask}`}
-          clipPathUnits="userSpaceOnUse"
-        >
-          <path d={riverGeometry(mask).water} />
+      {[...rivers].map(([id, c]) => (
+        <clipPath key={id} id={id} clipPathUnits="userSpaceOnUse">
+          <path d={riverGeometry(c.channel, c.basin).water} />
         </clipPath>
       ))}
     </>
@@ -107,31 +104,37 @@ export function ConnectedWater({
 }) {
   const { shore, channel, river } = connections;
   const frozen = frozenInSeason(tile, season);
-  const line = river ? riverGeometry(channel).line : shoreGeometry(shore).line;
+  const line = river
+    ? riverGeometry(channel, connections.basin).line
+    : shoreGeometry(shore).line;
   const shallow = ["shoal", "reef"].includes(tile.geography?.waterway ?? "");
   return (
     <g
       className="connected-water"
       data-shore-mask={shore}
       data-channel-mask={river ? channel : undefined}
+      data-basin-mask={river ? connections.basin || 0 : undefined}
       transform={`translate(${x} ${y})`}
       pointerEvents="none"
     >
       {river ? texture(bankArt(tile, season), "water-full-hex") : null}
       {river ? (
-        <path d={riverGeometry(channel).water} fill="#326b7c" />
+        <path
+          d={riverGeometry(channel, connections.basin).water}
+          fill="#326b7c"
+        />
       ) : (
         <polygon points={WATER_HEX} fill="#326b7c" />
       )}
       {frozen
         ? texture(
             terrainArtFile(terrainPatternKey("ice", tile.climate, season)),
-            river ? `water-river-${channel}` : "water-full-hex",
+            river ? riverClipId(connections) : "water-full-hex",
           )
         : waterTexture(
             x,
             y,
-            river ? `water-river-${channel}` : "water-full-hex",
+            river ? riverClipId(connections) : "water-full-hex",
           )}
       {!frozen &&
         !river &&

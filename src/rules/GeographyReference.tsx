@@ -1,3 +1,4 @@
+import { FloodComparison } from "../ui/FloodArt";
 import { useState } from "react";
 import {
   CLIMATES,
@@ -15,7 +16,7 @@ import { SEASONS, type Season } from "../game/seasons";
 import { GOOD_INFO } from "../game/content";
 import { LANDMARKS } from "../ui/Geography";
 import { ResourceIcon } from "../ui/ResourceIcon";
-import type { Stock, Good } from "../game/types";
+import type { Stock, Good, Hex } from "../game/types";
 import { localize as tx, useLocale } from "../i18n";
 function Goods({ stock }: { stock: Stock }) {
   return (
@@ -106,6 +107,38 @@ export function GeographyReference() {
         {l(
           "Level 0–1: natural fords open. Level 3–4: unprotected floodplains flood. Wet weather adds 1; dry weather subtracts 1. Cold and mild spells change ice transitions.",
           "Niveau 0–1 : gués naturels ouverts. Niveau 3–4 : crue sur les plaines sans digue. Une saison humide ajoute 1 ; une période sèche retranche 1. Froid et douceur modifient le gel et la fonte.",
+        )}
+      </p>
+      <h2>{l("Dry ground and flooding", "Terrain sec et crue")}</h2>
+      <p>
+        {l(
+          "Only marked floodplains flood. At water level 3 or 4, all raw and processed output from that hex stops unless a levee protects it. Buildings and stocks survive. Irrigation and bridges do not prevent flooding.",
+          "Seules les plaines signalées sont inondables. Aux niveaux 3 et 4, toute production brute et transformée de cette tuile cesse sans digue. Bâtiments et stocks survivent. Ponts et irrigation ne protègent pas contre les crues.",
+        )}
+      </p>
+      <FloodComparison
+        tile={
+          {
+            id: "0,0",
+            q: 0,
+            r: 0,
+            number: 6,
+            resource: ["arctic", "glacial", "tundra"].includes(climate)
+              ? "barren"
+              : "grain",
+            biome: ["arctic", "glacial", "tundra"].includes(climate)
+              ? "snow-plain"
+              : "flood-wheat",
+            climate,
+            geography: { elevation: 0.4, region: "guide", floodplain: true },
+          } as Hex
+        }
+        season={season}
+      />
+      <p>
+        {l(
+          "Polar snowmelt can flood low ground even while river ice remains. Cold spells lower spring/summer water levels by 1 in Arctic, Glacial and Tundra regions; mild conditions add 1. Glacial flood peaks occur in summer.",
+          "Le dégel polaire peut inonder les terrains bas même si le fleuve porte encore de la glace. Au printemps et en été, le froid retire 1 niveau d’eau en Arctique, Glaciaire et Toundra ; la douceur en ajoute 1. Les crues glaciaires culminent en été.",
         )}
       </p>
       <h2>{l("Mobile populations", "Populations migratrices")}</h2>

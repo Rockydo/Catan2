@@ -11,7 +11,7 @@ A town means either a settlement or a city. Losing your last town eliminates you
 
 ### Setup
 
-Choose Classic (5 factions, 125 tiles) or Grand campaign (12 factions, 300 tiles).
+Choose Classic (5 factions, 125 tiles) or Grand campaign (12 factions, 320 tiles).
 
 - In player order, each faction places one settlement and one adjoining road or sea route.
 - Repeat in reverse player order. Each faction now has two settlements and two route pieces.
@@ -91,17 +91,17 @@ An extreme map may lack enough legal starting sites. The game rejects a seed wit
 
 ### Living geography: new campaigns
 
-New five-player and twelve-player campaigns use connected landforms, river courses, regional weather and migrating wildlife. Existing saves retain their terrain generation and fixed animal resources; loading does not remove their production or replace occupied terrain. The new maps still have 125 or 300 initial hexes. Expeditions extend the same geography. There are no new resource cards, upkeep costs, wind rules or permanent mountain-crossing projects.
+New five-player and twelve-player campaigns use connected landforms, river courses, regional weather and migrating wildlife. Existing saves retain their terrain generation and fixed animal resources; loading does not remove their production or replace occupied terrain. The new maps still have 125 or 320 initial hexes. Expeditions extend the same geography. There are no new resource cards, upkeep costs, wind rules or permanent mountain-crossing projects.
 
 ### Landforms and river courses
 
-A seed selects continental, archipelago, inland-sea or peninsula geography. Correlated height fields create coastlines and mountain belts. Inland-sea worlds have broad enclosed seas; peninsulas favor elongated landforms. Lakes contain at most 12 connected non-river water hexes. Larger basins are seas, with marine wildlife. The size check includes unrevealed geography, so expeditions do not turn a lake into a sea by exposing its hidden extent. Banks follow adjacent land and river artwork connects through the actual upstream and downstream edges. A fixed survey around the starting area sets a usable coast level. Height, sea level and broad temperature/moisture fields are calculated first. Altitude cools the climate; distance from the sea moderates temperature, and windward slopes and rain shadows affect moisture. Climate regions grow using these physical affinities and the existing compatibility rules. Drainage follows height, with fewer river sources in dry regions. Land and water follow height and drainage instead of independent per-hex water rolls. The historical climate land/water percentages describe older campaigns only.
-Each watershed follows downhill neighbors toward sea or an inland depression. Rivers reserve water hexes; depressions can form lakes. River courses and heights are fixed by seed and coordinates, even beyond the revealed map. Revealing another frontier cannot reroll an existing coast or redirect a river. Each land hex makes one resource draw from choices allowed by its climate and physical location. Highlands favor minerals, peaks and passes. Gentle low riverbanks use a climate-specific riparian pool. Coastal pasture, cliffs and mangroves need a coast; peat needs damp gentle terrain; inland salt flats need dry conditions. Dice numbers remain random. No raw resource is guaranteed. Existing geography campaigns keep their revealed terrain and original drainage version; future land discoveries use the same climate-specific eligibility rules. Original campaigns without geography keep their old generator.
+New worlds blend regional continents, archipelagos, inland seas, peninsulas, island chains, skerries, fjords, barrier coasts, atolls and rift valleys. Warm moderately dry regions favor Mediterranean island chains; dry continental regions favor Steppe and Prairie expanses. Cold coasts favor fjords and skerries; humid warm coasts favor barriers and atolls. These are weighted tendencies, not guarantees. Province boundaries blend continuously. The ocean-area target is 25% lower than the previous target, relative rather than 25 percentage points. This sets a surveyed sea level; exact water share varies with the revealed area, rivers and lakes. Correlated height fields create coastlines and mountain belts. Inland-sea worlds have broad enclosed seas; peninsulas favor elongated landforms. Lakes contain at most 12 connected non-river water hexes. Larger basins are seas, with marine wildlife. The size check includes unrevealed geography, so expeditions do not turn a lake into a sea by exposing its hidden extent. Banks follow adjacent land and river artwork connects through the actual upstream and downstream edges. A fixed survey around the starting area sets a usable coast level. Height, sea level and broad temperature/moisture fields are calculated first. Altitude cools the climate; distance from the sea moderates temperature, and windward slopes and rain shadows affect moisture. Climate regions grow using these physical affinities and the existing compatibility rules. Drainage follows height, with fewer river sources in dry regions. Land and water follow height and drainage instead of independent per-hex water rolls. The historical climate land/water percentages describe older campaigns only.
+Wet mainland watersheds can have two converging headwaters. Small-island catchments have shorter courses; dry regions have fewer and shorter rivers. Each watershed follows downhill neighbors toward sea or an inland depression. Rivers reserve water hexes; depressions can form connected lake basins, typically grown toward 3–10 hexes where local height and spill levels allow. Single-hex ponds remain possible. Lakes cannot exceed 12 connected non-river hexes. River courses and heights are fixed by seed and coordinates, even beyond the revealed map. Revealing another frontier cannot reroll an existing coast or redirect a river. Each land hex makes one resource draw from choices allowed by its climate and physical location. Highlands favor minerals, peaks and passes. Gentle low riverbanks use a climate-specific riparian pool. Coastal pasture, cliffs and mangroves need a coast; peat needs damp gentle terrain; inland salt flats need dry conditions. Dice numbers remain random. No raw resource is guaranteed. Existing geography campaigns keep their revealed terrain and original drainage version; future land discoveries use the same climate-specific eligibility rules. Original campaigns without geography keep their old generator.
 
 ### River crossings and mountain passes
 
-A river is water, not a road. Armies can enter only while it is frozen, while a natural ford is open, or after a bridge is built. Thirty percent of river hexes have a potential ford. It opens at water level 0 or 1. Floods and seasonal rain can close it. Ships can still navigate an open ford or bridge; an enemy force on a shared crossing must be fought, not bypassed.
-Some highland hexes are mountain passes. Temperate and cold passes close in Winter and during cold spells in Spring or Autumn. Tropical-group and Andean passes close in wet Summers; Mediterranean and desert passes close in wet Winters. Arctic and Glacial passes open only in Summer. Bare Peaks always remain impassable. Neither bridges nor any other project can convert a peak or permanently open a pass. Roads may still follow peak edges under the ordinary rules.
+A river is water, not a road. Armies can enter only while it is frozen, while a natural ford is open, or after a bridge is built. Potential fords occur on 50% of river hexes in dry catchments, 15% in wet catchments and 30% elsewhere. It opens at water level 0 or 1. Floods and seasonal rain can close it. Ships can still navigate an open ford or bridge; an enemy force on a shared crossing must be fought, not bypassed.
+Some highland hexes are mountain passes. Temperate and cold passes close in Winter and during cold spells in Spring or Autumn. Tropical-group and Andean passes close in wet Summers; Mediterranean and desert passes close in wet Winters. Arctic and Glacial passes open only in Summer. Bare Peaks always remain impassable. Neither bridges nor any other project can convert a peak or permanently open a pass. Roads may follow the outside of mountains, but cannot use an edge shared by two Bare Peaks or mountain passes. The same restriction applies to setup and free roads. Existing roads are retained.
 When ice melts, a ford closes, a flood rises or a pass closes under an army, it automatically seeks accessible solid land through the previously open area. A safe landing is preferred; an unavoidable enemy landing starts a normal battle. If none exists, the force waits for rescue. Ships trapped by ice or stranded when floodwater recedes cannot move or retreat and fight at one-quarter power, rounded up. A friendly land army on the same hex defends at full strength. Reopening water releases the ship.
 
 ### Regional water levels and weather
@@ -119,7 +119,7 @@ Weather modifies a productive seasonal yield before city, camp and collector mul
 - Cold spell: Grain loses 50% in warm climates and for the water-sensitive crop group listed above; otherwise 25%. Farm animal products and Salt lose 25%. Logging loses 25% in cool climates.
 - Mild: Productive Spring and Autumn grain and farm animal yields gain 25% in Cold, Arctic, Glacial, Tundra, Alpine, Prairie and Andean climates. Other yields are unchanged.
 
-The tile forecast shows the exact before/after quantities; the Weather view shows regional conditions. Percentage changes can disappear after rounding a small yield. Directions follow published crop, grassland, forestry and salt-production evidence; percentages are game balance values, not measured field yields. The AI uses public weather probabilities when evaluating future production, without reading future draws.
+The tile forecast shows the exact before/after quantities; the Weather view shows regional conditions. Percentage changes can disappear after rounding a small yield. Directions follow published crop, grassland, forestry and salt-production evidence; percentages are game balance values, not measured field yields. See `docs/weather-evidence.md` for sources and the complete table. The AI uses public weather probabilities when evaluating future production, without reading future draws.
 
 ### Floodplains and deltas
 
@@ -127,12 +127,20 @@ Low river-adjacent land can become a floodplain. Land beside a river mouth can b
 Riverbank resources join the eligible pool before its single draw. Ordinary terrain weights are reduced to one quarter; each climate adds its own riverbank weights. There is no second roll that overwrites an already selected land tile. Warm wet climates can have Alluvial clay and Riverside woods. Cold banks use local clay, pines and barley; Arctic and Glacial banks use snow and polar rock; Tundra banks use peat, heath and musk-ox habitat. Warm fertile terrain cannot leak into these polar pools. Chinampa gardens and Sago groves require river or lake adjacency. Arctic, Glacial and Tundra floodplains do not create cereal fields. Mesoamerican river agriculture uses Chinampa gardens; Andean agriculture uses Potato fields. This does not introduce potatoes or maize outside the Americas.
 Alluvial wheat has a baseline of 3 Grain and harvests 12 in Summer. Recession sorghum has a baseline of 3 and harvests 12 in Autumn. River rice has a baseline of 4 and yields 4 / 0 / 4 / 8: its large harvest follows the wet-season flood. Delta gardens have a baseline of 4, yielding 4 / 4 / 8 / 0 in cool regions and 4 / 0 / 4 / 8 in warm wet regions. Water meadow has baseline 2 Wool and follows the local livestock calendar. These amounts are per producer before town/camp/collector multipliers. Floods can reduce realized output. Protection costs resources and does not remove the dice risk.
 
+Flood status applies only to tiles explicitly marked as floodplain, not every tile near water. Use the Floodplains map mode: gold is dry floodplain, blue is flooded and green is levee-protected. Tile details show the seasonal base, weather modifier, water level and exact lost harvest. The threshold is 3 on a 0–4 scale. A flooded hex produces zero raw goods and zero workshop or automatic processed goods for towns, camps and collectors; other adjacent hexes produce normally. Missed harvests are not banked. Irrigation and bridges do not prevent flooding. A levee restores normal seasonal production immediately. Wet and dry art use the same underlying seasonal terrain, so flooded snowy plains retain snow and rock instead of becoming green marshes.
+
+Arctic and Tundra flood peaks follow spring snowmelt. Glacial flooding peaks later, in summer. In these three climates, cold spells reduce spring/summer water level by one and mild spells increase it by one. Snowmelt flooding can coexist with river ice: ice jams impede drainage. The model abstracts this into the regional water level rather than simulating individual ice jams. See the [National Weather Service explanation](https://www.weather.gov/aprfc/breakupRecon).
+
+### Coastal freezing
+
+Seasonal freeze and melt rolls account for the six neighboring hexes and the next ring. More surrounding ocean progressively reduces freezing; sheltered bays freeze more readily. Open ocean with no adjacent land cannot freeze outside Arctic or Glacial climates unless a cold spell occurs in winter. Existing ice in such open nonpolar water melts at the next half-season transition when that cold spell is absent. Rivers and lakes retain freshwater probabilities. Permanent Glacial pack ice remains permanent. Late summer guarantees thaw elsewhere. The tile forecast and AI use these same local probabilities, without reading future random draws.
+
 ### Mobile wildlife
 
 Wild grasslands, wild cattle ranges, reindeer and musk-ox ranges, seal grounds and other wild hunting terrain have no fixed animal output. Without animals, open wild terrain is empty. Forests and jungles retain timber: at least 1 Wood each season before producer multipliers. Better timber retains its higher baseline. Domestic sheep, cattle, alpacas and other farm livestock stay on their tiles and use their existing harvest calendars.
-A suitable new wild land hex has a 22% chance to originate one population. Water has an 18% population chance except deep water at 11%. Coastal populations have a 22% chance to be whales; deep-water populations have a 72% chance, giving about twice the overall whale occurrence. Rivers and lakes have fish, never whales. Cod favor cold and cool marine climates. No population is guaranteed on a particular map.
+A suitable new wild land hex has a 22% chance to originate one population. New geography maps have a 24% population chance on ordinary marine water and 14⅔% on deep water. This is a one-third density increase to offset the 25% smaller ocean-area target. Rivers and lakes remain at 18%. Earlier geography maps retain the earlier marine density for discoveries. Coastal populations have a 22% chance to be whales; deep-water populations have a 72% chance, giving about twice the overall whale occurrence. Rivers and lakes have fish, never whales. Cold land populations are drawn from suitable species instead of defaulting to reindeer: open polar habitats can host reindeer or musk ox; Arctic, Glacial and Tundra coastlines can also host seals. Seals never settle inland. Empty ranges use habitat names: Cold grassland, Rocky tundra and Polar coast. Cod favor cold and cool marine climates. No population is guaranteed on a particular map.
 On its matching roll, each present population adds: Fish 3 Fish; Cod 5 Fish; Whales 3 Hides + 3 Oil; Deer 2 Hides + 2 Meat; Wild cattle 2 Hides + 3 Meat; Reindeer 2 Hides + 2 Meat; Musk ox 2 Wool + 2 Meat; Seals 2 Hides + 2 Oil; Forest game 3 Hides + 1 Meat; Wild turkeys 3 Meat. Every listed component receives ordinary producer multipliers and advanced city/merchant processing. Frozen or flooded harvesting remains subject to the normal access and production rules.
-At the start of each season, marine populations consider connected water within four hexes and land animals consider connected traversable habitat within three. Species stay in suitable climate and habitat: whales cannot travel through rivers, seals require cold coastlines, and cold or tropical species keep appropriate ranges. They may stay or move. Development at cities, roads, camps and towers lowers destination preference; nearby development also matters. Crowding, freezing, floods and seasonal shelter affect preference. Hunting never deletes a population. Existing groups remain somewhere on the revealed map; expeditions can reveal new populations. Several groups can share a hex. The Wildlife view and resource icons show their current location and output.
+At the start of each season, marine populations consider connected water within four hexes and land animals consider connected traversable habitat within three. Species stay in suitable climate and habitat: whales cannot travel through rivers, seals require cold coastlines, and cold or tropical species keep appropriate ranges. Land herds can cross frozen straits while migrating, within their three-hex movement limit. Each ice hex must be within two hexes of solid land. They always finish on suitable land habitat, never on ice or open water. They may stay or move. Development at cities, roads, camps and towers lowers destination preference; nearby development also matters. Crowding, freezing, floods and seasonal shelter affect preference. Hunting never deletes a population. Existing groups remain somewhere on the revealed map; expeditions can reveal new populations. Several groups can share a hex. The Wildlife view and resource icons show their current location and output.
 Wildlife cannot occupy crops, olive groves, orchards, oases or domestic pastures. Fish, cod and whales on newly frozen water first seek reachable ice-free water within four hexes, including at the early/late season boundary. They remain trapped only when no suitable open water is reachable. Invalid animal positions in older geography saves are moved to suitable habitat on load; if none exists, the population is retained dormant until habitat is revealed.
 Camps and workshops remain built when animals migrate away. They resume production if a suitable population returns. A workshop keeps the product chosen at construction. Migration never grants resources by itself or changes a tile's dice number.
 
@@ -166,11 +174,21 @@ Eligible land has a 1.2% landmark-candidate chance. Sites must suit their effect
 
 The AI values current mobile harvest locations, sends hunters and fishing ships toward useful reachable populations, avoids forecast seasonal closures, chooses legal vessel drafts, and evaluates bridges, irrigation, levees, harbors, granaries and crop repairs against their cost and local benefit. It can disrupt enemy crops during military operations. It uses visible geography and public seasonal probabilities; it does not inspect future migration or weather draws. No weather system adds an AI resource subsidy.
 
+### Design references
+
+- USGS, sediment from source to sink: https://www.usgs.gov/media/images/sediment-diagram-source-sink
+- FAO, floodplain agriculture and flood benefits: https://www.fao.org/4/w4347e/w4347e10.htm
+- National Park Service, seasonal migration and development: https://home.nps.gov/articles/000/migrationmapping.htm
+
+These sources inform geography and seasonal relationships. Production quantities, weather probabilities and movement costs are game balance rules.
+
 ### Water and wildlife artwork
 
 Water surfaces share a world-aligned texture. River channels use their actual downstream links and tributaries; shorelines are drawn only beside known land. The map retains separate shallow-water and submerged-reef treatments. Lakes are limited to 12 connected non-river hexes; larger basins are seas. Oversized lakes in geography saves are reclassified on load without moving terrain, changing dice, or removing stocks, buildings, troops or wildlife.
 
 Natural land habitats have separate occupied and empty seasonal paintings, with animals integrated into the landscape. The terrain view shows a representative species when several share a hex; the Wildlife view and tile panel show every species and population count. Domestic livestock remain in their farm artwork. Fish, cod and whales are blended into the water and clipped to the actual river channel or wet shoreline interior, including frozen channels.
+
+The 257 land habitat variants and their source record are in `public/assets/wildlife-terrain/`. Water and marine wildlife images are in `public/assets/geography/`. Images were generated with the built-in image tool.
 
 ## Seasons and harvests
 
@@ -661,16 +679,16 @@ Transition weights : Cold ×1.5, Temperate ×1, Mediterranean ×1, Desert ×1, A
 
 | Land terrain     | Conditional chance | Annual baseline       |
 | ---------------- | ------------------ | --------------------- |
-| Steppe plain     | 37%                | 1 Hides + 1 Wool      |
+| Steppe plain     | 43%                | 1 Hides + 1 Wool      |
 | Black-soil wheat | 4%                 | 3 Grain               |
 | Cattle range     | 12%                | 1 Meat + 1 Hides      |
 | Millet fields    | 7%                 | 1 Grain               |
 | Pasture          | 7%                 | 2 Wool                |
 | Woods            | 7%                 | 1 Wood OR 1 Hides     |
-| Stone quarry     | 8%                 | 1 Stone               |
+| Stone quarry     | 6%                 | 1 Stone               |
 | Iron mountains   | 5%                 | 1 Iron ore            |
-| Coal hills       | 5%                 | 1 Coal                |
-| Clay hills       | 5%                 | 1 Clay                |
+| Coal hills       | 3%                 | 1 Coal                |
+| Clay hills       | 3%                 | 1 Clay                |
 | Gold mountains   | 3%                 | 1 Gold                |
 | Water terrain    | Sequential check   | Effective water share |
 | ---              | ---                | ---                   |
@@ -995,14 +1013,14 @@ Transition weights : Cold ×1, Temperate ×1, Steppe ×2, Desert ×1, Mesoameric
 
 | Land terrain     | Conditional chance | Annual baseline       |
 | ---------------- | ------------------ | --------------------- |
-| Steppe plain     | 40%                | 1 Hides + 1 Wool      |
+| Steppe plain     | 46%                | 1 Hides + 1 Wool      |
 | Maize fields     | 9%                 | 2 Grain               |
 | Sunflower fields | 4%                 | 1 Oil                 |
 | Bison range      | 16%                | 1 Meat + 1 Hides      |
 | River woods      | 8%                 | 1 Wood                |
-| Clay hills       | 6%                 | 1 Clay                |
-| Stone quarry     | 5%                 | 1 Stone               |
-| Coal hills       | 5%                 | 1 Coal                |
+| Clay hills       | 4%                 | 1 Clay                |
+| Stone quarry     | 3%                 | 1 Stone               |
+| Coal hills       | 3%                 | 1 Coal                |
 | Iron mountains   | 4%                 | 1 Iron ore            |
 | Gold mountains   | 1%                 | 1 Gold                |
 | Salt flats       | 2%                 | 1 Salt                |

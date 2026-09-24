@@ -163,7 +163,7 @@ export async function prepareTerrainSources(
     }
     // Resolve shared connectivity masks once, rather than querying the whole
     // SVG for each water tile. Geometry is part of the tile's cache identity.
-    const clips = new Map<string, Path2D>();
+    const clips = new Map<string, { path: Path2D; rule: CanvasFillRule }>();
     for (const definition of root.querySelectorAll("defs > clipPath")) {
       const shape = definition.firstElementChild as SVGGraphicsElement | null;
       if (
@@ -171,7 +171,13 @@ export async function prepareTerrainSources(
         definition.childElementCount === 1 &&
         definition.getAttribute("clipPathUnits") === "userSpaceOnUse"
       )
-        clips.set(definition.id, path(shape));
+        clips.set(definition.id, {
+          path: path(shape),
+          rule:
+            shape.getAttribute("clip-rule") === "evenodd"
+              ? "evenodd"
+              : "nonzero",
+        });
     }
     async function compile(
       node: SVGGraphicsElement,
@@ -179,12 +185,27 @@ export async function prepareTerrainSources(
       signal.throwIfAborted();
       const matrix = worldTransform(node);
       let alpha = 1;
+      const localClips: { path: Path2D; rule: CanvasFillRule }[] = [];
       for (
         let parent: Element | null = node;
         parent && parent !== root;
         parent = parent.parentElement
       ) {
         alpha *= number(parent, "opacity", 1);
+        const clipId = parent.getAttribute("clip-path");
+        if (clipId) {
+          const match = /^url\(#([^)]*)\)$/.exec(clipId);
+          const clip = match && clips.get(match[1]);
+          if (!clip) throw Error("Unsupported terrain clip");
+          const transformed = new Path2D();
+          transformed.addPath(
+            clip.path,
+            matrix
+              .inverse()
+              .multiply(worldTransform(parent as SVGGraphicsElement)),
+          );
+          localClips.push({ path: transformed, rule: clip.rule });
+        }
         const filter =
           parent.getAttribute("filter") ?? (parent as SVGElement).style?.filter;
         if (filter && filter !== "none")
@@ -199,10 +220,6 @@ export async function prepareTerrainSources(
           y = number(node, "y"),
           width = number(node, "width"),
           height = number(node, "height");
-        const clipId = node.getAttribute("clip-path");
-        const clipMatch = clipId && /^url\(#([^)]*)\)$/.exec(clipId);
-        const clip = clipMatch ? clips.get(clipMatch[1]) : undefined;
-        if (clipId && !clip) throw Error("Unsupported terrain clip");
         const preserve =
           node.getAttribute("preserveAspectRatio") ?? "xMidYMid meet";
         if (preserve !== "xMidYMid slice" && preserve !== "xMidYMid meet")
@@ -216,7 +233,7 @@ export async function prepareTerrainSources(
         const w = image.naturalWidth * ratio,
           h = image.naturalHeight * ratio;
         if (
-          !clip &&
+          !localClips.length &&
           preserve === "xMidYMid meet" &&
           !matrix.b &&
           !matrix.c &&
@@ -234,10 +251,9 @@ export async function prepareTerrainSources(
             opacity: alpha,
           };
         }
-        if (!clip && preserve !== "xMidYMid meet")
+        if (!localClips.length && preserve !== "xMidYMid meet")
           throw Error("Unbounded image slice");
         paint = (context) => {
-          if (clip) context.clip(clip);
           context.drawImage(
             image,
             x + (width - w) / 2,
@@ -282,6 +298,7 @@ export async function prepareTerrainSources(
           matrix.e,
           matrix.f,
         );
+        for (const clip of localClips) context.clip(clip.path, clip.rule);
         context.globalAlpha = alpha;
         paint(context);
         context.restore();

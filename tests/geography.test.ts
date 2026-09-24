@@ -98,7 +98,7 @@ function started() {
   return structuredClone(baseline);
 }
 describe("coherent geography", () => {
-  it("generates all four world shapes with legal, stable river courses and playable setup", () => {
+  it("generates varied world shapes with legal, stable river courses and playable setup", () => {
     const forms = new Set<string>();
     let rivers = 0,
       floodplains = 0,
@@ -142,7 +142,7 @@ describe("coherent geography", () => {
         if (g.pass) passes++;
       }
     }
-    expect(forms.size).toBe(4);
+    expect(forms.size).toBeGreaterThanOrEqual(8);
     expect(rivers).toBeGreaterThan(30);
     expect(floodplains).toBeGreaterThan(30);
     expect(peaks).toBeGreaterThan(0);

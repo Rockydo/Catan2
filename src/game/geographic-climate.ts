@@ -1,3 +1,5 @@
+import { regionalClimateFields } from "./climate-fields";
+import { regionalLandform, type PhysicalLandform } from "./physical-landforms";
 import { elevationAt, seaLevel } from "./geography";
 import { coord, key, randomAt, DIRS } from "./world";
 import type { Climate } from "./climate-content";
@@ -7,44 +9,29 @@ export interface ClimateSetting {
   moisture: number;
   altitude: number;
   maritime: number;
+  landform?: PhysicalLandform;
 }
 const clamp = (n: number) => Math.max(0, Math.min(1, n));
 const cache = new Map<string, ClimateSetting>();
-function field(seed: string, q: number, r: number, stream: string) {
-  const scale = 11,
-    x = q / scale,
-    y = r / scale;
-  const a = Math.floor(x),
-    b = Math.floor(y);
-  const smooth = (n: number) => n * n * (3 - 2 * n);
-  const u = smooth(x - a),
-    v = smooth(y - b);
-  const at = (i: number, j: number) => randomAt(seed, key(i, j), stream);
-  // Expand the interpolated middle to retain cold and hot regions, without
-  // making a finite latitude band incompatible with unlimited expeditions.
-  return clamp(
-    ((at(a, b) * (1 - u) + at(a + 1, b) * u) * (1 - v) +
-      (at(a, b + 1) * (1 - u) + at(a + 1, b + 1) * u) * v -
-      0.5) *
-      1.6 +
-      0.5,
-  );
-}
 /** Fixed physical fields precede climate labels. Upwind relief dries leeward
  * country; nearby seas moderate temperature and supply moisture. No revealed
  * map edges are treated as coast, and querying an expedition changes nothing. */
-export function climateSetting(seed: string, id: string): ClimateSetting {
-  const ck = `${seed}/${id}`,
+export function climateSetting(
+  seed: string,
+  id: string,
+  version = 3,
+): ClimateSetting {
+  const ck = `${seed}/${id}/${version}`,
     cached = cache.get(ck);
   if (cached) return cached;
   const [q, r] = coord(id),
-    sea = seaLevel(seed),
-    height = elevationAt(seed, id);
+    sea = seaLevel(seed, version),
+    height = elevationAt(seed, id, version);
   const altitude = clamp((height - sea) / 0.27);
   let seaDistance = height < sea ? 0 : 7;
   for (const [dq, dr] of DIRS)
     for (let step = 1; step <= 6; step++) {
-      if (elevationAt(seed, key(q + dq * step, r + dr * step)) < sea) {
+      if (elevationAt(seed, key(q + dq * step, r + dr * step), version) < sea) {
         seaDistance = Math.min(seaDistance, step);
         break;
       }
@@ -54,24 +41,29 @@ export function climateSetting(seed: string, id: string): ClimateSetting {
     DIRS[Math.floor(randomAt(seed, "world", "prevailing-wind") * 6)];
   let upwind = height;
   for (let n = 1; n <= 5; n++)
-    upwind = Math.max(upwind, elevationAt(seed, key(q + wq * n, r + wr * n)));
+    upwind = Math.max(
+      upwind,
+      elevationAt(seed, key(q + wq * n, r + wr * n), version),
+    );
   const shadow = clamp((upwind - height) / 0.22);
   const windward = clamp(
-    (height - elevationAt(seed, key(q + wq * 3, r + wr * 3))) / 0.18,
+    (height - elevationAt(seed, key(q + wq * 3, r + wr * 3), version)) / 0.18,
   );
-  const thermal = field(seed, q, r, "regional-temperature");
+  const potential = regionalClimateFields(seed, id),
+    thermal = potential.temperature;
   const result = {
     temperature: clamp(
       thermal * (1 - maritime * 0.16) + 0.5 * maritime * 0.16 - altitude * 0.22,
     ),
     moisture: clamp(
-      field(seed, q, r, "regional-moisture") * 0.72 +
+      potential.moisture * 0.72 +
         maritime * 0.18 +
         windward * 0.18 -
         shadow * 0.28,
     ),
     altitude,
     maritime,
+    ...(version >= 3 ? { landform: regionalLandform(seed, id) } : {}),
   };
   if (cache.size >= 60000) cache.clear();
   cache.set(ck, result);
@@ -117,5 +109,26 @@ export function geographicClimateWeight(
   if (climate === "equatorial-wetlands") weight *= 1.4 - setting.altitude;
   if (climate === "steppe" || climate === "prairie")
     weight *= 1.5 - setting.maritime * 0.65;
+  if (setting.landform) {
+    const islands = [
+      "island-chains",
+      "archipelago",
+      "skerries",
+      "atolls",
+    ].includes(setting.landform);
+    if (climate === "mediterranean")
+      weight *= islands ? 3 : setting.landform === "peninsulas" ? 2 : 1;
+    if (climate === "steppe" || climate === "prairie")
+      weight *= islands
+        ? 0.18
+        : ["continent", "rift-valleys"].includes(setting.landform)
+          ? 2.5
+          : 1;
+    if (climate === "oceanic" || climate === "cold")
+      weight *=
+        setting.landform === "fjords" || setting.landform === "skerries"
+          ? 1.7
+          : 1;
+  }
   return weight;
 }

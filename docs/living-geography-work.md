@@ -14,3 +14,13 @@ Architecture decisions:
 - All gameplay changes must use authoritative engine validation, not UI-only restrictions. Saves validate new fields and roundtrip compact packing.
 
 Status: engine, AI, UI, save support, illustrated assets and bilingual rules implemented. Verified with 1,911 tests in the full suite, additional geography/art tests, English/French browser checks on Chromium, Firefox and mobile, two 32-round standard simulations and a 24-round twelve-faction simulation (7,567 actions). Final targeted checks cover the subsequent forecast and art refinements. Existing saves keep their terrain and production rules.
+
+## Geography revision 3
+
+New worlds blend ten climate-associated landforms, use shorter island catchments and additional wet mainland headwaters, and grow small basins toward 3–10 hexes with the existing 12-hex lake cap. The ocean-area target is reduced by one quarter, saltwater wildlife density increases by one third, and Grand Campaign starts with 12 factions on 320 tiles. Previous world versions retain their physical terrain and drainage.
+
+River headwaters occupy more of their hex. River mouths use full water-facing edges without false bank islands. All floodable terrain preserves its own seasonal artwork under floodwater. A floodplain overlay and bilingual inspector explain levels, raw and processed production losses, and levee protection. Polar cold/mild spells affect thaw-driven water levels; Glacial floods peak in summer.
+
+Cold habitat species selection includes reindeer, musk ox and suitable coastal seals. Empty ranges use habitat names. Land herds may traverse short nearshore ice crossings but end on land. Sea ice odds use surrounding ocean exposure, with open nonpolar ocean protected from freezing outside winter cold spells. Player forecasts and AI use the same odds. Mountain interiors reject roads between peaks/passes, including setup/free roads. Steppe and Prairie grassland weights increase at the expense of stone, coal and clay.
+
+Validation: 1,952 unit and integration tests passed. Chromium and Firefox checks cover connected water, all 793 channel/coast masks, large-map canvas rendering, campaign creation and bilingual rules. An eight-round, twelve-faction simulation completed 1,580 valid actions, including two expeditions, 44 battles, sieges and terrain repairs. Additional checks cover flood inspector selection and wet/dry rulebook previews. The accelerated terrain renderer now handles inherited clip paths, including even-odd clips, so flooding does not force a slow SVG fallback.

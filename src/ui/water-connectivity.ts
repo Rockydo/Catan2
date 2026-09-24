@@ -8,6 +8,7 @@ const wet = (tile?: Hex) =>
 export interface WaterConnections {
   shore: number;
   channel: number;
+  basin?: number;
   river: boolean;
 }
 /** Only known physical land receives a bank. Ice remains water geography,
@@ -17,11 +18,14 @@ export function waterConnections(
   tiles: ReadonlyMap<string, Hex>,
 ): WaterConnections {
   let shore = 0,
-    channel = 0;
+    channel = 0,
+    basin = 0;
   const river = tile.geography?.waterway === "river";
   neighbors(tile.id).forEach((id, side) => {
     const next = tiles.get(id);
     if (next && !wet(next)) shore |= 1 << side;
+    if (river && wet(next) && next?.geography?.waterway !== "river")
+      basin |= 1 << side;
     if (
       river &&
       ((next &&
@@ -33,7 +37,7 @@ export function waterConnections(
     )
       channel |= 1 << side;
   });
-  return { shore, channel, river };
+  return { shore, channel, river, basin };
 }
 const R = 44.05,
   A = (Math.sqrt(3) * 44) / 2;
@@ -81,41 +85,82 @@ export function shoreGeometry(mask: number) {
 }
 /** A single outline, including tributaries, with identical mouth endpoints on
  * both sides of every shared edge. Bank strokes omit those open mouths. */
-export function riverGeometry(mask: number) {
+export const riverClipId = (c: WaterConnections) =>
+  `water-river-${c.channel}${c.basin ? `-${c.basin}` : ""}`;
+export function riverGeometry(mask: number, basin = 0) {
   const mouths: { a: number[]; b: number[] }[] = [];
   for (let i = 0; i < 6; i++) {
     if (!(mask & (1 << i))) continue;
     const angle = (i * Math.PI) / 3,
       n = point(angle, A + 0.08),
       t = point(angle + Math.PI / 2, 14);
-    mouths.push({
-      a: [n[0] - t[0], n[1] - t[1]],
-      b: [n[0] + t[0], n[1] + t[1]],
-    });
+    mouths.push(
+      basin & (1 << i)
+        ? {
+            a: point(angle - Math.PI / 6, R),
+            b: point(angle + Math.PI / 6, R),
+          }
+        : {
+            a: [n[0] - t[0], n[1] - t[1]],
+            b: [n[0] + t[0], n[1] + t[1]],
+          },
+    );
   }
   if (!mouths.length)
     return {
-      water: "M-10,0C-10,-13 10,-13 10,0C10,13 -10,13 -10,0Z",
+      water: "M-25,0C-25,-32 25,-32 25,0C25,32 -25,32 -25,0Z",
       line: "",
     };
+  if (mouths.length === 1) {
+    // A broad headwater pool occupies the centre of the hex. Preserve the
+    // exact shared-edge mouth so neighbouring river segments still join.
+    const side = Math.log2(mask),
+      angle = (side * Math.PI) / 3;
+    const rotate = (x: number, y: number) =>
+      fmt([
+        x * Math.cos(angle) - y * Math.sin(angle),
+        x * Math.sin(angle) + y * Math.cos(angle),
+      ]);
+    const { a, b } = mouths[0];
+    const curve = `C${rotate(25, 14)} ${rotate(27, 30)} ${rotate(-1, 30)}C${rotate(-39, 30)} ${rotate(-39, -30)} ${rotate(-1, -30)}C${rotate(27, -30)} ${rotate(25, -14)} ${fmt(a)}`;
+    return {
+      water: `M${fmt(a)}L${fmt(b)}${curve}Z`,
+      line: `M${fmt(b)}${curve}`,
+    };
+  }
   let water = `M${fmt(mouths[0].a)}`,
     line = "";
   for (let i = 0; i < mouths.length; i++) {
     const { b } = mouths[i],
       next = mouths[(i + 1) % mouths.length].a;
-    const curve = `C${fmt(b.map((v) => v * 0.45))} ${fmt(next.map((v) => v * 0.45))} ${fmt(next)}`;
+    // Two sea-facing sides meet at an open-water corner. Do not loop a
+    // bank back into that corner: it creates a false teardrop-shaped island.
+    const gap = Math.hypot(b[0] - next[0], b[1] - next[1]);
+    if (gap < 0.01) {
+      water += `L${fmt(b)}`;
+      continue;
+    }
+    const inset = basin ? Math.min(7, gap * 0.16) : 0;
+    const control = (f: number) => {
+      const p = b.map((v, axis) => v + (next[axis] - v) * f);
+      const length = Math.hypot(p[0], p[1]) || 1;
+      return p.map((v) => v * (1 - inset / length));
+    };
+    const curve = basin
+      ? `C${fmt(control(1 / 3))} ${fmt(control(2 / 3))} ${fmt(next)}`
+      : `C${fmt(b.map((v) => v * 0.45))} ${fmt(next.map((v) => v * 0.45))} ${fmt(next)}`;
     water += `L${fmt(b)}${curve}`;
     line += `M${fmt(b)}${curve}`;
   }
   return { water: `${water}Z`, line };
 }
 /** Keep schools inside the channel, including off-centre river sources and bends. */
-export function riverWildlifeAnchor(mask: number) {
+export function riverWildlifeAnchor(mask: number, basin = 0) {
   const sides = Array.from({ length: 6 }, (_, i) => i).filter(
     (i) => mask & (1 << i),
   );
   if (!sides.length) return { x: 0, y: 0 };
-  const radius = sides.length === 1 ? 28 : 21;
+  const radius = sides.length === 1 ? 5 : basin ? 30 : 21;
   return {
     x:
       sides.reduce((sum, i) => sum + Math.cos((i * Math.PI) / 3) * radius, 0) /

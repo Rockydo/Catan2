@@ -1,6 +1,6 @@
 # Tundra, Temperate Rainforest and Equatorial Wetlands
 
-The game now has 20 climates. New Grand Campaigns start with 12 factions on 300 tiles. Classic remains five factions on 125 tiles. Existing campaigns keep their factions, revealed terrain and climate reservations. Expeditions can encounter the new climates beyond those reservations.
+The game now has 20 climates. New Grand Campaigns start with 12 factions on 320 tiles. Classic remains five factions on 125 tiles. Existing campaigns keep their factions, revealed terrain and climate reservations. Expeditions can encounter the new climates beyond those reservations.
 
 Climate continuity increases from 85% to 88%. This modestly favors larger regions without imposing a minimum size. The compatibility and buffer rules still apply. Each new climate has initial weight 1 and entry weight 0.75 from compatible neighbors. Its favored exit has weight 2; its other exits have weight 1.
 

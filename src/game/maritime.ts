@@ -127,14 +127,32 @@ export const terrainFamily = (tile: Hex) =>
           : TERRAIN[tileTerrain(tile)].family;
 export const terrainName = (tile: Hex) =>
   tile.geography &&
-  ["steppe-plain", "bison-range", "wildlife-grassland"].includes(
-    tile.biome ?? "",
-  )
-    ? "Wild grassland"
+  tile.biome === "seal-grounds" &&
+  !tile.geography.animals?.includes("seal")
+    ? "Polar coast"
     : tile.geography &&
-        ["hunting-forest", "fern-hunting-grounds"].includes(tile.biome ?? "")
-      ? "Wild forest"
-      : TERRAIN[tileTerrain(tile)].name;
+        tile.biome === "musk-ox-range" &&
+        !tile.geography.animals?.includes("musk-ox")
+      ? "Rocky tundra"
+      : tile.geography &&
+          tile.biome === "reindeer-range" &&
+          !tile.geography.animals?.includes("reindeer")
+        ? "Cold grassland"
+        : tile.geography &&
+            tile.biome === "turkey-grounds" &&
+            !tile.geography.animals?.includes("turkey")
+          ? "Open woodland"
+          : tile.geography &&
+              ["steppe-plain", "bison-range", "wildlife-grassland"].includes(
+                tile.biome ?? "",
+              )
+            ? "Wild grassland"
+            : tile.geography &&
+                ["hunting-forest", "fern-hunting-grounds"].includes(
+                  tile.biome ?? "",
+                )
+              ? "Wild forest"
+              : TERRAIN[tileTerrain(tile)].name;
 export const marineResource = (tile: Hex) =>
   tile.resource === "water" &&
   !!(

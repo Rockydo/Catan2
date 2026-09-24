@@ -536,3 +536,80 @@
   font-size: 0.72rem;
   margin: 0.3rem 0;
 }
+.floodplain-status {
+  margin: 0.75rem 0;
+  padding: 0.8rem;
+  background: #f2eddc;
+  border: 1px solid #d4c298;
+  border-radius: 10px;
+}
+.floodplain-status.is-flooded {
+  background: #e0eef1;
+  border-color: #68a0b4;
+}
+.floodplain-status p {
+  margin: 0.5rem 0;
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+.flood-level {
+  display: flex;
+  gap: 4px;
+  margin: 0.5rem 0;
+}
+.flood-level span {
+  flex: 1;
+  text-align: center;
+  background: #dadfd8;
+  border-radius: 3px;
+  font-size: 0.75rem;
+}
+.flood-level .filled {
+  background: #518597;
+  color: white;
+}
+.flood-level .danger {
+  border-bottom: 3px solid #c48248;
+}
+.flood-harvest {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.8rem;
+}
+.flood-harvest > b {
+  width: 100%;
+}
+.flood-harvest > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.flood-art-comparison {
+  display: flex;
+  gap: 8px;
+  margin: 0.5rem 0;
+}
+.flood-art-comparison figure {
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+}
+.flood-art-comparison svg {
+  width: 100%;
+  max-width: 140px;
+  display: block;
+  margin: auto;
+}
+.flood-art-comparison figcaption {
+  font-size: 0.7rem;
+  line-height: 1.3;
+}
+.floodplain-status summary {
+  cursor: pointer;
+  margin-top: 0.65rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+}

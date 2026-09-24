@@ -11,7 +11,7 @@ Le terme agglomération désigne une colonie ou une ville. Perdre votre dernièr
 
 ### Mise en place
 
-Choisissez Classique (5 factions, 125 tuiles) ou Grande campagne (12 factions, 300 tuiles).
+Choisissez Classique (5 factions, 125 tuiles) ou Grande campagne (12 factions, 320 tuiles).
 
 - Dans l’ordre des joueurs, chaque faction place une colonie et une route ou liaison maritime adjacente.
 - Répétez dans l’ordre inverse. Chaque faction possède alors deux colonies et deux tronçons.
@@ -95,17 +95,21 @@ Les nouvelles campagnes utilisent une génération physique avant le choix des r
 Chaque terre effectue un seul tirage parmi les terrains admis par son climat et sa position. Les hauteurs favorisent minerais, pics et cols. Les basses rives utilisent une liste propre à chaque climat. Falaises côtières, pâturages côtiers et mangroves exigent une côte ; la tourbe exige un terrain humide et peu pentu ; les salines intérieures exigent des conditions sèches. Aucun terrain déjà choisi n’est remplacé par un second tirage générique.
 Les lacs ne dépassent pas 12 hexagones connectés, hors rivières. Les bassins plus grands sont des mers. Le contrôle inclut les terres non révélées. Les cours d’eau rejoignent une mer, un lac ou une dépression terminale ; leurs raccords restent identiques lors des expéditions. Les chiffres des dés restent aléatoires, sans ressource garantie. Les anciens pourcentages terre/eau concernent les cartes historiques.
 Les sauvegardes géographiques conservent leurs terrains révélés et leur version du réseau hydrographique. Leurs futures découvertes utilisent les mêmes restrictions climatiques sur les ressources. Les campagnes antérieures à la géographie conservent leur ancien générateur.
+Les nouvelles cartes combinent dix formations : continents, archipels, mers intérieures, péninsules, chapelets d’îles, îlots rocheux, fjords, cordons littoraux, atolls et vallées de rift. Les régions chaudes modérément sèches favorisent les îles méditerranéennes ; les régions sèches continentales favorisent les grandes steppes et prairies. Les côtes froides favorisent fjords et îlots. Ces tendances ne sont pas garanties. Les frontières entre formations sont progressives. La cible de surface océanique diminue de 25 % par rapport à la précédente, et non de 25 points. La proportion réellement révélée varie avec les fleuves et les lacs. La grande campagne compte 12 factions sur 320 tuiles.
+
+Les bassins humides continentaux peuvent avoir deux sources convergentes. Les petites îles et les régions sèches ont des cours plus courts ; les régions sèches ont également moins de sources. Les lacs s’étendent selon le relief et le niveau de débordement, vers 3 à 10 tuiles lorsque le terrain le permet. Des mares d’une tuile restent possibles. Au-delà de 12 tuiles d’eau non fluviale connectées, le bassin est une mer. Les gués potentiels concernent 50 % des tuiles de fleuve en bassin sec, 15 % en bassin humide et 30 % ailleurs.
 
 ### Reliefs et cours d’eau
 
-La graine choisit une géographie continentale, insulaire, à mers intérieures ou à péninsules. Des altitudes corrélées forment côtes et massifs. Les mers intérieures sont de grands bassins fermés ; les péninsules favorisent les reliefs allongés. Un lac contient au plus 12 hexagones d’eau connectés, hors rivière. Au-delà, le bassin est une mer, avec une faune marine. Le calcul inclut la géographie non révélée : une expédition ne change pas cette classification. Les rives suivent la terre voisine et les rivières se raccordent par leurs côtés amont et aval. Une zone d’étude fixe autour du départ détermine le niveau côtier. Le climat est choisi à partir des conditions physiques avant le tirage des ressources. Terre et eau suivent désormais relief et drainage, au lieu d’un tirage indépendant par hexagone. Les anciens pourcentages terre/eau ne concernent que les campagnes historiques.
+La graine combine dix formations régionales, détaillées ci-dessous. Des altitudes corrélées forment côtes et massifs. Les mers intérieures sont de grands bassins fermés ; les péninsules favorisent les reliefs allongés. Un lac contient au plus 12 hexagones d’eau connectés, hors rivière. Au-delà, le bassin est une mer, avec une faune marine. Le calcul inclut la géographie non révélée : une expédition ne change pas cette classification. Les rives suivent la terre voisine et les rivières se raccordent par leurs côtés amont et aval. Une zone d’étude fixe autour du départ détermine le niveau côtier. Le climat est choisi à partir des conditions physiques avant le tirage des ressources. Terre et eau suivent désormais relief et drainage, au lieu d’un tirage indépendant par hexagone. Les anciens pourcentages terre/eau ne concernent que les campagnes historiques.
 Chaque bassin descend vers la mer ou une dépression intérieure. Les rivières occupent des hexagones d’eau ; les dépressions peuvent devenir des lacs. Altitudes et cours sont fixés par la graine et les coordonnées, même hors de la carte révélée. Une expédition ne redessine aucune côte existante ni aucune rivière. Ressources et numéros restent aléatoires. Aucune ressource brute n’est garantie.
 
 ### Traversées et cols
 
-Une rivière est de l’eau. Les armées n’y entrent que sur glace, par un gué ouvert ou par un pont. Trente pour cent des hexagones de rivière peuvent avoir un gué naturel. Il s’ouvre au niveau d’eau 0 ou 1. Pluie et crue peuvent le fermer. Les navires passent toujours sous un pont ou sur un gué ouvert ; une force ennemie présente sur le passage doit être combattue.
-Certains hexagones montagneux sont des cols. Les cols tempérés et froids ferment en Hiver et pendant une vague de froid au Printemps ou en Automne. Les cols tropicaux et andins ferment lors des Étés humides ; ceux des climats méditerranéens et désertiques lors des Hivers humides. Les cols Arctiques et Glaciaires n’ouvrent qu’en Été. Les Pics nus restent toujours infranchissables. Aucun ouvrage ne transforme un pic ni n’ouvre définitivement un col. Les routes peuvent longer leurs arêtes selon les règles habituelles.
+Une rivière est de l’eau. Les armées n’y entrent que sur glace, par un gué ouvert ou par un pont. Les gués potentiels concernent 50 % des hexagones en bassin sec, 15 % en bassin humide et 30 % ailleurs. Il s’ouvre au niveau d’eau 0 ou 1. Pluie et crue peuvent le fermer. Les navires passent toujours sous un pont ou sur un gué ouvert ; une force ennemie présente sur le passage doit être combattue.
+Certains hexagones montagneux sont des cols. Les cols tempérés et froids ferment en Hiver et pendant une vague de froid au Printemps ou en Automne. Les cols tropicaux et andins ferment lors des Étés humides ; ceux des climats méditerranéens et désertiques lors des Hivers humides. Les cols Arctiques et Glaciaires n’ouvrent qu’en Été. Les Pics nus restent toujours infranchissables. Aucun ouvrage ne transforme un pic ni n’ouvre définitivement un col. Les routes peuvent longer le pourtour, mais ne peuvent pas séparer deux pics ou cols.
 Quand la glace fond, qu’un gué ou un col ferme, ou qu’une crue submerge une armée, celle-ci cherche automatiquement une terre ferme accessible à travers la zone précédemment ouverte. Un débarquement sûr est préféré ; à défaut, une position ennemie entraîne un combat normal. Sans issue, la force attend des transports. Un navire pris dans la glace ou échoué après décrue ne peut ni bouger ni battre en retraite et combat au quart de sa puissance, arrondi au supérieur. Une armée terrestre amie présente le défend à pleine puissance. Le retour de l’eau libère le navire.
+Une route ne peut pas occuper une arête séparant deux sommets infranchissables ou cols, y compris lors du placement initial et pour une route gratuite. On peut contourner les montagnes. Les routes déjà construites sont conservées.
 
 ### Niveaux d’eau et météo régionale
 
@@ -128,15 +132,25 @@ La météo modifie une récolte saisonnière productive avant les multiplicateur
 Les basses terres riveraines peuvent devenir inondables. Les terres voisines d’une embouchure peuvent former un delta. Aux niveaux d’eau 3 et 4, une plaine sans digue devient une eau peu profonde : les armées ne passent plus et la production s’arrête. Bâtiments, routes et cartes stockées survivent. Une digue évite ces effets sur son hexagone. Les règles de construction des arêtes suivent toujours le terrain permanent ; les ouvrages ne changent pas l’identité des ressources.
 Les poids des terrains ordinaires sont divisés par quatre sur une basse rive, puis complétés par une liste riveraine propre au climat avant le tirage unique. Argile alluviale et Bois riverains appartiennent aux régions chaudes et humides. Les rives froides utilisent argile locale, pins et orge ; les rives Arctiques et Glaciaires utilisent neige et roches polaires ; la Toundra utilise tourbe, lande et habitats de bœufs musqués. Aucun champ céréalier ni bois chaud dans les listes polaires. Les Jardins du delta sont réservés aux embouchures Tropicales, Subtropicales et de Mousson. Jardins chinampas et Sagoutiers nécessitent une basse rive. Pommes de terre et maïs restent américains.
 Le Blé alluvial a une base de 3 Blés et donne 12 en Été. Le Sorgho de décrue a une base de 3 et donne 12 en Automne. La Rizière fluviale a une base de 4 et donne 4 / 0 / 4 / 8 : sa grande récolte suit la crue de la saison humide. Les Jardins du delta ont une base de 4, avec 4 / 4 / 8 / 0 en région fraîche et 4 / 0 / 4 / 8 en région chaude humide. La Prairie inondable a une base de 2 Laines et suit le calendrier local d’élevage. Ces quantités précèdent les multiplicateurs des producteurs. Les crues peuvent réduire le rendement réel ; les protections coûtent des ressources et ne suppriment pas le risque des dés.
+Seules les tuiles indiquées comme plaines inondables peuvent subir une crue. Le mode Plaines inondables distingue les terrains secs en jaune, inondés en bleu et protégés par une digue en vert. La fiche indique le niveau d’eau, son calcul et la récolte perdue. Aux niveaux 3 et 4, une tuile sans digue ne produit aucune matière première ni aucun produit transformé, pour les villes, camps, ateliers et collecteurs. Les tuiles voisines continuent normalement. Les bâtiments et stocks survivent. Les récoltes manquées ne sont pas reportées. Seuls les navires de faible tirant d’eau peuvent entrer ; les armées terrestres doivent quitter la tuile. Une digue rétablit immédiatement la production saisonnière normale. Ponts et irrigation ne protègent pas contre les crues. L’illustration inondée conserve le terrain et la saison : une plaine enneigée reste visiblement enneigée.
+
+En Arctique et Toundra, les crues culminent au dégel printanier. En climat Glaciaire, elles culminent en été. Dans ces trois climats, au printemps et en été, une vague de froid retire un niveau d’eau et une saison douce en ajoute un. Une crue peut coexister avec de la glace fluviale : les embâcles peuvent bloquer l’écoulement.
+
+### Gel littoral
+
+Le gel dépend des six voisins et de la couronne suivante. Plus l’eau est entourée d’océan, moins elle gèle ; les baies abritées gèlent plus facilement. Une tuile océanique sans terre voisine ne gèle hors des climats Arctique et Glaciaire que pendant une vague de froid hivernale. Sinon, sa glace fond à la prochaine transition de demi-saison. Fleuves et lacs conservent leurs probabilités d’eau douce. La banquise glaciaire permanente reste gelée. La fin d’été garantit le dégel ailleurs. Les prévisions et l’IA utilisent ces mêmes probabilités locales.
 
 ### Faune migratrice
 
 Prairies sauvages, bovins sauvages, rennes, bœufs musqués, phoques et autres terrains de chasse n’ont plus de production animale fixe. Une prairie sauvage sans animaux est vide. Forêts et jungles conservent au moins 1 Bois par saison avant multiplicateurs. Les meilleurs bois conservent leur base supérieure. Les moutons, bovins domestiques, alpagas et autres élevages restent fixes avec leur calendrier existant.
-Un nouvel hexagone terrestre admissible a 22 % de chances de créer une population. L’eau a une probabilité de 18 %, sauf la haute mer à 11 %. Une population côtière a 22 % de chances d’être composée de baleines, contre 72 % en haute mer : leur fréquence totale y est environ doublée. Les rivières et lacs ont des poissons, jamais de baleines. Les morues préfèrent les climats marins froids et frais. Aucune population n’est garantie.
+Un nouvel hexagone terrestre admissible a 22 % de chances de créer une population. L’eau a une probabilité de 24 %, sauf la haute mer à 14⅔ %. Une population côtière a 22 % de chances d’être composée de baleines, contre 72 % en haute mer : leur fréquence totale y est environ doublée. Les rivières et lacs ont des poissons, jamais de baleines. Les morues préfèrent les climats marins froids et frais. Aucune population n’est garantie.
 Sur son numéro, chaque population présente ajoute : Poissons 3 Poissons ; Morues 5 Poissons ; Baleines 3 Peaux + 3 Huiles ; Cerfs 2 Peaux + 2 Viandes ; Bovins sauvages 2 Peaux + 3 Viandes ; Rennes 2 Peaux + 2 Viandes ; Bœufs musqués 2 Laines + 2 Viandes ; Phoques 2 Peaux + 2 Huiles ; Gibier forestier 3 Peaux + 1 Viande ; Dindons sauvages 3 Viandes. Chaque composante reçoit les multiplicateurs habituels et la transformation avancée des villes ou marchands. Gel et crue restent soumis aux règles normales d’accès et de récolte.
 Au début de chaque saison, les populations marines cherchent des eaux connectées à quatre hexagones au plus ; les animaux terrestres cherchent un habitat accessible à trois hexagones au plus. Climat et habitat doivent convenir : les baleines ne traversent pas les rivières, les phoques restent sur les côtes froides et les espèces froides ou tropicales gardent des milieux adaptés. Elles peuvent rester ou migrer. Villes, routes, camps et tours réduisent l’attrait d’une destination, y compris dans le voisinage. Densité animale, gel, crues et abris saisonniers comptent aussi. La chasse ne supprime jamais une population. Les groupes restent sur la carte révélée ; les expéditions peuvent en découvrir de nouveaux. Plusieurs groupes peuvent partager une tuile. La vue Faune sauvage et les icônes de ressources montrent leur position et leur rendement.
 La faune ne peut pas occuper cultures, oliveraies, vergers, oasis ou pâturages domestiques. Lors du gel, poissons, morues et baleines cherchent d’abord une eau libre accessible à quatre hexagones au plus, y compris entre début et fin de saison. Sans issue adaptée, ils restent pris dans la glace. Les positions invalides des anciennes sauvegardes sont déplacées vers un habitat adapté au chargement ; sans habitat, la population est conservée en sommeil jusqu’à une nouvelle découverte.
 Camps et ateliers restent construits après le départ des animaux. Ils reprennent leur production si une population adaptée revient. Un atelier conserve sa ressource choisie à la construction. La migration n’accorde aucune ressource et ne change aucun numéro.
+Pour compenser la réduction océanique, les nouvelles cartes ont une probabilité de population marine de 24 % en eau ordinaire et de 14⅔ % en eau profonde, soit un tiers de plus. Fleuves et lacs restent à 18 %. Les anciennes cartes conservent leur densité de découverte. Les habitats polaires ouverts peuvent accueillir des rennes ou des bœufs musqués. Les phoques occupent uniquement les côtes Arctiques, Glaciaires ou de Toundra. Les terrains inoccupés portent des noms d’habitat : Prairie froide, Toundra rocailleuse et Côte polaire.
+
+Les troupeaux peuvent traverser des détroits gelés pendant leur migration, dans leur limite de trois hexagones. Chaque hexagone de glace doit être à deux hexagones au plus d’une terre ferme. Ils terminent toujours sur un habitat terrestre adapté, jamais sur la glace ou en eau libre.
 
 ### Chasseurs et navigation fluviale
 
@@ -170,6 +184,10 @@ L’IA évalue les récoltes mobiles visibles, déplace chasseurs et pêcheurs v
 ### Lire l’eau et la faune
 
 Les rives suivent les terres voisines ; les rivières raccordent leurs côtés amont et aval. Le gel respecte la forme du chenal. Les habitats terrestres naturels ont des peintures saisonnières distinctes, occupées ou vides, avec les animaux intégrés au paysage. Une case mixte montre une espèce représentative sur le terrain ; la vue Faune et le panneau détaillent toutes les populations. Les animaux d’élevage restent fixes. Poissons, morues et baleines sont intégrés à l’eau et découpés aux limites du chenal ou de la rive. Les lacs trop grands des sauvegardes géographiques deviennent des mers au chargement ; positions, dés, stocks, constructions et populations sont conservés.
+
+### Sources de conception
+
+Le [National Weather Service](https://www.weather.gov/aprfc/breakupRecon) décrit les crues de fonte et les embâcles : de la glace fluviale peut coexister avec des plaines inondées. Les coefficients du jeu sont des choix de jouabilité, pas des mesures hydrologiques.
 
 ## Saisons et récoltes
 
@@ -662,16 +680,16 @@ Poids des transitions : Froid ×1,5, Tempéré ×1, Méditerranéen ×1, Désert
 
 | Terrain terrestre    | Probabilité conditionnelle | Base annuelle           |
 | -------------------- | -------------------------- | ----------------------- |
-| Plaine de steppe     | 37%                        | 1 Peaux + 1 Laine       |
+| Plaine de steppe     | 43%                        | 1 Peaux + 1 Laine       |
 | Blé sur terre noire  | 4%                         | 3 Blé                   |
 | Élevage de savane    | 12%                        | 1 Viande + 1 Peaux      |
 | Champs de millet     | 7%                         | 1 Blé                   |
 | Pré                  | 7%                         | 2 Laine                 |
 | Bois clairsemés      | 7%                         | 1 Bois OU 1 Peau        |
-| Carrière de pierre   | 8%                         | 1 Pierre                |
+| Carrière de pierre   | 6%                         | 1 Pierre                |
 | Montagnes de minerai | 5%                         | 1 Minerai               |
-| Collines de charbon  | 5%                         | 1 Charbon               |
-| Collines d'argile    | 5%                         | 1 Argile                |
+| Collines de charbon  | 3%                         | 1 Charbon               |
+| Collines d'argile    | 3%                         | 1 Argile                |
 | Montagnes d'or       | 3%                         | 1 Or                    |
 | Terrain aquatique    | Tirage successif           | Part effective de l’eau |
 | ---                  | ---                        | ---                     |
@@ -996,14 +1014,14 @@ Poids des transitions : Froid ×1, Tempéré ×1, Steppe ×2, Désert ×1, Méso
 
 | Terrain terrestre    | Probabilité conditionnelle | Base annuelle           |
 | -------------------- | -------------------------- | ----------------------- |
-| Plaine de steppe     | 40%                        | 1 Peaux + 1 Laine       |
+| Plaine de steppe     | 46%                        | 1 Peaux + 1 Laine       |
 | Champs de maïs       | 9%                         | 2 Blé                   |
 | Champs de tournesols | 4%                         | 1 Huile                 |
 | Prairie à bisons     | 16%                        | 1 Viande + 1 Peaux      |
 | Bois riverains       | 8%                         | 1 Bois                  |
-| Collines d'argile    | 6%                         | 1 Argile                |
-| Carrière de pierre   | 5%                         | 1 Pierre                |
-| Collines de charbon  | 5%                         | 1 Charbon               |
+| Collines d'argile    | 4%                         | 1 Argile                |
+| Carrière de pierre   | 3%                         | 1 Pierre                |
+| Collines de charbon  | 3%                         | 1 Charbon               |
 | Montagnes de minerai | 4%                         | 1 Minerai               |
 | Montagnes d'or       | 1%                         | 1 Or                    |
 | Marais salants       | 2%                         | 1 Sel                   |

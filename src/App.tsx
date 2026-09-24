@@ -767,7 +767,7 @@ export default function App({
                 {tx("Build, trade, explore and command the frontier.")}
               </p>
               <div className="menu-facts">
-                <span>{tx("5 or 10 realms")}</span>
+                <span>{tx("5 or 12 realms")}</span>
                 <i>·</i>
                 <span>
                   {tx(GOODS.length)}
@@ -1866,7 +1866,7 @@ function NewGameForm({
         >
           <option value={5}>{tx("Classic · 5 factions · 125 tiles")}</option>
           <option value={12}>
-            {tx("Grand campaign · 12 factions · 300 tiles")}
+            {tx("Grand campaign · 12 factions · 320 tiles")}
           </option>
         </select>
       </label>

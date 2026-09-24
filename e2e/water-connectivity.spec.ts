@@ -19,6 +19,30 @@ function fixture(size: number) {
   s.calendar = { ...s.calendar!, startSeason: "summer" };
   syncSeasonSurfaces(s);
   syncEnvironment(s);
+  // Explicit occupants exercise both clips independently of procedural abundance.
+  const river = Object.values(s.tiles).find(
+    (t) => t.geography?.waterway === "river",
+  )!;
+  const sea = Object.values(s.tiles).find(
+    (t) =>
+      t.resource === "water" &&
+      ["coastal", "deep", "shoal"].includes(t.geography?.waterway ?? ""),
+  )!;
+  s.wildlife!.push(
+    {
+      id: "fixture-river-fish",
+      kind: "fish",
+      tile: river.id,
+      lastRound: s.round,
+    },
+    {
+      id: "fixture-sea-whale",
+      kind: "whale",
+      tile: sea.id,
+      lastRound: s.round,
+    },
+  );
+  syncEnvironment(s);
   while (s.phase.startsWith("setup")) s = run(s, chooseAIAction(s));
   s.phase = "economy";
   assertInvariants(s);
@@ -85,7 +109,7 @@ for (const size of [300, 850]) {
           const river = water.getAttribute("data-channel-mask");
           const expected =
             river !== null
-              ? `url(#water-river-${river})`
+              ? `url(#water-river-${river}${Number(water.getAttribute("data-basin-mask")) ? `-${water.getAttribute("data-basin-mask")}` : ""})`
               : `url(#water-surface-${water.getAttribute("data-shore-mask")})`;
           for (const animal of water.parentElement!.querySelectorAll(
             ".wildlife-art image",
@@ -137,14 +161,19 @@ for (const size of [300, 850]) {
 test("marine artwork cannot paint dry pixels in any river or coastline shape", async ({
   page,
 }) => {
-  const cases: { river: boolean; mask: number; path: string; svg: string }[] =
-    JSON.parse(
-      execFileSync(
-        process.execPath,
-        ["--import", "tsx", "scripts/water-clip-fixtures.ts"],
-        { encoding: "utf8" },
-      ),
-    );
+  const cases: {
+    river: boolean;
+    mask: number;
+    basin: number;
+    path: string;
+    svg: string;
+  }[] = JSON.parse(
+    execFileSync(
+      process.execPath,
+      ["--import", "tsx", "scripts/water-clip-fixtures.ts"],
+      { encoding: "utf8" },
+    ),
+  );
   await page.goto("/");
   const failures = await page.evaluate(async (cases) => {
     const assets = new Map<string, string>();
@@ -171,6 +200,23 @@ test("marine artwork cannot paint dry pixels in any river or coastline shape", a
       ctx.drawImage(image, 0, 0);
       const pixels = ctx.getImageData(0, 0, 368, 368).data,
         wet = new Path2D(fixture.path);
+      if (
+        fixture.river &&
+        fixture.mask &&
+        !(fixture.mask & (fixture.mask - 1))
+      ) {
+        let footprint = 0;
+        for (let y = -44; y <= 44; y++)
+          for (let x = -44; x <= 44; x++)
+            if (ctx.isPointInPath(wet, x, y)) footprint++;
+        if (footprint < 2500 || !ctx.isPointInPath(wet, 0, 0))
+          failures.push({
+            river: true,
+            mask: fixture.mask,
+            painted: footprint,
+            dry: -1,
+          });
+      }
       let painted = 0,
         dry = 0;
       ctx.lineWidth = 0.6;

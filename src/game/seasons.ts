@@ -8,7 +8,8 @@ import { baseGeographicYield, pieceAccess } from "./geography";
 import { BIOME_INFO } from "./climate-content";
 import type { Game, Hex, Raw, Stock } from "./types";
 import { tileYield } from "./maritime";
-import { randomAt } from "./world";
+import { randomAt, neighbors } from "./world";
+import type { Weather } from "./geography";
 
 export const SEASONS = ["spring", "summer", "autumn", "winter"] as const;
 export type Season = (typeof SEASONS)[number];
@@ -160,9 +161,66 @@ export function iceOdds(tile: Hex, season: Season, half: SeasonHalf): IceOdds {
     table?.[SEASONS.indexOf(season) * 2 + Number(half === "late")] ?? [0, 1]
   );
 }
+/** Known surrounding ocean controls exposure; unexplored edges count as open
+ * sea rather than artificial shelter. Inland rivers and lakes keep freshwater odds. */
+export function localIceOdds(
+  s: { tiles?: Game["tiles"] },
+  tile: Hex,
+  season: Season,
+  half: SeasonHalf,
+  weather: Weather = "normal",
+): IceOdds {
+  if (tile.geography?.warmed) return [0, 1];
+  if (tile.resource === "ice" && tile.climate === "glacial") return [1, 0];
+  let [freeze, melt] = iceOdds(tile, season, half);
+  if (weather === "cold") {
+    freeze = Math.min(1, freeze * 1.5);
+    melt = melt === 1 ? 1 : melt * 0.5;
+  } else if (weather === "mild") {
+    freeze *= 0.5;
+    melt = Math.min(1, melt * 1.4);
+  }
+  if (
+    tile.geography &&
+    tile.resource === "water" &&
+    !["river", "lake"].includes(tile.geography.waterway ?? "")
+  ) {
+    const sea = (id: string) => {
+      const t = s.tiles?.[id];
+      return !t || ["water", "ice"].includes(t.resource);
+    };
+    const adjacent = neighbors(tile.id);
+    const oceanSides = s.tiles
+      ? adjacent.filter(sea).length
+      : tile.geography.coastal
+        ? 3
+        : 6;
+    const ring = new Set(
+      adjacent
+        .flatMap(neighbors)
+        .filter((id) => id !== tile.id && !adjacent.includes(id)),
+    );
+    const outerSea = s.tiles
+      ? [...ring].filter(sea).length / ring.size
+      : oceanSides / 6;
+    const exposure = (oceanSides / 6) * 0.7 + outerSea * 0.3;
+    // Quadratic exposure penalty: sheltered bays freeze much more readily.
+    freeze = Math.min(1, freeze * (1.4 - 1.15 * exposure * exposure));
+    melt = Math.min(1, melt * (0.85 + 0.5 * exposure));
+    const polar = ["arctic", "glacial"].includes(tile.climate ?? "");
+    const severeCold = weather === "cold" && season === "winter";
+    if (oceanSides === 6 && !polar && !severeCold) {
+      freeze = 0;
+      melt = 1;
+    }
+    // Late summer remains a guaranteed thaw even in sheltered bays.
+    if (iceOdds(tile, season, half)[1] === 1) melt = 1;
+  }
+  return [freeze, melt];
+}
 /** Public risk only. AI forecasts never inspect the weather seed or future draws. */
 export function iceRisk(
-  s: Pick<Game, "calendar" | "round">,
+  s: Pick<Game, "calendar" | "round"> & Partial<Pick<Game, "tiles">>,
   tile: Hex,
   round = s.round + 1,
 ): number {
@@ -175,7 +233,6 @@ export function iceRisk(
     const at = { calendar: s.calendar, round: r },
       season = seasonAt(at);
     if (!season) continue;
-    const [baseFreeze, baseMelt] = iceOdds(tile, season, seasonHalf(at));
     const weather = tile.geography
       ? season === seasonAt(s)
         ? [[tile.geography.weather ?? "normal", 1] as const]
@@ -184,20 +241,9 @@ export function iceRisk(
     let freeze = 0,
       melt = 0;
     for (const [kind, chance] of weather) {
-      freeze +=
-        chance *
-        (kind === "cold"
-          ? Math.min(1, baseFreeze * 1.5)
-          : kind === "mild"
-            ? baseFreeze * 0.5
-            : baseFreeze);
-      melt +=
-        chance *
-        (kind === "cold" && baseMelt < 1
-          ? baseMelt * 0.5
-          : kind === "mild"
-            ? Math.min(1, baseMelt * 1.4)
-            : baseMelt);
+      const odds = localIceOdds(s, tile, season, seasonHalf(at), kind);
+      freeze += chance * odds[0];
+      melt += chance * odds[1];
     }
     risk = risk * (1 - melt) + (1 - risk) * freeze;
   }
@@ -236,27 +282,26 @@ function resolveWeather(s: Game, tile: Hex) {
       )
     )
       tile.surface =
-        tile.resource === "ice" || tile.climate! in ICE_TRANSITIONS
+        randomAt(s.seed, tile.id, "initial-winter-ice") <
+        localIceOdds(s, tile, "winter", "late")[0]
           ? "frozen"
           : "open";
   }
   for (let round = first; round <= s.round; round++) {
     const at = { calendar: s.calendar, round },
       season = seasonAt(at)!;
-    const [freeze, melt] = iceOdds(tile, season, seasonHalf(at));
+    const weather = tile.geography
+      ? regionalWeather({ ...s, round }, tile)
+      : "normal";
+    const [freeze, melt] = localIceOdds(
+      s,
+      tile,
+      season,
+      seasonHalf(at),
+      weather,
+    );
     const iced = tile.surface === "frozen";
-    let chance = iced ? melt : freeze;
-    if (tile.geography) {
-      const weather = regionalWeather({ ...s, round }, tile);
-      if (weather === "cold")
-        chance = iced
-          ? melt === 1
-            ? 1
-            : melt * 0.5
-          : Math.min(1, freeze * 1.5);
-      if (weather === "mild")
-        chance = iced ? Math.min(1, melt * 1.4) : freeze * 0.5;
-    }
+    const chance = iced ? melt : freeze;
     if (randomAt(s.seed, tile.id, `ice-weather-${round}`) < chance)
       tile.surface = iced ? "open" : "frozen";
   }

@@ -128,6 +128,7 @@ import {
   probability,
   settlementSites,
   canRoute,
+  roadBlockedByMountains,
   routeKind,
   routeSites,
   bankRate,
@@ -612,6 +613,8 @@ export function expansionPaths(
         r = s.routes[edgeId];
       if (r && (r.owner !== s.active || r.kind !== cur.kind)) continue;
       if (routeKind(s, edgeId) !== cur.kind) continue;
+      if (!r && cur.kind === "road" && roadBlockedByMountains(s, edgeId))
+        continue;
       if (
         e.tiles.some((t) =>
           hostileAt(
