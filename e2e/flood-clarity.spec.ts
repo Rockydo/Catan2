@@ -42,6 +42,7 @@ test("floodplain selection explains water level, lost harvest and protection", a
     page.getByText("Game imported. AI is paused until you resume."),
   ).toBeVisible();
   await page.getByTestId(`hex-${t.id}`).click();
+  await page.getByTestId("inspector-details-toggle").click();
   await expect(page.getByTestId(`hex-${t.id}`)).toHaveClass(/selected/);
   const panel = page.locator(".floodplain-status");
   await expect(panel).toBeVisible();

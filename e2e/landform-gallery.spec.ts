@@ -51,7 +51,9 @@ for (const form of [
     await page.goto("/");
     await page.getByRole("button", { name: /Continue campaign/ }).click();
     await expect(page.locator(".world-map")).toBeVisible();
+    await expect(page.getByTestId("hex-0,0")).toBeVisible();
     await page.getByTestId("hex-0,0").press("Enter");
+    await page.getByTestId("inspector-details-toggle").click();
     await expect(page.locator(".landform-label")).toContainText(
       LANDFORM_LABELS[form].en,
     );

@@ -1,7 +1,8 @@
 import { test, expect } from "@playwright/test";
 import { maritimeFixture } from "../tests/maritime-fixture";
 import { SAVE_KEY, serialize } from "../src/game/save";
-import { syncSeasonSurfaces } from "../src/game/seasons";
+import { syncSeasonSurfaces, seasonalProfile } from "../src/game/seasons";
+import { terrainName } from "../src/game/maritime";
 import { piece, run } from "../tests/helpers";
 import { newGame } from "../src/game/engine";
 import { chooseAIAction } from "../src/game/ai";
@@ -41,6 +42,7 @@ for (const locale of ["en", "fr"] as const) {
     await expect(calendar).toBeVisible();
     await expect(page.getByTestId("hex-0,0")).toBeVisible();
     await page.getByTestId("hex-0,0").press("Enter");
+    await page.getByTestId("inspector-details-toggle").click();
     const forecast = page.getByRole("region", {
       name: locale === "fr" ? "Production saisonnière" : "Seasonal production",
     });
@@ -157,7 +159,7 @@ test("icebound fleets and friendly land forces remain distinct and clearly label
   await page.getByTestId("hex-0,0").press("Enter");
   const overview = page.getByTestId("army-overview");
   await expect(overview.getByTestId("formation-owner-0")).toHaveCount(2);
-  await expect(overview).toContainText("Icebound");
+  await expect(overview).toContainText("Stranded");
   await expect(overview).toContainText("Your army");
   await expect(overview).toContainText("Your fleet");
   expect(ship.seasonStatus).toBe("icebound");
@@ -194,6 +196,7 @@ test("patchy autumn ice matches tile forecasts and summer previews", async ({
   await page.getByRole("button", { name: /Continue campaign/ }).click();
   await expect(page.getByTestId("hex-0,0")).toBeVisible();
   await page.getByTestId("hex-0,0").press("Enter");
+  await page.getByTestId("inspector-details-toggle").click();
   const forecast = page.getByRole("region", { name: "Seasonal production" });
   await expect(forecast.locator(".season-surface-label")).toHaveText([
     "Frozen sea",
@@ -205,13 +208,14 @@ test("patchy autumn ice matches tile forecasts and summer previews", async ({
     forecast.locator(".tile-season-grid > div").nth(1),
   ).toContainText("4");
   await expect(
-    page.locator('image[href$="arctic-ice-autumn.webp"]'),
+    page.locator(".connected-water [data-ice-exposure]"),
   ).toHaveCount(1);
   await expect(
     page.locator('image[href$="arctic-fish-autumn.webp"]'),
   ).toHaveCount(1);
   await expect(page.getByTestId("hex-1,0")).toBeVisible();
   await page.getByTestId("hex-1,0").press("Enter");
+  await page.getByTestId("inspector-details-toggle").click();
   await expect(forecast.locator(".season-surface-label")).toHaveText([
     "Open water",
     "Open water",
@@ -221,7 +225,7 @@ test("patchy autumn ice matches tile forecasts and summer previews", async ({
   await page.getByRole("button", { name: /Autumn Year 1/ }).click();
   await page.getByRole("button", { name: /Summer PREVIEW/ }).click();
   await expect(
-    page.locator('image[href$="arctic-ice-autumn.webp"]'),
+    page.locator(".connected-water [data-ice-exposure]"),
   ).toHaveCount(0);
   await expect(
     page.locator('image[href$="arctic-fish-summer.webp"]'),
@@ -252,6 +256,8 @@ for (const locale of ["en", "fr"] as const) {
           : "Seasonal harvest tables",
     });
     await expect(reference).toBeVisible();
+    // This fixture verifies the preserved fixed-animal climate-era table.
+    await reference.getByRole("checkbox").check();
     await reference
       .getByRole("button", { name: "Tropical", exact: true })
       .click();
@@ -387,13 +393,23 @@ test("a generated mixed-climate campaign renders crop and livestock seasons with
   const handoff = page.getByRole("button", { name: "I am Emberhold" });
   await expect(handoff).toBeVisible();
   await handoff.click();
-  for (const [id, name, amount] of [
-    ["-1,3", "Barley fields", 0],
-    ["5,-5", "Oat fields", 6],
-    ["3,-4", "Cattle pasture", 1],
-  ] as const) {
+  const samples = Object.values(s.tiles)
+    .filter(
+      (t) =>
+        ["grain", "meat", "wool"].includes(t.resource) &&
+        Object.values(seasonalProfile(t, 0)).some((stock) =>
+          Object.values(stock).some((n) => n),
+        ),
+    )
+    .slice(0, 3);
+  expect(samples).toHaveLength(3);
+  for (const tile of samples) {
+    const id = tile.id,
+      name = terrainName(tile);
+    const amount = Object.values(seasonalProfile(tile, 0).summer)[0] ?? 0;
     await expect(page.getByTestId(`hex-${id}`)).toBeVisible();
     await page.getByTestId(`hex-${id}`).press("Enter");
+    await page.getByTestId("inspector-details-toggle").click();
     const forecast = page.getByRole("region", { name: "Seasonal production" });
     await expect(
       page.getByRole("complementary", { name: "Action inspector" }),

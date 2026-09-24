@@ -49,6 +49,7 @@ for (const locale of ["en", "fr"] as const) {
       (t) => t.geography?.waterway === "river",
     )!;
     await page.getByTestId(`hex-${river.id}`).press("Enter");
+    await page.getByTestId("inspector-details-toggle").click();
     await expect(page.locator(".geography-panel")).toBeVisible();
     await expect(page.locator(".weather-impact")).toBeVisible();
     await page.screenshot({

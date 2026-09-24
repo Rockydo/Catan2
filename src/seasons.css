@@ -427,6 +427,26 @@
   flex-wrap: wrap;
   margin-bottom: 10px;
 }
+.ford-status {
+  margin: 8px 0 12px;
+  padding: 10px 12px;
+  border: 2px solid #7b936c;
+  border-radius: 8px;
+  background: #f7eac5;
+  color: #25483b;
+}
+.ford-status strong {
+  font-size: 16px;
+}
+.ford-status.ford-closed {
+  background: #e9eded;
+  border-color: #798f95;
+  color: #3c535d;
+}
+.ford-status.ford-ice {
+  background: #dfedf1;
+  border-color: #83aab5;
+}
 .geography-status span {
   border: 1px solid #bcc8bd;
   border-radius: 5px;

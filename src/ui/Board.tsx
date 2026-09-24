@@ -51,6 +51,7 @@ import {
   towerSiegeStatuses,
 } from "../game/siege-status";
 import { ArmyMiniature } from "./MilitaryArt";
+import { fordStatus } from "./ford-status";
 import { TownMiniature, ProductionToken } from "./MapPieces";
 import {
   memo,
@@ -386,6 +387,9 @@ const TerrainLayer = memo(function TerrainLayer({
                     schematic
                   />
                 )}
+                {mapView === "access" && tile.geography?.ford && (
+                  <GeographyMarker tile={tile} x={x} y={y} />
+                )}
               </g>
             );
           }
@@ -407,6 +411,8 @@ const TerrainLayer = memo(function TerrainLayer({
                   ? `${connected.river}/${connected.shore}/${connected.channel}/${connected.basin}/${connected.openIce}/${connected.banks?.join(",")}/${connected.floodedBanks?.join(",")}/${bankArt(tile, artworkSeason)}/${x % 512}/${y % 512}`
                   : "",
                 tile.geography?.access,
+                tile.geography?.ford,
+                tile.surface,
                 tile.geography?.landmark,
                 tile.geography?.animals?.join(","),
                 Object.keys(tile.geography?.projects ?? {}).join(","),
@@ -511,6 +517,7 @@ interface MapHexProps {
   outputLabel?: string;
   terrain: TerrainKey;
   terrainLabel: string;
+  crossingLabel?: string;
   impassable: boolean;
   number: number;
   x: number;
@@ -534,6 +541,7 @@ const MapHex = memo(function MapHex({
   outputLabel,
   terrain,
   terrainLabel,
+  crossingLabel,
   impassable,
   number,
   x,
@@ -553,7 +561,7 @@ const MapHex = memo(function MapHex({
   useLocale();
 
   const description = tx(
-    `${terrainLabel}, ${good ? `${outputLabel ?? (terrain === "whale" ? "Hides + Oil" : GOOD_INFO[good].name)}, roll ${number}` : resource === "water" ? "water" : impassable ? tx("Impassable") : "No resources"}, hex ${id}${movable ? ", reachable" : ""}`,
+    `${terrainLabel}, ${good ? `${outputLabel ?? (terrain === "whale" ? "Hides + Oil" : GOOD_INFO[good].name)}, roll ${number}` : resource === "water" ? "water" : impassable ? tx("Impassable") : "No resources"}, hex ${id}${movable ? ", reachable" : ""}${crossingLabel ? ` · ${tx(crossingLabel)}` : ""}`,
   );
   return (
     <g
@@ -669,7 +677,7 @@ const MapArmy = memo(function MapArmy({
   clicked: (action: () => void) => void;
 }) {
   useLocale();
-  const { owners, composition, label } = useMemo(() => {
+  const { owners, composition, label, badge } = useMemo(() => {
     const owners: number[] = [],
       counts = new Map<string, number>();
     let power = 0;
@@ -685,6 +693,15 @@ const MapArmy = memo(function MapArmy({
     return {
       owners,
       composition,
+      badge: units.some(
+        (u) => u.kind === "merchant" || u.kind === "merchantship",
+      )
+        ? "M: merchant formation"
+        : units.some((u) =>
+              ["fishing", "oceanfishing", "hunter"].includes(u.kind),
+            )
+          ? "F: harvesting formation (fishing boats or hunters)"
+          : undefined,
       label: `${owners.map((id) => playerNames[id]).join(" & ")} ${units[0].naval ? "fleet" : "army"}, ${units.length} pieces, ${power} base power; ${composition}`,
     };
   }, [units, playerNames]);
@@ -698,7 +715,7 @@ const MapArmy = memo(function MapArmy({
       data-map-y={y + 12}
       role="button"
       tabIndex={0}
-      aria-label={tx(label)}
+      aria-label={`${tx(label)}${badge ? ` · ${tx(badge)}` : ""}`}
       data-testid={`army-${tile}`}
       transform={`translate(${x + 21} ${y + 12})`}
       onClick={(e) => {
@@ -709,7 +726,10 @@ const MapArmy = memo(function MapArmy({
         if (e.key === "Enter") activate();
       }}
     >
-      <title>{tx(composition)}</title>
+      <title>
+        {tx(composition)}
+        {badge ? ` · ${tx(badge)}` : ""}
+      </title>
       <rect
         x="-17"
         y="-21"
@@ -1245,6 +1265,7 @@ const BoardScene = memo(function BoardScene({
                     outputLabel={outputLabel}
                     terrain={tileTerrain(tile)}
                     terrainLabel={terrainName(tile)}
+                    crossingLabel={fordStatus(tile)?.label}
                     impassable={
                       tile.resource === "peaks" ||
                       tile.geography?.access === "closed"

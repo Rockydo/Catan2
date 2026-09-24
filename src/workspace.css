@@ -922,6 +922,91 @@
   height: auto;
   padding: 10px 45px 9px 12px;
 }
+.inspector-workspace {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+.inspector-switch {
+  display: flex;
+  gap: 4px;
+  flex: none;
+  padding: 6px 10px;
+  border-bottom: 1px solid #dce1d5;
+  background: #f0f3e9;
+}
+.inspector-switch button {
+  flex: 1;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 7px 5px;
+  color: #496052;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 650;
+}
+.inspector-switch button[aria-pressed="true"] {
+  background: #fffdf5;
+  color: #234f40;
+  border-color: #bccdbc;
+}
+.inspector-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-gutter: stable;
+}
+.inspector-actions[hidden],
+.inspector-details[hidden] {
+  display: none;
+}
+.inspector-actions > .panel-content {
+  overflow: visible;
+  min-height: auto;
+  flex: none;
+}
+.inspector-details {
+  padding: 10px 12px 18px;
+}
+.inspector-details > .geography-panel {
+  margin: 10px 0 0;
+}
+.inspector-details > .tile-season-forecast {
+  margin: 0;
+}
+.tile-quick-status:empty {
+  display: none;
+}
+.current-tile-yield,
+.tile-condition-chips {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 7px;
+  margin-top: 6px;
+  font-size: 11px;
+  color: #365245;
+}
+.current-tile-yield .goods-list {
+  margin: 0;
+}
+.tile-condition-chips > span {
+  padding: 2px 6px;
+  border: 1px solid #bba678;
+  border-radius: 4px;
+  background: #f5e9cc;
+  font-weight: 650;
+}
+.force-primary-actions {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  padding: 6px 0;
+  background: #faf9f1;
+}
 .recruitment-controls {
   padding: 8px 12px 7px;
 }

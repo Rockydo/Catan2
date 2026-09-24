@@ -714,11 +714,16 @@ export function environmentSummary(tile: Hex, tiles?: Game["tiles"]): string[] {
       ? "Flooded: shallow vessels only"
       : g.access === "closed"
         ? "Pass closed"
-        : g.access === "ford"
-          ? "Low water: ford open"
-          : g.waterway === "river"
-            ? "River: land crossing requires a ford, ice or bridge"
-            : "",
-    g.projects?.bridge ? "Bridge crossing open" : "",
+        : g.projects?.bridge
+          ? "Bridge crossing open"
+          : g.waterway === "river" && tile.surface === "frozen"
+            ? "Frozen river: land crossing open"
+            : g.access === "ford"
+              ? "Low water: ford open"
+              : g.ford
+                ? "High water: ford closed"
+                : g.waterway === "river"
+                  ? "River: land crossing requires a ford, ice or bridge"
+                  : "",
   ].filter(Boolean);
 }

@@ -74,7 +74,9 @@ for (const locale of ["en", "fr"] as const) {
           await expect(hex).toHaveAccessibleName(
             new RegExp(`${amounts[1]} ${grain}`),
           );
+          await expect(hex).toBeVisible();
           await hex.press("Enter");
+          await page.getByTestId("inspector-details-toggle").click();
           await expect(page.locator(".panel-intro h2")).toHaveText(
             names[biome],
           );
@@ -139,7 +141,7 @@ for (const locale of ["en", "fr"] as const) {
     });
     await page.goto(`${rules}#world`);
     const climate = page.locator(".climate-reference");
-    await expect(climate.locator(".climate-tabs button")).toHaveCount(20);
+    await expect(climate.locator(".climate-tabs button")).toHaveCount(22);
     for (const [name, land, terrain, share] of [
       [
         locale === "fr" ? "Andin" : "Andean",
@@ -151,7 +153,7 @@ for (const locale of ["en", "fr"] as const) {
         "Prairie",
         "70%",
         locale === "fr" ? "Champs de tournesols" : "Sunflower fields",
-        "6%",
+        "4%",
       ],
       [
         locale === "fr" ? "Mésoaméricain" : "Mesoamerican",
@@ -175,9 +177,11 @@ for (const locale of ["en", "fr"] as const) {
             : "No whales in this climate.",
         );
       const row = climate
+        .locator(".climate-columns")
+        .nth(1)
         .locator(".climate-terrain")
         .filter({ hasText: terrain });
-      await expect(row).toContainText(share);
+      await expect(row.locator("strong")).toHaveText(share.replace("%", ""));
       const picture = row.locator(".terrain-picture");
       await expect(picture).toHaveCount(1);
       expect(
@@ -196,6 +200,7 @@ for (const locale of ["en", "fr"] as const) {
     }
     await page.goto(`${rules}#seasons`);
     const calendar = page.locator(".season-reference");
+    await calendar.getByRole("checkbox").check();
     for (const [name, biome, amounts, good] of [
       [
         locale === "fr" ? "Andin" : "Andean",
@@ -284,7 +289,9 @@ for (const locale of ["en", "fr"] as const) {
       })
       .click();
     await expect(page.locator(".world-map")).toBeVisible();
+    await expect(page.getByTestId("hex-0,0")).toBeVisible();
     await page.getByTestId("hex-0,0").press("Enter");
+    await page.getByTestId("inspector-details-toggle").click();
     const forecast = page.getByRole("region", {
       name: locale === "fr" ? "Production saisonnière" : "Seasonal production",
     });
@@ -296,7 +303,9 @@ for (const locale of ["en", "fr"] as const) {
       frozen,
       frozen,
     ]);
+    await expect(page.getByTestId("hex-3,0")).toBeVisible();
     await page.getByTestId("hex-3,0").press("Enter");
+    await page.getByTestId("inspector-details-toggle").click();
     await expect(
       forecast
         .locator(".tile-season-grid > div")

@@ -134,6 +134,7 @@ test("town inspection always displays siege turns and their breakdown, including
   enemy.wall = 0;
   await open(page, s);
   await page.getByTestId(`town-${home.id}`).click();
+  await page.getByTestId("inspector-details-toggle").click();
   const card = page.getByTestId("town-siege-resistance");
   await expect(card).toContainText("Siege resistance: 8 turns");
   await expect(card).toContainText("City 3 + walls 3 + watchtowers 2");

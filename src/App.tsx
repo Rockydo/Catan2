@@ -153,6 +153,7 @@ export default function App({
     [selection, setSelection] = useState<Selection>(null),
     [mode, setMode] = useState<BoardMode>("inspect"),
     [tab, setTab] = useState<PanelTab>("build"),
+    [inspectorActionRequest, setInspectorActionRequest] = useState(0),
     [unitIds, setUnitIds] = useState<string[]>([]),
     [paused, setPaused] = useState(false),
     [autoplay, setAutoplay] = useState(false),
@@ -590,6 +591,7 @@ export default function App({
       if (target) {
         event.preventDefault();
         setTab(target);
+        setInspectorActionRequest((n) => n + 1);
         setMobilePanel(true);
         setRealmsOpen(false);
         setMode("inspect");
@@ -1287,6 +1289,7 @@ export default function App({
                           setMobilePanel(true);
                           setRealmsOpen(false);
                           setTab(t.id);
+                          setInspectorActionRequest((n) => n + 1);
                           setMode("inspect");
                           setPreview([]);
                         }}
@@ -1311,12 +1314,14 @@ export default function App({
                     <X size={20} />
                   </button>
                   <DetailHeader
+                    compact
                     viewer={viewer}
                     game={game}
                     selection={selection}
                     unitIds={unitIds}
                   />
                   <Panels
+                    actionRequest={inspectorActionRequest}
                     game={game}
                     viewer={viewer}
                     privateHandVisible={

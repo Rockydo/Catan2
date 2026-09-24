@@ -7,7 +7,7 @@ for (const locale of ["en", "fr"] as const) {
   const grain = locale === "fr" ? "Blé" : "Grain";
   const rules = locale === "fr" ? "/rules-fr.html" : "/rules.html";
 
-  test(`${locale}: twenty climates and regional cereal yields agree across the guide`, async ({
+  test(`${locale}: current climates and regional cereal yields agree across the guide`, async ({
     page,
   }) => {
     const errors: string[] = [];
@@ -19,7 +19,7 @@ for (const locale of ["en", "fr"] as const) {
     });
     await page.goto(`${rules}#world`);
     const climate = page.locator(".climate-reference");
-    await expect(climate.locator(".climate-tabs button")).toHaveCount(20);
+    await expect(climate.locator(".climate-tabs button")).toHaveCount(22);
     for (const [name, land, art] of [
       ["Glacial", "45%", "glacial-snow-plain-summer.webp"],
       [
@@ -36,7 +36,9 @@ for (const locale of ["en", "fr"] as const) {
       await climate.getByRole("button", { name, exact: true }).click();
       await expect(climate.locator("h3")).toContainText(land);
       await expect(climate).toContainText(locale === "fr" ? "0,35" : "0.35");
-      const picture = climate.locator(`.terrain-picture[style*="${art}"]`);
+      const picture = climate
+        .locator(`.terrain-picture[style*="${art}"]`)
+        .first();
       await expect(picture).toHaveCount(1);
       expect(
         await picture.evaluate(async (element) => {
@@ -63,7 +65,10 @@ for (const locale of ["en", "fr"] as const) {
       ["turnip-fields", "cold alpine", 1],
     ] as const) {
       const variant = catalogue.locator(
-        `[data-terrain="${biome}"] [data-yield-climates="${climates}"]`,
+        `[data-terrain="${biome}"] ${climates
+          .split(" ")
+          .map((c) => `[data-yield-climates~="${c}"]`)
+          .join("")}`,
       );
       await expect(variant.locator(".terrain-outputs").nth(0)).toContainText(
         `${amount} ${grain}`,
@@ -75,7 +80,7 @@ for (const locale of ["en", "fr"] as const) {
 
     await page.goto(`${rules}#seasons`);
     const calendar = page.locator(".season-reference");
-    await expect(calendar.locator(".climate-tabs button")).toHaveCount(20);
+    await expect(calendar.locator(".climate-tabs button")).toHaveCount(22);
     for (const [name, biome, amounts] of [
       [locale === "fr" ? "Mousson" : "Monsoon", "rice-field", [0, 0, 4, 0]],
       [
@@ -164,7 +169,9 @@ for (const locale of ["en", "fr"] as const) {
     const frozen = locale === "fr" ? "Banquise" : "Frozen sea";
     const open = locale === "fr" ? "Mer libre" : "Open water";
     await expect(page.locator(".world-map")).toBeVisible();
+    await expect(page.getByTestId("hex-2,0")).toBeVisible();
     await page.getByTestId("hex-2,0").press("Enter");
+    await page.getByTestId("inspector-details-toggle").click();
     await expect(forecast.locator(".season-surface-label")).toHaveText([
       frozen,
       frozen,
@@ -175,10 +182,13 @@ for (const locale of ["en", "fr"] as const) {
       locale === "fr" ? "Banquise permanente" : "Permanent Glacial pack ice",
     );
     await expect(
-      page.locator('image[href$="glacial-ice-summer.webp"]'),
+      page.locator(".connected-water [data-ice-exposure]"),
     ).toHaveCount(1);
 
+    await expect(page.getByTestId("hex-3,0")).toBeVisible();
+
     await page.getByTestId("hex-3,0").press("Enter");
+    await page.getByTestId("inspector-details-toggle").click();
     await expect(forecast.locator(".season-surface-label")).toHaveText([
       frozen,
       open,
@@ -195,7 +205,10 @@ for (const locale of ["en", "fr"] as const) {
       page.locator('image[href$="glacial-fish-summer.webp"]'),
     ).toHaveCount(1);
 
+    await expect(page.getByTestId("hex-0,0")).toBeVisible();
+
     await page.getByTestId("hex-0,0").press("Enter");
+    await page.getByTestId("inspector-details-toggle").click();
     await expect(page.locator(".panel-intro h2")).toHaveText(
       locale === "fr" ? "Blé sur terre noire" : "Black-soil wheat",
     );
@@ -220,7 +233,7 @@ for (const locale of ["en", "fr"] as const) {
       })
       .click();
     await expect(
-      page.locator('image[href$="glacial-ice-winter.webp"]'),
+      page.locator(".connected-water [data-ice-exposure]"),
     ).toHaveCount(2);
     await expect(forecast.locator(".tile-season-heading")).toContainText(
       locale === "fr" ? "Été" : "Summer",

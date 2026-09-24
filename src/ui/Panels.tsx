@@ -30,7 +30,9 @@ import {
 } from "../game/maritime";
 import { shipStats, shipCost, TOWER_COSTS } from "../game/content";
 import { SiegeProgress } from "./TownAlerts";
-import { useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
+import { fordStatus } from "./ford-status";
+import { WEATHER_NAMES } from "../game/environment";
 import {
   Hammer,
   Shield,
@@ -132,6 +134,7 @@ import { type Selection, type BoardMode } from "./Board";
 export type PanelTab = "build" | "forces" | "trade" | "research" | "explore";
 export type DialogSpec = { type: string; [key: string]: unknown } | null;
 interface Props {
+  actionRequest?: number;
   privateHandVisible?: boolean;
   game: Game;
   viewer: number;
@@ -153,9 +156,11 @@ export function DetailHeader({
   selection,
   unitIds,
   viewer = s.active,
+  compact = false,
 }: {
   game: Game;
   viewer?: number;
+  compact?: boolean;
   selection: Selection;
   unitIds?: string[];
 }) {
@@ -187,7 +192,7 @@ export function DetailHeader({
             {tx(town.wall ? ` · ${WALL_NAMES[town.wall]}` : "")}
             {tx(besieged(s, town.id) ? " · UNDER SIEGE" : "")}
           </p>
-          <TownDefense game={s} town={town} ids={unitIds} />
+          {!compact && <TownDefense game={s} town={town} ids={unitIds} />}
         </div>
       );
   }
@@ -255,7 +260,11 @@ export function DetailHeader({
                     )} · rolls on ${t.number} · ${(((6 - Math.abs(t.number - 7)) / 36) * 100).toFixed(1)}% chance`,
             )}
           </p>
-          <TileSeasonForecast game={s} tile={t} owner={viewer} />
+          {compact ? (
+            <TileQuickStatus game={s} tile={t} viewer={viewer} />
+          ) : (
+            <TileSeasonForecast game={s} tile={t} owner={viewer} />
+          )}
         </div>
       );
     }
@@ -297,80 +306,183 @@ export function DetailHeader({
     </div>
   );
 }
-export function Panels(props: Props) {
-  useLocale();
-
-  const { tab, game: s, viewer, selection, interactive, onAction } = props;
-  const woods =
-    selection?.type === "tile" && canChooseWoods(s, selection.id, viewer)
-      ? s.tiles[selection.id]
-      : undefined;
+function TileQuickStatus({
+  game: s,
+  tile,
+  viewer,
+}: {
+  game: Game;
+  tile: Game["tiles"][string];
+  viewer: number;
+}) {
+  const season = seasonAt(s),
+    g = tile.geography,
+    ford = fordStatus(tile);
+  const alerts = [
+    ford?.label,
+    g?.access === "closed" ? "Pass closed" : undefined,
+    g?.access === "flooded" ? "Flooded now" : undefined,
+    !ford && tile.surface === "frozen" ? "Frozen water" : undefined,
+    g?.weather && g.weather !== "normal" ? WEATHER_NAMES[g.weather] : undefined,
+  ].filter(Boolean) as string[];
   return (
-    <>
-      {selection?.type === "tile" && s.tiles[selection.id]?.geography && (
-        <GeographyPanel
-          game={s}
-          tile={s.tiles[selection.id]}
-          viewer={viewer}
-          interactive={interactive}
-          onAction={onAction}
-          ids={props.unitIds}
-        />
-      )}
-      {woods && (
-        <section
-          className="woods-choice"
-          aria-label={tx("Woods harvest choice")}
-        >
-          <b>{tx("Your harvest")}</b>
-          <div className="woods-choice-buttons">
-            {(["lumber", "hides"] as const).map((good) => (
-              <button
-                key={good}
-                type="button"
-                aria-pressed={
-                  (woods.woodsChoices?.[viewer] ?? "lumber") === good
-                }
-                disabled={!interactive}
-                onClick={() =>
-                  onAction({ type: "woods-choice", tile: woods.id, kind: good })
-                }
-              >
-                <GoodIcon good={good} size={22} />
-                {tx(GOOD_INFO[good].name)}
-              </button>
-            ))}
-          </div>
-          <small>
-            {tx(
-              "Applies to your towns, camps and collectors on this tile. Other factions choose independently. Existing workshops keep their product.",
-            )}
-          </small>
-        </section>
-      )}
-      {tx(
-        tab === "build" ? (
-          <BuildPanel {...props} />
-        ) : tab === "forces" ? (
-          <ForcesPanel
-            key={
-              props.selection?.type === "tile"
-                ? props.selection.id
-                : "recruitment"
-            }
-            {...props}
+    <div className="tile-quick-status">
+      {season && tileGood(tile) && (
+        <div className="current-tile-yield">
+          <span>{tx("Current harvest")}</span>
+          <GoodsList
+            stock={seasonalYield(tile, viewer, season)}
+            empty="No harvest this season"
           />
-        ) : tab === "trade" ? (
-          <TradePanel {...props} />
-        ) : tab === "research" ? (
-          <ResearchPanel {...props} />
-        ) : (
-          <ExplorePanel {...props} />
-        ),
+        </div>
       )}
-    </>
+      {!!alerts.length && (
+        <div className="tile-condition-chips">
+          {alerts.map((text) => (
+            <span key={text}>{tx(text)}</span>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
+
+export function Panels(props: Props) {
+  useLocale();
+  const { tab, game: s, viewer, selection, interactive, onAction } = props;
+  const [details, setDetails] = useState(false);
+  const scroll = useRef<HTMLDivElement>(null);
+  // A new location or action always starts with the relevant controls in view.
+  // Turn/stock/selection-count updates do not reset the user's reading position.
+  useLayoutEffect(() => {
+    setDetails(false);
+    if (scroll.current) scroll.current.scrollTop = 0;
+  }, [selection?.id, selection?.type, tab, props.actionRequest]);
+  const tile = selection?.type === "tile" ? s.tiles[selection.id] : undefined;
+  const town =
+    selection?.type === "vertex" ? townAt(s, selection.id) : undefined;
+  const hasDetails = !!tile || !!town;
+  const woods = tile && canChooseWoods(s, tile.id, viewer) ? tile : undefined;
+  const showDetails = hasDetails && details;
+  return (
+    <div className="inspector-workspace">
+      {hasDetails && (
+        <div
+          className="inspector-switch"
+          role="group"
+          aria-label={tx("Inspector view")}
+        >
+          <button
+            type="button"
+            aria-controls="inspector-actions-content"
+            aria-pressed={!showDetails}
+            onClick={() => {
+              setDetails(false);
+              if (scroll.current) scroll.current.scrollTop = 0;
+            }}
+          >
+            {tx("Actions")}
+          </button>
+          <button
+            type="button"
+            data-testid="inspector-details-toggle"
+            aria-controls="inspector-details-content"
+            aria-pressed={showDetails}
+            onClick={() => {
+              setDetails(true);
+              if (scroll.current) scroll.current.scrollTop = 0;
+            }}
+          >
+            {tx(tile ? "Terrain & seasons" : "Town details")}
+          </button>
+        </div>
+      )}
+      <div className="inspector-scroll" ref={scroll}>
+        <div
+          id="inspector-actions-content"
+          className="inspector-actions"
+          hidden={showDetails}
+        >
+          {tx(
+            tab === "build" ? (
+              <BuildPanel {...props} />
+            ) : tab === "forces" ? (
+              <ForcesPanel
+                key={
+                  props.selection?.type === "tile"
+                    ? props.selection.id
+                    : "recruitment"
+                }
+                {...props}
+              />
+            ) : tab === "trade" ? (
+              <TradePanel {...props} />
+            ) : tab === "research" ? (
+              <ResearchPanel {...props} />
+            ) : (
+              <ExplorePanel {...props} />
+            ),
+          )}
+        </div>
+        <div
+          className="inspector-details"
+          id="inspector-details-content"
+          hidden={!showDetails}
+          key={`${selection?.type}/${selection?.id}`}
+        >
+          {tile && <TileSeasonForecast game={s} tile={tile} owner={viewer} />}
+          {tile?.geography && (
+            <GeographyPanel
+              game={s}
+              tile={tile}
+              viewer={viewer}
+              interactive={interactive}
+              onAction={onAction}
+              ids={props.unitIds}
+            />
+          )}
+          {town && <TownDefense game={s} town={town} ids={props.unitIds} />}
+          {woods && (
+            <section
+              className="woods-choice"
+              aria-label={tx("Woods harvest choice")}
+            >
+              <b>{tx("Your harvest")}</b>
+              <div className="woods-choice-buttons">
+                {(["lumber", "hides"] as const).map((good) => (
+                  <button
+                    key={good}
+                    type="button"
+                    aria-pressed={
+                      (woods.woodsChoices?.[viewer] ?? "lumber") === good
+                    }
+                    disabled={!interactive}
+                    onClick={() =>
+                      onAction({
+                        type: "woods-choice",
+                        tile: woods.id,
+                        kind: good,
+                      })
+                    }
+                  >
+                    <GoodIcon good={good} size={22} />
+                    {tx(GOOD_INFO[good].name)}
+                  </button>
+                ))}
+              </div>
+              <small>
+                {tx(
+                  "Applies to your towns, camps and collectors on this tile. Other factions choose independently. Existing workshops keep their product.",
+                )}
+              </small>
+            </section>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function BuildPanel({
   game: s,
   openDialog,
@@ -895,6 +1007,28 @@ function ForcesPanel({
               {tx(tile)}
             </SectionTitle>
 
+            {mine.length > 0 && (
+              <div className="force-primary-actions">
+                {" "}
+                <button
+                  className={`primary full ${mode === "move" ? "selected" : ""}`}
+                  disabled={
+                    !interactive ||
+                    s.phase !== "economy" ||
+                    !selected.length ||
+                    selected.some((u) => !ready(s, u))
+                  }
+                  onClick={() => setMode(mode === "move" ? "inspect" : "move")}
+                >
+                  <Navigation size={17} />
+                  {tx(
+                    mode === "move"
+                      ? "Choose a destination…"
+                      : "Move / attack with selected",
+                  )}
+                </button>
+              </div>
+            )}
             {tx(
               mine.length > 0 && (
                 <div className="force-selection-actions">
@@ -952,25 +1086,6 @@ function ForcesPanel({
                       </p>
                     </div>
                   )}
-                  <button
-                    className={`primary full ${mode === "move" ? "selected" : ""}`}
-                    disabled={
-                      !interactive ||
-                      s.phase !== "economy" ||
-                      !selected.length ||
-                      selected.some((u) => !ready(s, u))
-                    }
-                    onClick={() =>
-                      setMode(mode === "move" ? "inspect" : "move")
-                    }
-                  >
-                    <Navigation size={17} />
-                    {tx(
-                      mode === "move"
-                        ? "Choose a destination…"
-                        : "Move / attack with selected",
-                    )}
-                  </button>
 
                   {tx(
                     selected.length > 0 &&

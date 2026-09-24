@@ -107,13 +107,15 @@ test("switching armies resets scroll to the composition and keeps spent units ou
   await button.click();
   await button.click();
   await expect(overview).toContainText("1 selected · 1 ready");
-  await page.locator(".panel-content").evaluate((el) => {
+  await page.locator(".inspector-scroll").evaluate((el) => {
     el.scrollTop = el.scrollHeight;
   });
   await page.getByTestId("army--2,0").press("Enter");
   await expect(overview).toContainText("Veil Warden");
   await expect
-    .poll(() => page.locator(".panel-content").evaluate((el) => el.scrollTop))
+    .poll(() =>
+      page.locator(".inspector-scroll").evaluate((el) => el.scrollTop),
+    )
     .toBe(0);
   expect(fresh.id).not.toBe(spent.id);
 });

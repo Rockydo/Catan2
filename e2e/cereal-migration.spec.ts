@@ -61,7 +61,9 @@ for (const locale of ["en", "fr"] as const) {
         [0, 0, 4, 0],
       ],
     ] as const) {
+      await expect(page.getByTestId(`hex-${id}`)).toBeVisible();
       await page.getByTestId(`hex-${id}`).press("Enter");
+      await page.getByTestId("inspector-details-toggle").click();
       await expect(page.locator(".panel-intro h2")).toHaveText(name);
       for (const [index, amount] of amounts.entries())
         await expect(
@@ -77,7 +79,9 @@ for (const locale of ["en", "fr"] as const) {
         name: locale === "fr" ? /Reprendre/ : /Continue campaign/,
       })
       .click();
+    await expect(page.getByTestId("hex-0,0")).toBeVisible();
     await page.getByTestId("hex-0,0").press("Enter");
+    await page.getByTestId("inspector-details-toggle").click();
     await expect(page.locator(".panel-intro h2")).toHaveText(
       locale === "fr" ? "Champs d’orge" : "Barley fields",
     );

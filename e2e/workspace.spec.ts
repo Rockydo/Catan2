@@ -78,7 +78,7 @@ test("one naval catalogue supports atomic bulk launch and remembers tier", async
   await page.getByRole("button", { name: "Navy", exact: true }).click();
   await page.getByRole("button", { name: "Tier II", exact: true }).click();
   await page.getByLabel("Naval deployment").selectOption(water);
-  await expect(page.locator(".compact-recruit")).toHaveCount(6);
+  await expect(page.locator(".compact-recruit")).toHaveCount(8);
   await page.getByLabel("Recruitment quantity").fill("5");
   const before = inventory(s);
   await page
@@ -125,7 +125,7 @@ test("army batch recruitment pays the total order once", async ({ page }) => {
     );
 });
 
-test("six naval purchase controls fit a 720px desktop and pass accessibility checks", async ({
+test("eight naval purchase controls remain reachable on a 720px desktop and pass accessibility checks", async ({
   page,
 }, info) => {
   if (info.project.name !== "mobile")
@@ -141,7 +141,7 @@ test("six naval purchase controls fit a 720px desktop and pass accessibility che
       return r.top >= pane.top && r.bottom <= pane.bottom;
     }),
   );
-  expect(bounds).toEqual([true, true, true, true, true, true]);
+  expect(bounds).toEqual(Array(8).fill(true));
   const audit = await new AxeBuilder({ page })
     .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
     .analyze();

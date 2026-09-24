@@ -21,6 +21,7 @@ import { friendly } from "../game/relations";
 import { Cost, GoodsList } from "./components";
 import { localize as tx, useLocale } from "../i18n";
 import { MapSprite } from "./MapSprite";
+import { fordStatus } from "./ford-status";
 export type GeographyView =
   "normal" | "climate" | "weather" | "wildlife" | "access" | "flooding";
 export const GEOGRAPHY_VIEWS: Record<GeographyView, string> = {
@@ -124,7 +125,7 @@ export function GeographyLegend({ view }: { view: GeographyView }) {
             ]
           : [
               ["Land access", "#91a275"],
-              ["Ford or bridge", "#e3c578"],
+              ["Open ford or bridge", "#e3c578"],
               ["Frozen water", "#cde3e8"],
               ["Flooded ground", "#6496a6"],
               ["Shallow vessels only", "#4c919a"],
@@ -168,6 +169,43 @@ export function GeographyMarker({
 }) {
   const g = tile.geography;
   if (!g) return null;
+  const ford = fordStatus(tile);
+  if (ford)
+    return (
+      <MapSprite
+        assetKey={`ford-marker/${ford.kind}`}
+        bounds={{ x: -29, y: -8, width: 58, height: 16 }}
+        transform={`translate(${x} ${y + 23})`}
+        data-ford-status={ford.kind}
+        pointerEvents="none"
+      >
+        <rect
+          x="-27"
+          y="-7"
+          width="54"
+          height="14"
+          rx="5"
+          fill={
+            ford.kind === "closed"
+              ? "#334c55"
+              : ford.kind === "ice"
+                ? "#d4edf2"
+                : "#f6dd92"
+          }
+          stroke={ford.kind === "closed" ? "#cad4d3" : "#36584d"}
+          strokeWidth="1.3"
+        />
+        <text
+          y="2.5"
+          textAnchor="middle"
+          fontSize={ford.kind === "ice" ? "6.3" : "7.1"}
+          fontWeight="bold"
+          fill={ford.kind === "closed" ? "#fff2d4" : "#203f36"}
+        >
+          {tx(ford.label)}
+        </text>
+      </MapSprite>
+    );
   const symbol =
     g.access === "closed"
       ? "×"
@@ -221,6 +259,7 @@ export function GeographyPanel({
   const locale = useLocale();
   const g = tile.geography;
   if (!g) return null;
+  const ford = fordStatus(tile);
   const sites = (Object.keys(PROJECTS) as Project[]).filter((kind) =>
     projectSite(s, tile, kind, viewer),
   );
@@ -259,6 +298,12 @@ export function GeographyPanel({
   return (
     <section className="geography-panel" aria-label={tx("Local geography")}>
       <h3>{tx(geographicName(tile) ?? "Local geography")}</h3>
+      {ford && (
+        <div className={`ford-status ford-${ford.kind}`} role="status">
+          <strong>{tx(ford.label)}</strong>
+          <p>{tx(ford.detail)}</p>
+        </div>
+      )}
       {s.geographyVersion && s.geographyVersion >= 3 ? (
         <p className="landform-label">
           {locale === "fr" ? "Paysage régional : " : "Regional landscape: "}

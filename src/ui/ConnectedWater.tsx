@@ -132,6 +132,7 @@ export function ConnectedWater({
   const shallow =
     river ||
     ["river", "shoal", "reef"].includes(tile.geography?.waterway ?? "");
+  const fordSide = channel ? Math.log2(channel & -channel) : 0;
   return (
     <g
       className="connected-water"
@@ -189,6 +190,58 @@ export function ConnectedWater({
             opacity=".2"
           />
         ))}
+      {river &&
+        !frozen &&
+        tile.geography?.access === "ford" &&
+        !tile.geography.projects?.bridge && (
+          <g
+            className="open-ford-crossing"
+            clipPath={`url(#${riverClipId(connections)})`}
+          >
+            {/* A gravel sill across a real channel mouth, always clipped to water.
+              Fixed vector geometry is baked into the existing terrain cache. */}
+            <g transform={`rotate(${fordSide * 60}) translate(18 0)`}>
+              <path
+                d="M0 -30Q-3 -12 0 0T0 30"
+                fill="none"
+                stroke="#d1ce98"
+                strokeWidth="10"
+                opacity=".5"
+              />
+              <path
+                d="M5 -30Q2 -12 5 0T5 30"
+                fill="none"
+                stroke="#d8eee2"
+                strokeWidth="1"
+                opacity=".85"
+              />
+              {[-24, -16, -8, 0, 8, 16, 24].map((v, i) => (
+                <g
+                  key={v}
+                  transform={`translate(${i % 2 ? -1 : 1} ${v}) rotate(${i % 2 ? 12 : -9})`}
+                >
+                  <path
+                    d="M-3.8 1a3.8 2.9 0 1 0 7.6 0a3.8 2.9 0 1 0 -7.6 0"
+                    fill="#315657"
+                    opacity=".6"
+                  />
+                  <path
+                    d="M-3 -2 0 -3 3 -1 3 1 0 2-3 1Z"
+                    fill={i % 2 ? "#e4d5aa" : "#c9c5a3"}
+                    stroke="#6d806b"
+                    strokeWidth=".55"
+                  />
+                  <path
+                    d="M-2 -1 0 -2 2 -1"
+                    stroke="#fff0c9"
+                    strokeWidth=".55"
+                    fill="none"
+                  />
+                </g>
+              ))}
+            </g>
+          </g>
+        )}
       {!river && shore
         ? texture(bankArt(tile, season), `water-shore-${shore}`)
         : null}

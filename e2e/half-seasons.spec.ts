@@ -66,7 +66,9 @@ for (const locale of ["en", "fr"] as const) {
             : "Fermer le calendrier des saisons",
       })
       .click();
+    await expect(page.getByTestId("hex-1,0")).toBeVisible();
     await page.getByTestId("hex-1,0").press("Enter");
+    await page.getByTestId("inspector-details-toggle").click();
     const forecast = page.locator(".ice-forecast");
     await expect(forecast.locator(".ice-next-risk")).toContainText("90%");
     await expect(forecast).toContainText(
@@ -81,6 +83,7 @@ for (const locale of ["en", "fr"] as const) {
     await page.screenshot({
       path: `test-artifacts/half-season-ice-${locale}-${info.project.name}.png`,
     });
+    await expect(page.getByTestId("army-1,0")).toBeVisible();
     await page.getByTestId("army-1,0").press("Enter");
     const overview = page.getByTestId("army-overview");
     await expect(overview).toContainText(

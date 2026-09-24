@@ -2135,5 +2135,22 @@
   "Tropical Maritime": "Tropical maritime",
   "Island palms": "Palmeraie insulaire",
   "Breadfruit grove": "Verger d’arbres à pain",
-  "Low basins flood at level 3; higher riverbanks at level 4. Flooded tiles stop producing. Select a tile to see its threshold. A levee keeps it dry.": "Les cuvettes basses sont inondées au niveau 3, les berges hautes au niveau 4. La production s’arrête sous l’eau. Sélectionnez une tuile pour voir son seuil. Une digue la protège."
+  "Low basins flood at level 3; higher riverbanks at level 4. Flooded tiles stop producing. Select a tile to see its threshold. A levee keeps it dry.": "Les cuvettes basses sont inondées au niveau 3, les berges hautes au niveau 4. La production s’arrête sous l’eau. Sélectionnez une tuile pour voir son seuil. Une digue la protège.",
+  "Ford open": "Gué ouvert",
+  "Ford closed": "Gué fermé",
+  "Ice crossing": "Passage sur glace",
+  "Bridge open": "Pont ouvert",
+  "Open ford or bridge": "Gué ouvert ou pont",
+  "Land units can cross here using the bridge, even when the ford is submerged.": "Les unités terrestres peuvent emprunter le pont, même lorsque le gué est submergé.",
+  "Land units can cross on the ice. Recheck this crossing after thaw.": "Les unités terrestres peuvent traverser sur la glace. Vérifiez ce passage après le dégel.",
+  "Low water: land units can enter and cross this river tile. The ford can close when seasonal water levels rise.": "Basses eaux : les unités terrestres peuvent entrer sur cette tuile de rivière et la traverser. Le gué peut fermer lorsque le niveau saisonnier monte.",
+  "High water: land units cannot cross here without a bridge or frozen river. Boats still follow normal navigation rules.": "Hautes eaux : les unités terrestres ne peuvent pas traverser ici sans pont ou rivière gelée. Les bateaux suivent les règles habituelles de navigation.",
+  "Frozen river: land crossing open": "Rivière gelée : passage terrestre ouvert",
+  "High water: ford closed": "Hautes eaux : gué fermé",
+  "M: merchant formation": "M : formation marchande",
+  "F: harvesting formation (fishing boats or hunters)": "F : formation de collecte (bateaux de pêche ou chasseurs)",
+  "Inspector view": "Vue du panneau",
+  "Terrain & seasons": "Terrain et saisons",
+  "Town details": "Détails de la ville",
+  "Current harvest": "Récolte actuelle"
 }
