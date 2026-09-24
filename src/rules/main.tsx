@@ -1077,7 +1077,7 @@ function App() {
                   23 <small>{labels("goods", "ressources")}</small>
                 </span>
                 <span>
-                  125 / 250{" "}
+                  125 / 300{" "}
                   <small>{labels("starting tiles", "tuiles initiales")}</small>
                 </span>
               </div>

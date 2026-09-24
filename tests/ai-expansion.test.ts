@@ -82,7 +82,7 @@ describe("expeditions for the strongest AI factions", () => {
   it("excludes humans and eliminated factions, resolves ties consistently, and restricts only the leading AI seat", () => {
     const s = legacyGame(
       "rank-expedition",
-      REALM_NAMES.map((name, id) => ({
+      REALM_NAMES.slice(0, 10).map((name, id) => ({
         name,
         control: id === 0 ? "human" : "standard",
       })),

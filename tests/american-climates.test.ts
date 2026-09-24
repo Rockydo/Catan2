@@ -1,3 +1,4 @@
+import { startingClimateSeed } from "./climate-fixture";
 import { describe, expect, it } from "vitest";
 import {
   AMERICAN_CLIMATES,
@@ -101,7 +102,7 @@ const expected = {
 
 describe("American climate generation", () => {
   it("adds three normal climates with exact resource shares and reciprocal regional transitions", () => {
-    expect(CLIMATES).toHaveLength(17);
+    expect(CLIMATES).toHaveLength(20);
     expect(AMERICAN_CLIMATES).toEqual(["andean", "prairie", "mesoamerican"]);
     for (const climate of AMERICAN_CLIMATES) {
       expect(CLIMATE_INFO[climate]).toMatchObject(
@@ -126,7 +127,7 @@ describe("American climate generation", () => {
   });
 
   it("replaces retired Andean snow plains on import without changing their number or geometry", () => {
-    const s = newGame("regional-5-1");
+    const s = newGame(startingClimateSeed("andean"));
     const t = Object.values(s.tiles).find(
       (tile) =>
         tile.climate === "andean" &&
@@ -276,7 +277,8 @@ describe("American climate generation", () => {
     ["mesoamerican", "regional-5-20"],
   ] as const)(
     "completes AI setup and preserves a new %s campaign through save/load",
-    (climate, seed) => {
+    (climate, _oldSeed) => {
+      const seed = startingClimateSeed(climate);
       let s = newGame(seed);
       const start = Object.keys(s.tiles).sort(
         (a, b) =>
@@ -347,7 +349,7 @@ describe("American production", () => {
     },
   );
 
-  it("conserves every raw resource across all seventeen climate catalogues", () => {
+  it("conserves every raw resource across all twenty climate catalogues", () => {
     for (const climate of CLIMATES)
       for (const [biome] of [
         ...CLIMATE_INFO[climate].terrain,

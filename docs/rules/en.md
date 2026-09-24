@@ -11,7 +11,7 @@ A town means either a settlement or a city. Losing your last town eliminates you
 
 ### Setup
 
-Choose Classic (5 factions, 125 tiles) or Grand campaign (10 factions, 250 tiles).
+Choose Classic (5 factions, 125 tiles) or Grand campaign (12 factions, 300 tiles).
 
 - In player order, each faction places one settlement and one adjoining road or sea route.
 - Repeat in reverse player order. Each faction now has two settlements and two route pieces.
@@ -38,7 +38,7 @@ Goods are stored in individual towns but spent from a common pool. Armies can ra
 
 ### Climate generation
 
-The initial map contains 125 tiles in Classic or 250 in Grand campaign. Climate is assigned before terrain. Pick a random starting tile, then choose among seventeen climates using relative weights: 1 for each of the fourteen non-extreme climates and 0.35 each for Glacial, Hyperarid and Monsoon. Normalize these weights for the initial draw. Grow outward through neighbors. If all assigned immediate neighbors agree, retain that climate with 85% probability. On a switch, intersect the compatible climates of assigned immediate neighbors only. Destination weights start at 1. From the seven original climates, newly compatible Oceanic, Alpine, Subtropical and Savanna destinations have weight 0.5. Temperate and Steppe favor Cold at 1.5. Mediterranean gives Steppe and Desert weight 0.5. Tropical to Desert, Desert to Tropical and Cold to Arctic have weight 2. Oceanic favors Temperate at 2; Alpine favors Cold and Arctic at 2 each; Subtropical and Savanna favor Tropical at 2. Entering a compatible extreme climate has weight 0.5. Glacial exits to Arctic at 2 or Alpine at 1; Hyperarid exits to Desert at 2; Monsoon exits to Tropical at 2, Subtropical or Savanna at 1. Entering a compatible American region from an older climate has weight 0.75. Andean favors Alpine, Prairie favors Steppe and Mesoamerican favors Subtropical with weight 2; their other exits have weight 1. Eligible weights are normalized for each draw. The 85% continuity chance is unchanged. At mixed borders, prefer an existing adjacent compatible climate. If no candidate exists, copy an immediate neighbor.
+The initial map contains 125 tiles in Classic or 300 in Grand campaign. Climate is assigned before terrain. Pick a random starting tile, then choose among twenty climates using relative weights: 1 for each of the seventeen non-extreme climates and 0.35 each for Glacial, Hyperarid and Monsoon. Normalize these weights for the initial draw. Grow outward through neighbors. If all assigned immediate neighbors agree, retain that climate with 88% probability. On a switch, intersect the compatible climates of assigned immediate neighbors only. Destination weights start at 1. From the seven original climates, newly compatible Oceanic, Alpine, Subtropical and Savanna destinations have weight 0.5. Temperate and Steppe favor Cold at 1.5. Mediterranean gives Steppe and Desert weight 0.5. Tropical to Desert, Desert to Tropical and Cold to Arctic have weight 2. Oceanic favors Temperate at 2; Alpine favors Cold and Arctic at 2 each; Subtropical and Savanna favor Tropical at 2. Entering a compatible extreme climate has weight 0.5. Glacial exits to Arctic at 2 or Alpine at 1; Hyperarid exits to Desert at 2; Monsoon exits to Tropical at 2, Subtropical or Savanna at 1. Entering a compatible American region from an older climate has weight 0.75. Andean favors Alpine, Prairie favors Steppe and Mesoamerican favors Subtropical with weight 2; their other exits have weight 1. Eligible weights are normalized for each draw. Continuity is 88%, giving slightly larger regions on average. Entering Tundra, Temperate Rainforest or Equatorial Wetlands has weight 0.75. Their favored exits have weight 2: Tundra to Arctic, Temperate Rainforest to Oceanic, Equatorial Wetlands to Tropical. Their other exits have weight 1. At mixed borders, prefer an existing adjacent compatible climate. If no candidate exists, copy an immediate neighbor.
 Before rolling terrain, a final repair pass leaves intermediate compatible climates as buffer zones where needed. Adjacent climates are always compatible. Climate reservations include an unseen collar, so future expeditions cannot create incompatible seams. The underlying terrain never changes. Its appearance, yield and sea surface follow the seasonal calendar. The same seed and discovery sequence reproduce the same world. Different expedition sequences may extend climate zones differently.
 Choose land or water using that climate’s ratio, then use its terrain table below. Land percentages are conditional on rolling land. Water checks run in the listed order on remaining water only; the first success ends the sequence. Water tiles with no adjacent land double their climate’s Whale check chance. Fish, Cod and Frozen sea checks stay unchanged and run first. Frozen sea does not count as land. Hidden neighbors use their reserved climates and land rolls; the map edge alone does not qualify as open water. Gold frequency varies by climate. No resource, climate, port, continent or balanced start is guaranteed.
 Temperate, Tropical and Desert use 50% land. Cold and Subtropical use 55%, Steppe 65%, Arctic and Mediterranean 40%, Oceanic 35%, Alpine 75%, Savanna 70%, Glacial 45%, Hyperarid 90%, Monsoon 30%, Andean 75%, Prairie 70% and Mesoamerican 45%. Steppe and Desert are mutually compatible, as are all other listed borders. Oasis food means Grain.
@@ -69,7 +69,7 @@ Bare Peaks produce nothing and are impassable to every unit. Units cannot move t
 Old Andean Snow plains become Iron, Gold or Bare Peaks on load, with respective chances of 20%, 20% and 60%. A tile with units, a pending battle, an adjacent town or watchtower, or a port becomes Iron or Gold if Peaks were rolled. Replacements are fixed by the seed and coordinates. Tile numbers and stored goods stay unchanged. Snow plains in other climates remain.
 Revealed tiles retain their assigned climate, dice numbers, camps, workshops, units and stored goods. Current climate-adjusted crop productivity applies on load. Retired Rough fields become Barley in Cold, Alpine and Oceanic climates, or Millet in Steppe and Savanna. Oceanic Barley has baseline 2 and pays 8 Grain in Summer; Oceanic Golden fields keep their Autumn harvest.
 Retired Rye fields and prototype Potato fields outside American regions become Turnip fields. Their baseline remains 2 in Temperate/Oceanic climates and 1 in Cold/Alpine climates, with Summer/Autumn payouts of 2/6 or 1/3. Former non-American Maize becomes Oats in Temperate and other cool climates, or Sorghum in warm climates; both retain baseline 2. American Potato and Maize fields keep their identity. No stored harvest is recalculated or awarded during migration.
-Saves made before climates existed classify their older tiles as Temperate for future borders. New exploration can use all seventeen climates. Start a new campaign to use the current terrain tables throughout the map.
+Saves made before climates existed classify their older tiles as Temperate for future borders. New exploration can use all twenty climates. Start a new campaign to use the current terrain tables throughout the map.
 
 ### Tile numbers and dice
 
@@ -457,11 +457,11 @@ Click the season beside the round number for the yearly calendar and read-only l
 
 ### Temperate: 50% land / 50% water
 
-Compatible : Steppe, Mediterranean, Cold, Tropical, Oceanic, Alpine, Subtropical, Prairie
+Compatible : Temperate Rainforest, Steppe, Mediterranean, Cold, Tropical, Oceanic, Alpine, Subtropical, Prairie
 
 Initial climate weight : 1
 
-Transition weights : Steppe ×1, Mediterranean ×1, Cold ×1.5, Tropical ×1, Oceanic ×0.5, Alpine ×0.5, Subtropical ×0.5, Prairie ×0.75
+Transition weights : Temperate Rainforest ×0.75, Steppe ×1, Mediterranean ×1, Cold ×1.5, Tropical ×1, Oceanic ×0.5, Alpine ×0.5, Subtropical ×0.5, Prairie ×0.75
 
 | Land terrain     | Conditional chance | Annual baseline       |
 | ---------------- | ------------------ | --------------------- |
@@ -488,11 +488,11 @@ Open water (no adjacent land): Whale check 10%; effective share 8.5%. Table abov
 
 ### Cold: 55% land / 45% water
 
-Compatible : Temperate, Steppe, Arctic, Oceanic, Alpine, Prairie
+Compatible : Temperate Rainforest, Tundra, Temperate, Steppe, Arctic, Oceanic, Alpine, Prairie
 
 Initial climate weight : 1
 
-Transition weights : Temperate ×1, Steppe ×1, Arctic ×2, Oceanic ×0.5, Alpine ×0.5, Prairie ×0.75
+Transition weights : Temperate Rainforest ×0.75, Tundra ×0.75, Temperate ×1, Steppe ×1, Arctic ×2, Oceanic ×0.5, Alpine ×0.5, Prairie ×0.75
 
 | Land terrain    | Conditional chance | Annual baseline       |
 | --------------- | ------------------ | --------------------- |
@@ -518,11 +518,11 @@ Open water (no adjacent land): Whale check 20%; effective share 14.4%. Table abo
 
 ### Arctic: 40% land / 60% water
 
-Compatible : Cold, Alpine, Glacial
+Compatible : Tundra, Cold, Alpine, Glacial
 
 Initial climate weight : 1
 
-Transition weights : Cold ×1, Alpine ×0.5, Glacial ×0.5
+Transition weights : Tundra ×0.75, Cold ×1, Alpine ×0.5, Glacial ×0.5
 
 | Land terrain          | Conditional chance | Annual baseline       |
 | --------------------- | ------------------ | --------------------- |
@@ -602,11 +602,11 @@ Open water (no adjacent land): Whale check 10%; effective share 8.5%. Table abov
 
 ### Tropical: 50% land / 50% water
 
-Compatible : Temperate, Desert, Subtropical, Savanna, Monsoon, Mesoamerican
+Compatible : Equatorial Wetlands, Temperate, Desert, Subtropical, Savanna, Monsoon, Mesoamerican
 
 Initial climate weight : 1
 
-Transition weights : Temperate ×1, Desert ×2, Subtropical ×0.5, Savanna ×0.5, Monsoon ×0.5, Mesoamerican ×0.75
+Transition weights : Equatorial Wetlands ×0.75, Temperate ×1, Desert ×2, Subtropical ×0.5, Savanna ×0.5, Monsoon ×0.5, Mesoamerican ×0.75
 
 | Land terrain    | Conditional chance | Annual baseline       |
 | --------------- | ------------------ | --------------------- |
@@ -655,11 +655,11 @@ Open water (no adjacent land): Whale check 6%; effective share 5.52%. Table abov
 
 ### Oceanic: 35% land / 65% water
 
-Compatible : Temperate, Cold, Mediterranean
+Compatible : Temperate Rainforest, Temperate, Cold, Mediterranean
 
 Initial climate weight : 1
 
-Transition weights : Temperate ×2, Cold ×1, Mediterranean ×1
+Transition weights : Temperate Rainforest ×0.75, Temperate ×2, Cold ×1, Mediterranean ×1
 
 | Land terrain    | Conditional chance | Annual baseline       |
 | --------------- | ------------------ | --------------------- |
@@ -715,11 +715,11 @@ Open water (no adjacent land): Whale check 6%; effective share 4.86%. Table abov
 
 ### Subtropical: 55% land / 45% water
 
-Compatible : Tropical, Temperate, Mediterranean, Savanna, Monsoon, Andean, Mesoamerican
+Compatible : Equatorial Wetlands, Tropical, Temperate, Mediterranean, Savanna, Monsoon, Andean, Mesoamerican
 
 Initial climate weight : 1
 
-Transition weights : Tropical ×2, Temperate ×1, Mediterranean ×1, Savanna ×1, Monsoon ×0.5, Andean ×0.75, Mesoamerican ×0.75
+Transition weights : Equatorial Wetlands ×0.75, Tropical ×2, Temperate ×1, Mediterranean ×1, Savanna ×1, Monsoon ×0.5, Andean ×0.75, Mesoamerican ×0.75
 
 | Land terrain        | Conditional chance | Annual baseline       |
 | ------------------- | ------------------ | --------------------- |
@@ -933,74 +933,161 @@ Transition weights : Tropical ×1, Subtropical ×2, Savanna ×1, Andean ×1, Pra
 
 Open water (no adjacent land): Whale check 10%; effective share 8.5%. Table above: coastal water.
 
+### Tundra: 60% land / 40% water
+
+Compatible : Cold, Arctic
+
+Initial climate weight : 1
+
+Transition weights : Cold ×1, Arctic ×2
+
+| Land terrain          | Conditional chance | Annual baseline       |
+| --------------------- | ------------------ | --------------------- |
+| Berry heath           | 20%                | 1 Grain               |
+| Musk ox range         | 20%                | 1 Wool + 1 Meat       |
+| Reindeer range        | 15%                | 1 Meat + 1 Hides      |
+| Peat bog              | 15%                | 1 Coal                |
+| Arctic iron mountains | 12%                | 1 Iron ore            |
+| Arctic stone ridge    | 10%                | 1 Stone               |
+| Arctic gold mountains | 5%                 | 1 Gold                |
+| Snow plain            | 3%                 | 0                     |
+| Water terrain         | Sequential check   | Effective water share |
+| ---                   | ---                | ---                   |
+| Fishing grounds       | 20%                | 20%                   |
+| Cod grounds           | 15%                | 12%                   |
+| Whale grounds         | 8%                 | 5.44%                 |
+| Water                 |                    | 62.56%                |
+
+Open water (no adjacent land): Whale check 16%; effective share 10.88%. Table above: coastal water.
+
+### Temperate Rainforest: 40% land / 60% water
+
+Compatible : Temperate, Oceanic, Cold
+
+Initial climate weight : 1
+
+Transition weights : Temperate ×1, Oceanic ×2, Cold ×1
+
+| Land terrain         | Conditional chance | Annual baseline       |
+| -------------------- | ------------------ | --------------------- |
+| Old-growth forest    | 25%                | 3 Wood                |
+| Fern hunting grounds | 15%                | 1 Hides + 1 Meat      |
+| Coastal pasture      | 10%                | 2 Wool                |
+| Peat bog             | 10%                | 1 Coal                |
+| Alluvial clay banks  | 15%                | 2 Clay                |
+| Coastal cliffs       | 15%                | 1 Stone               |
+| Iron mountains       | 7%                 | 1 Iron ore            |
+| Gold mountains       | 3%                 | 1 Gold                |
+| Water terrain        | Sequential check   | Effective water share |
+| ---                  | ---                | ---                   |
+| Fishing grounds      | 25%                | 25%                   |
+| Cod grounds          | 10%                | 7.5%                  |
+| Whale grounds        | 8%                 | 5.4%                  |
+| Water                |                    | 62.1%                 |
+
+Open water (no adjacent land): Whale check 16%; effective share 10.8%. Table above: coastal water.
+
+### Equatorial Wetlands: 35% land / 65% water
+
+Compatible : Tropical, Subtropical
+
+Initial climate weight : 1
+
+Transition weights : Tropical ×2, Subtropical ×1
+
+| Land terrain        | Conditional chance | Annual baseline       |
+| ------------------- | ------------------ | --------------------- |
+| Mangroves           | 25%                | 1 Wood + 1 Fish       |
+| Sago grove          | 20%                | 1 Grain               |
+| River woods         | 15%                | 1 Wood                |
+| Alluvial clay banks | 20%                | 2 Clay                |
+| Peat bog            | 10%                | 1 Coal                |
+| Stone quarry        | 5%                 | 1 Stone               |
+| Iron mountains      | 3%                 | 1 Iron ore            |
+| Gold mountains      | 2%                 | 1 Gold                |
+| Water terrain       | Sequential check   | Effective water share |
+| ---                 | ---                | ---                   |
+| Fishing grounds     | 30%                | 30%                   |
+| Whale grounds       | 3%                 | 2.1%                  |
+| Water               |                    | 67.9%                 |
+
+Open water (no adjacent land): Whale check 6%; effective share 4.2%. Table above: coastal water.
+
 ## Terrain yields
 
 Current annual baselines include climate-specific crop productivity. Each seasonal calendar totals four times that baseline, not necessarily the value used by an earlier game version.
 
-| Terrain               | Climates                                                                                                                                                                            | Base yield        | Family |
-| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------- | ------ |
-| Woods                 | Temperate / Steppe / Mediterranean / Oceanic                                                                                                                                        | 1 Wood OR 1 Hides | forest |
-| Forest                | Cold / Alpine                                                                                                                                                                       | 2 Wood            | forest |
-| Hunting forest        | Cold                                                                                                                                                                                | 2 Hides           | forest |
-| Golden fields         | Temperate / Mediterranean / Oceanic                                                                                                                                                 | 2 Grain           | flat   |
-| Black-soil wheat      | Temperate / Steppe                                                                                                                                                                  | 3 Grain           | flat   |
-| Pasture               | Temperate / Steppe                                                                                                                                                                  | 2 Wool            | flat   |
-| Rough pasture         | Cold / Mediterranean / Savanna                                                                                                                                                      | 1 Wool            | rugged |
-| Clay hills            | Temperate / Cold / Steppe / Tropical / Oceanic / Alpine / Savanna / Andean / Prairie / Mesoamerican                                                                                 | 1 Clay            | rugged |
-| Gold mountains        | Temperate / Cold / Steppe / Mediterranean / Tropical / Desert / Oceanic / Alpine / Subtropical / Savanna / Hyperarid / Monsoon / Andean / Prairie / Mesoamerican                    | 1 Gold            | rugged |
-| Iron mountains        | Temperate / Cold / Steppe / Mediterranean / Tropical / Desert / Oceanic / Alpine / Subtropical / Savanna / Hyperarid / Monsoon / Andean / Prairie / Mesoamerican                    | 1 Iron ore        | rugged |
-| Stone quarry          | Temperate / Cold / Steppe / Tropical / Desert / Subtropical / Savanna / Hyperarid / Monsoon / Prairie                                                                               | 1 Stone           | rugged |
-| Coal hills            | Temperate / Cold / Steppe / Mediterranean / Tropical / Desert / Oceanic / Alpine / Subtropical / Hyperarid / Monsoon / Prairie / Mesoamerican                                       | 1 Coal            | rugged |
-| Salt flats            | Temperate / Mediterranean / Tropical / Desert / Subtropical / Savanna / Hyperarid / Andean / Prairie / Mesoamerican                                                                 | 1 Salt            | flat   |
-| Snow plain            | Arctic / Glacial                                                                                                                                                                    | 0                 | flat   |
-| Seal hunting grounds  | Arctic / Glacial                                                                                                                                                                    | 1 Hides + 1 Oil   | flat   |
-| Arctic iron mountains | Arctic / Glacial                                                                                                                                                                    | 1 Iron ore        | rugged |
-| Arctic stone ridge    | Arctic / Glacial                                                                                                                                                                    | 1 Stone           | rugged |
-| Arctic gold mountains | Arctic / Glacial                                                                                                                                                                    | 1 Gold            | rugged |
-| Steppe plain          | Steppe / Prairie                                                                                                                                                                    | 1 Hides + 1 Wool  | flat   |
-| Olive grove           | Mediterranean                                                                                                                                                                       | 1 Grain           | forest |
-| Escarpment            | Mediterranean                                                                                                                                                                       | 1 Stone           | rugged |
-| Jungle                | Tropical / Subtropical / Monsoon                                                                                                                                                    | 1 Hides           | forest |
-| Tropical woods        | Tropical / Monsoon / Mesoamerican                                                                                                                                                   | 1 Wood            | forest |
-| Rice field            | Tropical                                                                                                                                                                            | 3 Grain           | flat   |
-| Rice field            | Subtropical                                                                                                                                                                         | 2 Grain           | flat   |
-| Rice field            | Monsoon                                                                                                                                                                             | 1 Grain           | flat   |
-| Desert                | Desert / Hyperarid                                                                                                                                                                  | 0                 | flat   |
-| Oasis                 | Desert / Hyperarid                                                                                                                                                                  | 1 Wood + 1 Grain  | forest |
-| Water                 | Temperate / Cold / Arctic / Steppe / Mediterranean / Tropical / Desert / Oceanic / Alpine / Subtropical / Savanna / Glacial / Hyperarid / Monsoon / Andean / Prairie / Mesoamerican | 0                 | water  |
-| Fishing grounds       | Temperate / Cold / Arctic / Steppe / Mediterranean / Tropical / Desert / Oceanic / Alpine / Subtropical / Savanna / Glacial / Hyperarid / Monsoon / Andean / Prairie / Mesoamerican | 1 Fish            | water  |
-| Cod grounds           | Cold / Arctic / Oceanic / Alpine / Glacial                                                                                                                                          | 2 Fish            | water  |
-| Whale grounds         | Temperate / Cold / Arctic / Steppe / Mediterranean / Tropical / Desert / Oceanic / Alpine / Subtropical / Savanna / Glacial / Hyperarid / Monsoon / Mesoamerican                    | 1 Hides + 1 Oil   | water  |
-| Frozen sea            | Arctic / Glacial                                                                                                                                                                    | 0                 | flat   |
-| Coastal pasture       | Oceanic                                                                                                                                                                             | 2 Wool            | flat   |
-| Coastal cliffs        | Oceanic                                                                                                                                                                             | 1 Stone           | rugged |
-| Mountain quarry       | Alpine / Andean                                                                                                                                                                     | 2 Stone           | rugged |
-| Alpine pasture        | Alpine                                                                                                                                                                              | 1 Wool            | rugged |
-| Bare Peaks            | Alpine / Glacial / Hyperarid / Monsoon / Andean                                                                                                                                     | 0                 | rugged |
-| Alluvial clay banks   | Subtropical / Monsoon                                                                                                                                                               | 2 Clay            | flat   |
-| River woods           | Subtropical / Monsoon / Andean / Prairie                                                                                                                                            | 1 Wood            | forest |
-| Wildlife grassland    | Savanna                                                                                                                                                                             | 2 Hides           | flat   |
-| Dry woodland          | Savanna                                                                                                                                                                             | 1 Wood            | forest |
-| Barley fields         | Cold / Mediterranean / Alpine                                                                                                                                                       | 1 Grain           | flat   |
-| Barley fields         | Oceanic                                                                                                                                                                             | 2 Grain           | flat   |
-| Potato fields         | Andean                                                                                                                                                                              | 2 Grain           | flat   |
-| Turnip fields         | Temperate / Oceanic                                                                                                                                                                 | 2 Grain           | flat   |
-| Turnip fields         | Cold / Alpine                                                                                                                                                                       | 1 Grain           | flat   |
-| Oat fields            | Temperate                                                                                                                                                                           | 2 Grain           | flat   |
-| Sorghum fields        | Subtropical                                                                                                                                                                         | 2 Grain           | flat   |
-| Alpaca pasture        | Andean                                                                                                                                                                              | 1 Wool + 1 Meat   | flat   |
-| Sunflower fields      | Prairie                                                                                                                                                                             | 1 Oil             | flat   |
-| Bison range           | Prairie                                                                                                                                                                             | 1 Meat + 1 Hides  | flat   |
-| Chinampa gardens      | Mesoamerican                                                                                                                                                                        | 3 Grain           | flat   |
-| Turkey grounds        | Mesoamerican                                                                                                                                                                        | 2 Meat            | forest |
-| Cloud forest          | Mesoamerican                                                                                                                                                                        | 1 Wood + 1 Hides  | forest |
-| Volcanic quarry       | Mesoamerican                                                                                                                                                                        | 2 Stone           | rugged |
-| Millet fields         | Steppe / Savanna                                                                                                                                                                    | 1 Grain           | flat   |
-| Maize fields          | Prairie / Mesoamerican                                                                                                                                                              | 2 Grain           | flat   |
-| Cattle pasture        | Temperate / Oceanic / Subtropical                                                                                                                                                   | 2 Meat            | flat   |
-| Goat pasture          | Mediterranean / Desert / Alpine                                                                                                                                                     | 1 Meat            | rugged |
-| Reindeer range        | Cold / Arctic                                                                                                                                                                       | 1 Meat + 1 Hides  | flat   |
-| Cattle range          | Steppe / Savanna                                                                                                                                                                    | 1 Meat + 1 Hides  | flat   |
+| Terrain               | Climates                                                                                                                                                                                                                                  | Base yield        | Family |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------- | ------ |
+| Woods                 | Temperate / Steppe / Mediterranean / Oceanic                                                                                                                                                                                              | 1 Wood OR 1 Hides | forest |
+| Forest                | Cold / Alpine                                                                                                                                                                                                                             | 2 Wood            | forest |
+| Hunting forest        | Cold                                                                                                                                                                                                                                      | 2 Hides           | forest |
+| Golden fields         | Temperate / Mediterranean / Oceanic                                                                                                                                                                                                       | 2 Grain           | flat   |
+| Black-soil wheat      | Temperate / Steppe                                                                                                                                                                                                                        | 3 Grain           | flat   |
+| Pasture               | Temperate / Steppe                                                                                                                                                                                                                        | 2 Wool            | flat   |
+| Rough pasture         | Cold / Mediterranean / Savanna                                                                                                                                                                                                            | 1 Wool            | rugged |
+| Clay hills            | Temperate / Cold / Steppe / Tropical / Oceanic / Alpine / Savanna / Andean / Prairie / Mesoamerican                                                                                                                                       | 1 Clay            | rugged |
+| Gold mountains        | Temperate / Cold / Steppe / Mediterranean / Tropical / Desert / Oceanic / Alpine / Subtropical / Savanna / Hyperarid / Monsoon / Andean / Prairie / Mesoamerican / Temperate Rainforest / Equatorial Wetlands                             | 1 Gold            | rugged |
+| Iron mountains        | Temperate / Cold / Steppe / Mediterranean / Tropical / Desert / Oceanic / Alpine / Subtropical / Savanna / Hyperarid / Monsoon / Andean / Prairie / Mesoamerican / Temperate Rainforest / Equatorial Wetlands                             | 1 Iron ore        | rugged |
+| Stone quarry          | Temperate / Cold / Steppe / Tropical / Desert / Subtropical / Savanna / Hyperarid / Monsoon / Prairie / Equatorial Wetlands                                                                                                               | 1 Stone           | rugged |
+| Coal hills            | Temperate / Cold / Steppe / Mediterranean / Tropical / Desert / Oceanic / Alpine / Subtropical / Hyperarid / Monsoon / Prairie / Mesoamerican                                                                                             | 1 Coal            | rugged |
+| Salt flats            | Temperate / Mediterranean / Tropical / Desert / Subtropical / Savanna / Hyperarid / Andean / Prairie / Mesoamerican                                                                                                                       | 1 Salt            | flat   |
+| Snow plain            | Arctic / Glacial / Tundra                                                                                                                                                                                                                 | 0                 | flat   |
+| Seal hunting grounds  | Arctic / Glacial                                                                                                                                                                                                                          | 1 Hides + 1 Oil   | flat   |
+| Arctic iron mountains | Arctic / Glacial / Tundra                                                                                                                                                                                                                 | 1 Iron ore        | rugged |
+| Arctic stone ridge    | Arctic / Glacial / Tundra                                                                                                                                                                                                                 | 1 Stone           | rugged |
+| Arctic gold mountains | Arctic / Glacial / Tundra                                                                                                                                                                                                                 | 1 Gold            | rugged |
+| Steppe plain          | Steppe / Prairie                                                                                                                                                                                                                          | 1 Hides + 1 Wool  | flat   |
+| Olive grove           | Mediterranean                                                                                                                                                                                                                             | 1 Grain           | forest |
+| Escarpment            | Mediterranean                                                                                                                                                                                                                             | 1 Stone           | rugged |
+| Jungle                | Tropical / Subtropical / Monsoon                                                                                                                                                                                                          | 1 Hides           | forest |
+| Tropical woods        | Tropical / Monsoon / Mesoamerican                                                                                                                                                                                                         | 1 Wood            | forest |
+| Rice field            | Tropical                                                                                                                                                                                                                                  | 3 Grain           | flat   |
+| Rice field            | Subtropical                                                                                                                                                                                                                               | 2 Grain           | flat   |
+| Rice field            | Monsoon                                                                                                                                                                                                                                   | 1 Grain           | flat   |
+| Desert                | Desert / Hyperarid                                                                                                                                                                                                                        | 0                 | flat   |
+| Oasis                 | Desert / Hyperarid                                                                                                                                                                                                                        | 1 Wood + 1 Grain  | forest |
+| Water                 | Temperate / Cold / Arctic / Steppe / Mediterranean / Tropical / Desert / Oceanic / Alpine / Subtropical / Savanna / Glacial / Hyperarid / Monsoon / Andean / Prairie / Mesoamerican / Tundra / Temperate Rainforest / Equatorial Wetlands | 0                 | water  |
+| Fishing grounds       | Temperate / Cold / Arctic / Steppe / Mediterranean / Tropical / Desert / Oceanic / Alpine / Subtropical / Savanna / Glacial / Hyperarid / Monsoon / Andean / Prairie / Mesoamerican / Tundra / Temperate Rainforest / Equatorial Wetlands | 1 Fish            | water  |
+| Cod grounds           | Cold / Arctic / Oceanic / Alpine / Glacial / Tundra / Temperate Rainforest                                                                                                                                                                | 2 Fish            | water  |
+| Whale grounds         | Temperate / Cold / Arctic / Steppe / Mediterranean / Tropical / Desert / Oceanic / Alpine / Subtropical / Savanna / Glacial / Hyperarid / Monsoon / Mesoamerican / Tundra / Temperate Rainforest / Equatorial Wetlands                    | 1 Hides + 1 Oil   | water  |
+| Frozen sea            | Arctic / Glacial                                                                                                                                                                                                                          | 0                 | flat   |
+| Coastal pasture       | Oceanic / Temperate Rainforest                                                                                                                                                                                                            | 2 Wool            | flat   |
+| Coastal cliffs        | Oceanic / Temperate Rainforest                                                                                                                                                                                                            | 1 Stone           | rugged |
+| Mountain quarry       | Alpine / Andean                                                                                                                                                                                                                           | 2 Stone           | rugged |
+| Alpine pasture        | Alpine                                                                                                                                                                                                                                    | 1 Wool            | rugged |
+| Bare Peaks            | Alpine / Glacial / Hyperarid / Monsoon / Andean                                                                                                                                                                                           | 0                 | rugged |
+| Alluvial clay banks   | Subtropical / Monsoon / Temperate Rainforest / Equatorial Wetlands                                                                                                                                                                        | 2 Clay            | flat   |
+| River woods           | Subtropical / Monsoon / Andean / Prairie / Equatorial Wetlands                                                                                                                                                                            | 1 Wood            | forest |
+| Wildlife grassland    | Savanna                                                                                                                                                                                                                                   | 2 Hides           | flat   |
+| Dry woodland          | Savanna                                                                                                                                                                                                                                   | 1 Wood            | forest |
+| Barley fields         | Cold / Mediterranean / Alpine                                                                                                                                                                                                             | 1 Grain           | flat   |
+| Barley fields         | Oceanic                                                                                                                                                                                                                                   | 2 Grain           | flat   |
+| Potato fields         | Andean                                                                                                                                                                                                                                    | 2 Grain           | flat   |
+| Turnip fields         | Temperate / Oceanic                                                                                                                                                                                                                       | 2 Grain           | flat   |
+| Turnip fields         | Cold / Alpine                                                                                                                                                                                                                             | 1 Grain           | flat   |
+| Oat fields            | Temperate                                                                                                                                                                                                                                 | 2 Grain           | flat   |
+| Sorghum fields        | Subtropical                                                                                                                                                                                                                               | 2 Grain           | flat   |
+| Alpaca pasture        | Andean                                                                                                                                                                                                                                    | 1 Wool + 1 Meat   | flat   |
+| Sunflower fields      | Prairie                                                                                                                                                                                                                                   | 1 Oil             | flat   |
+| Bison range           | Prairie                                                                                                                                                                                                                                   | 1 Meat + 1 Hides  | flat   |
+| Chinampa gardens      | Mesoamerican                                                                                                                                                                                                                              | 3 Grain           | flat   |
+| Turkey grounds        | Mesoamerican                                                                                                                                                                                                                              | 2 Meat            | forest |
+| Cloud forest          | Mesoamerican                                                                                                                                                                                                                              | 1 Wood + 1 Hides  | forest |
+| Volcanic quarry       | Mesoamerican                                                                                                                                                                                                                              | 2 Stone           | rugged |
+| Millet fields         | Steppe / Savanna                                                                                                                                                                                                                          | 1 Grain           | flat   |
+| Maize fields          | Prairie / Mesoamerican                                                                                                                                                                                                                    | 2 Grain           | flat   |
+| Cattle pasture        | Temperate / Oceanic / Subtropical                                                                                                                                                                                                         | 2 Meat            | flat   |
+| Goat pasture          | Mediterranean / Desert / Alpine                                                                                                                                                                                                           | 1 Meat            | rugged |
+| Reindeer range        | Cold / Arctic / Tundra                                                                                                                                                                                                                    | 1 Meat + 1 Hides  | flat   |
+| Cattle range          | Steppe / Savanna                                                                                                                                                                                                                          | 1 Meat + 1 Hides  | flat   |
+| Berry heath           | Tundra                                                                                                                                                                                                                                    | 1 Grain           | flat   |
+| Musk ox range         | Tundra                                                                                                                                                                                                                                    | 1 Wool + 1 Meat   | flat   |
+| Peat bog              | Tundra / Temperate Rainforest / Equatorial Wetlands                                                                                                                                                                                       | 1 Coal            | flat   |
+| Old-growth forest     | Temperate Rainforest                                                                                                                                                                                                                      | 3 Wood            | forest |
+| Fern hunting grounds  | Temperate Rainforest                                                                                                                                                                                                                      | 1 Hides + 1 Meat  | forest |
+| Mangroves             | Equatorial Wetlands                                                                                                                                                                                                                       | 1 Wood + 1 Fish   | forest |
+| Sago grove            | Equatorial Wetlands                                                                                                                                                                                                                       | 1 Grain           | forest |
 
 Bare Peaks: no production and no unit entry, including recruitment, retreat or disembarkation. Roads may follow their edges; towns need adjacent walkable solid land.
 
@@ -1303,9 +1390,69 @@ Each season lasts two full rounds, early and late, with the same scheduled yield
 | Fishing grounds  | 1 Fish           | 1 Fish           | 1 Fish           | 1 Fish           |
 | Whale grounds    | 0                | 1 Hides + 1 Oil  | 2 Hides + 2 Oil  | 1 Hides + 1 Oil  |
 
+### Tundra
+
+| Terrain               | Spring           | Summer           | Autumn           | Winter           |
+| --------------------- | ---------------- | ---------------- | ---------------- | ---------------- |
+| Berry heath           | 0                | 2 Grain          | 2 Grain          | 0                |
+| Musk ox range         | 1 Wool + 1 Meat  | 3 Wool + 1 Meat  | 1 Meat           | 1 Meat           |
+| Reindeer range        | 1 Meat + 1 Hides | 1 Meat + 1 Hides | 1 Meat + 1 Hides | 1 Meat + 1 Hides |
+| Peat bog              | 0                | 2 Coal           | 2 Coal           | 0                |
+| Arctic iron mountains | 1 Iron ore       | 2 Iron ore       | 1 Iron ore       | 0                |
+| Arctic stone ridge    | 1 Stone          | 2 Stone          | 1 Stone          | 0                |
+| Arctic gold mountains | 1 Gold           | 2 Gold           | 1 Gold           | 0                |
+| Snow plain            | 0                | 0                | 0                | 0                |
+| Fishing grounds       | 1 Fish           | 2 Fish           | 1 Fish           | 0                |
+| Cod grounds           | 2 Fish           | 4 Fish           | 2 Fish           | 0                |
+| Whale grounds         | 1 Hides + 1 Oil  | 2 Hides + 2 Oil  | 1 Hides + 1 Oil  | 0                |
+
+### Temperate Rainforest
+
+| Terrain              | Spring           | Summer           | Autumn           | Winter           |
+| -------------------- | ---------------- | ---------------- | ---------------- | ---------------- |
+| Old-growth forest    | 3 Wood           | 4 Wood           | 3 Wood           | 2 Wood           |
+| Fern hunting grounds | 1 Hides + 1 Meat | 1 Hides + 1 Meat | 1 Hides + 1 Meat | 1 Hides + 1 Meat |
+| Coastal pasture      | 4 Wool           | 4 Wool           | 0                | 0                |
+| Peat bog             | 1 Coal           | 1 Coal           | 1 Coal           | 1 Coal           |
+| Alluvial clay banks  | 2 Clay           | 2 Clay           | 2 Clay           | 2 Clay           |
+| Coastal cliffs       | 1 Stone          | 1 Stone          | 1 Stone          | 1 Stone          |
+| Iron mountains       | 1 Iron ore       | 1 Iron ore       | 1 Iron ore       | 1 Iron ore       |
+| Gold mountains       | 1 Gold           | 1 Gold           | 1 Gold           | 1 Gold           |
+| Fishing grounds      | 1 Fish           | 1 Fish           | 1 Fish           | 1 Fish           |
+| Cod grounds          | 2 Fish           | 2 Fish           | 2 Fish           | 2 Fish           |
+| Whale grounds        | 0                | 1 Hides + 1 Oil  | 2 Hides + 2 Oil  | 1 Hides + 1 Oil  |
+
+### Equatorial Wetlands
+
+| Terrain             | Spring          | Summer          | Autumn          | Winter          |
+| ------------------- | --------------- | --------------- | --------------- | --------------- |
+| Mangroves           | 1 Wood + 1 Fish | 1 Wood + 1 Fish | 1 Wood + 1 Fish | 1 Wood + 1 Fish |
+| Sago grove          | 1 Grain         | 1 Grain         | 1 Grain         | 1 Grain         |
+| River woods         | 1 Wood          | 1 Wood          | 1 Wood          | 1 Wood          |
+| Alluvial clay banks | 2 Clay          | 1 Clay          | 2 Clay          | 3 Clay          |
+| Peat bog            | 1 Coal          | 1 Coal          | 1 Coal          | 1 Coal          |
+| Stone quarry        | 1 Stone         | 1 Stone         | 1 Stone         | 1 Stone         |
+| Iron mountains      | 1 Iron ore      | 1 Iron ore      | 1 Iron ore      | 1 Iron ore      |
+| Gold mountains      | 1 Gold          | 1 Gold          | 1 Gold          | 1 Gold          |
+| Fishing grounds     | 1 Fish          | 1 Fish          | 1 Fish          | 1 Fish          |
+| Whale grounds       | 0               | 1 Hides + 1 Oil | 2 Hides + 2 Oil | 1 Hides + 1 Oil |
+
 ## Half-season freeze and thaw chances
 
 Each sea tile checks once per full round. Open water uses the freeze chance; ice uses the thaw chance. Otherwise its surface stays unchanged. Results are saved and can differ between years. Other climates stay open year-round. Glacial Frozen sea is permanent pack ice; ordinary Glacial seas thaw by Late Summer. Arctic Frozen sea has its own heavier-ice table.
+
+### Tundra
+
+| Half-season entered | Open water: freezes | Frozen water: thaws |
+| ------------------- | ------------------- | ------------------- |
+| Early Spring        | 0%                  | 45%                 |
+| Late Spring         | 0%                  | 85%                 |
+| Early Summer        | 0%                  | 100%                |
+| Late Summer         | 0%                  | 100%                |
+| Early Autumn        | 15%                 | 0%                  |
+| Late Autumn         | 35%                 | 0%                  |
+| Early Winter        | 80%                 | 0%                  |
+| Late Winter         | 100%                | 0%                  |
 
 ### Glacial
 

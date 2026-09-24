@@ -88,6 +88,7 @@ describe("stable shoulder-season sea ice", () => {
     expect(SHOULDER_ICE_CHANCE).toEqual({
       glacial: { spring: 1, autumn: 1 },
       arctic: { spring: 0.7, autumn: 0.5 },
+      tundra: { spring: 0.45, autumn: 0.3 },
       alpine: { spring: 0.35, autumn: 0.25 },
       cold: { spring: 0.2, autumn: 0.1 },
       prairie: { spring: 0.1, autumn: 0.1 },

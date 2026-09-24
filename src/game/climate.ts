@@ -11,6 +11,8 @@ import {
 import type { World, Hex } from "./types";
 import { neighbors, coord, key, randomAt } from "./world";
 
+export const CLIMATE_CONTINUITY = 0.88;
+
 const climateDistances = CLIMATES.map((start) => {
   const distances = new Map<Climate, number>([[start, 0]]),
     queue: Climate[] = [start];
@@ -173,7 +175,7 @@ export function planClimates(world: World, seed: string, revealed: string[]) {
           Math.floor(randomAt(seed, id, "climate-parent") * adjacent.length)
         ];
       const same = adjacent.every((c) => c === base),
-        stay = randomAt(seed, id, "climate-stay") < 0.85;
+        stay = randomAt(seed, id, "climate-stay") < CLIMATE_CONTINUITY;
       let climate = base;
       if (!same || !stay) {
         let choices = CLIMATES.filter((c) =>

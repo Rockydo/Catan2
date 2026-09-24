@@ -1865,8 +1865,8 @@ function NewGameForm({
           }}
         >
           <option value={5}>{tx("Classic · 5 factions · 125 tiles")}</option>
-          <option value={10}>
-            {tx("Grand campaign · 10 factions · 250 tiles")}
+          <option value={12}>
+            {tx("Grand campaign · 12 factions · 300 tiles")}
           </option>
         </select>
       </label>

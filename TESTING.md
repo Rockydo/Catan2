@@ -1,5 +1,14 @@
 # Release verification
 
+## Three climates and twelve-faction Grand Campaign: 2026-09-24
+
+- Added Tundra, Temperate Rainforest and Equatorial Wetlands with reciprocal climate borders, seven new biomes, distinct resource shortages, complete seasonal yields, Tundra ice transitions and English/French names and rules. Climate continuity is 88%. New Grand Campaigns use 12 factions and 300 tiles; Classic and legacy 4/8/10-faction saves retain their existing sizes.
+- All 1,876 unit tests pass in 143 files. Coverage includes 12-seat setup, full turn rotation, upper-seat trades and victory, legacy save roundtrips, every seasonal asset, annual per-resource conservation, advanced processing, deterministic generation and compatible borders through repeated exploration. Old seed-dependent scenarios now search for their intended starting climate. The existing shoulder-ice table assertion includes Tundra.
+- 45 distinct affected browser cases pass across Chromium, mobile Chromium and Firefox, combining the main run and targeted reruns. They cover every new land asset in every season in both guide languages, map selection and climate overlays, seasonal forecasts, all 12 setup slots and harvest receipts, the twelfth human turn, and existing crop/ice save migrations. Two older keyboard scenarios now wait for the map to be visible before pressing Enter; the map artwork check allows the same texture to be referenced by multiple visible tiles.
+- Reviewed generated sheets and actual map screenshots. Added 96 distinct seasonal land WebPs (384px, about 5.1 MiB total) and seven base images. All 48 sea-season entries reuse the matching existing sea families. Source prompts and the atlas importer are committed. No extra rendering effect, timer or per-frame computation is introduced.
+- TypeScript, production build and whitespace checks pass. The release is deployed atomically with HTML last and previous hashed assets retained. All 12 production HTTP checks pass. Tests use disposable browser storage; the player's live campaign is not accessed or modified.
+- Evidence: `test-artifacts/frontier-final-unit-tests.log`, `frontier-browser-tests.log`, `frontier-browser-recheck.log`, `frontier-map-recheck.log`, `frontier-firefox-tests.log`, and `frontier-map-*.png`. The new regional rules are in `docs/frontier-climates.md` and the interactive bilingual guide.
+
 ## Final requested performance check: 2026-09-23
 
 - The deployed renderer remains `e063aeb`. A final hardware-backed 2,000-tile navigation profile preserves the complete campaign and reports no browser errors. Its profile identifies shader compilation/status waits and replacement of temporary vector artwork as remaining startup costs. Evidence: `test-artifacts/camera-startup-profile-growth2000.{json,cpuprofile,trace.json}`.
@@ -283,18 +292,18 @@ Browser scenarios build a city using Fish, upgrade a fishery, build a Smokehouse
 
 Four Standard-AI seeds (`maritime-audit-0` through `-3`) ran to victory or 60 rounds under the revised shared-food valuations: **4,718 valid commands**, no rejected commands or invariant failures. One campaign ended at round 56; the other three reached the 60-round observation limit. The slowest measured decision was 145 ms on this machine during concurrent verification. These are bounded observations, not a guarantee of campaign length or fairness on every seed.
 
-| Action | Count |
-|---|---:|
-| settlement | 45 |
-| city | 73 |
-| ship | 102 |
-| recruit | 258 |
-| tower | 27 |
-| siege | 77 |
-| destroy-town | 34 |
-| load | 42 |
-| unload | 29 |
-| resolve-battle | 115 |
+| Action         | Count |
+| -------------- | ----: |
+| settlement     |    45 |
+| city           |    73 |
+| ship           |   102 |
+| recruit        |   258 |
+| tower          |    27 |
+| siege          |    77 |
+| destroy-town   |    34 |
+| load           |    42 |
+| unload         |    29 |
+| resolve-battle |   115 |
 
 AI recruits mobile merchants, develops merchant ships and fisheries when useful, sends transports across seas, upgrades cities, builds towers and attacks towns. Fishing-ship demand is map- and food-dependent: one tier-II fishing ship was bought in this final batch, while numerous transport and merchant hulls were bought. Engine tests separately exercise every ship class and tier; self-play is not claimed to have purchased every one. Income calculations are cached only within a single AI decision, and production skips warehouse searches for non-collectors.
 
@@ -350,14 +359,14 @@ Regressions exercise a favorable six-against-five sortie that inflicts one casua
 
 Six Standard-AI seeds (`ai-audit-0` through `ai-audit-5`), up to 120 rounds each, were run before and after the combined update. Both batches use the same initial map generation; camp prices, troop tiers, recruitment rules and AI policies change together, so this is not an isolated causal estimate of one AI adjustment.
 
-| Measure | Previous build | Final 2.4 |
-|---|---:|---:|
-| Valid commands | 14,533 | 11,999 |
-| Recruits purchased | 1,239 | 662 |
-| Attacks initiated | 152 | 184 |
-| Settlements founded after setup | 60 | 106 |
-| City upgrades | 62 | 204 |
-| Conquests completed by cutoff | 2 / 6 | 3 / 6 |
+| Measure                         | Previous build | Final 2.4 |
+| ------------------------------- | -------------: | --------: |
+| Valid commands                  |         14,533 |    11,999 |
+| Recruits purchased              |          1,239 |       662 |
+| Attacks initiated               |            152 |       184 |
+| Settlements founded after setup |             60 |       106 |
+| City upgrades                   |             62 |       204 |
+| Conquests completed by cutoff   |          2 / 6 |     3 / 6 |
 
 The final run includes **93 upgrades to City I, 72 to City II and 39 to City III**, and recruits 122 new tier-II troops plus 9 tier-III troops. No tier-IV troops happened to be purchased in this batch; a dedicated funded scenario verifies that the AI chooses and legally recruits them. The largest stack reached 119 unit points, versus 92 before: the policy reduces repeated speculative purchasing overall, not every individual army’s size. Three campaigns remain contested. The longest measured decision was 681 ms. This is evidence of more economic development and active combat, not proof of optimal strategy, equal faction strength or guaranteed stalemate elimination.
 
@@ -417,19 +426,19 @@ The following records describe the preceding rules release. The rules and AI cod
 
 Verified 11 September 2026 against the local production build. The implemented scope is a four-player local browser game with human/AI seats, not an online multiplayer service.
 
-| Check | Result | Evidence |
-|---|---|---|
-| Extracted release archive | Starts without node_modules; game, rules and all three art assets load | `test-artifacts/release-archive-check.json` |
-| Clean dependency installation | Passed, locked dependencies | `test-artifacts/v2-clean-install.log` |
-| TypeScript and production build | Passed | `test-artifacts/v2-clean-build.log` |
-| Engine and scenario suite | **116 passed** | `test-artifacts/v2-coverage.log` |
-| Production browser suite | **48 passed**, no retries | `test-artifacts/release-v2-check.log` |
-| Accessibility | No WCAG A/AA violations in tested menu, game, five action panels and expanded resource guide | Browser suite uses axe-core |
-| Production HTTP server | **12 passed** | `test-artifacts/v2-http.log` |
-| Large-world state/AI smoke checks | 100, 500, 1,000 and 2,500 tiles passed | `test-artifacts/v2-stress.log` |
-| Rules and economy audit | **86 recipes**, **13,122 casualty arithmetic cases** | `../catane-design/balance-audit.json` |
-| Production dependencies | **0 reported vulnerabilities** at audit time | `test-artifacts/v2-dependencies.json` |
-| Formatting | Passed | `test-artifacts/v2-format.log` |
+| Check                             | Result                                                                                       | Evidence                                    |
+| --------------------------------- | -------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| Extracted release archive         | Starts without node_modules; game, rules and all three art assets load                       | `test-artifacts/release-archive-check.json` |
+| Clean dependency installation     | Passed, locked dependencies                                                                  | `test-artifacts/v2-clean-install.log`       |
+| TypeScript and production build   | Passed                                                                                       | `test-artifacts/v2-clean-build.log`         |
+| Engine and scenario suite         | **116 passed**                                                                               | `test-artifacts/v2-coverage.log`            |
+| Production browser suite          | **48 passed**, no retries                                                                    | `test-artifacts/release-v2-check.log`       |
+| Accessibility                     | No WCAG A/AA violations in tested menu, game, five action panels and expanded resource guide | Browser suite uses axe-core                 |
+| Production HTTP server            | **12 passed**                                                                                | `test-artifacts/v2-http.log`                |
+| Large-world state/AI smoke checks | 100, 500, 1,000 and 2,500 tiles passed                                                       | `test-artifacts/v2-stress.log`              |
+| Rules and economy audit           | **86 recipes**, **13,122 casualty arithmetic cases**                                         | `../catane-design/balance-audit.json`       |
+| Production dependencies           | **0 reported vulnerabilities** at audit time                                                 | `test-artifacts/v2-dependencies.json`       |
+| Formatting                        | Passed                                                                                       | `test-artifacts/v2-format.log`              |
 
 Browser coverage consists of 16 scenarios run in desktop Chromium, desktop Firefox and Pixel 7-sized mobile Chromium. It exercises the real production UI: fresh campaign and worker AI, snake setup, turns, towns, walls, extensions, research, imports, trades, movement and combat, casualties, siege victory, transport and landing, route relocation, expeditions, hotseat privacy, saves/reload/corruption, camps on both road sides, independent camp upgrades, complete warehouse raids, resource help and artwork loading. Firefox's atlas hit-testing bug was fixed and the full suite rerun successfully. Mobile action panels are exercised directly.
 
@@ -473,18 +482,15 @@ Release screenshots are in `test-artifacts/v2-menu.png`, `v2-board.png`, and the
 - Browser suite: 113 passed initially. Three relocation fixtures still assumed coastal shipping, and the new mobile test needed to reopen the automatically closed action panel. Updated those fixtures; all six focused coastal/relocation checks then passed on Firefox, Chromium and mobile, covering all four initial failures. No product changes were needed after the initial browser run.
 - Production build, formatting and all 12 HTTP checks passed; rules HTML/PDF regenerated. User campaign left untouched for refresh and continue.
 
-
 ## Complete merchant and fleet artwork: 2026-09-14
 
 - All 44 land-unit and ship portraits rendered in the actual `MilitaryPortrait` component; all nine painted art sheets loaded with no browser errors. Reviewed the full roster and merchant detail screenshots for framing, tier distinction and readability. Evidence: `test-artifacts/complete-roster.png`, `test-artifacts/complete-roster-review.json`.
 - Six existing browser checks passed across Firefox, Chromium and mobile Chromium, covering all twenty land portraits, army counters, tier-IV fishing/merchant ship recruitment and harvest details. Evidence: `test-artifacts/complete-roster-browser.log`.
 - Production build and formatting passed. This artwork-only follow-up does not alter game rules or saved campaigns.
 
-
 ## Destruction spoils: 2026-09-14
 
 Town destruction now transfers the full remaining warehouse to the attacker's nearest town before removing the target. Two regression scenarios cover settlement and level-4 city destruction after a prior raid, replenished stock of all 21 goods, exact destination and pooled totals, untouched other warehouses, event contents, save round trips and rejected repeat destruction. All 272 engine tests and 12 town-alert browser checks passed (Chromium, Firefox and mobile). Production build, rules generation and formatting passed. Evidence: `test-artifacts/destruction-spoils-*.log`.
-
 
 ## Four-tier research and alternative watchtower foundations: 2026-09-14
 
@@ -495,7 +501,6 @@ Town destruction now transfers the full remaining warehouse to the attacker's ne
 - Evidence: `test-artifacts/research-four-engine.log`, `research-four-browser-full.log`, `research-four-browser-rerun.log`, `research-four-browser-final.log`, `research-four-campaigns.json`, and the `research-four-choice-*.png` screenshots. Campaign simulations use four independent Standard-AI seeds, up to 100 rounds, with command validation and state invariants every 25 actions. These are bounded strategy/stability checks, not proof of equal faction win rates.
 
 Final campaign results: **371 purchases; 367 cards played; 11,786 validated actions**. Purchases by tier: I 272, II 64, III 27, IV 8. Two conquests completed in rounds 59 and 89; two remained contested at round 100. All four starting seats bought research across the batch; no faction had more than one unplayed card at the final snapshots. Armies, ships, city upgrades and expansion remained active. See `test-artifacts/research-four-summary.json`.
-
 
 ## Direct road and sea-route connections: 2026-09-15
 
@@ -516,10 +521,10 @@ Evidence: `coalition-engine.log`, `coalition-browser-final.log`, `coalition-audi
 Measured with the production build in isolated headless Chromium at 1920×1080. Each fixture has eight human factions, a seeded map, roads, developed towns and units; AI does not run. Baseline and final camera sequences send 100 frame-paced pan events and 40 zoom events. The final audit additionally uses actual browser mouse dragging, tile selection, a peaceful army move and two seconds idle. Waits allow fonts/art to load; the benchmark itself adds no permanent instrumentation to the game.
 
 | Populated map | Towns / units | Pan median / 95th percentile | Actual mouse drag median / 95th | Zoom median / 95th | Camera scripting | Camera layouts |
-| --- | --- | --- | --- | --- | --- | --- |
-| 200 tiles | 56 / 50 | 16.7 / 16.7 ms | 16.7 / 16.8 ms | 16.7 / 16.8 ms | 15.6 ms | 2 |
-| 500 tiles | 116 / 125 | 16.7 / 16.7 ms | 16.7 / 16.7 ms | 16.7 / 33.3 ms | 16.9 ms | 2 |
-| 1000 tiles | 116 / 250 | 16.7 / 16.8 ms | 16.7 / 16.8 ms | 16.7 / 16.8 ms | 18.0 ms | 2 |
+| ------------- | ------------- | ---------------------------- | ------------------------------- | ------------------ | ---------------- | -------------- |
+| 200 tiles     | 56 / 50       | 16.7 / 16.7 ms               | 16.7 / 16.8 ms                  | 16.7 / 16.8 ms     | 15.6 ms          | 2              |
+| 500 tiles     | 116 / 125     | 16.7 / 16.7 ms               | 16.7 / 16.7 ms                  | 16.7 / 33.3 ms     | 16.9 ms          | 2              |
+| 1000 tiles    | 116 / 250     | 16.7 / 16.8 ms               | 16.7 / 16.8 ms                  | 16.7 / 16.8 ms     | 18.0 ms          | 2              |
 
 The original 1,000-tile renderer measured **133.3 ms median pan frames (about 7.5 fps)**, 233.2 ms at the 95th percentile, 8,850 ms camera scripting and 174 layouts. The final renderer measures **16.7 ms median frames (about 60 fps)**, 16.8 ms at the 95th percentile, 18 ms scripting and two layouts. Shared patterns fall from 578 to 12. The final zoom sequence still has two brief rasterization tasks when movement settles (58 and 76 ms); it is not a claim that every possible frame is below 16.7 ms.
 
@@ -539,11 +544,11 @@ This initial zoom fix waited 600 ms of quiet input (superseded by the sharpening
 
 Production build, isolated headless Chromium, 1920×1080, 1,000 tiles, 116 towns and 250 units; no AI runs. The test sends actual wheel input up to deep zoom, then twelve alternating zoom steps. The sparse variant leaves 400–420 ms between steps. Final runs also wait for the settled redraw, not just the input frames.
 
-| Sequence | Median / 95th-percentile frame | Main-thread task work | Layout passes | Tasks at least 50 ms |
-| --- | --- | --- | --- | --- |
-| Original, 160–180 ms notches | 16.7 / 50.0 ms | 3420 ms | 42 | 42 |
-| Final, 160–180 ms notches | 16.7 / 16.7 ms | 472 ms | 2 | 1 |
-| Final, 400–420 ms notches | 16.7 / 16.7 ms | 527 ms | 2 | 1 |
+| Sequence                     | Median / 95th-percentile frame | Main-thread task work | Layout passes | Tasks at least 50 ms |
+| ---------------------------- | ------------------------------ | --------------------- | ------------- | -------------------- |
+| Original, 160–180 ms notches | 16.7 / 50.0 ms                 | 3420 ms               | 42            | 42                   |
+| Final, 160–180 ms notches    | 16.7 / 16.7 ms                 | 472 ms                | 2             | 1                    |
+| Final, 400–420 ms notches    | 16.7 / 16.7 ms                 | 527 ms                | 2             | 1                    |
 
 The final deep-zoom portion uses about **6–7 ms total layout time**, rather than the hundreds of milliseconds seen in the diagnostic traces. The single remaining long task is about 50–55 ms; this is not a claim of zero stalls on every machine. The complete 1,000-tile map benchmark also preserves approximately 60 fps dragging, 33.4 ms median selection latency and zero idle scripting over two seconds. It exercises army movement, persistence and camera input. Evidence: `zoom-verified.json`, `zoom-verified-sparse.json`, `zoom-map-verified.json`, their screenshots and logs in `test-artifacts/`. Reproduce with `scripts/zoom-performance.ts` (optionally `GAP=400`) after generating the populated fixture using `scripts/map-performance.ts`.
 
@@ -557,11 +562,11 @@ Reduced the camera's quiet-input delay from **600 ms to 80 ms**. Fast wheel/trac
 
 The same populated 1,000-tile fixture was measured in isolated headless Chromium at 1920×1080. The benchmark now records the first animation-frame observation of restored SVG geometry after a wheel event, in addition to frame times and browser work. This measures readiness for presentation, not physical display latency.
 
-| Wheel spacing | Median / 95th-percentile frame | Median / longest observed sharpening delay | Layout passes |
-| --- | --- | --- | --- |
-| 160–180 ms | 16.7 / 16.8 ms | 83.2 / 97.2 ms | 42 |
-| 400–420 ms | 16.7 / 16.8 ms | 83.1 / 103.9 ms | 42 |
-| Rapid 16–36 ms | 16.7 / 16.8 ms | 83.5 / 207.1 ms | 4 |
+| Wheel spacing  | Median / 95th-percentile frame | Median / longest observed sharpening delay | Layout passes |
+| -------------- | ------------------------------ | ------------------------------------------ | ------------- |
+| 160–180 ms     | 16.7 / 16.8 ms                 | 83.2 / 97.2 ms                             | 42            |
+| 400–420 ms     | 16.7 / 16.8 ms                 | 83.1 / 103.9 ms                            | 42            |
+| Rapid 16–36 ms | 16.7 / 16.8 ms                 | 83.5 / 207.1 ms                            | 4             |
 
 Individual notches now intentionally refresh more often than the previous 600 ms batching policy. The ordinary-notch run has no 50 ms long tasks. Sparse and rapid runs still contain occasional rasterization stalls (longest tasks 114 and 190 ms respectively), so this is not a guarantee of perfectly uniform frames. All three retain approximately 60 fps at the median and 95th percentile. Labels stay temporarily scaled during a continuous gesture, then sharpen after release; the timer is not a mid-gesture refresh interval.
 
@@ -579,12 +584,12 @@ A decision-scoped index supplies piece locations, faction pieces/towns, town ver
 
 Same saved Grand campaign (round 35, 410 tiles, 89 towns, 688 pieces), same 100 sequential choices, Node CPU profiler enabled in both runs:
 
-| AI decision computation | Before | After |
-| --- | --- | --- |
-| Total, 100 choices | 41,620 ms | 10,804 ms |
-| Median choice | 364 ms | 107 ms |
-| 95th percentile | 965 ms | 157 ms |
-| Slowest choice | 1,562 ms | 275 ms |
+| AI decision computation | Before    | After     |
+| ----------------------- | --------- | --------- |
+| Total, 100 choices      | 41,620 ms | 10,804 ms |
+| Median choice           | 364 ms    | 107 ms    |
+| 95th percentile         | 965 ms    | 157 ms    |
+| Slowest choice          | 1,562 ms  | 275 ms    |
 
 Total decision time falls **74%**, about **3.85× faster**. This sampled stretch belongs to the first faction's developed turn; it is not a complete eight-faction round. Browser worker checks separately send ten identical economy snapshots in isolated Chromium. The original app's fresh-worker-per-action mode totals **4,347 ms** including startup/message overhead; optimized code with worker reuse totals **951 ms**. These figures exclude the deliberately retained pacing and harvest pauses, and are not universal hardware/turn-duration guarantees.
 
@@ -658,6 +663,7 @@ Evidence: `coastal-actions-engine-verified.log`, `coastal-actions-browser-final.
 Five city specializations, three sequential tiers, geography restrictions, local warehouse output and optional standing orders. Costs use three resource types; raw/mixed/processed progression is checked across all 15 recipes. Stone/Blocks are universal construction inputs; Coal/Fuel support industry and advanced supply. Existing vanilla prices and save key remain unchanged.
 
 Validation:
+
 - **450 engine tests pass**, including 33 new guild scenarios with all raw processing chains and all tiers. Tests cover exact merchant contracts versus Fish substitution, Gold restrictions, aggregated Coal inputs, next-turn opening, saved lower-tier orders, once-per-turn limits, atomic failed payments, siege/occupation shutdown, raids/destruction, rebellion inheritance, save validation, unchanged production/dice, AI tier-III investment and military supply readiness.
 - **39 browser scenarios pass** in Chromium, Firefox and mobile: guild founding, public crests, rival inspection, lower-tier selection, manufacturing, exact processed contracts, army supply, persistence and accessibility, plus faction-power, worker and coastal-action regressions. A final 12-scenario guild rerun validates the strengthened save validator on the final bundle.
 - Production build/TypeScript, formatting, rules/HTML/PDF generation, the recipe/casualty arithmetic audit and 12 HTTP checks pass. Evidence uses the `test-artifacts/guilds-*` prefix.

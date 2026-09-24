@@ -18,6 +18,9 @@ export const CLIMATES = [
   "andean",
   "prairie",
   "mesoamerican",
+  "tundra",
+  "temperate-rainforest",
+  "equatorial-wetlands",
 ] as const;
 export type Climate = (typeof CLIMATES)[number];
 export const BIOMES = [
@@ -79,6 +82,13 @@ export const BIOMES = [
   "goat-pasture",
   "reindeer-range",
   "cattle-savanna",
+  "tundra-heath",
+  "musk-ox-range",
+  "peat-bog",
+  "old-growth-forest",
+  "fern-hunting-grounds",
+  "mangrove",
+  "sago-grove",
 ] as const;
 export type Biome = (typeof BIOMES)[number];
 export type TerrainResource =
@@ -100,6 +110,56 @@ const b = (
   color: string,
 ): BiomeInfo => ({ name, resource, yield: yield_, family, art, color });
 export const BIOME_INFO: Record<Biome, BiomeInfo> = {
+  "tundra-heath": b(
+    "Berry heath",
+    "grain",
+    { grain: 1 },
+    "flat",
+    "tundra-heath",
+    "#aaa06b",
+  ),
+  "musk-ox-range": b(
+    "Musk ox range",
+    "wool",
+    { wool: 1, meat: 1 },
+    "flat",
+    "musk-ox-range",
+    "#827768",
+  ),
+  "peat-bog": b("Peat bog", "coal", { coal: 1 }, "flat", "peat-bog", "#736348"),
+  "old-growth-forest": b(
+    "Old-growth forest",
+    "lumber",
+    { lumber: 3 },
+    "forest",
+    "old-growth-forest",
+    "#315c47",
+  ),
+  "fern-hunting-grounds": b(
+    "Fern hunting grounds",
+    "hides",
+    { hides: 1, meat: 1 },
+    "forest",
+    "fern-hunting-grounds",
+    "#527d59",
+  ),
+  mangrove: b(
+    "Mangroves",
+    "lumber",
+    { lumber: 1, fish: 1 },
+    "forest",
+    "mangrove",
+    "#518b7b",
+  ),
+  "sago-grove": b(
+    "Sago grove",
+    "grain",
+    { grain: 1 },
+    "forest",
+    "sago-grove",
+    "#7e9e50",
+  ),
+
   "chernozem-wheat": b(
     "Black-soil wheat",
     "grain",
@@ -496,6 +556,7 @@ export const CLIMATE_INFO: Record<Climate, ClimateInfo> = {
       ["whale", 0.05],
     ],
     compatible: [
+      "temperate-rainforest",
       "steppe",
       "mediterranean",
       "cold",
@@ -529,6 +590,8 @@ export const CLIMATE_INFO: Record<Climate, ClimateInfo> = {
       ["whale", 0.1],
     ],
     compatible: [
+      "temperate-rainforest",
+      "tundra",
       "temperate",
       "steppe",
       "arctic",
@@ -555,7 +618,7 @@ export const CLIMATE_INFO: Record<Climate, ClimateInfo> = {
       ["cod", 0.2],
       ["whale", 0.2],
     ],
-    compatible: ["cold", "alpine", "glacial"],
+    compatible: ["tundra", "cold", "alpine", "glacial"],
   },
   steppe: {
     name: "Steppe",
@@ -632,6 +695,7 @@ export const CLIMATE_INFO: Record<Climate, ClimateInfo> = {
       ["whale", 0.05],
     ],
     compatible: [
+      "equatorial-wetlands",
       "temperate",
       "desert",
       "subtropical",
@@ -690,7 +754,7 @@ export const CLIMATE_INFO: Record<Climate, ClimateInfo> = {
       ["cod", 0.1],
       ["whale", 0.1],
     ],
-    compatible: ["temperate", "cold", "mediterranean"],
+    compatible: ["temperate-rainforest", "temperate", "cold", "mediterranean"],
   },
   alpine: {
     name: "Alpine",
@@ -738,6 +802,7 @@ export const CLIMATE_INFO: Record<Climate, ClimateInfo> = {
       ["whale", 0.03],
     ],
     compatible: [
+      "equatorial-wetlands",
       "tropical",
       "temperate",
       "mediterranean",
@@ -899,12 +964,80 @@ export const CLIMATE_INFO: Record<Climate, ClimateInfo> = {
     ],
     compatible: ["tropical", "subtropical", "savanna", "andean", "prairie"],
   },
+  tundra: {
+    name: "Tundra",
+    land: 0.6,
+    color: "#a29aaf",
+    compatible: ["cold", "arctic"],
+    terrain: [
+      ["tundra-heath", 20],
+      ["musk-ox-range", 20],
+      ["reindeer-range", 15],
+      ["peat-bog", 15],
+      ["arctic-iron", 12],
+      ["arctic-stone", 10],
+      ["arctic-gold", 5],
+      ["snow-plain", 3],
+    ],
+    water: [
+      ["fish", 0.2],
+      ["cod", 0.15],
+      ["whale", 0.08],
+    ],
+  },
+  "temperate-rainforest": {
+    name: "Temperate Rainforest",
+    land: 0.4,
+    color: "#247867",
+    compatible: ["temperate", "oceanic", "cold"],
+    terrain: [
+      ["old-growth-forest", 25],
+      ["fern-hunting-grounds", 15],
+      ["coastal-pasture", 10],
+      ["peat-bog", 10],
+      ["alluvial-clay", 15],
+      ["coastal-cliffs", 15],
+      ["iron", 7],
+      ["gold", 3],
+    ],
+    water: [
+      ["fish", 0.25],
+      ["cod", 0.1],
+      ["whale", 0.08],
+    ],
+  },
+  "equatorial-wetlands": {
+    name: "Equatorial Wetlands",
+    land: 0.35,
+    color: "#55857e",
+    compatible: ["tropical", "subtropical"],
+    terrain: [
+      ["mangrove", 25],
+      ["sago-grove", 20],
+      ["river-woods", 15],
+      ["alluvial-clay", 20],
+      ["peat-bog", 10],
+      ["stone", 5],
+      ["iron", 3],
+      ["gold", 2],
+    ],
+    water: [
+      ["fish", 0.3],
+      ["whale", 0.03],
+    ],
+  },
 };
 
 export const AMERICAN_CLIMATES: readonly Climate[] = [
   "andean",
   "prairie",
   "mesoamerican",
+];
+
+export const FRONTIER_CLIMATES: readonly Climate[] = [
+  "tundra",
+  "temperate-rainforest",
+  "equatorial-wetlands",
 ];
 
 const NEW_CLIMATES: Climate[] = ["oceanic", "alpine", "subtropical", "savanna"];
@@ -920,6 +1053,9 @@ export function climateInitialWeight(climate: Climate): number {
 const TRANSITION_WEIGHTS: Partial<
   Record<Climate, Partial<Record<Climate, number>>>
 > = {
+  tundra: { arctic: 2 },
+  "temperate-rainforest": { oceanic: 2 },
+  "equatorial-wetlands": { tropical: 2 },
   temperate: { cold: 1.5 },
   steppe: { cold: 1.5 },
   mediterranean: { desert: 0.5, steppe: 0.5 },
@@ -940,6 +1076,9 @@ const TRANSITION_WEIGHTS: Partial<
 /** Relative destination weights, after checking immediate-neighbor compatibility. */
 export function climateTransitionWeight(from: Climate, to: Climate): number {
   if (from === to) return 1;
+  if (FRONTIER_CLIMATES.includes(to)) return 0.75;
+  if (FRONTIER_CLIMATES.includes(from))
+    return TRANSITION_WEIGHTS[from]?.[to] ?? 1;
   if (AMERICAN_CLIMATES.includes(to))
     return AMERICAN_CLIMATES.includes(from) ? 1 : 0.75;
   if (AMERICAN_CLIMATES.includes(from))

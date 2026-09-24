@@ -91,7 +91,7 @@ test("grand campaign exposes all ten realms including eliminated ones", async ({
 }) => {
   let s = newGame(
     "grand-browser-test",
-    REALM_NAMES.map((name, id) => ({
+    REALM_NAMES.slice(0, 10).map((name, id) => ({
       name,
       control: id === 0 ? "human" : "standard",
     })),

@@ -234,7 +234,7 @@ for (const locale of ["en", "fr"] as const) {
     page.on("pageerror", (e) => errors.push(e.message));
     await page.goto(`/rules${locale === "fr" ? "-fr" : ""}.html#world`);
     const reference = page.locator(".climate-reference");
-    await expect(reference.locator(".climate-tabs button")).toHaveCount(17);
+    await expect(reference.locator(".climate-tabs button")).toHaveCount(20);
     await reference
       .getByRole("button", {
         name: locale === "fr" ? "Océanique" : "Oceanic",
@@ -359,9 +359,7 @@ test("climate-only overview hides gameplay details and preserves the campaign", 
   expect(errors).toEqual([]);
 });
 
-test("printed guide includes all seventeen climate tables", async ({
-  page,
-}) => {
+test("printed guide includes all twenty climate tables", async ({ page }) => {
   await page.goto("/rules.html#world");
   await page.evaluate(() => window.dispatchEvent(new Event("beforeprint")));
   await expect(page.locator(".print-content .climate-reference")).toHaveCount(

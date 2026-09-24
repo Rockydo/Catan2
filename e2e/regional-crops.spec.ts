@@ -139,7 +139,7 @@ for (const locale of ["en", "fr"] as const) {
     });
     await page.goto(`${rules}#world`);
     const climate = page.locator(".climate-reference");
-    await expect(climate.locator(".climate-tabs button")).toHaveCount(17);
+    await expect(climate.locator(".climate-tabs button")).toHaveCount(20);
     for (const [name, land, terrain, share] of [
       [
         locale === "fr" ? "Andin" : "Andean",
@@ -283,6 +283,7 @@ for (const locale of ["en", "fr"] as const) {
         name: locale === "fr" ? /Reprendre/ : /Continue campaign/,
       })
       .click();
+    await expect(page.locator(".world-map")).toBeVisible();
     await page.getByTestId("hex-0,0").press("Enter");
     const forecast = page.getByRole("region", {
       name: locale === "fr" ? "Production saisonnière" : "Seasonal production",

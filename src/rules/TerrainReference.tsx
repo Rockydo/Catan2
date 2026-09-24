@@ -274,8 +274,8 @@ export function ClimateReference({
         {l("Initial climate weight: ", "Poids du climat initial : ")}
         {climateInitialWeight(climate).toLocaleString(locale)}
         {l(
-          ". The fourteen non-extreme climates have weight 1 each; Glacial, Hyperarid and Monsoon have weight 0.35 each. Weights are normalized for the starting draw.",
-          ". Les quatorze climats non extrêmes ont chacun un poids de 1 ; Glacial, Hyperaride et Mousson ont chacun 0,35. Les poids sont normalisés pour le tirage initial.",
+          ". The seventeen non-extreme climates have weight 1 each; Glacial, Hyperarid and Monsoon have weight 0.35 each. Weights are normalized for the starting draw.",
+          ". Les dix-sept climats non extrêmes ont chacun un poids de 1 ; Glacial, Hyperaride et Mousson ont chacun 0,35. Les poids sont normalisés pour le tirage initial.",
         )}
       </p>
       <p>
@@ -291,8 +291,8 @@ export function ClimateReference({
           )
           .join(" · ")}
         {l(
-          ". Applied only when changing climate, among destinations compatible with all immediate neighbors. Continuity remains 85%.",
-          ". Appliqués seulement lors d’un changement de climat, parmi les destinations compatibles avec tous les voisins immédiats. La continuité reste de 85 %.",
+          ". Applied only when changing climate, among destinations compatible with all immediate neighbors. Continuity remains 88%.",
+          ". Appliqués seulement lors d’un changement de climat, parmi les destinations compatibles avec tous les voisins immédiats. La continuité reste de 88 %.",
         )}
       </p>
       <div className="climate-columns">

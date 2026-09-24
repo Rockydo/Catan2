@@ -7,6 +7,7 @@ import {
   CLIMATE_INFO,
   BIOMES,
   AMERICAN_CLIMATES,
+  FRONTIER_CLIMATES,
   BIOME_INFO,
   compatibleClimate,
   climateTransitionWeight,
@@ -106,6 +107,7 @@ it("retains the previous climates and their transition biases", () => {
     ...newClimates,
     ...EXTREME_CLIMATES,
     ...AMERICAN_CLIMATES,
+    ...FRONTIER_CLIMATES,
   ]);
   for (const from of originalClimates)
     for (const to of CLIMATE_INFO[from].compatible.filter((c) =>
@@ -124,7 +126,9 @@ it("retains the previous climates and their transition biases", () => {
         CLIMATE_INFO[from].compatible
           .filter(
             (to) =>
-              !EXTREME_CLIMATES.includes(to) && !AMERICAN_CLIMATES.includes(to),
+              !EXTREME_CLIMATES.includes(to) &&
+              !AMERICAN_CLIMATES.includes(to) &&
+              !FRONTIER_CLIMATES.includes(to),
           )
           .map((to) => [to, climateTransitionWeight(from, to)]),
       ),

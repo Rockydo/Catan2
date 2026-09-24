@@ -24,7 +24,7 @@ Turnip fields replace Rye at unchanged generation shares: 4% Temperate, 2% Ocean
 
 ## Seventeen climates
 
-The initial draw gives weight 1 to fourteen normal climates, including Andean, Prairie and Mesoamerican, and 0.35 each to Glacial, Hyperarid and Monsoon. On a climate change, entering a compatible American region from an older climate has weight 0.75. American regions favor exits Andean to Alpine, Prairie to Steppe and Mesoamerican to Subtropical at weight 2; their other exits have weight 1. Extreme entry remains 0.5, established transitions keep their weights, and continuity stays 85%.
+The initial draw gives weight 1 to seventeen normal climates, including Andean, Prairie and Mesoamerican, and 0.35 each to Glacial, Hyperarid and Monsoon. On a climate change, entering a compatible American region from an older climate has weight 0.75. American regions favor exits Andean to Alpine, Prairie to Steppe and Mesoamerican to Subtropical at weight 2; their other exits have weight 1. Extreme entry remains 0.5, established transitions keep their weights, and continuity is 88%.
 
 Andean has 75% land and a dry Winter, with Potato fields, Alpacas, mines, salt, peaks and limited river timber. Andean land rolls contain 11% Iron, 7% Gold and 18% Bare Peaks, with no new Snow plains; old Andean Snow plains are replaced on load with Iron, Gold or Bare Peaks in 1:1:3 proportions. Occupied ground and tiles supporting towns, towers or ports receive Iron or Gold instead of Peaks. The seeded replacement preserves dice numbers, goods and all other climates. Mines stay productive, river timber follows 1/1/2/0 and seas never freeze. Prairie has 70% land with Maize, Sunflowers, Bison and river woods. Its mines follow the Cold schedule; ordinary seas use the Prairie half-season freeze/thaw table. Mesoamerican has 45% land, warm seas, rainy Summer, Maize, Chinampa gardens, Turkey grounds, Cloud forest and volcanic quarries.
 
@@ -67,3 +67,5 @@ The calendar uses early and late rounds for each season. Per-roll harvest values
 Existing saves retain current surfaces, season and year, with the current round treated as early. Subsequent rounds use the new rules. AI movement and trade planning use public transition probabilities, not future draws. Land artwork and crop schedules remain unchanged between early and late.
 
 Icebound ships use one quarter of normal combat power, rounded up per ship, with ordinary watchtower support and unchanged casualty points. They cannot retreat. Friendly or allied unembarked armies on the same hex defend normally in both direct attacks and shore bombardment. Adjacent armies and embarked passengers do not automatically join. Thaw restores normal ship power.
+
+See [the new regional climates](frontier-climates.md) for Tundra, Temperate Rainforest and Equatorial Wetlands, their schedules, terrain shares and art coverage.

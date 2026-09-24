@@ -1,3 +1,4 @@
+import { startingClimateSeed } from "./climate-fixture";
 import { describe, expect, it } from "vitest";
 import {
   BIOME_INFO,
@@ -75,8 +76,8 @@ describe("extreme climate generation", () => {
   it("makes extreme starting climates rarer without excluding them", () => {
     const counts: Partial<Record<Climate, number>> = {};
     // Relative weights 1 and .35 become 20 and 7 evenly spaced samples.
-    for (let i = 0; i < 301; i++) {
-      const climate = chooseInitialClimate((i + 0.5) / 301);
+    for (let i = 0; i < 361; i++) {
+      const climate = chooseInitialClimate((i + 0.5) / 361);
       counts[climate] = (counts[climate] ?? 0) + 1;
     }
     for (const climate of CLIMATES) {
@@ -144,7 +145,8 @@ describe("extreme climate generation", () => {
     ["regional-10-68", 10, "glacial"],
   ] as const)(
     "completes ordinary AI setup for %s with %i factions",
-    (seed, size, climate) => {
+    (_oldSeed, size, climate) => {
+      const seed = startingClimateSeed(climate, size * 25);
       let s = newGame(
         seed,
         Array.from({ length: size }, (_, i) => ({

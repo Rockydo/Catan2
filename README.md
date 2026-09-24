@@ -35,7 +35,7 @@ Choose **English** or **Français** on the main menu or in campaign settings. Th
 
 ## What to expect
 
-- Classic: 5 factions on 125 initial tiles. Grand campaign: 10 factions on 250 tiles.
+- Classic: 5 factions on 125 initial tiles. Grand campaign: 12 factions on 300 tiles.
 - Seventeen climate zones determine terrain and water probabilities. Terrain numbers and shortages vary by seed. Expeditions extend the map without changing existing tiles.
 - Thirteen raw resources and ten processed goods. Cities, camps, collectors and guilds provide different ways to grow.
 - Four seasons change harvests, landscapes and sea ice. Crop calendars and livestock provide different ways to manage food supply.
@@ -79,9 +79,9 @@ npx playwright install chromium firefox
 npm run test:e2e         # Chromium, Firefox and mobile-browser checks
 npm run test:soak        # Seeded AI campaigns (5 factions by default)
 npm run test:stress      # Larger-map stress checks
-npx tsx scripts/seasons-audit.ts --rounds=16 # Two years over all seventeen climates
+npx tsx scripts/seasons-audit.ts --rounds=16 # Two years over all twenty climates
 npx tsx scripts/seasons-audit.ts --stress # All seasons on maps up to 2,500 tiles
-FACTIONS=10 SEEDS=1 ROUNDS=40 npm run test:soak  # Grand campaign audit
+FACTIONS=12 SEEDS=1 ROUNDS=40 npm run test:soak  # Grand campaign audit
 npm run format:check
 npm run docs            # Refresh both Markdown rule references
 ```
@@ -279,7 +279,7 @@ This is an independent fan project, not an official Catan product or an endorsem
 
 ## Climate maps
 
-New campaigns use seventeen climates and regional terrain types. Select a tile for its climate and base production, or use **Show climates** in the map controls. The **Map and dice** rules chapter has interactive tables with all land and water probabilities.
+New campaigns use twenty climates and regional terrain types. Tundra, Temperate Rainforest and Equatorial Wetlands add seven terrain types; see [their rules and resource tables](docs/frontier-climates.md). Climate continuity is 88%. Select a tile for its climate and base production, or use **Show climates** in the map controls. The **Map and dice** rules chapter has interactive tables with all land and water probabilities.
 
 Towns, camps and collectors multiply the terrain’s base yield. Woods let each faction choose Wood or Hides during its action phase. Frozen sea carries land units, blocks ships and cannot support permanent construction without solid ground. Bare Peaks are impassable to all units; roads can follow their edges, but towns need adjacent walkable solid land. Existing saves retain their revealed terrain and stored goods, apart from the documented replacements of retired Rough fields, Rye and non-American Maize or prototype Potatoes. Current climate-adjusted crop yields apply on load; newly explored tiles use current climate generation.
 

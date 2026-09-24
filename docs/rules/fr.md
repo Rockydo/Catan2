@@ -11,7 +11,7 @@ Le terme agglomération désigne une colonie ou une ville. Perdre votre dernièr
 
 ### Mise en place
 
-Choisissez Classique (5 factions, 125 tuiles) ou Grande campagne (10 factions, 250 tuiles).
+Choisissez Classique (5 factions, 125 tuiles) ou Grande campagne (12 factions, 300 tuiles).
 
 - Dans l’ordre des joueurs, chaque faction place une colonie et une route ou liaison maritime adjacente.
 - Répétez dans l’ordre inverse. Chaque faction possède alors deux colonies et deux tronçons.
@@ -38,7 +38,7 @@ Les ressources sont stockées par agglomération mais dépensées en commun. Les
 
 ### Génération des climats
 
-La carte initiale contient 125 tuiles en Classique ou 250 en Grande campagne. Le climat est défini avant le terrain. Une tuile de départ est choisie au hasard, puis un climat parmi dix-sept selon des poids relatifs : 1 pour chacun des quatorze climats non extrêmes et 0,35 pour chacun des climats Glacial, Hyperaride et Mousson. Les poids sont normalisés pour ce tirage initial. La génération progresse par les voisins. Si les voisins immédiats déjà définis ont le même climat, il est conservé avec 85 % de probabilité. Lors d’un changement, les climats compatibles sont l’intersection des possibilités des seules tuiles voisines immédiates déjà définies. Le poids de base de chaque destination est de 1. Depuis les sept climats d’origine, les nouvelles destinations compatibles Océanique, Alpin, Subtropical et Savane ont un poids de 0,5. Tempéré et Steppe favorisent Froid à 1,5. Méditerranéen donne un poids de 0,5 à Steppe et Désertique. Tropical vers Désertique, Désertique vers Tropical et Froid vers Arctique ont un poids de 2. Océanique favorise Tempéré à 2 ; Alpin favorise Froid et Arctique à 2 chacun ; Subtropical et Savane favorisent Tropical à 2. Entrer dans un climat extrême compatible a un poids de 0,5. Glacial mène à Arctique avec 2 ou Alpin avec 1 ; Hyperaride mène à Désertique avec 2 ; Mousson mène à Tropical avec 2, Subtropical ou Savane avec 1. Entrer dans une région américaine compatible depuis un ancien climat a un poids de 0,75. Andin favorise Alpin, Prairie favorise Steppe et Mésoaméricain favorise Subtropical avec un poids de 2 ; leurs autres sorties ont un poids de 1. Les poids admissibles sont normalisés pour chaque tirage. La probabilité de continuité de 85 % reste inchangée. À une frontière mixte, un climat voisin compatible est privilégié. Sans candidat, le climat d’un voisin immédiat est repris.
+La carte initiale contient 125 tuiles en Classique ou 300 en Grande campagne. Le climat est défini avant le terrain. Une tuile de départ est choisie au hasard, puis un climat parmi vingt selon des poids relatifs : 1 pour chacun des dix-sept climats non extrêmes et 0,35 pour chacun des climats Glacial, Hyperaride et Mousson. Les poids sont normalisés pour ce tirage initial. La génération progresse par les voisins. Si les voisins immédiats déjà définis ont le même climat, il est conservé avec 88 % de probabilité. Lors d’un changement, les climats compatibles sont l’intersection des possibilités des seules tuiles voisines immédiates déjà définies. Le poids de base de chaque destination est de 1. Depuis les sept climats d’origine, les nouvelles destinations compatibles Océanique, Alpin, Subtropical et Savane ont un poids de 0,5. Tempéré et Steppe favorisent Froid à 1,5. Méditerranéen donne un poids de 0,5 à Steppe et Désertique. Tropical vers Désertique, Désertique vers Tropical et Froid vers Arctique ont un poids de 2. Océanique favorise Tempéré à 2 ; Alpin favorise Froid et Arctique à 2 chacun ; Subtropical et Savane favorisent Tropical à 2. Entrer dans un climat extrême compatible a un poids de 0,5. Glacial mène à Arctique avec 2 ou Alpin avec 1 ; Hyperaride mène à Désertique avec 2 ; Mousson mène à Tropical avec 2, Subtropical ou Savane avec 1. Entrer dans une région américaine compatible depuis un ancien climat a un poids de 0,75. Andin favorise Alpin, Prairie favorise Steppe et Mésoaméricain favorise Subtropical avec un poids de 2 ; leurs autres sorties ont un poids de 1. Les poids admissibles sont normalisés pour chaque tirage. La continuité est de 88 %, ce qui agrandit légèrement les régions en moyenne. L’entrée en Toundra, Forêt pluviale tempérée ou Marais équatoriaux a un poids de 0,75. Leurs sorties privilégiées ont un poids de 2 : Toundra vers Arctique, Forêt pluviale tempérée vers Océanique, Marais équatoriaux vers Tropical. Les autres sorties ont un poids de 1. À une frontière mixte, un climat voisin compatible est privilégié. Sans candidat, le climat d’un voisin immédiat est repris.
 Avant de tirer les terrains, une passe finale de correction conserve des climats intermédiaires comme zones tampons si nécessaire. Deux climats adjacents sont toujours compatibles. Une réserve invisible autour de la carte évite les raccords impossibles lors des expéditions. Aucun terrain révélé ne change. Une même graine et une même séquence d’exploration reproduisent la même carte. Un ordre d’expéditions différent peut prolonger les zones autrement.
 Le ratio du climat détermine terre ou eau, puis sa table détermine le terrain. Les pourcentages terrestres s’appliquent après avoir tiré une terre. Les tirages aquatiques suivent l’ordre indiqué et ne concernent que l’eau restante ; le premier succès termine la séquence. Une tuile aquatique sans terre adjacente double la probabilité du tirage Baleines de son climat. Les tirages Poissons, Morues et Banquise restent inchangés et passent avant. La banquise ne compte pas comme terre. Les voisins cachés utilisent leurs climats réservés et leurs tirages terre/eau ; le bord de carte seul ne suffit pas à définir la haute mer. La fréquence de l’Or varie selon le climat. Aucun climat, ressource, port, continent ou départ équilibré n’est garanti.
 Tempéré, Tropical et Désertique : 50 % de terre. Froid et Subtropical : 55 %. Steppe : 65 %. Arctique et Méditerranéen : 40 %. Océanique : 35 %. Alpin : 75 %. Savane : 70 %. Glacial : 45 %. Hyperaride : 90 %. Mousson : 30 %. Andin : 75 %, Prairie : 70 % et Mésoaméricain : 45 %. Les frontières Steppe/Désertique sont mutuellement compatibles, comme toutes les autres frontières autorisées. La nourriture des Oasis correspond au Blé.
@@ -69,7 +69,7 @@ Les Pics rocheux ne produisent rien et sont infranchissables pour toutes les uni
 Les anciennes Plaines enneigées andines deviennent du Minerai, de l’Or ou des Pics rocheux au chargement, avec des probabilités respectives de 20 %, 20 % et 60 %. Une tuile occupée par des unités, concernée par un combat en cours, adjacente à une agglomération ou une tour de guet, ou portant un port devient du Minerai ou de l’Or si des Pics ont été tirés. La graine et les coordonnées fixent le remplacement. Les numéros et stocks sont conservés. Les Plaines enneigées des autres climats restent présentes.
 Les tuiles révélées conservent leur climat, numéros, camps, ateliers, unités et stocks. La productivité actuelle ajustée au climat s’applique au chargement. Les anciens Champs pauvres deviennent des Champs d’orge en Froid, Alpin et Océanique, ou des Champs de millet en Steppe et Savane. L’Orge océanique a une base de 2 et produit 8 Blés en Été ; les Champs dorés océaniques conservent leur récolte d’Automne.
 Les anciens Champs de seigle et les Champs de pommes de terre du prototype hors des régions américaines deviennent des Champs de navets. Leur base reste 2 en Tempéré et Océanique, ou 1 en Froid et Alpin, avec des récoltes Été/Automne de 2/6 ou 1/3. Les anciens Maïs non américains deviennent de l’Avoine en Tempéré et dans les autres climats frais, ou du Sorgho dans les climats chauds ; les deux conservent une base de 2. Les Pommes de terre et Maïs américains gardent leur identité. Aucune récolte stockée n’est recalculée ni accordée lors de la migration.
-Les sauvegardes antérieures aux climats classent leurs anciennes tuiles en Tempéré pour les futures frontières. Les nouvelles explorations peuvent utiliser les dix-sept climats. Commencez une nouvelle partie pour appliquer les tables actuelles à toute la carte.
+Les sauvegardes antérieures aux climats classent leurs anciennes tuiles en Tempéré pour les futures frontières. Les nouvelles explorations peuvent utiliser les vingt climats. Commencez une nouvelle partie pour appliquer les tables actuelles à toute la carte.
 
 ### Numéros et dés
 
@@ -459,11 +459,11 @@ Cliquez sur la saison à côté du numéro de manche pour consulter l’année e
 
 ### Tempéré: 50% terre / 50% eau
 
-Compatible : Steppe, Méditerranéen, Froid, Tropical, Océanique, Alpin, Subtropical, Prairie
+Compatible : Forêt pluviale tempérée, Steppe, Méditerranéen, Froid, Tropical, Océanique, Alpin, Subtropical, Prairie
 
 Poids du climat initial : 1
 
-Poids des transitions : Steppe ×1, Méditerranéen ×1, Froid ×1,5, Tropical ×1, Océanique ×0,5, Alpin ×0,5, Subtropical ×0,5, Prairie ×0,75
+Poids des transitions : Forêt pluviale tempérée ×0,75, Steppe ×1, Méditerranéen ×1, Froid ×1,5, Tropical ×1, Océanique ×0,5, Alpin ×0,5, Subtropical ×0,5, Prairie ×0,75
 
 | Terrain terrestre    | Probabilité conditionnelle | Base annuelle           |
 | -------------------- | -------------------------- | ----------------------- |
@@ -490,11 +490,11 @@ Haute mer (sans terre adjacente) : tirage Baleines 10 % ; part effective 8.5 %. 
 
 ### Froid: 55% terre / 45% eau
 
-Compatible : Tempéré, Steppe, Arctique, Océanique, Alpin, Prairie
+Compatible : Forêt pluviale tempérée, Toundra, Tempéré, Steppe, Arctique, Océanique, Alpin, Prairie
 
 Poids du climat initial : 1
 
-Poids des transitions : Tempéré ×1, Steppe ×1, Arctique ×2, Océanique ×0,5, Alpin ×0,5, Prairie ×0,75
+Poids des transitions : Forêt pluviale tempérée ×0,75, Toundra ×0,75, Tempéré ×1, Steppe ×1, Arctique ×2, Océanique ×0,5, Alpin ×0,5, Prairie ×0,75
 
 | Terrain terrestre    | Probabilité conditionnelle | Base annuelle           |
 | -------------------- | -------------------------- | ----------------------- |
@@ -520,11 +520,11 @@ Haute mer (sans terre adjacente) : tirage Baleines 20 % ; part effective 14.4 %.
 
 ### Arctique: 40% terre / 60% eau
 
-Compatible : Froid, Alpin, Glacial
+Compatible : Toundra, Froid, Alpin, Glacial
 
 Poids du climat initial : 1
 
-Poids des transitions : Froid ×1, Alpin ×0,5, Glacial ×0,5
+Poids des transitions : Toundra ×0,75, Froid ×1, Alpin ×0,5, Glacial ×0,5
 
 | Terrain terrestre              | Probabilité conditionnelle | Base annuelle           |
 | ------------------------------ | -------------------------- | ----------------------- |
@@ -604,11 +604,11 @@ Haute mer (sans terre adjacente) : tirage Baleines 10 % ; part effective 8.5 %. 
 
 ### Tropical: 50% terre / 50% eau
 
-Compatible : Tempéré, Désert, Subtropical, Savane, Mousson, Mésoaméricain
+Compatible : Marais équatoriaux, Tempéré, Désert, Subtropical, Savane, Mousson, Mésoaméricain
 
 Poids du climat initial : 1
 
-Poids des transitions : Tempéré ×1, Désert ×2, Subtropical ×0,5, Savane ×0,5, Mousson ×0,5, Mésoaméricain ×0,75
+Poids des transitions : Marais équatoriaux ×0,75, Tempéré ×1, Désert ×2, Subtropical ×0,5, Savane ×0,5, Mousson ×0,5, Mésoaméricain ×0,75
 
 | Terrain terrestre    | Probabilité conditionnelle | Base annuelle           |
 | -------------------- | -------------------------- | ----------------------- |
@@ -657,11 +657,11 @@ Haute mer (sans terre adjacente) : tirage Baleines 6 % ; part effective 5.52 %. 
 
 ### Océanique: 35% terre / 65% eau
 
-Compatible : Tempéré, Froid, Méditerranéen
+Compatible : Forêt pluviale tempérée, Tempéré, Froid, Méditerranéen
 
 Poids du climat initial : 1
 
-Poids des transitions : Tempéré ×2, Froid ×1, Méditerranéen ×1
+Poids des transitions : Forêt pluviale tempérée ×0,75, Tempéré ×2, Froid ×1, Méditerranéen ×1
 
 | Terrain terrestre    | Probabilité conditionnelle | Base annuelle           |
 | -------------------- | -------------------------- | ----------------------- |
@@ -717,11 +717,11 @@ Haute mer (sans terre adjacente) : tirage Baleines 6 % ; part effective 4.86 %. 
 
 ### Subtropical: 55% terre / 45% eau
 
-Compatible : Tropical, Tempéré, Méditerranéen, Savane, Mousson, Andin, Mésoaméricain
+Compatible : Marais équatoriaux, Tropical, Tempéré, Méditerranéen, Savane, Mousson, Andin, Mésoaméricain
 
 Poids du climat initial : 1
 
-Poids des transitions : Tropical ×2, Tempéré ×1, Méditerranéen ×1, Savane ×1, Mousson ×0,5, Andin ×0,75, Mésoaméricain ×0,75
+Poids des transitions : Marais équatoriaux ×0,75, Tropical ×2, Tempéré ×1, Méditerranéen ×1, Savane ×1, Mousson ×0,5, Andin ×0,75, Mésoaméricain ×0,75
 
 | Terrain terrestre    | Probabilité conditionnelle | Base annuelle           |
 | -------------------- | -------------------------- | ----------------------- |
@@ -935,74 +935,161 @@ Poids des transitions : Tropical ×1, Subtropical ×2, Savane ×1, Andin ×1, Pr
 
 Haute mer (sans terre adjacente) : tirage Baleines 10 % ; part effective 8.5 %. Tableau ci-dessus : eau côtière.
 
+### Toundra: 60% terre / 40% eau
+
+Compatible : Froid, Arctique
+
+Poids du climat initial : 1
+
+Poids des transitions : Froid ×1, Arctique ×2
+
+| Terrain terrestre              | Probabilité conditionnelle | Base annuelle           |
+| ------------------------------ | -------------------------- | ----------------------- |
+| Lande à baies                  | 20%                        | 1 Blé                   |
+| Pâturage de bœufs musqués      | 20%                        | 1 Laine + 1 Viande      |
+| Pâturage de rennes             | 15%                        | 1 Viande + 1 Peaux      |
+| Tourbière                      | 15%                        | 1 Charbon               |
+| Montagnes de minerai arctiques | 12%                        | 1 Minerai               |
+| Crête rocheuse arctique        | 10%                        | 1 Pierre                |
+| Montagnes aurifères arctiques  | 5%                         | 1 Or                    |
+| Plaine enneigée                | 3%                         | 0                       |
+| Terrain aquatique              | Tirage successif           | Part effective de l’eau |
+| ---                            | ---                        | ---                     |
+| Zone de pêche                  | 20%                        | 20%                     |
+| Bancs de morue                 | 15%                        | 12%                     |
+| Zone de Baleines               | 8%                         | 5.44%                   |
+| Mer                            |                            | 62.56%                  |
+
+Haute mer (sans terre adjacente) : tirage Baleines 16 % ; part effective 10.88 %. Tableau ci-dessus : eau côtière.
+
+### Forêt pluviale tempérée: 40% terre / 60% eau
+
+Compatible : Tempéré, Océanique, Froid
+
+Poids du climat initial : 1
+
+Poids des transitions : Tempéré ×1, Océanique ×2, Froid ×1
+
+| Terrain terrestre    | Probabilité conditionnelle | Base annuelle           |
+| -------------------- | -------------------------- | ----------------------- |
+| Forêt ancienne       | 25%                        | 3 Bois                  |
+| Sous-bois de chasse  | 15%                        | 1 Peaux + 1 Viande      |
+| Pâturage côtier      | 10%                        | 2 Laine                 |
+| Tourbière            | 10%                        | 1 Charbon               |
+| Berges argileuses    | 15%                        | 2 Argile                |
+| Falaises côtières    | 15%                        | 1 Pierre                |
+| Montagnes de minerai | 7%                         | 1 Minerai               |
+| Montagnes d'or       | 3%                         | 1 Or                    |
+| Terrain aquatique    | Tirage successif           | Part effective de l’eau |
+| ---                  | ---                        | ---                     |
+| Zone de pêche        | 25%                        | 25%                     |
+| Bancs de morue       | 10%                        | 7.5%                    |
+| Zone de Baleines     | 8%                         | 5.4%                    |
+| Mer                  |                            | 62.1%                   |
+
+Haute mer (sans terre adjacente) : tirage Baleines 16 % ; part effective 10.8 %. Tableau ci-dessus : eau côtière.
+
+### Marais équatoriaux: 35% terre / 65% eau
+
+Compatible : Tropical, Subtropical
+
+Poids du climat initial : 1
+
+Poids des transitions : Tropical ×2, Subtropical ×1
+
+| Terrain terrestre       | Probabilité conditionnelle | Base annuelle           |
+| ----------------------- | -------------------------- | ----------------------- |
+| Mangrove                | 25%                        | 1 Bois + 1 Poissons     |
+| Palmeraie de sagoutiers | 20%                        | 1 Blé                   |
+| Bois riverains          | 15%                        | 1 Bois                  |
+| Berges argileuses       | 20%                        | 2 Argile                |
+| Tourbière               | 10%                        | 1 Charbon               |
+| Carrière de pierre      | 5%                         | 1 Pierre                |
+| Montagnes de minerai    | 3%                         | 1 Minerai               |
+| Montagnes d'or          | 2%                         | 1 Or                    |
+| Terrain aquatique       | Tirage successif           | Part effective de l’eau |
+| ---                     | ---                        | ---                     |
+| Zone de pêche           | 30%                        | 30%                     |
+| Zone de Baleines        | 3%                         | 2.1%                    |
+| Mer                     |                            | 67.9%                   |
+
+Haute mer (sans terre adjacente) : tirage Baleines 6 % ; part effective 4.2 %. Tableau ci-dessus : eau côtière.
+
 ## Production des terrains
 
 Les bases annuelles actuelles incluent la productivité des cultures propre au climat. Chaque calendrier totalise quatre fois cette base, qui peut différer de celle d’une ancienne version du jeu.
 
-| Terrain                        | Climats                                                                                                                                                                               | Production de base | Famille           |
-| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ | ----------------- |
-| Bois clairsemés                | Tempéré / Steppe / Méditerranéen / Océanique                                                                                                                                          | 1 Bois OU 1 Peau   | forêt             |
-| Forêt                          | Froid / Alpin                                                                                                                                                                         | 2 Bois             | forêt             |
-| Forêt de chasse                | Froid                                                                                                                                                                                 | 2 Peaux            | forêt             |
-| Champs                         | Tempéré / Méditerranéen / Océanique                                                                                                                                                   | 2 Blé              | plaine            |
-| Blé sur terre noire            | Tempéré / Steppe                                                                                                                                                                      | 3 Blé              | plaine            |
-| Pré                            | Tempéré / Steppe                                                                                                                                                                      | 2 Laine            | plaine            |
-| Pâturage pauvre                | Froid / Méditerranéen / Savane                                                                                                                                                        | 1 Laine            | terrain accidenté |
-| Collines d'argile              | Tempéré / Froid / Steppe / Tropical / Océanique / Alpin / Savane / Andin / Prairie / Mésoaméricain                                                                                    | 1 Argile           | terrain accidenté |
-| Montagnes d'or                 | Tempéré / Froid / Steppe / Méditerranéen / Tropical / Désert / Océanique / Alpin / Subtropical / Savane / Hyperaride / Mousson / Andin / Prairie / Mésoaméricain                      | 1 Or               | terrain accidenté |
-| Montagnes de minerai           | Tempéré / Froid / Steppe / Méditerranéen / Tropical / Désert / Océanique / Alpin / Subtropical / Savane / Hyperaride / Mousson / Andin / Prairie / Mésoaméricain                      | 1 Minerai          | terrain accidenté |
-| Carrière de pierre             | Tempéré / Froid / Steppe / Tropical / Désert / Subtropical / Savane / Hyperaride / Mousson / Prairie                                                                                  | 1 Pierre           | terrain accidenté |
-| Collines de charbon            | Tempéré / Froid / Steppe / Méditerranéen / Tropical / Désert / Océanique / Alpin / Subtropical / Hyperaride / Mousson / Prairie / Mésoaméricain                                       | 1 Charbon          | terrain accidenté |
-| Marais salants                 | Tempéré / Méditerranéen / Tropical / Désert / Subtropical / Savane / Hyperaride / Andin / Prairie / Mésoaméricain                                                                     | 1 Sel              | plaine            |
-| Plaine enneigée                | Arctique / Glacial                                                                                                                                                                    | 0                  | plaine            |
-| Chasse aux phoques             | Arctique / Glacial                                                                                                                                                                    | 1 Peaux + 1 Huile  | plaine            |
-| Montagnes de minerai arctiques | Arctique / Glacial                                                                                                                                                                    | 1 Minerai          | terrain accidenté |
-| Crête rocheuse arctique        | Arctique / Glacial                                                                                                                                                                    | 1 Pierre           | terrain accidenté |
-| Montagnes aurifères arctiques  | Arctique / Glacial                                                                                                                                                                    | 1 Or               | terrain accidenté |
-| Plaine de steppe               | Steppe / Prairie                                                                                                                                                                      | 1 Peaux + 1 Laine  | plaine            |
-| Oliveraie                      | Méditerranéen                                                                                                                                                                         | 1 Blé              | forêt             |
-| Escarpement                    | Méditerranéen                                                                                                                                                                         | 1 Pierre           | terrain accidenté |
-| Jungle                         | Tropical / Subtropical / Mousson                                                                                                                                                      | 1 Peaux            | forêt             |
-| Bois tropicaux                 | Tropical / Mousson / Mésoaméricain                                                                                                                                                    | 1 Bois             | forêt             |
-| Rizière                        | Tropical                                                                                                                                                                              | 3 Blé              | plaine            |
-| Rizière                        | Subtropical                                                                                                                                                                           | 2 Blé              | plaine            |
-| Rizière                        | Mousson                                                                                                                                                                               | 1 Blé              | plaine            |
-| Désert                         | Désert / Hyperaride                                                                                                                                                                   | 0                  | plaine            |
-| Oasis                          | Désert / Hyperaride                                                                                                                                                                   | 1 Bois + 1 Blé     | forêt             |
-| Mer                            | Tempéré / Froid / Arctique / Steppe / Méditerranéen / Tropical / Désert / Océanique / Alpin / Subtropical / Savane / Glacial / Hyperaride / Mousson / Andin / Prairie / Mésoaméricain | 0                  | mer               |
-| Zone de pêche                  | Tempéré / Froid / Arctique / Steppe / Méditerranéen / Tropical / Désert / Océanique / Alpin / Subtropical / Savane / Glacial / Hyperaride / Mousson / Andin / Prairie / Mésoaméricain | 1 Poissons         | mer               |
-| Bancs de morue                 | Froid / Arctique / Océanique / Alpin / Glacial                                                                                                                                        | 2 Poissons         | mer               |
-| Zone de Baleines               | Tempéré / Froid / Arctique / Steppe / Méditerranéen / Tropical / Désert / Océanique / Alpin / Subtropical / Savane / Glacial / Hyperaride / Mousson / Mésoaméricain                   | 1 Peaux + 1 Huile  | mer               |
-| Banquise                       | Arctique / Glacial                                                                                                                                                                    | 0                  | plaine            |
-| Pâturage côtier                | Océanique                                                                                                                                                                             | 2 Laine            | plaine            |
-| Falaises côtières              | Océanique                                                                                                                                                                             | 1 Pierre           | terrain accidenté |
-| Carrière de montagne           | Alpin / Andin                                                                                                                                                                         | 2 Pierre           | terrain accidenté |
-| Pâturage alpin                 | Alpin                                                                                                                                                                                 | 1 Laine            | terrain accidenté |
-| Pics rocheux                   | Alpin / Glacial / Hyperaride / Mousson / Andin                                                                                                                                        | 0                  | terrain accidenté |
-| Berges argileuses              | Subtropical / Mousson                                                                                                                                                                 | 2 Argile           | plaine            |
-| Bois riverains                 | Subtropical / Mousson / Andin / Prairie                                                                                                                                               | 1 Bois             | forêt             |
-| Prairie à gibier               | Savane                                                                                                                                                                                | 2 Peaux            | plaine            |
-| Bois secs                      | Savane                                                                                                                                                                                | 1 Bois             | forêt             |
-| Champs d’orge                  | Froid / Méditerranéen / Alpin                                                                                                                                                         | 1 Blé              | plaine            |
-| Champs d’orge                  | Océanique                                                                                                                                                                             | 2 Blé              | plaine            |
-| Champs de pommes de terre      | Andin                                                                                                                                                                                 | 2 Blé              | plaine            |
-| Champs de navets               | Tempéré / Océanique                                                                                                                                                                   | 2 Blé              | plaine            |
-| Champs de navets               | Froid / Alpin                                                                                                                                                                         | 1 Blé              | plaine            |
-| Champs d’avoine                | Tempéré                                                                                                                                                                               | 2 Blé              | plaine            |
-| Champs de sorgho               | Subtropical                                                                                                                                                                           | 2 Blé              | plaine            |
-| Pâturage d’alpagas             | Andin                                                                                                                                                                                 | 1 Laine + 1 Viande | plaine            |
-| Champs de tournesols           | Prairie                                                                                                                                                                               | 1 Huile            | plaine            |
-| Prairie à bisons               | Prairie                                                                                                                                                                               | 1 Viande + 1 Peaux | plaine            |
-| Jardins chinampas              | Mésoaméricain                                                                                                                                                                         | 3 Blé              | plaine            |
-| Terrains à dindons             | Mésoaméricain                                                                                                                                                                         | 2 Viande           | forêt             |
-| Forêt de nuages                | Mésoaméricain                                                                                                                                                                         | 1 Bois + 1 Peaux   | forêt             |
-| Carrière volcanique            | Mésoaméricain                                                                                                                                                                         | 2 Pierre           | terrain accidenté |
-| Champs de millet               | Steppe / Savane                                                                                                                                                                       | 1 Blé              | plaine            |
-| Champs de maïs                 | Prairie / Mésoaméricain                                                                                                                                                               | 2 Blé              | plaine            |
-| Pâturage bovin                 | Tempéré / Océanique / Subtropical                                                                                                                                                     | 2 Viande           | plaine            |
-| Pâturage de chèvres            | Méditerranéen / Désert / Alpin                                                                                                                                                        | 1 Viande           | terrain accidenté |
-| Pâturage de rennes             | Froid / Arctique                                                                                                                                                                      | 1 Viande + 1 Peaux | plaine            |
-| Élevage de savane              | Steppe / Savane                                                                                                                                                                       | 1 Viande + 1 Peaux | plaine            |
+| Terrain                        | Climats                                                                                                                                                                                                                                        | Production de base  | Famille           |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- | ----------------- |
+| Bois clairsemés                | Tempéré / Steppe / Méditerranéen / Océanique                                                                                                                                                                                                   | 1 Bois OU 1 Peau    | forêt             |
+| Forêt                          | Froid / Alpin                                                                                                                                                                                                                                  | 2 Bois              | forêt             |
+| Forêt de chasse                | Froid                                                                                                                                                                                                                                          | 2 Peaux             | forêt             |
+| Champs                         | Tempéré / Méditerranéen / Océanique                                                                                                                                                                                                            | 2 Blé               | plaine            |
+| Blé sur terre noire            | Tempéré / Steppe                                                                                                                                                                                                                               | 3 Blé               | plaine            |
+| Pré                            | Tempéré / Steppe                                                                                                                                                                                                                               | 2 Laine             | plaine            |
+| Pâturage pauvre                | Froid / Méditerranéen / Savane                                                                                                                                                                                                                 | 1 Laine             | terrain accidenté |
+| Collines d'argile              | Tempéré / Froid / Steppe / Tropical / Océanique / Alpin / Savane / Andin / Prairie / Mésoaméricain                                                                                                                                             | 1 Argile            | terrain accidenté |
+| Montagnes d'or                 | Tempéré / Froid / Steppe / Méditerranéen / Tropical / Désert / Océanique / Alpin / Subtropical / Savane / Hyperaride / Mousson / Andin / Prairie / Mésoaméricain / Forêt pluviale tempérée / Marais équatoriaux                                | 1 Or                | terrain accidenté |
+| Montagnes de minerai           | Tempéré / Froid / Steppe / Méditerranéen / Tropical / Désert / Océanique / Alpin / Subtropical / Savane / Hyperaride / Mousson / Andin / Prairie / Mésoaméricain / Forêt pluviale tempérée / Marais équatoriaux                                | 1 Minerai           | terrain accidenté |
+| Carrière de pierre             | Tempéré / Froid / Steppe / Tropical / Désert / Subtropical / Savane / Hyperaride / Mousson / Prairie / Marais équatoriaux                                                                                                                      | 1 Pierre            | terrain accidenté |
+| Collines de charbon            | Tempéré / Froid / Steppe / Méditerranéen / Tropical / Désert / Océanique / Alpin / Subtropical / Hyperaride / Mousson / Prairie / Mésoaméricain                                                                                                | 1 Charbon           | terrain accidenté |
+| Marais salants                 | Tempéré / Méditerranéen / Tropical / Désert / Subtropical / Savane / Hyperaride / Andin / Prairie / Mésoaméricain                                                                                                                              | 1 Sel               | plaine            |
+| Plaine enneigée                | Arctique / Glacial / Toundra                                                                                                                                                                                                                   | 0                   | plaine            |
+| Chasse aux phoques             | Arctique / Glacial                                                                                                                                                                                                                             | 1 Peaux + 1 Huile   | plaine            |
+| Montagnes de minerai arctiques | Arctique / Glacial / Toundra                                                                                                                                                                                                                   | 1 Minerai           | terrain accidenté |
+| Crête rocheuse arctique        | Arctique / Glacial / Toundra                                                                                                                                                                                                                   | 1 Pierre            | terrain accidenté |
+| Montagnes aurifères arctiques  | Arctique / Glacial / Toundra                                                                                                                                                                                                                   | 1 Or                | terrain accidenté |
+| Plaine de steppe               | Steppe / Prairie                                                                                                                                                                                                                               | 1 Peaux + 1 Laine   | plaine            |
+| Oliveraie                      | Méditerranéen                                                                                                                                                                                                                                  | 1 Blé               | forêt             |
+| Escarpement                    | Méditerranéen                                                                                                                                                                                                                                  | 1 Pierre            | terrain accidenté |
+| Jungle                         | Tropical / Subtropical / Mousson                                                                                                                                                                                                               | 1 Peaux             | forêt             |
+| Bois tropicaux                 | Tropical / Mousson / Mésoaméricain                                                                                                                                                                                                             | 1 Bois              | forêt             |
+| Rizière                        | Tropical                                                                                                                                                                                                                                       | 3 Blé               | plaine            |
+| Rizière                        | Subtropical                                                                                                                                                                                                                                    | 2 Blé               | plaine            |
+| Rizière                        | Mousson                                                                                                                                                                                                                                        | 1 Blé               | plaine            |
+| Désert                         | Désert / Hyperaride                                                                                                                                                                                                                            | 0                   | plaine            |
+| Oasis                          | Désert / Hyperaride                                                                                                                                                                                                                            | 1 Bois + 1 Blé      | forêt             |
+| Mer                            | Tempéré / Froid / Arctique / Steppe / Méditerranéen / Tropical / Désert / Océanique / Alpin / Subtropical / Savane / Glacial / Hyperaride / Mousson / Andin / Prairie / Mésoaméricain / Toundra / Forêt pluviale tempérée / Marais équatoriaux | 0                   | mer               |
+| Zone de pêche                  | Tempéré / Froid / Arctique / Steppe / Méditerranéen / Tropical / Désert / Océanique / Alpin / Subtropical / Savane / Glacial / Hyperaride / Mousson / Andin / Prairie / Mésoaméricain / Toundra / Forêt pluviale tempérée / Marais équatoriaux | 1 Poissons          | mer               |
+| Bancs de morue                 | Froid / Arctique / Océanique / Alpin / Glacial / Toundra / Forêt pluviale tempérée                                                                                                                                                             | 2 Poissons          | mer               |
+| Zone de Baleines               | Tempéré / Froid / Arctique / Steppe / Méditerranéen / Tropical / Désert / Océanique / Alpin / Subtropical / Savane / Glacial / Hyperaride / Mousson / Mésoaméricain / Toundra / Forêt pluviale tempérée / Marais équatoriaux                   | 1 Peaux + 1 Huile   | mer               |
+| Banquise                       | Arctique / Glacial                                                                                                                                                                                                                             | 0                   | plaine            |
+| Pâturage côtier                | Océanique / Forêt pluviale tempérée                                                                                                                                                                                                            | 2 Laine             | plaine            |
+| Falaises côtières              | Océanique / Forêt pluviale tempérée                                                                                                                                                                                                            | 1 Pierre            | terrain accidenté |
+| Carrière de montagne           | Alpin / Andin                                                                                                                                                                                                                                  | 2 Pierre            | terrain accidenté |
+| Pâturage alpin                 | Alpin                                                                                                                                                                                                                                          | 1 Laine             | terrain accidenté |
+| Pics rocheux                   | Alpin / Glacial / Hyperaride / Mousson / Andin                                                                                                                                                                                                 | 0                   | terrain accidenté |
+| Berges argileuses              | Subtropical / Mousson / Forêt pluviale tempérée / Marais équatoriaux                                                                                                                                                                           | 2 Argile            | plaine            |
+| Bois riverains                 | Subtropical / Mousson / Andin / Prairie / Marais équatoriaux                                                                                                                                                                                   | 1 Bois              | forêt             |
+| Prairie à gibier               | Savane                                                                                                                                                                                                                                         | 2 Peaux             | plaine            |
+| Bois secs                      | Savane                                                                                                                                                                                                                                         | 1 Bois              | forêt             |
+| Champs d’orge                  | Froid / Méditerranéen / Alpin                                                                                                                                                                                                                  | 1 Blé               | plaine            |
+| Champs d’orge                  | Océanique                                                                                                                                                                                                                                      | 2 Blé               | plaine            |
+| Champs de pommes de terre      | Andin                                                                                                                                                                                                                                          | 2 Blé               | plaine            |
+| Champs de navets               | Tempéré / Océanique                                                                                                                                                                                                                            | 2 Blé               | plaine            |
+| Champs de navets               | Froid / Alpin                                                                                                                                                                                                                                  | 1 Blé               | plaine            |
+| Champs d’avoine                | Tempéré                                                                                                                                                                                                                                        | 2 Blé               | plaine            |
+| Champs de sorgho               | Subtropical                                                                                                                                                                                                                                    | 2 Blé               | plaine            |
+| Pâturage d’alpagas             | Andin                                                                                                                                                                                                                                          | 1 Laine + 1 Viande  | plaine            |
+| Champs de tournesols           | Prairie                                                                                                                                                                                                                                        | 1 Huile             | plaine            |
+| Prairie à bisons               | Prairie                                                                                                                                                                                                                                        | 1 Viande + 1 Peaux  | plaine            |
+| Jardins chinampas              | Mésoaméricain                                                                                                                                                                                                                                  | 3 Blé               | plaine            |
+| Terrains à dindons             | Mésoaméricain                                                                                                                                                                                                                                  | 2 Viande            | forêt             |
+| Forêt de nuages                | Mésoaméricain                                                                                                                                                                                                                                  | 1 Bois + 1 Peaux    | forêt             |
+| Carrière volcanique            | Mésoaméricain                                                                                                                                                                                                                                  | 2 Pierre            | terrain accidenté |
+| Champs de millet               | Steppe / Savane                                                                                                                                                                                                                                | 1 Blé               | plaine            |
+| Champs de maïs                 | Prairie / Mésoaméricain                                                                                                                                                                                                                        | 2 Blé               | plaine            |
+| Pâturage bovin                 | Tempéré / Océanique / Subtropical                                                                                                                                                                                                              | 2 Viande            | plaine            |
+| Pâturage de chèvres            | Méditerranéen / Désert / Alpin                                                                                                                                                                                                                 | 1 Viande            | terrain accidenté |
+| Pâturage de rennes             | Froid / Arctique / Toundra                                                                                                                                                                                                                     | 1 Viande + 1 Peaux  | plaine            |
+| Élevage de savane              | Steppe / Savane                                                                                                                                                                                                                                | 1 Viande + 1 Peaux  | plaine            |
+| Lande à baies                  | Toundra                                                                                                                                                                                                                                        | 1 Blé               | plaine            |
+| Pâturage de bœufs musqués      | Toundra                                                                                                                                                                                                                                        | 1 Laine + 1 Viande  | plaine            |
+| Tourbière                      | Toundra / Forêt pluviale tempérée / Marais équatoriaux                                                                                                                                                                                         | 1 Charbon           | plaine            |
+| Forêt ancienne                 | Forêt pluviale tempérée                                                                                                                                                                                                                        | 3 Bois              | forêt             |
+| Sous-bois de chasse            | Forêt pluviale tempérée                                                                                                                                                                                                                        | 1 Peaux + 1 Viande  | forêt             |
+| Mangrove                       | Marais équatoriaux                                                                                                                                                                                                                             | 1 Bois + 1 Poissons | forêt             |
+| Palmeraie de sagoutiers        | Marais équatoriaux                                                                                                                                                                                                                             | 1 Blé               | forêt             |
 
 Pics rocheux : aucune production et aucune entrée d’unité, y compris par recrutement, repli ou débarquement. Les routes peuvent suivre leurs arêtes ; une agglomération exige une terre ferme praticable adjacente.
 
@@ -1305,9 +1392,69 @@ Chaque saison dure deux manches complètes, début et fin, avec le même rendeme
 | Zone de pêche        | 1 Poissons       | 1 Poissons        | 1 Poissons        | 1 Poissons        |
 | Zone de Baleines     | 0                | 1 Peaux + 1 Huile | 2 Peaux + 2 Huile | 1 Peaux + 1 Huile |
 
+### Toundra
+
+| Terrain                        | Printemps          | Été                | Automne            | Hiver              |
+| ------------------------------ | ------------------ | ------------------ | ------------------ | ------------------ |
+| Lande à baies                  | 0                  | 2 Blé              | 2 Blé              | 0                  |
+| Pâturage de bœufs musqués      | 1 Laine + 1 Viande | 3 Laine + 1 Viande | 1 Viande           | 1 Viande           |
+| Pâturage de rennes             | 1 Viande + 1 Peaux | 1 Viande + 1 Peaux | 1 Viande + 1 Peaux | 1 Viande + 1 Peaux |
+| Tourbière                      | 0                  | 2 Charbon          | 2 Charbon          | 0                  |
+| Montagnes de minerai arctiques | 1 Minerai          | 2 Minerai          | 1 Minerai          | 0                  |
+| Crête rocheuse arctique        | 1 Pierre           | 2 Pierre           | 1 Pierre           | 0                  |
+| Montagnes aurifères arctiques  | 1 Or               | 2 Or               | 1 Or               | 0                  |
+| Plaine enneigée                | 0                  | 0                  | 0                  | 0                  |
+| Zone de pêche                  | 1 Poissons         | 2 Poissons         | 1 Poissons         | 0                  |
+| Bancs de morue                 | 2 Poissons         | 4 Poissons         | 2 Poissons         | 0                  |
+| Zone de Baleines               | 1 Peaux + 1 Huile  | 2 Peaux + 2 Huile  | 1 Peaux + 1 Huile  | 0                  |
+
+### Forêt pluviale tempérée
+
+| Terrain              | Printemps          | Été                | Automne            | Hiver              |
+| -------------------- | ------------------ | ------------------ | ------------------ | ------------------ |
+| Forêt ancienne       | 3 Bois             | 4 Bois             | 3 Bois             | 2 Bois             |
+| Sous-bois de chasse  | 1 Peaux + 1 Viande | 1 Peaux + 1 Viande | 1 Peaux + 1 Viande | 1 Peaux + 1 Viande |
+| Pâturage côtier      | 4 Laine            | 4 Laine            | 0                  | 0                  |
+| Tourbière            | 1 Charbon          | 1 Charbon          | 1 Charbon          | 1 Charbon          |
+| Berges argileuses    | 2 Argile           | 2 Argile           | 2 Argile           | 2 Argile           |
+| Falaises côtières    | 1 Pierre           | 1 Pierre           | 1 Pierre           | 1 Pierre           |
+| Montagnes de minerai | 1 Minerai          | 1 Minerai          | 1 Minerai          | 1 Minerai          |
+| Montagnes d'or       | 1 Or               | 1 Or               | 1 Or               | 1 Or               |
+| Zone de pêche        | 1 Poissons         | 1 Poissons         | 1 Poissons         | 1 Poissons         |
+| Bancs de morue       | 2 Poissons         | 2 Poissons         | 2 Poissons         | 2 Poissons         |
+| Zone de Baleines     | 0                  | 1 Peaux + 1 Huile  | 2 Peaux + 2 Huile  | 1 Peaux + 1 Huile  |
+
+### Marais équatoriaux
+
+| Terrain                 | Printemps           | Été                 | Automne             | Hiver               |
+| ----------------------- | ------------------- | ------------------- | ------------------- | ------------------- |
+| Mangrove                | 1 Bois + 1 Poissons | 1 Bois + 1 Poissons | 1 Bois + 1 Poissons | 1 Bois + 1 Poissons |
+| Palmeraie de sagoutiers | 1 Blé               | 1 Blé               | 1 Blé               | 1 Blé               |
+| Bois riverains          | 1 Bois              | 1 Bois              | 1 Bois              | 1 Bois              |
+| Berges argileuses       | 2 Argile            | 1 Argile            | 2 Argile            | 3 Argile            |
+| Tourbière               | 1 Charbon           | 1 Charbon           | 1 Charbon           | 1 Charbon           |
+| Carrière de pierre      | 1 Pierre            | 1 Pierre            | 1 Pierre            | 1 Pierre            |
+| Montagnes de minerai    | 1 Minerai           | 1 Minerai           | 1 Minerai           | 1 Minerai           |
+| Montagnes d'or          | 1 Or                | 1 Or                | 1 Or                | 1 Or                |
+| Zone de pêche           | 1 Poissons          | 1 Poissons          | 1 Poissons          | 1 Poissons          |
+| Zone de Baleines        | 0                   | 1 Peaux + 1 Huile   | 2 Peaux + 2 Huile   | 1 Peaux + 1 Huile   |
+
 ## Probabilités de gel et de dégel par demi-saison
 
 Chaque tuile marine effectue un tirage par manche complète. L’eau libre utilise la probabilité de gel ; la glace utilise celle de dégel. Sinon, l’état reste inchangé. Les résultats sont sauvegardés et peuvent varier d’une année à l’autre. Les autres climats restent libres toute l’année. La Banquise glaciale est permanente ; les mers glaciales ordinaires dégèlent au plus tard en fin d’été. La Banquise arctique possède sa propre table de glace persistante.
+
+### Toundra
+
+| Demi-saison atteinte | Eau libre : gel | Eau gelée : dégel |
+| -------------------- | --------------- | ----------------- |
+| Début de printemps   | 0%              | 45%               |
+| Fin de printemps     | 0%              | 85%               |
+| Début d’été          | 0%              | 100%              |
+| Fin d’été            | 0%              | 100%              |
+| Début d’automne      | 15%             | 0%                |
+| Fin d’automne        | 35%             | 0%                |
+| Début d’hiver        | 80%             | 0%                |
+| Fin d’hiver          | 100%            | 0%                |
 
 ### Glacial
 

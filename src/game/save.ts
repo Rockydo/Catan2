@@ -142,8 +142,8 @@ function validateInvariants(
     "Invalid world seed.",
   );
   rule(
-    Array.isArray(s.players) && [4, 5, 8, 10].includes(s.players.length),
-    "A save must have five or ten players, or four/eight in a legacy campaign.",
+    Array.isArray(s.players) && [4, 5, 8, 10, 12].includes(s.players.length),
+    "A save must have five or twelve players, or four/eight/ten in a legacy campaign.",
   );
   for (const k of [
     "active",

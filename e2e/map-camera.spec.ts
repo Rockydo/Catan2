@@ -235,7 +235,7 @@ test("deep zoom culls distant artwork, keeps the viewport covered while dragging
 }) => {
   let s = newGame(
     "zoom-coverage",
-    REALM_NAMES.map((name) => ({ name, control: "human" })),
+    REALM_NAMES.slice(0, 10).map((name) => ({ name, control: "human" })),
   );
   while (s.phase.startsWith("setup")) s = run(s, chooseAIAction(s));
   s.phase = "economy";

@@ -12,7 +12,7 @@ test("Grand AI reuses its worker, ignores stale replies, and cancels pending wor
 }) => {
   let s = newGame(
     "grand-worker-reuse",
-    REALM_NAMES.map((name, i) => ({
+    REALM_NAMES.slice(0, 10).map((name, i) => ({
       name,
       control: i === 0 ? "human" : "standard",
     })),

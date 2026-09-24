@@ -11,6 +11,7 @@ type Year = [number, number, number, number];
 export const SHOULDER_ICE_CHANCE = {
   glacial: { spring: 1, autumn: 1 },
   arctic: { spring: 0.7, autumn: 0.5 },
+  tundra: { spring: 0.45, autumn: 0.3 },
   alpine: { spring: 0.35, autumn: 0.25 },
   cold: { spring: 0.2, autumn: 0.1 },
   prairie: { spring: 0.1, autumn: 0.1 },
@@ -70,6 +71,16 @@ type IceYear = readonly [
 /** On entry to each half-season: chance for open water to freeze / ice to melt.
  * Summer guarantees a full thaw by its late half, except permanent pack ice. */
 export const ICE_TRANSITIONS = {
+  tundra: [
+    [0, 0.45],
+    [0, 0.85],
+    [0, 1],
+    [0, 1],
+    [0.15, 0],
+    [0.35, 0],
+    [0.8, 0],
+    [1, 0],
+  ],
   glacial: [
     [0.25, 0.05],
     [0.1, 0.15],
@@ -205,9 +216,14 @@ function resolveWeather(s: Game, tile: Hex) {
 function schedule(tile: Hex, raw: Raw, base: number): Year {
   const biome = tile.biome,
     climate = tile.climate ?? "temperate";
-  const frost = ["cold", "arctic", "alpine", "glacial", "prairie"].includes(
-    climate,
-  );
+  const frost = [
+    "cold",
+    "arctic",
+    "alpine",
+    "glacial",
+    "prairie",
+    "tundra",
+  ].includes(climate);
   const dry = ["desert", "hyperarid"].includes(climate);
   const rainy = [
     "tropical",
@@ -215,12 +231,27 @@ function schedule(tile: Hex, raw: Raw, base: number): Year {
     "savanna",
     "monsoon",
     "mesoamerican",
+    "equatorial-wetlands",
   ].includes(climate);
   const hot = dry || rainy;
   const times = (weights: Year): Year => weights.map((n) => n * base) as Year;
   const wetSummer = Math.max(1, base - 1),
     dryPeak = 2 * base - wetSummer;
   const wetDry: Year = [base, wetSummer, base, dryPeak];
+  // Regional schedules conserve each resource independently. Peat is dried
+  // during the local drier season; tropical sago can be cut throughout the year.
+  if (biome === "tundra-heath") return times([0, 2, 2, 0]);
+  if (biome === "musk-ox-range")
+    return times(raw === "wool" ? [1, 3, 0, 0] : [1, 1, 1, 1]);
+  if (biome === "peat-bog")
+    return times(climate === "tundra" ? [0, 2, 2, 0] : [1, 1, 1, 1]);
+  if (biome === "old-growth-forest") return [3, 4, 3, 2];
+  if (
+    biome === "fern-hunting-grounds" ||
+    biome === "mangrove" ||
+    biome === "sago-grove"
+  )
+    return times([1, 1, 1, 1]);
   if (biome === "cloud-forest" || biome === "volcanic-quarry")
     return times([1, 1, 1, 1]);
   if (biome === "alpaca-pasture")
@@ -279,7 +310,9 @@ function schedule(tile: Hex, raw: Raw, base: number): Year {
   if (raw === "wool") return times(hot ? [1, 1, 1, 1] : [2, 2, 0, 0]);
   if (raw === "fish")
     return times(
-      hot || climate === "mediterranean" ? [1, 1, 1, 1] : [1, 2, 1, 0],
+      hot || climate === "mediterranean" || climate === "temperate-rainforest"
+        ? [1, 1, 1, 1]
+        : [1, 2, 1, 0],
     );
   if (biome === "whale" || (!biome && tile.whale))
     return times(frost ? [1, 2, 1, 0] : [0, 1, 2, 1]);
@@ -302,7 +335,13 @@ function schedule(tile: Hex, raw: Raw, base: number): Year {
   // to risky agriculture. Clay extraction can continue during tropical rains.
   if (
     raw === "brick" &&
-    ["tropical", "subtropical", "monsoon", "mesoamerican"].includes(climate)
+    [
+      "tropical",
+      "subtropical",
+      "monsoon",
+      "mesoamerican",
+      "equatorial-wetlands",
+    ].includes(climate)
   )
     return wetDry;
   return times([1, 1, 1, 1]);
@@ -380,6 +419,22 @@ export function frozenInSeason(tile: Hex, season?: Season): boolean {
 export function seasonWeather(tile: Hex, season: Season): string {
   if (frozenInSeason(tile, season)) return "Frozen sea";
   const climate = tile.climate ?? "temperate";
+  if (climate === "tundra")
+    return season === "spring"
+      ? "Spring thaw"
+      : season === "summer"
+        ? "Brief tundra summer"
+        : season === "autumn"
+          ? "Early snow"
+          : "Snow cover";
+  if (climate === "temperate-rainforest")
+    return season === "summer" ? "Mild coastal summer" : "Coastal rains";
+  if (climate === "equatorial-wetlands")
+    return season === "summer"
+      ? "High water"
+      : season === "winter"
+        ? "Lower water"
+        : "Humid wetlands";
   if (climate === "glacial")
     return tile.resource === "water"
       ? "Brief summer opening"

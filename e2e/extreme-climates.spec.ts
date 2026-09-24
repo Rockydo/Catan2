@@ -7,7 +7,7 @@ for (const locale of ["en", "fr"] as const) {
   const grain = locale === "fr" ? "Blé" : "Grain";
   const rules = locale === "fr" ? "/rules-fr.html" : "/rules.html";
 
-  test(`${locale}: seventeen climates and regional cereal yields agree across the guide`, async ({
+  test(`${locale}: twenty climates and regional cereal yields agree across the guide`, async ({
     page,
   }) => {
     const errors: string[] = [];
@@ -19,7 +19,7 @@ for (const locale of ["en", "fr"] as const) {
     });
     await page.goto(`${rules}#world`);
     const climate = page.locator(".climate-reference");
-    await expect(climate.locator(".climate-tabs button")).toHaveCount(17);
+    await expect(climate.locator(".climate-tabs button")).toHaveCount(20);
     for (const [name, land, art] of [
       ["Glacial", "45%", "glacial-snow-plain-summer.webp"],
       [
@@ -75,7 +75,7 @@ for (const locale of ["en", "fr"] as const) {
 
     await page.goto(`${rules}#seasons`);
     const calendar = page.locator(".season-reference");
-    await expect(calendar.locator(".climate-tabs button")).toHaveCount(17);
+    await expect(calendar.locator(".climate-tabs button")).toHaveCount(20);
     for (const [name, biome, amounts] of [
       [locale === "fr" ? "Mousson" : "Monsoon", "rice-field", [0, 0, 4, 0]],
       [
@@ -163,6 +163,7 @@ for (const locale of ["en", "fr"] as const) {
     });
     const frozen = locale === "fr" ? "Banquise" : "Frozen sea";
     const open = locale === "fr" ? "Mer libre" : "Open water";
+    await expect(page.locator(".world-map")).toBeVisible();
     await page.getByTestId("hex-2,0").press("Enter");
     await expect(forecast.locator(".season-surface-label")).toHaveText([
       frozen,

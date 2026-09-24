@@ -6,8 +6,8 @@ import { ownTowns, ownPieces } from "../src/game/selectors";
 const seeds = Number(process.env.SEEDS ?? "8"),
   maxRounds = Number(process.env.ROUNDS ?? "120"),
   factions = Number(process.env.FACTIONS ?? "5");
-if (![4, 5, 8, 10].includes(factions))
-  throw new Error("FACTIONS must be 4, 5, 8 or 10.");
+if (![4, 5, 8, 10, 12].includes(factions))
+  throw new Error("FACTIONS must be 4, 5, 8, 10 or 12.");
 const results = [];
 const start = performance.now();
 for (let n = 0; n < seeds; n++) {

@@ -23,6 +23,8 @@ export const COLORS = [
   "#a6b3bf",
   "#884b34",
   "#2e6350",
+  "#d4ccad",
+  "#584b93",
 ];
 export const NAMES = ["Emberhold", "Tidewatch", "Violet Reach", "Golden Vale"];
 export const REALM_NAMES = [
@@ -33,6 +35,8 @@ export const REALM_NAMES = [
   "Ironhaven",
   "Copperfell",
   "Pinewatch",
+  "Ivory Bay",
+  "Duskmoor",
 ];
 export const GOOD_INFO: Record<
   Good,

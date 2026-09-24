@@ -8,6 +8,7 @@ import {
   CLIMATE_INFO,
   EXTREME_CLIMATES,
   AMERICAN_CLIMATES,
+  FRONTIER_CLIMATES,
   type Biome,
   type Climate,
 } from "../game/climate-content";
@@ -108,9 +109,14 @@ export function terrainPatternKey(
   // Summer opens Glacial seas; autumn shows the warm extremes' crop harvests.
   if (
     !season &&
-    (EXTREME_CLIMATES.includes(region) || AMERICAN_CLIMATES.includes(region))
+    (EXTREME_CLIMATES.includes(region) ||
+      AMERICAN_CLIMATES.includes(region) ||
+      FRONTIER_CLIMATES.includes(region))
   ) {
-    const representative = region === "glacial" ? "summer" : "autumn";
+    const representative =
+      region === "glacial" || FRONTIER_CLIMATES.includes(region)
+        ? "summer"
+        : "autumn";
     const key = `${region}/${biome}/${representative}`;
     if (seasonalTiles[key]) return `season-${key.replaceAll("/", "-")}`;
   }

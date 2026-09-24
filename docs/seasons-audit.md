@@ -86,7 +86,7 @@ Required regression coverage: all five generation shares and unchanged other dra
 
 ## Extreme climate and cereal integration
 
-The initial draw contains seventeen climates with relative weights 1 for each non-extreme climate and 0.35 for each extreme. Entry weights of 0.5 do not change the 85% continuity rule. Verify reciprocal compatibility, the 2/1 Glacial, 2 Hyperarid and 2/1/1 Monsoon exit weights, and preservation of all existing reservations through expeditions and reloads.
+The initial draw contains twenty climates with relative weights 1 for each non-extreme climate and 0.35 for each extreme. Entry weights of 0.5 do not change the 88% continuity rule. Verify reciprocal compatibility, the 2/1 Glacial, 2 Hyperarid and 2/1/1 Monsoon exit weights, and preservation of all existing reservations through expeditions and reloads.
 
 Glacial land remains snowy in all four seasons. Its mines and ordinary productive seas allocate four times their baseline to Summer; Seal grounds remain productive every season. Permanent Glacial ice is barren and never opens. Test movement, construction, fishing coverage and forecasts for this distinction. Hyperarid scarcity and Monsoon fragmentation need no new disasters or AI exceptions.
 
@@ -102,4 +102,4 @@ Prairie seas use the half-season freeze/thaw table. Their established local harv
 
 Save version 12 replaces retired Rye and prototype non-American Potatoes with Turnips. Old non-American Maize becomes Oats in cool regions or Sorghum in warm regions; American crops retain their identity. Perform conversion before catalogue checks, retaining tile IDs, climate, dice, producers, inventories, units and random streams. No migration harvest is awarded. Keep archived crop artwork for earlier clients.
 
-Required coverage: all seventeen climate tables and transitions; region-exclusive crop generation; version-11 and prototype version-12 imports plus roundtrips; annual raw and processed conservation; unchanged food/Oil substitution; AI production valuation; English/French names, icons, forecasts and decoded artwork before and after reload. Generated guides must use shared yield helpers and tolerate climates without Whale entries.
+Required coverage: all twenty climate tables and transitions; region-exclusive crop generation; version-11 and prototype version-12 imports plus roundtrips; annual raw and processed conservation; unchanged food/Oil substitution; AI production valuation; English/French names, icons, forecasts and decoded artwork before and after reload. Generated guides must use shared yield helpers and tolerate climates without Whale entries.

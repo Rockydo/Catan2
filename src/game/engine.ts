@@ -141,8 +141,8 @@ export function newGame(
   })),
 ): Game {
   rule(
-    [4, 5, 8, 10].includes(config.length),
-    "Choose five or ten player slots (legacy four/eight saves remain supported).",
+    [4, 5, 8, 10, 12].includes(config.length),
+    "Choose five or twelve player slots (legacy four/eight/ten saves remain supported).",
   );
   rule(
     typeof seed === "string" && seed.length > 0 && seed.length <= 120,

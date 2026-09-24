@@ -116,7 +116,7 @@ describe("AI regional rebellions", () => {
   it("restores at most one faction per turn even with multiple eliminated seats", () => {
     let s = legacyGame(
       "single-rebellion",
-      REALM_NAMES.map((name) => ({ name, control: "standard" })),
+      REALM_NAMES.slice(0, 10).map((name) => ({ name, control: "standard" })),
     );
     while (s.phase.startsWith("setup")) s = run(s, chooseAIAction(s));
     for (const owner of [8, 9])
