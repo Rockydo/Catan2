@@ -34,6 +34,31 @@ test("river channels retain width through bends without circular bulges", async 
       );
     }, paths[8]),
   ).toBe(true);
+  // The upstream pocket is visibly wider than the 38-unit channel, while
+  // every variant retains exactly the same 38-unit opening at the hex edge.
+  expect(
+    await page.evaluate((paths) => {
+      const ctx = document.createElement("canvas").getContext("2d")!;
+      return Array.from({ length: 5 }, (_, v) => {
+        const source = new Path2D(paths[v * 63]);
+        const body = new Path2D(paths[v * 63 + 8]);
+        return (
+          ctx.isPointInPath(source, -4, 24) &&
+          ctx.isPointInPath(source, -4, -24) &&
+          !ctx.isPointInPath(body, -4, 24) &&
+          !ctx.isPointInPath(body, -4, -24) &&
+          [source, body].every(
+            (p) =>
+              ctx.isPointInPath(p, 38, 18) &&
+              ctx.isPointInPath(p, 38, -18) &&
+              !ctx.isPointInPath(p, 38, 20) &&
+              !ctx.isPointInPath(p, 38, -20),
+          )
+        );
+      }).every(Boolean);
+    }, paths),
+  ).toBe(true);
+  expect(new Set([0, 1, 2, 3, 4].map((v) => paths[v * 63 + 8])).size).toBe(5);
   await page.setContent(
     `<style>body{margin:0;background:#2c6071;display:grid;place-items:center}</style>${svg}`,
   );
@@ -50,9 +75,12 @@ test("river channels retain width through bends without circular bulges", async 
       ),
     );
   });
-  await expect(page.locator(".connected-water")).toHaveCount(6);
+  await expect(page.locator(".connected-water")).toHaveCount(12);
   await expect(page.locator("[data-bank-side]")).toHaveCount(0);
   for (const g of await page.locator(".connected-water").all())
     await expect(g).toHaveAttribute("clip-path", "url(#water-full-hex)");
-  await page.screenshot({ path: "test-artifacts/river-wide-banks.png" });
+  await page.screenshot({
+    path: "test-artifacts/river-wide-banks.png",
+    fullPage: true,
+  });
 });

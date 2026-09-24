@@ -14,6 +14,7 @@ export interface WaterConnections {
   shore: number;
   channel: number;
   basin?: number;
+  variant?: number;
   river: boolean;
   openIce?: number;
   banks?: (string | undefined)[];
@@ -96,6 +97,15 @@ export function waterConnections(
     river,
     basin,
     openIce,
+    // Stable across seasons/reloads, with a small shared set of SVG clips.
+    ...(river
+      ? {
+          variant:
+            ((Math.imul(tile.q, 73856093) ^ Math.imul(tile.r, 19349663)) >>>
+              0) %
+            5,
+        }
+      : {}),
     ...(banks.length ? { banks } : {}),
     ...(floodedBanks.length ? { floodedBanks } : {}),
   };
@@ -147,8 +157,9 @@ export function shoreGeometry(mask: number) {
 /** A single outline, including tributaries, with identical mouth endpoints on
  * both sides of every shared edge. Bank strokes omit those open mouths. */
 export const riverClipId = (c: WaterConnections) =>
-  `water-river-${c.channel}${c.basin ? `-${c.basin}` : ""}`;
-export function riverGeometry(mask: number, basin = 0) {
+  `water-river-${c.channel}${c.basin ? `-${c.basin}` : ""}-v${c.variant ?? 0}`;
+export function riverGeometry(mask: number, basin = 0, variant = 0) {
+  const drift = point(variant * 2.4, variant ? 2.8 : 0);
   const mouths: { a: number[]; b: number[]; side: number }[] = [];
   for (let i = 0; i < 6; i++) {
     if (!(mask & (1 << i))) continue;
@@ -175,8 +186,8 @@ export function riverGeometry(mask: number, basin = 0) {
       line: "",
     };
   if (mouths.length === 1) {
-    // A narrowing upstream reach, not a circular source lake. Preserve the
-    // exact shared-edge mouth so neighboring river segments still join.
+    // A broad headwater pocket feeds the narrower channel. Keep it asymmetric
+    // and preserve the exact shared-edge mouth and its outgoing tangent.
     const side = Math.log2(mask),
       angle = (side * Math.PI) / 3;
     const rotate = (x: number, y: number) =>
@@ -185,7 +196,8 @@ export function riverGeometry(mask: number, basin = 0) {
         x * Math.sin(angle) + y * Math.cos(angle),
       ]);
     const { a, b } = mouths[0];
-    const curve = `C${rotate(18, 19)} ${rotate(5, 14)} ${rotate(-15, 8)}C${rotate(-26, 4)} ${rotate(-26, -4)} ${rotate(-15, -8)}C${rotate(5, -14)} ${rotate(18, -19)} ${fmt(a)}`;
+    const swell = variant * 0.4;
+    const curve = `C${rotate(24, 19)} ${rotate(10, 28 + swell)} ${rotate(-4, 27 + swell)}C${rotate(-36, 26)} ${rotate(-36, -26)} ${rotate(-4, -25 - swell)}C${rotate(10, -26 - swell)} ${rotate(24, -19)} ${fmt(a)}`;
     return {
       water: `M${fmt(a)}L${fmt(b)}${curve}Z`,
       line: `M${fmt(b)}${curve}`,
@@ -222,9 +234,24 @@ export function riverGeometry(mask: number, basin = 0) {
       const n = point((side * Math.PI) / 3, reach);
       return p.map((v, axis) => v - n[axis]);
     };
-    const curve = basin
-      ? `C${fmt(control(1 / 3))} ${fmt(control(2 / 3))} ${fmt(next)}`
-      : `C${fmt(inward(b, fromSide))} ${fmt(inward(next, toSide))} ${fmt(next)}`;
+    const c1 = basin ? control(1 / 3) : inward(b, fromSide);
+    const c2 = basin ? control(2 / 3) : inward(next, toSide);
+    // Split the cubic at its midpoint, then gently shift the interior. Mouth
+    // positions and tangents stay identical on neighboring tiles. Both banks
+    // share the same drift, avoiding repeated symmetric lake-shaped bulges.
+    const mid = (a: number[], b: number[]) =>
+      a.map((v, axis) => (v + b[axis]) / 2);
+    const a1 = mid(b, c1),
+      a2 = mid(c1, c2),
+      a3 = mid(c2, next);
+    const b1 = mid(a1, a2),
+      b2 = mid(a2, a3),
+      center = mid(b1, b2);
+    const shift = (p: number[]) => p.map((v, axis) => v + drift[axis]);
+    const curve =
+      variant && !basin
+        ? `C${fmt(a1)} ${fmt(shift(b1))} ${fmt(shift(center))}C${fmt(shift(b2))} ${fmt(a3)} ${fmt(next)}`
+        : `C${fmt(c1)} ${fmt(c2)} ${fmt(next)}`;
     water += `L${fmt(b)}${curve}`;
     line += `M${fmt(b)}${curve}`;
   }

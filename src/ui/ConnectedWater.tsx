@@ -59,7 +59,7 @@ export function WaterDefinitions({
       ))}
       {[...rivers].map(([id, c]) => (
         <clipPath key={id} id={id} clipPathUnits="userSpaceOnUse">
-          <path d={riverGeometry(c.channel, c.basin).water} />
+          <path d={riverGeometry(c.channel, c.basin, c.variant).water} />
         </clipPath>
       ))}
     </>
@@ -125,9 +125,10 @@ export function ConnectedWater({
       (a, b) => b[1] - a[1] || a[0].localeCompare(b[0]),
     )[0]?.[0] ?? bankArt(tile, season);
   const frozen = frozenInSeason(tile, season);
-  const line = river
-    ? riverGeometry(channel, connections.basin).line
-    : shoreGeometry(shore).line;
+  const geometry = river
+    ? riverGeometry(channel, connections.basin, connections.variant)
+    : undefined;
+  const line = river ? geometry!.line : shoreGeometry(shore).line;
   const shallow =
     river ||
     ["river", "shoal", "reef"].includes(tile.geography?.waterway ?? "");
@@ -155,10 +156,7 @@ export function ConnectedWater({
           ) : null,
         )}
       {river ? (
-        <path
-          d={riverGeometry(channel, connections.basin).water}
-          fill="#326b7c"
-        />
+        <path d={geometry!.water} fill="#326b7c" />
       ) : (
         <polygon points={WATER_HEX} fill="#326b7c" />
       )}
@@ -183,11 +181,7 @@ export function ConnectedWater({
       {!frozen &&
         shallow &&
         (river ? (
-          <path
-            d={riverGeometry(channel, connections.basin).water}
-            fill="#92b9a5"
-            opacity=".2"
-          />
+          <path d={geometry!.water} fill="#92b9a5" opacity=".2" />
         ) : (
           <polygon
             points={WATER_HEX}

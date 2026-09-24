@@ -8,9 +8,12 @@ import {
 } from "../src/ui/water-connectivity";
 import type { Hex } from "../src/game/types";
 
-const paths = Array.from({ length: 63 }, (_, i) => riverGeometry(i + 1).water);
-const masks = [1, 3, 5, 9, 21, 63];
-const connections: WaterConnections[] = masks.map((channel) => ({
+const paths = Array.from({ length: 5 }, (_, variant) =>
+  Array.from({ length: 63 }, (_, i) => riverGeometry(i + 1, 0, variant).water),
+).flat();
+const masks = [1, 3, 5, 9, 21, 63, 1, 1, 1, 9, 9, 9];
+const connections: WaterConnections[] = masks.map((channel, i) => ({
+  variant: i < 6 ? 0 : (i % 3) + 1,
   river: true,
   channel,
   shore: 63 ^ channel,
@@ -39,9 +42,9 @@ const svg = renderToStaticMarkup(
     "svg",
     {
       xmlns: "http://www.w3.org/2000/svg",
-      viewBox: "-50 -50 300 200",
-      width: 1000,
-      height: 667,
+      viewBox: "-50 -50 300 400",
+      width: 750,
+      height: 1000,
     },
     createElement(
       "defs",
