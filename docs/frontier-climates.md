@@ -10,14 +10,14 @@ Climate continuity increases from 85% to 88%. This modestly favors larger region
 
 | Land tile      | Share | Annual baseline  |
 | -------------- | ----: | ---------------- |
-| Berry heath    |   20% | 1 Grain          |
+| Berry heath    |   10% | 1 Grain          |
 | Musk ox range  |   20% | 1 Wool + 1 Meat  |
 | Reindeer range |   15% | 1 Meat + 1 Hides |
-| Peat bog       |   15% | 1 Coal           |
+| Peat bog       |   20% | 1 Coal           |
 | Arctic iron    |   12% | 1 Iron ore       |
 | Arctic stone   |   10% | 1 Stone          |
 | Arctic gold    |    5% | 1 Gold           |
-| Snow plain     |    3% | None             |
+| Snow plain     |    8% | None             |
 
 Water checks: 20% Fish, then 15% Cod, then 8% Whales. Open water doubles the Whale check as elsewhere.
 
@@ -31,11 +31,11 @@ The sea freezes earlier and thaws later than in Cold. Early/Late Spring melt cha
 
 | Land tile            | Share | Annual baseline  |
 | -------------------- | ----: | ---------------- |
-| Old-growth forest    |   25% | 3 Wood           |
+| Old-growth forest    |   35% | 3 Wood           |
 | Fern hunting grounds |   15% | 1 Hides + 1 Meat |
-| Coastal pasture      |   10% | 2 Wool           |
+| Coastal pasture      |    5% | 2 Wool           |
 | Peat bog             |   10% | 1 Coal           |
-| Alluvial clay banks  |   15% | 2 Clay           |
+| Alluvial clay banks  |   10% | 2 Clay           |
 | Coastal cliffs       |   15% | 1 Stone          |
 | Iron                 |    7% | 1 Iron ore       |
 | Gold                 |    3% | 1 Gold           |

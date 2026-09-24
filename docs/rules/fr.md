@@ -945,14 +945,14 @@ Poids des transitions : Froid ×1, Arctique ×2
 
 | Terrain terrestre              | Probabilité conditionnelle | Base annuelle           |
 | ------------------------------ | -------------------------- | ----------------------- |
-| Lande à baies                  | 20%                        | 1 Blé                   |
+| Lande à baies                  | 10%                        | 1 Blé                   |
 | Pâturage de bœufs musqués      | 20%                        | 1 Laine + 1 Viande      |
 | Pâturage de rennes             | 15%                        | 1 Viande + 1 Peaux      |
-| Tourbière                      | 15%                        | 1 Charbon               |
+| Tourbière                      | 20%                        | 1 Charbon               |
 | Montagnes de minerai arctiques | 12%                        | 1 Minerai               |
 | Crête rocheuse arctique        | 10%                        | 1 Pierre                |
 | Montagnes aurifères arctiques  | 5%                         | 1 Or                    |
-| Plaine enneigée                | 3%                         | 0                       |
+| Plaine enneigée                | 8%                         | 0                       |
 | Terrain aquatique              | Tirage successif           | Part effective de l’eau |
 | ---                            | ---                        | ---                     |
 | Zone de pêche                  | 20%                        | 20%                     |
@@ -972,11 +972,11 @@ Poids des transitions : Tempéré ×1, Océanique ×2, Froid ×1
 
 | Terrain terrestre    | Probabilité conditionnelle | Base annuelle           |
 | -------------------- | -------------------------- | ----------------------- |
-| Forêt ancienne       | 25%                        | 3 Bois                  |
+| Forêt ancienne       | 35%                        | 3 Bois                  |
 | Sous-bois de chasse  | 15%                        | 1 Peaux + 1 Viande      |
-| Pâturage côtier      | 10%                        | 2 Laine                 |
+| Pâturage côtier      | 5%                         | 2 Laine                 |
 | Tourbière            | 10%                        | 1 Charbon               |
-| Berges argileuses    | 15%                        | 2 Argile                |
+| Berges argileuses    | 10%                        | 2 Argile                |
 | Falaises côtières    | 15%                        | 1 Pierre                |
 | Montagnes de minerai | 7%                         | 1 Minerai               |
 | Montagnes d'or       | 3%                         | 1 Or                    |

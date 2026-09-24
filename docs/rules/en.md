@@ -943,14 +943,14 @@ Transition weights : Cold ×1, Arctic ×2
 
 | Land terrain          | Conditional chance | Annual baseline       |
 | --------------------- | ------------------ | --------------------- |
-| Berry heath           | 20%                | 1 Grain               |
+| Berry heath           | 10%                | 1 Grain               |
 | Musk ox range         | 20%                | 1 Wool + 1 Meat       |
 | Reindeer range        | 15%                | 1 Meat + 1 Hides      |
-| Peat bog              | 15%                | 1 Coal                |
+| Peat bog              | 20%                | 1 Coal                |
 | Arctic iron mountains | 12%                | 1 Iron ore            |
 | Arctic stone ridge    | 10%                | 1 Stone               |
 | Arctic gold mountains | 5%                 | 1 Gold                |
-| Snow plain            | 3%                 | 0                     |
+| Snow plain            | 8%                 | 0                     |
 | Water terrain         | Sequential check   | Effective water share |
 | ---                   | ---                | ---                   |
 | Fishing grounds       | 20%                | 20%                   |
@@ -970,11 +970,11 @@ Transition weights : Temperate ×1, Oceanic ×2, Cold ×1
 
 | Land terrain         | Conditional chance | Annual baseline       |
 | -------------------- | ------------------ | --------------------- |
-| Old-growth forest    | 25%                | 3 Wood                |
+| Old-growth forest    | 35%                | 3 Wood                |
 | Fern hunting grounds | 15%                | 1 Hides + 1 Meat      |
-| Coastal pasture      | 10%                | 2 Wool                |
+| Coastal pasture      | 5%                 | 2 Wool                |
 | Peat bog             | 10%                | 1 Coal                |
-| Alluvial clay banks  | 15%                | 2 Clay                |
+| Alluvial clay banks  | 10%                | 2 Clay                |
 | Coastal cliffs       | 15%                | 1 Stone               |
 | Iron mountains       | 7%                 | 1 Iron ore            |
 | Gold mountains       | 3%                 | 1 Gold                |
