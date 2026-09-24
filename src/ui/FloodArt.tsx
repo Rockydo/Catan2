@@ -63,16 +63,16 @@ export function FloodSurface({
       pointerEvents="none"
       clipPath="url(#flood-ground-hex)"
     >
-      <polygon points={WATER_HEX} fill="#407f99" opacity=".08" />
+      <polygon points={WATER_HEX} fill="#407f99" opacity=".12" />
       <g clipPath={`url(#flood-${family})`}>
-        <polygon points={WATER_HEX} fill="#538c9e" opacity=".20" />
+        <polygon points={WATER_HEX} fill="#538c9e" opacity=".32" />
         <image
           href="./assets/geography/connected-water.webp"
           x="-44"
           y="-44"
           width="88"
           height="88"
-          opacity=".20"
+          opacity=".38"
           preserveAspectRatio="xMidYMid slice"
         />
       </g>
@@ -80,8 +80,8 @@ export function FloodSurface({
         d="M-35 -20q4-1.5 8 0t8 0M10 -22q4-1.5 8 0t8 0M-26 0q4-1.5 8 0t8 0M8 6q4-1.5 8 0t8 0M-20 26q4-1.5 8 0t8 0M5 32q4-1.5 8 0t8 0"
         fill="none"
         stroke="#d9efdd"
-        strokeWidth=".55"
-        opacity=".35"
+        strokeWidth=".7"
+        opacity=".55"
       />
       {outline && (
         <polygon
