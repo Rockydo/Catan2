@@ -63,7 +63,7 @@ export function climateSetting(
     ),
     altitude,
     maritime,
-    ...(version >= 3 ? { landform: regionalLandform(seed, id) } : {}),
+    ...(version >= 3 ? { landform: regionalLandform(seed, id, version) } : {}),
   };
   if (cache.size >= 60000) cache.clear();
   cache.set(ck, result);
@@ -117,13 +117,19 @@ export function geographicClimateWeight(
       "archipelago",
       "skerries",
       "atolls",
+      "volcanic-arcs",
     ].includes(setting.landform);
     if (climate === "mediterranean")
       weight *= islands ? 3 : setting.landform === "peninsulas" ? 2 : 1;
     if (climate === "steppe" || climate === "prairie")
       weight *= islands
         ? 0.18
-        : ["continent", "rift-valleys"].includes(setting.landform)
+        : [
+              "continent",
+              "rift-valleys",
+              "basin-ranges",
+              "dissected-plateaus",
+            ].includes(setting.landform)
           ? 2.5
           : 1;
     if (climate === "oceanic" || climate === "cold")
@@ -132,5 +138,15 @@ export function geographicClimateWeight(
           ? 1.7
           : 1;
   }
+  if (
+    setting.landform === "drowned-valleys" &&
+    ["oceanic", "temperate", "temperate-rainforest"].includes(climate)
+  )
+    weight *= 1.5;
+  if (
+    setting.landform === "basin-ranges" &&
+    ["semiarid", "desert", "steppe"].includes(climate)
+  )
+    weight *= 1.5;
   return weight;
 }

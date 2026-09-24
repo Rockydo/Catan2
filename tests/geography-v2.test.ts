@@ -276,7 +276,11 @@ describe("resource-specific regional weather", () => {
 });
 
 import { existsSync } from "node:fs";
-import { seasonalTerrainPattern, terrainArtFile } from "../src/ui/terrain-art";
+import {
+  baseSeasonalTerrainPattern,
+  seasonalTerrainPattern,
+  terrainArtFile,
+} from "../src/ui/terrain-art";
 import { SEASONS } from "../src/game/seasons";
 import { CLIMATE_INFO } from "../src/game/climate-content";
 import { WILDLIFE_GOODS } from "../src/game/geography";
@@ -296,7 +300,13 @@ it("has complete occupied and empty paintings for every generated natural habita
       for (const season of SEASONS) {
         t.geography!.animals = [];
         const empty = seasonalTerrainPattern(t, season);
-        expect(empty, `${climate}/${biome}/${season}`).toMatch(/^wild-empty-/);
+        // Desert and oasis originals already contain no animals.
+        if (["desert", "oasis"].includes(biome))
+          expect(empty).toBe(baseSeasonalTerrainPattern(t, season));
+        else
+          expect(empty, `${climate}/${biome}/${season}`).toMatch(
+            /^wild-empty-/,
+          );
         expect(existsSync(`public/assets/${terrainArtFile(empty)}`)).toBe(true);
         for (const kind of Object.keys(WILDLIFE_GOODS) as WildlifeKind[]) {
           if (!suitableWildlifeHabitat(t, kind)) continue;

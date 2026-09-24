@@ -19,6 +19,7 @@ export const WILDLIFE_ART: Record<WildlifeKind, string> = Object.fromEntries(
     "seal",
     "jungle-game",
     "turkey",
+    "gazelle",
   ].map((kind) => [kind, `geography/wildlife-${kind}.webp`]),
 ) as Record<WildlifeKind, string>;
 

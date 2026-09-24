@@ -1,0 +1,230 @@
+[
+  {
+    "seed": "old-geo-a",
+    "id": "0,0",
+    "form": "barrier-coasts",
+    "height": 0.8783647627493409,
+    "geography": {
+      "elevation": 0.8783647627493409,
+      "water": false,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.3856122067506995,
+      "moisture": 0.25296191751206243,
+      "altitude": 0.8388635736780503,
+      "maritime": 0.4285714285714286,
+      "landform": "continent"
+    }
+  },
+  {
+    "seed": "old-geo-a",
+    "id": "5,-3",
+    "form": "barrier-coasts",
+    "height": 0.6371332999456588,
+    "geography": {
+      "elevation": 0.6371332999456588,
+      "water": true,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.39916629501602546,
+      "moisture": 0.3027939996498355,
+      "altitude": 0,
+      "maritime": 1,
+      "landform": "continent"
+    }
+  },
+  {
+    "seed": "old-geo-a",
+    "id": "19,7",
+    "form": "barrier-coasts",
+    "height": 0.6876560235300031,
+    "geography": {
+      "elevation": 0.6876560235300031,
+      "water": false,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.8805857378586858,
+      "moisture": 0.6353889635664287,
+      "altitude": 0.13253490990272496,
+      "maritime": 0.8571428571428572,
+      "landform": "inland-seas"
+    }
+  },
+  {
+    "seed": "old-geo-a",
+    "id": "-25,10",
+    "form": "barrier-coasts",
+    "height": 0.634686615512792,
+    "geography": {
+      "elevation": 0.634686615512792,
+      "water": true,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.5257756966505549,
+      "moisture": 0.6700266086002935,
+      "altitude": 0,
+      "maritime": 1,
+      "landform": "inland-seas"
+    }
+  },
+  {
+    "seed": "old-geo-b",
+    "id": "0,0",
+    "form": "atolls",
+    "height": 0.31806088647590225,
+    "geography": {
+      "elevation": 0.31806088647590225,
+      "water": true,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.7694718798846006,
+      "moisture": 0.4138486037254334,
+      "altitude": 0,
+      "maritime": 1,
+      "landform": "atolls"
+    }
+  },
+  {
+    "seed": "old-geo-b",
+    "id": "5,-3",
+    "form": "atolls",
+    "height": 0.31743848885440296,
+    "geography": {
+      "elevation": 0.31743848885440296,
+      "water": true,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.9107288746416624,
+      "moisture": 0.3569533216885852,
+      "altitude": 0,
+      "maritime": 1,
+      "landform": "atolls"
+    }
+  },
+  {
+    "seed": "old-geo-b",
+    "id": "19,7",
+    "form": "atolls",
+    "height": 0.61076568949604,
+    "geography": {
+      "elevation": 0.61076568949604,
+      "water": false,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.27361802475299013,
+      "moisture": 0.2333163779958413,
+      "altitude": 0.6710990323477114,
+      "maritime": 0.7142857142857143,
+      "landform": "atolls"
+    }
+  },
+  {
+    "seed": "old-geo-b",
+    "id": "-25,10",
+    "form": "atolls",
+    "height": 0.4795573881532017,
+    "geography": {
+      "elevation": 0.4795573881532017,
+      "water": false,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.9021258235014775,
+      "moisture": 0.6282577564197539,
+      "altitude": 0.18514236070756943,
+      "maritime": 0.7142857142857143,
+      "landform": "atolls"
+    }
+  },
+  {
+    "seed": "old-geo-c",
+    "id": "0,0",
+    "form": "rift-valleys",
+    "height": 0.41047402333176425,
+    "geography": {
+      "elevation": 0.41047402333176425,
+      "water": true,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.2887162489891052,
+      "moisture": 0.006955483704805365,
+      "altitude": 0,
+      "maritime": 1,
+      "landform": "rift-valleys"
+    }
+  },
+  {
+    "seed": "old-geo-c",
+    "id": "5,-3",
+    "form": "rift-valleys",
+    "height": 0.6069467624854646,
+    "geography": {
+      "elevation": 0.6069467624854646,
+      "water": false,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.14352756331210878,
+      "moisture": 0.45940728869526337,
+      "altitude": 0.34613538465509797,
+      "maritime": 0.4285714285714286,
+      "landform": "rift-valleys"
+    }
+  },
+  {
+    "seed": "old-geo-c",
+    "id": "19,7",
+    "form": "rift-valleys",
+    "height": 0.44734709953304075,
+    "geography": {
+      "elevation": 0.44734709953304075,
+      "water": true,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.9199999999999999,
+      "moisture": 0.434852240284838,
+      "altitude": 0,
+      "maritime": 1,
+      "landform": "island-chains"
+    }
+  },
+  {
+    "seed": "old-geo-c",
+    "id": "-25,10",
+    "form": "rift-valleys",
+    "height": 0.5197786777408406,
+    "geography": {
+      "elevation": 0.5197786777408406,
+      "water": false,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.48443304054304387,
+      "moisture": 0.656297598501707,
+      "altitude": 0.023290626341675735,
+      "maritime": 0.8571428571428572,
+      "landform": "island-chains"
+    }
+  }
+]

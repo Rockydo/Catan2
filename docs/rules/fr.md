@@ -218,6 +218,22 @@ Les berges reprennent l’image des cultures alluviales, argiles, prairies et bo
 Un col doit jouxter au moins deux Pics infranchissables. Les cols isolés deviennent un terrain rocheux producteur de pierre, y compris au chargement des sauvegardes ; unités, bâtiments et numéros de dés sont conservés. Les pics restent infranchissables. Les routes peuvent contourner les massifs mais ne peuvent pas passer entre deux tuiles de montagne, cols compris.
 Sommets et cols arctiques ou de toundra sont très enneigés au printemps, en automne et en hiver, avec un bref dégel estival. En hiver méditerranéen, les sommets et couloirs enneigés surplombent encore des pentes de calcaire exposées. Les images reflètent l’enneigement régional ; le cercle barré indique la fermeture du col, pas la simple présence de neige sur l’image.
 
+### Gazelles et cols montagneux
+
+Les troupeaux de gazelles vivent dans les climats Désertique, Hyperaride et Semi-aride chaud. Ils fréquentent les prairies naturelles sèches, le désert et les oasis, jamais les cultures ni les gisements. Un troupeau ajoute 1 Peau et 2 Viandes à la production de base avant les modificateurs saisonniers et météorologiques. Une oasis conserve son Bois et ses Céréales. La probabilité initiale est de 35 % dans une oasis, 22 % dans une prairie sèche, 8 % dans le désert et 4 % dans un désert hyperaride. Les anciennes sauvegardes à géographie vivante reçoivent un seul recensement de ces habitats ; recharger ne crée pas de nouveaux troupeaux.
+Les gazelles migrent par les passages terrestres existants, jusqu’à trois hexagones par saison. Une oasis reçoit un poids de 8, ses voisins immédiats de 4 ; pendant une période sèche, ces valeurs passent à 12 et 6. La prairie reçoit un poids de 1,5 et le désert de 0,7. Développement, concentration des animaux, inondations et autres modificateurs habituels continuent de s’appliquer. L’eau attire les animaux sans les téléporter ni augmenter leur nombre.
+Un col exige au moins deux Pics nus adjacents. Deux cols ne peuvent jamais être adjacents. Les cols déjà présents priment sur les nouvelles découvertes. Un ancien col non conforme devient un terrain pierreux adapté au climat, en conservant son numéro, ses armées et ses constructions.
+
+### Formes de relief supplémentaires
+
+Les nouvelles parties utilisent la géographie version 5. Quatre formes régionales supplémentaires se combinent aux reliefs existants avant la sélection des climats, des cours d’eau et des ressources. Elles n’ajoutent aucune règle de déplacement ni aucune ressource garantie.
+
+- **Vallées ennoyées :** des bras de mer ramifiés entaillent un socle bas. Ce relief est favorisé dans les régions tempérées humides et océaniques. Les baies séparent les colonies proches et créent des routes abritées et plusieurs points de débarquement. Il se distingue des fjords glaciaires parallèles.
+- **Arcs volcaniques :** des chaînes courbes d’îles inégales aux pentes fortes, parfois avec un sommet affaissé. Les bassins insulaires ont des rivières courtes. Les hauteurs utilisent les montagnes et minerais existants, adaptés au climat. Un cratère ne garantit ni lac ni ressource particulière.
+- **Chaînes et bassins :** de longues crêtes étroites alternent avec de larges vallées, surtout dans les intérieurs secs. Les vallées facilitent les déplacements longitudinaux, tandis que pics et cols saisonniers limitent les traversées.
+- **Plateaux disséqués :** de larges hauteurs sont séparées par des couloirs bas et des rebords escarpés. Les colonies peuvent se développer en hauteur ; rivières et baies suivent le terrain bas. Les règles habituelles de montagnes, plaines inondables et rivières déterminent les hexagones.
+  Le relief reste stable au-delà de la carte révélée. Une expédition ne redessine jamais les terrains déjà connus. Les anciennes parties conservent leur version de relief et de drainage ; commencez une nouvelle partie pour utiliser ces quatre formes. La réduction de la surface océanique et la limite de 12 hexagones par lac restent applicables.
+
 ## Saisons et récoltes
 
 ### Campagnes à géographie vivante

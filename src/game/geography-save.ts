@@ -12,7 +12,7 @@ export function validateGeography(s: Game): void {
     return;
   }
   rule(
-    [1, 2, 3, 4].includes(s.geographyVersion),
+    [1, 2, 3, 4, 5].includes(s.geographyVersion),
     "Unsupported geography version.",
   );
   rule(
@@ -114,6 +114,7 @@ export function validateGeography(s: Game): void {
       "delta",
       "pass",
       "newlyRevealed",
+      "gazelleSurveyed",
       "coastal",
       "warmed",
     ] as const)

@@ -11,6 +11,7 @@ import { BIOME_INFO, type Climate } from "./climate-content";
 import {
   canSail,
   habitatKind,
+  gazelleHabitat,
   wildHabitat,
   WILDLIFE_GOODS,
   type Weather,
@@ -213,6 +214,8 @@ export function suitableWildlifeHabitat(tile: Hex, kind: WildlifeKind) {
     !wildHabitat(tile)
   )
     return false;
+  if (kind === "gazelle") return gazelleHabitat(tile);
+  if (gazelleHabitat(tile)) return false;
   if (kind === "turkey")
     return (
       ["mesoamerican", "prairie"].includes(tile.climate ?? "") &&
@@ -284,6 +287,11 @@ export function nativeWildlifeKind(
 /** Ocean area is 75% of the previous target; compensate per-water-hex density.
  * Freshwater populations are unchanged. */
 export function wildlifeSpawnChance(tile: Hex, geographyVersion = 0): number {
+  if (gazelleHabitat(tile)) {
+    if (tile.biome === "oasis") return 0.35;
+    if (tile.biome === "desert")
+      return tile.climate === "hyperarid" ? 0.04 : 0.08;
+  }
   if (tile.resource !== "water") return 0.22;
   const freshwater = ["river", "lake"].includes(tile.geography?.waterway ?? "");
   return (
@@ -291,6 +299,19 @@ export function wildlifeSpawnChance(tile: Hex, geographyVersion = 0): number {
     (geographyVersion >= 3 && !freshwater ? 4 / 3 : 1)
   );
 }
+/** A preference, not a teleport: migration still walks at most three land tiles.
+ * Drought concentrates herds around water without creating extra animals. */
+export function gazelleHabitatWeight(
+  s: Pick<Game, "tiles">,
+  tile: Hex,
+): number {
+  const dry = tile.geography?.weather === "dry";
+  if (tile.biome === "oasis") return dry ? 12 : 8;
+  if (neighbors(tile.id).some((id) => s.tiles[id]?.biome === "oasis"))
+    return dry ? 6 : 4;
+  return tile.biome === "desert" ? 0.7 : 1.5;
+}
+
 function nearSolidLand(s: Game, id: string): boolean {
   const nearby = new Set(neighbors(id));
   for (const next of [...nearby])
@@ -347,10 +368,35 @@ export function migrationCandidates(s: Game, population: Wildlife) {
  * A population with no suitable revealed habitat waits dormant until one exists. */
 export function restoreWildlifeHabitats(s: Game): void {
   if (!s.geographyVersion || !s.wildlife) return;
+  const known = new Set(s.wildlife.map((h) => h.id));
+  let added = false;
+  for (const tile of Object.values(s.tiles)) {
+    if (
+      !tile.geography ||
+      !gazelleHabitat(tile) ||
+      tile.geography.gazelleSurveyed
+    )
+      continue;
+    tile.geography.gazelleSurveyed = true;
+    const id = `wild:${tile.id}`;
+    if (
+      !known.has(id) &&
+      randomAt(s.seed, tile.id, "wildlife-density") < wildlifeSpawnChance(tile)
+    ) {
+      s.wildlife.push({
+        id,
+        kind: "gazelle",
+        tile: tile.id,
+        lastRound: s.round,
+      });
+      known.add(id);
+      added = true;
+    }
+  }
   const invalid = s.wildlife.filter(
     (h) => h.dormant || !suitableWildlifeHabitat(s.tiles[h.tile], h.kind),
   );
-  if (!invalid.length) return;
+  if (!invalid.length && !added) return;
   const choices = new Map<WildlifeKind, string[]>();
   for (const herd of invalid) {
     let candidates = choices.get(herd.kind);
@@ -452,9 +498,13 @@ export function syncEnvironment(s: Game): void {
     if (geo.damagedUntil !== undefined && geo.damagedUntil <= s.round)
       delete geo.damagedUntil;
     const id = `wild:${tile.id}`;
+    const firstGazelleSurvey = gazelleHabitat(tile) && !geo.gazelleSurveyed;
+    if (gazelleHabitat(tile)) geo.gazelleSurveyed = true;
     if (
       known.has(id) ||
-      (s.environmentRound !== undefined && !geo.newlyRevealed)
+      (s.environmentRound !== undefined &&
+        !geo.newlyRevealed &&
+        !firstGazelleSurvey)
     )
       continue;
     let kind = nativeWildlifeKind(s.seed, tile);
@@ -520,6 +570,7 @@ export function syncEnvironment(s: Game): void {
           (g.access === "flooded" && !marine(herd.kind))
         )
           weight *= 0.2;
+        if (herd.kind === "gazelle") weight *= gazelleHabitatWeight(s, tile);
         if (g.waterway === "river" && herd.kind === "fish") weight *= 1.8;
         if (season === "summer" && g.elevation > 0.6 && !marine(herd.kind))
           weight *= 1.4;

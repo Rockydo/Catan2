@@ -219,6 +219,22 @@ Riverbank artwork extends neighboring alluvial crops, clay, meadows and riversid
 A Mountain pass must border at least two Bare Peaks. Unsupported passes are replaced by ordinary rugged stone terrain, including in loaded saves; units, buildings and tile numbers are preserved. Bare Peaks remain impassable. Roads can skirt ranges but cannot run between two mountain tiles, including passes.
 Arctic and tundra summits and passes have heavy snow in spring, autumn and winter, with a short summer thaw. Mediterranean winter mountains retain exposed limestone below snowy summits and gullies. Art reflects regional snow cover; the crossed-circle marker, rather than the presence of painted snow, tells you whether a pass is closed.
 
+### Desert herds and mountain passes
+
+Gazelle herds inhabit Desert, Hyperarid and Hot Semi-arid climates. They stop on natural dry grassland, desert scrub and oases, not farmland or mineral deposits. A herd adds 1 Hides and 2 Meat to the tile’s base production before seasonal and weather modifiers. Oases retain their Wood and Grain. Initial herd chances are 35% on an oasis, 22% on dry grassland, 8% on desert and 4% on hyperarid desert. Existing living-geography saves receive a one-time survey of these habitats; loading repeatedly creates no extra herds.
+Gazelles migrate through the existing land movement network, at most three hexes per season. Compared with an ordinary site, an oasis has weight 8 and its immediate neighbors weight 4; during dry spells these become 12 and 6. Open grassland has weight 1.5 and desert 0.7. Development, crowding, flooding and the usual migration modifiers still apply. Water attracts herds but never teleports them or increases their population.
+A mountain pass needs at least two adjacent Bare Peaks. Two mountain passes can never be adjacent. Existing passes take priority over expedition additions. When an older map contains an invalid pass, it becomes climate-appropriate stone terrain, preserving its number, armies and structures.
+
+### Additional landforms
+
+New campaigns use geography version 5. Four additional regional patterns are blended with the existing landforms before climate, drainage and resources are selected. No new movement rules or guaranteed resources are introduced.
+
+- **Drowned valleys:** branching coastal inlets cut into a low platform. Humid temperate and oceanic regions favor this pattern. Bays divide nearby settlements and create sheltered routes and several landing points. These are irregular branching valleys, distinct from the existing parallel glacial fjords.
+- **Volcanic arcs:** curved chains of unequal, steep-sided islands, occasionally with a depressed summit. They have short island catchments rather than long mainland rivers. High ground uses existing climate-appropriate mountains and minerals; a crater is not a promise of a lake or a new resource.
+- **Basin and range:** long, narrow uplifts separated by broader valleys, favored in dry interiors. Armies move efficiently along valleys, while peaks and seasonal passes restrict movement across the ranges.
+- **Dissected plateaus:** broad uplands broken by lower corridors and steep margins. Settlements can develop on the uplands while rivers and coastal bays follow the lower terrain. Existing mountain, floodplain and river rules determine the resulting tiles.
+  Patterns remain seed-stable beyond the revealed map. Expanding in another direction never redraws existing terrain. Earlier campaigns retain their original landform and drainage version; start a new campaign to use these four patterns. The ocean-area reduction and maximum 12-hex lakes still apply.
+
 ## Seasons and harvests
 
 ### New geography campaigns

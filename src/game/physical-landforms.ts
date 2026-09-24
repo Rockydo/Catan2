@@ -14,21 +14,35 @@ export const LANDFORMS = [
   "barrier-coasts",
   "atolls",
   "rift-valleys",
+  "drowned-valleys",
+  "volcanic-arcs",
+  "basin-ranges",
+  "dissected-plateaus",
 ] as const;
 export type PhysicalLandform = (typeof LANDFORMS)[number];
-export const worldLandform = (seed: string): PhysicalLandform =>
-  LANDFORMS[Math.floor(randomAt(seed, "world", "landform") * LANDFORMS.length)];
+export const worldLandform = (seed: string, version = 5): PhysicalLandform =>
+  LANDFORMS[
+    Math.floor(
+      randomAt(seed, "world", "landform") *
+        (version >= 5 ? LANDFORMS.length : 10),
+    )
+  ];
 const provinceCache = new Map<string, PhysicalLandform>();
 /** Provinces share broad climate potential with climate selection. Geography
  * does not get repainted after a climate/resource roll. */
-function province(seed: string, q: number, r: number): PhysicalLandform {
+function province(
+  seed: string,
+  q: number,
+  r: number,
+  version: number,
+): PhysicalLandform {
   const id = key(q, r),
-    cacheKey = `${seed}/${id}`,
+    cacheKey = `${seed}/${id}/${version}`,
     cached = provinceCache.get(cacheKey);
   if (cached) return cached;
   const c = regionalClimateFields(seed, key(q * 16, r * 16));
   const weights: [PhysicalLandform, number][] = [
-    [worldLandform(seed), 5],
+    [worldLandform(seed, version), 5],
     ["continent", 1],
     ["archipelago", 1],
     ["peninsulas", 1],
@@ -47,6 +61,16 @@ function province(seed: string, q: number, r: number): PhysicalLandform {
       ["island-chains", 2],
       ["rift-valleys", 2],
     );
+  if (version >= 5) {
+    // Lithology is not a climate, but dry interiors expose basin/range relief
+    // and humid coastlines favor drowned, branching valleys.
+    weights.push(["volcanic-arcs", 1.2]);
+    if (c.moisture < 0.4)
+      weights.push(["basin-ranges", 4], ["dissected-plateaus", 3]);
+    else if (c.temperature > 0.3 && c.moisture > 0.5)
+      weights.push(["drowned-valleys", 4], ["dissected-plateaus", 1.5]);
+    else weights.push(["dissected-plateaus", 1]);
+  }
   let roll =
     randomAt(seed, id, "landform-province") *
     weights.reduce((s, [, w]) => s + w, 0);
@@ -62,9 +86,13 @@ function province(seed: string, q: number, r: number): PhysicalLandform {
   provinceCache.set(cacheKey, selected);
   return selected;
 }
-export function regionalLandform(seed: string, id: string): PhysicalLandform {
+export function regionalLandform(
+  seed: string,
+  id: string,
+  version = 5,
+): PhysicalLandform {
   const [q, r] = coord(id);
-  return province(seed, Math.round(q / 16), Math.round(r / 16));
+  return province(seed, Math.round(q / 16), Math.round(r / 16), version);
 }
 function height(
   seed: string,
@@ -82,6 +110,59 @@ function height(
     warp = (field(seed, q, r, 8, "coast-warp") - 0.5) * 5;
   const climate = regionalClimateFields(seed, key(q, r));
   switch (form) {
+    case "drowned-valleys": {
+      // Branching valleys cut an uneven coastal platform, rather than the
+      // straight parallel cuts of glacial fjords. Sea level floods their ends.
+      const trunk = Math.pow((Math.cos((v + warp) * 0.55) + 1) / 2, 10);
+      const tributary = Math.pow(
+        (Math.cos((u * 0.65 + Math.abs(v + warp) * 0.8) * 0.8) + 1) / 2,
+        12,
+      );
+      const incision = Math.max(trunk, tributary * (0.5 + trunk * 0.5));
+      return 0.32 + broad * 0.35 + ridge * 0.09 + fine * 0.07 - incision * 0.27;
+    }
+    case "volcanic-arcs": {
+      // Unequal volcanic massifs follow a curved chain, with occasional
+      // collapsed centers. Their radial slopes feed the ordinary river model.
+      const cell = Math.round(u / 6);
+      const row = Math.round((v - Math.sin(u * 0.12) * 5) / 18);
+      let mass = 0;
+      for (let band = row - 1; band <= row + 1; band++)
+        for (let n = cell - 2; n <= cell + 2; n++) {
+          const id = key(n, band);
+          const centerU = n * 6 + (randomAt(seed, id, "volcano-u") - 0.5) * 2;
+          const centerV =
+            band * 18 +
+            Math.sin(centerU * 0.12) * 5 +
+            (randomAt(seed, id, "volcano-v") - 0.5) * 2;
+          const radius = 1.7 + randomAt(seed, id, "volcano-radius") * 1.5;
+          const d = Math.hypot(u - centerU, v - centerV);
+          const cone = Math.exp((-d * d) / (radius * radius));
+          const collapse =
+            randomAt(seed, id, "volcano-caldera") < 0.28
+              ? Math.exp((-d * d) / 0.8) * 0.6
+              : 0;
+          mass = Math.max(mass, cone - collapse);
+        }
+      return 0.2 + broad * 0.12 + fine * 0.08 + mass * 0.52;
+    }
+    case "basin-ranges": {
+      // Alternating long, narrow uplifts and broad valley floors.
+      const crest = Math.pow((Math.cos((v + warp * 0.45) * 0.7) + 1) / 2, 4);
+      const length = 0.6 + field(seed, u, v, 8, "range-length") * 0.4;
+      return 0.29 + broad * 0.23 + crest * length * 0.32 + fine * 0.07;
+    }
+    case "dissected-plateaus": {
+      // Raised tablelands retain broad tops, split by lower eroded corridors.
+      const bedrock = field(seed, u + 23, v - 51, 6, "plateau-bedrock");
+      const shelf = Math.max(0, Math.min(1, (bedrock - 0.3) / 0.35));
+      const top = shelf * shelf * (3 - 2 * shelf);
+      const ravine = Math.pow(
+        (Math.cos((v + warp + Math.sin(u * 0.4)) * 0.8) + 1) / 2,
+        8,
+      );
+      return 0.28 + top * 0.33 + broad * 0.1 + fine * 0.05 - ravine * 0.12;
+    }
     case "continent":
       return (
         0.2 +
@@ -160,7 +241,11 @@ function height(
     }
   }
 }
-export function physicalElevation(seed: string, id: string): number {
+export function physicalElevation(
+  seed: string,
+  id: string,
+  version = 5,
+): number {
   const [q, r] = coord(id),
     x = q / 16,
     y = r / 16,
@@ -170,9 +255,9 @@ export function physicalElevation(seed: string, id: string): number {
     u = smooth(x - a),
     v = smooth(y - b);
   return (
-    height(seed, q, r, province(seed, a, b)) * (1 - u) * (1 - v) +
-    height(seed, q, r, province(seed, a + 1, b)) * u * (1 - v) +
-    height(seed, q, r, province(seed, a, b + 1)) * (1 - u) * v +
-    height(seed, q, r, province(seed, a + 1, b + 1)) * u * v
+    height(seed, q, r, province(seed, a, b, version)) * (1 - u) * (1 - v) +
+    height(seed, q, r, province(seed, a + 1, b, version)) * u * (1 - v) +
+    height(seed, q, r, province(seed, a, b + 1, version)) * (1 - u) * v +
+    height(seed, q, r, province(seed, a + 1, b + 1, version)) * u * v
   );
 }

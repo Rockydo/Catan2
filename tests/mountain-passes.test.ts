@@ -16,6 +16,13 @@ it("requires two adjacent Bare Peaks in new worlds and after expeditions", () =>
       if (t.geography?.pass) {
         passes++;
         expect(
+          neighbors(t.id).some(
+            (id) =>
+              w.tiles[id]?.geography?.pass ||
+              w.tiles[id]?.biome === "mountain-pass",
+          ),
+        ).toBe(false);
+        expect(
           neighbors(t.id).filter((id) => w.tiles[id]?.resource === "peaks")
             .length,
         ).toBeGreaterThanOrEqual(2);
@@ -86,4 +93,34 @@ it("uses polar snow in autumn and lighter Mediterranean winter cover for peaks a
     for (const key of [autumn, summer, med])
       expect(existsSync("public/assets/" + terrainArtFile(key))).toBe(true);
   }
+});
+
+it("never retains adjacent passes and preserves existing passes when extending the map", () => {
+  const { s } = maritimeFixture();
+  for (const tile of Object.values(s.tiles)) {
+    tile.resource = "peaks";
+    tile.biome = "bare-peaks";
+    tile.geography = { elevation: 0.8, region: "alpine:0,0", animals: [] };
+  }
+  const ids = ["0,0", neighbors("0,0")[0]];
+  const makePass = (id: string) => {
+    s.tiles[id].resource = "stone";
+    s.tiles[id].biome = "mountain-pass";
+    s.tiles[id].geography!.pass = true;
+    s.tiles[id].geography!.access = "closed";
+  };
+  ids.forEach(makePass);
+  const army = piece(s, ids[1], 0, "heavy");
+  restoreMountainPasses(s, [ids[1]]);
+  expect(s.tiles[ids[0]].geography?.pass).toBe(true);
+  expect(s.tiles[ids[1]].geography?.pass).toBeUndefined();
+  expect(s.tiles[ids[1]].resource).toBe("stone");
+  expect(s.tiles[ids[1]].geography?.access).not.toBe("closed");
+  expect(s.pieces[army.id].tile).toBe(ids[1]);
+  ids.forEach(makePass);
+  restoreMountainPasses(s);
+  expect(ids.filter((id) => s.tiles[id].geography?.pass)).toHaveLength(1);
+  const once = JSON.stringify(s.tiles);
+  restoreMountainPasses(s);
+  expect(JSON.stringify(s.tiles)).toBe(once);
 });

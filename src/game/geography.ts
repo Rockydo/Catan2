@@ -35,7 +35,8 @@ export type WildlifeKind =
   | "musk-ox"
   | "seal"
   | "jungle-game"
-  | "turkey";
+  | "turkey"
+  | "gazelle";
 export interface Geography {
   elevation: number;
   region: string;
@@ -57,6 +58,7 @@ export interface Geography {
   projects?: Partial<Record<Project, { owner: number; born: number }>>;
   damagedUntil?: number;
   newlyRevealed?: boolean;
+  gazelleSurveyed?: boolean;
   nextHarvestMode?: "concentrated" | "spread";
   harvestChosenYear?: number;
   harvestMode?: "concentrated" | "spread";
@@ -68,13 +70,13 @@ export interface Wildlife {
   lastRound: number;
   dormant?: true;
 }
-export const GEOGRAPHY_VERSION = 4;
+export const GEOGRAPHY_VERSION = 5;
 export const landform = (
   seed: string,
   version = GEOGRAPHY_VERSION,
 ): Landform =>
   version >= 3
-    ? worldLandform(seed)
+    ? worldLandform(seed, version)
     : (["continent", "archipelago", "inland-seas", "peninsulas"] as const)[
         Math.floor(randomAt(seed, "world", "landform") * 4)
       ];
@@ -108,7 +110,7 @@ export function elevationAt(
   const saved = heightCache.get(cacheKey);
   if (saved !== undefined) return saved;
   if (version >= 3) {
-    const height = physicalElevation(seed, id);
+    const height = physicalElevation(seed, id, version);
     if (heightCache.size >= 60000) heightCache.clear();
     heightCache.set(cacheKey, height);
     return height;
@@ -173,6 +175,10 @@ export function seaLevel(seed: string, version = GEOGRAPHY_VERSION) {
     "barrier-coasts": 0.5,
     atolls: 0.61,
     "rift-valleys": 0.38,
+    "drowned-valleys": 0.5,
+    "volcanic-arcs": 0.58,
+    "basin-ranges": 0.3,
+    "dissected-plateaus": 0.32,
   }[landform(seed, version)];
   const level =
     heights[Math.floor(heights.length * water * (version >= 3 ? 0.75 : 1))];
@@ -256,12 +262,14 @@ function watershed(
     supplied &&
     elevationAt(seed, source, version) > seaLevel(seed, version) + 0.06
   ) {
-    const form = version >= 3 ? regionalLandform(seed, source) : "continent";
+    const form =
+      version >= 3 ? regionalLandform(seed, source, version) : "continent";
     const smallIslands = [
       "island-chains",
       "archipelago",
       "skerries",
       "atolls",
+      "volcanic-arcs",
     ].includes(form);
     const maxSteps =
       version < 3
@@ -523,6 +531,15 @@ const WILD_BIOMES = new Set<Biome>([
   "jungle",
   "turkey-grounds",
 ]);
+/** Desert herds browse open scrub and gather at permanent water. */
+export const gazelleHabitat = (tile: Hex) =>
+  DRY.has(tile.climate ?? "temperate") &&
+  ["desert", "oasis", "steppe-plain", "wildlife-grassland"].includes(
+    tile.biome ?? "",
+  ) &&
+  !["water", "ice", "peaks"].includes(tile.resource) &&
+  !tile.geography?.pass;
+
 /** Only natural timber or unproductive habitat supports wild herds. Tree crops
  * are agriculture even though their combat terrain is forested. */
 export const wildHabitat = (tile: Hex) => {
@@ -532,7 +549,7 @@ export const wildHabitat = (tile: Hex) => {
     tile.geography?.pass
   )
     return false;
-  if (WILD_BIOMES.has(tile.biome)) return true;
+  if (WILD_BIOMES.has(tile.biome) || gazelleHabitat(tile)) return true;
   const info = BIOME_INFO[tile.biome];
   return (
     (info.family === "forest" || tile.biome === "snow-plain") &&
@@ -549,6 +566,7 @@ export function habitatKind(tile: Hex): WildlifeKind | undefined {
     return tile.climate && COLD.has(tile.climate) ? "cod" : "fish";
   }
   if (!wildHabitat(tile)) return undefined;
+  if (gazelleHabitat(tile)) return "gazelle";
   if (tile.biome === "turkey-grounds") return "turkey";
   if (tile.biome === "seal-grounds") return "seal";
   if (tile.biome === "musk-ox-range") return "musk-ox";
@@ -569,6 +587,7 @@ export const WILDLIFE_GOODS: Record<WildlifeKind, Stock> = {
   seal: { hides: 2, oil: 2 },
   "jungle-game": { hides: 3, meat: 1 },
   turkey: { meat: 3 },
+  gazelle: { hides: 1, meat: 2 },
 };
 export const WILDLIFE_NAMES: Record<WildlifeKind, string> = {
   fish: "Fish shoal",
@@ -581,6 +600,7 @@ export const WILDLIFE_NAMES: Record<WildlifeKind, string> = {
   seal: "Seal colony",
   "jungle-game": "Forest game",
   turkey: "Wild turkey flock",
+  gazelle: "Gazelle herd",
 };
 export const PROJECTS: Record<
   Project,
@@ -1078,14 +1098,26 @@ export function restoreMountainPasses(
   world: World,
   ids = Object.keys(world.tiles),
 ): void {
-  for (const id of ids) {
+  const repairing = new Set(ids);
+  const isPass = (tile: Hex | undefined) =>
+    tile?.biome === "mountain-pass" || !!tile?.geography?.pass;
+  // Existing passes win over expedition additions; whole-map repairs are stable.
+  const retained = new Set(
+    Object.values(world.tiles)
+      .filter((tile) => !repairing.has(tile.id) && isPass(tile))
+      .map((tile) => tile.id),
+  );
+  for (const id of [...ids].sort()) {
     const tile = world.tiles[id];
     if (tile?.biome !== "mountain-pass" && !tile?.geography?.pass) continue;
     if (
       neighbors(id).filter((n) => world.tiles[n]?.resource === "peaks")
-        .length >= 2
-    )
+        .length >= 2 &&
+      !neighbors(id).some((n) => retained.has(n))
+    ) {
+      retained.add(id);
       continue;
+    }
     const biome: Biome = ["arctic", "glacial", "tundra"].includes(
       tile.climate ?? "",
     )
