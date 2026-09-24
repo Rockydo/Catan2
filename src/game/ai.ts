@@ -1154,7 +1154,7 @@ export function economyProjects(s: Game): Project[] {
             const info = shipStats(kind, tier);
             if (
               t.turnLevel < info.level ||
-              !pieceAccess(s.tiles[tile], { naval: true, kind, tier })
+              !pieceAccess(s.tiles[tile], { naval: true, kind, tier }, s.tiles)
             )
               continue;
             const freeCount = s.players[s.active].bonuses.ships.filter(
@@ -1354,7 +1354,7 @@ export function economyProjects(s: Game): Project[] {
           .filter(
             (id) =>
               !hostileAt(s, id) &&
-              pieceAccess(s.tiles[id], { naval, kind, tier }),
+              pieceAccess(s.tiles[id], { naval, kind, tier }, s.tiles),
           )
           .map((tile) => {
             const key = `${kind}/${tier}/${tile}`;

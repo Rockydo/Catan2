@@ -692,7 +692,10 @@ export function moveTargets(s: Game, ids: string[]): Record<string, string[]> {
     const t = queue[i];
     if (paths[t].length >= max) continue;
     for (const n of neighbors(t)) {
-      if (paths[n] || !profiles.every((u) => pieceAccess(s.tiles[n], u)))
+      if (
+        paths[n] ||
+        !profiles.every((u) => pieceAccess(s.tiles[n], u, s.tiles))
+      )
         continue;
       paths[n] = [...paths[t], n];
       result[n] = paths[n];
@@ -716,7 +719,7 @@ export function retreatOptions(
         ? units.every(
             (u) =>
               u.seasonStatus !== "icebound" &&
-              pieceAccess(s.tiles[n], u) &&
+              pieceAccess(s.tiles[n], u, s.tiles) &&
               !hostileAt(s, n, u.owner, u.naval),
           )
         : canOccupy(s.tiles[n], naval) && !hostileAt(s, n, owner, naval)),

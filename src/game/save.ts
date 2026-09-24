@@ -783,7 +783,7 @@ function validateInvariants(
           !!s.calendar &&
             !u.carrier &&
             (u.seasonStatus === "icebound"
-              ? u.naval && !pieceAccess(s.tiles[u.tile], u)
+              ? u.naval && !pieceAccess(s.tiles[u.tile], u, s.tiles)
               : u.seasonStatus === "adrift" &&
                 !u.naval &&
                 ((s.tiles[u.tile].surface === "open" &&
@@ -820,7 +820,7 @@ function validateInvariants(
         );
       } else {
         rule(
-          pieceAccess(s.tiles[u.tile], u) || !!u.seasonStatus,
+          pieceAccess(s.tiles[u.tile], u, s.tiles) || !!u.seasonStatus,
           "A unit is on impassable terrain.",
         );
         const owners = tileOwners.get(u.tile);

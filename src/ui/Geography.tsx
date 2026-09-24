@@ -258,7 +258,7 @@ export function GeographyPanel({
     <section className="geography-panel" aria-label={tx("Local geography")}>
       <h3>{tx(geographicName(tile) ?? "Local geography")}</h3>
       <div className="geography-status">
-        {environmentSummary(tile).map((text) => (
+        {environmentSummary(tile, s.tiles).map((text) => (
           <span key={text}>{tx(text)}</span>
         ))}
       </div>

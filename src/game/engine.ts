@@ -1263,11 +1263,15 @@ function executeOrder(
         "Choose ship tier I–IV.",
       );
       rule(
-        pieceAccess(s.tiles[c.tile], {
-          naval: true,
-          kind: kind as ShipClass,
-          tier,
-        }),
+        pieceAccess(
+          s.tiles[c.tile],
+          {
+            naval: true,
+            kind: kind as ShipClass,
+            tier,
+          },
+          s.tiles,
+        ),
         "This ship needs deeper water. Choose a shallow-draft vessel or another shipyard.",
       );
       const info = shipStats(kind as ShipClass, tier);

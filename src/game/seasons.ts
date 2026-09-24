@@ -683,7 +683,8 @@ export function syncSeasonSurfaces(s: Game): void {
     delete unit.seasonStatus;
     if (unit.carrier) continue;
     const tile = s.tiles[unit.tile];
-    if (unit.naval && !pieceAccess(tile, unit)) unit.seasonStatus = "icebound";
+    if (unit.naval && !pieceAccess(tile, unit, s.tiles))
+      unit.seasonStatus = "icebound";
     if (
       !unit.naval &&
       ((tile.surface === "open" &&

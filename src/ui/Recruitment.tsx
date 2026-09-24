@@ -370,7 +370,7 @@ export function Recruitment({
                     {tx(
                       shallowDraft(kind as ShipClass, tier)
                         ? "Rivers, shallows and open water"
-                        : "Deep water only · no rivers, shoals or reefs",
+                        : "Deep water · shallows with exactly 1 adjacent land tile",
                     )}
                   </small>
                 )}

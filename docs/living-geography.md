@@ -62,6 +62,8 @@ Rivers, shoals, reefs and flooded ground admit Riverboats, Fishing ships, Transp
 
 Shallows follow shallow seabed close to land, with wider sediment shelves at river mouths. Warm clear shallow sea can have reefs; muddy river mouths cannot. These are connected geographic conditions, not independent ocean decoration rolls. Recruitment lists each ship’s allowed waters. Automatic trading ports require a land/water shore and do not appear on narrow river channels or permanent ice.
 
+Deep-draft ships may also enter rivers, shoals and reefs with exactly one adjacent land tile. This exception applies to recruitment and movement, but not to flooded land or frozen water. Sea ice does not count as land. Shallow-draft ships retain access to all ice-free deep water, including tiles with two or more adjacent land tiles.
+
 ## Local improvements
 
 Build from a clear adjacent owned town or route. Harbors and granaries require a town. Improvements cannot be built on peaks or passes. There is one of each type per tile; they do not stack. Bridge, irrigation and levee benefits apply to the shared tile. Harbor and granary benefits belong to their builder.

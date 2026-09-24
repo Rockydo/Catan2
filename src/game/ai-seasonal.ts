@@ -429,7 +429,7 @@ function rescueStranded(s: Game): Command | undefined {
         for (const to of neighbors(at)) {
           if (
             paths.has(to) ||
-            !pieceAccess(s.tiles[to], ship) ||
+            !pieceAccess(s.tiles[to], ship, s.tiles) ||
             piecesAt(s, to).some((u) => !friendly(s, u.owner, s.active))
           )
             continue;
@@ -489,7 +489,7 @@ export function seasonalEvacuation(s: Game): Command | undefined {
       for (const to of neighbors(at)) {
         if (
           paths.has(to) ||
-          !pieceAccess(s.tiles[to], first) ||
+          !pieceAccess(s.tiles[to], first, s.tiles) ||
           piecesAt(s, to).some((u) => !friendly(s, u.owner, first.owner))
         )
           continue;

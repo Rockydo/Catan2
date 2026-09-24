@@ -373,6 +373,76 @@ describe("geographic AI forecasts", () => {
   });
 });
 describe("crossings, local projects and ships", () => {
+  it("allows deep-draft ships through shallows only with exactly one permanent land neighbor", () => {
+    const t = tile("river", "water");
+    t.surface = "open";
+    const tiles: Game["tiles"] = { [t.id]: t };
+    const adjacent = neighbors(t.id);
+    for (let count = 0; count <= 6; count++) {
+      adjacent.forEach((id, index) => {
+        tiles[id] = {
+          ...tile(),
+          id,
+          resource: index < count ? "lumber" : "water",
+        };
+      });
+      for (const waterway of ["river", "shoal", "reef"] as const) {
+        t.geography!.waterway = waterway;
+        for (const kind of [
+          "carrack",
+          "convoy",
+          "merchantship",
+          "galley",
+        ] as const)
+          expect(pieceAccess(t, { naval: true, kind, tier: 4 }, tiles)).toBe(
+            count === 1,
+          );
+        expect(canSail(t, "riverboat", 4, tiles)).toBe(true);
+      }
+      t.geography!.waterway = "deep";
+      expect(canSail(t, "riverboat", 1, tiles)).toBe(true);
+    }
+    adjacent.forEach((id, index) => {
+      tiles[id].resource = index === 0 ? "lumber" : "ice";
+      tiles[id].surface = index === 0 ? undefined : "frozen";
+    });
+    t.geography!.waterway = "shoal";
+    expect(canSail(t, "carrack", 4, tiles)).toBe(true);
+    t.surface = "frozen";
+    expect(canSail(t, "carrack", 4, tiles)).toBe(false);
+    t.surface = "open";
+    t.geography!.access = "closed";
+    expect(canSail(t, "carrack", 4, tiles)).toBe(false);
+    t.geography!.access = "flooded";
+    expect(canSail(t, "carrack", 4, tiles)).toBe(false);
+  });
+  it("uses the coastal exception when recruiting deep-draft ships", () => {
+    const s = started(),
+      town = ownTowns(s)[0];
+    const id = s.vertices[town.vertex].tiles[0];
+    const t = s.tiles[id];
+    t.resource = "water";
+    t.biome = "river";
+    t.surface = "open";
+    t.geography!.waterway = "shoal";
+    t.geography!.access = "normal";
+    town.level = town.turnLevel = 4;
+    const adjacent = neighbors(id).filter((id) => s.tiles[id]);
+    adjacent.forEach((id, index) => {
+      s.tiles[id].resource = index === 0 ? "stone" : "water";
+    });
+    const command = {
+      type: "ship",
+      town: town.id,
+      tile: id,
+      kind: "carrack",
+      tier: 4,
+    } as const;
+    expect(canApplyCommand(s, command)).toBe(true);
+    s.tiles[adjacent[1]].resource = "stone";
+    expect(canApplyCommand(s, command)).toBe(false);
+  });
+
   it("opens rivers only with ice, a low-water ford or a bridge; peaks never open", () => {
     const t = tile("river", "water");
     t.surface = "open";

@@ -80,7 +80,7 @@ function routeTree(
         if (
           previous.has(next) ||
           !canOccupy(s.tiles[next], naval) ||
-          !profiles.every((u) => pieceAccess(s.tiles[next], u))
+          !profiles.every((u) => pieceAccess(s.tiles[next], u, s.tiles))
         )
           continue;
         previous.set(next, current);

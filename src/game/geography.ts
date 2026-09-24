@@ -953,6 +953,7 @@ export function canSail(
   tile: Hex | undefined,
   kind: ShipClass,
   tier = 1,
+  tiles?: World["tiles"],
 ): boolean {
   if (!tile || tile.surface === "frozen" || tile.geography?.access === "closed")
     return false;
@@ -967,13 +968,24 @@ export function canSail(
   const shallow =
     ["river", "shoal", "reef"].includes(geo.waterway ?? "") ||
     geo.access === "flooded";
-  return !shallow || shallowDraft(kind, tier);
+  if (!shallow || shallowDraft(kind, tier)) return true;
+  // Flooded land remains restricted. Coastal clearance is based on permanent
+  // land, never on seasonal sea ice or temporarily flooded shores.
+  return (
+    geo.access !== "flooded" &&
+    !!tiles &&
+    neighbors(tile.id).filter((id) => {
+      const adjacent = tiles[id];
+      return adjacent && !["water", "ice"].includes(adjacent.resource);
+    }).length === 1
+  );
 }
 export function pieceAccess(
   tile: Hex | undefined,
   u: Pick<Piece, "naval" | "kind" | "tier">,
+  tiles?: World["tiles"],
 ): boolean {
-  if (u.naval) return canSail(tile, u.kind as ShipClass, u.tier);
+  if (u.naval) return canSail(tile, u.kind as ShipClass, u.tier, tiles);
   if (!tile || tile.resource === "peaks" || tile.geography?.access === "closed")
     return false;
   if (tile.geography?.projects?.bridge || tile.geography?.access === "ford")

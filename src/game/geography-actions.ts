@@ -66,7 +66,7 @@ export function geographyCommand(s: Game, c: Command): boolean {
     if (kind === "levee" && g.access === "flooded") g.access = "normal";
     for (const unit of Object.values(s.pieces))
       if (unit.tile === tile.id && !unit.carrier) {
-        if (pieceAccess(tile, unit)) delete unit.seasonStatus;
+        if (pieceAccess(tile, unit, s.tiles)) delete unit.seasonStatus;
         else unit.seasonStatus = unit.naval ? "icebound" : "adrift";
       }
     log(

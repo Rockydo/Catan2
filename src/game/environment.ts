@@ -9,6 +9,7 @@ import {
 } from "./seasons";
 import { BIOME_INFO, type Climate } from "./climate-content";
 import {
+  canSail,
   habitatKind,
   wildHabitat,
   WILDLIFE_GOODS,
@@ -527,15 +528,22 @@ export function syncEnvironment(s: Game): void {
   }
   s.environmentRound = s.round;
 }
-export function environmentSummary(tile: Hex): string[] {
+export function environmentSummary(tile: Hex, tiles?: Game["tiles"]): string[] {
   const g = tile.geography;
   if (!g) return [];
   return [
     WEATHER_NAMES[g.weather ?? "normal"],
+    g.waterway === "river" && canSail(tile, "carrack", 1, tiles)
+      ? "River: all ship classes (one adjacent land tile)"
+      : "",
     g.waterway === "shoal"
-      ? "Coastal shelf: shallow-draft vessels only"
+      ? canSail(tile, "carrack", 1, tiles)
+        ? "Coastal shelf: all ship classes (one adjacent land tile)"
+        : "Coastal shelf: shallow-draft vessels only"
       : g.waterway === "reef"
-        ? "Coral reef: shallow-draft vessels only"
+        ? canSail(tile, "carrack", 1, tiles)
+          ? "Coral reef: all ship classes (one adjacent land tile)"
+          : "Coral reef: shallow-draft vessels only"
         : g.waterway === "lake"
           ? "Lake: all vessel classes when ice-free"
           : ["coast", "deep"].includes(g.waterway ?? "")
