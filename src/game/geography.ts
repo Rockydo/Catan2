@@ -235,6 +235,65 @@ export function geographyAt(seed: string, id: string) {
     elevation < seaLevel(seed) || !!drainage.downstream || drainage.lake;
   return { elevation, water, ...drainage };
 }
+export const MAX_LAKE_TILES = 12;
+const lakeCache = new Map<string, boolean>();
+/** Bounded basin search on the underlying world, including unrevealed tiles.
+ * Rivers are outlets, not part of a lake's area. Thirteen tiles prove a sea;
+ * no unbounded ocean flood fill or dependency on expedition reveal order. */
+export function isSmallLake(seed: string, id: string): boolean {
+  const cacheKey = `${seed}/${id}`;
+  const known = lakeCache.get(cacheKey);
+  if (known !== undefined) return known;
+  const basin = (at: string) => {
+    const g = geographyAt(seed, at);
+    return g.water && !g.downstream;
+  };
+  if (!basin(id)) return false;
+  const found = new Set([id]),
+    queue = [id];
+  let small = true;
+  search: for (let i = 0; i < queue.length; i++) {
+    for (const next of neighbors(queue[i])) {
+      if (found.has(next) || !basin(next)) continue;
+      found.add(next);
+      queue.push(next);
+      if (found.size > MAX_LAKE_TILES) {
+        small = false;
+        break search;
+      }
+    }
+  }
+  if (lakeCache.size > 60000) lakeCache.clear();
+  for (const tile of found) lakeCache.set(`${seed}/${tile}`, small);
+  return small;
+}
+/** Repair oversized lakes in already saved geography worlds. Preserve every
+ * coordinate, roll, producer, population, project and surface state. */
+export function restoreLakeSizes(world: World): void {
+  const seen = new Set<string>();
+  for (const tile of Object.values(world.tiles)) {
+    if (seen.has(tile.id) || tile.geography?.waterway !== "lake") continue;
+    const group = [tile];
+    seen.add(tile.id);
+    for (let i = 0; i < group.length; i++)
+      for (const id of neighbors(group[i].id)) {
+        const next = world.tiles[id];
+        if (next?.geography?.waterway !== "lake" || seen.has(id)) continue;
+        seen.add(id);
+        group.push(next);
+      }
+    if (group.length <= MAX_LAKE_TILES) continue;
+    for (const t of group) {
+      t.geography!.waterway = neighbors(t.id).some((id) => {
+        const next = world.tiles[id];
+        return next && next.resource !== "water" && next.resource !== "ice";
+      })
+        ? "coast"
+        : "deep";
+      if (t.biome === "lake") t.biome = "water";
+    }
+  }
+}
 const COLD = new Set<Climate>([
   "cold",
   "arctic",
@@ -370,7 +429,7 @@ export function geographicTerrain(seed: string, tile: Hex): void {
   if (at.water) {
     geo.waterway = at.downstream
       ? "river"
-      : at.lake || landform(seed) === "inland-seas"
+      : isSmallLake(seed, id)
         ? "lake"
         : around.some((n) => !n.water)
           ? "coast"

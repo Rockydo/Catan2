@@ -95,7 +95,7 @@ New five-player and twelve-player campaigns use connected landforms, river cours
 
 ### Landforms and river courses
 
-A seed selects continental, archipelago, inland-sea or peninsula geography. Correlated height fields create coastlines and mountain belts. Inland-sea worlds have broad enclosed lake basins, with freshwater fish rather than marine cod or whales; peninsulas favor elongated landforms. A fixed survey around the starting area sets a usable coast level. Climate is still assigned first and determines eligible resources. Land and water now follow height and drainage instead of independent per-hex water rolls. The historical climate land/water percentages describe older campaigns only.
+A seed selects continental, archipelago, inland-sea or peninsula geography. Correlated height fields create coastlines and mountain belts. Inland-sea worlds have broad enclosed seas; peninsulas favor elongated landforms. Lakes contain at most 12 connected non-river water hexes. Larger basins are seas, with marine wildlife. The size check includes unrevealed geography, so expeditions do not change this classification. Shorelines appear only beside land; rivers connect through their actual upstream and downstream edges. A fixed survey around the starting area sets a usable coast level. Climate is still assigned first and determines eligible resources. Land and water now follow height and drainage instead of independent per-hex water rolls. The historical climate land/water percentages describe older campaigns only.
 Each watershed follows downhill neighbors toward sea or an inland depression. Rivers reserve water hexes; depressions can form lakes. River courses and heights are fixed by seed and coordinates, even beyond the revealed map. Revealing another frontier cannot reroll an existing coast or redirect a river. Resources and dice numbers remain random. No raw resource is guaranteed.
 
 ### River crossings and mountain passes
@@ -151,6 +151,10 @@ Eligible land has a 1.2% landmark-candidate chance. Sites must suit their effect
 ### Planning and AI
 
 The AI values current mobile harvest locations, sends hunters and fishing ships toward useful reachable populations, avoids forecast seasonal closures, chooses legal vessel drafts, and evaluates bridges, irrigation, levees, harbors, granaries and crop repairs against their cost and local benefit. It can disrupt enemy crops during military operations. It uses visible geography and public seasonal probabilities; it does not inspect future migration or weather draws. No weather system adds an AI resource subsidy.
+
+### Reading water and wildlife
+
+Shorelines follow adjacent land. Rivers connect through their upstream and downstream edges. Animals are painted directly onto their current habitats, including fish, cod and whales. An empty habitat has no animal artwork. Mixed populations show each species; select the tile for exact counts. Farm animals remain fixed. Oversized lakes from earlier geography saves become seas on load; positions, dice, stocks, structures and populations are preserved.
 
 ## Seasons and harvests
 

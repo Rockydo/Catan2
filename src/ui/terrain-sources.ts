@@ -161,6 +161,18 @@ export async function prepareTerrainSources(
         return gradient;
       };
     }
+    // Resolve shared connectivity masks once, rather than querying the whole
+    // SVG for each water tile. Geometry is part of the tile's cache identity.
+    const clips = new Map<string, Path2D>();
+    for (const definition of root.querySelectorAll("defs > clipPath")) {
+      const shape = definition.firstElementChild as SVGGraphicsElement | null;
+      if (
+        shape &&
+        definition.childElementCount === 1 &&
+        definition.getAttribute("clipPathUnits") === "userSpaceOnUse"
+      )
+        clips.set(definition.id, path(shape));
+    }
     async function compile(
       node: SVGGraphicsElement,
     ): Promise<Paint | MapSpriteSource> {
@@ -188,15 +200,9 @@ export async function prepareTerrainSources(
           width = number(node, "width"),
           height = number(node, "height");
         const clipId = node.getAttribute("clip-path");
-        if (clipId && clipId !== "url(#season-terrain-hex)")
-          throw Error("Unsupported terrain clip");
-        const clip = clipId
-          ? path(
-              root.querySelector<SVGGraphicsElement>(
-                "#season-terrain-hex > polygon",
-              )!,
-            )
-          : undefined;
+        const clipMatch = clipId && /^url\(#([^)]*)\)$/.exec(clipId);
+        const clip = clipMatch ? clips.get(clipMatch[1]) : undefined;
+        if (clipId && !clip) throw Error("Unsupported terrain clip");
         const preserve =
           node.getAttribute("preserveAspectRatio") ?? "xMidYMid meet";
         if (preserve !== "xMidYMid slice" && preserve !== "xMidYMid meet")
@@ -303,9 +309,24 @@ export async function prepareTerrainSources(
               throw Error("Unprepared production badge");
             tokens.push(paint);
           } else {
-            if (typeof paint !== "function")
-              throw Error("Unbounded terrain image");
-            backgrounds.push(paint);
+            // Prepared geography markers are bounded sprite images too. Keep
+            // them in the static terrain batch without forcing SVG fallback.
+            backgrounds.push(
+              typeof paint === "function"
+                ? paint
+                : (context) => {
+                    context.save();
+                    context.globalAlpha = paint.opacity ?? 1;
+                    context.drawImage(
+                      paint.image,
+                      paint.x,
+                      paint.y,
+                      paint.w,
+                      paint.h,
+                    );
+                    context.restore();
+                  },
+            );
           }
         }
         return {
@@ -325,7 +346,9 @@ export async function prepareTerrainSources(
     });
     signal.throwIfAborted();
     const definitions = [
-      ...root.querySelectorAll("linearGradient, #season-terrain-hex"),
+      ...root.querySelectorAll(
+        "linearGradient, #season-terrain-hex, #water-full-hex",
+      ),
     ]
       .map((node) => node.outerHTML)
       .join("");

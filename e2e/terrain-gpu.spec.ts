@@ -10,7 +10,7 @@ import { syncSeasonSurfaces } from "../src/game/seasons";
 let campaign: string;
 function fixture() {
   if (campaign) return campaign;
-  let game = newGame("large-terrain-renderer");
+  let game = newGame("large-terrain-renderer", undefined, { geography: false });
   Object.assign(game, generateWorld(game.seed, 850));
   game.calendar = { ...game.calendar!, startSeason: "spring" };
   syncSeasonSurfaces(game);

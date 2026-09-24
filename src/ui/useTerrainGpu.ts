@@ -147,6 +147,8 @@ export function useTerrainGpu(
         "opacity",
         "transform",
         "points",
+        "d",
+        "clip-path",
         "data-terrain-key",
         "x",
         "y",

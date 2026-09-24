@@ -95,7 +95,7 @@ Les nouvelles campagnes à cinq ou douze factions utilisent des continents cohé
 
 ### Reliefs et cours d’eau
 
-La graine choisit une géographie continentale, insulaire, à mers intérieures ou à péninsules. Des altitudes corrélées forment côtes et massifs. Les mers intérieures sont de grands bassins lacustres fermés, peuplés de poissons d’eau douce plutôt que de morues ou de baleines ; les péninsules favorisent les reliefs allongés. Une zone d’étude fixe autour du départ détermine le niveau côtier. Le climat reste attribué en premier et détermine les ressources admissibles. Terre et eau suivent désormais relief et drainage, au lieu d’un tirage indépendant par hexagone. Les anciens pourcentages terre/eau ne concernent que les campagnes historiques.
+La graine choisit une géographie continentale, insulaire, à mers intérieures ou à péninsules. Des altitudes corrélées forment côtes et massifs. Les mers intérieures sont de grands bassins fermés ; les péninsules favorisent les reliefs allongés. Un lac contient au plus 12 hexagones d’eau connectés, hors rivière. Au-delà, le bassin est une mer, avec une faune marine. Le calcul inclut la géographie non révélée : une expédition ne change pas cette classification. Les rives suivent la terre voisine et les rivières se raccordent par leurs côtés amont et aval. Une zone d’étude fixe autour du départ détermine le niveau côtier. Le climat reste attribué en premier et détermine les ressources admissibles. Terre et eau suivent désormais relief et drainage, au lieu d’un tirage indépendant par hexagone. Les anciens pourcentages terre/eau ne concernent que les campagnes historiques.
 Chaque bassin descend vers la mer ou une dépression intérieure. Les rivières occupent des hexagones d’eau ; les dépressions peuvent devenir des lacs. Altitudes et cours sont fixés par la graine et les coordonnées, même hors de la carte révélée. Une expédition ne redessine aucune côte existante ni aucune rivière. Ressources et numéros restent aléatoires. Aucune ressource brute n’est garantie.
 
 ### Traversées et cols
@@ -151,6 +151,10 @@ Une terre admissible a 1,2 % de chances de proposer un site remarquable. Le terr
 ### Planification de l’IA
 
 L’IA évalue les récoltes mobiles visibles, déplace chasseurs et pêcheurs vers les populations accessibles, évite les fermetures saisonnières prévues, choisit les navires adaptés et compare coût et intérêt local des ponts, irrigations, digues, ports, greniers et réparations. Elle peut saboter les cultures ennemies en campagne. Elle utilise les probabilités publiques et la géographie visible, sans lire les futurs tirages de météo ou de migration. La météo n’accorde aucune ressource spéciale à l’IA.
+
+### Lire l’eau et la faune
+
+Les rives suivent la terre voisine. Les rivières se raccordent par leurs côtés amont et aval. Les animaux sont dessinés sur leur habitat actuel, y compris poissons, morues et baleines. Un habitat vide ne montre aucun animal. Une population mixte montre chaque espèce ; sélectionnez la case pour connaître les effectifs exacts. Les animaux d’élevage restent fixes. Les lacs trop grands des anciennes sauvegardes géographiques deviennent des mers au chargement ; positions, dés, stocks, constructions et populations sont conservés.
 
 ## Saisons et récoltes
 

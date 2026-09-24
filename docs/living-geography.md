@@ -6,7 +6,7 @@ New five-player and twelve-player campaigns use connected landforms, river cours
 
 ## Landforms and river courses
 
-A seed selects continental, archipelago, inland-sea or peninsula geography. Correlated height fields create coastlines and mountain belts. Inland-sea worlds have broad enclosed lake basins, with freshwater fish rather than marine cod or whales; peninsulas favor elongated landforms. A fixed survey around the starting area sets a usable coast level. Climate is still assigned first and determines eligible resources. Land and water now follow height and drainage instead of independent per-hex water rolls. The historical climate land/water percentages describe older campaigns only.
+A seed selects continental, archipelago, inland-sea or peninsula geography. Correlated height fields create coastlines and mountain belts. Inland-sea worlds have broad enclosed seas; peninsulas favor elongated landforms. Lakes contain at most 12 connected non-river water hexes. Larger basins are seas, with marine wildlife. The size check includes unrevealed geography, so expeditions do not turn a lake into a sea by exposing its hidden extent. Banks follow adjacent land and river artwork connects through the actual upstream and downstream edges. A fixed survey around the starting area sets a usable coast level. Climate is still assigned first and determines eligible resources. Land and water now follow height and drainage instead of independent per-hex water rolls. The historical climate land/water percentages describe older campaigns only.
 Each watershed follows downhill neighbors toward sea or an inland depression. Rivers reserve water hexes; depressions can form lakes. River courses and heights are fixed by seed and coordinates, even beyond the revealed map. Revealing another frontier cannot reroll an existing coast or redirect a river. Resources and dice numbers remain random. No raw resource is guaranteed.
 
 ## River crossings and mountain passes
@@ -70,3 +70,11 @@ The AI values current mobile harvest locations, sends hunters and fishing ships 
 - National Park Service, seasonal migration and development: https://home.nps.gov/articles/000/migrationmapping.htm
 
 These sources inform geography and seasonal relationships. Production quantities, weather probabilities and movement costs are game balance rules.
+
+## Water and wildlife artwork
+
+Water surfaces share a world-aligned texture. River channels use their actual downstream links and tributaries; shorelines are drawn only beside known land. The map retains separate shallow-water and submerged-reef treatments. Lakes are limited to 12 connected non-river hexes; larger basins are seas. Oversized lakes in geography saves are reclassified on load without moving terrain, changing dice, or removing stocks, buildings, troops or wildlife.
+
+Every mobile wildlife species has painted artwork over its seasonal habitat, including fish, cod and whales. The empty habitat remains when animals migrate away. Mixed populations show each species; duplicate populations retain their counts in the tile panel. This composition provides occupied and unoccupied artwork for every compatible terrain and season without copying thousands of large textures. Domestic livestock remain part of their farm artwork. Production tokens sit higher on wildlife tiles to keep the animals visible.
+
+New water, reef and wildlife images were generated with the built-in image tool. Assets and their prompt record are in `public/assets/geography/`.

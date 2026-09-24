@@ -1,3 +1,6 @@
+import { WildlifeArt } from "./WildlifeArt";
+import { ConnectedWater, WaterDefinitions } from "./ConnectedWater";
+import { bankArt, waterConnections } from "./water-connectivity";
 import {
   GeographyLegend,
   GeographyMarker,
@@ -186,7 +189,7 @@ const TerrainArt = memo(function TerrainArt({
 
   // Direct images share a single hex clip. Pattern fills force expensive
   // texture resampling when Chromium scales a large seasonal scene.
-  if (resource.startsWith("season-"))
+  if (resource.startsWith("season-") || resource.startsWith("geo-"))
     return (
       <g transform={`translate(${x} ${y})`} pointerEvents="none">
         <image
@@ -267,6 +270,17 @@ const TerrainLayer = memo(function TerrainLayer({
     tiles.length >= 800 && !climates,
     scale,
   );
+  const connections = useMemo(() => {
+    const lookup = new Map(tiles.map((t) => [t.id, t]));
+    return new Map(
+      tiles
+        .filter(
+          (t) =>
+            t.geography && (t.resource === "water" || t.resource === "ice"),
+        )
+        .map((t) => [t.id, waterConnections(t, lookup)]),
+    );
+  }, [tiles]);
   const artKeys = useMemo(
     () =>
       [
@@ -285,6 +299,7 @@ const TerrainLayer = memo(function TerrainLayer({
     >
       <defs>
         <TerrainPatterns resources={artKeys} />
+        <WaterDefinitions connections={[...connections.values()]} />
         <clipPath id="season-terrain-hex" clipPathUnits="userSpaceOnUse">
           <polygon points="0,-43 37.2,-21.5 37.2,21.5 0,43 -37.2,21.5 -37.2,-21.5" />
         </clipPath>
@@ -335,7 +350,8 @@ const TerrainLayer = memo(function TerrainLayer({
             poly = shapes[tile.id],
             small = !!compact[tile.id]?.length,
             sea = tile.resource === "water" || tile.resource === "ice",
-            openWater = sea && !frozenInSeason(tile, artworkSeason);
+            openWater = sea && !frozenInSeason(tile, artworkSeason),
+            connected = openWater ? connections.get(tile.id) : undefined;
           if (climates) {
             const climate = tile.climate ?? "temperate";
             return (
@@ -352,6 +368,14 @@ const TerrainLayer = memo(function TerrainLayer({
                   stroke="#203c4555"
                   strokeWidth="0.6"
                 />
+                {mapView === "wildlife" && (
+                  <WildlifeArt
+                    tile={tile}
+                    x={x}
+                    y={y - 16}
+                    season={artworkSeason}
+                  />
+                )}
               </g>
             );
           }
@@ -366,6 +390,11 @@ const TerrainLayer = memo(function TerrainLayer({
                 !!good,
                 tile.resource !== "water",
                 openWater,
+                // Frozen river wildlife still uses its channel clip.
+                connections.get(tile.id)?.channel,
+                connected
+                  ? `${connected.river}/${connected.shore}/${connected.channel}/${bankArt(tile, artworkSeason)}/${x % 512}/${y % 512}`
+                  : "",
                 tile.geography?.access,
                 tile.geography?.landmark,
                 tile.geography?.animals?.join(","),
@@ -387,14 +416,25 @@ const TerrainLayer = memo(function TerrainLayer({
                 stroke={sea ? "#95bcb155" : "#e2d4ad"}
                 strokeWidth={sea ? 0.7 : 1}
               />
-              <TerrainArt
-                resource={seasonalTerrainPattern(tile, artworkSeason)}
-                openWater={openWater}
-                productiveWater={sea && !!good}
-                x={x}
-                y={y}
-                seed={hash(tile.id)}
-              />
+              {connected ? (
+                <ConnectedWater
+                  tile={tile}
+                  connections={connected}
+                  x={x}
+                  y={y}
+                  season={artworkSeason}
+                />
+              ) : (
+                <TerrainArt
+                  resource={seasonalTerrainPattern(tile, artworkSeason)}
+                  openWater={openWater}
+                  productiveWater={sea && !!good}
+                  x={x}
+                  y={y}
+                  seed={hash(tile.id)}
+                />
+              )}
+              <WildlifeArt tile={tile} x={x} y={y} season={artworkSeason} />
               <GeographyMarker tile={tile} x={x} y={y} />
               {tx(
                 good && (
@@ -406,7 +446,7 @@ const TerrainLayer = memo(function TerrainLayer({
                     )}
                     <g
                       className="terrain-production"
-                      transform={`translate(${x - (small ? 12 : 0)} ${y - 12})`}
+                      transform={`translate(${x - (small ? 12 : 0)} ${y - (tile.geography?.animals?.length ? 24 : 12)})`}
                     >
                       <ProductionToken
                         resource={good}

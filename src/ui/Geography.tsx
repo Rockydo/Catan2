@@ -155,11 +155,9 @@ export function GeographyMarker({
             ? "≈"
             : g.landmark
               ? "✦"
-              : g.animals?.length
-                ? "●"
-                : g.pass
-                  ? "⌃"
-                  : undefined;
+              : g.pass
+                ? "⌃"
+                : undefined;
   if (!symbol) return null;
   return (
     <MapSprite
