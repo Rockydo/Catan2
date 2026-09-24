@@ -104,6 +104,32 @@ export function baseSeasonalTerrainPattern(tile: Hex, season?: Season): string {
   }
   if (tile.geography && !frozenInSeason(tile, season)) {
     let image: string | undefined = tile.biome;
+    // Riparian paintings are shared across climates. A dry savanna seedbed
+    // must not override Steppe snow, nor should mild coastal winter use snow.
+    const snowyWinter =
+      season === "winter" &&
+      [
+        "temperate",
+        "steppe",
+        "prairie",
+        "cold",
+        "alpine",
+        "andean",
+        "arctic",
+        "glacial",
+        "tundra",
+      ].includes(tile.climate ?? "temperate");
+    if (image === "flood-sorghum" && snowyWinter)
+      return "geo-flood-sorghum-snow-v1";
+    if (
+      season === "winter" &&
+      ["mediterranean", "oceanic", "temperate-rainforest"].includes(
+        tile.climate ?? "",
+      )
+    ) {
+      if (image === "flood-wheat") return "geo-flood-wheat-spring";
+      if (image === "flood-meadow") return "geo-warm-meadow";
+    }
     if (
       image === "flood-wheat" &&
       ["desert", "hyperarid", "semiarid"].includes(tile.climate ?? "")

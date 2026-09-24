@@ -192,6 +192,21 @@ export function floodsAt(
 ): boolean {
   return (
     !!tile.geography?.floodplain &&
+    // Cold continental/highland winter stores water as snow and ice. Do not
+    // turn dormant fields into floodwater, including imported weather states.
+    !(
+      season === "winter" &&
+      [
+        "steppe",
+        "prairie",
+        "cold",
+        "alpine",
+        "andean",
+        "arctic",
+        "glacial",
+        "tundra",
+      ].includes(tile.climate ?? "")
+    ) &&
     (!tile.biome || BIOME_INFO[tile.biome].family !== "rugged") &&
     !tile.geography.projects?.levee &&
     riverLevel(tile, season, weather) >= floodThreshold(tile)

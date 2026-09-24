@@ -167,3 +167,28 @@ it("keeps paid projects and compact saves valid after retiring rugged floodplain
   assertInvariants(restored);
   expect(deserialize(serializePacked(restored))).toEqual(restored);
 });
+
+it("keeps cold winter floodplains dry in every weather state while allowing thaw and winter rain elsewhere", () => {
+  for (const climate of [
+    "steppe",
+    "prairie",
+    "cold",
+    "alpine",
+    "andean",
+    "arctic",
+    "glacial",
+    "tundra",
+  ] as Climate[]) {
+    const t = bank(climate);
+    t.geography.floodThreshold = 3;
+    for (const weather of ["normal", "wet", "dry", "cold", "mild"] as const)
+      expect(floodsAt(t, "winter", weather), `${climate}/${weather}`).toBe(
+        false,
+      );
+    expect(environmentRisk(t, "winter")).toBe(0);
+  }
+  const t = bank("mediterranean");
+  t.geography.floodThreshold = 3;
+  expect(floodsAt(t, "winter", "normal")).toBe(true);
+  expect(floodsAt(bank("cold"), "spring", "wet")).toBe(true);
+});

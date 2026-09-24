@@ -254,6 +254,10 @@ Loading a geographic save clears obsolete flooding from rugged ground and applie
 
 Version 7 removes side-by-side hairpins from a traced course and joins tributaries to an existing lower channel at first contact. Links remain adjacent and downhill. Broad mouths with two or more neighboring sea/lake tiles render as open estuaries, with banks only beside real land. These visual corrections apply to existing saves without changing terrain, navigation or production. Older worlds retain their saved generation version.
 
+### Cold-season floodplains
+
+Steppe, Prairie, Cold, Alpine, Andean, Arctic, Glacial and Tundra floodplains cannot flood in winter, regardless of local weather. The ordinary water-level and bank-height rules resume in the other seasons. Mediterranean and oceanic winter rain floods remain possible. Recession sorghum uses snow-covered winter stubble in cold regions and dry stubble in hot regions; mild coastal river fields and meadows stay snow-free.
+
 ## Seasons and harvests
 
 ### New geography campaigns

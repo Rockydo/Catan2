@@ -253,6 +253,10 @@ Le chargement retire les anciennes crues des terrains accidentés et applique le
 
 La version 7 raccourcit les détours qui doublent un même tracé et raccorde les affluents à un chenal existant plus bas dès leur premier contact. Chaque liaison reste voisine et descendante. Une embouchure bordée par au moins deux tuiles de mer ou de lac apparaît comme un estuaire ouvert, avec des berges uniquement contre les terres réelles. Ces corrections visuelles s’appliquent aux sauvegardes sans modifier terrain, navigation ni production. Les anciens mondes conservent leur version de génération.
 
+### Plaines inondables en hiver
+
+Les plaines inondables des climats Steppe, Prairie, Froid, Alpin, Andin, Arctique, Glaciaire et Toundra ne peuvent pas être inondées en hiver, quelle que soit la météo locale. Les règles habituelles de niveau d’eau et de hauteur des berges reprennent aux autres saisons. Les crues hivernales méditerranéennes et océaniques restent possibles. Le sorgho de décrue est enneigé en hiver dans les régions froides et reste sec dans les régions chaudes ; les champs et prairies riverains des climats côtiers doux restent sans neige.
+
 ## Saisons et récoltes
 
 ### Campagnes à géographie vivante

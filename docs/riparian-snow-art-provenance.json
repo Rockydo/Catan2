@@ -1,0 +1,6 @@
+{
+  "tool": "built-in image_gen",
+  "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-dd59e0e1-ecbe-4282-89dc-17195dc3134c.png",
+  "output": "public/assets/geography/flood-sorghum-snow-v1.webp",
+  "prompt": "Use case: lighting-weather. Edit this existing recession sorghum terrain painting for a snowy Steppe winter in a strategy board game. Preserve EXACTLY the elevated camera, field boundaries, rows of harvested short sorghum stubble, leafless trees, paths and curved river position. Cover the fields and surrounding plains in continuous white winter snow with subtle harvested stalks poking through and sparse straw grass, matching snowy continental steppe. River has cold dark water with thin ice along banks. No flooding, no growing ripe crops, no added buildings, no animals, no text, no icons, no border or hex outline. Same hand-painted detailed landscape style, square framing, zoom unchanged."
+}

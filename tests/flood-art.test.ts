@@ -88,3 +88,42 @@ it("distinguishes flooded, dry and protected land and stops raw and workshop out
       renderToStaticMarkup(createElement(FloodArt, { tile: t, x: 0, y: 0 })),
     ).toBe("");
 });
+
+it("matches riparian winter art to continental snow and mild coastal rain", () => {
+  const t = {
+    ...generateHex("riparian-winter", "0,0"),
+    resource: "grain" as const,
+    biome: "flood-sorghum" as const,
+    climate: "steppe" as const,
+    geography: { elevation: 0.4, region: "test", floodplain: true },
+  };
+  expect(seasonalTerrainPattern(t, "winter")).toBe("geo-flood-sorghum-snow-v1");
+  for (const climate of ["savanna", "desert", "hyperarid", "semiarid"] as const)
+    expect(seasonalTerrainPattern({ ...t, climate }, "winter")).toBe(
+      "geo-flood-sorghum-winter",
+    );
+  for (const climate of [
+    "mediterranean",
+    "oceanic",
+    "temperate-rainforest",
+  ] as const) {
+    expect(
+      seasonalTerrainPattern({ ...t, climate, biome: "flood-wheat" }, "winter"),
+    ).toBe("geo-flood-wheat-spring");
+    expect(
+      seasonalTerrainPattern(
+        { ...t, climate, biome: "flood-meadow" },
+        "winter",
+      ),
+    ).toBe("geo-warm-meadow");
+  }
+  for (const climate of [
+    "tropical",
+    "tropical-maritime",
+    "subtropical",
+    "monsoon",
+  ] as const)
+    expect(
+      seasonalTerrainPattern({ ...t, climate, biome: "flood-rice" }, "winter"),
+    ).toBe("geo-flood-rice-summer");
+});
