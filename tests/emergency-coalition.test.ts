@@ -35,6 +35,15 @@ function world(leader = 3, troops = 22) {
   return { s, towns };
 }
 
+function overtakenWorld(incumbent = 3, challenger = 0) {
+  const { s, towns } = world(incumbent, 80);
+  syncEmergencyCoalition(s);
+  s.pieces = {};
+  for (let i = 0; i < 20; i++) piece(s, "0,2", incumbent, "heavy");
+  for (let i = 0; i < 21; i++) piece(s, "-5,0", challenger, "heavy");
+  return { s, towns };
+}
+
 describe("mandatory global survival coalition", () => {
   it("deploys armed economic ships without being pinned by exhausted escorts", () => {
     const { s } = world(3, 100);
@@ -182,6 +191,107 @@ describe("mandatory global survival coalition", () => {
     expect(friendly(next, 0, 1)).toBe(false);
     expect(friendly(next, 1, 2)).toBe(true);
     assertInvariants(deserialize(serialize(next)));
+  });
+  it.each([
+    [3, 0],
+    [0, 3],
+    [3, 4],
+  ])(
+    "switches from faction %i to stronger faction %i below 40%%, including humans on either side",
+    (incumbent, challenger) => {
+      const { s } = overtakenWorld(incumbent, challenger);
+      const scores = factionStrengths(s);
+      const total = scores.reduce((a, b) => a + b, 0);
+      expect(scores[incumbent] / total).toBeGreaterThan(0.2);
+      expect(scores[challenger] / total).toBeLessThan(0.4);
+      const id = s.alliances![0].id;
+      syncEmergencyCoalition(s);
+      expect(s.alliances).toEqual([
+        {
+          id,
+          threat: challenger,
+          emergency: "locked",
+          lockedUntil: s.round,
+          members: s.players
+            .filter((p) => p.id !== challenger)
+            .map((p) => p.id),
+        },
+      ]);
+      for (const member of s.alliances![0].members) {
+        s.active = member;
+        expect(emergencyTarget(s)).toBe(challenger);
+        expect(allianceLock(s, member)).toBe(Infinity);
+        for (const other of s.players)
+          expect(warTarget(s, other.id)).toBe(other.id === challenger);
+      }
+      expect(s.events.at(-1)?.text).toContain(
+        `switches from ${s.players[incumbent].name} to ${s.players[challenger].name}`,
+      );
+      assertInvariants(s);
+      // Equal power never switches back, even to a lower faction ID.
+      piece(s, "0,2", incumbent, "heavy");
+      const events = s.events.length;
+      syncEmergencyCoalition(s);
+      expect(s.alliances![0].threat).toBe(challenger);
+      expect(s.events).toHaveLength(events);
+      // The rule remains active after a first switch.
+      piece(s, "0,2", incumbent, "heavy");
+      syncEmergencyCoalition(s);
+      expect(s.alliances![0].threat).toBe(incumbent);
+    },
+  );
+  it("switches on load and committed actions without changing assets or command previews", () => {
+    const { s } = overtakenWorld();
+    s.phase = "roll";
+    const before = serialize(s);
+    const stateBefore = JSON.stringify(s);
+    expect(canApplyCommand(s, { type: "roll" })).toBe(true);
+    expect(JSON.stringify(s)).toBe(stateBefore);
+    expect(run(s, { type: "roll" }).alliances![0].threat).toBe(0);
+    expect(s.alliances![0].threat).toBe(3);
+    const loaded = deserialize(before);
+    expect(loaded.alliances![0].threat).toBe(0);
+    for (const key of [
+      "towns",
+      "pieces",
+      "routes",
+      "rng",
+      "round",
+      "active",
+      "actions",
+    ] as const)
+      expect(loaded[key]).toEqual(s[key]);
+    expect(deserialize(serialize(loaded))).toEqual(loaded);
+    assertInvariants(loaded);
+  });
+  it("preserves former allies' withdrawal rights and cancels sieges against the former target", () => {
+    const { s, towns } = overtakenWorld();
+    piece(s, "-5,0", 1, "heavy");
+    const besieger = piece(s, landAtVertex(s, towns[3].vertex)[0], 1, "heavy");
+    s.sieges[towns[3].id] = {
+      town: towns[3].id,
+      owner: 1,
+      progress: 1,
+      last: 9,
+      raided: null,
+      units: [besieger.id],
+    };
+    s.players[1].plan = {
+      label: "Old front",
+      target: towns[3].id,
+      kind: "raid",
+      since: 9,
+    };
+    s.withdrawals = [{ tile: "0,2", owners: [3, 1] }];
+    const pieces = structuredClone(s.pieces);
+    syncEmergencyCoalition(s);
+    expect(s.alliances![0].threat).toBe(0);
+    expect(s.withdrawals).toEqual([{ tile: "-5,0", owners: [0, 1] }]);
+    expect(friendly(s, 1, 3)).toBe(true);
+    expect(s.sieges[towns[3].id]).toBeUndefined();
+    expect(s.players[1].plan).toBeUndefined();
+    expect(s.pieces).toEqual(pieces);
+    assertInvariants(deserialize(serialize(s)));
   });
   it("migrates an existing save immediately and is idempotent without touching assets or RNG", () => {
     const { s } = world(3, 80);

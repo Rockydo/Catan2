@@ -47,14 +47,20 @@ export function syncEmergencyCoalition(
   const leader = [...alive].sort(
     (a, b) => scores[b.id] - scores[a.id] || a.id - b.id,
   )[0];
-  // The original target remains fixed throughout the 40% -> 20% recovery band.
-  const target =
-    coalition?.threat ??
-    (scores[leader.id] > total * EMERGENCY_TRIGGER ? leader.id : undefined);
+  // A locked coalition follows a strictly stronger successor even below the
+  // activation threshold. Equal power keeps the incumbent target.
+  const target = coalition
+    ? scores[leader.id] > scores[coalition.threat]
+      ? leader.id
+      : coalition.threat
+    : scores[leader.id] > total * EMERGENCY_TRIGGER
+      ? leader.id
+      : undefined;
   if (target === undefined) return;
   const members = alive.filter((p) => p.id !== target).map((p) => p.id);
   if (
     coalition &&
+    coalition.threat === target &&
     s.alliances?.length === 1 &&
     coalition.members.length === members.length &&
     members.every((id) => coalition!.members.includes(id))
@@ -100,7 +106,14 @@ export function syncEmergencyCoalition(
   );
   for (const p of s.players) delete p.plan;
   breakSieges(s);
-  if (!coalition)
+  if (coalition && coalition.threat !== target)
+    log(
+      s,
+      `Emergency coalition switches from ${s.players[coalition.threat].name} to ${s.players[target].name}, now the strongest faction. All other surviving factions join against the new target. The pact stays locked until its target falls to 20% of global power.`,
+      "warning",
+      target,
+    );
+  else if (!coalition)
     log(
       s,
       `Emergency coalition: all other surviving factions unite against ${s.players[target].name}, who holds more than 40% of global power. The pact cannot be left until that faction falls to 20%.`,

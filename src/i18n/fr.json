@@ -1962,5 +1962,6 @@
   "Lower water": "Basses eaux",
   "Humid wetlands": "Marais humides",
   "Ivory Bay": "Baie d’Ivoire",
-  "Duskmoor": "Landes du Crépuscule"
+  "Duskmoor": "Landes du Crépuscule",
+  "Emergency coalition switches from {0} to {1}, now the strongest faction. All other surviving factions join against the new target. The pact stays locked until its target falls to 20% of global power.": "La coalition d’urgence change de cible : {1}, désormais la faction la plus puissante, remplace {0}. Toutes les autres factions survivantes s’unissent contre cette nouvelle cible. Le pacte reste verrouillé jusqu’à ce que sa cible tombe à 20 % de la puissance mondiale."
 }
