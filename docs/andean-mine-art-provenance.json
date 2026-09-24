@@ -1,0 +1,95 @@
+[
+  {
+    "name": "iron",
+    "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-2d4e9a4a-b1e8-4506-83d8-eb753532a0a9.png",
+    "output": "public/assets/seasons/andean-iron-winter.webp",
+    "prompt": "Edit the supplied Andean iron terrain artwork for a Catan-like hex board game. Keep the hand-painted realistic miniature strategy-game style and the clear resource identity. Reframe as a wider elevated overhead view: the mine/quarry workings occupy only the middle 40% of the square, with extensive surrounding Andean gray rocky highland and sparse tussock grass. Add convincing winter snow covering most surrounding ground, ledges and mountain slopes, while the working tracks, mine entrance or quarry cutting area remain recognizable and partly cleared. Snowy rock scenery all the way to the square edges, no sky, no horizon, no frame, no hex outline, no text, no icons, no people or animals. A small timber-supported iron mine, cart of reddish iron ore and short narrow-gauge rails, with ample snowy slopes around. Landscape must read at small hex scale. No giant foreground props. Square image.",
+    "tool": "built-in image_gen"
+  },
+  {
+    "name": "gold",
+    "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-12674477-0a9c-4cab-ac8b-363e7f1dc356.png",
+    "output": "public/assets/seasons/andean-gold-winter.webp",
+    "prompt": "Edit the supplied Andean gold terrain artwork for a Catan-like hex board game. Keep the hand-painted realistic miniature strategy-game style and the clear resource identity. Reframe as a wider elevated overhead view: the mine/quarry workings occupy only the middle 40% of the square, with extensive surrounding Andean gray rocky highland and sparse tussock grass. Add convincing winter snow covering most surrounding ground, ledges and mountain slopes, while the working tracks, mine entrance or quarry cutting area remain recognizable and partly cleared. Snowy rock scenery all the way to the square edges, no sky, no horizon, no frame, no hex outline, no text, no icons, no people or animals. A small timber gold adit with clearly golden mineral veins and a modest ore basket, surrounded by broad snowy slopes. Landscape must read at small hex scale. No giant foreground props. Square image.",
+    "tool": "built-in image_gen"
+  },
+  {
+    "name": "mountain-quarry",
+    "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-11a47a34-b519-42ac-91e4-b322fd316d5d.png",
+    "output": "public/assets/seasons/andean-mountain-quarry-winter.webp",
+    "prompt": "Edit the supplied Andean mountain-quarry terrain artwork for a Catan-like hex board game. Keep the hand-painted realistic miniature strategy-game style and the clear resource identity. Reframe as a wider elevated overhead view: the mine/quarry workings occupy only the middle 40% of the square, with extensive surrounding Andean gray rocky highland and sparse tussock grass. Add convincing winter snow covering most surrounding ground, ledges and mountain slopes, while the working tracks, mine entrance or quarry cutting area remain recognizable and partly cleared. Snowy rock scenery all the way to the square edges, no sky, no horizon, no frame, no hex outline, no text, no icons, no people or animals. A compact terraced gray stone quarry with small squared pale stone blocks and a timber lifting crane, in broad snowy highland slopes. Landscape must read at small hex scale. No giant foreground props. Square image.",
+    "tool": "built-in image_gen"
+  },
+  {
+    "name": "iron",
+    "season": "spring",
+    "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-251ddbe5-bb9d-4c17-a681-1595ac2e8456.png",
+    "output": "public/assets/seasons/andean-iron-spring.webp",
+    "prompt": "Edit this Andean iron winter hex terrain painting into spring. Keep EXACTLY the same wide elevated camera, scale, mine/quarry size, entrance/crane/cart positions, rock geology, tracks and square framing. Change only seasonal ground coverage: early thaw in the high Andes, patchy melting snow remaining on about a quarter of the surrounding slopes, exposed gray rock, straw-colored tussock grass and subtle fresh green patches. Preserve resource identity, no additional objects, no people, no animals, no labels, no text, no UI, no sky. Match the supplied hand-painted miniature landscape perfectly. Keep the open working area recognizable. Do not zoom in.",
+    "tool": "built-in image_gen"
+  },
+  {
+    "name": "iron",
+    "season": "summer",
+    "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-155c028b-2aeb-4702-914d-602afd0913b9.png",
+    "output": "public/assets/seasons/andean-iron-summer.webp",
+    "prompt": "Edit this Andean iron winter hex terrain painting into summer. Keep EXACTLY the same wide elevated camera, scale, mine/quarry size, entrance/crane/cart positions, rock geology, tracks and square framing. Change only seasonal ground coverage: dry Andean summer, remove almost all snow except small remnant patches on highest rocky ledges, gray exposed rock with scattered golden tussock grass and some dull green cushion plants. Preserve resource identity, no additional objects, no people, no animals, no labels, no text, no UI, no sky. Match the supplied hand-painted miniature landscape perfectly. Keep the open working area recognizable. Do not zoom in.",
+    "tool": "built-in image_gen"
+  },
+  {
+    "name": "iron",
+    "season": "autumn",
+    "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-fb0b7f23-3499-4826-98bb-6ab6c9a77993.png",
+    "output": "public/assets/seasons/andean-iron-autumn.webp",
+    "prompt": "Edit this Andean iron winter hex terrain painting into autumn. Keep EXACTLY the same wide elevated camera, scale, mine/quarry size, entrance/crane/cart positions, rock geology, tracks and square framing. Change only seasonal ground coverage: cool Andean autumn, light frost and patchy snow in shaded gullies and high ledges over about a third of the rocky surroundings, pale golden dry grasses. Preserve resource identity, no additional objects, no people, no animals, no labels, no text, no UI, no sky. Match the supplied hand-painted miniature landscape perfectly. Keep the open working area recognizable. Do not zoom in.",
+    "tool": "built-in image_gen"
+  },
+  {
+    "name": "gold",
+    "season": "spring",
+    "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-ef54b633-2416-4a47-836a-e399b4ab79d6.png",
+    "output": "public/assets/seasons/andean-gold-spring.webp",
+    "prompt": "Edit this Andean gold winter hex terrain painting into spring. Keep EXACTLY the same wide elevated camera, scale, mine/quarry size, entrance/crane/cart positions, rock geology, tracks and square framing. Change only seasonal ground coverage: early thaw in the high Andes, patchy melting snow remaining on about a quarter of the surrounding slopes, exposed gray rock, straw-colored tussock grass and subtle fresh green patches. Preserve resource identity, no additional objects, no people, no animals, no labels, no text, no UI, no sky. Match the supplied hand-painted miniature landscape perfectly. Keep the open working area recognizable. Do not zoom in.",
+    "tool": "built-in image_gen"
+  },
+  {
+    "name": "gold",
+    "season": "summer",
+    "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-8d05cedb-7135-497a-a3e5-eb75e24c4817.png",
+    "output": "public/assets/seasons/andean-gold-summer.webp",
+    "prompt": "Edit this Andean gold winter hex terrain painting into summer. Keep EXACTLY the same wide elevated camera, scale, mine/quarry size, entrance/crane/cart positions, rock geology, tracks and square framing. Change only seasonal ground coverage: dry Andean summer, remove almost all snow except small remnant patches on highest rocky ledges, gray exposed rock with scattered golden tussock grass and some dull green cushion plants. Preserve resource identity, no additional objects, no people, no animals, no labels, no text, no UI, no sky. Match the supplied hand-painted miniature landscape perfectly. Keep the open working area recognizable. Do not zoom in.",
+    "tool": "built-in image_gen"
+  },
+  {
+    "name": "gold",
+    "season": "autumn",
+    "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-51fd5ea7-f314-49b3-a23a-3004455141ce.png",
+    "output": "public/assets/seasons/andean-gold-autumn.webp",
+    "prompt": "Edit this Andean gold winter hex terrain painting into autumn. Keep EXACTLY the same wide elevated camera, scale, mine/quarry size, entrance/crane/cart positions, rock geology, tracks and square framing. Change only seasonal ground coverage: cool Andean autumn, light frost and patchy snow in shaded gullies and high ledges over about a third of the rocky surroundings, pale golden dry grasses. Preserve resource identity, no additional objects, no people, no animals, no labels, no text, no UI, no sky. Match the supplied hand-painted miniature landscape perfectly. Keep the open working area recognizable. Do not zoom in.",
+    "tool": "built-in image_gen"
+  },
+  {
+    "name": "mountain-quarry",
+    "season": "spring",
+    "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-0efee4b0-c528-4f5a-a8e9-dcdba213be6a.png",
+    "output": "public/assets/seasons/andean-mountain-quarry-spring.webp",
+    "prompt": "Edit this Andean mountain-quarry winter hex terrain painting into spring. Keep EXACTLY the same wide elevated camera, scale, mine/quarry size, entrance/crane/cart positions, rock geology, tracks and square framing. Change only seasonal ground coverage: early thaw in the high Andes, patchy melting snow remaining on about a quarter of the surrounding slopes, exposed gray rock, straw-colored tussock grass and subtle fresh green patches. Preserve resource identity, no additional objects, no people, no animals, no labels, no text, no UI, no sky. Match the supplied hand-painted miniature landscape perfectly. Keep the open working area recognizable. Do not zoom in.",
+    "tool": "built-in image_gen"
+  },
+  {
+    "name": "mountain-quarry",
+    "season": "summer",
+    "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-81cd9196-2c10-4863-abcf-9e374c00a278.png",
+    "output": "public/assets/seasons/andean-mountain-quarry-summer.webp",
+    "prompt": "Edit this Andean mountain-quarry winter hex terrain painting into summer. Keep EXACTLY the same wide elevated camera, scale, mine/quarry size, entrance/crane/cart positions, rock geology, tracks and square framing. Change only seasonal ground coverage: dry Andean summer, remove almost all snow except small remnant patches on highest rocky ledges, gray exposed rock with scattered golden tussock grass and some dull green cushion plants. Preserve resource identity, no additional objects, no people, no animals, no labels, no text, no UI, no sky. Match the supplied hand-painted miniature landscape perfectly. Keep the open working area recognizable. Do not zoom in.",
+    "tool": "built-in image_gen"
+  },
+  {
+    "name": "mountain-quarry",
+    "season": "autumn",
+    "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-ed06d4d7-d327-4a4c-9c69-5d46c868d3b2.png",
+    "output": "public/assets/seasons/andean-mountain-quarry-autumn.webp",
+    "prompt": "Edit this Andean mountain-quarry winter hex terrain painting into autumn. Keep EXACTLY the same wide elevated camera, scale, mine/quarry size, entrance/crane/cart positions, rock geology, tracks and square framing. Change only seasonal ground coverage: cool Andean autumn, light frost and patchy snow in shaded gullies and high ledges over about a third of the rocky surroundings, pale golden dry grasses. Preserve resource identity, no additional objects, no people, no animals, no labels, no text, no UI, no sky. Match the supplied hand-painted miniature landscape perfectly. Keep the open working area recognizable. Do not zoom in.",
+    "tool": "built-in image_gen"
+  }
+]

@@ -32,7 +32,7 @@ it("supports all four new formations with legal land, water, drainage and expedi
       }
     expect(seed).not.toBe("");
     const world = generateWorld(seed, 320, true);
-    expect(world.geographyVersion).toBe(6);
+    expect(world.geographyVersion).toBe(7);
     const land = Object.values(world.tiles).filter(
       (t) => !["water", "ice", "peaks"].includes(t.resource),
     );

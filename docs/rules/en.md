@@ -227,7 +227,7 @@ A mountain pass needs at least two adjacent Bare Peaks. Two mountain passes can 
 
 ### Additional landforms
 
-New campaigns use geography version 6. Four additional regional patterns are blended with the existing landforms before climate, drainage and resources are selected. No new movement rules or guaranteed resources are introduced.
+New campaigns use geography version 7. Four additional regional patterns are blended with the existing landforms before climate, drainage and resources are selected. No new movement rules or guaranteed resources are introduced.
 
 - **Drowned valleys:** branching coastal inlets cut into a low platform. Humid temperate and oceanic regions favor this pattern. Bays divide nearby settlements and create sheltered routes and several landing points. These are irregular branching valleys, distinct from the existing parallel glacial fjords.
 - **Volcanic arcs:** curved chains of unequal, steep-sided islands, occasionally with a depressed summit. They have short island catchments rather than long mainland rivers. High ground uses existing climate-appropriate mountains and minerals; a crater is not a promise of a lake or a new resource.
@@ -243,12 +243,16 @@ Palm woods produce 1 Wood each season. Breadfruit uses the Grain card and produc
 
 ### River sources and mountain gaps
 
-New version 6 watersheds choose among more high-ground source candidates. Lowland springs remain possible but are less common. Sources still follow downhill drainage. All adjacent river tiles join visually across their shared edge, including on older maps. Wider channels keep the center underwater; one continuous ground texture replaces triangular bank patches. Corners shared only by water stay open, avoiding narrow strips of fictitious land between parallel reaches.
+New version 6 watersheds choose among more high-ground source candidates. Lowland springs remain possible but are less common. Sources still follow downhill drainage. All adjacent river tiles join visually across their shared edge, including on older maps. Wider channels use continuous curved banks instead of circular central pools; one continuous ground texture replaces triangular bank patches. Corners shared only by water stay open, avoiding narrow strips of fictitious land between parallel reaches.
 Passes need at least two adjacent Bare Peaks and cannot touch another pass. New stone outcrops are more likely to become a pass when neighboring peaks are separated around the hex, especially opposite faces. Peaks and crops are never removed to create these gaps. Seasonal closures and the prohibition on permanent crossings remain.
 
 ### Applying these changes to a saved game
 
-Loading a geographic save clears obsolete flooding from rugged ground and applies the current flood thresholds without rerolling weather, advancing time or changing stored resources. Older floodplains without a stored threshold use 4. Existing improvements are retained. New headwater placement and physical landforms require a new version 6 campaign; existing worlds retain their versioned drainage and revealed terrain.
+Loading a geographic save clears obsolete flooding from rugged ground and applies the current flood thresholds without rerolling weather, advancing time or changing stored resources. Older floodplains without a stored threshold use 4. Existing improvements are retained. New headwater placement and physical landforms require a new version 7 campaign; existing worlds retain their versioned drainage and revealed terrain.
+
+### River convergence
+
+Version 7 removes side-by-side hairpins from a traced course and joins tributaries to an existing lower channel at first contact. Links remain adjacent and downhill. Broad mouths with two or more neighboring sea/lake tiles render as open estuaries, with banks only beside real land. These visual corrections apply to existing saves without changing terrain, navigation or production. Older worlds retain their saved generation version.
 
 ## Seasons and harvests
 

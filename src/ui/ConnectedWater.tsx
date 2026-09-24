@@ -129,7 +129,8 @@ export function ConnectedWater({
     ? riverGeometry(channel, connections.basin).line
     : shoreGeometry(shore).line;
   const shallow =
-    river || ["shoal", "reef"].includes(tile.geography?.waterway ?? "");
+    river ||
+    ["river", "shoal", "reef"].includes(tile.geography?.waterway ?? "");
   return (
     <g
       className="connected-water"

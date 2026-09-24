@@ -1,3 +1,4 @@
+import { convergeRiverCourse } from "./river-course";
 import {
   physicalElevation,
   regionalLandform,
@@ -71,7 +72,7 @@ export interface Wildlife {
   lastRound: number;
   dormant?: true;
 }
-export const GEOGRAPHY_VERSION = 6;
+export const GEOGRAPHY_VERSION = 7;
 export const landform = (
   seed: string,
   version = GEOGRAPHY_VERSION,
@@ -377,9 +378,18 @@ function watershed(
         if (step === maxSteps - 1) lakes.add(at);
       }
       if (course.size >= 2) {
-        for (const [id, next] of course) result.rivers.set(id, next);
-        for (const id of lakes) result.lakes.add(id);
-        for (const id of mouths) result.mouths.add(id);
+        const resolved =
+          version >= 7
+            ? convergeRiverCourse(course, result.rivers, (id) =>
+                elevationAt(seed, id, version),
+              )
+            : { course, joined: false };
+        for (const [id, next] of resolved.course) result.rivers.set(id, next);
+        if (!resolved.joined) {
+          for (const id of lakes) result.lakes.add(id);
+          for (const id of mouths)
+            if (resolved.course.has(id)) result.mouths.add(id);
+        }
       }
     }
   }

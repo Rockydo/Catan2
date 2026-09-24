@@ -16,8 +16,8 @@ const connections: WaterConnections[] = masks.map((channel) => ({
   shore: 63 ^ channel,
   basin: 0,
   banks: [
-    "seasons/cold-clay-winter.webp",
-    "seasons/cold-clay-winter.webp",
+    "seasons/cold-clay-summer.webp",
+    "seasons/cold-clay-summer.webp",
     "seasons/desert-clay-summer.webp",
   ],
 }));
@@ -56,7 +56,7 @@ const svg = renderToStaticMarkup(
         connections: c,
         x: (i % 3) * 100,
         y: Math.floor(i / 3) * 100,
-        season: "winter",
+        season: "summer",
       }),
     ),
   ),

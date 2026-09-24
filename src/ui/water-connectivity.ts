@@ -30,7 +30,15 @@ export function waterConnections(
     channel = 0,
     basin = 0,
     openIce = 0;
-  const river = tile.geography?.waterway === "river";
+  // A river mouth opening onto a broad sea/lake is an estuary, not another
+  // narrow painted channel laid across open water. This also repairs old maps.
+  const estuary = (t: Hex) =>
+    t.geography?.waterway === "river" &&
+    neighbors(t.id).filter((id) => {
+      const n = tiles.get(id);
+      return n && wet(n) && n.geography?.waterway !== "river";
+    }).length >= 2;
+  const river = tile.geography?.waterway === "river" && !estuary(tile);
   const banks: (string | undefined)[] = [];
   const floodedBanks: ("crops" | "forest" | "rock" | undefined)[] = [];
   neighbors(tile.id).forEach((id, side) => {
@@ -69,7 +77,12 @@ export function waterConnections(
         }
       }
     }
-    if (river && wet(next) && next?.geography?.waterway !== "river")
+    if (
+      river &&
+      next &&
+      wet(next) &&
+      (next.geography?.waterway !== "river" || estuary(next))
+    )
       basin |= 1 << side;
     if (
       river &&
@@ -136,7 +149,7 @@ export function shoreGeometry(mask: number) {
 export const riverClipId = (c: WaterConnections) =>
   `water-river-${c.channel}${c.basin ? `-${c.basin}` : ""}`;
 export function riverGeometry(mask: number, basin = 0) {
-  const mouths: { a: number[]; b: number[] }[] = [];
+  const mouths: { a: number[]; b: number[]; side: number }[] = [];
   for (let i = 0; i < 6; i++) {
     if (!(mask & (1 << i))) continue;
     const angle = (i * Math.PI) / 3,
@@ -145,6 +158,7 @@ export function riverGeometry(mask: number, basin = 0) {
     // Three touching water hexes have no real land at their common vertex.
     // Open that corner fully instead of drawing paired banks or tiny islands.
     mouths.push({
+      side: i,
       a:
         basin & (1 << i) || mask & (1 << ((i + 5) % 6))
           ? point(angle - Math.PI / 6, R)
@@ -157,12 +171,12 @@ export function riverGeometry(mask: number, basin = 0) {
   }
   if (!mouths.length)
     return {
-      water: "M-25,0C-25,-32 25,-32 25,0C25,32 -25,32 -25,0Z",
+      water: "M-27,-16C-2,-20 -8,7 24,7L27,18C-5,21 -9,-4 -27,-4Z",
       line: "",
     };
   if (mouths.length === 1) {
-    // A broad headwater pool occupies the centre of the hex. Preserve the
-    // exact shared-edge mouth so neighbouring river segments still join.
+    // A narrowing upstream reach, not a circular source lake. Preserve the
+    // exact shared-edge mouth so neighboring river segments still join.
     const side = Math.log2(mask),
       angle = (side * Math.PI) / 3;
     const rotate = (x: number, y: number) =>
@@ -171,7 +185,7 @@ export function riverGeometry(mask: number, basin = 0) {
         x * Math.sin(angle) + y * Math.cos(angle),
       ]);
     const { a, b } = mouths[0];
-    const curve = `C${rotate(25, 14)} ${rotate(27, 30)} ${rotate(-1, 30)}C${rotate(-39, 30)} ${rotate(-39, -30)} ${rotate(-1, -30)}C${rotate(27, -30)} ${rotate(25, -14)} ${fmt(a)}`;
+    const curve = `C${rotate(18, 19)} ${rotate(5, 14)} ${rotate(-15, 8)}C${rotate(-26, 4)} ${rotate(-26, -4)} ${rotate(-15, -8)}C${rotate(5, -14)} ${rotate(18, -19)} ${fmt(a)}`;
     return {
       water: `M${fmt(a)}L${fmt(b)}${curve}Z`,
       line: `M${fmt(b)}${curve}`,
@@ -195,25 +209,22 @@ export function riverGeometry(mask: number, basin = 0) {
       const length = Math.hypot(p[0], p[1]) || 1;
       return p.map((v) => v * (1 - inset / length));
     };
-    // Wide connected arms enclose a central pool. Following an inner circular
-    // arc keeps the middle underwater, even on sharp bends or tributary joins.
-    const radius = 26;
-    const fromAngle = Math.atan2(b[1], b[0]);
-    const toAngle = Math.atan2(next[1], next[0]);
-    const sweep = (toAngle - fromAngle + Math.PI * 2) % (Math.PI * 2);
-    const innerB = point(fromAngle, radius),
-      innerNext = point(toAngle, radius);
-    const enterTangent = [
-      innerB[0] + Math.sin(fromAngle) * 6,
-      innerB[1] - Math.cos(fromAngle) * 6,
-    ];
-    const exitTangent = [
-      innerNext[0] - Math.sin(toAngle) * 6,
-      innerNext[1] + Math.cos(toAngle) * 6,
-    ];
+    // Pull each bank along its mouth's inward normal. Opposite mouths make
+    // a straight, constant-width reach; bends use longer outer-bank handles.
+    // Scaling points toward the origin also scaled width and caused pinching;
+    // a central circular arc caused the repeated lake-shaped bulges.
+    const fromSide = mouths[i].side;
+    const toSide = mouths[(i + 1) % mouths.length].side;
+    const turn = (toSide - fromSide + 6) % 6;
+    const reach =
+      A * (turn === 5 ? 1.55 : turn === 4 ? 1.25 : turn === 3 ? 0.72 : 0.62);
+    const inward = (p: number[], side: number) => {
+      const n = point((side * Math.PI) / 3, reach);
+      return p.map((v, axis) => v - n[axis]);
+    };
     const curve = basin
       ? `C${fmt(control(1 / 3))} ${fmt(control(2 / 3))} ${fmt(next)}`
-      : `C${fmt(b.map((v) => v * 0.88))} ${fmt(enterTangent)} ${fmt(innerB)}A${radius},${radius} 0 ${sweep > Math.PI ? 1 : 0} 1 ${fmt(innerNext)}C${fmt(exitTangent)} ${fmt(next.map((v) => v * 0.88))} ${fmt(next)}`;
+      : `C${fmt(inward(b, fromSide))} ${fmt(inward(next, toSide))} ${fmt(next)}`;
     water += `L${fmt(b)}${curve}`;
     line += `M${fmt(b)}${curve}`;
   }

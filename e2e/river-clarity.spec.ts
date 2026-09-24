@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { execFileSync } from "node:child_process";
 
-test("river bends retain a broad wet center and continuous clipped bank art", async ({
+test("river channels retain width through bends without circular bulges", async ({
   page,
 }) => {
   await page.goto("/");
@@ -17,18 +17,23 @@ test("river bends retain a broad wet center and continuous clipped bank art", as
       const ctx = document.createElement("canvas").getContext("2d")!;
       return paths.flatMap((d, i) => {
         const p = new Path2D(d);
-        return [
-          [0, 0],
-          [15, 0],
-          [-15, 0],
-          [0, 15],
-          [0, -15],
-        ].some(([x, y]) => !ctx.isPointInPath(p, x, y))
-          ? [i + 1]
-          : [];
+        return !ctx.isPointInPath(p, 0, 0) ? [i + 1] : [];
       });
     }, paths),
   ).toEqual([]);
+  expect(
+    await page.evaluate((d) => {
+      const ctx = document.createElement("canvas").getContext("2d")!;
+      const path = new Path2D(d);
+      return [-30, -15, 0, 15, 30].every(
+        (x) =>
+          ctx.isPointInPath(path, x, 18) &&
+          ctx.isPointInPath(path, x, -18) &&
+          !ctx.isPointInPath(path, x, 21) &&
+          !ctx.isPointInPath(path, x, -21),
+      );
+    }, paths[8]),
+  ).toBe(true);
   await page.setContent(
     `<style>body{margin:0;background:#2c6071;display:grid;place-items:center}</style>${svg}`,
   );

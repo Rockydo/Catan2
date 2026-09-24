@@ -245,6 +245,26 @@ describe("connected water artwork", () => {
     expect(waterConnections(b, tiles).channel & 8).toBe(8);
     expect(riverGeometry(63).line).toBe("");
   });
+  it("opens a broad river mouth into the sea without phantom parallel banks", () => {
+    const t = water("0,0", true),
+      ids = neighbors(t.id);
+    const map = new Map([
+      [t.id, t],
+      [ids[0], water(ids[0])],
+      [ids[1], water(ids[1])],
+    ]);
+    const c = waterConnections(t, map);
+    expect(c.river).toBe(false);
+    expect(c.shore).toBe(0);
+    const land = {
+      ...water(ids[3]),
+      resource: "stone" as const,
+      biome: "stone" as const,
+    };
+    map.set(land.id, land);
+    expect(waterConnections(t, map).shore).toBe(1 << 3);
+    expect(t.geography?.waterway).toBe("river");
+  });
   it("has finite closed geometry for every shore and river connection pattern", () => {
     for (let mask = 0; mask < 64; mask++) {
       const { water, line } = riverGeometry(mask),

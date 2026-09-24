@@ -226,7 +226,7 @@ Un col exige au moins deux Pics nus adjacents. Deux cols ne peuvent jamais être
 
 ### Formes de relief supplémentaires
 
-Les nouvelles parties utilisent la géographie version 6. Quatre formes régionales supplémentaires se combinent aux reliefs existants avant la sélection des climats, des cours d’eau et des ressources. Elles n’ajoutent aucune règle de déplacement ni aucune ressource garantie.
+Les nouvelles parties utilisent la géographie version 7. Quatre formes régionales supplémentaires se combinent aux reliefs existants avant la sélection des climats, des cours d’eau et des ressources. Elles n’ajoutent aucune règle de déplacement ni aucune ressource garantie.
 
 - **Vallées ennoyées :** des bras de mer ramifiés entaillent un socle bas. Ce relief est favorisé dans les régions tempérées humides et océaniques. Les baies séparent les colonies proches et créent des routes abritées et plusieurs points de débarquement. Il se distingue des fjords glaciaires parallèles.
 - **Arcs volcaniques :** des chaînes courbes d’îles inégales aux pentes fortes, parfois avec un sommet affaissé. Les bassins insulaires ont des rivières courtes. Les hauteurs utilisent les montagnes et minerais existants, adaptés au climat. Un cratère ne garantit ni lac ni ressource particulière.
@@ -242,12 +242,16 @@ Les Bois de palmiers donnent 1 Bois à chaque saison. Le Verger d’arbres à pa
 
 ### Sources et cols de montagne
 
-Les bassins de version 6 choisissent leurs sources parmi davantage de points élevés. Les sources de plaine restent possibles mais moins fréquentes. Les cours suivent toujours la pente. Toutes les tuiles de rivière voisines se raccordent visuellement par leur arête commune, y compris sur les anciennes cartes. Les chenaux élargis gardent le centre sous l’eau ; une texture de berge continue remplace les morceaux triangulaires. Les coins entourés seulement d’eau restent ouverts, sans bandes de terre fictives entre chenaux parallèles.
+Les bassins de version 6 choisissent leurs sources parmi davantage de points élevés. Les sources de plaine restent possibles mais moins fréquentes. Les cours suivent toujours la pente. Toutes les tuiles de rivière voisines se raccordent visuellement par leur arête commune, y compris sur les anciennes cartes. Les chenaux élargis suivent des berges courbes continues, sans bassin circulaire au centre ; une texture de berge continue remplace les morceaux triangulaires. Les coins entourés seulement d’eau restent ouverts, sans bandes de terre fictives entre chenaux parallèles.
 Un col exige au moins deux Pics nus voisins et ne peut toucher aucun autre col. Un affleurement de pierre nouvellement généré devient plus volontiers un col lorsque les pics voisins sont espacés autour de l’hexagone, surtout sur des faces opposées. Aucun pic ni aucune culture n’est supprimé pour créer un passage. Fermetures saisonnières et interdiction des passages permanents restent applicables.
 
 ### Effet sur une sauvegarde
 
-Le chargement retire les anciennes crues des terrains accidentés et applique les seuils actuels sans effectuer un nouveau tirage météo, avancer le temps ni modifier les stocks. Une ancienne plaine sans seuil enregistré utilise 4. Les aménagements existants sont conservés. Les nouvelles sources et formes physiques nécessitent une campagne de version 6 ; les anciens mondes conservent leur drainage versionné et leurs terrains révélés.
+Le chargement retire les anciennes crues des terrains accidentés et applique les seuils actuels sans effectuer un nouveau tirage météo, avancer le temps ni modifier les stocks. Une ancienne plaine sans seuil enregistré utilise 4. Les aménagements existants sont conservés. Les nouvelles sources et formes physiques nécessitent une campagne de version 7 ; les anciens mondes conservent leur drainage versionné et leurs terrains révélés.
+
+### Convergence des rivières
+
+La version 7 raccourcit les détours qui doublent un même tracé et raccorde les affluents à un chenal existant plus bas dès leur premier contact. Chaque liaison reste voisine et descendante. Une embouchure bordée par au moins deux tuiles de mer ou de lac apparaît comme un estuaire ouvert, avec des berges uniquement contre les terres réelles. Ces corrections visuelles s’appliquent aux sauvegardes sans modifier terrain, navigation ni production. Les anciens mondes conservent leur version de génération.
 
 ## Saisons et récoltes
 
