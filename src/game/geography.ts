@@ -68,7 +68,7 @@ export interface Wildlife {
   lastRound: number;
   dormant?: true;
 }
-export const GEOGRAPHY_VERSION = 3;
+export const GEOGRAPHY_VERSION = 4;
 export const landform = (
   seed: string,
   version = GEOGRAPHY_VERSION,
@@ -188,16 +188,21 @@ interface Drainage {
 /** Fill a local river depression from its lowest neighbouring ground. A
  * bounded footprint and spill-height limit keep lakes compact and avoid
  * flooding mountain ridges. Coordinates alone determine the complete basin. */
-function fillLakeBasin(seed: string, sink: string, rain: number): Set<string> {
+function fillLakeBasin(
+  seed: string,
+  sink: string,
+  rain: number,
+  version: number,
+): Set<string> {
   const basin = new Set([sink]);
   const target = 3 + Math.floor(randomAt(seed, sink, "lake-area") * 8);
-  const level = elevationAt(seed, sink) + 0.055 + rain * 0.045;
+  const level = elevationAt(seed, sink, version) + 0.055 + rain * 0.045;
   const frontier = new Set(neighbors(sink));
   while (basin.size < target && frontier.size) {
     let next: string | undefined,
       lowest = Infinity;
     for (const id of frontier) {
-      const h = elevationAt(seed, id);
+      const h = elevationAt(seed, id, version);
       if (h < lowest || (h === lowest && id < next!)) {
         next = id;
         lowest = h;
@@ -206,7 +211,7 @@ function fillLakeBasin(seed: string, sink: string, rain: number): Set<string> {
     if (!next || lowest > level) break;
     frontier.delete(next);
     // Reaching sea level gives this basin an outlet. Do not grow into sea.
-    if (lowest < seaLevel(seed)) break;
+    if (lowest < seaLevel(seed, version)) break;
     basin.add(next);
     for (const id of neighbors(next))
       if (!basin.has(id) && distance(sink, id) <= 3) frontier.add(id);
@@ -258,7 +263,20 @@ function watershed(
       "skerries",
       "atolls",
     ].includes(form);
-    const maxSteps = version < 3 ? 16 : smallIslands ? 8 : rain < 0.3 ? 10 : 16;
+    const maxSteps =
+      version < 3
+        ? 16
+        : version === 3
+          ? smallIslands
+            ? 8
+            : rain < 0.3
+              ? 10
+              : 16
+          : smallIslands
+            ? 12
+            : rain < 0.3
+              ? 24
+              : 36;
     const sources = [source];
     // Wet mainland catchments have additional headwaters. They merge by
     // following the same downhill terrain, rather than drawing random branches.
@@ -293,13 +311,42 @@ function watershed(
         lakes = new Set<string>(),
         mouths = new Set<string>();
       for (let step = 0; step < maxSteps; step++) {
-        const next = neighbors(at)
+        let next = neighbors(at)
           .filter((n) => !visited.has(n))
           .sort(
             (a, b) =>
               elevationAt(seed, a, version) - elevationAt(seed, b, version) ||
               a.localeCompare(b),
           )[0];
+        if (version >= 4) {
+          const height = elevationAt(seed, at, version);
+          const downhill = neighbors(at).filter(
+            (id) => !visited.has(id) && elevationAt(seed, id, version) < height,
+          );
+          // Modest downhill bends extend valleys without crossing a ridge or
+          // allowing river cycles. A continuation avoids premature local sinks.
+          const flowing = downhill.filter(
+            (id) =>
+              elevationAt(seed, id, version) < seaLevel(seed, version) ||
+              neighbors(id).some(
+                (n) =>
+                  elevationAt(seed, n, version) <
+                  elevationAt(seed, id, version),
+              ),
+          );
+          if (flowing.length && randomAt(seed, at, "river-meander") < 0.65)
+            next = flowing.sort(
+              (a, b) =>
+                elevationAt(seed, b, version) - elevationAt(seed, a, version) ||
+                a.localeCompare(b),
+            )[0];
+          // Query collars cover 24 hexes. Reserve three for lake spread and
+          // keep longer meandering courses inside that fixed spatial budget.
+          if (next && distance(from, next) > 20) {
+            if (step >= 2) lakes.add(at);
+            break;
+          }
+        }
         if (!next) break;
         if (
           elevationAt(seed, next, version) >= elevationAt(seed, at, version)
@@ -326,7 +373,8 @@ function watershed(
   if (version >= 3 && result.lakes.size) {
     const sinks = [...result.lakes];
     for (const sink of sinks)
-      for (const id of fillLakeBasin(seed, sink, rain)) result.lakes.add(id);
+      for (const id of fillLakeBasin(seed, sink, rain, version))
+        result.lakes.add(id);
     // Submerged river sections become part of the lake, not narrow channels.
     for (const id of result.lakes) {
       result.rivers.delete(id);
@@ -448,6 +496,7 @@ const COLD = new Set<Climate>([
   "tundra",
 ]);
 const HOT = new Set<Climate>([
+  "semiarid",
   "tropical",
   "subtropical",
   "monsoon",
@@ -455,7 +504,7 @@ const HOT = new Set<Climate>([
   "mesoamerican",
   "equatorial-wetlands",
 ]);
-const DRY = new Set<Climate>(["desert", "hyperarid"]);
+const DRY = new Set<Climate>(["desert", "hyperarid", "semiarid"]);
 const RIVER_ONLY = new Set<Biome>([
   "alluvial-clay",
   "river-woods",
@@ -675,14 +724,23 @@ export const RIPARIAN_TERRAIN: Record<
     ["wildlife-grassland", 15],
   ],
   desert: [
-    ["flood-sorghum", 35],
-    ["clay", 20],
-    ["oasis", 25],
+    ["flood-wheat", 55],
+    ["flood-sorghum", 25],
+    ["clay", 10],
+    ["oasis", 20],
+  ],
+  semiarid: [
+    ["flood-wheat", 40],
+    ["flood-sorghum", 20],
+    ["clay", 15],
+    ["dry-woodland", 15],
+    ["goat-pasture", 10],
   ],
   hyperarid: [
+    ["flood-wheat", 40],
     ["flood-sorghum", 20],
-    ["clay", 20],
-    ["oasis", 40],
+    ["clay", 15],
+    ["oasis", 35],
   ],
 };
 /** One conditional draw, not a normal tile replaced by special geography.

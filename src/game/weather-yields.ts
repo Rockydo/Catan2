@@ -74,7 +74,11 @@ export function weatherYieldFactor(
         ].includes(biome)
       )
         return 1.25;
-      if (["desert", "hyperarid", "steppe", "savanna"].includes(climate))
+      if (
+        ["desert", "hyperarid", "semiarid", "steppe", "savanna"].includes(
+          climate,
+        )
+      )
         return 1.25;
       return 0.75;
     }
@@ -89,9 +93,14 @@ export function weatherYieldFactor(
     if (weather === "dry" || weather === "cold") return 0.75;
     if (
       weather === "wet" &&
-      ["desert", "hyperarid", "steppe", "savanna", "mediterranean"].includes(
-        climate,
-      )
+      [
+        "desert",
+        "hyperarid",
+        "semiarid",
+        "steppe",
+        "savanna",
+        "mediterranean",
+      ].includes(climate)
     )
       return 1.25;
     if (

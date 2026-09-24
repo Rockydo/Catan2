@@ -321,7 +321,7 @@ function schedule(tile: Hex, raw: Raw, base: number): Year {
     "prairie",
     "tundra",
   ].includes(climate);
-  const dry = ["desert", "hyperarid"].includes(climate);
+  const dry = ["desert", "hyperarid", "semiarid"].includes(climate);
   const rainy = [
     "tropical",
     "subtropical",
@@ -347,7 +347,7 @@ function schedule(tile: Hex, raw: Raw, base: number): Year {
       : base === 2
         ? [2, 2, 3, 1]
         : times([1, 1, 1, 1]);
-  if (biome === "flood-wheat") return times([0, 4, 0, 0]);
+  if (biome === "flood-wheat") return times(dry ? [4, 0, 0, 0] : [0, 4, 0, 0]);
   if (biome === "flood-sorghum") return times([0, 0, 4, 0]);
   if (biome === "flood-rice") return times([1, 0, 1, 2]);
   if (biome === "delta-gardens")
@@ -405,9 +405,11 @@ function schedule(tile: Hex, raw: Raw, base: number): Year {
     if (biome === "millet-fields") return times([0, 0, 4, 0]);
     if (biome === "barley-fields")
       return times(
-        climate === "alpine" || climate === "cold"
-          ? [0, 0, 4, 0]
-          : [0, 4, 0, 0],
+        climate === "semiarid"
+          ? [4, 0, 0, 0]
+          : climate === "alpine" || climate === "cold"
+            ? [0, 0, 4, 0]
+            : [0, 4, 0, 0],
       );
     // Early varieties provide a small Summer crop; maincrop lifting peaks in Autumn.
     if (biome === "potato-fields" || biome === "turnip-fields")
@@ -580,6 +582,14 @@ export function seasonWeather(tile: Hex, season: Season): string {
     return tile.resource === "water"
       ? "Brief summer opening"
       : "Permanent snow";
+  if (climate === "semiarid")
+    return season === "summer"
+      ? "Hot dry season"
+      : season === "winter"
+        ? "Winter rains"
+        : season === "spring"
+          ? "Spring grain harvest"
+          : "Dry seedbeds";
   if (climate === "hyperarid")
     return season === "summer" ? "Extreme drought" : "Persistent drought";
   if (climate === "andean")

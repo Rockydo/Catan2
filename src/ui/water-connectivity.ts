@@ -172,7 +172,7 @@ export function riverWildlifeAnchor(mask: number, basin = 0) {
 }
 export function bankArt(tile: Hex, season?: Season) {
   // Climate-appropriate ground, kept free of baked-in water or wildlife.
-  const dry = ["desert", "hyperarid"].includes(tile.climate ?? "");
+  const dry = ["desert", "hyperarid", "semiarid"].includes(tile.climate ?? "");
   const evergreen = [
     "tropical",
     "subtropical",

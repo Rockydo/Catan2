@@ -79,6 +79,7 @@ const niches: Record<Climate, readonly [number, number]> = {
   mediterranean: [0.66, 0.34],
   tropical: [0.88, 0.76],
   desert: [0.75, 0.13],
+  semiarid: [0.74, 0.26],
   oceanic: [0.48, 0.7],
   alpine: [0.24, 0.5],
   subtropical: [0.73, 0.61],
@@ -109,6 +110,7 @@ export function geographicClimateWeight(
   if (climate === "equatorial-wetlands") weight *= 1.4 - setting.altitude;
   if (climate === "steppe" || climate === "prairie")
     weight *= 1.5 - setting.maritime * 0.65;
+  if (climate === "semiarid") weight *= 1.3 - setting.maritime * 0.4;
   if (setting.landform) {
     const islands = [
       "island-chains",

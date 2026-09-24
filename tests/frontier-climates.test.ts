@@ -43,7 +43,7 @@ function tile(climate: Climate, biome: Biome) {
 
 describe("new regional climates", () => {
   it("has reciprocal reachable borders, complete probability tables and modest entry weights", () => {
-    expect(CLIMATES).toHaveLength(20);
+    expect(CLIMATES).toHaveLength(21);
     expect(CLIMATE_CONTINUITY).toBe(0.88);
     for (const climate of FRONTIER_CLIMATES) {
       const info = CLIMATE_INFO[climate];

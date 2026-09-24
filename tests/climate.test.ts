@@ -108,6 +108,7 @@ it("retains the previous climates and their transition biases", () => {
     ...EXTREME_CLIMATES,
     ...AMERICAN_CLIMATES,
     ...FRONTIER_CLIMATES,
+    "semiarid",
   ]);
   for (const from of originalClimates)
     for (const to of CLIMATE_INFO[from].compatible.filter((c) =>
@@ -118,7 +119,7 @@ it("retains the previous climates and their transition biases", () => {
     oceanic: { temperate: 2, cold: 1, mediterranean: 1 },
     alpine: { cold: 2, arctic: 2, temperate: 1, steppe: 1 },
     subtropical: { tropical: 2, temperate: 1, mediterranean: 1, savanna: 1 },
-    savanna: { tropical: 2, desert: 1, steppe: 1, subtropical: 1 },
+    savanna: { tropical: 2, desert: 1, steppe: 1, subtropical: 1, semiarid: 1 },
   } as const;
   for (const from of newClimates)
     expect(

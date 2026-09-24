@@ -95,6 +95,11 @@ export function seasonalTerrainPattern(tile: Hex, season?: Season): string {
 export function baseSeasonalTerrainPattern(tile: Hex, season?: Season): string {
   if (tile.geography && !frozenInSeason(tile, season)) {
     let image: string | undefined = tile.biome;
+    if (
+      image === "flood-wheat" &&
+      ["desert", "hyperarid", "semiarid"].includes(tile.climate ?? "")
+    )
+      return terrainPatternKey(image, tile.climate, season ?? "spring");
     const warmRegion = [
       "tropical",
       "subtropical",
@@ -102,6 +107,7 @@ export function baseSeasonalTerrainPattern(tile: Hex, season?: Season): string {
       "savanna",
       "desert",
       "hyperarid",
+      "semiarid",
       "mesoamerican",
       "equatorial-wetlands",
     ].includes(tile.climate ?? "");
@@ -113,7 +119,7 @@ export function baseSeasonalTerrainPattern(tile: Hex, season?: Season): string {
       return "geo-wet-pass";
     if (
       image === "mountain-pass" &&
-      ["desert", "hyperarid"].includes(tile.climate ?? "")
+      ["desert", "hyperarid", "semiarid"].includes(tile.climate ?? "")
     )
       return "geo-desert-pass";
     if (image === "lake" && warmRegion) return "geo-warm-lake";
@@ -151,6 +157,8 @@ export function baseSeasonalTerrainPattern(tile: Hex, season?: Season): string {
       ].includes(image ?? "")
     )
       image = "wild-grassland" as Biome;
+    if (tile.climate === "semiarid" && image === "wild-grassland")
+      return `geo-wild-grassland-${{ spring: "spring", summer: "autumn", autumn: "autumn", winter: "spring" }[season ?? "summer"]}`;
     if (["hunting-forest", "fern-hunting-grounds"].includes(image ?? ""))
       return terrainPatternKey("forest", tile.climate, season);
     if (
@@ -172,6 +180,7 @@ export function baseSeasonalTerrainPattern(tile: Hex, season?: Season): string {
         "savanna",
         "desert",
         "hyperarid",
+        "semiarid",
         "mesoamerican",
         "equatorial-wetlands",
       ].includes(tile.climate ?? "");
@@ -186,7 +195,7 @@ export function baseSeasonalTerrainPattern(tile: Hex, season?: Season): string {
             ? "summer"
             : (season ?? "summer");
       if (image === "river" && warm)
-        image = ["desert", "hyperarid"].includes(tile.climate ?? "")
+        image = ["desert", "hyperarid", "semiarid"].includes(tile.climate ?? "")
           ? "desert-river"
           : "tropical-river";
       if (image === "flood-rice")
@@ -228,6 +237,14 @@ export function terrainPatternKey(
   const biome =
     terrain === "grain" ? "rough-fields" : (aliases[terrain] ?? terrain);
   const region = climate ?? "temperate";
+  if (
+    !season &&
+    (region === "semiarid" ||
+      (biome === "flood-wheat" && ["desert", "hyperarid"].includes(region)))
+  ) {
+    const key = `${region}/${biome}/spring`;
+    if (seasonalTiles[key]) return `season-${key.replaceAll("/", "-")}`;
+  }
   // The reference catalog should show the climate's actual landscape too.
   // Summer opens Glacial seas; autumn shows the warm extremes' crop harvests.
   if (

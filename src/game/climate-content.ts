@@ -21,6 +21,7 @@ export const CLIMATES = [
   "tundra",
   "temperate-rainforest",
   "equatorial-wetlands",
+  "semiarid",
 ] as const;
 export type Climate = (typeof CLIMATES)[number];
 export const BIOMES = [
@@ -705,6 +706,7 @@ export const CLIMATE_INFO: Record<Climate, ClimateInfo> = {
       ["whale", 0.05],
     ],
     compatible: [
+      "semiarid",
       "cold",
       "temperate",
       "mediterranean",
@@ -736,7 +738,14 @@ export const CLIMATE_INFO: Record<Climate, ClimateInfo> = {
       ["fish", 0.15],
       ["whale", 0.05],
     ],
-    compatible: ["temperate", "steppe", "desert", "oceanic", "subtropical"],
+    compatible: [
+      "semiarid",
+      "temperate",
+      "steppe",
+      "desert",
+      "oceanic",
+      "subtropical",
+    ],
   },
   tropical: {
     name: "Tropical",
@@ -767,6 +776,29 @@ export const CLIMATE_INFO: Record<Climate, ClimateInfo> = {
       "mesoamerican",
     ],
   },
+  semiarid: {
+    name: "Hot Semi-Arid",
+    color: "#b98b50",
+    land: 0.7,
+    terrain: [
+      ["wildlife-grassland", 24],
+      ["dry-woodland", 10],
+      ["barley-fields", 12],
+      ["goat-pasture", 10],
+      ["desert", 8],
+      ["clay", 10],
+      ["stone", 10],
+      ["iron", 6],
+      ["coal", 3],
+      ["gold", 3],
+      ["salt-flats", 4],
+    ],
+    water: [
+      ["fish", 0.12],
+      ["whale", 0.04],
+    ],
+    compatible: ["desert", "savanna", "mediterranean", "steppe"],
+  },
   desert: {
     name: "Desert",
     color: "#d6ab66",
@@ -786,6 +818,7 @@ export const CLIMATE_INFO: Record<Climate, ClimateInfo> = {
       ["whale", 0.03],
     ],
     compatible: [
+      "semiarid",
       "tropical",
       "mediterranean",
       "steppe",
@@ -896,6 +929,7 @@ export const CLIMATE_INFO: Record<Climate, ClimateInfo> = {
       ["whale", 0.03],
     ],
     compatible: [
+      "semiarid",
       "tropical",
       "desert",
       "steppe",
@@ -1123,7 +1157,8 @@ const TRANSITION_WEIGHTS: Partial<
   steppe: { cold: 1.5 },
   mediterranean: { desert: 0.5, steppe: 0.5 },
   tropical: { desert: 2 },
-  desert: { tropical: 2 },
+  desert: { tropical: 2, semiarid: 1.5 },
+  semiarid: { desert: 1.5, savanna: 1, mediterranean: 1, steppe: 1 },
   cold: { arctic: 2 },
   oceanic: { temperate: 2 },
   alpine: { cold: 2, arctic: 2 },

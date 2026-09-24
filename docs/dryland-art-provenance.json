@@ -1,0 +1,50 @@
+[
+  {
+    "name": "semiarid-barley-spring",
+    "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-250ebb96-6093-4bfc-884e-033b66e10ffc.png",
+    "tool": "image_gen",
+    "prompt": "Use case: stylized-concept. Asset type: seamless-looking square terrain illustration for an illustrated Catan-style hex board game, later cropped into a hex. Full bleed high angle overhead painterly realistic miniature landscape, rich fine hand-painted detail, softly shaded, crisp readable at small scale, NO horizon, NO sky, NO hex border, NO text, NO icons. Hot semi-arid spring barley harvest: ripe tawny barley with long delicate awns covering most of the image, irregular small rainfed fields, pale limestone rubble, sparse low scrub at edges, ochre dusty soil. No river, no dunes, no animals. Match warm illustrated board game terrain. Render a single 1024x1024 square image, not a sheet or collage."
+  },
+  {
+    "name": "semiarid-barley-summer",
+    "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-9cde7028-3ea7-44a1-94f5-853cdff75696.png",
+    "tool": "image_gen",
+    "prompt": "Use case: stylized-concept. Asset type: seamless-looking square terrain illustration for an illustrated Catan-style hex board game, later cropped into a hex. Full bleed high angle overhead painterly realistic miniature landscape, rich fine hand-painted detail, softly shaded, crisp readable at small scale, NO horizon, NO sky, NO hex border, NO text, NO icons. Hot semi-arid midsummer after the barley harvest: dry short cut straw stubble over most of the image, sparse pale limestone rubble and parched scrub, ochre soil, bright warm light. No standing grain, no river, no dunes, no animals. Match warm illustrated board game terrain. Render a single 1024x1024 square image, not a sheet or collage."
+  },
+  {
+    "name": "semiarid-barley-autumn",
+    "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-25831667-0795-4b38-bf6f-b3eefc5a01ed.png",
+    "tool": "image_gen",
+    "prompt": "Use case: stylized-concept. Asset type: seamless-looking square terrain illustration for an illustrated Catan-style hex board game, later cropped into a hex. Full bleed high angle overhead painterly realistic miniature landscape, rich fine hand-painted detail, softly shaded, crisp readable at small scale, NO horizon, NO sky, NO hex border, NO text, NO icons. Hot semi-arid autumn barley fields before winter rains: tilled ochre brown soil over most of image, old stubble and sparse sage scrub, pale limestone stones. No standing grain, no river, no dunes, no animals. Match warm illustrated board game terrain. Render a single 1024x1024 square image, not a sheet or collage."
+  },
+  {
+    "name": "semiarid-barley-winter",
+    "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-c31edda1-1ab1-4b9f-aece-671c1dfa646f.png",
+    "tool": "image_gen",
+    "prompt": "Use case: stylized-concept. Asset type: seamless-looking square terrain illustration for an illustrated Catan-style hex board game, later cropped into a hex. Full bleed high angle overhead painterly realistic miniature landscape, rich fine hand-painted detail, softly shaded, crisp readable at small scale, NO horizon, NO sky, NO hex border, NO text, NO icons. Hot semi-arid mild winter barley growing after rain: dense short green barley shoots in irregular small fields on rich brown earth, pale limestone rubble and sage scrub around fields. No snow, no mature heads of grain, no river, no animals. Match warm illustrated board game terrain. Render a single 1024x1024 square image, not a sheet or collage."
+  },
+  {
+    "name": "desert-flood-wheat-spring",
+    "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-a4259905-e867-46eb-bd0c-c88f26d2fbb8.png",
+    "tool": "image_gen",
+    "prompt": "Use case: stylized-concept. Asset type: seamless-looking square terrain illustration for an illustrated Catan-style hex board game, later cropped into a hex. Full bleed high angle overhead painterly realistic miniature landscape, rich fine hand-painted detail, softly shaded, crisp readable at small scale, NO horizon, NO sky, NO hex border, NO text, NO icons. Nile-style desert floodplain wheat ready for spring harvest: dense ripe golden wheat fields on dark silt soil in small traditional basin plots, narrow turquoise irrigation channels, a few date palms, sandy ochre barren desert margins. Farmland dominates central crop. No animals, no buildings, no snow. Match warm illustrated board game terrain. Render a single 1024x1024 square image, not a sheet or collage."
+  },
+  {
+    "name": "desert-flood-wheat-summer",
+    "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-a76e7ad2-9973-45f6-b323-a87d75503387.png",
+    "tool": "image_gen",
+    "prompt": "Use case: stylized-concept. Asset type: seamless-looking square terrain illustration for an illustrated Catan-style hex board game, later cropped into a hex. Full bleed high angle overhead painterly realistic miniature landscape, rich fine hand-painted detail, softly shaded, crisp readable at small scale, NO horizon, NO sky, NO hex border, NO text, NO icons. Nile-style desert floodplain in dry summer after wheat harvest: dense cut straw stubble fields on dark silty soil in small traditional basin plots, narrow turquoise irrigation channels, a few date palms, sandy ochre barren desert margins. No standing grain, no animals, no buildings, no snow. Not flooded. Match warm illustrated board game terrain. Render a single 1024x1024 square image, not a sheet or collage."
+  },
+  {
+    "name": "desert-flood-wheat-autumn",
+    "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-512b23e5-d9c4-43c0-929f-79520e060e1e.png",
+    "tool": "image_gen",
+    "prompt": "Use case: stylized-concept. Asset type: seamless-looking square terrain illustration for an illustrated Catan-style hex board game, later cropped into a hex. Full bleed high angle overhead painterly realistic miniature landscape, rich fine hand-painted detail, softly shaded, crisp readable at small scale, NO horizon, NO sky, NO hex border, NO text, NO icons. Nile-style desert floodplain in autumn recession before sowing: damp dark silt seedbeds in small traditional basin plots, narrow turquoise irrigation channels, a few date palms, sandy ochre barren desert margins. Ground exposed, NOT flooded, no standing grain, no animals, no buildings, no snow. Match warm illustrated board game terrain. Render a single 1024x1024 square image, not a sheet or collage."
+  },
+  {
+    "name": "desert-flood-wheat-winter",
+    "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-09df83c7-846b-45f6-ac53-ef166e8d2e54.png",
+    "tool": "image_gen",
+    "prompt": "Use case: stylized-concept. Asset type: seamless-looking square terrain illustration for an illustrated Catan-style hex board game, later cropped into a hex. Full bleed high angle overhead painterly realistic miniature landscape, rich fine hand-painted detail, softly shaded, crisp readable at small scale, NO horizon, NO sky, NO hex border, NO text, NO icons. Nile-style desert floodplain in mild winter: lush low emerald wheat in small traditional basin plots of dark fertile silt, narrow turquoise irrigation channels, a few date palms, sandy ochre barren desert margins. No ripe grain, no animals, no buildings, no snow. Match warm illustrated board game terrain. Render a single 1024x1024 square image, not a sheet or collage."
+  }
+]

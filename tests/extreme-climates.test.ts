@@ -76,8 +76,12 @@ describe("extreme climate generation", () => {
   it("makes extreme starting climates rarer without excluding them", () => {
     const counts: Partial<Record<Climate, number>> = {};
     // Relative weights 1 and .35 become 20 and 7 evenly spaced samples.
-    for (let i = 0; i < 361; i++) {
-      const climate = chooseInitialClimate((i + 0.5) / 361);
+    const samples = CLIMATES.reduce(
+      (sum, c) => sum + Math.round(climateInitialWeight(c) * 20),
+      0,
+    );
+    for (let i = 0; i < samples; i++) {
+      const climate = chooseInitialClimate((i + 0.5) / samples);
       counts[climate] = (counts[climate] ?? 0) + 1;
     }
     for (const climate of CLIMATES) {

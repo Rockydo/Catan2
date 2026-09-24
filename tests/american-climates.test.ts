@@ -103,7 +103,7 @@ const expected = {
 
 describe("American climate generation", () => {
   it("adds three normal climates with exact resource shares and reciprocal regional transitions", () => {
-    expect(CLIMATES).toHaveLength(20);
+    expect(CLIMATES).toHaveLength(21);
     expect(AMERICAN_CLIMATES).toEqual(["andean", "prairie", "mesoamerican"]);
     for (const climate of AMERICAN_CLIMATES) {
       expect(CLIMATE_INFO[climate]).toMatchObject(

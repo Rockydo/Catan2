@@ -33,6 +33,7 @@ const tropical = new Set<Climate>([
   "mesoamerican",
   "equatorial-wetlands",
 ]);
+const warmWildlife = new Set<Climate>([...tropical, "semiarid"]);
 const cold = new Set<Climate>([
   "cold",
   "arctic",
@@ -45,6 +46,7 @@ const cold = new Set<Climate>([
  * not independent tile rolls. Flood peaks follow snowmelt or local wet seasons. */
 export function waterCalendar(climate: Climate): readonly number[] {
   if (climate === "glacial") return [1, 3, 1, 0];
+  if (climate === "semiarid") return [1, 0, 1, 2];
   if (tropical.has(climate)) return [1, 3, 2, 0];
   if (["desert", "hyperarid"].includes(climate)) return [0, 0, 0, 1];
   if (climate === "mediterranean") return [1, 0, 1, 3];
@@ -58,6 +60,24 @@ export function weatherChoices(
   climate: Climate,
   season: Season,
 ): [Weather, number][] {
+  if (climate === "semiarid")
+    return season === "winter"
+      ? [
+          ["normal", 0.5],
+          ["wet", 0.35],
+          ["dry", 0.15],
+        ]
+      : season === "summer"
+        ? [
+            ["normal", 0.5],
+            ["dry", 0.45],
+            ["wet", 0.05],
+          ]
+        : [
+            ["normal", 0.55],
+            ["dry", 0.3],
+            ["wet", 0.15],
+          ];
   if (tropical.has(climate))
     return [
       ["normal", 0.55],
@@ -133,7 +153,11 @@ export function passClosed(
   if (!tile.geography?.pass) return false;
   if (tile.climate === "andean" || tropical.has(tile.climate ?? "temperate"))
     return season === "summer" && weather === "wet";
-  if (["desert", "hyperarid", "mediterranean"].includes(tile.climate ?? ""))
+  if (
+    ["desert", "hyperarid", "semiarid", "mediterranean"].includes(
+      tile.climate ?? "",
+    )
+  )
     return season === "winter" && weather === "wet";
   if (["glacial", "arctic"].includes(tile.climate ?? ""))
     return season !== "summer";
@@ -200,7 +224,7 @@ export function suitableWildlifeHabitat(tile: Hex, kind: WildlifeKind) {
       !!tile.geography.coastal &&
       ["arctic", "glacial", "tundra"].includes(tile.climate ?? "")
     );
-  if (kind === "jungle-game" && !tropical.has(tile.climate ?? "temperate"))
+  if (kind === "jungle-game" && !warmWildlife.has(tile.climate ?? "temperate"))
     return false;
   if (
     (kind === "bison" || kind === "musk-ox") &&
@@ -209,15 +233,20 @@ export function suitableWildlifeHabitat(tile: Hex, kind: WildlifeKind) {
     return false;
   if (
     kind === "deer" &&
-    (tropical.has(tile.climate ?? "temperate") ||
+    (warmWildlife.has(tile.climate ?? "temperate") ||
       ["arctic", "glacial", "tundra"].includes(tile.climate ?? ""))
   )
     return false;
   if (
     kind === "bison" &&
-    !["steppe", "prairie", "temperate", "mediterranean", "savanna"].includes(
-      tile.climate ?? "",
-    )
+    ![
+      "steppe",
+      "prairie",
+      "temperate",
+      "mediterranean",
+      "savanna",
+      "semiarid",
+    ].includes(tile.climate ?? "")
   )
     return false;
   if (kind === "reindeer" || kind === "musk-ox")
