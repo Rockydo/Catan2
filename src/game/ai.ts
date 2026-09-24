@@ -798,7 +798,15 @@ export function economyProjects(s: Game): Project[] {
   const strandedForces = new Map<string, number>();
   const collectorCounts = new Map<string, number>();
   for (const unit of units)
-    if (["merchant", "fishing", "merchantship", "hunter"].includes(unit.kind))
+    if (
+      [
+        "merchant",
+        "fishing",
+        "oceanfishing",
+        "merchantship",
+        "hunter",
+      ].includes(unit.kind)
+    )
       collectorCounts.set(
         unit.kind,
         (collectorCounts.get(unit.kind) ?? 0) + unit.tier,
@@ -818,6 +826,7 @@ export function economyProjects(s: Game): Project[] {
           "merchant",
           "merchantship",
           "fishing",
+          "oceanfishing",
           "settler",
           "settlership",
         ].includes(action.kind ?? "");
@@ -1146,6 +1155,7 @@ export function economyProjects(s: Game): Project[] {
         for (const kind of (Object.keys(SHIP_INFO) as ShipClass[]).filter(
           (k) =>
             k !== "fishing" &&
+            k !== "oceanfishing" &&
             k !== "merchantship" &&
             (k !== "riverboat" || !!s.geographyVersion) &&
             !isSettler(k),
@@ -1326,6 +1336,7 @@ export function economyProjects(s: Game): Project[] {
     for (const kind of [
       "merchant",
       "fishing",
+      "oceanfishing",
       "merchantship",
       "hunter",
     ] as const) {
@@ -1334,7 +1345,11 @@ export function economyProjects(s: Game): Project[] {
         ? waterAtVertex(s, town.vertex)
         : landAtVertex(s, town.vertex);
       const count = collectorCounts.get(kind) ?? 0;
-      for (let tier = 1; tier <= town.turnLevel; tier++) {
+      for (
+        let tier = kind === "oceanfishing" ? 2 : 1;
+        tier <= town.turnLevel;
+        tier++
+      ) {
         const bonus = s.players[s.active].bonuses;
         const free = naval
           ? bonus.ships.some(
@@ -1370,7 +1385,9 @@ export function economyProjects(s: Game): Project[] {
                           s.tiles[id],
                           s.active,
                           tier,
-                          kind !== "fishing" && kind !== "hunter",
+                          kind !== "fishing" &&
+                            kind !== "oceanfishing" &&
+                            kind !== "hunter",
                           kind === "hunter"
                             ? (s.tiles[id].geography?.fauna ?? {})
                             : tileYield(s.tiles[id], s.active),
@@ -1823,7 +1840,7 @@ export function coalitionTrade(
           p.action.kind !== "merchant" &&
           !isSettler(p.action.kind ?? "")) ||
         (p.action.type === "ship" &&
-          !["fishing", "merchantship", "settlership"].includes(
+          !["fishing", "oceanfishing", "merchantship", "settlership"].includes(
             p.action.kind!,
           )) ||
         p.action.type === "wall",
@@ -1895,9 +1912,14 @@ function chooseEconomy(
     values = marginalValues(s);
   const commission = (project: Project): Command | null => {
     const economic =
-      ["merchant", "merchantship", "fishing", "hunter"].includes(
-        project.action.kind ?? "",
-      ) && ["recruit", "ship"].includes(project.action.type);
+      [
+        "merchant",
+        "merchantship",
+        "fishing",
+        "oceanfishing",
+        "hunter",
+      ].includes(project.action.kind ?? "") &&
+      ["recruit", "ship"].includes(project.action.type);
     if (!economic || (project.quantity ?? 1) <= 1) return null;
     const target = recruitmentFundingTarget(
       s,
@@ -2570,7 +2592,7 @@ function collectorMove(s: Game): Command | null {
                 s.tiles[id],
                 s.active,
                 u.tier,
-                !["fishing", "hunter"].includes(u.kind),
+                !["fishing", "oceanfishing", "hunter"].includes(u.kind),
                 u.kind === "hunter"
                   ? (s.tiles[id].geography?.fauna ?? {})
                   : tileYield(s.tiles[id], s.active),

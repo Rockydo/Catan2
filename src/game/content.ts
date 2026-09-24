@@ -293,6 +293,13 @@ export const SHIP_INFO: Record<
     capacity: 0,
     level: 1,
   },
+  oceanfishing: {
+    name: "Ocean fishing ship",
+    speed: 2,
+    power: 2,
+    capacity: 0,
+    level: 2,
+  },
   fishing: { name: "Fishing ship", speed: 2, power: 0, capacity: 0, level: 1 },
   merchantship: {
     name: "Merchant ship",
@@ -585,6 +592,12 @@ export const SHIP_NAMES: Record<ShipClass, string[]> = {
     "Armored Carrack",
     "Dreadnought",
   ],
+  oceanfishing: [
+    "Offshore Fisher",
+    "Offshore Fisher",
+    "Whaling Carrack",
+    "Ocean Harvester",
+  ],
   fishing: [
     "Fishing Skiff",
     "Fishing Cutter",
@@ -626,6 +639,11 @@ const SHIP_STATS = {
     speed: [1, 2, 2, 2],
     capacity: [0, 0, 0, 0],
   },
+  oceanfishing: {
+    power: [2, 2, 3, 5],
+    speed: [2, 2, 2, 3],
+    capacity: [0, 0, 0, 0],
+  },
   fishing: {
     power: [0, 1, 2, 3],
     speed: [2, 2, 3, 3],
@@ -638,7 +656,10 @@ const SHIP_STATS = {
   },
 };
 export function shipStats(kind: ShipClass, tier = 1) {
-  const i = Math.max(0, Math.min(3, tier - 1));
+  const i = Math.max(
+    SHIP_INFO[kind].level - 1,
+    Math.min(SHIP_NAMES[kind].length - 1, tier - 1),
+  );
   const stats = SHIP_STATS[kind];
   return {
     name: SHIP_NAMES[kind][i],
@@ -653,4 +674,11 @@ export function shipStats(kind: ShipClass, tier = 1) {
   };
 }
 export const shipCost = (kind: ShipClass, tier = 1) =>
-  COSTS[SHIP_NAMES[kind][tier - 1]];
+  COSTS[shipStats(kind, tier).name];
+
+export const shipTierAllowed = (kind: ShipClass, tier: number) =>
+  Number.isInteger(tier) &&
+  tier >= SHIP_INFO[kind].level &&
+  tier <= SHIP_NAMES[kind].length;
+export const fishingRange = (kind: string, tier: number) =>
+  tier + Number(kind === "oceanfishing");

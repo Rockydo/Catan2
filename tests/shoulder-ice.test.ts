@@ -26,7 +26,7 @@ import { maritimeFixture } from "./maritime-fixture";
 import { piece } from "./helpers";
 
 const coldClimates = ["arctic", "alpine", "cold"] as const;
-const shoulderClimates = [...coldClimates, "prairie"] as const;
+const shoulderClimates = [...coldClimates, "prairie", "steppe", "tundra"] as const;
 const frozenClimates = [...shoulderClimates, "glacial"] as const;
 const shoulders = ["spring", "autumn"] as const;
 
@@ -92,6 +92,7 @@ describe("stable shoulder-season sea ice", () => {
       alpine: { spring: 0.35, autumn: 0.25 },
       cold: { spring: 0.2, autumn: 0.1 },
       prairie: { spring: 0.1, autumn: 0.1 },
+      steppe: { spring: 0.1, autumn: 0.1 },
     });
   });
 

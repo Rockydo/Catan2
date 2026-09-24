@@ -1,0 +1,20 @@
+[
+  {
+    "tier": 2,
+    "name": "Offshore Fisher",
+    "prompt": "Use case: stylized-concept. One single unit portrait for the illustrated board game Catane Frontiers, matching detailed painterly isometric miniature ships on warm cream parchment. Subject: sturdy double-masted oak fishing vessel, deep rounded hull, cream sails, visible trawl nets, fish baskets and storage barrels, compact stern cabin, clearly a working fishing ship. Full ship from raised three-quarter view, bow lower-left, isolated on a small patch of blue-grey waves fading into parchment. Centered with generous margin around all masts and hull for portrait crop. Crisp readable silhouette, hand-painted rich fine timber and rigging details, gentle natural light. Single ship only, no grid, no text, no numbers, no logo, no soldiers, no naval cannons, no blood, no modern motors. Square image.",
+    "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-63f54bc7-f989-43ee-b581-d8415addd3ee.png"
+  },
+  {
+    "tier": 3,
+    "name": "Whaling Carrack",
+    "prompt": "Use case: stylized-concept. One single unit portrait for the illustrated board game Catane Frontiers, matching detailed painterly isometric miniature ships on warm cream parchment. Subject: large three-masted oak ocean fishing carrack, reinforced blue-grey hull bands, cream sails, thick rope winches, large bundled nets and oil barrels, two small whaleboats hung on davits, conspicuous deck capstan. Full ship from raised three-quarter view, bow lower-left, isolated on a small patch of blue-grey waves fading into parchment. Centered with generous margin around all masts and hull for portrait crop. Crisp readable silhouette, hand-painted rich fine timber and rigging details, gentle natural light. Single ship only, no grid, no text, no numbers, no logo, no soldiers, no naval cannons, no blood, no modern motors. Square image.",
+    "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-4f19b67b-8a6c-4c04-97a7-943917e146f2.png"
+  },
+  {
+    "tier": 4,
+    "name": "Ocean Harvester",
+    "prompt": "Use case: stylized-concept. One single unit portrait for the illustrated board game Catane Frontiers, matching detailed painterly isometric miniature ships on warm cream parchment. Subject: massive advanced three-masted deep-ocean fishing vessel, dark oak and reinforced steel fittings, cream sails, two heavy net cranes, ample barrels and catch-handling deck, green pennants, broad strong seagoing hull, grand but utilitarian. Full ship from raised three-quarter view, bow lower-left, isolated on a small patch of blue-grey waves fading into parchment. Centered with generous margin around all masts and hull for portrait crop. Crisp readable silhouette, hand-painted rich fine timber and rigging details, gentle natural light. Single ship only, no grid, no text, no numbers, no logo, no soldiers, no naval cannons, no blood, no modern motors. Square image.",
+    "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-afae4e3b-c54d-48be-9d30-a74468464ed5.png"
+  }
+]

@@ -1,3 +1,4 @@
+import { fishingRange } from "../game/content";
 import { seasonAt, seasonalYield } from "../game/seasons";
 import { localize as tx, useLocale } from "../i18n";
 import { towerSiegeStatuses } from "../game/siege-status";
@@ -151,25 +152,33 @@ export function HarvestPanel({
                 )}
                 .
               </p>
-              {u.kind === "fishing" && (
+              {(u.kind === "fishing" || u.kind === "oceanfishing") && (
                 <p>
                   {tx(
-                    `Fishing range: ${u.tier} water tiles. Land and ice block coverage.`,
+                    `Fishing range: ${fishingRange(u.kind, u.tier)} water tiles. Land and ice block coverage.`,
                   )}
                 </p>
               )}
-              {!["fishing", "hunter"].includes(u.kind) && u.tier >= 3 && (
+              {u.kind === "oceanfishing" && (
                 <p>
                   {tx(
-                    `Adds ${u.tier - 2} times the harvested base yield as processed goods.`,
+                    "Heavy fishing ships cannot harvest through impassable shallow channels.",
                   )}
                 </p>
               )}
+              {!["fishing", "oceanfishing", "hunter"].includes(u.kind) &&
+                u.tier >= 3 && (
+                  <p>
+                    {tx(
+                      `Adds ${u.tier - 2} times the harvested base yield as processed goods.`,
+                    )}
+                  </p>
+                )}
               <small>
                 {tx(
                   u.kind === "hunter"
                     ? "Hunting radius equals tier. Collects animal goods only; enemy armies block hunting."
-                    : u.kind === "fishing"
+                    : u.kind === "fishing" || u.kind === "oceanfishing"
                       ? "Fish and Whales (Hides + Oil) · enemy fleets block harvest."
                       : "Collects despite enemy occupation.",
                 )}
@@ -195,7 +204,9 @@ export function HarvestPanel({
                             s.tiles[id],
                             u.owner,
                             u.tier,
-                            !["fishing", "hunter"].includes(u.kind),
+                            !["fishing", "oceanfishing", "hunter"].includes(
+                              u.kind,
+                            ),
                             u.kind === "hunter"
                               ? Object.fromEntries(
                                   Object.entries(

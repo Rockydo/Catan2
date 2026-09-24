@@ -4,6 +4,7 @@ import { generateHex, addHexes, neighbors, randomAt } from "../src/game/world";
 import { GOODS, RAW, PROCESSED, type ShipClass } from "../src/game/types";
 import {
   COSTS,
+  shipTierAllowed,
   shipCost,
   shipStats,
   SHIP_NAMES,
@@ -259,39 +260,40 @@ describe("watchtower support", () => {
 
 describe("tiered fleets and merchants", () => {
   for (const kind of Object.keys(SHIP_NAMES) as ShipClass[])
-    it.each(SHIP_NAMES[kind].map((_, i) => i + 1))(
-      `builds ${kind} tier %s with the right price and stats`,
-      (tier) => {
-        let { s, home, water } = fishingFixture();
-        const before = inventory(s);
-        s = run(s, { type: "ship", town: home.id, tile: water, kind, tier });
-        const u = Object.values(s.pieces)[0];
-        expect(u.tier).toBe(tier);
-        expect(points(u)).toBe(shipStats(kind, tier).power);
-        expect(speed(u)).toBe(shipStats(kind, tier).speed);
-        for (const [g, n] of Object.entries(shipCost(kind, tier)))
-          expect(
-            before[g as keyof typeof before]! -
-              inventory(s)[g as keyof typeof before]!,
-          ).toBe(n);
-        const recipe = shipCost(kind, tier);
-        expect(Object.keys(recipe).length).toBeLessThanOrEqual(
-          kind === "settlership" ? 5 : 4,
+    it.each(
+      SHIP_NAMES[kind]
+        .map((_, i) => i + 1)
+        .filter((t) => shipTierAllowed(kind, t)),
+    )(`builds ${kind} tier %s with the right price and stats`, (tier) => {
+      let { s, home, water } = fishingFixture();
+      const before = inventory(s);
+      s = run(s, { type: "ship", town: home.id, tile: water, kind, tier });
+      const u = Object.values(s.pieces)[0];
+      expect(u.tier).toBe(tier);
+      expect(points(u)).toBe(shipStats(kind, tier).power);
+      expect(speed(u)).toBe(shipStats(kind, tier).speed);
+      for (const [g, n] of Object.entries(shipCost(kind, tier)))
+        expect(
+          before[g as keyof typeof before]! -
+            inventory(s)[g as keyof typeof before]!,
+        ).toBe(n);
+      const recipe = shipCost(kind, tier);
+      expect(Object.keys(recipe).length).toBeLessThanOrEqual(
+        kind === "settlership" ? 5 : 4,
+      );
+      if (tier === 1)
+        expect(Object.keys(recipe).every((g) => RAW.includes(g as any))).toBe(
+          true,
         );
-        if (tier === 1)
-          expect(Object.keys(recipe).every((g) => RAW.includes(g as any))).toBe(
-            true,
-          );
-        if (tier === 2) {
-          expect(recipe.lumber).toBeGreaterThan(0);
-          expect(
-            Object.keys(recipe).filter((g) => PROCESSED.includes(g as any)),
-          ).toHaveLength(1);
-        }
-        if (tier >= 3) expect(recipe.planks).toBeGreaterThan(0);
-        assertInvariants(s);
-      },
-    );
+      if (tier === 2) {
+        expect(recipe.lumber).toBeGreaterThan(0);
+        expect(
+          Object.keys(recipe).filter((g) => PROCESSED.includes(g as any)),
+        ).toHaveLength(1);
+      }
+      if (tier >= 3) expect(recipe.planks).toBeGreaterThan(0);
+      assertInvariants(s);
+    });
   it("fishing ships collect only Fish from themselves and neighboring water", () => {
     const { s, water } = fishingFixture();
     const adjacent = neighbors(water).find(

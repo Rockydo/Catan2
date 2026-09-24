@@ -1,7 +1,11 @@
 import type { Hex } from "../game/types";
-import type { Season } from "../game/seasons";
+import { frozenInSeason, type Season } from "../game/seasons";
 import { neighbors } from "../game/world";
-import { seasonalTerrainPattern, terrainArtFile } from "./terrain-art";
+import {
+  baseSeasonalTerrainPattern,
+  seasonalTerrainPattern,
+  terrainArtFile,
+} from "./terrain-art";
 
 const wet = (tile?: Hex) =>
   !!tile && (tile.resource === "water" || tile.resource === "ice");
@@ -10,20 +14,45 @@ export interface WaterConnections {
   channel: number;
   basin?: number;
   river: boolean;
+  openIce?: number;
+  banks?: (string | undefined)[];
 }
 /** Only known physical land receives a bank. Ice remains water geography,
  * and an unexplored edge never invents a coastline. */
 export function waterConnections(
   tile: Hex,
   tiles: ReadonlyMap<string, Hex>,
+  season?: Season,
 ): WaterConnections {
   let shore = 0,
     channel = 0,
-    basin = 0;
+    basin = 0,
+    openIce = 0;
   const river = tile.geography?.waterway === "river";
+  const banks: (string | undefined)[] = [];
   neighbors(tile.id).forEach((id, side) => {
     const next = tiles.get(id);
-    if (next && !wet(next)) shore |= 1 << side;
+    if (!next || (wet(next) && !frozenInSeason(next, season)))
+      openIce |= 1 << side;
+    if (next && !wet(next)) {
+      shore |= 1 << side;
+      if (
+        river &&
+        (next.geography?.floodplain ||
+          [
+            "alluvial-clay",
+            "river-woods",
+            "chinampa-gardens",
+            "sago-grove",
+            "flood-wheat",
+            "flood-rice",
+            "flood-sorghum",
+            "flood-meadow",
+            "delta-gardens",
+          ].includes(next.biome ?? ""))
+      )
+        banks[side] = terrainArtFile(baseSeasonalTerrainPattern(next, season));
+    }
     if (river && wet(next) && next?.geography?.waterway !== "river")
       basin |= 1 << side;
     if (
@@ -37,7 +66,14 @@ export function waterConnections(
     )
       channel |= 1 << side;
   });
-  return { shore, channel, river, basin };
+  return {
+    shore,
+    channel,
+    river,
+    basin,
+    openIce,
+    ...(banks.length ? { banks } : {}),
+  };
 }
 const R = 44.05,
   A = (Math.sqrt(3) * 44) / 2;
@@ -212,4 +248,11 @@ export function bankArt(tile: Hex, season?: Season) {
       evergreen ? "spring" : season,
     ),
   );
+}
+
+/** Each bank inherits the adjacent riparian terrain only on its own side.
+ * The river water is painted on top, preserving connected channel geometry. */
+export function riverBankSector(side: number): string {
+  const { a, b } = shoreEdge(side);
+  return `M0,0L${fmt(a)}L${fmt(b)}Z`;
 }

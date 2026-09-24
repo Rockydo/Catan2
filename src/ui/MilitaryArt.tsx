@@ -70,6 +70,19 @@ export function MilitaryGlyph({
         <path d="M16 5V10" stroke={ink} />
       </g>
     );
+  if (kind === "oceanfishing")
+    return (
+      <g stroke={shadow} strokeWidth="1.2">
+        <path d="M1 21H31L27 29H6Z" fill={ink} />
+        <path d="M9 20V3L19 7 10 15M22 20V6L30 10 23 16" fill={accent} />
+        <path
+          d="M3 16L14 15 12 24 5 23Z M4 19H13 M7 16V23 M10 16V24"
+          fill="none"
+          stroke={ink}
+        />
+        <path d="M1 31Q9 28 16 31T31 31" fill="none" stroke={accent} />
+      </g>
+    );
   if (kind === "fishing")
     return (
       <g stroke={shadow} strokeWidth="1.2">
@@ -391,7 +404,8 @@ export function MilitaryPortrait({
           <rect x="2" y="2" width="60" height="68" fill="#edddbc" />
           {isSettler(unit.kind) ||
           unit.kind === "hunter" ||
-          unit.kind === "riverboat" ? (
+          unit.kind === "riverboat" ||
+          unit.kind === "oceanfishing" ? (
             <image
               href={`./assets/portrait-${unit.kind}${isSettler(unit.kind) ? "" : `-${unit.tier}`}-v1.webp`}
               x="2"
@@ -470,7 +484,11 @@ export const ArmyMiniature = memo(function ArmyMiniature({
       ranks,
       rank: maxValue(ranks),
       merchant,
-      economic: merchant || byKind.has("fishing") || byKind.has("hunter"),
+      economic:
+        merchant ||
+        byKind.has("fishing") ||
+        byKind.has("oceanfishing") ||
+        byKind.has("hunter"),
       settler: kinds.some(isSettler),
     };
   }, [units]);

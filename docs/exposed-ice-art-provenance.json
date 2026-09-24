@@ -1,0 +1,12 @@
+[
+  {
+    "name": "exposed-sea-ice",
+    "prompt": "Edit this painterly strategy board-game ice terrain texture, preserving its white and icy blue palette and close elevated perspective. Break the continuous ice apart into rounded low snow-covered white sea-ice floes, interlocking large thick flat fragments and a few small icebergs. About 60 percent ice, 40 percent visible cold muted blue-teal ocean between floes (#326b7c family, not tropical turquoise). Varied NATURAL irregular ice shapes with believable waterlines and soft reflected shadows, no repeated geometric pattern. The water channels continue through the whole image and to all edges; no solid straight coastline. Readable at tiny hex tile scale, beautiful but restrained. No sky, no horizon, no land, no vegetation, no animals, no text, no border. Square seamless-feeling full bleed texture.",
+    "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-538e161a-4d65-4507-9969-7ffdbc99a847.png"
+  },
+  {
+    "name": "exposed-pack-ice",
+    "prompt": "Edit this painterly strategy board-game ice terrain texture, preserving its white and icy blue palette and close elevated perspective. Break the continuous ice apart into thicker glacial pack ice fragments, jagged ridges and moderately tall blue-white iceberg shoulders. About 60 percent ice, 40 percent visible cold muted blue-teal ocean between floes (#326b7c family, not tropical turquoise). Varied NATURAL irregular ice shapes with believable waterlines and soft reflected shadows, no repeated geometric pattern. The water channels continue through the whole image and to all edges; no solid straight coastline. Readable at tiny hex tile scale, beautiful but restrained. No sky, no horizon, no land, no vegetation, no animals, no text, no border. Square seamless-feeling full bleed texture.",
+    "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-6ff6bc90-378d-4cae-aeef-b9477e37dbc7.png"
+  }
+]

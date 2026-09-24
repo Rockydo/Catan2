@@ -3,6 +3,7 @@ import { frozenInSeason, type Season } from "../game/seasons";
 import { terrainArtFile, terrainPatternKey } from "./terrain-art";
 import {
   bankArt,
+  riverBankSector,
   WATER_HEX,
   shoreGeometry,
   riverGeometry,
@@ -24,6 +25,16 @@ export function WaterDefinitions({
   );
   return (
     <>
+      {connections.some((c) => c.banks?.length) &&
+        Array.from({ length: 6 }, (_, side) => (
+          <clipPath
+            key={`bank-${side}`}
+            id={`river-bank-${side}`}
+            clipPathUnits="userSpaceOnUse"
+          >
+            <path d={riverBankSector(side)} />
+          </clipPath>
+        ))}
       <clipPath id="water-full-hex" clipPathUnits="userSpaceOnUse">
         <polygon points={WATER_HEX} />
       </clipPath>
@@ -118,7 +129,20 @@ export function ConnectedWater({
       transform={`translate(${x} ${y})`}
       pointerEvents="none"
     >
-      {river ? texture(bankArt(tile, season), "water-full-hex") : null}
+      {river
+        ? texture(
+            connections.banks?.find(Boolean) ?? bankArt(tile, season),
+            "water-full-hex",
+          )
+        : null}
+      {river &&
+        connections.banks?.map((file, side) =>
+          file ? (
+            <g key={side} data-bank-side={side}>
+              {texture(file, `river-bank-${side}`)}
+            </g>
+          ) : null,
+        )}
       {river ? (
         <path
           d={riverGeometry(channel, connections.basin).water}
@@ -127,16 +151,20 @@ export function ConnectedWater({
       ) : (
         <polygon points={WATER_HEX} fill="#326b7c" />
       )}
-      {frozen
-        ? texture(
-            terrainArtFile(terrainPatternKey("ice", tile.climate, season)),
-            river ? riverClipId(connections) : "water-full-hex",
-          )
-        : waterTexture(
-            x,
-            y,
-            river ? riverClipId(connections) : "water-full-hex",
+      {waterTexture(x, y, river ? riverClipId(connections) : "water-full-hex")}
+      {frozen && (
+        <g
+          clipPath={`url(#${river ? riverClipId(connections) : "water-full-hex"})`}
+          data-ice-exposure={connections.openIce ?? 0}
+        >
+          {texture(
+            connections.openIce
+              ? `geography/exposed-${tile.climate === "glacial" || tile.resource === "ice" ? "pack" : "sea"}-ice-v1.webp`
+              : terrainArtFile(terrainPatternKey("ice", tile.climate, season)),
+            "water-full-hex",
           )}
+        </g>
+      )}
       {!frozen &&
         !river &&
         tile.geography?.waterway === "reef" &&

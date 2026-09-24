@@ -93,6 +93,15 @@ export function seasonalTerrainPattern(tile: Hex, season?: Season): string {
   return empty ? `wild-${empty}` : base;
 }
 export function baseSeasonalTerrainPattern(tile: Hex, season?: Season): string {
+  if (tile.biome === "mountain-pass") {
+    const mountain = mountainArt(
+      "mountain-pass",
+      tile.climate,
+      season,
+      tile.geography?.access === "closed",
+    );
+    if (mountain) return mountain;
+  }
   if (tile.geography && !frozenInSeason(tile, season)) {
     let image: string | undefined = tile.biome;
     if (
@@ -237,6 +246,8 @@ export function terrainPatternKey(
   const biome =
     terrain === "grain" ? "rough-fields" : (aliases[terrain] ?? terrain);
   const region = climate ?? "temperate";
+  const mountain = mountainArt(biome, region, season);
+  if (mountain) return mountain;
   if (
     !season &&
     (region === "semiarid" ||
@@ -310,4 +321,53 @@ export function terrainArtFile(art: string): string {
         ? 2
         : 1;
   return `terrain-${art}-v1.webp${revision > 1 ? `?v=${revision}` : ""}`;
+}
+
+/** Altitude keeps snow on polar summits well beyond the lowland winter.
+ * Art never changes pass access; the closed marker is still authoritative. */
+function mountainArt(
+  biome: string,
+  climate: Climate = "temperate",
+  season: Season = "summer",
+  closed = false,
+): string | undefined {
+  const pass = biome === "mountain-pass";
+  if (!pass && biome !== "bare-peaks") return;
+  if (["arctic", "tundra"].includes(climate) || (pass && climate === "glacial"))
+    return `geo-polar-${pass ? "pass" : "peaks"}-${season === "summer" && climate !== "glacial" && !closed ? "thaw" : "snow"}-v1`;
+  const dry = [
+    "mediterranean",
+    "semiarid",
+    "savanna",
+    "steppe",
+    "prairie",
+  ].includes(climate);
+  if (dry) {
+    if (pass && closed)
+      return ["steppe", "prairie"].includes(climate)
+        ? "geo-mountain-pass-winter"
+        : "geo-wet-pass";
+    return `geo-dry-${pass ? "pass" : "peaks"}${season === "winter" && climate !== "savanna" ? "-winter" : ""}-v1`;
+  }
+  if (["desert", "hyperarid"].includes(climate)) {
+    if (pass) return closed ? "geo-wet-pass" : "geo-desert-pass";
+    return `season-hyperarid-bare-peaks-${season}`;
+  }
+  if (
+    [
+      "tropical",
+      "subtropical",
+      "monsoon",
+      "mesoamerican",
+      "equatorial-wetlands",
+    ].includes(climate)
+  ) {
+    if (pass) return closed ? "geo-wet-pass" : "geo-mountain-pass-summer";
+    return `season-monsoon-bare-peaks-${season}`;
+  }
+  if (climate === "cold" && season !== "summer")
+    return pass
+      ? "geo-mountain-pass-winter"
+      : "season-alpine-bare-peaks-winter";
+  return undefined;
 }

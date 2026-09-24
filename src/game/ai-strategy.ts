@@ -39,7 +39,8 @@ function troopStrengths(s: Game): readonly number[] {
         (points(u) * 2 +
           (u.kind === "merchant" ||
           u.kind === "merchantship" ||
-          u.kind === "fishing"
+          u.kind === "fishing" ||
+          u.kind === "oceanfishing"
             ? u.tier * 3
             : 0));
     return forces;

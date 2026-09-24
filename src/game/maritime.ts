@@ -1,6 +1,16 @@
-import { baseGeographicYield, habitatKind, WILDLIFE_GOODS } from "./geography";
+import {
+  canSail,
+  baseGeographicYield,
+  habitatKind,
+  WILDLIFE_GOODS,
+} from "./geography";
 import { BIOMES, BIOME_INFO, biomeYield } from "./climate-content";
-import { TERRAIN, processedFor, type TerrainKey } from "./content";
+import {
+  fishingRange,
+  TERRAIN,
+  processedFor,
+  type TerrainKey,
+} from "./content";
 import { friendly } from "./relations";
 import type { Game, Hex, Piece, Raw, Stock, Watchtower } from "./types";
 import {
@@ -164,6 +174,7 @@ export const marineResource = (tile: Hex) =>
 export const collector = (u: Pick<Piece, "kind">) =>
   u.kind === "merchant" ||
   u.kind === "fishing" ||
+  u.kind === "oceanfishing" ||
   u.kind === "merchantship" ||
   u.kind === "hunter";
 export const productiveAtVertex = (s: Game, vertex: string) =>
@@ -234,14 +245,18 @@ function collectorTiles(
     );
   }
   // A fishing radius follows connected water: nets do not cross land or ice.
-  if (!canOccupy(s.tiles[u.tile], true)) return [];
+  const accessible = (id: string) =>
+    u.kind === "oceanfishing"
+      ? canSail(s.tiles[id], "oceanfishing", u.tier, s.tiles)
+      : canOccupy(s.tiles[id], true);
+  if (!accessible(u.tile)) return [];
   const reached = new Set([u.tile]),
     queue = [{ id: u.tile, depth: 0 }];
   for (let i = 0; i < queue.length; i++) {
     const { id, depth } = queue[i];
-    if (depth >= u.tier) continue;
+    if (depth >= fishingRange(u.kind, u.tier)) continue;
     for (const next of neighbors(id)) {
-      if (reached.has(next) || !canOccupy(s.tiles[next], true)) continue;
+      if (reached.has(next) || !accessible(next)) continue;
       reached.add(next);
       queue.push({ id: next, depth: depth + 1 });
     }

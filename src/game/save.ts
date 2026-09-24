@@ -1,5 +1,5 @@
 import { restoreWildlifeHabitats } from "./environment";
-import { restoreLakeSizes } from "./geography";
+import { restoreMountainPasses, restoreLakeSizes } from "./geography";
 import {
   packGame,
   createSnapshotUnitPacker,
@@ -755,7 +755,11 @@ function validateInvariants(
         Object.hasOwn(u.naval ? SHIP_INFO : UNIT_INFO, u.kind),
         "Invalid unit class.",
       );
-      int(u.tier, 1, ["settler", "settlership"].includes(u.kind) ? 1 : 4);
+      int(
+        u.tier,
+        u.kind === "oceanfishing" ? 2 : 1,
+        ["settler", "settlership"].includes(u.kind) ? 1 : 4,
+      );
       if (u.coverage !== undefined)
         rule(
           u.kind === "merchant" &&
@@ -1717,6 +1721,7 @@ export function deserializeSnapshot(text: string): {
         );
       if (guild.auto && !guildStandingOrders(guild).length) guild.auto = false;
     }
+  restoreMountainPasses(data.game);
   restoreLakeSizes(data.game);
   restoreWildlifeHabitats(data.game);
   restoreCoastalRoads(data.game);

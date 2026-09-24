@@ -1,3 +1,4 @@
+import { shipTierAllowed, fishingRange } from "../game/content";
 import { shallowDraft } from "../game/geography";
 import { GoldPaymentNotice } from "./components";
 import { localize as tx, useLocale } from "../i18n";
@@ -88,6 +89,7 @@ export function Recruitment({
   const kinds = Object.keys(naval ? SHIP_INFO : UNIT_INFO).filter(
     (kind) =>
       (!isSettler(kind) || tier === 1) &&
+      (!naval || shipTierAllowed(kind as ShipClass, tier)) &&
       (kind !== "hunter" || !!s.geographyVersion),
   ) as (UnitClass | ShipClass)[];
   function changeDomain(value: boolean) {
@@ -297,7 +299,7 @@ export function Recruitment({
                             ? "Colonization"
                             : kind === "merchantship"
                               ? "Trade ship"
-                              : kind === "fishing"
+                              : kind === "fishing" || kind === "oceanfishing"
                                 ? "Fishing ship"
                                 : kind === "convoy"
                                   ? "Convoy"
@@ -343,7 +345,8 @@ export function Recruitment({
                         : kind === "merchant" ||
                             kind === "merchantship" ||
                             kind === "hunter" ||
-                            kind === "fishing"
+                            kind === "fishing" ||
+                            kind === "oceanfishing"
                           ? `×${tier} harvest`
                           : ship?.siege
                             ? `−${ship.siege} siege`
@@ -354,8 +357,10 @@ export function Recruitment({
                                 : "",
                     )}
                   </span>
-                  {(kind === "fishing" || kind === "hunter") && (
-                    <span>{tx(`Range ${tier}`)}</span>
+                  {(kind === "fishing" ||
+                    kind === "oceanfishing" ||
+                    kind === "hunter") && (
+                    <span>{tx(`Range ${fishingRange(kind, tier)}`)}</span>
                   )}
                   {(kind === "merchant" || kind === "merchantship") &&
                     tier >= 3 && <span>{tx(`×${tier - 2} processed`)}</span>}

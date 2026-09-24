@@ -211,6 +211,13 @@ L’orge semi-aride et le blé alluvial désertique disposent chacun de quatre p
 
 Références agronomiques : [FAO, gestion du blé en zone sèche](https://www.fao.org/4/Y4011E/y4011e0s.htm) et [FAO, systèmes agricoles](https://www.fao.org/4/y1860e/y1860e05.htm). Quantités récoltées et probabilités météo sont des valeurs d’équilibrage du jeu.
 
+Les berges reprennent l’image des cultures alluviales, argiles, prairies et bois riverains voisins. Ce changement est visuel : le fleuve conserve sa production et ses règles de navigation.
+
+### Cols de montagne
+
+Un col doit jouxter au moins deux Pics infranchissables. Les cols isolés deviennent un terrain rocheux producteur de pierre, y compris au chargement des sauvegardes ; unités, bâtiments et numéros de dés sont conservés. Les pics restent infranchissables. Les routes peuvent contourner les massifs mais ne peuvent pas passer entre deux tuiles de montagne, cols compris.
+Sommets et cols arctiques ou de toundra sont très enneigés au printemps, en automne et en hiver, avec un bref dégel estival. En hiver méditerranéen, les sommets et couloirs enneigés surplombent encore des pentes de calcaire exposées. Les images reflètent l’enneigement régional ; le cercle barré indique la fermeture du col, pas la simple présence de neige sur l’image.
+
 ## Saisons et récoltes
 
 ### Campagnes à géographie vivante
@@ -292,6 +299,10 @@ Les sauvegardes antérieures aux saisons activent leur calendrier à la manche s
 ### Aperçu des paysages
 
 Choisissez une saison dans le calendrier pour voir ses paysages, puis déplacez et inspectez la carte normalement. Le bandeau indique l’aperçu et la saison dont les règles restent appliquées. Revenez à la saison en cours ou appuyez sur Échap pour quitter l’aperçu. Toute action de jeu réussie rétablit aussi les paysages actuels. Les prévisions de production et les règles de déplacement ne changent jamais pendant l’aperçu.
+
+### Glace exposée
+
+Steppe et Prairie utilisent le même calendrier de gel et de dégel. La météo locale et l’exposition au large modifient toujours les probabilités. Au bord d’une eau libre ou d’une limite inexplorée, la glace apparaît fragmentée ; entourée de terre ou de glace, elle reste compacte. Cette différence visuelle ne modifie ni déplacement ni production : les deux surfaces sont gelées. Elle concerne mers, banquises, lacs, fleuves et zones gelées de poissons ou de baleines. La glace existante évolue normalement à la prochaine demi-saison.
 
 ## Ressources, stocks et échanges
 
@@ -458,6 +469,11 @@ Si un transport coule, ses passagers rejoignent les places libres des navires am
 ### Bombardement côtier
 
 L’artillerie terrestre peut attaquer une flotte ennemie adjacente. Seule l’artillerie sélectionnée participe, avec une puissance de combat égale au double de son palier, plus son soutien de tours habituel. La flotte riposte avec sa puissance navale et ses tours. Dépensez 1 PM, même après déplacement s’il en reste. Appliquez l’écart de puissance et l’arrondi aux unités entières. L’artillerie reste à terre ; les navires vaincus reculent si possible ou restent piégés. Un PM supplémentaire permet un autre bombardement. Cela permet d’éliminer les navires des lacs isolés.
+
+### Pêche hauturière
+
+Disponible à partir du palier II. Pêcheur du large II, Caraque baleinière III et Grand pêcheur océanique IV : puissance 2/3/5, mouvement 2/2/3 et portée de pêche 3/4/5. Chaque résultat de dés correspondant rapporte 2/3/4 fois les ressources animales saisonnières de la tuile. Ces navires récoltent poissons, morues et baleines, dont les Peaux et l’Huile. Aucun produit transformé supplémentaire. La portée suit les eaux accessibles : elle ne traverse ni terre, ni glace, ni chenal interdit au navire. Les flottes ennemies bloquent la récolte. Les prises sont stockées dans l’agglomération alliée la plus proche.
+Ces navires à fort tirant d’eau ne peuvent entrer dans les hauts-fonds, récifs et fleuves que si la tuile jouxte exactement une terre permanente. Aucun transport de troupes, aucune puissance de siège. Les bateaux de pêche légers conservent leurs règles de navigation. Coût II : 4 Bois, 2 Tissu et 2 Minerai de fer ; III : 4 Planches, 3 Tissu et 2 Acier ; IV : 6 Planches, 4 Tissu, 3 Acier et 2 Combustible. L’agglomération doit avoir commencé le tour au niveau de construction navale requis.
 
 ## Cartes Développement
 
@@ -1927,6 +1943,19 @@ Chaque tuile marine effectue un tirage par manche complète. L’eau libre utili
 | Début d’hiver        | 45%             | 0%                |
 | Fin d’hiver          | 90%             | 0%                |
 
+### Steppe
+
+| Demi-saison atteinte | Eau libre : gel | Eau gelée : dégel |
+| -------------------- | --------------- | ----------------- |
+| Début de printemps   | 0%              | 80%               |
+| Fin de printemps     | 0%              | 95%               |
+| Début d’été          | 0%              | 100%              |
+| Fin d’été            | 0%              | 100%              |
+| Début d’automne      | 5%              | 0%                |
+| Fin d’automne        | 10%             | 0%                |
+| Début d’hiver        | 45%             | 0%                |
+| Fin d’hiver          | 90%             | 0%                |
+
 ## Tous les coûts
 
 Les coûts concernent chaque construction ou étape. La Tour de guet I propose deux paiements alternatifs : 2 Bois OU 2 Pierres.
@@ -2100,6 +2129,9 @@ Les coûts concernent chaque construction ou étape. La Tour de guet I propose d
 | Gabare                                       | 2 Bois + 1 Tissu + 1 Minerai                                      |
 | Patrouilleur fluvial                         | 2 Planches + 1 Tissu + 1 Acier                                    |
 | Canonnière blindée                           | 2 Planches + 2 Acier + 1 Combustible                              |
+| Pêcheur du large                             | 4 Bois + 2 Tissu + 2 Minerai                                      |
+| Caraque baleinière                           | 4 Planches + 3 Tissu + 2 Acier                                    |
+| Grand pêcheur océanique                      | 6 Planches + 4 Tissu + 3 Acier + 2 Combustible                    |
 
 ## Unités terrestres
 
@@ -2133,37 +2165,40 @@ Les coûts concernent chaque construction ou étape. La Tour de guet I propose d
 
 ## Navires
 
-| Navire               | Palier | Puissance / points de pertes | Mouvement | Places | Siège |
-| -------------------- | ------ | ---------------------------- | --------- | ------ | ----- |
-| Barque fluviale      | I      | 1                            | 3         | 1      | 0     |
-| Gabare               | II     | 2                            | 3         | 2      | 0     |
-| Patrouilleur fluvial | III    | 3                            | 4         | 3      | 0     |
-| Canonnière blindée   | IV     | 5                            | 4         | 4      | 0     |
-| Navire de colons     | I      | 0                            | 2         | 0      | 0     |
-| Barque de pêche      | I      | 0                            | 2         | 0      | 0     |
-| Cotre de pêche       | II     | 1                            | 2         | 0      | 0     |
-| Chalutier hauturier  | III    | 2                            | 3         | 0      | 0     |
-| Grand chalutier      | IV     | 3                            | 3         | 0      | 0     |
-| Sloop marchand       | I      | 0                            | 2         | 0      | 0     |
-| Cogue marchande      | II     | 1                            | 2         | 0      | 0     |
-| Galion marchand      | III    | 2                            | 3         | 0      | 0     |
-| Galion au trésor     | IV     | 3                            | 3         | 0      | 0     |
-| Transport côtier     | I      | 1                            | 3         | 1      | 0     |
-| Transport à voiles   | II     | 2                            | 3         | 2      | 0     |
-| Transport océanique  | III    | 3                            | 4         | 3      | 0     |
-| Transport royal      | IV     | 4                            | 4         | 4      | 0     |
-| Barge de transport   | I      | 1                            | 2         | 2      | 0     |
-| Cogue de convoi      | II     | 2                            | 2         | 4      | 0     |
-| Galion de convoi     | III    | 3                            | 2         | 6      | 0     |
-| Grand convoi         | IV     | 4                            | 3         | 8      | 0     |
-| Galère de patrouille | I      | 2                            | 3         | 0      | 0     |
-| Galère de guerre     | II     | 3                            | 4         | 0      | 0     |
-| Frégate de guerre    | III    | 5                            | 4         | 0      | 1     |
-| Frégate royale       | IV     | 7                            | 5         | 0      | 2     |
-| Caraque de garde     | I      | 3                            | 1         | 0      | 1     |
-| Caraque de combat    | II     | 5                            | 2         | 0      | 2     |
-| Caraque cuirassée    | III    | 7                            | 2         | 0      | 3     |
-| Cuirassé             | IV     | 10                           | 2         | 0      | 4     |
+| Navire                  | Palier | Puissance / points de pertes | Mouvement | Places | Siège |
+| ----------------------- | ------ | ---------------------------- | --------- | ------ | ----- |
+| Barque fluviale         | I      | 1                            | 3         | 1      | 0     |
+| Gabare                  | II     | 2                            | 3         | 2      | 0     |
+| Patrouilleur fluvial    | III    | 3                            | 4         | 3      | 0     |
+| Canonnière blindée      | IV     | 5                            | 4         | 4      | 0     |
+| Navire de colons        | I      | 0                            | 2         | 0      | 0     |
+| Pêcheur du large        | II     | 2                            | 2         | 0      | 0     |
+| Caraque baleinière      | III    | 3                            | 2         | 0      | 0     |
+| Grand pêcheur océanique | IV     | 5                            | 3         | 0      | 0     |
+| Barque de pêche         | I      | 0                            | 2         | 0      | 0     |
+| Cotre de pêche          | II     | 1                            | 2         | 0      | 0     |
+| Chalutier hauturier     | III    | 2                            | 3         | 0      | 0     |
+| Grand chalutier         | IV     | 3                            | 3         | 0      | 0     |
+| Sloop marchand          | I      | 0                            | 2         | 0      | 0     |
+| Cogue marchande         | II     | 1                            | 2         | 0      | 0     |
+| Galion marchand         | III    | 2                            | 3         | 0      | 0     |
+| Galion au trésor        | IV     | 3                            | 3         | 0      | 0     |
+| Transport côtier        | I      | 1                            | 3         | 1      | 0     |
+| Transport à voiles      | II     | 2                            | 3         | 2      | 0     |
+| Transport océanique     | III    | 3                            | 4         | 3      | 0     |
+| Transport royal         | IV     | 4                            | 4         | 4      | 0     |
+| Barge de transport      | I      | 1                            | 2         | 2      | 0     |
+| Cogue de convoi         | II     | 2                            | 2         | 4      | 0     |
+| Galion de convoi        | III    | 3                            | 2         | 6      | 0     |
+| Grand convoi            | IV     | 4                            | 3         | 8      | 0     |
+| Galère de patrouille    | I      | 2                            | 3         | 0      | 0     |
+| Galère de guerre        | II     | 3                            | 4         | 0      | 0     |
+| Frégate de guerre       | III    | 5                            | 4         | 0      | 1     |
+| Frégate royale          | IV     | 7                            | 5         | 0      | 2     |
+| Caraque de garde        | I      | 3                            | 1         | 0      | 1     |
+| Caraque de combat       | II     | 5                            | 2         | 0      | 2     |
+| Caraque cuirassée       | III    | 7                            | 2         | 0      | 3     |
+| Cuirassé                | IV     | 10                           | 2         | 0      | 4     |
 
 ## Toutes les cartes Développement
 

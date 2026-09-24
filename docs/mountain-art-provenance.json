@@ -1,0 +1,38 @@
+[
+  {
+    "name": "polar-peaks-snow",
+    "reference": "/home/alvinh/ai/catane-game/public/assets/seasons/alpine-bare-peaks-autumn.webp",
+    "prompt": "Keep the same dense sharp impassable mountain silhouettes and close overhead painterly board-game perspective. Change to true Arctic high mountains in early autumn: thick continuous white snow blankets ALL summits and the ground down to the valleys, icy blue shaded faces, a few dark near-vertical rock ribs, NO trees, NO orange or green foliage, NO paths. Mostly white but retain dark rock silhouette legibility. Fill square edge to edge with mountain terrain, no sky horizon, no border, no text.",
+    "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-5e81a36e-bd88-4c34-8855-297e98327d86.png"
+  },
+  {
+    "name": "polar-peaks-thaw",
+    "reference": "/home/alvinh/ai/catane-game/public/assets/seasons/alpine-bare-peaks-autumn.webp",
+    "prompt": "Keep same dense jagged impassable mountain composition and painterly board-game style. Arctic short summer: snow covers every high summit and much of slopes, dark slate bare rock exposed only low in valleys, tiny muted tundra moss low down, NO trees NO orange foliage. About 65 percent continuous white snow. Edge to edge square terrain, no horizon, no text.",
+    "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-91967ae5-0676-4406-93f1-0e4a93a46993.png"
+  },
+  {
+    "name": "polar-pass-snow",
+    "reference": "/home/alvinh/ai/catane-game/public/assets/geography/mountain-pass-autumn.webp",
+    "prompt": "Keep the same readable winding central mountain saddle between tall flanking rocky ridges, painterly board-game viewpoint. True Arctic autumn/winter: deep white snow covers mountains and valley floor, only a few dark steep rock ribs exposed, no trees no autumn colors no plants. The central saddle stays visually identifiable as a lower winding snow corridor with shallow wind-carved grooves. No people, buildings, words or icons. Square edge-to-edge terrain.",
+    "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-5db0f6f5-e5ff-4a6f-a293-9bcfa616a29e.png"
+  },
+  {
+    "name": "polar-pass-thaw",
+    "reference": "/home/alvinh/ai/catane-game/public/assets/geography/mountain-pass-autumn.webp",
+    "prompt": "Keep the same winding central mountain saddle between flanking tall rocky ridges in painterly board-game viewpoint. Arctic brief summer: snowy high ridges, extensive white snow patches low down, winding gravel and pale grey rocky saddle clearly exposed in foreground, tiny subdued tundra moss, no trees no autumn foliage. Snow about 55 percent. No people buildings labels or borders. Square edge-to-edge terrain.",
+    "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-72dbb901-e923-4602-a290-e55e9a9bf48d.png"
+  },
+  {
+    "name": "dry-peaks",
+    "reference": "/home/alvinh/ai/catane-game/public/assets/seasons/alpine-bare-peaks-autumn.webp",
+    "prompt": "Keep exact same dense jagged impassable peaks composition and painterly board-game perspective. Mediterranean semi-dry warm mountains: pale grey limestone, muted tan weathered faces, sparse olive-grey scrub low in gullies, extremely little snow only tiny remnants on highest tips. No orange autumn trees, no dense forest, no sand dunes. Natural subtle climate variant not a different style. Square edge to edge, no horizon no labels.",
+    "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-131512d0-e10e-4bb9-9f24-cf14e7a9196e.png"
+  },
+  {
+    "name": "dry-pass",
+    "reference": "/home/alvinh/ai/catane-game/public/assets/geography/mountain-pass-autumn.webp",
+    "prompt": "Keep same central narrow winding mountain saddle flanked by tall sharp ridges, same painterly board-game style. Mediterranean semi-dry warm mountains: pale grey limestone with muted tan weathering, sparse olive-grey scrub in low gullies, dusty gravel path through saddle, no snow, no orange autumn trees, no sand dunes. Natural subtle climate variant, square edge-to-edge no horizon no labels.",
+    "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-fce46674-ad77-400c-a8d5-b10540b5cb36.png"
+  }
+]

@@ -1,3 +1,4 @@
+import { fishingRange } from "./content";
 import { pieceAccess } from "./geography";
 import { maxValue, minValue } from "./aggregate";
 import type { SnapshotDelta } from "./snapshot-delta";
@@ -1174,13 +1175,14 @@ function readProduction(
           const good = tileGood(tiles[id]);
           if (
             good &&
-            (!["fishing", "hunter"].includes(u.kind) || !blocked(id, u.owner))
+            (!["fishing", "oceanfishing", "hunter"].includes(u.kind) ||
+              !blocked(id, u.owner))
           )
             for (const [raw, amount] of harvestAt(
               id,
               u.owner,
               u.tier,
-              !["fishing", "hunter"].includes(u.kind),
+              !["fishing", "oceanfishing", "hunter"].includes(u.kind),
             ))
               if (
                 u.kind !== "hunter" ||
@@ -1383,10 +1385,13 @@ export function productionSignature(s: Game): string {
     ]);
     const fishers = new Map<number, Map<string, number>>();
     for (const { unit: u } of actors.collectors) {
-      if (["fishing", "hunter"].includes(u.kind)) {
+      if (["fishing", "oceanfishing", "hunter"].includes(u.kind)) {
         if (!fishers.has(u.owner)) fishers.set(u.owner, new Map());
         const positions = fishers.get(u.owner)!;
-        positions.set(u.tile, Math.max(positions.get(u.tile) ?? 0, u.tier));
+        positions.set(
+          u.tile,
+          Math.max(positions.get(u.tile) ?? 0, fishingRange(u.kind, u.tier)),
+        );
       }
     }
     const towns = Object.values(s.towns);

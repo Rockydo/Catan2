@@ -251,7 +251,7 @@ for (const locale of ["en", "fr"] as const) {
     "|---|---|---|---|---|---|",
   );
   for (const k of Object.keys(SHIP_INFO) as ShipClass[])
-    for (let i = 1; i <= SHIP_NAMES[k].length; i++) {
+    for (let i = SHIP_INFO[k].level; i <= SHIP_NAMES[k].length; i++) {
       const s = shipStats(k, i);
       lines.push(
         `| ${tx(s.name)} | ${ROMAN[i]} | ${s.power} | ${s.speed} | ${s.capacity} | ${s.siege} |`,

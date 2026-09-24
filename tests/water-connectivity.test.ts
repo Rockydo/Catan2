@@ -289,3 +289,33 @@ it("keeps mixed populations visible without multiplying identical painted groups
   );
   expect((html.match(/data-wildlife-kind/g) ?? []).length).toBe(3);
 });
+
+it("extends riparian crops and resources onto the matching river bank without changing the channel", () => {
+  const t = water("0,0", true);
+  const tiles = new Map<string, Hex>([[t.id, t]]);
+  const adjacent = neighbors(t.id);
+  for (const [side, biome] of [
+    "flood-wheat",
+    "alluvial-clay",
+    "flood-rice",
+    "river-woods",
+  ].entries()) {
+    const n = {
+      ...generateHex("banks", adjacent[side]),
+      climate: "temperate" as const,
+      resource: "grain" as const,
+      biome: biome as Hex["biome"],
+      geography: { elevation: 0.4, region: "temperate:0,0", floodplain: true },
+    };
+    tiles.set(n.id, n);
+  }
+  const spring = waterConnections(t, tiles, "spring");
+  const winter = waterConnections(t, tiles, "winter");
+  expect(spring.banks?.filter(Boolean)).toHaveLength(4);
+  expect(spring.banks?.[0]).toContain("flood-wheat");
+  expect(spring.banks?.[1]).toContain("alluvial-clay");
+  expect(spring.banks?.[2]).toContain("flood-rice");
+  expect(winter.banks?.[0]).not.toBe(spring.banks?.[0]);
+  expect(winter.channel).toBe(spring.channel);
+  expect(t.biome).toBe("river");
+});

@@ -35,6 +35,7 @@ const classOrder = [
   "transport",
   "convoy",
   "fishing",
+  "oceanfishing",
   "merchantship",
   "settlership",
 ];
@@ -257,6 +258,7 @@ export function ArmyComposition({
                       "merchantship",
                       "settlership",
                       "fishing",
+                      "oceanfishing",
                     ].includes(u.kind);
                     const deselect =
                       count > 0 &&

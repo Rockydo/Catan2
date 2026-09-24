@@ -24,6 +24,7 @@ export const SHOULDER_ICE_CHANCE = {
   alpine: { spring: 0.35, autumn: 0.25 },
   cold: { spring: 0.2, autumn: 0.1 },
   prairie: { spring: 0.1, autumn: 0.1 },
+  steppe: { spring: 0.1, autumn: 0.1 },
 } as const;
 
 export function seasonAt(
@@ -131,6 +132,16 @@ export const ICE_TRANSITIONS = {
     [1, 0],
   ],
   prairie: [
+    [0, 0.8],
+    [0, 0.95],
+    [0, 1],
+    [0, 1],
+    [0.05, 0],
+    [0.1, 0],
+    [0.45, 0],
+    [0.9, 0],
+  ],
+  steppe: [
     [0, 0.8],
     [0, 0.95],
     [0, 1],

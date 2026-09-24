@@ -1,3 +1,4 @@
+import { shipTierAllowed, fishingRange } from "../game/content";
 import { GeographyReference } from "./GeographyReference";
 import { SeasonReference } from "./SeasonReference";
 import { CalendarDays } from "lucide-react";
@@ -354,6 +355,7 @@ function PrintedRoster() {
           <h3>{tx(SHIP_INFO[k].name)}</h3>
           {SHIP_NAMES[k].map((_, i) => {
             const t = i + 1;
+            if (!shipTierAllowed(k, t)) return null;
             const s = shipStats(k, t);
             return (
               <p key={t}>
@@ -596,7 +598,7 @@ function Catalogue({ initial = "goods" }: { initial?: CatalogSection }) {
             })}
         {kind === "ships" &&
           (Object.keys(SHIP_INFO) as ShipClass[])
-            .filter((k) => tier <= SHIP_NAMES[k].length)
+            .filter((k) => shipTierAllowed(k, tier))
             .filter((k) =>
               matches(
                 tx(SHIP_INFO[k].name) + " " + tx(shipStats(k, tier).name),
@@ -641,11 +643,11 @@ function Catalogue({ initial = "goods" }: { initial?: CatalogSection }) {
                       )}
                     </p>
                   )}
-                  {k === "fishing" && (
+                  {(k === "fishing" || k === "oceanfishing") && (
                     <p>
                       {labels(
-                        `Fishing range ${tier} water tiles · ×${tier} raw output`,
-                        `Portée de pêche : ${tier} tuiles d’eau · production brute ×${tier}`,
+                        `Fishing range ${fishingRange(k, tier)} water tiles · ×${tier} raw output`,
+                        `Portée de pêche : ${fishingRange(k, tier)} tuiles d’eau · production brute ×${tier}`,
                       )}
                     </p>
                   )}

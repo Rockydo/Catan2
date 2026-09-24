@@ -1071,3 +1071,40 @@ export function geographicName(tile: Hex): string | undefined {
             }[g.waterway]
           : undefined;
 }
+
+/** A pass is a saddle through a real range, never an isolated seasonal obstacle.
+ * Keep legal units and all player structures in place when repairing old maps. */
+export function restoreMountainPasses(
+  world: World,
+  ids = Object.keys(world.tiles),
+): void {
+  for (const id of ids) {
+    const tile = world.tiles[id];
+    if (tile?.biome !== "mountain-pass" && !tile?.geography?.pass) continue;
+    if (
+      neighbors(id).filter((n) => world.tiles[n]?.resource === "peaks")
+        .length >= 2
+    )
+      continue;
+    const biome: Biome = ["arctic", "glacial", "tundra"].includes(
+      tile.climate ?? "",
+    )
+      ? "arctic-stone"
+      : ["alpine", "andean"].includes(tile.climate ?? "")
+        ? "mountain-quarry"
+        : tile.climate === "mediterranean"
+          ? "escarpment"
+          : "stone";
+    const geography = tile.geography ? { ...tile.geography } : undefined;
+    if (geography) {
+      delete geography.pass;
+      if (geography.access === "closed") delete geography.access;
+    }
+    world.tiles[id] = {
+      ...tile,
+      biome,
+      resource: BIOME_INFO[biome].resource,
+      geography,
+    };
+  }
+}

@@ -35,7 +35,12 @@ function expectedForces(s: Game) {
             (sum, u) =>
               sum +
               (selectors.points(u) * 2 +
-                (["merchant", "merchantship", "fishing"].includes(u.kind)
+                ([
+                  "merchant",
+                  "merchantship",
+                  "fishing",
+                  "oceanfishing",
+                ].includes(u.kind)
                   ? u.tier * 3
                   : 0)),
             0,

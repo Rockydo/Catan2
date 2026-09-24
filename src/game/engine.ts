@@ -1,3 +1,4 @@
+import { shipTierAllowed } from "./content";
 import { geographyCommand } from "./geography-actions";
 import { pieceAccess } from "./geography";
 import { syncEmergencyCoalition } from "./emergency-coalition";
@@ -1259,8 +1260,8 @@ function executeOrder(
     if (naval) {
       rule(Object.hasOwn(SHIP_INFO, kind), "Choose a ship class.");
       rule(
-        Number.isInteger(tier) && tier >= 1 && tier <= 4,
-        "Choose ship tier I–IV.",
+        shipTierAllowed(kind as ShipClass, tier),
+        "Choose an available ship tier.",
       );
       rule(
         pieceAccess(

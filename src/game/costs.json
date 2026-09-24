@@ -812,5 +812,21 @@
     "planks": 2,
     "steel": 2,
     "coke": 1
+  },
+  "Offshore Fisher": {
+    "lumber": 4,
+    "cloth": 2,
+    "ore": 2
+  },
+  "Whaling Carrack": {
+    "planks": 4,
+    "cloth": 3,
+    "steel": 2
+  },
+  "Ocean Harvester": {
+    "planks": 6,
+    "cloth": 4,
+    "steel": 3,
+    "coke": 2
   }
 }

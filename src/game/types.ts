@@ -52,6 +52,7 @@ export type ShipClass =
   | "galley"
   | "carrack"
   | "fishing"
+  | "oceanfishing"
   | "merchantship"
   | "settlership";
 export type Phase =

@@ -1,4 +1,9 @@
-import { geographicTerrain, GEOGRAPHY_VERSION, pieceAccess } from "./geography";
+import {
+  restoreMountainPasses,
+  geographicTerrain,
+  GEOGRAPHY_VERSION,
+  pieceAccess,
+} from "./geography";
 import { planClimates, climateTerrain } from "./climate";
 import { CLIMATE_INFO, type Climate } from "./climate-content";
 import generation from "./generation.json" with { type: "json" };
@@ -215,6 +220,7 @@ export function addHexes(world: World, seed: string, ids: string[]) {
           world.vertices[v].edges.push(e);
     }
   }
+  restoreMountainPasses(world, [...added]);
   // Older campaigns retain their actual terrain even where the new generator differs.
   // Unknown neighbours still use fixed coordinates, keeping reveal order stable.
   // Never reroll already revealed tiles, including saves made before Whales existed.

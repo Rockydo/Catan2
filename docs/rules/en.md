@@ -212,6 +212,13 @@ The new barley and arid alluvial-wheat tiles each have four seasonal paintings. 
 
 Agronomic basis: [FAO dryland wheat management](https://www.fao.org/4/Y4011E/y4011e0s.htm) describes winter-rainfall wheat and barley, with barley dominant in drier zones. [FAO farming systems](https://www.fao.org/4/y1860e/y1860e05.htm) describes the importance of irrigation and flood timing in arid river agriculture. Harvest quantities and weather percentages are game-balance values.
 
+Riverbank artwork extends neighboring alluvial crops, clay, meadows and riverside woods to the channel. This is cosmetic: the river keeps its own production and navigation rules.
+
+### Mountain saddles
+
+A Mountain pass must border at least two Bare Peaks. Unsupported passes are replaced by ordinary rugged stone terrain, including in loaded saves; units, buildings and tile numbers are preserved. Bare Peaks remain impassable. Roads can skirt ranges but cannot run between two mountain tiles, including passes.
+Arctic and tundra summits and passes have heavy snow in spring, autumn and winter, with a short summer thaw. Mediterranean winter mountains retain exposed limestone below snowy summits and gullies. Art reflects regional snow cover; the crossed-circle marker, rather than the presence of painted snow, tells you whether a pass is closed.
+
 ## Seasons and harvests
 
 ### New geography campaigns
@@ -293,6 +300,10 @@ Campaigns saved before seasons activate their calendar next round. Retired Rough
 ### Artwork preview
 
 Select a season in the calendar to preview its landscape, then pan and inspect the map normally. The badge shows the preview and the season whose rules still apply. Return to current season or press Escape to leave the preview. Any successful game command also restores the current landscape. Production forecasts and movement rules never change during a preview.
+
+### Exposed sea ice
+
+Steppe and Prairie use the same freezing and thawing schedule. Local weather and coastal exposure still modify the odds. Ice bordering open water, including an unexplored map edge, has broken floes along those edges; ice fully enclosed by land or other ice keeps a solid surface. This visual difference does not change movement or production: both count as frozen water. It applies to ordinary sea, permanent pack, lakes, rivers and frozen fish or whale grounds. Existing ice changes normally at the next half-season transition.
 
 ## Goods, storage and trade
 
@@ -457,6 +468,11 @@ If a carrier sinks, move passengers into spare berths on friendly surviving part
 ### Shore bombardment
 
 Land artillery can attack an adjacent enemy fleet. Only the selected artillery participates, at twice its tier in combat power, plus its normal tower support. The fleet returns fire with ordinary naval power and its tower support. Spend 1 movement point, including after movement if points remain. Use normal power-difference losses and whole-unit rounding. Artillery stays on land; defeated ships retreat if possible or remain trapped. You can bombard again with another point. This lets land forces deal with fleets in isolated lakes.
+
+### Ocean fishing ships
+
+Available from tier II. Offshore Fisher II, Whaling Carrack III and Ocean Harvester IV have power 2/3/5, movement 2/2/3 and fishing range 3/4/5. Each matching roll yields 2/3/4 times the tile’s seasonal animal resources. They harvest fish, cod and whales, including both Hides and Oil. They never add processed goods. Their connected-water range cannot cross land, ice or channels the ship cannot enter. Enemy fleets block harvest. All catches go to the nearest friendly town.
+These are deep-draft vessels: shallow tiles, reefs and rivers require exactly one adjacent permanent land tile. They carry no units and have no siege power. The existing light fishing ships retain their navigation rules. Tier II costs 4 Wood, 2 Cloth and 2 Iron ore; tier III costs 4 Planks, 3 Cloth and 2 Steel; tier IV costs 6 Planks, 4 Cloth, 3 Steel and 2 Fuel. The town must have started the turn at the corresponding shipbuilding level.
 
 ## Research cards
 
@@ -1926,6 +1942,19 @@ Each sea tile checks once per full round. Open water uses the freeze chance; ice
 | Early Winter        | 45%                 | 0%                  |
 | Late Winter         | 90%                 | 0%                  |
 
+### Steppe
+
+| Half-season entered | Open water: freezes | Frozen water: thaws |
+| ------------------- | ------------------- | ------------------- |
+| Early Spring        | 0%                  | 80%                 |
+| Late Spring         | 0%                  | 95%                 |
+| Early Summer        | 0%                  | 100%                |
+| Late Summer         | 0%                  | 100%                |
+| Early Autumn        | 5%                  | 0%                  |
+| Late Autumn         | 10%                 | 0%                  |
+| Early Winter        | 45%                 | 0%                  |
+| Late Winter         | 90%                 | 0%                  |
+
 ## All costs
 
 Prices are paid per construction or upgrade step. Watchtower I offers two alternative payments: 2 Wood OR 2 Stone.
@@ -2099,6 +2128,9 @@ Prices are paid per construction or upgrade step. Watchtower I offers two altern
 | River Barge                            | 2 Wood + 1 Cloth + 1 Iron ore                           |
 | River Patrol                           | 2 Planks + 1 Cloth + 1 Steel                            |
 | Armored Riverboat                      | 2 Planks + 2 Steel + 1 Fuel                             |
+| Offshore Fisher                        | 4 Wood + 2 Cloth + 2 Iron ore                           |
+| Whaling Carrack                        | 4 Planks + 3 Cloth + 2 Steel                            |
+| Ocean Harvester                        | 6 Planks + 4 Cloth + 3 Steel + 2 Fuel                   |
 
 ## Land roster
 
@@ -2139,6 +2171,9 @@ Prices are paid per construction or upgrade step. Watchtower I offers two altern
 | River Patrol      | III  | 3                       | 4        | 3      | 0     |
 | Armored Riverboat | IV   | 5                       | 4        | 4      | 0     |
 | Settler Ship      | I    | 0                       | 2        | 0      | 0     |
+| Offshore Fisher   | II   | 2                       | 2        | 0      | 0     |
+| Whaling Carrack   | III  | 3                       | 2        | 0      | 0     |
+| Ocean Harvester   | IV   | 5                       | 3        | 0      | 0     |
 | Fishing Skiff     | I    | 0                       | 2        | 0      | 0     |
 | Fishing Cutter    | II   | 1                       | 2        | 0      | 0     |
 | Deepwater Trawler | III  | 2                       | 3        | 0      | 0     |

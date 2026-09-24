@@ -466,7 +466,13 @@ describe("complete production and fleet catalogue", () => {
       t.turnLevel = 4;
       const tile = s.vertices[t.vertex].tiles[0];
       s.tiles[tile].resource = "water";
-      s = run(s, { type: "ship", town: t.id, tile, kind });
+      s = run(s, {
+        type: "ship",
+        town: t.id,
+        tile,
+        kind,
+        tier: kind === "oceanfishing" ? 2 : 1,
+      });
       expect(Object.values(s.pieces)[0].kind).toBe(kind);
       expect(Object.values(s.pieces)[0].naval).toBe(true);
       assertInvariants(s);

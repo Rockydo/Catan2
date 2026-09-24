@@ -282,11 +282,12 @@ const TerrainLayer = memo(function TerrainLayer({
       tiles
         .filter(
           (t) =>
-            t.geography && (t.resource === "water" || t.resource === "ice"),
+            (t.geography || frozenInSeason(t, artworkSeason)) &&
+            (t.resource === "water" || t.resource === "ice"),
         )
-        .map((t) => [t.id, waterConnections(t, lookup)]),
+        .map((t) => [t.id, waterConnections(t, lookup, artworkSeason)]),
     );
-  }, [tiles]);
+  }, [tiles, artworkSeason]);
   const artKeys = useMemo(
     () =>
       [
@@ -403,7 +404,7 @@ const TerrainLayer = memo(function TerrainLayer({
                 connections.get(tile.id)?.channel,
                 connections.get(tile.id)?.shore,
                 connected
-                  ? `${connected.river}/${connected.shore}/${connected.channel}/${connected.basin}/${bankArt(tile, artworkSeason)}/${x % 512}/${y % 512}`
+                  ? `${connected.river}/${connected.shore}/${connected.channel}/${connected.basin}/${connected.openIce}/${connected.banks?.join(",")}/${bankArt(tile, artworkSeason)}/${x % 512}/${y % 512}`
                   : "",
                 tile.geography?.access,
                 tile.geography?.landmark,

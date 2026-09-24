@@ -72,6 +72,7 @@ export function piece(
       "galley",
       "carrack",
       "fishing",
+      "oceanfishing",
       "merchantship",
       "settlership",
     ].includes(kind),

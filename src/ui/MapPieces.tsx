@@ -493,7 +493,8 @@ export function DiceFace({
 
 /** Each fleet class has a distinct rig or hull, independent of ownership color. */
 export function ShipMiniature({ kind }: { kind: string }) {
-  const double = kind === "convoy" || kind === "carrack",
+  const double =
+      kind === "convoy" || kind === "carrack" || kind === "oceanfishing",
     war = kind === "galley" || kind === "carrack";
   return (
     <svg viewBox="0 0 48 48" width="45" height="45" aria-hidden="true">
