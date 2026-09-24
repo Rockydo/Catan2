@@ -81,7 +81,7 @@ Every productive tile receives a uniform random number from 2 through 12, includ
 
 ### Ports
 
-Eligible fully revealed coastal edges have a 10% port-candidate chance. Ports require open water beside solid land: frozen sea cannot host a port, but snow plains can. Invalid ice ports from older saves are removed on load. Half are generic 3:1 ports; half are specific 2:1 raw-resource ports, excluding Gold and Oil. Ports cannot share an intersection. A town on either end uses the port, unless under siege or its sea tile is blockaded. In older saves, Gold ports are treated as generic ports.
+Eligible fully revealed coastal edges have a 10% port-candidate chance. On current geography maps (version 8 onward), creation and loading also fill gaps in coastal port coverage: the target is one port per eight eligible coast edges, capped at six, with at least half that target in different specialist resources and at least one generic port when the target is two or more. Existing ports stay in place; additions spread along suitable coasts and cannot share intersections, so tiny or inaccessible coastlines may have fewer. Narrow river channels cannot host trading ports. Ports frozen by seasonal ice are unavailable until thaw. Ports require open water beside solid land: frozen sea cannot host a port, but snow plains can. Invalid ice ports from older saves are removed on load. Each initial candidate is equally likely to be a generic 3:1 port or a specific 2:1 raw-resource port, excluding Gold and Oil. Ports cannot share an intersection. A town on either end uses the port, unless under siege or its sea tile is blockaded. In older saves, Gold ports are treated as generic ports.
 
 ### Setup restrictions
 

@@ -63,7 +63,13 @@ import {
   TRADE_RAW,
   TRADE_PROCESSED,
 } from "./guilds";
-import { neighbors, randomAt, restoreGoldPorts, canOccupy } from "./world";
+import {
+  neighbors,
+  randomAt,
+  restoreGoldPorts,
+  ensurePortCoverage,
+  canOccupy,
+} from "./world";
 import { shipStats } from "./content";
 import { GOODS, RAW, type Game, type Piece } from "./types";
 import { hash, tileVertices, edgeKey } from "./world";
@@ -1730,6 +1736,7 @@ export function deserializeSnapshot(text: string): {
   restoreWildlifeHabitats(data.game);
   restoreCoastalRoads(data.game);
   restoreGoldPorts(data.game);
+  ensurePortCoverage(data.game, data.game.seed);
   // Validation already visited the army in its exact record order. The fixes
   // above only affect towns and routes. Reuse those troop references for the
   // immediate coalition read; never retain an index on the mutable loaded game.

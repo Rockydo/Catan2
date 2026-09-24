@@ -37,6 +37,82 @@ export function restoreGoldPorts(world: World) {
     if (edge.harbor === "gold") edge.harbor = "generic";
   }
 }
+/** Repair unlucky modern coast rolls without moving or rerolling any existing
+ * port. Runs on initial creation/load, not per reveal, so exploration order
+ * cannot compete for these reserved sites. Earlier geography stays unchanged. */
+export function ensurePortCoverage(world: World, seed: string): void {
+  if ((world.geographyVersion ?? 0) < 8) return;
+  const coast = Object.values(world.edges).filter(
+    (e) =>
+      portCoast(world, e.tiles) &&
+      e.vertices.some((v) => solidAtVertex(world, v).length > 0),
+  );
+  const target = Math.min(6, Math.floor(coast.length / 8));
+  if (!target) return;
+  const ports = Object.values(world.edges).filter((e) => e.harbor);
+  const used = new Set(ports.flatMap((e) => e.vertices));
+  const specialists = new Set(
+    ports.map((e) => e.harbor).filter((h) => h && h !== "generic"),
+  );
+  const specialistTarget = Math.ceil(target / 2);
+  let generic = ports.some((e) => e.harbor === "generic");
+  if (
+    ports.length >= target &&
+    specialists.size >= specialistTarget &&
+    (generic || target < 2)
+  )
+    return;
+  const candidates = coast
+    .filter((e) => !e.harbor)
+    .sort(
+      (a, b) =>
+        randomAt(seed, a.id, "port-coverage") -
+          randomAt(seed, b.id, "port-coverage") || a.id.localeCompare(b.id),
+    );
+  const midpoints = new Map(
+    [...ports, ...candidates].map((e) => {
+      const [a, b] = e.vertices.map((v) => world.vertices[v]);
+      return [e.id, [(a.x + b.x) / 2, (a.y + b.y) / 2]] as const;
+    }),
+  );
+  while (
+    ports.length < target ||
+    specialists.size < specialistTarget ||
+    (!generic && target >= 2)
+  ) {
+    let chosen: Edge | undefined,
+      separation = -1;
+    // Distribute additions over the available coast rather than filling one bay.
+    for (const edge of candidates) {
+      if (edge.harbor || edge.vertices.some((v) => used.has(v))) continue;
+      const p = midpoints.get(edge.id)!;
+      let gap = ports.length ? Infinity : 0;
+      for (const port of ports) {
+        const q = midpoints.get(port.id)!;
+        gap = Math.min(gap, (p[0] - q[0]) ** 2 + (p[1] - q[1]) ** 2);
+      }
+      if (gap > separation) {
+        chosen = edge;
+        separation = gap;
+      }
+    }
+    if (!chosen) break; // Tiny or mountainous coasts may have no legal spare site.
+    const missing = PORT_RESOURCES.filter((g) => !specialists.has(g));
+    chosen.harbor =
+      !generic && specialists.size > 0 && target >= 2
+        ? "generic"
+        : (missing.length ? missing : PORT_RESOURCES)[
+            Math.floor(
+              randomAt(seed, chosen.id, "port-coverage-resource") *
+                (missing.length || PORT_RESOURCES.length),
+            )
+          ];
+    if (chosen.harbor === "generic") generic = true;
+    else specialists.add(chosen.harbor);
+    ports.push(chosen);
+    chosen.vertices.forEach((v) => used.add(v));
+  }
+}
 export const LAND_RESOURCES = RAW.filter(
   (g) => g !== "fish" && g !== "meat" && g !== "oil" && g !== "gold",
 );
@@ -290,6 +366,7 @@ export function generateWorld(
       randomAt(seed, a, "shape") - randomAt(seed, b, "shape"),
   );
   addHexes(world, seed, ids.slice(0, count));
+  ensurePortCoverage(world, seed);
   return world;
 }
 export const vertexNeighbors = (world: World, id: string) =>
