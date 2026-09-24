@@ -1,4 +1,5 @@
 import type { Game, Good } from "./types";
+import { BIOME_INFO } from "./climate-content";
 import { PROJECTS, WILDLIFE_GOODS } from "./geography";
 import { rule, validStock } from "./economy";
 
@@ -12,7 +13,7 @@ export function validateGeography(s: Game): void {
     return;
   }
   rule(
-    [1, 2, 3, 4, 5].includes(s.geographyVersion),
+    [1, 2, 3, 4, 5, 6].includes(s.geographyVersion),
     "Unsupported geography version.",
   );
   rule(
@@ -108,6 +109,10 @@ export function validateGeography(s: Game): void {
         ].includes(g.landmark),
       "Invalid landmark.",
     );
+    rule(
+      g.floodThreshold === undefined || [3, 4].includes(g.floodThreshold),
+      "Invalid flood threshold.",
+    );
     for (const key of [
       "ford",
       "floodplain",
@@ -171,7 +176,9 @@ export function validateGeography(s: Game): void {
           "Bridges must cross rivers.",
         );
         rule(
-          !["levee", "irrigation"].includes(kind) || g.floodplain,
+          !["levee", "irrigation"].includes(kind) ||
+            g.floodplain ||
+            (tile.biome && BIOME_INFO[tile.biome].family === "rugged"),
           "This improvement requires a floodplain.",
         );
       }

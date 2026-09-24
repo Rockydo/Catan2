@@ -1,4 +1,7 @@
-import { restoreWildlifeHabitats } from "./environment";
+import {
+  restoreWildlifeHabitats,
+  restoreFloodplainAccess,
+} from "./environment";
 import { restoreMountainPasses, restoreLakeSizes } from "./geography";
 import {
   packGame,
@@ -1723,6 +1726,7 @@ export function deserializeSnapshot(text: string): {
     }
   restoreMountainPasses(data.game);
   restoreLakeSizes(data.game);
+  restoreFloodplainAccess(data.game);
   restoreWildlifeHabitats(data.game);
   restoreCoastalRoads(data.game);
   restoreGoldPorts(data.game);

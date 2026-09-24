@@ -124,3 +124,44 @@ it("never retains adjacent passes and preserves existing passes when extending t
   restoreMountainPasses(s);
   expect(JSON.stringify(s.tiles)).toBe(once);
 });
+
+import { mountainGapChance, favorMountainGaps } from "../src/game/geography";
+it("prefers saddles between separated peaks and never converts crops or old terrain", () => {
+  const { s } = maritimeFixture();
+  s.geographyVersion = 5;
+  const t = s.tiles["0,0"];
+  for (const tile of Object.values(s.tiles)) {
+    tile.resource = "grain";
+    tile.biome = "golden-fields";
+    tile.geography = { elevation: 0.65, region: "alpine", animals: [] };
+  }
+  const ring = neighbors(t.id);
+  const setPeaks = (indices: number[]) =>
+    ring.forEach((id, i) => {
+      s.tiles[id].resource = indices.includes(i) ? "peaks" : "grain";
+    });
+  setPeaks([0, 1]);
+  expect(mountainGapChance(s, t.id)).toBe(0);
+  setPeaks([0, 2]);
+  const separated = mountainGapChance(s, t.id);
+  expect(separated).toBeGreaterThan(0);
+  setPeaks([0, 3]);
+  expect(mountainGapChance(s, t.id)).toBeGreaterThan(separated);
+  setPeaks([0, 2, 4]);
+  expect(mountainGapChance(s, t.id)).toBeGreaterThan(separated);
+  for (let i = 0; i < 100; i++) favorMountainGaps(s, `saddle-${i}`, [t.id]);
+  expect(t.biome).toBe("golden-fields");
+  t.biome = "stone";
+  t.resource = "stone";
+  favorMountainGaps(s, "untouched", []);
+  expect(t.biome).toBe("stone");
+  let passes = 0;
+  for (let i = 0; i < 300; i++) {
+    t.biome = "stone";
+    delete t.geography!.pass;
+    favorMountainGaps(s, `saddle-${i}`, [t.id]);
+    if (t.geography!.pass) passes++;
+  }
+  expect(passes).toBeGreaterThan(80);
+  expect(passes).toBeLessThan(220);
+});

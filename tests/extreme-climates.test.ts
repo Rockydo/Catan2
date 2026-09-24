@@ -94,7 +94,10 @@ describe("extreme climate generation", () => {
   it.each([
     ["glacial", { arctic: 2, alpine: 1 }],
     ["hyperarid", { desert: 2 }],
-    ["monsoon", { tropical: 2, subtropical: 1, savanna: 1 }],
+    [
+      "monsoon",
+      { tropical: 2, subtropical: 1, savanna: 1, "tropical-maritime": 1 },
+    ],
   ] as const)(
     "uses explicit reciprocal transitions for %s",
     (climate, exits) => {

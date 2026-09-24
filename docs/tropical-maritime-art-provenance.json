@@ -1,0 +1,122 @@
+[
+  {
+    "biome": "island-palms",
+    "season": "autumn",
+    "prompt": "Use case: stylized-concept. Create square board-game terrain art matching the attached reference's painterly detail, overhead oblique view, scale, no horizon, full-bleed texture. Reference is style and seasonal palette only. Subject: Dense natural grove of slender coconut and pandanus palms, ferns, tropical understory on pale sandy soil, a few cut timber logs integrated in foreground to indicate wood production. No animals. Pacific and Caribbean tropical maritime character. Season autumn: rich green tropical foliage, warm light and ripening fruit. This land tile may be inland, so NO painted coastlines, oceans or streams. Everything visible and recognizable within central hex crop. No buildings, people, icons, text, borders.",
+    "reference": "/home/alvinh/ai/catane-game/public/assets/seasons/tropical-tropical-woods-autumn.webp",
+    "hint": "Generated images are saved to /home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d as /home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-da6e2790-52b7-44b2-8d82-8101b55c3cde.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+    "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-da6e2790-52b7-44b2-8d82-8101b55c3cde.png"
+  },
+  {
+    "biome": "island-palms",
+    "season": "spring",
+    "prompt": "Use case: stylized-concept. Create square board-game terrain art matching the attached reference's painterly detail, overhead oblique view, scale, no horizon, full-bleed texture. Reference is style and seasonal palette only. Subject: Dense natural grove of slender coconut and pandanus palms, ferns, tropical understory on pale sandy soil, a few cut timber logs integrated in foreground to indicate wood production. No animals. Pacific and Caribbean tropical maritime character. Season spring: fresh green foliage with modest flowers. This land tile may be inland, so NO painted coastlines, oceans or streams. Everything visible and recognizable within central hex crop. No buildings, people, icons, text, borders.",
+    "reference": "/home/alvinh/ai/catane-game/public/assets/seasons/tropical-tropical-woods-spring.webp",
+    "hint": "Generated images are saved to /home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d as /home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-1d025530-1681-46e7-a43d-d8d4ada196a9.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+    "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-1d025530-1681-46e7-a43d-d8d4ada196a9.png"
+  },
+  {
+    "biome": "island-palms",
+    "season": "winter",
+    "prompt": "Use case: stylized-concept. Create square board-game terrain art matching the attached reference's painterly detail, overhead oblique view, scale, no horizon, full-bleed texture. Reference is style and seasonal palette only. Subject: Dense natural grove of slender coconut and pandanus palms, ferns, tropical understory on pale sandy soil, a few cut timber logs integrated in foreground to indicate wood production. No animals. Pacific and Caribbean tropical maritime character. Season winter: warm drier trade-wind season, green palms and slight golden ground, absolutely no snow, frost, ice or bare winter trees. This land tile may be inland, so NO painted coastlines, oceans or streams. Everything visible and recognizable within central hex crop. No buildings, people, icons, text, borders.",
+    "reference": "/home/alvinh/ai/catane-game/public/assets/seasons/tropical-tropical-woods-winter.webp",
+    "hint": "Generated images are saved to /home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d as /home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-fdd1c0be-f5c1-4164-b0cb-b5a7d2941c61.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+    "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-fdd1c0be-f5c1-4164-b0cb-b5a7d2941c61.png"
+  },
+  {
+    "biome": "island-palms",
+    "season": "summer",
+    "prompt": "Use case: stylized-concept. Create square board-game terrain art matching the attached reference's painterly detail, overhead oblique view, scale, no horizon, full-bleed texture. Reference is style and seasonal palette only. Subject: Dense natural grove of slender coconut and pandanus palms, ferns, tropical understory on pale sandy soil, a few cut timber logs integrated in foreground to indicate wood production. No animals. Pacific and Caribbean tropical maritime character. Season summer: lush green wet-season vegetation, subtle damp ground. This land tile may be inland, so NO painted coastlines, oceans or streams. Everything visible and recognizable within central hex crop. No buildings, people, icons, text, borders.",
+    "reference": "/home/alvinh/ai/catane-game/public/assets/seasons/tropical-tropical-woods-summer.webp",
+    "hint": "Generated images are saved to /home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d as /home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-e4cde9a5-6ab7-441a-811e-570634d3a884.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+    "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-e4cde9a5-6ab7-441a-811e-570634d3a884.png"
+  },
+  {
+    "biome": "breadfruit-grove",
+    "season": "spring",
+    "prompt": "Use case: stylized-concept. Create square board-game terrain art matching the attached reference's painterly detail, overhead oblique view, scale, no horizon, full-bleed texture. Reference is style and seasonal palette only. Subject: Cultivated breadfruit orchard with broad lush lobed leaves, abundant large round green breadfruits, several woven baskets of harvested breadfruit low in foreground, pale sandy fertile soil, a few distant palms. No logs or animals. Pacific and Caribbean tropical maritime character. Season spring: fresh green foliage with modest flowers. This land tile may be inland, so NO painted coastlines, oceans or streams. Everything visible and recognizable within central hex crop. No buildings, people, icons, text, borders.",
+    "reference": "/home/alvinh/ai/catane-game/public/assets/seasons/tropical-tropical-woods-spring.webp",
+    "hint": "Generated images are saved to /home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d as /home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-8c922ab6-f5dd-4be8-afda-cbbc981d5c99.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+    "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-8c922ab6-f5dd-4be8-afda-cbbc981d5c99.png"
+  },
+  {
+    "biome": "breadfruit-grove",
+    "season": "autumn",
+    "prompt": "Use case: stylized-concept. Create square board-game terrain art matching the attached reference's painterly detail, overhead oblique view, scale, no horizon, full-bleed texture. Reference is style and seasonal palette only. Subject: Cultivated breadfruit orchard with broad lush lobed leaves, abundant large round green breadfruits, several woven baskets of harvested breadfruit low in foreground, pale sandy fertile soil, a few distant palms. No logs or animals. Pacific and Caribbean tropical maritime character. Season autumn: rich green tropical foliage, warm light and ripening fruit. This land tile may be inland, so NO painted coastlines, oceans or streams. Everything visible and recognizable within central hex crop. No buildings, people, icons, text, borders.",
+    "reference": "/home/alvinh/ai/catane-game/public/assets/seasons/tropical-tropical-woods-autumn.webp",
+    "hint": "Generated images are saved to /home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d as /home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-398a66ee-a887-4064-a979-2b4d049070f0.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+    "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-398a66ee-a887-4064-a979-2b4d049070f0.png"
+  },
+  {
+    "biome": "breadfruit-grove",
+    "season": "summer",
+    "prompt": "Use case: stylized-concept. Create square board-game terrain art matching the attached reference's painterly detail, overhead oblique view, scale, no horizon, full-bleed texture. Reference is style and seasonal palette only. Subject: Cultivated breadfruit orchard with broad lush lobed leaves, abundant large round green breadfruits, several woven baskets of harvested breadfruit low in foreground, pale sandy fertile soil, a few distant palms. No logs or animals. Pacific and Caribbean tropical maritime character. Season summer: lush green wet-season vegetation, subtle damp ground. This land tile may be inland, so NO painted coastlines, oceans or streams. Everything visible and recognizable within central hex crop. No buildings, people, icons, text, borders.",
+    "reference": "/home/alvinh/ai/catane-game/public/assets/seasons/tropical-tropical-woods-summer.webp",
+    "hint": "Generated images are saved to /home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d as /home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-f05bea0e-bb38-45eb-b0ae-97a1ba13f004.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+    "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-f05bea0e-bb38-45eb-b0ae-97a1ba13f004.png"
+  },
+  {
+    "biome": "breadfruit-grove",
+    "season": "winter",
+    "prompt": "Use case: stylized-concept. Create square board-game terrain art matching the attached reference's painterly detail, overhead oblique view, scale, no horizon, full-bleed texture. Reference is style and seasonal palette only. Subject: Cultivated breadfruit orchard with broad lush lobed leaves, abundant large round green breadfruits, several woven baskets of harvested breadfruit low in foreground, pale sandy fertile soil, a few distant palms. No logs or animals. Pacific and Caribbean tropical maritime character. Season winter: warm drier trade-wind season, green palms and slight golden ground, absolutely no snow, frost, ice or bare winter trees. This land tile may be inland, so NO painted coastlines, oceans or streams. Everything visible and recognizable within central hex crop. No buildings, people, icons, text, borders.",
+    "reference": "/home/alvinh/ai/catane-game/public/assets/seasons/tropical-tropical-woods-winter.webp",
+    "hint": "Generated images are saved to /home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d as /home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-a764ad33-ca23-41ab-97c9-1fa59c452efa.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+    "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-a764ad33-ca23-41ab-97c9-1fa59c452efa.png"
+  },
+  {
+    "biome": "coastal-cliffs",
+    "season": "spring",
+    "prompt": "Use case: stylized-concept. Create square board-game terrain art matching the attached reference's painterly detail, overhead oblique view, scale, no horizon, full-bleed texture. Reference is style and seasonal palette only. Subject: Warm tropical island limestone escarpment, pale ivory coral limestone blocks and exposed rock ledges, small traditional stone quarry with cut blocks, palms and lush shrubs around the rocks, on pale sandy ground. No water across the image. Pacific and Caribbean tropical maritime character. Season spring: fresh green foliage with modest flowers. This land tile may be inland, so NO painted coastlines, oceans or streams. Everything visible and recognizable within central hex crop. No buildings, people, icons, text, borders.",
+    "reference": "/home/alvinh/ai/catane-game/public/assets/seasons/tropical-tropical-woods-spring.webp",
+    "hint": "Generated images are saved to /home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d as /home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-9dcb2097-dbb0-4b21-b149-488b68ea99f8.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+    "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-9dcb2097-dbb0-4b21-b149-488b68ea99f8.png"
+  },
+  {
+    "biome": "coastal-cliffs",
+    "season": "winter",
+    "prompt": "Use case: stylized-concept. Create square board-game terrain art matching the attached reference's painterly detail, overhead oblique view, scale, no horizon, full-bleed texture. Reference is style and seasonal palette only. Subject: Warm tropical island limestone escarpment, pale ivory coral limestone blocks and exposed rock ledges, small traditional stone quarry with cut blocks, palms and lush shrubs around the rocks, on pale sandy ground. No water across the image. Pacific and Caribbean tropical maritime character. Season winter: warm drier trade-wind season, green palms and slight golden ground, absolutely no snow, frost, ice or bare winter trees. This land tile may be inland, so NO painted coastlines, oceans or streams. Everything visible and recognizable within central hex crop. No buildings, people, icons, text, borders.",
+    "reference": "/home/alvinh/ai/catane-game/public/assets/seasons/tropical-tropical-woods-winter.webp",
+    "hint": "Generated images are saved to /home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d as /home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-81d90bb9-93cf-4f76-8156-e2c026c39223.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+    "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-81d90bb9-93cf-4f76-8156-e2c026c39223.png"
+  },
+  {
+    "biome": "coastal-cliffs",
+    "season": "summer",
+    "prompt": "Use case: stylized-concept. Create square board-game terrain art matching the attached reference's painterly detail, overhead oblique view, scale, no horizon, full-bleed texture. Reference is style and seasonal palette only. Subject: Warm tropical island limestone escarpment, pale ivory coral limestone blocks and exposed rock ledges, small traditional stone quarry with cut blocks, palms and lush shrubs around the rocks, on pale sandy ground. No water across the image. Pacific and Caribbean tropical maritime character. Season summer: lush green wet-season vegetation, subtle damp ground. This land tile may be inland, so NO painted coastlines, oceans or streams. Everything visible and recognizable within central hex crop. No buildings, people, icons, text, borders.",
+    "reference": "/home/alvinh/ai/catane-game/public/assets/seasons/tropical-tropical-woods-summer.webp",
+    "hint": "Generated images are saved to /home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d as /home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-35ddaf6c-9332-4b16-a984-34ac7462f8f8.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+    "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-35ddaf6c-9332-4b16-a984-34ac7462f8f8.png"
+  },
+  {
+    "biome": "coastal-cliffs",
+    "season": "autumn",
+    "prompt": "Use case: stylized-concept. Create square board-game terrain art matching the attached reference's painterly detail, overhead oblique view, scale, no horizon, full-bleed texture. Reference is style and seasonal palette only. Subject: Warm tropical island limestone escarpment, pale ivory coral limestone blocks and exposed rock ledges, small traditional stone quarry with cut blocks, palms and lush shrubs around the rocks, on pale sandy ground. No water across the image. Pacific and Caribbean tropical maritime character. Season autumn: rich green tropical foliage, warm light and ripening fruit. This land tile may be inland, so NO painted coastlines, oceans or streams. Everything visible and recognizable within central hex crop. No buildings, people, icons, text, borders.",
+    "reference": "/home/alvinh/ai/catane-game/public/assets/seasons/tropical-tropical-woods-autumn.webp",
+    "hint": "Generated images are saved to /home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d as /home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-278eab97-ed4d-4816-93c1-99c14ed428a0.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+    "source": "/home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-278eab97-ed4d-4816-93c1-99c14ed428a0.png"
+  },
+  {
+    "season": "spring",
+    "reference": "/home/alvinh/ai/catane-game/public/assets/seasons/tropical-maritime-island-palms-spring.webp",
+    "prompt": "Use case: precise-object-edit. Preserve this exact square tropical island palm woodland terrain artwork: same palms, sand, timber, season, lighting, camera and style. Integrate two small wild boars and a slender small deer browsing on the forest floor, naturally shaded with grounded feet, visible at game tile scale, distributed in central hex crop. Animals are part of the painting, not pasted cutouts. No snow, no text, no border, no new scenery.",
+    "hint": "Generated images are saved to /home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d as /home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-66b8eda2-30b3-4622-861b-59b26ed5f85e.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+  },
+  {
+    "season": "summer",
+    "reference": "/home/alvinh/ai/catane-game/public/assets/seasons/tropical-maritime-island-palms-summer.webp",
+    "prompt": "Use case: precise-object-edit. Preserve this exact square tropical island palm woodland terrain artwork: same palms, sand, timber, season, lighting, camera and style. Integrate two small wild boars and a slender small deer browsing on the forest floor, naturally shaded with grounded feet, visible at game tile scale, distributed in central hex crop. Animals are part of the painting, not pasted cutouts. No snow, no text, no border, no new scenery.",
+    "hint": "Generated images are saved to /home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d as /home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-0e3c4806-b9bd-4bbf-9c68-1864890c7e22.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+  },
+  {
+    "season": "winter",
+    "reference": "/home/alvinh/ai/catane-game/public/assets/seasons/tropical-maritime-island-palms-winter.webp",
+    "prompt": "Use case: precise-object-edit. Preserve this exact square tropical island palm woodland terrain artwork: same palms, sand, timber, season, lighting, camera and style. Integrate two small wild boars and a slender small deer browsing on the forest floor, naturally shaded with grounded feet, visible at game tile scale, distributed in central hex crop. Animals are part of the painting, not pasted cutouts. No snow, no text, no border, no new scenery.",
+    "hint": "Generated images are saved to /home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d as /home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-728244b7-0ad0-4dee-a9aa-de95cefa4e36.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+  },
+  {
+    "season": "autumn",
+    "reference": "/home/alvinh/ai/catane-game/public/assets/seasons/tropical-maritime-island-palms-autumn.webp",
+    "prompt": "Use case: precise-object-edit. Preserve this exact square tropical island palm woodland terrain artwork: same palms, sand, timber, season, lighting, camera and style. Integrate two small wild boars and a slender small deer browsing on the forest floor, naturally shaded with grounded feet, visible at game tile scale, distributed in central hex crop. Animals are part of the painting, not pasted cutouts. No snow, no text, no border, no new scenery.",
+    "hint": "Generated images are saved to /home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d as /home/alvinh/.codex/generated_images/01a08f98-8940-7a73-8503-27e8f35fd62d/exec-b7b78d79-3bdb-47b3-8232-2a1f0a1f4563.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+  }
+]

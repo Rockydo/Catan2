@@ -28,6 +28,7 @@ export const WEATHER_NAMES: Record<Weather, string> = {
 };
 const tropical = new Set<Climate>([
   "tropical",
+  "tropical-maritime",
   "subtropical",
   "savanna",
   "monsoon",
@@ -48,19 +49,39 @@ const cold = new Set<Climate>([
 export function waterCalendar(climate: Climate): readonly number[] {
   if (climate === "glacial") return [1, 3, 1, 0];
   if (climate === "semiarid") return [1, 0, 1, 2];
+  if (climate === "equatorial-wetlands") return [2, 3, 2, 2];
+  if (
+    ["tropical", "tropical-maritime", "subtropical", "mesoamerican"].includes(
+      climate,
+    )
+  )
+    return [1, 2, 2, 1];
   if (tropical.has(climate)) return [1, 3, 2, 0];
-  if (["desert", "hyperarid"].includes(climate)) return [0, 0, 0, 1];
+  if (["desert", "hyperarid"].includes(climate)) return [1, 0, 1, 1];
   if (climate === "mediterranean") return [1, 0, 1, 3];
   if (climate === "andean") return [2, 3, 1, 0];
   if (cold.has(climate)) return [3, 2, 1, 0];
   if (["oceanic", "temperate-rainforest"].includes(climate))
     return [2, 1, 2, 3];
-  return [3, 1, 1, 2];
+  if (climate === "steppe") return [2, 1, 1, 0];
+  return [2, 1, 1, 2];
 }
 export function weatherChoices(
   climate: Climate,
   season: Season,
 ): [Weather, number][] {
+  if (climate === "tropical-maritime")
+    return season === "summer" || season === "autumn"
+      ? [
+          ["normal", 0.55],
+          ["wet", 0.35],
+          ["dry", 0.1],
+        ]
+      : [
+          ["normal", 0.65],
+          ["wet", 0.15],
+          ["dry", 0.2],
+        ];
   if (climate === "semiarid")
     return season === "winter"
       ? [
@@ -123,7 +144,22 @@ export function waterLevelModifier(
   season: Season,
   weather: Weather,
 ): number {
-  if (weather === "wet") return 1;
+  if (weather === "wet") {
+    // Rare downpours in arid catchments are sudden spates, not snowmelt.
+    if (["desert", "hyperarid"].includes(tile.climate ?? "")) return 3;
+    if (
+      [
+        "semiarid",
+        "temperate",
+        "tropical",
+        "tropical-maritime",
+        "subtropical",
+        "mesoamerican",
+      ].includes(tile.climate ?? "")
+    )
+      return 2;
+    return 1;
+  }
   if (weather === "dry") return -1;
   if (
     ["arctic", "glacial", "tundra"].includes(tile.climate ?? "") &&
@@ -146,6 +182,37 @@ export function riverLevel(
     ),
   );
 }
+/** High water reaches only the lowest basins; raised banks need a flood crest. */
+export const floodThreshold = (tile: Hex): 3 | 4 =>
+  tile.geography?.floodThreshold ?? 4;
+export function floodsAt(
+  tile: Hex,
+  season: Season,
+  weather: Weather = tile.geography?.weather ?? "normal",
+): boolean {
+  return (
+    !!tile.geography?.floodplain &&
+    (!tile.biome || BIOME_INFO[tile.biome].family !== "rugged") &&
+    !tile.geography.projects?.levee &&
+    riverLevel(tile, season, weather) >= floodThreshold(tile)
+  );
+}
+/** Apply the balance correction without rolling weather, moving units, or changing the calendar. */
+export function restoreFloodplainAccess(s: Game): void {
+  if (!s.geographyVersion) return;
+  const season = seasonAt(s) ?? "spring";
+  for (const tile of Object.values(s.tiles)) {
+    const g = tile.geography;
+    if (!g?.floodplain || g.pass || g.ford) continue;
+    if (tile.biome && BIOME_INFO[tile.biome].family === "rugged") {
+      g.floodplain = false;
+      delete g.floodThreshold;
+      g.delta = false;
+    }
+    g.access = floodsAt(tile, season) ? "flooded" : "normal";
+  }
+}
+
 export function passClosed(
   tile: Hex,
   season: Season,
@@ -176,9 +243,7 @@ export function environmentRisk(tile: Hex, season: Season): number {
         Number(
           !!(
             passClosed(tile, season, weather) ||
-            (tile.geography!.floodplain &&
-              !tile.geography!.projects?.levee &&
-              riverLevel(tile, season, weather) >= 3) ||
+            floodsAt(tile, season, weather) ||
             (tile.geography!.ford &&
               !tile.geography!.projects?.bridge &&
               riverLevel(tile, season, weather) > 1)
@@ -296,7 +361,8 @@ export function wildlifeSpawnChance(tile: Hex, geographyVersion = 0): number {
   const freshwater = ["river", "lake"].includes(tile.geography?.waterway ?? "");
   return (
     (tile.geography?.waterway === "deep" ? 0.11 : 0.18) *
-    (geographyVersion >= 3 && !freshwater ? 4 / 3 : 1)
+    (geographyVersion >= 3 && !freshwater ? 4 / 3 : 1) *
+    (tile.climate === "tropical-maritime" && !freshwater ? 1.15 : 1)
   );
 }
 /** A preference, not a teleport: migration still walks at most three land tiles.
@@ -480,7 +546,7 @@ export function syncEnvironment(s: Game): void {
     geo.weatherSeason = season;
     geo.access = passClosed(tile, season)
       ? "closed"
-      : geo.floodplain && !geo.projects?.levee && riverLevel(tile, season) >= 3
+      : floodsAt(tile, season)
         ? "flooded"
         : geo.ford && riverLevel(tile, season) <= 1
           ? "ford"

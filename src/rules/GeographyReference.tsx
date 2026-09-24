@@ -105,15 +105,15 @@ export function GeographyReference() {
       </div>
       <p>
         {l(
-          "Level 0–1: natural fords open. Level 3–4: unprotected floodplains flood. Wet weather adds 1; dry weather subtracts 1. Cold and mild spells change ice transitions.",
-          "Niveau 0–1 : gués naturels ouverts. Niveau 3–4 : crue sur les plaines sans digue. Une saison humide ajoute 1 ; une période sèche retranche 1. Froid et douceur modifient le gel et la fonte.",
+          "Level 0–1: natural fords open. Low basins flood at 3, higher banks at 4. Wet weather adds 1, or 2 in Temperate, Semi-arid, Tropical, Tropical Maritime, Subtropical and Mesoamerican regions, or 3 in deserts. Dry weather subtracts 1.",
+          "Niveaux 0–1 : gués ouverts. Cuvettes basses inondées à 3, berges hautes à 4. Une période humide ajoute 1, ou 2 en Tempéré, Semi-aride, Tropical, Tropical maritime, Subtropical et Mésoaméricain, ou 3 dans les déserts. Une période sèche retranche 1.",
         )}
       </p>
       <h2>{l("Dry ground and flooding", "Terrain sec et crue")}</h2>
       <p>
         {l(
-          "Only marked floodplains flood. At water level 3 or 4, all raw and processed output from that hex stops unless a levee protects it. Buildings and stocks survive. Irrigation and bridges do not prevent flooding.",
-          "Seules les plaines signalées sont inondables. Aux niveaux 3 et 4, toute production brute et transformée de cette tuile cesse sans digue. Bâtiments et stocks survivent. Ponts et irrigation ne protègent pas contre les crues.",
+          "Only marked floodplains flood. Rugged terrain never floods. Each tile shows its threshold: 3 for low basins, 4 for higher banks. Reaching it stops raw and processed production unless a levee protects the tile. Buildings and stocks survive. Irrigation and bridges do not prevent flooding.",
+          "Seules les plaines signalées sont inondables. Les terrains accidentés ne sont jamais inondés. Chaque tuile affiche son seuil : 3 pour une cuvette basse, 4 pour une berge haute. À ce seuil, toute production cesse sans digue. Bâtiments et stocks survivent. Ponts et irrigation ne protègent pas contre les crues.",
         )}
       </p>
       <FloodComparison

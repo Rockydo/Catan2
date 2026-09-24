@@ -301,7 +301,7 @@ it("has complete occupied and empty paintings for every generated natural habita
         t.geography!.animals = [];
         const empty = seasonalTerrainPattern(t, season);
         // Desert and oasis originals already contain no animals.
-        if (["desert", "oasis"].includes(biome))
+        if (["desert", "oasis", "island-palms"].includes(biome))
           expect(empty).toBe(baseSeasonalTerrainPattern(t, season));
         else
           expect(empty, `${climate}/${biome}/${season}`).toMatch(

@@ -22,6 +22,7 @@ export const CLIMATES = [
   "temperate-rainforest",
   "equatorial-wetlands",
   "semiarid",
+  "tropical-maritime",
 ] as const;
 export type Climate = (typeof CLIMATES)[number];
 export const BIOMES = [
@@ -100,6 +101,8 @@ export const BIOMES = [
   "fern-hunting-grounds",
   "mangrove",
   "sago-grove",
+  "island-palms",
+  "breadfruit-grove",
 ] as const;
 export type Biome = (typeof BIOMES)[number];
 export type TerrainResource =
@@ -121,6 +124,22 @@ const b = (
   color: string,
 ): BiomeInfo => ({ name, resource, yield: yield_, family, art, color });
 export const BIOME_INFO: Record<Biome, BiomeInfo> = {
+  "island-palms": b(
+    "Island palms",
+    "lumber",
+    { lumber: 1 },
+    "forest",
+    "island-palms",
+    "#559c6b",
+  ),
+  "breadfruit-grove": b(
+    "Breadfruit grove",
+    "grain",
+    { grain: 2 },
+    "forest",
+    "breadfruit-grove",
+    "#85a34f",
+  ),
   river: b("River", "water", {}, "water", "river", "#438b9c"),
   lake: b("Lake", "water", {}, "water", "lake", "#467c94"),
   shoal: b("Shallows", "water", {}, "water", "shoal", "#69b6ba"),
@@ -747,6 +766,35 @@ export const CLIMATE_INFO: Record<Climate, ClimateInfo> = {
       "subtropical",
     ],
   },
+  "tropical-maritime": {
+    name: "Tropical Maritime",
+    color: "#39b6ac",
+    land: 0.3,
+    terrain: [
+      ["island-palms", 26],
+      ["breadfruit-grove", 12],
+      ["jungle", 12],
+      ["mangrove", 8],
+      ["volcanic-quarry", 10],
+      ["coastal-cliffs", 6],
+      ["clay", 8],
+      ["salt-flats", 6],
+      ["iron", 6],
+      ["gold", 4],
+      ["coal", 2],
+    ],
+    water: [
+      ["fish", 0.2],
+      ["whale", 0.08],
+    ],
+    compatible: [
+      "tropical",
+      "subtropical",
+      "monsoon",
+      "mesoamerican",
+      "oceanic",
+    ],
+  },
   tropical: {
     name: "Tropical",
     color: "#4f9667",
@@ -767,6 +815,7 @@ export const CLIMATE_INFO: Record<Climate, ClimateInfo> = {
       ["whale", 0.05],
     ],
     compatible: [
+      "tropical-maritime",
       "equatorial-wetlands",
       "temperate",
       "desert",
@@ -850,7 +899,13 @@ export const CLIMATE_INFO: Record<Climate, ClimateInfo> = {
       ["cod", 0.1],
       ["whale", 0.1],
     ],
-    compatible: ["temperate-rainforest", "temperate", "cold", "mediterranean"],
+    compatible: [
+      "tropical-maritime",
+      "temperate-rainforest",
+      "temperate",
+      "cold",
+      "mediterranean",
+    ],
   },
   alpine: {
     name: "Alpine",
@@ -898,6 +953,7 @@ export const CLIMATE_INFO: Record<Climate, ClimateInfo> = {
       ["whale", 0.03],
     ],
     compatible: [
+      "tropical-maritime",
       "equatorial-wetlands",
       "tropical",
       "temperate",
@@ -998,7 +1054,7 @@ export const CLIMATE_INFO: Record<Climate, ClimateInfo> = {
       ["fish", 0.1],
       ["whale", 0.02],
     ],
-    compatible: ["tropical", "subtropical", "savanna"],
+    compatible: ["tropical-maritime", "tropical", "subtropical", "savanna"],
   },
   andean: {
     name: "Andean",
@@ -1059,7 +1115,14 @@ export const CLIMATE_INFO: Record<Climate, ClimateInfo> = {
       ["fish", 0.15],
       ["whale", 0.05],
     ],
-    compatible: ["tropical", "subtropical", "savanna", "andean", "prairie"],
+    compatible: [
+      "tropical-maritime",
+      "tropical",
+      "subtropical",
+      "savanna",
+      "andean",
+      "prairie",
+    ],
   },
   tundra: {
     name: "Tundra",

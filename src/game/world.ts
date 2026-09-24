@@ -1,5 +1,6 @@
 import {
   restoreMountainPasses,
+  favorMountainGaps,
   geographicTerrain,
   GEOGRAPHY_VERSION,
   pieceAccess,
@@ -220,6 +221,7 @@ export function addHexes(world: World, seed: string, ids: string[]) {
           world.vertices[v].edges.push(e);
     }
   }
+  favorMountainGaps(world, seed, [...added]);
   restoreMountainPasses(world, [...added]);
   // Older campaigns retain their actual terrain even where the new generator differs.
   // Unknown neighbours still use fixed coordinates, keeping reveal order stable.

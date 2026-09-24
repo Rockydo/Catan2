@@ -42,6 +42,19 @@ export function FloodArt({ tile, x, y }: { tile: Hex; x: number; y: number }) {
       : info?.family === "forest"
         ? "forest"
         : "rock";
+  return <FloodSurface family={family} x={x} y={y} />;
+}
+export function FloodSurface({
+  family,
+  x = 0,
+  y = 0,
+  outline = true,
+}: {
+  family: "crops" | "forest" | "rock";
+  x?: number;
+  y?: number;
+  outline?: boolean;
+}) {
   return (
     <g
       className="flooded-terrain"
@@ -70,12 +83,14 @@ export function FloodArt({ tile, x, y }: { tile: Hex; x: number; y: number }) {
         strokeWidth=".55"
         opacity=".35"
       />
-      <polygon
-        points={WATER_HEX}
-        fill="none"
-        stroke="#a2d6e0"
-        strokeWidth="1.5"
-      />
+      {outline && (
+        <polygon
+          points={WATER_HEX}
+          fill="none"
+          stroke="#a2d6e0"
+          strokeWidth="1.5"
+        />
+      )}
     </g>
   );
 }

@@ -111,6 +111,7 @@ export function baseSeasonalTerrainPattern(tile: Hex, season?: Season): string {
       return terrainPatternKey(image, tile.climate, season ?? "spring");
     const warmRegion = [
       "tropical",
+      "tropical-maritime",
       "subtropical",
       "monsoon",
       "savanna",
@@ -145,7 +146,7 @@ export function baseSeasonalTerrainPattern(tile: Hex, season?: Season): string {
           ? "alpine"
           : undefined;
       return terrainPatternKey(
-        forestClimate ? "forest" : "woods",
+        forestClimate ? "forest" : warmRegion ? "tropical-woods" : "woods",
         forestClimate ?? tile.climate,
         season ?? "summer",
       );
@@ -184,6 +185,7 @@ export function baseSeasonalTerrainPattern(tile: Hex, season?: Season): string {
     ) {
       const warm = [
         "tropical",
+        "tropical-maritime",
         "subtropical",
         "monsoon",
         "savanna",
@@ -274,6 +276,30 @@ export function terrainPatternKey(
   const seasonalKey = `${region}/${biome}/${season}`;
   if (season && seasonalTiles[seasonalKey])
     return `season-${seasonalKey.replaceAll("/", "-")}`;
+  if (
+    season &&
+    [
+      "tropical",
+      "tropical-maritime",
+      "subtropical",
+      "monsoon",
+      "mesoamerican",
+      "equatorial-wetlands",
+    ].includes(region) &&
+    [
+      "woods",
+      "forest",
+      "hunting-forest",
+      "river-woods",
+      "tropical-woods",
+    ].includes(biome)
+  ) {
+    const own = `${region}/tropical-woods/${season}`;
+    const warmKey = seasonalTiles[own]
+      ? own
+      : `tropical/tropical-woods/${season}`;
+    return `season-${warmKey.replaceAll("/", "-")}`;
+  }
   // Older campaigns may contain a terrain outside its modern climate table.
   // Reuse a complete seasonal family, not a static image. Archived fields match
   // legacy Grain's one autumn harvest without shifting the visible calendar.
@@ -356,6 +382,7 @@ function mountainArt(
   if (
     [
       "tropical",
+      "tropical-maritime",
       "subtropical",
       "monsoon",
       "mesoamerican",

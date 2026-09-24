@@ -1,6 +1,6 @@
 # Regional landforms, version 5
 
-New campaigns select among 14 broad landforms. Local provinces blend the chosen form with climate-weighted alternatives. Terrain height is evaluated at fixed seed/coordinates before sea level, climate selection, drainage and resource placement. No pass, river or mountain overlay is painted onto a finished resource map.
+New campaigns select among 14 broad landforms. Local provinces blend the chosen form with climate-weighted alternatives. Terrain height is evaluated at fixed seed/coordinates before sea level, climate selection, drainage and resource placement. Rivers and mountains follow this physical field. Once neighboring peaks are known, eligible fresh stone outcrops may become mountain passes; this preserves their Stone resource and never replaces crops or peaks.
 
 ## New patterns
 
@@ -17,7 +17,7 @@ Lakes retain their 12-hex cap. The existing ocean-area reduction remains. Volcan
 
 ## Save compatibility
 
-Version 5 is assigned only to new worlds. Versions 1–4 retain their original height fields, landform choices, sea levels and drainage. Explicit version parameters reach every physical-landform query. Regression fixtures record version 4 elevations, drainage and climate settings. Expedition additions leave revealed terrain intact.
+Version 6 now extends these patterns with stronger high-ground headwater selection. Version 5 was assigned only to new worlds. Versions 1–4 retain their original height fields, landform choices, sea levels and drainage. Explicit version parameters reach every physical-landform query. Regression fixtures record version 4 elevations, drainage and climate settings. Expedition additions leave revealed terrain intact.
 
 ## Geological references
 

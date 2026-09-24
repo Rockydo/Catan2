@@ -1,3 +1,4 @@
+import { FloodSurface } from "./FloodArt";
 import type { Hex } from "../game/types";
 import { frozenInSeason, type Season } from "../game/seasons";
 import { terrainArtFile, terrainPatternKey } from "./terrain-art";
@@ -114,6 +115,15 @@ export function ConnectedWater({
   season?: Season;
 }) {
   const { shore, channel, river } = connections;
+  // One continuous ground painting per hex. Painting neighbor textures into
+  // triangular wedges created hard, pointed seams between snow and dry ground.
+  const bankCounts = new Map<string, number>();
+  for (const file of connections.banks ?? [])
+    if (file) bankCounts.set(file, (bankCounts.get(file) ?? 0) + 1);
+  const bank =
+    [...bankCounts].sort(
+      (a, b) => b[1] - a[1] || a[0].localeCompare(b[0]),
+    )[0]?.[0] ?? bankArt(tile, season);
   const frozen = frozenInSeason(tile, season);
   const line = river
     ? riverGeometry(channel, connections.basin).line
@@ -128,18 +138,18 @@ export function ConnectedWater({
       data-basin-mask={river ? connections.basin || 0 : undefined}
       transform={`translate(${x} ${y})`}
       pointerEvents="none"
+      clipPath="url(#water-full-hex)"
     >
-      {river
-        ? texture(
-            connections.banks?.find(Boolean) ?? bankArt(tile, season),
-            "water-full-hex",
-          )
-        : null}
+      {river ? texture(bank, "water-full-hex") : null}
       {river &&
-        connections.banks?.map((file, side) =>
-          file ? (
-            <g key={side} data-bank-side={side}>
-              {texture(file, `river-bank-${side}`)}
+        connections.floodedBanks?.map((family, side) =>
+          family ? (
+            <g
+              key={`flood-${side}`}
+              data-flooded-bank={side}
+              clipPath={`url(#river-bank-${side})`}
+            >
+              <FloodSurface family={family} outline={false} />
             </g>
           ) : null,
         )}

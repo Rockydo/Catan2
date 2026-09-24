@@ -2,6 +2,7 @@ import { FloodComparison } from "./FloodArt";
 import type { Game, Hex, Good } from "../game/types";
 import {
   riverLevel,
+  floodThreshold,
   waterCalendar,
   waterLevelModifier,
   WEATHER_NAMES,
@@ -24,7 +25,8 @@ export function FloodplainStatus({
     l = (en: string, fr: string) => (locale === "fr" ? fr : en);
   const g = tile.geography!,
     season = seasonAt(game) ?? "spring",
-    level = riverLevel(tile, season);
+    level = riverLevel(tile, season),
+    threshold = floodThreshold(tile);
   const flooded = g.access === "flooded" && !g.projects?.levee,
     protectedTile = !!g.projects?.levee;
   const base = waterCalendar(tile.climate ?? "temperate")[
@@ -61,7 +63,7 @@ export function FloodplainStatus({
         {[0, 1, 2, 3, 4].map((n) => (
           <span
             key={n}
-            className={`${n <= level ? "filled" : ""} ${n >= 3 ? "danger" : ""}`}
+            className={`${n <= level ? "filled" : ""} ${n >= threshold ? "danger" : ""}`}
           >
             {n}
           </span>
@@ -69,8 +71,8 @@ export function FloodplainStatus({
       </div>
       <p>
         {l(
-          "Levels 0–2: dry. Levels 3–4: flooded unless a levee protects this tile. Conditions last for both halves of the season.",
-          "Niveaux 0–2 : sec. Niveaux 3–4 : inondé sans digue sur cette tuile. Ces conditions durent les deux moitiés de la saison.",
+          `This ${threshold === 3 ? "low basin" : "higher riverbank"} floods at level ${threshold}. Lower water levels leave it dry. A levee prevents flooding. Conditions last both halves of the season.`,
+          `Cette ${threshold === 3 ? "cuvette basse" : "berge haute"} est inondée au niveau ${threshold}. Elle reste sèche en dessous. Une digue empêche la crue. Ces conditions durent les deux moitiés de la saison.`,
         )}
       </p>
       {["arctic", "glacial", "tundra"].includes(tile.climate ?? "") && (

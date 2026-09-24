@@ -1,3 +1,4 @@
+import { BIOME_INFO } from "../game/climate-content";
 import type { Hex } from "../game/types";
 import { frozenInSeason, type Season } from "../game/seasons";
 import { neighbors } from "../game/world";
@@ -16,6 +17,7 @@ export interface WaterConnections {
   river: boolean;
   openIce?: number;
   banks?: (string | undefined)[];
+  floodedBanks?: ("crops" | "forest" | "rock" | undefined)[];
 }
 /** Only known physical land receives a bank. Ice remains water geography,
  * and an unexplored edge never invents a coastline. */
@@ -30,6 +32,7 @@ export function waterConnections(
     openIce = 0;
   const river = tile.geography?.waterway === "river";
   const banks: (string | undefined)[] = [];
+  const floodedBanks: ("crops" | "forest" | "rock" | undefined)[] = [];
   neighbors(tile.id).forEach((id, side) => {
     const next = tiles.get(id);
     if (!next || (wet(next) && !frozenInSeason(next, season)))
@@ -50,19 +53,27 @@ export function waterConnections(
             "flood-meadow",
             "delta-gardens",
           ].includes(next.biome ?? ""))
-      )
+      ) {
         banks[side] = terrainArtFile(baseSeasonalTerrainPattern(next, season));
+        if (
+          next.geography?.access === "flooded" &&
+          !next.geography.projects?.levee
+        ) {
+          const info = next.biome ? BIOME_INFO[next.biome] : undefined;
+          floodedBanks[side] =
+            info?.yield.grain || info?.yield.wool || info?.yield.meat
+              ? "crops"
+              : info?.family === "forest"
+                ? "forest"
+                : "rock";
+        }
+      }
     }
     if (river && wet(next) && next?.geography?.waterway !== "river")
       basin |= 1 << side;
     if (
       river &&
-      ((next &&
-        wet(next) &&
-        (next.geography?.waterway !== "river" ||
-          tile.geography?.downstream === id ||
-          next.geography?.downstream === tile.id)) ||
-        (!next && tile.geography?.downstream === id))
+      ((next && wet(next)) || (!next && tile.geography?.downstream === id))
     )
       channel |= 1 << side;
   });
@@ -73,6 +84,7 @@ export function waterConnections(
     basin,
     openIce,
     ...(banks.length ? { banks } : {}),
+    ...(floodedBanks.length ? { floodedBanks } : {}),
   };
 }
 const R = 44.05,
@@ -129,18 +141,19 @@ export function riverGeometry(mask: number, basin = 0) {
     if (!(mask & (1 << i))) continue;
     const angle = (i * Math.PI) / 3,
       n = point(angle, A + 0.08),
-      t = point(angle + Math.PI / 2, 14);
-    mouths.push(
-      basin & (1 << i)
-        ? {
-            a: point(angle - Math.PI / 6, R),
-            b: point(angle + Math.PI / 6, R),
-          }
-        : {
-            a: [n[0] - t[0], n[1] - t[1]],
-            b: [n[0] + t[0], n[1] + t[1]],
-          },
-    );
+      t = point(angle + Math.PI / 2, 19);
+    // Three touching water hexes have no real land at their common vertex.
+    // Open that corner fully instead of drawing paired banks or tiny islands.
+    mouths.push({
+      a:
+        basin & (1 << i) || mask & (1 << ((i + 5) % 6))
+          ? point(angle - Math.PI / 6, R)
+          : [n[0] - t[0], n[1] - t[1]],
+      b:
+        basin & (1 << i) || mask & (1 << ((i + 1) % 6))
+          ? point(angle + Math.PI / 6, R)
+          : [n[0] + t[0], n[1] + t[1]],
+    });
   }
   if (!mouths.length)
     return {
@@ -182,9 +195,25 @@ export function riverGeometry(mask: number, basin = 0) {
       const length = Math.hypot(p[0], p[1]) || 1;
       return p.map((v) => v * (1 - inset / length));
     };
+    // Wide connected arms enclose a central pool. Following an inner circular
+    // arc keeps the middle underwater, even on sharp bends or tributary joins.
+    const radius = 26;
+    const fromAngle = Math.atan2(b[1], b[0]);
+    const toAngle = Math.atan2(next[1], next[0]);
+    const sweep = (toAngle - fromAngle + Math.PI * 2) % (Math.PI * 2);
+    const innerB = point(fromAngle, radius),
+      innerNext = point(toAngle, radius);
+    const enterTangent = [
+      innerB[0] + Math.sin(fromAngle) * 6,
+      innerB[1] - Math.cos(fromAngle) * 6,
+    ];
+    const exitTangent = [
+      innerNext[0] - Math.sin(toAngle) * 6,
+      innerNext[1] + Math.cos(toAngle) * 6,
+    ];
     const curve = basin
       ? `C${fmt(control(1 / 3))} ${fmt(control(2 / 3))} ${fmt(next)}`
-      : `C${fmt(b.map((v) => v * 0.45))} ${fmt(next.map((v) => v * 0.45))} ${fmt(next)}`;
+      : `C${fmt(b.map((v) => v * 0.88))} ${fmt(enterTangent)} ${fmt(innerB)}A${radius},${radius} 0 ${sweep > Math.PI ? 1 : 0} 1 ${fmt(innerNext)}C${fmt(exitTangent)} ${fmt(next.map((v) => v * 0.88))} ${fmt(next)}`;
     water += `L${fmt(b)}${curve}`;
     line += `M${fmt(b)}${curve}`;
   }
@@ -211,6 +240,7 @@ export function bankArt(tile: Hex, season?: Season) {
   const dry = ["desert", "hyperarid", "semiarid"].includes(tile.climate ?? "");
   const evergreen = [
     "tropical",
+    "tropical-maritime",
     "subtropical",
     "equatorial-wetlands",
     "temperate-rainforest",
@@ -222,6 +252,7 @@ export function bankArt(tile: Hex, season?: Season) {
   );
   const jungle = [
     "tropical",
+    "tropical-maritime",
     "equatorial-wetlands",
     "mesoamerican",
     "monsoon",

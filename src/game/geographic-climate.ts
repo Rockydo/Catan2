@@ -78,6 +78,7 @@ const niches: Record<Climate, readonly [number, number]> = {
   steppe: [0.48, 0.25],
   mediterranean: [0.66, 0.34],
   tropical: [0.88, 0.76],
+  "tropical-maritime": [0.83, 0.65],
   desert: [0.75, 0.13],
   semiarid: [0.74, 0.26],
   oceanic: [0.48, 0.7],
@@ -148,5 +149,18 @@ export function geographicClimateWeight(
     ["semiarid", "desert", "steppe"].includes(climate)
   )
     weight *= 1.5;
+  if (climate === "tropical-maritime") {
+    const island = [
+      "atolls",
+      "archipelago",
+      "island-chains",
+      "volcanic-arcs",
+      "barrier-coasts",
+    ].includes(setting.landform ?? "");
+    weight *=
+      (0.02 + setting.maritime ** 3 * 2.5) *
+      (island ? 3 : 0.25) *
+      (1 - setting.altitude * 0.7);
+  }
   return weight;
 }

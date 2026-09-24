@@ -179,7 +179,7 @@ describe("coherent geography", () => {
 describe("seasonal geography and wildlife", () => {
   it("distinguishes snowmelt, monsoon and Mediterranean wet seasons", () => {
     expect(waterCalendar("cold")).toEqual([3, 2, 1, 0]);
-    expect(waterCalendar("tropical")).toEqual([1, 3, 2, 0]);
+    expect(waterCalendar("monsoon")).toEqual([1, 3, 2, 0]);
     expect(waterCalendar("mediterranean")).toEqual([1, 0, 1, 3]);
     const t = tile("mountain-pass", "stone");
     t.geography!.pass = true;
@@ -541,6 +541,8 @@ describe("crossings, local projects and ships", () => {
       )!;
     Object.assign(s.tiles[id], { resource: "grain", biome: "flood-wheat" });
     s.tiles[id].geography!.floodplain = true;
+    s.tiles[id].geography!.floodThreshold = 3;
+    s.tiles[id].climate = "cold";
     const before = JSON.stringify(s);
     expect(
       canApplyCommand(s, { type: "project", tile: id, kind: "irrigation" }),
@@ -654,6 +656,8 @@ describe("crossings, local projects and ships", () => {
       )!;
     Object.assign(s.tiles[id], { resource: "grain", biome: "flood-wheat" });
     s.tiles[id].geography!.floodplain = true;
+    s.tiles[id].geography!.floodThreshold = 3;
+    s.tiles[id].climate = "cold";
     t.level = t.turnLevel = 4;
     const plans = withPlanningFrame(s, () => economyProjects(s));
     expect(

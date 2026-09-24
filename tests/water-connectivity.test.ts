@@ -128,7 +128,7 @@ describe("bounded lakes", () => {
     expect(single).toBeGreaterThan(0);
     expect(multi).toBeGreaterThan(single);
     expect([...sizes].some((size) => size >= 5)).toBe(true);
-  });
+  }, 15000);
   it("leaves a twelve-tile lake alone and converts thirteen without changing geography or contents", () => {
     const w = generateWorld("lake-migration", 30, true);
     w.tiles = Object.fromEntries(
@@ -200,7 +200,7 @@ describe("connected water artwork", () => {
       expect(waterConnections(t, tiles).shore).toBe((1 << (i + 1)) - 1);
     });
   });
-  it("joins a downstream bend, tributary and sea mouth, but not an unrelated adjacent river", () => {
+  it("joins downstream bends, tributaries, sea mouths and touching river heads", () => {
     const t = water("0,0", true),
       ids = neighbors(t.id),
       tiles = new Map([[t.id, t]]);
@@ -212,10 +212,38 @@ describe("connected water artwork", () => {
     [outlet, tributary, unrelated, water(ids[5])].forEach((n) =>
       tiles.set(n.id, n),
     );
-    expect(waterConnections(t, tiles).channel).toBe(1 + 4 + 32);
+    expect(waterConnections(t, tiles).channel).toBe(1 + 4 + 8 + 32);
     expect(waterConnections(outlet, tiles).channel & 8).toBe(8);
     tiles.delete(ids[0]);
     expect(waterConnections(t, tiles).channel & 1).toBe(1);
+  });
+  it("joins neighboring source pools reciprocally without changing their drainage", () => {
+    const a = water("0,0", true),
+      b = water(neighbors("0,0")[1], true);
+    a.geography!.downstream = neighbors(a.id)[4];
+    b.geography!.downstream = neighbors(b.id)[0];
+    const tiles = new Map([
+      [a.id, a],
+      [b.id, b],
+    ]);
+    const before = structuredClone([a, b]);
+    expect(waterConnections(a, tiles).channel & (1 << 1)).toBeTruthy();
+    expect(waterConnections(b, tiles).channel & (1 << 4)).toBeTruthy();
+    expect([a, b]).toEqual(before);
+  });
+  it("merges adjacent river reaches even when both already have their own upstream", () => {
+    const a = water("0,0", true),
+      b = water("1,0", true);
+    const upstreamA = water("0,-1", true),
+      upstreamB = water("2,-1", true);
+    upstreamA.geography!.downstream = a.id;
+    upstreamB.geography!.downstream = b.id;
+    a.geography!.downstream = "-1,1";
+    b.geography!.downstream = "1,1";
+    const tiles = new Map([a, b, upstreamA, upstreamB].map((t) => [t.id, t]));
+    expect(waterConnections(a, tiles).channel & 1).toBe(1);
+    expect(waterConnections(b, tiles).channel & 8).toBe(8);
+    expect(riverGeometry(63).line).toBe("");
   });
   it("has finite closed geometry for every shore and river connection pattern", () => {
     for (let mask = 0; mask < 64; mask++) {
@@ -227,7 +255,10 @@ describe("connected water artwork", () => {
       );
       const sides = mask.toString(2).replaceAll("0", "").length;
       expect((shore.line.match(/M/g) ?? []).length).toBe(sides);
-      expect((line.match(/M/g) ?? []).length).toBe(sides);
+      const banks = Array.from({ length: 6 }, (_, i) => i).filter(
+        (i) => mask & (1 << i) && !(mask & (1 << ((i + 1) % 6))),
+      ).length;
+      expect((line.match(/M/g) ?? []).length).toBe(banks);
     }
     expect(shoreGeometry(0)).toEqual({ banks: "", line: "" });
   });

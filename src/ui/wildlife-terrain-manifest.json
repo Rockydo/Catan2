@@ -274,5 +274,9 @@
   "gazelle/seasons/hyperarid-oasis-summer.webp": "gazelle-hyperarid-oasis-summer",
   "gazelle/seasons/hyperarid-oasis-autumn.webp": "gazelle-hyperarid-oasis-autumn",
   "gazelle/seasons/hyperarid-oasis-spring.webp": "gazelle-hyperarid-oasis-spring",
-  "gazelle/seasons/hyperarid-oasis-winter.webp": "gazelle-hyperarid-oasis-winter"
+  "gazelle/seasons/hyperarid-oasis-winter.webp": "gazelle-hyperarid-oasis-winter",
+  "jungle-game/seasons/tropical-maritime-island-palms-spring.webp": "jungle-game-island-palms-spring",
+  "jungle-game/seasons/tropical-maritime-island-palms-summer.webp": "jungle-game-island-palms-summer",
+  "jungle-game/seasons/tropical-maritime-island-palms-winter.webp": "jungle-game-island-palms-winter",
+  "jungle-game/seasons/tropical-maritime-island-palms-autumn.webp": "jungle-game-island-palms-autumn"
 }

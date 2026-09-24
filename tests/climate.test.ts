@@ -109,6 +109,7 @@ it("retains the previous climates and their transition biases", () => {
     ...AMERICAN_CLIMATES,
     ...FRONTIER_CLIMATES,
     "semiarid",
+    "tropical-maritime",
   ]);
   for (const from of originalClimates)
     for (const to of CLIMATE_INFO[from].compatible.filter((c) =>
@@ -116,9 +117,20 @@ it("retains the previous climates and their transition biases", () => {
     ))
       expect(climateTransitionWeight(from, to)).toBe(0.5);
   const expected = {
-    oceanic: { temperate: 2, cold: 1, mediterranean: 1 },
+    oceanic: {
+      temperate: 2,
+      cold: 1,
+      mediterranean: 1,
+      "tropical-maritime": 1,
+    },
     alpine: { cold: 2, arctic: 2, temperate: 1, steppe: 1 },
-    subtropical: { tropical: 2, temperate: 1, mediterranean: 1, savanna: 1 },
+    subtropical: {
+      tropical: 2,
+      temperate: 1,
+      mediterranean: 1,
+      savanna: 1,
+      "tropical-maritime": 1,
+    },
     savanna: { tropical: 2, desert: 1, steppe: 1, subtropical: 1, semiarid: 1 },
   } as const;
   for (const from of newClimates)
@@ -385,7 +397,7 @@ it("uses neighboring climates and hidden land at map edges for open-water whales
 });
 it("keeps compatible climate buffers through seeded games, saves and successive expeditions", () => {
   const seen = new Set<string>();
-  for (let seed = 0; seed < 30; seed++) {
+  for (let seed = 0; seed < 60; seed++) {
     let s = newGame(`climate-audit-${seed}`);
     for (let step = 0; step < 4; step++) {
       assertInvariants(s);
@@ -428,7 +440,7 @@ it("keeps compatible climate buffers through seeded games, saves and successive 
     }
   }
   expect([...seen].sort()).toEqual([...CLIMATES].sort());
-});
+}, 15000);
 it("repairs conflicting climate proposals with buffers while preserving fixed borders", () => {
   const baseline: Record<string, Climate> = Object.fromEntries(
     Array.from({ length: 9 }, (_, i) => [`${i},0`, "temperate"]),

@@ -2131,5 +2131,9 @@
   "Ocean Harvester": "Grand pêcheur océanique",
   "Choose an available ship tier.": "Choisissez un palier de navire disponible.",
   "Heavy fishing ships cannot harvest through impassable shallow channels.": "Les navires de pêche hauturière ne peuvent pas pêcher au-delà des chenaux peu profonds infranchissables.",
-  "Gazelle herd": "Troupeau de gazelles"
+  "Gazelle herd": "Troupeau de gazelles",
+  "Tropical Maritime": "Tropical maritime",
+  "Island palms": "Palmeraie insulaire",
+  "Breadfruit grove": "Verger d’arbres à pain",
+  "Low basins flood at level 3; higher riverbanks at level 4. Flooded tiles stop producing. Select a tile to see its threshold. A levee keeps it dry.": "Les cuvettes basses sont inondées au niveau 3, les berges hautes au niveau 4. La production s’arrête sous l’eau. Sélectionnez une tuile pour voir son seuil. Une digue la protège."
 }

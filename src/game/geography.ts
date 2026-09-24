@@ -47,6 +47,7 @@ export interface Geography {
   downstream?: string;
   ford?: boolean;
   floodplain?: boolean;
+  floodThreshold?: 3 | 4;
   delta?: boolean;
   pass?: boolean;
   landmark?: Landmark;
@@ -70,7 +71,7 @@ export interface Wildlife {
   lastRound: number;
   dormant?: true;
 }
-export const GEOGRAPHY_VERSION = 5;
+export const GEOGRAPHY_VERSION = 6;
 export const landform = (
   seed: string,
   version = GEOGRAPHY_VERSION,
@@ -243,7 +244,8 @@ function watershed(
     mouths: new Set(),
   };
   let source = key(q * 8 + 4, r * 8 + 4);
-  for (let i = 0; i < 12; i++) {
+
+  for (let i = 0; i < (version >= 6 ? 24 : 12); i++) {
     const candidate = key(
       q * 8 + Math.floor(randomAt(seed, sourceKey, `source-q-${i}`) * 8),
       r * 8 + Math.floor(randomAt(seed, sourceKey, `source-r-${i}`) * 8),
@@ -257,7 +259,10 @@ function watershed(
     version >= 2 ? climateSetting(seed, source, version).moisture : 1;
   const supplied =
     version < 2 ||
-    randomAt(seed, source, "watershed-rain") < 0.18 + rain * 0.82;
+    (randomAt(seed, source, "watershed-rain") < 0.18 + rain * 0.82 &&
+      (version < 6 ||
+        elevationAt(seed, source, version) > seaLevel(seed, version) + 0.12 ||
+        randomAt(seed, source, "lowland-spring") < 0.25));
   if (
     supplied &&
     elevationAt(seed, source, version) > seaLevel(seed, version) + 0.06
@@ -506,6 +511,7 @@ const COLD = new Set<Climate>([
 const HOT = new Set<Climate>([
   "semiarid",
   "tropical",
+  "tropical-maritime",
   "subtropical",
   "monsoon",
   "savanna",
@@ -712,6 +718,13 @@ export const RIPARIAN_TERRAIN: Record<
     ["flood-meadow", 20],
     ["oat-fields", 10],
   ],
+  "tropical-maritime": [
+    ["river-woods", 30],
+    ["breadfruit-grove", 20],
+    ["flood-rice", 15],
+    ["alluvial-clay", 15],
+    ["jungle", 20],
+  ],
   tropical: [
     ["flood-rice", 39],
     ["alluvial-clay", 17],
@@ -832,7 +845,12 @@ export function geographicLandChoices(
     for (const [b, w] of weights) weights.set(b, w * 0.25);
     for (const [biome, weight] of RIPARIAN_TERRAIN[climate]) add(biome, weight);
     // Productive rice deltas belong only to warm rice-growing river basins.
-    if (delta && ["tropical", "subtropical", "monsoon"].includes(climate))
+    if (
+      delta &&
+      ["tropical", "tropical-maritime", "subtropical", "monsoon"].includes(
+        climate,
+      )
+    )
       add("delta-gardens", 25);
   }
   if (!weights.size) add("stone", 1);
@@ -948,6 +966,18 @@ export function geographicTerrain(
   } else {
     const selection = geographicLandChoices(seed, tile, at, around, version);
     geo.floodplain = selection.floodplain;
+    if (geo.floodplain) {
+      const bank = around.filter((n) => n.downstream || n.lake);
+      const rise = bank.length
+        ? at.elevation -
+          bank.reduce((min, n) => Math.min(min, n.elevation), Infinity)
+        : 1;
+      const slope = around.reduce(
+        (m, n) => Math.max(m, Math.abs(n.elevation - at.elevation)),
+        0,
+      );
+      geo.floodThreshold = rise <= 0.025 && slope <= 0.08 ? 3 : 4;
+    }
     geo.delta = selection.delta;
     let roll =
       randomAt(seed, id, "resource") *
@@ -961,8 +991,9 @@ export function geographicTerrain(
       }
     }
     geo.pass = biome === "mountain-pass";
-    if (biome === "bare-peaks" || geo.pass) {
+    if (BIOME_INFO[biome].family === "rugged" || geo.pass) {
       geo.floodplain = false;
+      delete geo.floodThreshold;
       geo.delta = false;
     }
     if (
@@ -1092,6 +1123,56 @@ export function geographicName(tile: Hex): string | undefined {
           : undefined;
 }
 
+/** Separated rock faces form a useful saddle; a clump on one side does not. */
+export function mountainGapChance(world: World, id: string): number {
+  const ring = neighbors(id);
+  const peaks = ring
+    .map((n, i) => (world.tiles[n]?.resource === "peaks" ? i : -1))
+    .filter((i) => i >= 0);
+  let separated = 0,
+    opposite = 0;
+  for (let a = 0; a < peaks.length; a++)
+    for (let b = a + 1; b < peaks.length; b++) {
+      const gap = Math.min(peaks[b] - peaks[a], 6 - (peaks[b] - peaks[a]));
+      if (gap >= 2) separated++;
+      if (gap === 3) opposite++;
+    }
+  return separated
+    ? Math.min(0.65, 0.12 + separated * 0.12 + opposite * 0.1)
+    : 0;
+}
+/** Refine fresh stone outcrops into saddles once the neighboring peaks are known.
+ * Never remove a peak, crop, town, or previously revealed resource. */
+export function favorMountainGaps(
+  world: World,
+  seed: string,
+  ids: string[],
+): void {
+  if ((world.geographyVersion ?? 0) < 5) return;
+  for (const id of [...ids].sort()) {
+    const tile = world.tiles[id];
+    if (
+      !tile?.geography ||
+      tile.geography.floodplain ||
+      tile.geography.waterway ||
+      tile.geography.pass ||
+      ![
+        "stone",
+        "arctic-stone",
+        "escarpment",
+        "mountain-quarry",
+        "volcanic-quarry",
+      ].includes(tile.biome ?? "")
+    )
+      continue;
+    if (randomAt(seed, id, "mountain-saddle") >= mountainGapChance(world, id))
+      continue;
+    tile.biome = "mountain-pass";
+    tile.resource = "stone";
+    tile.geography.pass = true;
+  }
+}
+
 /** A pass is a saddle through a real range, never an isolated seasonal obstacle.
  * Keep legal units and all player structures in place when repairing old maps. */
 export function restoreMountainPasses(
@@ -1107,7 +1188,11 @@ export function restoreMountainPasses(
       .filter((tile) => !repairing.has(tile.id) && isPass(tile))
       .map((tile) => tile.id),
   );
-  for (const id of [...ids].sort()) {
+  for (const id of [...ids].sort(
+    (a, b) =>
+      mountainGapChance(world, b) - mountainGapChance(world, a) ||
+      a.localeCompare(b),
+  )) {
     const tile = world.tiles[id];
     if (tile?.biome !== "mountain-pass" && !tile?.geography?.pass) continue;
     if (

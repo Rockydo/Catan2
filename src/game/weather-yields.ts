@@ -4,6 +4,7 @@ import type { Weather } from "./geography";
 
 const warm = new Set([
   "tropical",
+  "tropical-maritime",
   "subtropical",
   "monsoon",
   "savanna",
@@ -64,6 +65,7 @@ export function weatherYieldFactor(
     if (weather === "cold")
       return warm.has(climate) || thirsty.has(biome) ? 0.5 : 0.75;
     if (weather === "wet") {
+      if (biome === "breadfruit-grove") return 1;
       if (
         [
           "rice-field",

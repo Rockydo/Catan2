@@ -97,13 +97,20 @@ const expected = {
       ["fish", 0.15],
       ["whale", 0.05],
     ],
-    compatible: ["tropical", "subtropical", "savanna", "andean", "prairie"],
+    compatible: [
+      "tropical-maritime",
+      "tropical",
+      "subtropical",
+      "savanna",
+      "andean",
+      "prairie",
+    ],
   },
 } as const;
 
 describe("American climate generation", () => {
   it("adds three normal climates with exact resource shares and reciprocal regional transitions", () => {
-    expect(CLIMATES).toHaveLength(21);
+    expect(CLIMATES).toHaveLength(22);
     expect(AMERICAN_CLIMATES).toEqual(["andean", "prairie", "mesoamerican"]);
     for (const climate of AMERICAN_CLIMATES) {
       expect(CLIMATE_INFO[climate]).toMatchObject(

@@ -335,6 +335,7 @@ function schedule(tile: Hex, raw: Raw, base: number): Year {
   const dry = ["desert", "hyperarid", "semiarid"].includes(climate);
   const rainy = [
     "tropical",
+    "tropical-maritime",
     "subtropical",
     "savanna",
     "monsoon",
@@ -358,6 +359,7 @@ function schedule(tile: Hex, raw: Raw, base: number): Year {
       : base === 2
         ? [2, 2, 3, 1]
         : times([1, 1, 1, 1]);
+  if (biome === "breadfruit-grove") return [2, 2, 3, 1];
   if (biome === "flood-wheat") return times(dry ? [4, 0, 0, 0] : [0, 4, 0, 0]);
   if (biome === "flood-sorghum") return times([0, 0, 4, 0]);
   if (biome === "flood-rice") return times([1, 0, 1, 2]);
@@ -462,6 +464,7 @@ function schedule(tile: Hex, raw: Raw, base: number): Year {
     raw === "brick" &&
     [
       "tropical",
+      "tropical-maritime",
       "subtropical",
       "monsoon",
       "mesoamerican",
@@ -631,7 +634,15 @@ export function seasonWeather(tile: Hex, season: Season): string {
         : season === "summer"
           ? "Summer thaw"
           : "Snow cover";
-  if (["tropical", "subtropical", "savanna", "mesoamerican"].includes(climate))
+  if (
+    [
+      "tropical",
+      "tropical-maritime",
+      "subtropical",
+      "savanna",
+      "mesoamerican",
+    ].includes(climate)
+  )
     return season === "spring"
       ? "Early rains"
       : season === "summer"

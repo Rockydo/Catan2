@@ -2,6 +2,7 @@ import { test, expect } from "@playwright/test";
 import { newGame } from "../src/game/engine";
 import { chooseAIAction } from "../src/game/ai";
 import { run } from "../tests/helpers";
+import { floodsAt } from "../src/game/environment";
 import { syncSeasonSurfaces } from "../src/game/seasons";
 import { serialize, assertInvariants } from "../src/game/save";
 
@@ -14,11 +15,22 @@ test("floodplain selection explains water level, lost harvest and protection", a
   s.phase = "economy";
   for (const tile of Object.values(s.tiles)) delete tile.iceWeather;
   syncSeasonSurfaces(s);
-  assertInvariants(s);
   const t = Object.values(s.tiles).find(
-    (t) => t.geography?.access === "flooded",
+    (t) =>
+      t.geography?.floodplain &&
+      floodsAt(
+        { ...t, geography: { ...t.geography, floodThreshold: 3 } },
+        "spring",
+        "wet",
+      ),
   )!;
   expect(t).toBeTruthy();
+  // A definite flood exercises the panel independently of this seed's weather.
+  t.geography!.floodThreshold = 3;
+  t.geography!.weather = "wet";
+  t.geography!.weatherSeason = "spring";
+  t.geography!.access = "flooded";
+  assertInvariants(s);
   await page.addInitScript(() => localStorage.setItem("catane-language", "en"));
   await page.goto("/");
   await page.locator("input[type=file]").setInputFiles({
