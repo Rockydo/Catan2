@@ -1,3 +1,10 @@
+import {
+  GeographyLegend,
+  GeographyMarker,
+  GEOGRAPHY_VIEWS,
+  geographyColor,
+  type GeographyView,
+} from "./Geography";
 import { maxValue, minValue } from "../game/aggregate";
 import {
   frozenInSeason,
@@ -229,6 +236,7 @@ const TerrainLayer = memo(function TerrainLayer({
   compact,
   numbers,
   climates,
+  mapView,
   total,
   viewer,
   season,
@@ -244,6 +252,7 @@ const TerrainLayer = memo(function TerrainLayer({
   compact: Record<string, Piece[]>;
   numbers: boolean;
   climates: boolean;
+  mapView: GeographyView;
   total: number | null;
   viewer: number;
   season?: Season;
@@ -335,7 +344,11 @@ const TerrainLayer = memo(function TerrainLayer({
                   className="climate-map-tile"
                   data-climate={climate}
                   points={poly}
-                  fill={CLIMATE_INFO[climate].color}
+                  fill={
+                    mapView === "climate"
+                      ? CLIMATE_INFO[climate].color
+                      : geographyColor(tile, mapView)
+                  }
                   stroke="#203c4555"
                   strokeWidth="0.6"
                 />
@@ -353,6 +366,10 @@ const TerrainLayer = memo(function TerrainLayer({
                 !!good,
                 tile.resource !== "water",
                 openWater,
+                tile.geography?.access,
+                tile.geography?.landmark,
+                tile.geography?.animals?.join(","),
+                Object.keys(tile.geography?.projects ?? {}).join(","),
                 seasonalTerrainPattern(tile, artworkSeason) === "water"
                   ? hash(tile.id) % 3
                   : 0,
@@ -378,6 +395,7 @@ const TerrainLayer = memo(function TerrainLayer({
                 y={y}
                 seed={hash(tile.id)}
               />
+              <GeographyMarker tile={tile} x={x} y={y} />
               {tx(
                 good && (
                   <>
@@ -875,7 +893,8 @@ const BoardScene = memo(function BoardScene({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const currentSeason = seasonAt(s);
   const PreviewIcon = seasonPreview ? SEASON_ICONS[seasonPreview] : null;
-  const [climates, setClimates] = useState(false);
+  const [mapView, setMapView] = useState<GeographyView>("normal");
+  const climates = mapView !== "normal";
   const [numbers, setNumbers] = useState(true);
   const lastAlertFocus = useRef<Props["focus"]>(null);
   const tiles = useMemo(() => Object.values(s.tiles), [s.tiles]),
@@ -1007,7 +1026,7 @@ const BoardScene = memo(function BoardScene({
     [
       s,
       mode,
-      climates,
+      mapView,
       mode === "colonize" ? unitIds.join(",") : "",
       mode === "move-route" ? selection?.id : undefined,
     ],
@@ -1096,6 +1115,7 @@ const BoardScene = memo(function BoardScene({
           compact={groupUnits}
           numbers={numbers}
           climates={climates}
+          mapView={mapView}
           season={currentSeason}
           artworkSeason={seasonPreview ?? currentSeason}
           total={!rolling && s.dice ? s.dice[0] + s.dice[1] : null}
@@ -1911,11 +1931,27 @@ const BoardScene = memo(function BoardScene({
           className="icon-button climate-view-toggle"
           aria-label={tx("Show climates")}
           title={tx("Show climates")}
-          aria-pressed={climates}
-          onClick={() => setClimates((v) => !v)}
+          aria-pressed={mapView === "climate"}
+          onClick={() =>
+            setMapView((v) => (v === "climate" ? "normal" : "climate"))
+          }
         >
           <span aria-hidden="true">◈</span> {tx("Climates")}
         </button>
+        {s.geographyVersion && (
+          <select
+            className="map-view-select"
+            aria-label={tx("Map view")}
+            value={mapView}
+            onChange={(e) => setMapView(e.target.value as GeographyView)}
+          >
+            {Object.entries(GEOGRAPHY_VIEWS).map(([key, label]) => (
+              <option key={key} value={key}>
+                {tx(label)}
+              </option>
+            ))}
+          </select>
+        )}
         <button
           className="icon-button"
           aria-label={tx(numbers ? "Hide dice numbers" : "Show dice numbers")}
@@ -1944,7 +1980,10 @@ const BoardScene = memo(function BoardScene({
           </button>
         </div>
       )}
-      {climates && (
+      {mapView !== "normal" && mapView !== "climate" && (
+        <GeographyLegend view={mapView} />
+      )}
+      {mapView === "climate" && (
         <div className="climate-map-legend" aria-label={tx("Climates")}>
           <strong>{tx("Climate overview")}</strong>
           {CLIMATES.filter((c) =>

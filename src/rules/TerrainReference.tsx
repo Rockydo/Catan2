@@ -1,3 +1,5 @@
+import { baseGeographicYield, wildHabitat } from "../game/geography";
+import type { Hex } from "../game/types";
 import type { Season } from "../game/seasons";
 import { terrainPatternKey, terrainArtFile } from "../ui/terrain-art";
 import {
@@ -88,8 +90,40 @@ function Outputs({
     </span>
   );
 }
+function sample(tile: Biome, climate?: Climate): Hex {
+  return {
+    id: "0,0",
+    q: 0,
+    r: 0,
+    number: 7,
+    resource: BIOME_INFO[tile].resource,
+    biome: tile,
+    climate,
+    vertices: [],
+    edges: [],
+    geography: { elevation: 0.5, region: "reference" },
+  };
+}
 function yields(tile: Biome, climate?: Climate): Stock {
-  return tile === "woods" ? { lumber: 1, hides: 1 } : biomeYield(tile, climate);
+  return baseGeographicYield(sample(tile, climate));
+}
+function potential(tile: Biome): Stock {
+  return {
+    ...yields(tile),
+    ...(wildHabitat(sample(tile)) ? { hides: 1, meat: 1, wool: 1 } : {}),
+    ...([
+      "water",
+      "river",
+      "lake",
+      "shoal",
+      "reef",
+      "fish",
+      "cod",
+      "whale",
+    ].includes(tile)
+      ? { fish: 1, hides: 1, oil: 1 }
+      : {}),
+  };
 }
 function yieldVariants(tile: Biome) {
   const groups = new Map<string, { climates: Climate[]; raw: Stock }>();
@@ -123,8 +157,8 @@ export function GoodSources({ good }: { good: Good }) {
     >
       {BIOMES.filter(
         (t) =>
-          good in yields(t) ||
-          (Object.keys(yields(t)) as Raw[]).some(
+          good in potential(t) ||
+          (Object.keys(potential(t)) as Raw[]).some(
             (g) => processedFor(g) === good,
           ),
       ).map((tile) => (
@@ -148,10 +182,27 @@ export function TerrainReference({ seaOnly = false }: { seaOnly?: boolean }) {
           "Les quantités ci-dessous sont les bases annuelles actuelles d’une colonie, ajustées au climat. Chaque rendement régional des cultures est indiqué. Multipliez la production brute par le niveau de l’agglomération, du camp ou du collecteur. Les agglomérations, marchands terrestres et navires marchands de niveau III/IV ajoutent aussi 1×/2× la base en produits transformés. Les ateliers ajoutent séparément leur palier × le rendement de la ressource liée ; ces bonus ne consomment aucune matière première.",
         )}
       </p>
+      <p>
+        {l(
+          "Permanent terrain yields only. Wild grasslands and water produce nothing without migrating animals; forests retain timber. Animal yields are added while populations are present. See Living geography for their outputs and river crops.",
+          "Rendements du terrain permanent uniquement. Les plaines sauvages et l’eau ne produisent rien sans animaux migrateurs ; les forêts conservent leur bois. Les populations présentes ajoutent leurs rendements. Consultez Géographie vivante pour ces productions et les cultures riveraines.",
+        )}
+      </p>
       <div className="terrain-reference-grid">
         {BIOMES.filter(
           (t) =>
-            !seaOnly || ["water", "fish", "cod", "whale", "ice"].includes(t),
+            !seaOnly ||
+            [
+              "water",
+              "fish",
+              "cod",
+              "whale",
+              "ice",
+              "river",
+              "lake",
+              "shoal",
+              "reef",
+            ].includes(t),
         ).map((tile) => {
           const variants = yieldVariants(tile),
             workshops = workshopGoods(tile);
@@ -179,25 +230,27 @@ export function TerrainReference({ seaOnly = false }: { seaOnly?: boolean }) {
                       </strong>
                     )}
                     {Object.keys(raw).length ? (
-                      <Outputs goods={raw} choice={tile === "woods"} />
+                      <Outputs goods={raw} choice={false} />
                     ) : (
                       <p>{l("No production.", "Aucune production.")}</p>
                     )}
-                    {workshops.map((g) => (
-                      <div key={g}>
-                        <span className="output-label">
-                          {tx(extensionName(g))}
-                        </span>
-                        <Outputs goods={{ [processedFor(g)]: raw[g] }} />
-                      </div>
-                    ))}
+                    {workshops
+                      .filter((g) => !!raw[g])
+                      .map((g) => (
+                        <div key={g}>
+                          <span className="output-label">
+                            {tx(extensionName(g))}
+                          </span>
+                          <Outputs goods={{ [processedFor(g)]: raw[g] }} />
+                        </div>
+                      ))}
                   </div>
                 ))}
                 {tile === "woods" && (
                   <p>
                     {l(
-                      "Each faction chooses its own harvest. Choose Wood or Hides during your action phase. A workshop keeps the product chosen when built.",
-                      "Chaque faction choisit sa production : Bois ou Peaux, pendant sa phase d’actions. Un atelier conserve le produit choisi à sa construction.",
+                      "Woods always produce Wood in geography campaigns. Migrating animals add their own yields while present. The Wood/Hides choice applies only to legacy campaigns.",
+                      "Dans les campagnes géographiques, les Bois produisent toujours du Bois. Les animaux migrateurs ajoutent leurs rendements lorsqu’ils sont présents. Le choix Bois/Peaux concerne uniquement les anciennes campagnes.",
                     )}
                   </p>
                 )}
@@ -247,7 +300,15 @@ export function ClimateReference({
       className="climate-reference"
       aria-label={l("Climate probabilities", "Probabilités des climats")}
     >
-      <h2>{l("Climates", "Climats")}</h2>
+      <h2>
+        {l("Climate resource weights", "Poids des ressources par climat")}
+      </h2>
+      <p>
+        {l(
+          "In geography campaigns, these land weights are the starting resource distribution before relief, rivers and coasts replace eligible terrain. Land/water percentages and fixed marine rolls below describe legacy maps only. New maps use connected elevation and drainage; fish and whales migrate.",
+          "Dans les campagnes géographiques, les poids terrestres constituent la distribution initiale, avant les remplacements liés au relief, aux cours d’eau et au littoral. Les pourcentages terre/eau et les tirages marins fixes ci-dessous décrivent uniquement les anciennes cartes. Les nouvelles cartes utilisent relief et drainage continus ; poissons et baleines migrent.",
+        )}
+      </p>
       {!readOnly && (
         <div
           className="climate-tabs"
@@ -305,10 +366,7 @@ export function ClimateReference({
                 {tx(BIOME_INFO[t].name)}
                 <small>
                   {Object.keys(yields(t, climate)).length ? (
-                    <Outputs
-                      goods={yields(t, climate)}
-                      choice={t === "woods"}
-                    />
+                    <Outputs goods={yields(t, climate)} choice={false} />
                   ) : t === "bare-peaks" ? (
                     l(
                       "No production. Impassable.",

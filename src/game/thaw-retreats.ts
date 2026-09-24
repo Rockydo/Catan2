@@ -11,7 +11,7 @@ const solidLand = (s: Game, tile: string) =>
   canOccupy(s.tiles[tile], false);
 
 /** Search the old ice sheet and remaining ice, without crossing older open sea
- * or hostile forces. Safe land takes priority over a forced enemy landing. */
+ * or hostile forces. Seasonal flooded ground and closed passes use the same evacuation rules. Safe land takes priority over a forced enemy landing. */
 export function thawLanding(
   s: Game,
   origin: string,
@@ -74,7 +74,7 @@ export function continueThawRetreats(s: Game): void {
     if (!landing) {
       log(
         s,
-        `${s.players[next.owner].name}: thaw left ${units.length} units without a reachable landing. Transport rescue is needed.`,
+        `${s.players[next.owner].name}: seasonal terrain closure left ${units.length} units without a reachable landing. Transport rescue is needed.`,
         "info",
         next.owner,
         next.origin,
@@ -84,7 +84,7 @@ export function continueThawRetreats(s: Game): void {
     if (landing.defenders.length) {
       log(
         s,
-        `${s.players[next.owner].name}: retreating from melting ice into an enemy-held landing at ${landing.tile}.`,
+        `${s.players[next.owner].name}: retreating from seasonal terrain closure into an enemy-held landing at ${landing.tile}.`,
         "battle",
         next.owner,
         landing.tile,
@@ -101,7 +101,7 @@ export function continueThawRetreats(s: Game): void {
       for (const unit of units) setTile(s, unit, landing.tile);
       log(
         s,
-        `${s.players[next.owner].name}: ${units.length} units automatically retreated from melting ice to ${landing.tile}.`,
+        `${s.players[next.owner].name}: ${units.length} units automatically retreated from seasonal terrain closure to ${landing.tile}.`,
         "info",
         next.owner,
         landing.tile,

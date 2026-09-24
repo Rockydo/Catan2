@@ -116,7 +116,7 @@ export function MilitaryGlyph({
         )}
       </g>
     );
-  if (kind === "light")
+  if (kind === "light" || kind === "hunter")
     return (
       <g strokeLinejoin="round" strokeLinecap="round">
         <path
@@ -389,9 +389,11 @@ export function MilitaryPortrait({
         </defs>
         <g clipPath={`url(#${clip})`}>
           <rect x="2" y="2" width="60" height="68" fill="#edddbc" />
-          {isSettler(unit.kind) ? (
+          {isSettler(unit.kind) ||
+          unit.kind === "hunter" ||
+          unit.kind === "riverboat" ? (
             <image
-              href={`./assets/portrait-${unit.kind}-v1.webp`}
+              href={`./assets/portrait-${unit.kind}${isSettler(unit.kind) ? "" : `-${unit.tier}`}-v1.webp`}
               x="2"
               y="2"
               width="60"
@@ -468,7 +470,7 @@ export const ArmyMiniature = memo(function ArmyMiniature({
       ranks,
       rank: maxValue(ranks),
       merchant,
-      economic: merchant || byKind.has("fishing"),
+      economic: merchant || byKind.has("fishing") || byKind.has("hunter"),
       settler: kinds.some(isSettler),
     };
   }, [units]);

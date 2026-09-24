@@ -34,6 +34,9 @@ export function legacyGame(...args: Parameters<typeof newGame>): Game {
   addHexes(world, s.seed, []);
   Object.assign(s, world);
   delete s.climatePlan;
+  delete s.geographyVersion;
+  delete s.wildlife;
+  delete s.environmentRound;
   s.generation = 4;
   delete s.calendar;
   return s;
@@ -63,6 +66,7 @@ export function piece(
   tier = 1,
 ): Piece {
   const naval = [
+      "riverboat",
       "transport",
       "convoy",
       "galley",
@@ -90,4 +94,9 @@ export function piece(
 export function nextOwnerTurn(s: Game) {
   beginTurn(s);
   s.phase = "military";
+}
+
+/** Version-five climate worlds for migration and equivalence fixtures. */
+export function climateGame(...args: Parameters<typeof newGame>): Game {
+  return newGame(args[0], args[1], { geography: false });
 }

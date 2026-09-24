@@ -1,3 +1,4 @@
+import { pieceAccess } from "./geography";
 import { maxValue, minValue } from "./aggregate";
 import type { SnapshotDelta } from "./snapshot-delta";
 import {
@@ -388,7 +389,13 @@ export function hostileAt(
   if (index?.source.pieces === s.pieces) {
     const owners = index.movement.tiles.get(tile);
     // Stranded troops can be attacked from either movement domain.
-    const mask = naval === undefined ? 15 : naval ? 14 : 11;
+    const mask =
+      naval === undefined ||
+      (canOccupy(s.tiles[tile]) && canOccupy(s.tiles[tile], true))
+        ? 15
+        : naval
+          ? 14
+          : 11;
     if (owners)
       for (const [owner, flags] of owners)
         if (flags & mask && !friendly(s, owner, p)) return true;
@@ -398,7 +405,10 @@ export function hostileAt(
       if (
         unit.tile === tile &&
         !unit.carrier &&
-        (naval === undefined || unit.naval === naval || !!unit.seasonStatus) &&
+        (naval === undefined ||
+          unit.naval === naval ||
+          !!unit.seasonStatus ||
+          (canOccupy(s.tiles[tile]) && canOccupy(s.tiles[tile], true))) &&
         !friendly(s, unit.owner, p)
       )
         return true;
@@ -408,7 +418,11 @@ export function hostileAt(
 /** A stranded force can be engaged from the tile's current movement surface. */
 export const combatantsAt = (s: Game, tile: string, naval?: boolean) =>
   piecesAt(s, tile).filter(
-    (u) => naval === undefined || u.naval === naval || !!u.seasonStatus,
+    (u) =>
+      naval === undefined ||
+      u.naval === naval ||
+      !!u.seasonStatus ||
+      (canOccupy(s.tiles[tile]) && canOccupy(s.tiles[tile], true)),
   );
 function blockadingAt(s: Game, tile: string, owner: number, naval: boolean) {
   const index = readIndex(s);
@@ -452,7 +466,9 @@ export const points = (u: Pick<Piece, "kind" | "naval" | "tier">) =>
     ? shipStats(u.kind as ShipClass, u.tier).power
     : u.kind === "merchant" || isSettler(u.kind)
       ? 0
-      : u.tier;
+      : u.kind === "hunter"
+        ? Math.max(0, u.tier - 1)
+        : u.tier;
 export const speed = (u: Piece) =>
   u.naval
     ? shipStats(u.kind as ShipClass, u.tier).speed
@@ -532,7 +548,7 @@ export function fleetDefenders(
   return piecesAt(s, tile).filter(
     (u) =>
       !friendly(s, u.owner, owner) &&
-      (u.naval || s.tiles[tile].surface === "frozen"),
+      (u.naval || canOccupy(s.tiles[tile], false)),
   );
 }
 /** Artillery doubles its own power; shore watchtowers add support once. */
@@ -665,13 +681,19 @@ export function moveTargets(s: Game, ids: string[]): Record<string, string[]> {
   // initiate combat on that hex for one MP, without teleporting either army.
   if (max >= 1 && hostileAt(s, first.tile, first.owner, first.naval))
     result[first.tile] = [first.tile];
+  const profiles = [
+    ...new Map(
+      units.map((u) => [`${u.naval}/${u.kind}/${u.tier}`, u]),
+    ).values(),
+  ];
   const queue = [first.tile];
   const paths: Record<string, string[]> = { [first.tile]: [] };
   for (let i = 0; i < queue.length; i++) {
     const t = queue[i];
     if (paths[t].length >= max) continue;
     for (const n of neighbors(t)) {
-      if (paths[n] || !canOccupy(s.tiles[n], first.naval)) continue;
+      if (paths[n] || !profiles.every((u) => pieceAccess(s.tiles[n], u)))
+        continue;
       paths[n] = [...paths[t], n];
       result[n] = paths[n];
       if (!hostileAt(s, n, first.owner, first.naval)) queue.push(n);
@@ -694,7 +716,7 @@ export function retreatOptions(
         ? units.every(
             (u) =>
               u.seasonStatus !== "icebound" &&
-              canOccupy(s.tiles[n], u.naval) &&
+              pieceAccess(s.tiles[n], u) &&
               !hostileAt(s, n, u.owner, u.naval),
           )
         : canOccupy(s.tiles[n], naval) && !hostileAt(s, n, owner, naval)),
@@ -1129,20 +1151,34 @@ function readProduction(
       if (town)
         for (const id of covered) {
           const good = tileGood(tiles[id]);
-          if (good && (u.kind !== "fishing" || !blocked(id, u.owner)))
+          if (
+            good &&
+            (!["fishing", "hunter"].includes(u.kind) || !blocked(id, u.owner))
+          )
             for (const [raw, amount] of harvestAt(
               id,
               u.owner,
               u.tier,
-              u.kind !== "fishing",
+              !["fishing", "hunter"].includes(u.kind),
             ))
-              sources.push({
-                owner: u.owner,
-                town,
-                tile: id,
-                good: raw as Good,
-                amount: amount!,
-              });
+              if (
+                u.kind !== "hunter" ||
+                (tiles[id].geography?.fauna?.[raw as Good] ?? 0) > 0
+              )
+                sources.push({
+                  owner: u.owner,
+                  town,
+                  tile: id,
+                  good: raw as Good,
+                  amount:
+                    u.kind === "hunter"
+                      ? Math.min(
+                          amount!,
+                          (tiles[id].geography?.fauna?.[raw as Good] ?? 0) *
+                            u.tier,
+                        )
+                      : amount!,
+                });
         }
       collectors.set(key, sources);
     }
@@ -1326,7 +1362,7 @@ export function productionSignature(s: Game): string {
     ]);
     const fishers = new Map<number, Map<string, number>>();
     for (const { unit: u } of actors.collectors) {
-      if (u.kind === "fishing") {
+      if (["fishing", "hunter"].includes(u.kind)) {
         if (!fishers.has(u.owner)) fishers.set(u.owner, new Map());
         const positions = fishers.get(u.owner)!;
         positions.set(u.tile, Math.max(positions.get(u.tile) ?? 0, u.tier));
@@ -1351,7 +1387,7 @@ export function productionSignature(s: Game): string {
     // producer records above rather than adding blocked-harvest interests.
     if (fishers.size)
       for (const tile of Object.values(s.tiles))
-        if (marineResource(tile))
+        if (marineResource(tile) || tile.geography?.animals?.length)
           for (const [owner, positions] of fishers)
             for (const [origin, tier] of positions)
               if (distance(origin, tile.id) <= tier) {
@@ -1891,7 +1927,8 @@ export function researchCount(s: Game, owner: number): number {
 }
 
 export function canChooseWoods(s: Game, tile: string, owner = s.active) {
-  if (s.tiles[tile]?.biome !== "woods") return false;
+  if (s.tiles[tile]?.geography || s.tiles[tile]?.biome !== "woods")
+    return false;
   // Several woods are considered in one AI decision. Collect the faction's
   // harvest access once, rather than scanning every unit for each woodland.
   // Mutable drafts retain the direct query below; published snapshots and

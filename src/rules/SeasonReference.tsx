@@ -50,6 +50,7 @@ export function SeasonReference({
   const locale = useLocale();
   const l = (en: string, fr: string) => (locale === "fr" ? fr : en);
   const [climate, setClimate] = useState<Climate>(initial);
+  const [legacy, setLegacy] = useState(false);
   const [season, setSeason] = useState<Season>("summer");
   const biomes = [
     ...new Set<Biome>([
@@ -75,6 +76,25 @@ export function SeasonReference({
           "Chaque case indique la production d’une colonie sur un jet correspondant. Zéro signifie aucune production pendant cette saison. Les quatre saisons totalisent quatre fois la base actuelle ajustée au climat. Multipliez ces quantités par le niveau de l’agglomération, du camp ou du collecteur ; la transformation avancée utilise ces mêmes quantités saisonnières.",
         )}
       </p>
+      <label>
+        <input
+          type="checkbox"
+          checked={legacy}
+          onChange={(e) => setLegacy(e.target.checked)}
+        />{" "}
+        {l(
+          "Show legacy campaign yields",
+          "Afficher les rendements des anciennes campagnes",
+        )}
+      </label>
+      {!legacy && (
+        <p>
+          {l(
+            "Geography campaigns: these are permanent terrain yields. Add the animals currently present, shown in the Living geography chapter. Floods, ice and disruption can prevent production. River crops and regional weather are detailed in that chapter.",
+            "Campagnes géographiques : ces rendements correspondent au terrain permanent. Ajoutez les animaux présents, décrits au chapitre Géographie vivante. Crues, glace et sabotages peuvent empêcher la production. Les cultures riveraines et la météo régionale sont détaillées dans ce chapitre.",
+          )}
+        </p>
+      )}
       {!readOnly && (
         <div
           className="climate-tabs"
@@ -135,7 +155,7 @@ export function SeasonReference({
           </thead>
           <tbody>
             {biomes.flatMap((biome) =>
-              (biome === "woods"
+              (legacy && biome === "woods"
                 ? (["lumber", "hides"] as const)
                 : [undefined]
               ).map((choice) => {
@@ -149,6 +169,9 @@ export function SeasonReference({
                   resource: BIOME_INFO[biome].resource,
                   vertices: [],
                   edges: [],
+                  ...(!legacy
+                    ? { geography: { elevation: 0.5, region: "reference" } }
+                    : {}),
                   ...(choice ? { woodsChoices: { 0: choice } } : {}),
                 };
                 const profile = seasonalProfile(tile, 0);

@@ -1,3 +1,10 @@
+import {
+  syncEnvironment,
+  regionalWeather,
+  weatherChoices,
+} from "./environment";
+import { baseGeographicYield, pieceAccess } from "./geography";
+import { BIOME_INFO } from "./climate-content";
 import type { Game, Hex, Raw, Stock } from "./types";
 import { tileYield } from "./maritime";
 import { randomAt } from "./world";
@@ -158,7 +165,8 @@ export function iceRisk(
   tile: Hex,
   round = s.round + 1,
 ): number {
-  if (!["water", "ice"].includes(tile.resource)) return 0;
+  if (tile.geography?.warmed || !["water", "ice"].includes(tile.resource))
+    return 0;
   if (s.calendar?.iceModel !== 2)
     return Number(frozenInSeason(tile, seasonAt({ ...s, round })));
   let risk = Number(tile.surface === "frozen");
@@ -166,7 +174,30 @@ export function iceRisk(
     const at = { calendar: s.calendar, round: r },
       season = seasonAt(at);
     if (!season) continue;
-    const [freeze, melt] = iceOdds(tile, season, seasonHalf(at));
+    const [baseFreeze, baseMelt] = iceOdds(tile, season, seasonHalf(at));
+    const weather = tile.geography
+      ? season === seasonAt(s)
+        ? [[tile.geography.weather ?? "normal", 1] as const]
+        : weatherChoices(tile.climate ?? "temperate", season)
+      : [["normal", 1] as const];
+    let freeze = 0,
+      melt = 0;
+    for (const [kind, chance] of weather) {
+      freeze +=
+        chance *
+        (kind === "cold"
+          ? Math.min(1, baseFreeze * 1.5)
+          : kind === "mild"
+            ? baseFreeze * 0.5
+            : baseFreeze);
+      melt +=
+        chance *
+        (kind === "cold"
+          ? baseMelt * 0.5
+          : kind === "mild"
+            ? Math.min(1, baseMelt * 1.4)
+            : baseMelt);
+    }
     risk = risk * (1 - melt) + (1 - risk) * freeze;
   }
   return risk;
@@ -204,7 +235,14 @@ function resolveWeather(s: Game, tile: Hex) {
       season = seasonAt(at)!;
     const [freeze, melt] = iceOdds(tile, season, seasonHalf(at));
     const iced = tile.surface === "frozen";
-    const chance = iced ? melt : freeze;
+    let chance = iced ? melt : freeze;
+    if (tile.geography) {
+      const weather = regionalWeather({ ...s, round }, tile);
+      if (weather === "cold")
+        chance = iced ? melt * 0.5 : Math.min(1, freeze * 1.5);
+      if (weather === "mild")
+        chance = iced ? Math.min(1, melt * 1.4) : freeze * 0.5;
+    }
     if (randomAt(s.seed, tile.id, `ice-weather-${round}`) < chance)
       tile.surface = iced ? "open" : "frozen";
   }
@@ -240,6 +278,21 @@ function schedule(tile: Hex, raw: Raw, base: number): Year {
   const wetDry: Year = [base, wetSummer, base, dryPeak];
   // Regional schedules conserve each resource independently. Peat is dried
   // during the local drier season; tropical sago can be cut throughout the year.
+  if (
+    tile.geography &&
+    BIOME_INFO[tile.biome!].family === "forest" &&
+    raw === "lumber"
+  )
+    return base === 1
+      ? [1, 1, 1, 1]
+      : base === 2
+        ? [2, 2, 3, 1]
+        : times([1, 1, 1, 1]);
+  if (biome === "flood-wheat") return times([0, 4, 0, 0]);
+  if (biome === "flood-sorghum") return times([0, 0, 4, 0]);
+  if (biome === "flood-rice") return times([1, 0, 1, 2]);
+  if (biome === "delta-gardens")
+    return times(rainy ? [1, 0, 1, 2] : [1, 1, 2, 0]);
   if (biome === "tundra-heath") return times([0, 2, 2, 0]);
   if (biome === "musk-ox-range")
     return times(raw === "wool" ? [1, 3, 0, 0] : [1, 1, 1, 1]);
@@ -362,7 +415,9 @@ export function seasonalProfile(
   const harvestTile = tile.iceWeather
     ? { ...tile, iceWeather: undefined }
     : tile;
-  for (const [raw, base] of Object.entries(tileYield(tile, owner))) {
+  for (const [raw, base] of Object.entries(
+    tile.geography ? baseGeographicYield(tile) : tileYield(tile, owner),
+  )) {
     const amounts = schedule(tile, raw as Raw, base!);
     if (tile.resource === "water")
       for (const i of [0, 2] as const)
@@ -374,6 +429,25 @@ export function seasonalProfile(
       if (amounts[i]) result[season][raw as Raw] = amounts[i];
     });
   }
+  if (tile.geography) {
+    for (const season of SEASONS)
+      for (const [raw, n] of Object.entries(tile.geography.fauna ?? {}))
+        result[season][raw as Raw] = (result[season][raw as Raw] ?? 0) + n!;
+    const g = tile.geography;
+    if (g.harvestMode === "spread" && g.projects?.irrigation) {
+      const grain = SEASONS.reduce(
+        (sum, season) => sum + (result[season].grain ?? 0),
+        0,
+      );
+      const each = Math.floor(grain / 4);
+      SEASONS.forEach((season, i) => {
+        result[season].grain = each + Number(i < grain % 4);
+      });
+    }
+    if (g.projects?.irrigation || g.landmark === "fertile-basin")
+      for (const season of SEASONS)
+        if (result[season].grain) result[season].grain! += 1;
+  }
   return result;
 }
 export function seasonalYield(
@@ -381,6 +455,9 @@ export function seasonalYield(
   owner: number | undefined,
   season?: Season,
 ): Stock {
+  if (tile.geography?.damagedUntil) return {};
+  if (tile.geography?.access === "flooded" && !tile.geography.projects?.levee)
+    return {};
   if (season && tile.iceWeather?.season === season && tile.surface === "frozen")
     return {};
   return season ? seasonalProfile(tile, owner)[season] : tileYield(tile, owner);
@@ -400,6 +477,7 @@ export function seasonalWorkshopBase(
 }
 
 export function frozenInSeason(tile: Hex, season?: Season): boolean {
+  if (tile.geography?.warmed) return false;
   if (season && tile.iceWeather?.season === season)
     return tile.surface === "frozen";
   if (!season) return tile.resource === "ice";
@@ -536,16 +614,21 @@ export function syncSeasonSurfaces(s: Game): void {
       delete tile.thawGrace;
     tile.surface = frozenInSeason(tile, season) ? "frozen" : "open";
   }
+  syncEnvironment(s);
   if (!season) return;
   for (const unit of Object.values(s.pieces)) {
     delete unit.seasonStatus;
     if (unit.carrier) continue;
     const tile = s.tiles[unit.tile];
-    if (unit.naval && tile.surface === "frozen") unit.seasonStatus = "icebound";
+    if (unit.naval && !pieceAccess(tile, unit)) unit.seasonStatus = "icebound";
     if (
       !unit.naval &&
-      tile.surface === "open" &&
-      ["water", "ice"].includes(tile.resource)
+      ((tile.surface === "open" &&
+        ["water", "ice"].includes(tile.resource) &&
+        !tile.geography?.projects?.bridge &&
+        tile.geography?.access !== "ford") ||
+        tile.geography?.access === "flooded" ||
+        tile.geography?.access === "closed")
     )
       unit.seasonStatus = "adrift";
   }

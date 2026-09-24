@@ -399,3 +399,106 @@
   font-size: 11px;
   line-height: 1.45;
 }
+
+.geography-panel {
+  margin: 10px 0;
+  padding: 12px;
+  background: #f3f0e5;
+  border: 1px solid #cbd1bd;
+  border-radius: 12px;
+  font-size: 12px;
+}
+.geography-panel h3 {
+  margin: 0 0 8px;
+  font-size: 15px;
+}
+.geography-panel p {
+  margin: 6px 0;
+  line-height: 1.45;
+}
+.geography-panel small {
+  display: block;
+  color: #536b67;
+  line-height: 1.5;
+}
+.geography-status {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.geography-status span {
+  border: 1px solid #bcc8bd;
+  border-radius: 5px;
+  padding: 3px 6px;
+  background: #fffaf0;
+}
+.geography-calendar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 3px;
+  margin: 10px 0;
+}
+.geography-calendar > div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  text-align: center;
+  padding: 7px 2px;
+  border-radius: 5px;
+  background: #e4e8dc;
+}
+.geography-calendar > .current {
+  background: #2d5c58;
+  color: #fff6df;
+}
+.geography-calendar > small {
+  grid-column: 1 / -1;
+}
+.geography-landmark {
+  display: flex;
+  gap: 10px;
+  padding: 9px 0;
+  align-items: center;
+}
+.geography-landmark img {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid #c6ac66;
+}
+.geography-project {
+  display: grid;
+  gap: 4px;
+  padding: 10px 0;
+  border-top: 1px solid #d6d9c9;
+}
+.geography-panel summary {
+  cursor: pointer;
+  font-weight: 700;
+  padding: 8px 0;
+}
+.geography-panel label {
+  display: grid;
+  gap: 5px;
+  margin: 8px 0;
+}
+.geography-panel button {
+  min-height: 32px;
+}
+.geography-legend small {
+  display: block;
+  max-width: 225px;
+  line-height: 1.45;
+  font-weight: 400;
+  margin-top: 7px;
+}
+.map-view-select {
+  max-width: 118px;
+  border-radius: 7px;
+  padding: 5px;
+  color: #244d49;
+  background: #fff9e9;
+  border: 1px solid #b6c4b8;
+}

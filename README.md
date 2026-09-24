@@ -304,3 +304,11 @@ Existing per-roll harvest calendars stay unchanged, including local marine Summe
 Existing campaigns keep their calendar, stores and dice numbers. Save version 12 replaces Rye and prototype Potato fields outside American regions with Turnip fields. Former non-American Maize becomes Oats in cool climates or Sorghum in warm climates. Climate, tile references and annual baselines survive; current seasonal schedules apply on load. Loading preserves current sea surfaces; later half-season boundaries apply the new weather rules. In older saves without a seasonal calendar, seasons begin in Spring at the next full round, so the current round finishes under its existing production rules. Newly explored land can include the new crops and livestock.
 
 Version 13 keeps an existing campaign’s season, year and sea surfaces when loading. The current round becomes the early half; the next round is late. Weather begins changing at the next full-round boundary.
+
+## Living geography
+
+New campaigns generate connected continents, islands, rivers, lakes and mountain passes. Regional weather changes crossings and floodplains; wild herds, fish and whales migrate. Hunters, riverboats, bridges, irrigation, levees, harbors, granaries and rare landmarks support the new geography. Bare Peaks remain impassable.
+
+Use the map view selector for Weather, Wildlife and Access. Open **Geography and wildlife** in the English or French guide for illustrated rules, seasonal tables, unit roles and construction costs. A technical rules summary is in [docs/living-geography.md](docs/living-geography.md).
+
+Existing campaigns keep their original map and fixed animal production. Start a new campaign to use the new geography. Save loading never replaces an existing map.

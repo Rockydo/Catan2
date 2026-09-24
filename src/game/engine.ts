@@ -1,3 +1,5 @@
+import { geographyCommand } from "./geography-actions";
+import { pieceAccess } from "./geography";
 import { syncEmergencyCoalition } from "./emergency-coalition";
 import { copyRecords } from "./record-copy";
 import { startThawRetreats, continueThawRetreats } from "./thaw-retreats";
@@ -139,6 +141,7 @@ export function newGame(
     name,
     control: i === 0 ? "human" : "standard",
   })),
+  options: { geography?: boolean } = {},
 ): Game {
   rule(
     [4, 5, 8, 10, 12].includes(config.length),
@@ -149,7 +152,12 @@ export function newGame(
     "Use a seed between 1 and 120 characters.",
   );
   const s: Game = {
-    ...generateWorld(seed, config.length * 25),
+    ...generateWorld(
+      seed,
+      config.length * 25,
+      options.geography !== false &&
+        (config.length === 5 || config.length === 12),
+    ),
     version: 5,
     generation: 5,
     calendar: {
@@ -227,7 +235,8 @@ export function beginTurn(s: Game) {
   for (const u of ownPieces(s)) {
     u.moved = 0;
     u.acted = false;
-    u.bonus = 0;
+    u.bonus = u.harborBoost ? 1 : 0;
+    delete u.harborBoost;
     delete u.guildSupplied;
     delete u.guildSiege;
   }
@@ -250,13 +259,21 @@ function nextTurn(s: Game) {
   } while (!s.players[s.active].alive);
   if (s.active <= old) {
     previousIce = Object.values(s.tiles)
-      .filter((tile) => tile.surface === "frozen")
+      .filter((tile) => canOccupy(tile, false))
       .map((tile) => tile.id);
     s.round++;
     syncSeasonSurfaces(s);
     const season = seasonAt(s);
     if (season)
       log(s, `Year ${seasonYear(s)}: ${seasonLabel(s)} begins.`, "info");
+    if (s.geographyVersion) {
+      const tiles = Object.values(s.tiles);
+      log(
+        s,
+        `Regional conditions: ${tiles.filter((t) => t.geography?.access === "flooded").length} flooded tiles, ${tiles.filter((t) => t.geography?.access === "closed").length} closed passes, ${tiles.filter((t) => t.geography?.access === "ford").length} open fords.`,
+        "info",
+      );
+    }
   }
   beginTurn(s);
   if (previousIce) startThawRetreats(s, previousIce);
@@ -682,7 +699,20 @@ function commandResult(state: Game, c: Command, preview: boolean): Result {
       survivingFactionsHaveTowns(state);
     const s: Game = localOrder
       ? localOrderDraft(state, c)
-      : (preview && c.type !== "expedition") || shareUnits
+      : (preview &&
+            c.type !== "expedition" &&
+            !(
+              state.geographyVersion &&
+              [
+                "project",
+                "harvest-mode",
+                "sabotage",
+                "repair-terrain",
+                "end-turn",
+                "surrender",
+              ].includes(c.type)
+            )) ||
+          shareUnits
         ? {
             ...structuredClone({
               ...state,
@@ -998,6 +1028,7 @@ function executeOrder(
     (s.tiles[c.tile].woodsChosenOn ??= {})[s.active] = p.turns;
     return;
   }
+  if (geographyCommand(s, c)) return;
   if (diplomacyCommand(s, c)) return;
   if (
     militaryCommand(s, c, {
@@ -1226,6 +1257,14 @@ function executeOrder(
         Number.isInteger(tier) && tier >= 1 && tier <= 4,
         "Choose ship tier I–IV.",
       );
+      rule(
+        pieceAccess(s.tiles[c.tile], {
+          naval: true,
+          kind: kind as ShipClass,
+          tier,
+        }),
+        "This ship needs deeper water. Choose a shallow-draft vessel or another shipyard.",
+      );
       const info = shipStats(kind as ShipClass, tier);
       rule(
         t.turnLevel >= info.level,
@@ -1292,6 +1331,13 @@ function executeOrder(
         moved: 0,
         acted: true,
         bonus: 0,
+        ...(naval &&
+        (s.tiles[c.tile].geography?.projects?.harbor?.owner === s.active ||
+          neighbors(c.tile).some(
+            (id) => s.tiles[id]?.geography?.landmark === "natural-harbor",
+          ))
+          ? { harborBoost: true }
+          : {}),
       };
     }
     log(
@@ -1380,8 +1426,12 @@ function executeOrder(
       "This enclosed frontier cannot reveal enough tiles for this tier.",
     );
     pay(s, expeditionCost(c.kind, c.tier), `expedition${c.tier}`);
+    const beforeDiscovery = Object.values(s.tiles)
+      .filter((t) => canOccupy(t, false))
+      .map((t) => t.id);
     addHexes(s, s.seed, footprint);
     syncSeasonSurfaces(s);
+    startThawRetreats(s, beforeDiscovery);
     restoreCoastalRoads(s);
     p.expeditionUsed = true;
     log(

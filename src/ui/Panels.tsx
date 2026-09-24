@@ -1,3 +1,4 @@
+import { GeographyPanel } from "./Geography";
 import { seasonAt, seasonalYield, seasonalWorkshopBase } from "../game/seasons";
 import { TileSeasonForecast } from "./SeasonCalendar";
 import { CLIMATE_INFO } from "../game/climate-content";
@@ -16,6 +17,7 @@ import { ResearchArt } from "./ResearchArt";
 import { TowerPanel, HarvestPanel } from "./Maritime";
 import {
   marineResource,
+  terrainName,
   tileTerrain,
   tileGood,
   tileGoods,
@@ -205,7 +207,7 @@ export function DetailHeader({
           Object.values(UNIT_INFO).find((unit) => unit.family === family);
       return (
         <div className="panel-intro">
-          <h2>{tx(TERRAIN[tileTerrain(t)].name)}</h2>
+          <h2>{tx(terrainName(t))}</h2>
           <div className="tile-metadata">
             <span
               className="climate-chip"
@@ -305,6 +307,16 @@ export function Panels(props: Props) {
       : undefined;
   return (
     <>
+      {selection?.type === "tile" && s.tiles[selection.id]?.geography && (
+        <GeographyPanel
+          game={s}
+          tile={s.tiles[selection.id]}
+          viewer={viewer}
+          interactive={interactive}
+          onAction={onAction}
+          ids={props.unitIds}
+        />
+      )}
       {woods && (
         <section
           className="woods-choice"
@@ -1341,7 +1353,7 @@ function ForcesPanel({
                           {tx(" power")}
                           {tx(
                             u.seasonStatus === "icebound"
-                              ? " · icebound"
+                              ? " · stranded"
                               : u.seasonStatus === "adrift"
                                 ? " · adrift"
                                 : u.carrier

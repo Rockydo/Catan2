@@ -5,7 +5,7 @@ import {
   type Climate,
 } from "../src/game/climate-content";
 import { climateTerrain } from "../src/game/climate";
-import { newGame } from "../src/game/engine";
+import { climateGame as newGame } from "./helpers";
 import { production } from "../src/game/economy";
 import { assertInvariants, deserialize, serialize } from "../src/game/save";
 import { randomAt } from "../src/game/world";

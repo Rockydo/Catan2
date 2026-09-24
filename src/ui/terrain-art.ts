@@ -77,6 +77,97 @@ export const REGIONAL_ART_KEYS = Object.values(regionalArt).flatMap(
 );
 /** Use the tile's forecast, including patchy ice, for actual and preview art. */
 export function seasonalTerrainPattern(tile: Hex, season?: Season): string {
+  if (tile.geography && !frozenInSeason(tile, season)) {
+    let image: string | undefined = tile.biome;
+    const warmRegion = [
+      "tropical",
+      "subtropical",
+      "monsoon",
+      "savanna",
+      "desert",
+      "hyperarid",
+      "mesoamerican",
+      "equatorial-wetlands",
+    ].includes(tile.climate ?? "");
+    if (
+      image === "mountain-pass" &&
+      tile.geography.access === "closed" &&
+      warmRegion
+    )
+      return "geo-wet-pass";
+    if (
+      image === "mountain-pass" &&
+      ["desert", "hyperarid"].includes(tile.climate ?? "")
+    )
+      return "geo-desert-pass";
+    if (image === "lake" && warmRegion) return "geo-warm-lake";
+    if (image === "flood-meadow" && warmRegion) return "geo-warm-meadow";
+    const coldSnow =
+      tile.climate === "glacial" ||
+      (["arctic", "tundra"].includes(tile.climate ?? "") &&
+        season !== "summer");
+    if (tile.geography.access === "flooded") return "geo-flooded";
+    if (
+      [
+        "steppe-plain",
+        "wildlife-grassland",
+        "bison-range",
+        "reindeer-range",
+        "musk-ox-range",
+        "seal-grounds",
+        "turkey-grounds",
+      ].includes(image ?? "")
+    )
+      image = "wild-grassland" as Biome;
+    if (["hunting-forest", "fern-hunting-grounds"].includes(image ?? ""))
+      return terrainPatternKey("forest", tile.climate, season);
+    if (
+      [
+        "river",
+        "delta-gardens",
+        "mountain-pass",
+        "reef",
+        "flood-wheat",
+        "flood-rice",
+        "flood-sorghum",
+        "wild-grassland",
+      ].includes(image ?? "")
+    ) {
+      const warm = [
+        "tropical",
+        "subtropical",
+        "monsoon",
+        "savanna",
+        "desert",
+        "hyperarid",
+        "mesoamerican",
+        "equatorial-wetlands",
+      ].includes(tile.climate ?? "");
+      const displaySeason =
+        (["wild-grassland", "river", "mountain-pass"].includes(image ?? "") &&
+          coldSnow) ||
+        (image === "mountain-pass" && tile.geography.access === "closed")
+          ? "winter"
+          : warm &&
+              ["wild-grassland", "mountain-pass"].includes(image ?? "") &&
+              season === "winter"
+            ? "summer"
+            : (season ?? "summer");
+      if (image === "river" && warm)
+        image = ["desert", "hyperarid"].includes(tile.climate ?? "")
+          ? "desert-river"
+          : "tropical-river";
+      if (image === "flood-rice")
+        return `geo-flood-rice-${{ spring: "spring", summer: "winter", autumn: "autumn", winter: "summer" }[season ?? "summer"]}`;
+      return `geo-${image}-${displaySeason}`;
+    }
+    if (image === "lake")
+      return `geo-lake-${coldSnow ? "winter" : (season ?? "summer")}`;
+    if (image === "shoal")
+      return `geo-reef-${season === "winter" ? "summer" : (season ?? "summer")}`;
+    if (image === "flood-meadow")
+      return `geo-flood-meadow-${coldSnow ? "winter" : (season ?? "summer")}`;
+  }
   return terrainPatternKey(
     frozenInSeason(tile, season) ? "ice" : tileTerrain(tile),
     tile.climate,
@@ -152,6 +243,7 @@ export function terrainPatternKey(
   );
 }
 export function terrainArtFile(art: string): string {
+  if (art.startsWith("geo-")) return `geography/${art.slice(4)}.webp`;
   if (seasonalFiles[art]) return seasonalFiles[art];
   if (["gold", "fish", "whale"].includes(art))
     return `terrain-${art}-${art === "fish" ? "v2" : "v1"}.png`;

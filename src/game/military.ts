@@ -1,3 +1,4 @@
+import { protectedFood } from "./geography-actions";
 import { friendly, emergencyTarget } from "./relations";
 import {
   GOODS,
@@ -288,7 +289,10 @@ export function engageBattle(
   );
   // Exposed merchants and colonists are lost when combat begins, including ties.
   const civilians = [...units, ...defenders].filter(
-    (u) => u.kind === "merchant" || isSettler(u.kind),
+    (u) =>
+      u.kind === "merchant" ||
+      (u.kind === "hunter" && u.tier === 1) ||
+      isSettler(u.kind),
   );
   removePieces(
     s,
@@ -402,7 +406,10 @@ export function militaryCommand(
           Number(s.players[a.owner].control === "human") || a.owner - b.owner,
     );
     const colonists = defenders.filter(
-      (u) => isSettler(u.kind) || u.kind === "merchant",
+      (u) =>
+        isSettler(u.kind) ||
+        u.kind === "merchant" ||
+        (u.kind === "hunter" && u.tier === 1),
     );
     removePieces(
       s,
@@ -585,8 +592,11 @@ export function militaryCommand(
       const loot = { ...town.stock };
       const destination = nearestTown(s, units[0].tile, s.active);
       rule(destination, "A surviving town is required to receive the raid.");
+      const protected_ = protectedFood(s, town);
+      for (const [good, amount] of Object.entries(protected_))
+        loot[good as keyof typeof loot]! -= amount!;
       addStock(destination.stock, loot);
-      town.stock = {};
+      town.stock = protected_;
       siege.raided ??= turn;
       log(
         s,

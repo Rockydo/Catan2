@@ -36,7 +36,11 @@ Les ressources sont stockées par agglomération mais dépensées en commun. Les
 
 ## Carte et dés
 
-### Génération des climats
+### Versions de génération
+
+Les nouvelles campagnes utilisent des reliefs cohérents et une faune migratrice. Le chapitre Géographie et faune décrit rivières, crues, cols et aménagements. Compatibilité climatique, dés, ports et mise en place restent applicables. Les pourcentages indépendants terre/eau et les animaux fixes concernent seulement les anciennes campagnes.
+
+### Génération climatique historique
 
 La carte initiale contient 125 tuiles en Classique ou 300 en Grande campagne. Le climat est défini avant le terrain. Une tuile de départ est choisie au hasard, puis un climat parmi vingt selon des poids relatifs : 1 pour chacun des dix-sept climats non extrêmes et 0,35 pour chacun des climats Glacial, Hyperaride et Mousson. Les poids sont normalisés pour ce tirage initial. La génération progresse par les voisins. Si les voisins immédiats déjà définis ont le même climat, il est conservé avec 88 % de probabilité. Lors d’un changement, les climats compatibles sont l’intersection des possibilités des seules tuiles voisines immédiates déjà définies. Le poids de base de chaque destination est de 1. Depuis les sept climats d’origine, les nouvelles destinations compatibles Océanique, Alpin, Subtropical et Savane ont un poids de 0,5. Tempéré et Steppe favorisent Froid à 1,5. Méditerranéen donne un poids de 0,5 à Steppe et Désertique. Tropical vers Désertique, Désertique vers Tropical et Froid vers Arctique ont un poids de 2. Océanique favorise Tempéré à 2 ; Alpin favorise Froid et Arctique à 2 chacun ; Subtropical et Savane favorisent Tropical à 2. Entrer dans un climat extrême compatible a un poids de 0,5. Glacial mène à Arctique avec 2 ou Alpin avec 1 ; Hyperaride mène à Désertique avec 2 ; Mousson mène à Tropical avec 2, Subtropical ou Savane avec 1. Entrer dans une région américaine compatible depuis un ancien climat a un poids de 0,75. Andin favorise Alpin, Prairie favorise Steppe et Mésoaméricain favorise Subtropical avec un poids de 2 ; leurs autres sorties ont un poids de 1. Les poids admissibles sont normalisés pour chaque tirage. La continuité est de 88 %, ce qui agrandit légèrement les régions en moyenne. L’entrée en Toundra, Forêt pluviale tempérée ou Marais équatoriaux a un poids de 0,75. Leurs sorties privilégiées ont un poids de 2 : Toundra vers Arctique, Forêt pluviale tempérée vers Océanique, Marais équatoriaux vers Tropical. Les autres sorties ont un poids de 1. À une frontière mixte, un climat voisin compatible est privilégié. Sans candidat, le climat d’un voisin immédiat est repris.
 Avant de tirer les terrains, une passe finale de correction conserve des climats intermédiaires comme zones tampons si nécessaire. Deux climats adjacents sont toujours compatibles. Une réserve invisible autour de la carte évite les raccords impossibles lors des expéditions. Aucun terrain révélé ne change. Une même graine et une même séquence d’exploration reproduisent la même carte. Un ordre d’expéditions différent peut prolonger les zones autrement.
@@ -83,7 +87,76 @@ Une arête côtière entièrement révélée a 10 % de chances de devenir candid
 
 Une carte extrême peut manquer d’emplacements initiaux légaux. Le jeu signale alors une graine impossible à jouer sans la corriger en secret. Durant la mise en place, un choix ne peut pas empêcher les autres de placer leurs deux colonies. L’absence d’une ressource n’invalide pas une carte : les échanges avec la réserve permettent de l’obtenir.
 
+## Géographie et faune
+
+### Géographie vivante : nouvelles campagnes
+
+Les nouvelles campagnes à cinq ou douze factions utilisent des continents cohérents, des cours d’eau, une météo régionale et une faune migratrice. Les sauvegardes existantes conservent leur génération et leurs ressources animales fixes. Le chargement ne supprime aucune production ni aucun terrain occupé. La carte initiale compte toujours 125 ou 300 hexagones. Les expéditions prolongent cette géographie. Aucune nouvelle carte Ressource, aucun entretien, vent ni ouvrage permanent de franchissement des montagnes.
+
+### Reliefs et cours d’eau
+
+La graine choisit une géographie continentale, insulaire, à mers intérieures ou à péninsules. Des altitudes corrélées forment côtes et massifs. Les mers intérieures sont de grands bassins lacustres fermés, peuplés de poissons d’eau douce plutôt que de morues ou de baleines ; les péninsules favorisent les reliefs allongés. Une zone d’étude fixe autour du départ détermine le niveau côtier. Le climat reste attribué en premier et détermine les ressources admissibles. Terre et eau suivent désormais relief et drainage, au lieu d’un tirage indépendant par hexagone. Les anciens pourcentages terre/eau ne concernent que les campagnes historiques.
+Chaque bassin descend vers la mer ou une dépression intérieure. Les rivières occupent des hexagones d’eau ; les dépressions peuvent devenir des lacs. Altitudes et cours sont fixés par la graine et les coordonnées, même hors de la carte révélée. Une expédition ne redessine aucune côte existante ni aucune rivière. Ressources et numéros restent aléatoires. Aucune ressource brute n’est garantie.
+
+### Traversées et cols
+
+Une rivière est de l’eau. Les armées n’y entrent que sur glace, par un gué ouvert ou par un pont. Trente pour cent des hexagones de rivière peuvent avoir un gué naturel. Il s’ouvre au niveau d’eau 0 ou 1. Pluie et crue peuvent le fermer. Les navires passent toujours sous un pont ou sur un gué ouvert ; une force ennemie présente sur le passage doit être combattue.
+Certains hexagones montagneux sont des cols. Les cols tempérés et froids ferment en Hiver et pendant une vague de froid au Printemps ou en Automne. Les cols tropicaux et andins ferment lors des Étés humides ; ceux des climats méditerranéens et désertiques lors des Hivers humides. Les cols Arctiques et Glaciaires n’ouvrent qu’en Été. Les Pics nus restent toujours infranchissables. Aucun ouvrage ne transforme un pic ni n’ouvre définitivement un col. Les routes peuvent longer leurs arêtes selon les règles habituelles.
+Quand la glace fond, qu’un gué ou un col ferme, ou qu’une crue submerge une armée, celle-ci cherche automatiquement une terre ferme accessible à travers la zone précédemment ouverte. Un débarquement sûr est préféré ; à défaut, une position ennemie entraîne un combat normal. Sans issue, la force attend des transports. Un navire pris dans la glace ou échoué après décrue ne peut ni bouger ni battre en retraite et combat au quart de sa puissance, arrondi au supérieur. Une armée terrestre amie présente le défend à pleine puissance. Le retour de l’eau libère le navire.
+
+### Niveaux d’eau et météo régionale
+
+La météo concerne de larges secteurs d’un même climat. Elle change au début d’une saison et reste identique pendant ses deux moitiés. La vue Météo montre ces secteurs ; la vue Passages montre les gués, crues et fermetures. La formation et la fonte de la glace restent probabilistes par hexagone, sous cette météo commune.
+Niveaux de base, Printemps / Été / Automne / Hiver : Froid, Arctique, Glaciaire, Alpin, Toundra et Prairie 3 / 2 / 1 / 0 ; Tropical, Subtropical, Savane, Mousson, Mésoaméricain et Zones humides équatoriales 1 / 3 / 2 / 0 ; Méditerranéen 1 / 0 / 1 / 3 ; Désert et Hyperaride 0 / 0 / 0 / 1 ; Andin 2 / 3 / 1 / 0 ; Océanique et Forêt pluviale tempérée 2 / 1 / 2 / 3 ; autres climats 3 / 1 / 1 / 2.
+Une saison humide ajoute 1 au niveau d’eau ; une période sèche retranche 1, dans une plage de 0 à 4. Groupe tropical : 55 % ordinaire, 30 % humide, 15 % sec. Groupe désertique : 60 % ordinaire, 30 % sec, 10 % humide. Groupe froid hors Été : 50 % ordinaire, 30 % froid, 20 % doux. Autres cas : 55 % ordinaire, 20 % humide, 15 % sec, 10 % doux. Une vague de froid multiplie la probabilité de gel par 1,5 et divise celle de fonte par deux ; une saison douce divise le gel par deux et multiplie la fonte par 1,4. Les probabilités sont plafonnées à 100 %.
+
+### Plaines inondables et deltas
+
+Les basses terres riveraines peuvent devenir inondables. Les terres voisines d’une embouchure peuvent former un delta. Aux niveaux d’eau 3 et 4, une plaine sans digue devient une eau peu profonde : les armées ne passent plus et la production s’arrête. Bâtiments, routes et cartes stockées survivent. Une digue évite ces effets sur son hexagone. Les règles de construction des arêtes suivent toujours le terrain permanent ; les ouvrages ne changent pas l’identité des ressources.
+Une partie du tirage local est remplacée par des terrains fertiles : Argile alluviale, Bois riverains, cultures fluviales et Prairie inondable. Jardins chinampas et Sagoutiers nécessitent une rivière ou un lac voisin. Les plaines Arctiques, Glaciaires et de Toundra ne créent pas de céréales. L’agriculture riveraine Mésoaméricaine utilise les Chinampas ; l’agriculture Andine utilise les Pommes de terre. Aucune pomme de terre ni aucun maïs n’est introduit hors des Amériques.
+Le Blé alluvial a une base de 3 Blés et donne 12 en Été. Le Sorgho de décrue a une base de 3 et donne 12 en Automne. La Rizière fluviale a une base de 4 et donne 4 / 0 / 4 / 8 : sa grande récolte suit la crue de la saison humide. Les Jardins du delta ont une base de 4, avec 4 / 4 / 8 / 0 en région fraîche et 4 / 0 / 4 / 8 en région chaude humide. La Prairie inondable a une base de 2 Laines et suit le calendrier local d’élevage. Ces quantités précèdent les multiplicateurs des producteurs. Les crues peuvent réduire le rendement réel ; les protections coûtent des ressources et ne suppriment pas le risque des dés.
+
+### Faune migratrice
+
+Prairies sauvages, bovins sauvages, rennes, bœufs musqués, phoques et autres terrains de chasse n’ont plus de production animale fixe. Une prairie sauvage sans animaux est vide. Forêts et jungles conservent au moins 1 Bois par saison avant multiplicateurs. Les meilleurs bois conservent leur base supérieure. Les moutons, bovins domestiques, alpagas et autres élevages restent fixes avec leur calendrier existant.
+Un nouvel hexagone terrestre admissible a 13 % de chances de créer une population. L’eau a une probabilité de 18 %, sauf la haute mer à 11 %. Une population côtière a 22 % de chances d’être composée de baleines, contre 72 % en haute mer : leur fréquence totale y est environ doublée. Les rivières et lacs ont des poissons, jamais de baleines. Les morues préfèrent les climats marins froids et frais. Aucune population n’est garantie.
+Sur son numéro, chaque population présente ajoute : Poissons 3 Poissons ; Morues 5 Poissons ; Baleines 3 Peaux + 3 Huiles ; Cerfs 2 Peaux + 2 Viandes ; Bovins sauvages 2 Peaux + 3 Viandes ; Rennes 2 Peaux + 2 Viandes ; Bœufs musqués 2 Laines + 2 Viandes ; Phoques 2 Peaux + 2 Huiles ; Gibier forestier 3 Peaux + 1 Viande ; Dindons sauvages 3 Viandes. Chaque composante reçoit les multiplicateurs habituels et la transformation avancée des villes ou marchands. Gel et crue restent soumis aux règles normales d’accès et de récolte.
+Au début de chaque saison, les populations marines cherchent des eaux connectées à quatre hexagones au plus ; les animaux terrestres cherchent un habitat accessible à trois hexagones au plus. Climat et habitat doivent convenir : les baleines ne traversent pas les rivières, les phoques restent sur les côtes froides et les espèces froides ou tropicales gardent des milieux adaptés. Elles peuvent rester ou migrer. Villes, routes, camps et tours réduisent l’attrait d’une destination, y compris dans le voisinage. Densité animale, gel, crues et abris saisonniers comptent aussi. La chasse ne supprime jamais une population. Les groupes restent sur la carte révélée ; les expéditions peuvent en découvrir de nouveaux. Plusieurs groupes peuvent partager une tuile. La vue Faune sauvage et les icônes de ressources montrent leur position et leur rendement.
+Camps et ateliers restent construits après le départ des animaux. Ils reprennent leur production si une population adaptée revient. Un atelier conserve sa ressource choisie à la construction. La migration n’accorde aucune ressource et ne change aucun numéro.
+
+### Chasseurs et navigation fluviale
+
+Les chasseurs se déplacent de 2 hexagones par tour. Leurs quatre paliers ont une puissance de 0 / 1 / 2 / 3, un rayon de chasse de 1 / 2 / 3 / 4 par terres accessibles et un multiplicateur de 1 / 2 / 3 / 4. Ils récoltent uniquement les produits animaux, y compris toutes les composantes d’une même tuile. Ils ne coupent pas de bois et ne transforment rien. Les armées ennemies bloquent la chasse. Les chasseurs de palier I sont détruits dès que leur force combat. Coûts et portraits figurent au catalogue de recrutement.
+Rivières, hauts-fonds, récifs et terrains inondés admettent Bateaux fluviaux, Navires de pêche, Transports, Navires de colons et Galères I–II. Galères supérieures, Caraques, Convois et Navires marchands nécessitent des eaux profondes. Lacs et eaux côtières ou hauturières ordinaires admettent toutes les classes sans glace. Une flotte mixte suit son membre le plus contraignant. Les Bateaux fluviaux ont puissance 1 / 2 / 3 / 5, vitesse 3 / 3 / 4 / 4 et capacité 1 / 2 / 3 / 4. Ils n’ont aucune puissance de siège. Les grands navires gardent leurs avantages de vitesse, capacité, combat ou siège côtier.
+
+### Aménagements locaux
+
+Construisez depuis une agglomération ou une route de votre faction, sans ennemi sur le site. Ports et greniers exigent une agglomération. Aucun aménagement sur un pic ou un col. Un seul ouvrage de chaque type par tuile, sans cumul. Ponts, irrigation et digues profitent au terrain partagé ; ports et greniers profitent à leur constructeur.
+
+- Pont : 3 Pierres + 2 Planches + 1 Acier. Passage terrestre permanent sur une rivière, sans bloquer les navires. Aucun franchissement de mer ordinaire ni de pic.
+- Irrigation : 2 Pierres + 2 Argiles + 1 Minerai. Ajoute 1 Blé par producteur aux jets productifs d’une culture riveraine et permet d’étaler les récoltes.
+- Digue : 3 Pierres + 2 Planches. Maintient une plaine sèche et productive pendant les crues. Un navire déjà présent s’échoue lorsque la digue assèche son terrain.
+- Port aménagé : 2 Blocs + 2 Planches + 1 Acier. Les navires recrutés sur cet hexagone gagnent 1 mouvement à leur premier tour actif. Aucun bonus récurrent ni nouveau taux commercial.
+- Grenier surélevé : 2 Pierres + 2 Bois. Chaque agglomération voisine du propriétaire conserve jusqu’à 8 cartes d’aliments par niveau lors d’un pillage : Blé, puis Poisson, puis Viande. Plusieurs greniers n’augmentent pas ce plafond. La destruction prend toujours tous les stocks.
+  Une culture irriguée peut garder ses récoltes concentrées ou répartir sa base annuelle entre les quatre saisons, avec les cartes restantes dans les premières saisons. Le bonus d’irrigation s’applique à chaque saison productive. Un seul choix par année, appliqué l’année suivante. Impossible de cumuler deux calendriers par des changements répétés. La culture ne change pas d’identité.
+
+### Perturbation économique
+
+Une force terrestre armée sur une culture ennemie peut dépenser 1 mouvement pour suspendre sa production jusqu’à deux tours de table plus tard. Aucun producteur allié ou de votre faction ne doit exploiter la cible. Terrain, bâtiments et numéro restent en place. Une faction reliée par route ou agglomération peut réparer pour 1 Bois + 1 Pierre après avoir chassé l’occupant. Ce raid ne permet aucune transformation arbitraire du terrain.
+
+### Sites remarquables
+
+Une terre admissible a 1,2 % de chances de proposer un site remarquable. Le terrain doit convenir à l’effet, donc la fréquence réelle est moindre. Les Sources chaudes empêchent le gel des eaux ordinaires voisines, sans fondre la banquise Glaciaire permanente. Les Abris naturels donnent aux navires construits dans les eaux voisines le même bonus initial qu’un port aménagé, sans cumul. Les Bassins fertiles ajoutent 1 Blé aux récoltes productives. Les Filons riches ajoutent 1 minerai avant multiplicateurs saisonniers et de production. Les Bosquets anciens ajoutent 1 Bois avant ces multiplicateurs. Ce sont des avantages locaux partagés, pas des bonus de faction. Ils ne peuvent être déplacés, achetés ni créés par terrassement.
+
+### Planification de l’IA
+
+L’IA évalue les récoltes mobiles visibles, déplace chasseurs et pêcheurs vers les populations accessibles, évite les fermetures saisonnières prévues, choisit les navires adaptés et compare coût et intérêt local des ponts, irrigations, digues, ports, greniers et réparations. Elle peut saboter les cultures ennemies en campagne. Elle utilise les probabilités publiques et la géographie visible, sans lire les futurs tirages de météo ou de migration. La météo n’accorde aucune ressource spéciale à l’IA.
+
 ## Saisons et récoltes
+
+### Campagnes à géographie vivante
+
+Le chapitre Géographie et faune décrit rivières, crues, migrations, chasseurs, tirant d’eau et aménagements. Ces règles remplacent les terrains de chasse et de pêche fixes des anciennes campagnes. Les forêts donnent du bois ; les produits animaux nécessitent une population. Les tables distinguent production de base et faune présente.
 
 ### Calendrier
 
@@ -163,6 +236,10 @@ Choisissez une saison dans le calendrier pour voir ses paysages, puis déplacez 
 
 ## Ressources, stocks et échanges
 
+### Campagnes à géographie vivante
+
+Le chapitre Géographie et faune décrit rivières, crues, migrations, chasseurs, tirant d’eau et aménagements. Ces règles remplacent les terrains de chasse et de pêche fixes des anciennes campagnes. Les forêts donnent du bois ; les produits animaux nécessitent une population. Les tables distinguent production de base et faune présente.
+
 ### Production et stockage
 
 Il existe treize ressources brutes et dix produits transformés. Sur un jet correspondant, les agglomérations reçoivent la production saisonnière actuelle de chaque tuile adjacente multipliée par leur niveau. Toutes les composantes d’une tuile mixte sont multipliées. Hors saison, le rendement est nul. Les niveaux 3 et 4 ajoutent 1× et 2× chaque composante brute saisonnière sous forme transformée, sans extension. En Été, une agglomération de niveau 4 voisine de Champs dorés reçoit 32 Blés et 16 Rations. Ce bonus suit le rendement de la tuile. Les extensions ajoutent leur propre production transformée sans consommer la récolte brute. Toutes les factions produisent sur chaque jet. Les nouveaux bâtiments et collecteurs peuvent produire dès le prochain jet correspondant. Le chapitre Saisons et récoltes donne le calendrier complet.
@@ -205,6 +282,10 @@ Chaque faction choisit séparément Bois ou Peaux pour chaque tuile Bois qu’el
 
 ## Constructions et améliorations
 
+### Campagnes à géographie vivante
+
+Le chapitre Géographie et faune décrit rivières, crues, migrations, chasseurs, tirant d’eau et aménagements. Ces règles remplacent les terrains de chasse et de pêche fixes des anciennes campagnes. Les forêts donnent du bois ; les produits animaux nécessitent une population. Les tables distinguent production de base et faune présente.
+
 ### Routes et colonies
 
 Une nouvelle liaison doit toucher votre route, liaison maritime ou agglomération. Routes et liaisons maritimes se raccordent directement, sans ville côtière intermédiaire. Une agglomération ou tour d’une autre faction coupe la jonction ; les infrastructures alliées ne deviennent pas les vôtres. Après la mise en place, une colonie doit rejoindre votre réseau, toucher une terre et laisser une intersection libre entre agglomérations. Les troupes ne fondent pas de colonies isolées.
@@ -232,6 +313,10 @@ Sélectionnez l’unité dans Forces, puis Fonder une colonie et un coin en surb
 Les Colons terrestres peuvent embarquer dans un transport et doivent débarquer avant de fonder. Les Navires de colons n’embarquent aucun passager. Aucun de ces types ne récolte, ne fournit de puissance, ne bloque la production, ne protège les agglomérations et ne peut piller seul. Les colons exposés et les navires de colons sont détruits dès qu’un combat a lieu sur leur tuile, même si leur escorte gagne. Les colons embarqués suivent les règles ordinaires de perte des passagers. Les colons n’empêchent pas l’élimination après la perte de la dernière agglomération. L’IA peut recruter des colons et les envoyer vers des sites productifs accessibles, en privilégiant les ressources rares et en évitant les positions ennemies.
 
 ## Armées et combats
+
+### Campagnes à géographie vivante
+
+Le chapitre Géographie et faune décrit rivières, crues, migrations, chasseurs, tirant d’eau et aménagements. Ces règles remplacent les terrains de chasse et de pêche fixes des anciennes campagnes. Les forêts donnent du bois ; les produits animaux nécessitent une population. Les tables distinguent production de base et faune présente.
 
 ### Unités et déplacements
 
@@ -288,6 +373,10 @@ La flotte doit occuper une tuile d’eau libre touchant l’agglomération. Il f
 Pour un siège naval, la puissance des batteries remplace celle de l’artillerie dans la formule de résistance. Les formations terrestres et navales ne se combinent jamais, même sur une même tuile. Le départ ou le gel de la dernière batterie, ou l’arrivée d’une flotte de défense, interrompt un siège uniquement naval.
 
 ## Flottes et récoltes maritimes
+
+### Campagnes à géographie vivante
+
+Le chapitre Géographie et faune décrit rivières, crues, migrations, chasseurs, tirant d’eau et aménagements. Ces règles remplacent les terrains de chasse et de pêche fixes des anciennes campagnes. Les forêts donnent du bois ; les produits animaux nécessitent une population. Les tables distinguent production de base et faune présente.
 
 ### Liaisons et flottes sont distinctes
 
@@ -455,7 +544,7 @@ Afficher les climats, dans les commandes de carte, colore les zones climatiques.
 
 Cliquez sur la saison à côté du numéro de manche pour consulter l’année et les aperçus de paysages. Sélectionnez une tuile pour voir son calendrier de récoltes et son état actuel. Les mers froides indiquent aussi les probabilités de gel et de dégel sur les huit prochaines manches. Les étiquettes de la carte montrent les quantités de la saison actuelle ; zéro signifie hors saison, pas une perte de ressource.
 
-## Tables climatiques
+## Probabilités climatiques historiques
 
 ### Tempéré: 50% terre / 50% eau
 
@@ -1017,13 +1106,15 @@ Haute mer (sans terre adjacente) : tirage Baleines 6 % ; part effective 4.2 %. T
 
 ## Production des terrains
 
+Campagnes géographiques : terrain permanent uniquement. Les animaux migrateurs ajoutent les rendements du chapitre Géographie vivante. Les probabilités climatiques précédentes décrivent les anciennes cartes.
+
 Les bases annuelles actuelles incluent la productivité des cultures propre au climat. Chaque calendrier totalise quatre fois cette base, qui peut différer de celle d’une ancienne version du jeu.
 
 | Terrain                        | Climats                                                                                                                                                                                                                                        | Production de base  | Famille           |
 | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- | ----------------- |
-| Bois clairsemés                | Tempéré / Steppe / Méditerranéen / Océanique                                                                                                                                                                                                   | 1 Bois OU 1 Peau    | forêt             |
+| Bois clairsemés                | Tempéré / Steppe / Méditerranéen / Océanique                                                                                                                                                                                                   | 1 Bois              | forêt             |
 | Forêt                          | Froid / Alpin                                                                                                                                                                                                                                  | 2 Bois              | forêt             |
-| Forêt de chasse                | Froid                                                                                                                                                                                                                                          | 2 Peaux             | forêt             |
+| Forêt de chasse                | Froid                                                                                                                                                                                                                                          | 2 Bois              | forêt             |
 | Champs                         | Tempéré / Méditerranéen / Océanique                                                                                                                                                                                                            | 2 Blé               | plaine            |
 | Blé sur terre noire            | Tempéré / Steppe                                                                                                                                                                                                                               | 3 Blé               | plaine            |
 | Pré                            | Tempéré / Steppe                                                                                                                                                                                                                               | 2 Laine             | plaine            |
@@ -1035,14 +1126,14 @@ Les bases annuelles actuelles incluent la productivité des cultures propre au c
 | Collines de charbon            | Tempéré / Froid / Steppe / Méditerranéen / Tropical / Désert / Océanique / Alpin / Subtropical / Hyperaride / Mousson / Prairie / Mésoaméricain                                                                                                | 1 Charbon           | terrain accidenté |
 | Marais salants                 | Tempéré / Méditerranéen / Tropical / Désert / Subtropical / Savane / Hyperaride / Andin / Prairie / Mésoaméricain                                                                                                                              | 1 Sel               | plaine            |
 | Plaine enneigée                | Arctique / Glacial / Toundra                                                                                                                                                                                                                   | 0                   | plaine            |
-| Chasse aux phoques             | Arctique / Glacial                                                                                                                                                                                                                             | 1 Peaux + 1 Huile   | plaine            |
+| Chasse aux phoques             | Arctique / Glacial                                                                                                                                                                                                                             | 0                   | plaine            |
 | Montagnes de minerai arctiques | Arctique / Glacial / Toundra                                                                                                                                                                                                                   | 1 Minerai           | terrain accidenté |
 | Crête rocheuse arctique        | Arctique / Glacial / Toundra                                                                                                                                                                                                                   | 1 Pierre            | terrain accidenté |
 | Montagnes aurifères arctiques  | Arctique / Glacial / Toundra                                                                                                                                                                                                                   | 1 Or                | terrain accidenté |
-| Plaine de steppe               | Steppe / Prairie                                                                                                                                                                                                                               | 1 Peaux + 1 Laine   | plaine            |
-| Oliveraie                      | Méditerranéen                                                                                                                                                                                                                                  | 1 Blé               | forêt             |
+| Plaine de steppe               | Steppe / Prairie                                                                                                                                                                                                                               | 0                   | plaine            |
+| Oliveraie                      | Méditerranéen                                                                                                                                                                                                                                  | 1 Blé + 1 Bois      | forêt             |
 | Escarpement                    | Méditerranéen                                                                                                                                                                                                                                  | 1 Pierre            | terrain accidenté |
-| Jungle                         | Tropical / Subtropical / Mousson                                                                                                                                                                                                               | 1 Peaux             | forêt             |
+| Jungle                         | Tropical / Subtropical / Mousson                                                                                                                                                                                                               | 1 Bois              | forêt             |
 | Bois tropicaux                 | Tropical / Mousson / Mésoaméricain                                                                                                                                                                                                             | 1 Bois              | forêt             |
 | Rizière                        | Tropical                                                                                                                                                                                                                                       | 3 Blé               | plaine            |
 | Rizière                        | Subtropical                                                                                                                                                                                                                                    | 2 Blé               | plaine            |
@@ -1050,9 +1141,9 @@ Les bases annuelles actuelles incluent la productivité des cultures propre au c
 | Désert                         | Désert / Hyperaride                                                                                                                                                                                                                            | 0                   | plaine            |
 | Oasis                          | Désert / Hyperaride                                                                                                                                                                                                                            | 1 Bois + 1 Blé      | forêt             |
 | Mer                            | Tempéré / Froid / Arctique / Steppe / Méditerranéen / Tropical / Désert / Océanique / Alpin / Subtropical / Savane / Glacial / Hyperaride / Mousson / Andin / Prairie / Mésoaméricain / Toundra / Forêt pluviale tempérée / Marais équatoriaux | 0                   | mer               |
-| Zone de pêche                  | Tempéré / Froid / Arctique / Steppe / Méditerranéen / Tropical / Désert / Océanique / Alpin / Subtropical / Savane / Glacial / Hyperaride / Mousson / Andin / Prairie / Mésoaméricain / Toundra / Forêt pluviale tempérée / Marais équatoriaux | 1 Poissons          | mer               |
-| Bancs de morue                 | Froid / Arctique / Océanique / Alpin / Glacial / Toundra / Forêt pluviale tempérée                                                                                                                                                             | 2 Poissons          | mer               |
-| Zone de Baleines               | Tempéré / Froid / Arctique / Steppe / Méditerranéen / Tropical / Désert / Océanique / Alpin / Subtropical / Savane / Glacial / Hyperaride / Mousson / Mésoaméricain / Toundra / Forêt pluviale tempérée / Marais équatoriaux                   | 1 Peaux + 1 Huile   | mer               |
+| Zone de pêche                  | Tempéré / Froid / Arctique / Steppe / Méditerranéen / Tropical / Désert / Océanique / Alpin / Subtropical / Savane / Glacial / Hyperaride / Mousson / Andin / Prairie / Mésoaméricain / Toundra / Forêt pluviale tempérée / Marais équatoriaux | 0                   | mer               |
+| Bancs de morue                 | Froid / Arctique / Océanique / Alpin / Glacial / Toundra / Forêt pluviale tempérée                                                                                                                                                             | 0                   | mer               |
+| Zone de Baleines               | Tempéré / Froid / Arctique / Steppe / Méditerranéen / Tropical / Désert / Océanique / Alpin / Subtropical / Savane / Glacial / Hyperaride / Mousson / Mésoaméricain / Toundra / Forêt pluviale tempérée / Marais équatoriaux                   | 0                   | mer               |
 | Banquise                       | Arctique / Glacial                                                                                                                                                                                                                             | 0                   | plaine            |
 | Pâturage côtier                | Océanique / Forêt pluviale tempérée                                                                                                                                                                                                            | 2 Laine             | plaine            |
 | Falaises côtières              | Océanique / Forêt pluviale tempérée                                                                                                                                                                                                            | 1 Pierre            | terrain accidenté |
@@ -1061,7 +1152,7 @@ Les bases annuelles actuelles incluent la productivité des cultures propre au c
 | Pics rocheux                   | Alpin / Glacial / Hyperaride / Mousson / Andin                                                                                                                                                                                                 | 0                   | terrain accidenté |
 | Berges argileuses              | Subtropical / Mousson / Forêt pluviale tempérée / Marais équatoriaux                                                                                                                                                                           | 2 Argile            | plaine            |
 | Bois riverains                 | Subtropical / Mousson / Andin / Prairie / Marais équatoriaux                                                                                                                                                                                   | 1 Bois              | forêt             |
-| Prairie à gibier               | Savane                                                                                                                                                                                                                                         | 2 Peaux             | plaine            |
+| Prairie à gibier               | Savane                                                                                                                                                                                                                                         | 0                   | plaine            |
 | Bois secs                      | Savane                                                                                                                                                                                                                                         | 1 Bois              | forêt             |
 | Champs d’orge                  | Froid / Méditerranéen / Alpin                                                                                                                                                                                                                  | 1 Blé               | plaine            |
 | Champs d’orge                  | Océanique                                                                                                                                                                                                                                      | 2 Blé               | plaine            |
@@ -1072,372 +1163,368 @@ Les bases annuelles actuelles incluent la productivité des cultures propre au c
 | Champs de sorgho               | Subtropical                                                                                                                                                                                                                                    | 2 Blé               | plaine            |
 | Pâturage d’alpagas             | Andin                                                                                                                                                                                                                                          | 1 Laine + 1 Viande  | plaine            |
 | Champs de tournesols           | Prairie                                                                                                                                                                                                                                        | 1 Huile             | plaine            |
-| Prairie à bisons               | Prairie                                                                                                                                                                                                                                        | 1 Viande + 1 Peaux  | plaine            |
+| Prairie à bisons               | Prairie                                                                                                                                                                                                                                        | 0                   | plaine            |
 | Jardins chinampas              | Mésoaméricain                                                                                                                                                                                                                                  | 3 Blé               | plaine            |
-| Terrains à dindons             | Mésoaméricain                                                                                                                                                                                                                                  | 2 Viande            | forêt             |
-| Forêt de nuages                | Mésoaméricain                                                                                                                                                                                                                                  | 1 Bois + 1 Peaux    | forêt             |
+| Terrains à dindons             | Mésoaméricain                                                                                                                                                                                                                                  | 1 Bois              | forêt             |
+| Forêt de nuages                | Mésoaméricain                                                                                                                                                                                                                                  | 1 Bois              | forêt             |
 | Carrière volcanique            | Mésoaméricain                                                                                                                                                                                                                                  | 2 Pierre            | terrain accidenté |
 | Champs de millet               | Steppe / Savane                                                                                                                                                                                                                                | 1 Blé               | plaine            |
 | Champs de maïs                 | Prairie / Mésoaméricain                                                                                                                                                                                                                        | 2 Blé               | plaine            |
 | Pâturage bovin                 | Tempéré / Océanique / Subtropical                                                                                                                                                                                                              | 2 Viande            | plaine            |
 | Pâturage de chèvres            | Méditerranéen / Désert / Alpin                                                                                                                                                                                                                 | 1 Viande            | terrain accidenté |
-| Pâturage de rennes             | Froid / Arctique / Toundra                                                                                                                                                                                                                     | 1 Viande + 1 Peaux  | plaine            |
+| Pâturage de rennes             | Froid / Arctique / Toundra                                                                                                                                                                                                                     | 0                   | plaine            |
 | Élevage de savane              | Steppe / Savane                                                                                                                                                                                                                                | 1 Viande + 1 Peaux  | plaine            |
 | Lande à baies                  | Toundra                                                                                                                                                                                                                                        | 1 Blé               | plaine            |
-| Pâturage de bœufs musqués      | Toundra                                                                                                                                                                                                                                        | 1 Laine + 1 Viande  | plaine            |
+| Pâturage de bœufs musqués      | Toundra                                                                                                                                                                                                                                        | 0                   | plaine            |
 | Tourbière                      | Toundra / Forêt pluviale tempérée / Marais équatoriaux                                                                                                                                                                                         | 1 Charbon           | plaine            |
 | Forêt ancienne                 | Forêt pluviale tempérée                                                                                                                                                                                                                        | 3 Bois              | forêt             |
-| Sous-bois de chasse            | Forêt pluviale tempérée                                                                                                                                                                                                                        | 1 Peaux + 1 Viande  | forêt             |
+| Sous-bois de chasse            | Forêt pluviale tempérée                                                                                                                                                                                                                        | 1 Bois              | forêt             |
 | Mangrove                       | Marais équatoriaux                                                                                                                                                                                                                             | 1 Bois + 1 Poissons | forêt             |
-| Palmeraie de sagoutiers        | Marais équatoriaux                                                                                                                                                                                                                             | 1 Blé               | forêt             |
+| Palmeraie de sagoutiers        | Marais équatoriaux                                                                                                                                                                                                                             | 1 Blé + 1 Bois      | forêt             |
 
 Pics rocheux : aucune production et aucune entrée d’unité, y compris par recrutement, repli ou débarquement. Les routes peuvent suivre leurs arêtes ; une agglomération exige une terre ferme praticable adjacente.
 
 ## Tables complètes des récoltes saisonnières
 
-Chaque saison dure deux manches complètes, début et fin, avec le même rendement prévu par jet correspondant. Les lignes marines indiquent le calendrier existant avant blocage par la glace réelle ; chaque tuile conserve sa concentration estivale existante. Aucune récolte manquée n’est compensée. La glace évolue indépendamment à chaque demi-saison selon les tables ci-dessous. Sélectionnez une tuile pour connaître son état actuel, ses rendements et ses risques météorologiques.
+Chaque saison dure deux manches complètes, début et fin, avec le même rendement prévu par jet correspondant. Ces rendements concernent le terrain permanent. Poissons, baleines et gibier migrateurs ajoutent les productions des populations présentes ; glace et crues peuvent bloquer la production. Aucune récolte manquée n’est compensée. La glace évolue indépendamment à chaque demi-saison selon les tables ci-dessous. Sélectionnez une tuile pour connaître son état actuel, ses rendements et ses risques météorologiques.
 
 ### Tempéré
 
-| Terrain                 | Printemps  | Été               | Automne           | Hiver             |
-| ----------------------- | ---------- | ----------------- | ----------------- | ----------------- |
-| Champs                  | 0          | 8 Blé             | 0                 | 0                 |
-| Blé sur terre noire     | 0          | 12 Blé            | 0                 | 0                 |
-| Champs d’avoine         | 0          | 6 Blé             | 2 Blé             | 0                 |
-| Champs de navets        | 0          | 2 Blé             | 6 Blé             | 0                 |
-| Pré                     | 4 Laine    | 4 Laine           | 0                 | 0                 |
-| Pâturage bovin          | 1 Viande   | 1 Viande          | 4 Viande          | 2 Viande          |
-| Bois clairsemés (Bois)  | 1 Bois     | 1 Bois            | 2 Bois            | 0                 |
-| Bois clairsemés (Peaux) | 1 Peaux    | 1 Peaux           | 2 Peaux           | 0                 |
-| Montagnes d'or          | 1 Or       | 1 Or              | 1 Or              | 1 Or              |
-| Collines d'argile       | 1 Argile   | 1 Argile          | 1 Argile          | 1 Argile          |
-| Carrière de pierre      | 1 Pierre   | 1 Pierre          | 1 Pierre          | 1 Pierre          |
-| Montagnes de minerai    | 1 Minerai  | 1 Minerai         | 1 Minerai         | 1 Minerai         |
-| Collines de charbon     | 1 Charbon  | 1 Charbon         | 1 Charbon         | 1 Charbon         |
-| Marais salants          | 1 Sel      | 2 Sel             | 1 Sel             | 0                 |
-| Zone de pêche           | 1 Poissons | 2 Poissons        | 1 Poissons        | 0                 |
-| Zone de Baleines        | 0          | 1 Peaux + 1 Huile | 2 Peaux + 2 Huile | 1 Peaux + 1 Huile |
+| Terrain              | Printemps | Été       | Automne   | Hiver     |
+| -------------------- | --------- | --------- | --------- | --------- |
+| Champs               | 0         | 8 Blé     | 0         | 0         |
+| Blé sur terre noire  | 0         | 12 Blé    | 0         | 0         |
+| Champs d’avoine      | 0         | 6 Blé     | 2 Blé     | 0         |
+| Champs de navets     | 0         | 2 Blé     | 6 Blé     | 0         |
+| Pré                  | 4 Laine   | 4 Laine   | 0         | 0         |
+| Pâturage bovin       | 1 Viande  | 1 Viande  | 4 Viande  | 2 Viande  |
+| Bois clairsemés      | 1 Bois    | 1 Bois    | 1 Bois    | 1 Bois    |
+| Montagnes d'or       | 1 Or      | 1 Or      | 1 Or      | 1 Or      |
+| Collines d'argile    | 1 Argile  | 1 Argile  | 1 Argile  | 1 Argile  |
+| Carrière de pierre   | 1 Pierre  | 1 Pierre  | 1 Pierre  | 1 Pierre  |
+| Montagnes de minerai | 1 Minerai | 1 Minerai | 1 Minerai | 1 Minerai |
+| Collines de charbon  | 1 Charbon | 1 Charbon | 1 Charbon | 1 Charbon |
+| Marais salants       | 1 Sel     | 2 Sel     | 1 Sel     | 0         |
+| Zone de pêche        | 0         | 0         | 0         | 0         |
+| Zone de Baleines     | 0         | 0         | 0         | 0         |
 
 ### Froid
 
-| Terrain              | Printemps          | Été                | Automne            | Hiver              |
-| -------------------- | ------------------ | ------------------ | ------------------ | ------------------ |
-| Forêt                | 2 Bois             | 2 Bois             | 3 Bois             | 1 Bois             |
-| Forêt de chasse      | 2 Peaux            | 0                  | 2 Peaux            | 4 Peaux            |
-| Pâturage de rennes   | 1 Viande + 1 Peaux | 1 Viande + 1 Peaux | 1 Viande + 1 Peaux | 1 Viande + 1 Peaux |
-| Champs d’orge        | 0                  | 0                  | 4 Blé              | 0                  |
-| Champs de navets     | 0                  | 1 Blé              | 3 Blé              | 0                  |
-| Pâturage pauvre      | 2 Laine            | 2 Laine            | 0                  | 0                  |
-| Montagnes d'or       | 1 Or               | 2 Or               | 1 Or               | 0                  |
-| Collines de charbon  | 1 Charbon          | 1 Charbon          | 1 Charbon          | 1 Charbon          |
-| Montagnes de minerai | 1 Minerai          | 2 Minerai          | 1 Minerai          | 0                  |
-| Carrière de pierre   | 1 Pierre           | 2 Pierre           | 1 Pierre           | 0                  |
-| Collines d'argile    | 1 Argile           | 2 Argile           | 1 Argile           | 0                  |
-| Zone de pêche        | 1 Poissons         | 2 Poissons         | 1 Poissons         | 0                  |
-| Bancs de morue       | 2 Poissons         | 4 Poissons         | 2 Poissons         | 0                  |
-| Zone de Baleines     | 1 Peaux + 1 Huile  | 2 Peaux + 2 Huile  | 1 Peaux + 1 Huile  | 0                  |
+| Terrain              | Printemps | Été       | Automne   | Hiver     |
+| -------------------- | --------- | --------- | --------- | --------- |
+| Forêt                | 2 Bois    | 2 Bois    | 3 Bois    | 1 Bois    |
+| Forêt de chasse      | 2 Bois    | 2 Bois    | 3 Bois    | 1 Bois    |
+| Pâturage de rennes   | 0         | 0         | 0         | 0         |
+| Champs d’orge        | 0         | 0         | 4 Blé     | 0         |
+| Champs de navets     | 0         | 1 Blé     | 3 Blé     | 0         |
+| Pâturage pauvre      | 2 Laine   | 2 Laine   | 0         | 0         |
+| Montagnes d'or       | 1 Or      | 2 Or      | 1 Or      | 0         |
+| Collines de charbon  | 1 Charbon | 1 Charbon | 1 Charbon | 1 Charbon |
+| Montagnes de minerai | 1 Minerai | 2 Minerai | 1 Minerai | 0         |
+| Carrière de pierre   | 1 Pierre  | 2 Pierre  | 1 Pierre  | 0         |
+| Collines d'argile    | 1 Argile  | 2 Argile  | 1 Argile  | 0         |
+| Zone de pêche        | 0         | 0         | 0         | 0         |
+| Bancs de morue       | 0         | 0         | 0         | 0         |
+| Zone de Baleines     | 0         | 0         | 0         | 0         |
 
 ### Arctique
 
-| Terrain                        | Printemps          | Été                | Automne            | Hiver              |
-| ------------------------------ | ------------------ | ------------------ | ------------------ | ------------------ |
-| Plaine enneigée                | 0                  | 0                  | 0                  | 0                  |
-| Pâturage de rennes             | 1 Viande + 1 Peaux | 1 Viande + 1 Peaux | 1 Viande + 1 Peaux | 1 Viande + 1 Peaux |
-| Chasse aux phoques             | 1 Peaux + 1 Huile  | 1 Peaux + 1 Huile  | 1 Peaux + 1 Huile  | 1 Peaux + 1 Huile  |
-| Montagnes de minerai arctiques | 1 Minerai          | 2 Minerai          | 1 Minerai          | 0                  |
-| Crête rocheuse arctique        | 1 Pierre           | 2 Pierre           | 1 Pierre           | 0                  |
-| Montagnes aurifères arctiques  | 1 Or               | 2 Or               | 1 Or               | 0                  |
-| Banquise                       | 0                  | 0                  | 0                  | 0                  |
-| Zone de pêche                  | 1 Poissons         | 2 Poissons         | 1 Poissons         | 0                  |
-| Bancs de morue                 | 2 Poissons         | 4 Poissons         | 2 Poissons         | 0                  |
-| Zone de Baleines               | 1 Peaux + 1 Huile  | 2 Peaux + 2 Huile  | 1 Peaux + 1 Huile  | 0                  |
+| Terrain                        | Printemps | Été       | Automne   | Hiver |
+| ------------------------------ | --------- | --------- | --------- | ----- |
+| Plaine enneigée                | 0         | 0         | 0         | 0     |
+| Pâturage de rennes             | 0         | 0         | 0         | 0     |
+| Chasse aux phoques             | 0         | 0         | 0         | 0     |
+| Montagnes de minerai arctiques | 1 Minerai | 2 Minerai | 1 Minerai | 0     |
+| Crête rocheuse arctique        | 1 Pierre  | 2 Pierre  | 1 Pierre  | 0     |
+| Montagnes aurifères arctiques  | 1 Or      | 2 Or      | 1 Or      | 0     |
+| Banquise                       | 0         | 0         | 0         | 0     |
+| Zone de pêche                  | 0         | 0         | 0         | 0     |
+| Bancs de morue                 | 0         | 0         | 0         | 0     |
+| Zone de Baleines               | 0         | 0         | 0         | 0     |
 
 ### Steppe
 
-| Terrain                 | Printemps          | Été               | Automne            | Hiver              |
-| ----------------------- | ------------------ | ----------------- | ------------------ | ------------------ |
-| Plaine de steppe        | 1 Peaux + 2 Laine  | 2 Laine           | 1 Peaux            | 2 Peaux            |
-| Blé sur terre noire     | 0                  | 12 Blé            | 0                  | 0                  |
-| Élevage de savane       | 1 Viande + 1 Peaux | 0                 | 2 Viande + 2 Peaux | 1 Viande + 1 Peaux |
-| Champs de millet        | 0                  | 0                 | 4 Blé              | 0                  |
-| Pré                     | 4 Laine            | 4 Laine           | 0                  | 0                  |
-| Bois clairsemés (Bois)  | 1 Bois             | 1 Bois            | 2 Bois             | 0                  |
-| Bois clairsemés (Peaux) | 1 Peaux            | 1 Peaux           | 2 Peaux            | 0                  |
-| Carrière de pierre      | 1 Pierre           | 1 Pierre          | 1 Pierre           | 1 Pierre           |
-| Montagnes de minerai    | 1 Minerai          | 1 Minerai         | 1 Minerai          | 1 Minerai          |
-| Collines de charbon     | 1 Charbon          | 1 Charbon         | 1 Charbon          | 1 Charbon          |
-| Collines d'argile       | 1 Argile           | 1 Argile          | 1 Argile           | 1 Argile           |
-| Montagnes d'or          | 1 Or               | 1 Or              | 1 Or               | 1 Or               |
-| Zone de pêche           | 1 Poissons         | 2 Poissons        | 1 Poissons         | 0                  |
-| Zone de Baleines        | 0                  | 1 Peaux + 1 Huile | 2 Peaux + 2 Huile  | 1 Peaux + 1 Huile  |
+| Terrain              | Printemps          | Été       | Automne            | Hiver              |
+| -------------------- | ------------------ | --------- | ------------------ | ------------------ |
+| Plaine de steppe     | 0                  | 0         | 0                  | 0                  |
+| Blé sur terre noire  | 0                  | 12 Blé    | 0                  | 0                  |
+| Élevage de savane    | 1 Viande + 1 Peaux | 0         | 2 Viande + 2 Peaux | 1 Viande + 1 Peaux |
+| Champs de millet     | 0                  | 0         | 4 Blé              | 0                  |
+| Pré                  | 4 Laine            | 4 Laine   | 0                  | 0                  |
+| Bois clairsemés      | 1 Bois             | 1 Bois    | 1 Bois             | 1 Bois             |
+| Carrière de pierre   | 1 Pierre           | 1 Pierre  | 1 Pierre           | 1 Pierre           |
+| Montagnes de minerai | 1 Minerai          | 1 Minerai | 1 Minerai          | 1 Minerai          |
+| Collines de charbon  | 1 Charbon          | 1 Charbon | 1 Charbon          | 1 Charbon          |
+| Collines d'argile    | 1 Argile           | 1 Argile  | 1 Argile           | 1 Argile           |
+| Montagnes d'or       | 1 Or               | 1 Or      | 1 Or               | 1 Or               |
+| Zone de pêche        | 0                  | 0         | 0                  | 0                  |
+| Zone de Baleines     | 0                  | 0         | 0                  | 0                  |
 
 ### Méditerranéen
 
-| Terrain                 | Printemps  | Été               | Automne           | Hiver             |
-| ----------------------- | ---------- | ----------------- | ----------------- | ----------------- |
-| Champs                  | 0          | 8 Blé             | 0                 | 0                 |
-| Champs d’orge           | 0          | 4 Blé             | 0                 | 0                 |
-| Oliveraie               | 0          | 0                 | 2 Blé             | 2 Blé             |
-| Escarpement             | 1 Pierre   | 1 Pierre          | 1 Pierre          | 1 Pierre          |
-| Bois clairsemés (Bois)  | 1 Bois     | 1 Bois            | 2 Bois            | 0                 |
-| Bois clairsemés (Peaux) | 1 Peaux    | 1 Peaux           | 2 Peaux           | 0                 |
-| Pâturage pauvre         | 2 Laine    | 2 Laine           | 0                 | 0                 |
-| Pâturage de chèvres     | 1 Viande   | 0                 | 2 Viande          | 1 Viande          |
-| Marais salants          | 1 Sel      | 2 Sel             | 1 Sel             | 0                 |
-| Montagnes d'or          | 1 Or       | 1 Or              | 1 Or              | 1 Or              |
-| Collines de charbon     | 1 Charbon  | 1 Charbon         | 1 Charbon         | 1 Charbon         |
-| Montagnes de minerai    | 1 Minerai  | 1 Minerai         | 1 Minerai         | 1 Minerai         |
-| Zone de pêche           | 1 Poissons | 1 Poissons        | 1 Poissons        | 1 Poissons        |
-| Zone de Baleines        | 0          | 1 Peaux + 1 Huile | 2 Peaux + 2 Huile | 1 Peaux + 1 Huile |
+| Terrain              | Printemps | Été       | Automne        | Hiver          |
+| -------------------- | --------- | --------- | -------------- | -------------- |
+| Champs               | 0         | 8 Blé     | 0              | 0              |
+| Champs d’orge        | 0         | 4 Blé     | 0              | 0              |
+| Oliveraie            | 1 Bois    | 1 Bois    | 2 Blé + 1 Bois | 2 Blé + 1 Bois |
+| Escarpement          | 1 Pierre  | 1 Pierre  | 1 Pierre       | 1 Pierre       |
+| Bois clairsemés      | 1 Bois    | 1 Bois    | 1 Bois         | 1 Bois         |
+| Pâturage pauvre      | 2 Laine   | 2 Laine   | 0              | 0              |
+| Pâturage de chèvres  | 1 Viande  | 0         | 2 Viande       | 1 Viande       |
+| Marais salants       | 1 Sel     | 2 Sel     | 1 Sel          | 0              |
+| Montagnes d'or       | 1 Or      | 1 Or      | 1 Or           | 1 Or           |
+| Collines de charbon  | 1 Charbon | 1 Charbon | 1 Charbon      | 1 Charbon      |
+| Montagnes de minerai | 1 Minerai | 1 Minerai | 1 Minerai      | 1 Minerai      |
+| Zone de pêche        | 0         | 0         | 0              | 0              |
+| Zone de Baleines     | 0         | 0         | 0              | 0              |
 
 ### Tropical
 
-| Terrain              | Printemps  | Été               | Automne           | Hiver             |
-| -------------------- | ---------- | ----------------- | ----------------- | ----------------- |
-| Jungle               | 1 Peaux    | 1 Peaux           | 1 Peaux           | 1 Peaux           |
-| Bois tropicaux       | 1 Bois     | 1 Bois            | 1 Bois            | 1 Bois            |
-| Rizière              | 4 Blé      | 4 Blé             | 4 Blé             | 0                 |
-| Collines d'argile    | 1 Argile   | 1 Argile          | 1 Argile          | 1 Argile          |
-| Montagnes d'or       | 1 Or       | 1 Or              | 1 Or              | 1 Or              |
-| Carrière de pierre   | 1 Pierre   | 1 Pierre          | 1 Pierre          | 1 Pierre          |
-| Collines de charbon  | 1 Charbon  | 1 Charbon         | 1 Charbon         | 1 Charbon         |
-| Montagnes de minerai | 1 Minerai  | 1 Minerai         | 1 Minerai         | 1 Minerai         |
-| Marais salants       | 1 Sel      | 0                 | 1 Sel             | 2 Sel             |
-| Zone de pêche        | 1 Poissons | 1 Poissons        | 1 Poissons        | 1 Poissons        |
-| Zone de Baleines     | 0          | 1 Peaux + 1 Huile | 2 Peaux + 2 Huile | 1 Peaux + 1 Huile |
+| Terrain              | Printemps | Été       | Automne   | Hiver     |
+| -------------------- | --------- | --------- | --------- | --------- |
+| Jungle               | 1 Bois    | 1 Bois    | 1 Bois    | 1 Bois    |
+| Bois tropicaux       | 1 Bois    | 1 Bois    | 1 Bois    | 1 Bois    |
+| Rizière              | 4 Blé     | 4 Blé     | 4 Blé     | 0         |
+| Collines d'argile    | 1 Argile  | 1 Argile  | 1 Argile  | 1 Argile  |
+| Montagnes d'or       | 1 Or      | 1 Or      | 1 Or      | 1 Or      |
+| Carrière de pierre   | 1 Pierre  | 1 Pierre  | 1 Pierre  | 1 Pierre  |
+| Collines de charbon  | 1 Charbon | 1 Charbon | 1 Charbon | 1 Charbon |
+| Montagnes de minerai | 1 Minerai | 1 Minerai | 1 Minerai | 1 Minerai |
+| Marais salants       | 1 Sel     | 0         | 1 Sel     | 2 Sel     |
+| Zone de pêche        | 0         | 0         | 0         | 0         |
+| Zone de Baleines     | 0         | 0         | 0         | 0         |
 
 ### Désert
 
-| Terrain              | Printemps  | Été               | Automne           | Hiver             |
-| -------------------- | ---------- | ----------------- | ----------------- | ----------------- |
-| Désert               | 0          | 0                 | 0                 | 0                 |
-| Pâturage de chèvres  | 1 Viande   | 0                 | 2 Viande          | 1 Viande          |
-| Montagnes d'or       | 1 Or       | 1 Or              | 1 Or              | 1 Or              |
-| Montagnes de minerai | 1 Minerai  | 1 Minerai         | 1 Minerai         | 1 Minerai         |
-| Carrière de pierre   | 1 Pierre   | 1 Pierre          | 1 Pierre          | 1 Pierre          |
-| Collines de charbon  | 1 Charbon  | 1 Charbon         | 1 Charbon         | 1 Charbon         |
-| Oasis                | 1 Bois     | 1 Bois            | 1 Bois + 4 Blé    | 1 Bois            |
-| Marais salants       | 1 Sel      | 1 Sel             | 1 Sel             | 1 Sel             |
-| Zone de pêche        | 1 Poissons | 1 Poissons        | 1 Poissons        | 1 Poissons        |
-| Zone de Baleines     | 0          | 1 Peaux + 1 Huile | 2 Peaux + 2 Huile | 1 Peaux + 1 Huile |
+| Terrain              | Printemps | Été       | Automne        | Hiver     |
+| -------------------- | --------- | --------- | -------------- | --------- |
+| Désert               | 0         | 0         | 0              | 0         |
+| Pâturage de chèvres  | 1 Viande  | 0         | 2 Viande       | 1 Viande  |
+| Montagnes d'or       | 1 Or      | 1 Or      | 1 Or           | 1 Or      |
+| Montagnes de minerai | 1 Minerai | 1 Minerai | 1 Minerai      | 1 Minerai |
+| Carrière de pierre   | 1 Pierre  | 1 Pierre  | 1 Pierre       | 1 Pierre  |
+| Collines de charbon  | 1 Charbon | 1 Charbon | 1 Charbon      | 1 Charbon |
+| Oasis                | 1 Bois    | 1 Bois    | 1 Bois + 4 Blé | 1 Bois    |
+| Marais salants       | 1 Sel     | 1 Sel     | 1 Sel          | 1 Sel     |
+| Zone de pêche        | 0         | 0         | 0              | 0         |
+| Zone de Baleines     | 0         | 0         | 0              | 0         |
 
 ### Océanique
 
-| Terrain                 | Printemps  | Été               | Automne           | Hiver             |
-| ----------------------- | ---------- | ----------------- | ----------------- | ----------------- |
-| Pâturage côtier         | 4 Laine    | 4 Laine           | 0                 | 0                 |
-| Pâturage bovin          | 1 Viande   | 1 Viande          | 4 Viande          | 2 Viande          |
-| Bois clairsemés (Bois)  | 1 Bois     | 1 Bois            | 2 Bois            | 0                 |
-| Bois clairsemés (Peaux) | 1 Peaux    | 1 Peaux           | 2 Peaux           | 0                 |
-| Champs d’orge           | 0          | 8 Blé             | 0                 | 0                 |
-| Champs de navets        | 0          | 2 Blé             | 6 Blé             | 0                 |
-| Champs                  | 0          | 0                 | 8 Blé             | 0                 |
-| Collines d'argile       | 1 Argile   | 1 Argile          | 1 Argile          | 1 Argile          |
-| Falaises côtières       | 1 Pierre   | 1 Pierre          | 1 Pierre          | 1 Pierre          |
-| Collines de charbon     | 1 Charbon  | 1 Charbon         | 1 Charbon         | 1 Charbon         |
-| Montagnes de minerai    | 1 Minerai  | 1 Minerai         | 1 Minerai         | 1 Minerai         |
-| Montagnes d'or          | 1 Or       | 1 Or              | 1 Or              | 1 Or              |
-| Zone de pêche           | 1 Poissons | 2 Poissons        | 1 Poissons        | 0                 |
-| Bancs de morue          | 2 Poissons | 4 Poissons        | 2 Poissons        | 0                 |
-| Zone de Baleines        | 0          | 1 Peaux + 1 Huile | 2 Peaux + 2 Huile | 1 Peaux + 1 Huile |
+| Terrain              | Printemps | Été       | Automne   | Hiver     |
+| -------------------- | --------- | --------- | --------- | --------- |
+| Pâturage côtier      | 4 Laine   | 4 Laine   | 0         | 0         |
+| Pâturage bovin       | 1 Viande  | 1 Viande  | 4 Viande  | 2 Viande  |
+| Bois clairsemés      | 1 Bois    | 1 Bois    | 1 Bois    | 1 Bois    |
+| Champs d’orge        | 0         | 8 Blé     | 0         | 0         |
+| Champs de navets     | 0         | 2 Blé     | 6 Blé     | 0         |
+| Champs               | 0         | 0         | 8 Blé     | 0         |
+| Collines d'argile    | 1 Argile  | 1 Argile  | 1 Argile  | 1 Argile  |
+| Falaises côtières    | 1 Pierre  | 1 Pierre  | 1 Pierre  | 1 Pierre  |
+| Collines de charbon  | 1 Charbon | 1 Charbon | 1 Charbon | 1 Charbon |
+| Montagnes de minerai | 1 Minerai | 1 Minerai | 1 Minerai | 1 Minerai |
+| Montagnes d'or       | 1 Or      | 1 Or      | 1 Or      | 1 Or      |
+| Zone de pêche        | 0         | 0         | 0         | 0         |
+| Bancs de morue       | 0         | 0         | 0         | 0         |
+| Zone de Baleines     | 0         | 0         | 0         | 0         |
 
 ### Alpin
 
-| Terrain              | Printemps         | Été               | Automne           | Hiver     |
-| -------------------- | ----------------- | ----------------- | ----------------- | --------- |
-| Carrière de montagne | 2 Pierre          | 4 Pierre          | 2 Pierre          | 0         |
-| Montagnes de minerai | 1 Minerai         | 2 Minerai         | 1 Minerai         | 0         |
-| Collines de charbon  | 1 Charbon         | 1 Charbon         | 1 Charbon         | 1 Charbon |
-| Pâturage alpin       | 2 Laine           | 2 Laine           | 0                 | 0         |
-| Pâturage de chèvres  | 1 Viande          | 0                 | 2 Viande          | 1 Viande  |
-| Champs d’orge        | 0                 | 0                 | 4 Blé             | 0         |
-| Champs de navets     | 0                 | 1 Blé             | 3 Blé             | 0         |
-| Forêt                | 2 Bois            | 2 Bois            | 3 Bois            | 1 Bois    |
-| Montagnes d'or       | 1 Or              | 2 Or              | 1 Or              | 0         |
-| Collines d'argile    | 1 Argile          | 2 Argile          | 1 Argile          | 0         |
-| Pics rocheux         | 0                 | 0                 | 0                 | 0         |
-| Zone de pêche        | 1 Poissons        | 2 Poissons        | 1 Poissons        | 0         |
-| Bancs de morue       | 2 Poissons        | 4 Poissons        | 2 Poissons        | 0         |
-| Zone de Baleines     | 1 Peaux + 1 Huile | 2 Peaux + 2 Huile | 1 Peaux + 1 Huile | 0         |
+| Terrain              | Printemps | Été       | Automne   | Hiver     |
+| -------------------- | --------- | --------- | --------- | --------- |
+| Carrière de montagne | 2 Pierre  | 4 Pierre  | 2 Pierre  | 0         |
+| Montagnes de minerai | 1 Minerai | 2 Minerai | 1 Minerai | 0         |
+| Collines de charbon  | 1 Charbon | 1 Charbon | 1 Charbon | 1 Charbon |
+| Pâturage alpin       | 2 Laine   | 2 Laine   | 0         | 0         |
+| Pâturage de chèvres  | 1 Viande  | 0         | 2 Viande  | 1 Viande  |
+| Champs d’orge        | 0         | 0         | 4 Blé     | 0         |
+| Champs de navets     | 0         | 1 Blé     | 3 Blé     | 0         |
+| Forêt                | 2 Bois    | 2 Bois    | 3 Bois    | 1 Bois    |
+| Montagnes d'or       | 1 Or      | 2 Or      | 1 Or      | 0         |
+| Collines d'argile    | 1 Argile  | 2 Argile  | 1 Argile  | 0         |
+| Pics rocheux         | 0         | 0         | 0         | 0         |
+| Zone de pêche        | 0         | 0         | 0         | 0         |
+| Bancs de morue       | 0         | 0         | 0         | 0         |
+| Zone de Baleines     | 0         | 0         | 0         | 0         |
 
 ### Subtropical
 
-| Terrain              | Printemps  | Été               | Automne           | Hiver             |
-| -------------------- | ---------- | ----------------- | ----------------- | ----------------- |
-| Berges argileuses    | 2 Argile   | 1 Argile          | 2 Argile          | 3 Argile          |
-| Rizière              | 0          | 4 Blé             | 4 Blé             | 0                 |
-| Champs de sorgho     | 0          | 0                 | 8 Blé             | 0                 |
-| Bois riverains       | 1 Bois     | 1 Bois            | 1 Bois            | 1 Bois            |
-| Pâturage bovin       | 1 Viande   | 1 Viande          | 4 Viande          | 2 Viande          |
-| Jungle               | 1 Peaux    | 1 Peaux           | 1 Peaux           | 1 Peaux           |
-| Carrière de pierre   | 1 Pierre   | 1 Pierre          | 1 Pierre          | 1 Pierre          |
-| Collines de charbon  | 1 Charbon  | 1 Charbon         | 1 Charbon         | 1 Charbon         |
-| Montagnes de minerai | 1 Minerai  | 1 Minerai         | 1 Minerai         | 1 Minerai         |
-| Marais salants       | 1 Sel      | 0                 | 1 Sel             | 2 Sel             |
-| Montagnes d'or       | 1 Or       | 1 Or              | 1 Or              | 1 Or              |
-| Zone de pêche        | 1 Poissons | 1 Poissons        | 1 Poissons        | 1 Poissons        |
-| Zone de Baleines     | 0          | 1 Peaux + 1 Huile | 2 Peaux + 2 Huile | 1 Peaux + 1 Huile |
+| Terrain              | Printemps | Été       | Automne   | Hiver     |
+| -------------------- | --------- | --------- | --------- | --------- |
+| Berges argileuses    | 2 Argile  | 1 Argile  | 2 Argile  | 3 Argile  |
+| Rizière              | 0         | 4 Blé     | 4 Blé     | 0         |
+| Champs de sorgho     | 0         | 0         | 8 Blé     | 0         |
+| Bois riverains       | 1 Bois    | 1 Bois    | 1 Bois    | 1 Bois    |
+| Pâturage bovin       | 1 Viande  | 1 Viande  | 4 Viande  | 2 Viande  |
+| Jungle               | 1 Bois    | 1 Bois    | 1 Bois    | 1 Bois    |
+| Carrière de pierre   | 1 Pierre  | 1 Pierre  | 1 Pierre  | 1 Pierre  |
+| Collines de charbon  | 1 Charbon | 1 Charbon | 1 Charbon | 1 Charbon |
+| Montagnes de minerai | 1 Minerai | 1 Minerai | 1 Minerai | 1 Minerai |
+| Marais salants       | 1 Sel     | 0         | 1 Sel     | 2 Sel     |
+| Montagnes d'or       | 1 Or      | 1 Or      | 1 Or      | 1 Or      |
+| Zone de pêche        | 0         | 0         | 0         | 0         |
+| Zone de Baleines     | 0         | 0         | 0         | 0         |
 
 ### Savane
 
-| Terrain              | Printemps          | Été               | Automne            | Hiver              |
-| -------------------- | ------------------ | ----------------- | ------------------ | ------------------ |
-| Prairie à gibier     | 2 Peaux            | 1 Peaux           | 3 Peaux            | 2 Peaux            |
-| Élevage de savane    | 1 Viande + 1 Peaux | 0                 | 2 Viande + 2 Peaux | 1 Viande + 1 Peaux |
-| Champs de millet     | 0                  | 0                 | 4 Blé              | 0                  |
-| Bois secs            | 1 Bois             | 1 Bois            | 1 Bois             | 1 Bois             |
-| Pâturage pauvre      | 1 Laine            | 1 Laine           | 1 Laine            | 1 Laine            |
-| Montagnes de minerai | 1 Minerai          | 1 Minerai         | 1 Minerai          | 1 Minerai          |
-| Collines d'argile    | 1 Argile           | 1 Argile          | 1 Argile           | 1 Argile           |
-| Carrière de pierre   | 1 Pierre           | 1 Pierre          | 1 Pierre           | 1 Pierre           |
-| Montagnes d'or       | 1 Or               | 1 Or              | 1 Or               | 1 Or               |
-| Marais salants       | 1 Sel              | 0                 | 1 Sel              | 2 Sel              |
-| Zone de pêche        | 1 Poissons         | 1 Poissons        | 1 Poissons         | 1 Poissons         |
-| Zone de Baleines     | 0                  | 1 Peaux + 1 Huile | 2 Peaux + 2 Huile  | 1 Peaux + 1 Huile  |
+| Terrain              | Printemps          | Été       | Automne            | Hiver              |
+| -------------------- | ------------------ | --------- | ------------------ | ------------------ |
+| Prairie à gibier     | 0                  | 0         | 0                  | 0                  |
+| Élevage de savane    | 1 Viande + 1 Peaux | 0         | 2 Viande + 2 Peaux | 1 Viande + 1 Peaux |
+| Champs de millet     | 0                  | 0         | 4 Blé              | 0                  |
+| Bois secs            | 1 Bois             | 1 Bois    | 1 Bois             | 1 Bois             |
+| Pâturage pauvre      | 1 Laine            | 1 Laine   | 1 Laine            | 1 Laine            |
+| Montagnes de minerai | 1 Minerai          | 1 Minerai | 1 Minerai          | 1 Minerai          |
+| Collines d'argile    | 1 Argile           | 1 Argile  | 1 Argile           | 1 Argile           |
+| Carrière de pierre   | 1 Pierre           | 1 Pierre  | 1 Pierre           | 1 Pierre           |
+| Montagnes d'or       | 1 Or               | 1 Or      | 1 Or               | 1 Or               |
+| Marais salants       | 1 Sel              | 0         | 1 Sel              | 2 Sel              |
+| Zone de pêche        | 0                  | 0         | 0                  | 0                  |
+| Zone de Baleines     | 0                  | 0         | 0                  | 0                  |
 
 ### Glacial
 
-| Terrain                        | Printemps         | Été               | Automne           | Hiver             |
-| ------------------------------ | ----------------- | ----------------- | ----------------- | ----------------- |
-| Plaine enneigée                | 0                 | 0                 | 0                 | 0                 |
-| Pics rocheux                   | 0                 | 0                 | 0                 | 0                 |
-| Chasse aux phoques             | 1 Peaux + 1 Huile | 1 Peaux + 1 Huile | 1 Peaux + 1 Huile | 1 Peaux + 1 Huile |
-| Montagnes de minerai arctiques | 0                 | 4 Minerai         | 0                 | 0                 |
-| Crête rocheuse arctique        | 0                 | 4 Pierre          | 0                 | 0                 |
-| Montagnes aurifères arctiques  | 0                 | 4 Or              | 0                 | 0                 |
-| Banquise                       | 0                 | 0                 | 0                 | 0                 |
-| Zone de pêche                  | 0                 | 4 Poissons        | 0                 | 0                 |
-| Bancs de morue                 | 0                 | 8 Poissons        | 0                 | 0                 |
-| Zone de Baleines               | 0                 | 4 Peaux + 4 Huile | 0                 | 0                 |
+| Terrain                        | Printemps | Été       | Automne | Hiver |
+| ------------------------------ | --------- | --------- | ------- | ----- |
+| Plaine enneigée                | 0         | 0         | 0       | 0     |
+| Pics rocheux                   | 0         | 0         | 0       | 0     |
+| Chasse aux phoques             | 0         | 0         | 0       | 0     |
+| Montagnes de minerai arctiques | 0         | 4 Minerai | 0       | 0     |
+| Crête rocheuse arctique        | 0         | 4 Pierre  | 0       | 0     |
+| Montagnes aurifères arctiques  | 0         | 4 Or      | 0       | 0     |
+| Banquise                       | 0         | 0         | 0       | 0     |
+| Zone de pêche                  | 0         | 0         | 0       | 0     |
+| Bancs de morue                 | 0         | 0         | 0       | 0     |
+| Zone de Baleines               | 0         | 0         | 0       | 0     |
 
 ### Hyperaride
 
-| Terrain              | Printemps  | Été               | Automne           | Hiver             |
-| -------------------- | ---------- | ----------------- | ----------------- | ----------------- |
-| Désert               | 0          | 0                 | 0                 | 0                 |
-| Pics rocheux         | 0          | 0                 | 0                 | 0                 |
-| Marais salants       | 1 Sel      | 1 Sel             | 1 Sel             | 1 Sel             |
-| Montagnes de minerai | 1 Minerai  | 1 Minerai         | 1 Minerai         | 1 Minerai         |
-| Carrière de pierre   | 1 Pierre   | 1 Pierre          | 1 Pierre          | 1 Pierre          |
-| Montagnes d'or       | 1 Or       | 1 Or              | 1 Or              | 1 Or              |
-| Oasis                | 1 Bois     | 1 Bois            | 1 Bois + 4 Blé    | 1 Bois            |
-| Collines de charbon  | 1 Charbon  | 1 Charbon         | 1 Charbon         | 1 Charbon         |
-| Zone de pêche        | 1 Poissons | 1 Poissons        | 1 Poissons        | 1 Poissons        |
-| Zone de Baleines     | 0          | 1 Peaux + 1 Huile | 2 Peaux + 2 Huile | 1 Peaux + 1 Huile |
+| Terrain              | Printemps | Été       | Automne        | Hiver     |
+| -------------------- | --------- | --------- | -------------- | --------- |
+| Désert               | 0         | 0         | 0              | 0         |
+| Pics rocheux         | 0         | 0         | 0              | 0         |
+| Marais salants       | 1 Sel     | 1 Sel     | 1 Sel          | 1 Sel     |
+| Montagnes de minerai | 1 Minerai | 1 Minerai | 1 Minerai      | 1 Minerai |
+| Carrière de pierre   | 1 Pierre  | 1 Pierre  | 1 Pierre       | 1 Pierre  |
+| Montagnes d'or       | 1 Or      | 1 Or      | 1 Or           | 1 Or      |
+| Oasis                | 1 Bois    | 1 Bois    | 1 Bois + 4 Blé | 1 Bois    |
+| Collines de charbon  | 1 Charbon | 1 Charbon | 1 Charbon      | 1 Charbon |
+| Zone de pêche        | 0         | 0         | 0              | 0         |
+| Zone de Baleines     | 0         | 0         | 0              | 0         |
 
 ### Mousson
 
-| Terrain              | Printemps  | Été               | Automne           | Hiver             |
-| -------------------- | ---------- | ----------------- | ----------------- | ----------------- |
-| Jungle               | 1 Peaux    | 1 Peaux           | 1 Peaux           | 1 Peaux           |
-| Bois tropicaux       | 1 Bois     | 1 Bois            | 1 Bois            | 1 Bois            |
-| Bois riverains       | 1 Bois     | 1 Bois            | 1 Bois            | 1 Bois            |
-| Rizière              | 0          | 0                 | 4 Blé             | 0                 |
-| Berges argileuses    | 2 Argile   | 1 Argile          | 2 Argile          | 3 Argile          |
-| Pics rocheux         | 0          | 0                 | 0                 | 0                 |
-| Carrière de pierre   | 1 Pierre   | 1 Pierre          | 1 Pierre          | 1 Pierre          |
-| Montagnes de minerai | 1 Minerai  | 1 Minerai         | 1 Minerai         | 1 Minerai         |
-| Collines de charbon  | 1 Charbon  | 1 Charbon         | 1 Charbon         | 1 Charbon         |
-| Montagnes d'or       | 1 Or       | 1 Or              | 1 Or              | 1 Or              |
-| Zone de pêche        | 1 Poissons | 1 Poissons        | 1 Poissons        | 1 Poissons        |
-| Zone de Baleines     | 0          | 1 Peaux + 1 Huile | 2 Peaux + 2 Huile | 1 Peaux + 1 Huile |
+| Terrain              | Printemps | Été       | Automne   | Hiver     |
+| -------------------- | --------- | --------- | --------- | --------- |
+| Jungle               | 1 Bois    | 1 Bois    | 1 Bois    | 1 Bois    |
+| Bois tropicaux       | 1 Bois    | 1 Bois    | 1 Bois    | 1 Bois    |
+| Bois riverains       | 1 Bois    | 1 Bois    | 1 Bois    | 1 Bois    |
+| Rizière              | 0         | 0         | 4 Blé     | 0         |
+| Berges argileuses    | 2 Argile  | 1 Argile  | 2 Argile  | 3 Argile  |
+| Pics rocheux         | 0         | 0         | 0         | 0         |
+| Carrière de pierre   | 1 Pierre  | 1 Pierre  | 1 Pierre  | 1 Pierre  |
+| Montagnes de minerai | 1 Minerai | 1 Minerai | 1 Minerai | 1 Minerai |
+| Collines de charbon  | 1 Charbon | 1 Charbon | 1 Charbon | 1 Charbon |
+| Montagnes d'or       | 1 Or      | 1 Or      | 1 Or      | 1 Or      |
+| Zone de pêche        | 0         | 0         | 0         | 0         |
+| Zone de Baleines     | 0         | 0         | 0         | 0         |
 
 ### Andin
 
-| Terrain                   | Printemps          | Été        | Automne    | Hiver     |
-| ------------------------- | ------------------ | ---------- | ---------- | --------- |
-| Champs de pommes de terre | 0                  | 2 Blé      | 6 Blé      | 0         |
-| Pâturage d’alpagas        | 4 Laine + 1 Viande | 0          | 2 Viande   | 1 Viande  |
-| Carrière de montagne      | 2 Pierre           | 2 Pierre   | 2 Pierre   | 2 Pierre  |
-| Montagnes de minerai      | 1 Minerai          | 1 Minerai  | 1 Minerai  | 1 Minerai |
-| Montagnes d'or            | 1 Or               | 1 Or       | 1 Or       | 1 Or      |
-| Marais salants            | 1 Sel              | 2 Sel      | 1 Sel      | 0         |
-| Collines d'argile         | 1 Argile           | 1 Argile   | 1 Argile   | 1 Argile  |
-| Bois riverains            | 1 Bois             | 1 Bois     | 2 Bois     | 0         |
-| Pics rocheux              | 0                  | 0          | 0          | 0         |
-| Zone de pêche             | 1 Poissons         | 2 Poissons | 1 Poissons | 0         |
+| Terrain                   | Printemps          | Été       | Automne   | Hiver     |
+| ------------------------- | ------------------ | --------- | --------- | --------- |
+| Champs de pommes de terre | 0                  | 2 Blé     | 6 Blé     | 0         |
+| Pâturage d’alpagas        | 4 Laine + 1 Viande | 0         | 2 Viande  | 1 Viande  |
+| Carrière de montagne      | 2 Pierre           | 2 Pierre  | 2 Pierre  | 2 Pierre  |
+| Montagnes de minerai      | 1 Minerai          | 1 Minerai | 1 Minerai | 1 Minerai |
+| Montagnes d'or            | 1 Or               | 1 Or      | 1 Or      | 1 Or      |
+| Marais salants            | 1 Sel              | 2 Sel     | 1 Sel     | 0         |
+| Collines d'argile         | 1 Argile           | 1 Argile  | 1 Argile  | 1 Argile  |
+| Bois riverains            | 1 Bois             | 1 Bois    | 1 Bois    | 1 Bois    |
+| Pics rocheux              | 0                  | 0         | 0         | 0         |
+| Zone de pêche             | 0                  | 0         | 0         | 0         |
 
 ### Prairie
 
-| Terrain              | Printemps          | Été        | Automne            | Hiver              |
-| -------------------- | ------------------ | ---------- | ------------------ | ------------------ |
-| Plaine de steppe     | 1 Peaux + 2 Laine  | 2 Laine    | 1 Peaux            | 2 Peaux            |
-| Champs de maïs       | 0                  | 0          | 8 Blé              | 0                  |
-| Champs de tournesols | 0                  | 0          | 4 Huile            | 0                  |
-| Prairie à bisons     | 1 Viande + 1 Peaux | 0          | 2 Viande + 2 Peaux | 1 Viande + 1 Peaux |
-| Bois riverains       | 1 Bois             | 1 Bois     | 2 Bois             | 0                  |
-| Collines d'argile    | 1 Argile           | 2 Argile   | 1 Argile           | 0                  |
-| Carrière de pierre   | 1 Pierre           | 2 Pierre   | 1 Pierre           | 0                  |
-| Collines de charbon  | 1 Charbon          | 1 Charbon  | 1 Charbon          | 1 Charbon          |
-| Montagnes de minerai | 1 Minerai          | 2 Minerai  | 1 Minerai          | 0                  |
-| Montagnes d'or       | 1 Or               | 2 Or       | 1 Or               | 0                  |
-| Marais salants       | 1 Sel              | 2 Sel      | 1 Sel              | 0                  |
-| Zone de pêche        | 1 Poissons         | 2 Poissons | 1 Poissons         | 0                  |
+| Terrain              | Printemps | Été       | Automne   | Hiver     |
+| -------------------- | --------- | --------- | --------- | --------- |
+| Plaine de steppe     | 0         | 0         | 0         | 0         |
+| Champs de maïs       | 0         | 0         | 8 Blé     | 0         |
+| Champs de tournesols | 0         | 0         | 4 Huile   | 0         |
+| Prairie à bisons     | 0         | 0         | 0         | 0         |
+| Bois riverains       | 1 Bois    | 1 Bois    | 1 Bois    | 1 Bois    |
+| Collines d'argile    | 1 Argile  | 2 Argile  | 1 Argile  | 0         |
+| Carrière de pierre   | 1 Pierre  | 2 Pierre  | 1 Pierre  | 0         |
+| Collines de charbon  | 1 Charbon | 1 Charbon | 1 Charbon | 1 Charbon |
+| Montagnes de minerai | 1 Minerai | 2 Minerai | 1 Minerai | 0         |
+| Montagnes d'or       | 1 Or      | 2 Or      | 1 Or      | 0         |
+| Marais salants       | 1 Sel     | 2 Sel     | 1 Sel     | 0         |
+| Zone de pêche        | 0         | 0         | 0         | 0         |
 
 ### Mésoaméricain
 
-| Terrain              | Printemps        | Été               | Automne           | Hiver             |
-| -------------------- | ---------------- | ----------------- | ----------------- | ----------------- |
-| Champs de maïs       | 0                | 0                 | 8 Blé             | 0                 |
-| Jardins chinampas    | 4 Blé            | 4 Blé             | 4 Blé             | 0                 |
-| Terrains à dindons   | 1 Viande         | 1 Viande          | 4 Viande          | 2 Viande          |
-| Forêt de nuages      | 1 Bois + 1 Peaux | 1 Bois + 1 Peaux  | 1 Bois + 1 Peaux  | 1 Bois + 1 Peaux  |
-| Bois tropicaux       | 1 Bois           | 1 Bois            | 1 Bois            | 1 Bois            |
-| Collines d'argile    | 1 Argile         | 1 Argile          | 1 Argile          | 1 Argile          |
-| Carrière volcanique  | 2 Pierre         | 2 Pierre          | 2 Pierre          | 2 Pierre          |
-| Montagnes de minerai | 1 Minerai        | 1 Minerai         | 1 Minerai         | 1 Minerai         |
-| Montagnes d'or       | 1 Or             | 1 Or              | 1 Or              | 1 Or              |
-| Marais salants       | 1 Sel            | 0                 | 1 Sel             | 2 Sel             |
-| Collines de charbon  | 1 Charbon        | 1 Charbon         | 1 Charbon         | 1 Charbon         |
-| Zone de pêche        | 1 Poissons       | 1 Poissons        | 1 Poissons        | 1 Poissons        |
-| Zone de Baleines     | 0                | 1 Peaux + 1 Huile | 2 Peaux + 2 Huile | 1 Peaux + 1 Huile |
+| Terrain              | Printemps | Été       | Automne   | Hiver     |
+| -------------------- | --------- | --------- | --------- | --------- |
+| Champs de maïs       | 0         | 0         | 8 Blé     | 0         |
+| Jardins chinampas    | 4 Blé     | 4 Blé     | 4 Blé     | 0         |
+| Terrains à dindons   | 1 Bois    | 1 Bois    | 1 Bois    | 1 Bois    |
+| Forêt de nuages      | 1 Bois    | 1 Bois    | 1 Bois    | 1 Bois    |
+| Bois tropicaux       | 1 Bois    | 1 Bois    | 1 Bois    | 1 Bois    |
+| Collines d'argile    | 1 Argile  | 1 Argile  | 1 Argile  | 1 Argile  |
+| Carrière volcanique  | 2 Pierre  | 2 Pierre  | 2 Pierre  | 2 Pierre  |
+| Montagnes de minerai | 1 Minerai | 1 Minerai | 1 Minerai | 1 Minerai |
+| Montagnes d'or       | 1 Or      | 1 Or      | 1 Or      | 1 Or      |
+| Marais salants       | 1 Sel     | 0         | 1 Sel     | 2 Sel     |
+| Collines de charbon  | 1 Charbon | 1 Charbon | 1 Charbon | 1 Charbon |
+| Zone de pêche        | 0         | 0         | 0         | 0         |
+| Zone de Baleines     | 0         | 0         | 0         | 0         |
 
 ### Toundra
 
-| Terrain                        | Printemps          | Été                | Automne            | Hiver              |
-| ------------------------------ | ------------------ | ------------------ | ------------------ | ------------------ |
-| Lande à baies                  | 0                  | 2 Blé              | 2 Blé              | 0                  |
-| Pâturage de bœufs musqués      | 1 Laine + 1 Viande | 3 Laine + 1 Viande | 1 Viande           | 1 Viande           |
-| Pâturage de rennes             | 1 Viande + 1 Peaux | 1 Viande + 1 Peaux | 1 Viande + 1 Peaux | 1 Viande + 1 Peaux |
-| Tourbière                      | 0                  | 2 Charbon          | 2 Charbon          | 0                  |
-| Montagnes de minerai arctiques | 1 Minerai          | 2 Minerai          | 1 Minerai          | 0                  |
-| Crête rocheuse arctique        | 1 Pierre           | 2 Pierre           | 1 Pierre           | 0                  |
-| Montagnes aurifères arctiques  | 1 Or               | 2 Or               | 1 Or               | 0                  |
-| Plaine enneigée                | 0                  | 0                  | 0                  | 0                  |
-| Zone de pêche                  | 1 Poissons         | 2 Poissons         | 1 Poissons         | 0                  |
-| Bancs de morue                 | 2 Poissons         | 4 Poissons         | 2 Poissons         | 0                  |
-| Zone de Baleines               | 1 Peaux + 1 Huile  | 2 Peaux + 2 Huile  | 1 Peaux + 1 Huile  | 0                  |
+| Terrain                        | Printemps | Été       | Automne   | Hiver |
+| ------------------------------ | --------- | --------- | --------- | ----- |
+| Lande à baies                  | 0         | 2 Blé     | 2 Blé     | 0     |
+| Pâturage de bœufs musqués      | 0         | 0         | 0         | 0     |
+| Pâturage de rennes             | 0         | 0         | 0         | 0     |
+| Tourbière                      | 0         | 2 Charbon | 2 Charbon | 0     |
+| Montagnes de minerai arctiques | 1 Minerai | 2 Minerai | 1 Minerai | 0     |
+| Crête rocheuse arctique        | 1 Pierre  | 2 Pierre  | 1 Pierre  | 0     |
+| Montagnes aurifères arctiques  | 1 Or      | 2 Or      | 1 Or      | 0     |
+| Plaine enneigée                | 0         | 0         | 0         | 0     |
+| Zone de pêche                  | 0         | 0         | 0         | 0     |
+| Bancs de morue                 | 0         | 0         | 0         | 0     |
+| Zone de Baleines               | 0         | 0         | 0         | 0     |
 
 ### Forêt pluviale tempérée
 
-| Terrain              | Printemps          | Été                | Automne            | Hiver              |
-| -------------------- | ------------------ | ------------------ | ------------------ | ------------------ |
-| Forêt ancienne       | 3 Bois             | 4 Bois             | 3 Bois             | 2 Bois             |
-| Sous-bois de chasse  | 1 Peaux + 1 Viande | 1 Peaux + 1 Viande | 1 Peaux + 1 Viande | 1 Peaux + 1 Viande |
-| Pâturage côtier      | 4 Laine            | 4 Laine            | 0                  | 0                  |
-| Tourbière            | 1 Charbon          | 1 Charbon          | 1 Charbon          | 1 Charbon          |
-| Berges argileuses    | 2 Argile           | 2 Argile           | 2 Argile           | 2 Argile           |
-| Falaises côtières    | 1 Pierre           | 1 Pierre           | 1 Pierre           | 1 Pierre           |
-| Montagnes de minerai | 1 Minerai          | 1 Minerai          | 1 Minerai          | 1 Minerai          |
-| Montagnes d'or       | 1 Or               | 1 Or               | 1 Or               | 1 Or               |
-| Zone de pêche        | 1 Poissons         | 1 Poissons         | 1 Poissons         | 1 Poissons         |
-| Bancs de morue       | 2 Poissons         | 2 Poissons         | 2 Poissons         | 2 Poissons         |
-| Zone de Baleines     | 0                  | 1 Peaux + 1 Huile  | 2 Peaux + 2 Huile  | 1 Peaux + 1 Huile  |
+| Terrain              | Printemps | Été       | Automne   | Hiver     |
+| -------------------- | --------- | --------- | --------- | --------- |
+| Forêt ancienne       | 3 Bois    | 3 Bois    | 3 Bois    | 3 Bois    |
+| Sous-bois de chasse  | 1 Bois    | 1 Bois    | 1 Bois    | 1 Bois    |
+| Pâturage côtier      | 4 Laine   | 4 Laine   | 0         | 0         |
+| Tourbière            | 1 Charbon | 1 Charbon | 1 Charbon | 1 Charbon |
+| Berges argileuses    | 2 Argile  | 2 Argile  | 2 Argile  | 2 Argile  |
+| Falaises côtières    | 1 Pierre  | 1 Pierre  | 1 Pierre  | 1 Pierre  |
+| Montagnes de minerai | 1 Minerai | 1 Minerai | 1 Minerai | 1 Minerai |
+| Montagnes d'or       | 1 Or      | 1 Or      | 1 Or      | 1 Or      |
+| Zone de pêche        | 0         | 0         | 0         | 0         |
+| Bancs de morue       | 0         | 0         | 0         | 0         |
+| Zone de Baleines     | 0         | 0         | 0         | 0         |
 
 ### Marais équatoriaux
 
 | Terrain                 | Printemps           | Été                 | Automne             | Hiver               |
 | ----------------------- | ------------------- | ------------------- | ------------------- | ------------------- |
 | Mangrove                | 1 Bois + 1 Poissons | 1 Bois + 1 Poissons | 1 Bois + 1 Poissons | 1 Bois + 1 Poissons |
-| Palmeraie de sagoutiers | 1 Blé               | 1 Blé               | 1 Blé               | 1 Blé               |
+| Palmeraie de sagoutiers | 1 Blé + 1 Bois      | 1 Blé + 1 Bois      | 1 Blé + 1 Bois      | 1 Blé + 1 Bois      |
 | Bois riverains          | 1 Bois              | 1 Bois              | 1 Bois              | 1 Bois              |
 | Berges argileuses       | 2 Argile            | 1 Argile            | 2 Argile            | 3 Argile            |
 | Tourbière               | 1 Charbon           | 1 Charbon           | 1 Charbon           | 1 Charbon           |
 | Carrière de pierre      | 1 Pierre            | 1 Pierre            | 1 Pierre            | 1 Pierre            |
 | Montagnes de minerai    | 1 Minerai           | 1 Minerai           | 1 Minerai           | 1 Minerai           |
 | Montagnes d'or          | 1 Or                | 1 Or                | 1 Or                | 1 Or                |
-| Zone de pêche           | 1 Poissons          | 1 Poissons          | 1 Poissons          | 1 Poissons          |
-| Zone de Baleines        | 0                   | 1 Peaux + 1 Huile   | 2 Peaux + 2 Huile   | 1 Peaux + 1 Huile   |
+| Zone de pêche           | 0                   | 0                   | 0                   | 0                   |
+| Zone de Baleines        | 0                   | 0                   | 0                   | 0                   |
 
 ## Probabilités de gel et de dégel par demi-saison
 
@@ -1699,11 +1786,23 @@ Les coûts concernent chaque construction ou étape. La Tour de guet I propose d
 | Guilde des érudits III                       | 4 Blocs + 2 Combustible + 3 Tissu                                 |
 | Colons                                       | 2 Peaux + 2 Laine + 3 Blé + 1 Bois + 1 Argile                     |
 | Navire de colons                             | 3 Bois + 2 Laine + 2 Peaux + 1 Argile + 1 Blé                     |
+| Pisteur                                      | 1 Bois + 1 Peaux + 1 Blé                                          |
+| Veneur                                       | 1 Bois + 1 Peaux + 1 Cuir                                         |
+| Chasseur forestier                           | 1 Planches + 1 Cuir + 1 Rations                                   |
+| Maître chasseur                              | 2 Planches + 2 Cuir + 1 Acier                                     |
+| Barque fluviale                              | 2 Bois + 1 Laine + 1 Minerai                                      |
+| Gabare                                       | 2 Bois + 1 Tissu + 1 Minerai                                      |
+| Patrouilleur fluvial                         | 2 Planches + 1 Tissu + 1 Acier                                    |
+| Canonnière blindée                           | 2 Planches + 2 Acier + 1 Combustible                              |
 
 ## Unités terrestres
 
 | Unité                       | Palier | Puissance | Mouvement | Bonus de terrain     |
 | --------------------------- | ------ | --------- | --------- | -------------------- |
+| Pisteur                     | I      | 0         | 2         | 0                    |
+| Veneur                      | II     | 1         | 2         | 0                    |
+| Chasseur forestier          | III    | 2         | 2         | 0                    |
+| Maître chasseur             | IV     | 3         | 2         | 0                    |
 | Colons                      | I      | 0         | 1         | 0                    |
 | Colporteur                  | I      | 0         | 1         | 0                    |
 | Négociant                   | II     | 0         | 1         | 0                    |
@@ -1730,6 +1829,10 @@ Les coûts concernent chaque construction ou étape. La Tour de guet I propose d
 
 | Navire               | Palier | Puissance / points de pertes | Mouvement | Places | Siège |
 | -------------------- | ------ | ---------------------------- | --------- | ------ | ----- |
+| Barque fluviale      | I      | 1                            | 3         | 1      | 0     |
+| Gabare               | II     | 2                            | 3         | 2      | 0     |
+| Patrouilleur fluvial | III    | 3                            | 4         | 3      | 0     |
+| Canonnière blindée   | IV     | 5                            | 4         | 4      | 0     |
 | Navire de colons     | I      | 0                            | 2         | 0      | 0     |
 | Barque de pêche      | I      | 0                            | 2         | 0      | 0     |
 | Cotre de pêche       | II     | 1                            | 2         | 0      | 0     |

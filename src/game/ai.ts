@@ -1,3 +1,7 @@
+import { PROJECTS, pieceAccess, baseGeographicYield } from "./geography";
+import { projectSite } from "./geography-actions";
+import { environmentRisk } from "./environment";
+import { SEASONS, seasonAt } from "./seasons";
 import { planEconomicWork, type EconomicWorkQueue } from "./ai-work-queue";
 import { appendValues, maxValue, minValue } from "./aggregate";
 import {
@@ -791,7 +795,7 @@ export function economyProjects(s: Game): Project[] {
   const strandedForces = new Map<string, number>();
   const collectorCounts = new Map<string, number>();
   for (const unit of units)
-    if (["merchant", "fishing", "merchantship"].includes(unit.kind))
+    if (["merchant", "fishing", "merchantship", "hunter"].includes(unit.kind))
       collectorCounts.set(
         unit.kind,
         (collectorCounts.get(unit.kind) ?? 0) + unit.tier,
@@ -991,7 +995,7 @@ export function economyProjects(s: Game): Project[] {
       for (const tile of tiles.filter((id) => !hostileAt(s, id))) {
         const terrain = s.tiles[tile].resource;
         for (const kind of (Object.keys(UNIT_INFO) as UnitClass[]).filter(
-          (k) => k !== "merchant" && !isSettler(k),
+          (k) => k !== "merchant" && k !== "hunter" && !isSettler(k),
         ))
           for (let tier = 1; tier <= Math.min(4, t.turnLevel); tier++) {
             const freeCount = s.players[s.active].bonuses.recruits.filter(
@@ -1137,11 +1141,19 @@ export function economyProjects(s: Game): Project[] {
           );
         const stranded = strandedForces.get(regionKey)!;
         for (const kind of (Object.keys(SHIP_INFO) as ShipClass[]).filter(
-          (k) => k !== "fishing" && k !== "merchantship" && !isSettler(k),
+          (k) =>
+            k !== "fishing" &&
+            k !== "merchantship" &&
+            (k !== "riverboat" || !!s.geographyVersion) &&
+            !isSettler(k),
         ))
           for (let tier = 1; tier <= t.turnLevel; tier++) {
             const info = shipStats(kind, tier);
-            if (t.turnLevel < info.level) continue;
+            if (
+              t.turnLevel < info.level ||
+              !pieceAccess(s.tiles[tile], { naval: true, kind, tier })
+            )
+              continue;
             const freeCount = s.players[s.active].bonuses.ships.filter(
                 (v, i) =>
                   v.includes(kind) &&
@@ -1202,6 +1214,68 @@ export function economyProjects(s: Game): Project[] {
       }
     }
   }
+  if (s.geographyVersion) {
+    const connected = new Set<string>();
+    for (const town of towns)
+      for (const id of s.vertices[town.vertex].tiles) connected.add(id);
+    for (const route of Object.values(s.routes))
+      if (route.owner === s.active)
+        for (const id of s.edges[route.edge].tiles) connected.add(id);
+    for (const id of connected) {
+      const tile = s.tiles[id],
+        g = tile.geography!;
+      const nearby = towns.filter((t) =>
+        s.vertices[t.vertex].tiles.includes(id),
+      );
+      const production =
+        nearby.reduce((n, t) => n + t.level, 0) +
+        tile.edges.reduce(
+          (n, e) =>
+            n +
+            (s.routes[e]?.owner === s.active
+              ? (s.routes[e].camps[id] ?? 0)
+              : 0),
+          0,
+        );
+      for (const kind of Object.keys(PROJECTS) as (keyof typeof PROJECTS)[]) {
+        if (!projectSite(s, tile, kind)) continue;
+        const floodRisk =
+          SEASONS.reduce((n, season) => n + environmentRisk(tile, season), 0) /
+          4;
+        const score =
+          kind === "levee"
+            ? production * floodRisk * 12
+            : kind === "irrigation"
+              ? production * 3.5
+              : kind === "granary"
+                ? nearby.some((t) => townThreats(s, t).length)
+                  ? 14
+                  : 1
+                : kind === "harbor"
+                  ? units.some((u) => u.naval && u.tile === id)
+                    ? 7
+                    : 1
+                  : neighbors(id).filter((n) => canOccupy(s.tiles[n])).length >=
+                      2
+                    ? 12
+                    : 2;
+        add(
+          { type: "project", tile: id, kind },
+          PROJECTS[kind].cost,
+          score,
+          `Adapt to local geography: ${PROJECTS[kind].name}`,
+        );
+      }
+      if (g.damagedUntil && production > 0 && !hostileAt(s, id))
+        add(
+          { type: "repair-terrain", tile: id },
+          { lumber: 1, stone: 1 },
+          production * 8,
+          "Restore disrupted harvests",
+          true,
+        );
+    }
+  }
   const towerLocations = towerSites(s);
   const supportedTowns = new Map<string, Town[]>();
   // A tower only supports towns at its vertex or one edge away. Build the
@@ -1246,8 +1320,13 @@ export function economyProjects(s: Game): Project[] {
       );
   }
   for (const town of towns.filter((t) => !besieged(s, t.id))) {
-    for (const kind of ["merchant", "fishing", "merchantship"] as const) {
-      const naval = kind !== "merchant";
+    for (const kind of [
+      "merchant",
+      "fishing",
+      "merchantship",
+      "hunter",
+    ] as const) {
+      const naval = kind !== "merchant" && kind !== "hunter";
       const deployments = naval
         ? waterAtVertex(s, town.vertex)
         : landAtVertex(s, town.vertex);
@@ -1261,15 +1340,19 @@ export function economyProjects(s: Game): Project[] {
                 tier === (bonus.shipTiers?.[i] ?? bonus.shipTier ?? 1),
             )
           : bonus.recruits.some(
-              (v) => v.tier === tier && v.classes.includes("merchant"),
+              (v) => v.tier === tier && v.classes.includes(kind as UnitClass),
             );
         const cost = free
           ? {}
           : naval
             ? shipCost(kind as ShipClass, tier)
-            : unitCost("merchant", tier);
+            : unitCost(kind as UnitClass, tier);
         const rated = deployments
-          .filter((id) => !hostileAt(s, id))
+          .filter(
+            (id) =>
+              !hostileAt(s, id) &&
+              pieceAccess(s.tiles[id], { naval, kind, tier }),
+          )
           .map((tile) => {
             const key = `${kind}/${tier}/${tile}`;
             if (!collectionOutput.has(key))
@@ -1284,7 +1367,10 @@ export function economyProjects(s: Game): Project[] {
                           s.tiles[id],
                           s.active,
                           tier,
-                          kind !== "fishing",
+                          kind !== "fishing" && kind !== "hunter",
+                          kind === "hunter"
+                            ? (s.tiles[id].geography?.fauna ?? {})
+                            : tileYield(s.tiles[id], s.active),
                         ),
                         values,
                       ),
@@ -1806,7 +1892,7 @@ function chooseEconomy(
     values = marginalValues(s);
   const commission = (project: Project): Command | null => {
     const economic =
-      ["merchant", "merchantship", "fishing"].includes(
+      ["merchant", "merchantship", "fishing", "hunter"].includes(
         project.action.kind ?? "",
       ) && ["recruit", "ship"].includes(project.action.type);
     if (!economic || (project.quantity ?? 1) <= 1) return null;
@@ -2477,7 +2563,15 @@ function collectorMove(s: Game): Command | null {
           n +
           probability(s.tiles[id].number) *
             stockValue(
-              harvestYield(s.tiles[id], s.active, u.tier, u.kind !== "fishing"),
+              harvestYield(
+                s.tiles[id],
+                s.active,
+                u.tier,
+                !["fishing", "hunter"].includes(u.kind),
+                u.kind === "hunter"
+                  ? (s.tiles[id].geography?.fauna ?? {})
+                  : tileYield(s.tiles[id], s.active),
+              ),
               values,
             ),
         0,
@@ -2544,6 +2638,25 @@ function chooseMilitary(s: Game): Command {
   if (engineering && check(s, engineering)) return engineering;
   const operation = townOperation(s);
   if (operation) return operation;
+  if (s.geographyVersion)
+    for (const unit of ownPieces(s)) {
+      const tile = s.tiles[unit.tile];
+      if (
+        !unit.naval &&
+        ready(s, unit) &&
+        points(unit) > 0 &&
+        speed(unit) + unit.bonus - unit.moved >= 1 &&
+        !tile.geography?.damagedUntil &&
+        (baseGeographicYield(tile).grain ?? 0) > 0
+      ) {
+        const action: Command = {
+          type: "sabotage",
+          tile: unit.tile,
+          ids: [unit.id],
+        };
+        if (check(s, action)) return action;
+      }
+    }
   const supply = guildMilitaryOrder(s);
   if (supply && check(s, supply)) return supply;
   const maneuver = cachedMilitaryWait(s, () => chooseManeuver(s, emergency));

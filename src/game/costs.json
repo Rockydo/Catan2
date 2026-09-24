@@ -772,5 +772,45 @@
     "hides": 2,
     "brick": 1,
     "grain": 1
+  },
+  "Tracker": {
+    "lumber": 1,
+    "hides": 1,
+    "grain": 1
+  },
+  "Huntsman": {
+    "lumber": 1,
+    "hides": 1,
+    "leather": 1
+  },
+  "Ranger": {
+    "planks": 1,
+    "leather": 1,
+    "provisions": 1
+  },
+  "Master Hunter": {
+    "planks": 2,
+    "leather": 2,
+    "steel": 1
+  },
+  "River Skiff": {
+    "lumber": 2,
+    "wool": 1,
+    "ore": 1
+  },
+  "River Barge": {
+    "lumber": 2,
+    "cloth": 1,
+    "ore": 1
+  },
+  "River Patrol": {
+    "planks": 2,
+    "cloth": 1,
+    "steel": 1
+  },
+  "Armored Riverboat": {
+    "planks": 2,
+    "steel": 2,
+    "coke": 1
   }
 }

@@ -1,3 +1,4 @@
+import { baseGeographicYield } from "../src/game/geography";
 import {
   SEASONS,
   seasonalProfile,
@@ -52,7 +53,9 @@ for (const locale of ["en", "fr"] as const) {
       `## ${c.title[locale]}`,
       c.body[locale].replace(/^## /gm, "### "),
     );
-  lines.push(`## ${text("Climate tables", "Tables climatiques")}`);
+  lines.push(
+    `## ${text("Legacy climate probabilities", "Probabilités climatiques historiques")}`,
+  );
   for (const climate of CLIMATES) {
     const c = CLIMATE_INFO[climate];
     const whaleChance = c.water.find(([b]) => b === "whale")?.[1];
@@ -84,6 +87,10 @@ for (const locale of ["en", "fr"] as const) {
   lines.push(
     `## ${text("Terrain yields", "Production des terrains")}`,
     text(
+      "Geography campaigns: permanent terrain only. Migrating animals add the yields in the Living geography chapter. Earlier climate probabilities describe legacy maps.",
+      "Campagnes géographiques : terrain permanent uniquement. Les animaux migrateurs ajoutent les rendements du chapitre Géographie vivante. Les probabilités climatiques précédentes décrivent les anciennes cartes.",
+    ),
+    text(
       "Current annual baselines include climate-specific crop productivity. Each seasonal calendar totals four times that baseline, not necessarily the value used by an earlier game version.",
       "Les bases annuelles actuelles incluent la productivité des cultures propre au climat. Chaque calendrier totalise quatre fois cette base, qui peut différer de celle d’une ancienne version du jeu.",
     ),
@@ -100,9 +107,13 @@ for (const locale of ["en", "fr"] as const) {
       )
         continue;
       const yieldText =
-        b === "woods"
-          ? text("1 Wood OR 1 Hides", "1 Bois OU 1 Peau")
-          : cost(biomeYield(b, climate)) || "0";
+        cost(
+          baseGeographicYield({
+            biome: b,
+            climate,
+            geography: { elevation: 0.5, region: "reference" },
+          } as Hex),
+        ) || "0";
       variants.set(yieldText, [
         ...(variants.get(yieldText) ?? []),
         tx(info.name),
@@ -122,8 +133,8 @@ for (const locale of ["en", "fr"] as const) {
   lines.push(
     `## ${text("Complete seasonal harvest tables", "Tables complètes des récoltes saisonnières")}`,
     text(
-      "Each season lasts two full rounds, early and late, with the same scheduled yield per matching roll in both halves. Marine rows show the established harvest calendar before actual ice blocks production; individual tiles retain their existing Summer concentration. No missed harvest is repaid. Physical ice changes independently at each half-season boundary using the tables below. Select a tile for its current surface, harvest values and next weather risks.",
-      "Chaque saison dure deux manches complètes, début et fin, avec le même rendement prévu par jet correspondant. Les lignes marines indiquent le calendrier existant avant blocage par la glace réelle ; chaque tuile conserve sa concentration estivale existante. Aucune récolte manquée n’est compensée. La glace évolue indépendamment à chaque demi-saison selon les tables ci-dessous. Sélectionnez une tuile pour connaître son état actuel, ses rendements et ses risques météorologiques.",
+      "Each season lasts two full rounds, early and late, with the same scheduled yield per matching roll in both halves. These are permanent terrain outputs. Migrating fish, whales and wild game add their current population yields; ice and floods can block production. No missed harvest is repaid. Physical ice changes independently at each half-season boundary using the tables below. Select a tile for its current surface, harvest values and next weather risks.",
+      "Chaque saison dure deux manches complètes, début et fin, avec le même rendement prévu par jet correspondant. Ces rendements concernent le terrain permanent. Poissons, baleines et gibier migrateurs ajoutent les productions des populations présentes ; glace et crues peuvent bloquer la production. Aucune récolte manquée n’est compensée. La glace évolue indépendamment à chaque demi-saison selon les tables ci-dessous. Sélectionnez une tuile pour connaître son état actuel, ses rendements et ses risques météorologiques.",
     ),
   );
   for (const climate of CLIMATES) {
@@ -139,9 +150,7 @@ for (const locale of ["en", "fr"] as const) {
       ]),
     ];
     for (const biome of biomes)
-      for (const choice of biome === "woods"
-        ? (["lumber", "hides"] as const)
-        : [undefined]) {
+      for (const choice of [undefined]) {
         const tile: Hex = {
           id: "0,0",
           q: 0,
@@ -152,11 +161,12 @@ for (const locale of ["en", "fr"] as const) {
           resource: BIOME_INFO[biome].resource,
           vertices: [],
           edges: [],
+          geography: { elevation: 0.5, region: "reference" },
           ...(choice ? { woodsChoices: { 0: choice } } : {}),
         };
         const profile = seasonalProfile(tile, 0);
         lines.push(
-          `| ${tx(BIOME_INFO[biome].name)}${choice ? ` (${tx(GOOD_INFO[choice].name)})` : ""} | ${SEASONS.map((season) => cost(profile[season]) || "0").join(" | ")} |`,
+          `| ${tx(BIOME_INFO[biome].name)} | ${SEASONS.map((season) => cost(profile[season]) || "0").join(" | ")} |`,
         );
       }
   }
@@ -213,7 +223,7 @@ for (const locale of ["en", "fr"] as const) {
   for (const [kind, u] of Object.entries(UNIT_INFO))
     for (let i = 0; i < u.names.length; i++)
       lines.push(
-        `| ${tx(u.names[i])} | ${ROMAN[i + 1]} | ${kind === "merchant" || kind === "settler" ? 0 : i + 1} | ${u.speed} | ${u.family ? "×2 " + tx(u.family) : "0"} |`,
+        `| ${tx(u.names[i])} | ${ROMAN[i + 1]} | ${kind === "merchant" || kind === "settler" ? 0 : kind === "hunter" ? i : i + 1} | ${u.speed} | ${u.family ? "×2 " + tx(u.family) : "0"} |`,
       );
   lines.push(
     `## ${text("Ship roster", "Navires")}`,

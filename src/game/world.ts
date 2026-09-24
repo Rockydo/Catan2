@@ -1,3 +1,4 @@
+import { geographicTerrain, GEOGRAPHY_VERSION, pieceAccess } from "./geography";
 import { planClimates, climateTerrain } from "./climate";
 import { CLIMATE_INFO, type Climate } from "./climate-content";
 import generation from "./generation.json" with { type: "json" };
@@ -160,6 +161,7 @@ export function addHexes(world: World, seed: string, ids: string[]) {
       );
     });
     const hex = generateHex(seed, id, world.climatePlan?.[id], openWater);
+    if (world.geographyVersion) geographicTerrain(seed, hex);
     added.add(id);
     world.tiles[id] = hex;
     for (const v of hex.vertices) {
@@ -227,8 +229,17 @@ export function addHexes(world: World, seed: string, ids: string[]) {
     e.vertices.forEach((v) => used.add(v));
   }
 }
-export function generateWorld(seed: string, count = 125): World {
-  const world: World = { tiles: {}, vertices: {}, edges: {} };
+export function generateWorld(
+  seed: string,
+  count = 125,
+  geography = false,
+): World {
+  const world: World = {
+    tiles: {},
+    vertices: {},
+    edges: {},
+    ...(geography ? { geographyVersion: GEOGRAPHY_VERSION } : {}),
+  };
   let radius = 0;
   while (1 + 3 * radius * (radius + 1) < count) radius++;
   const ids: string[] = [];
@@ -339,16 +350,15 @@ export function landAtVertex(world: World, v: string): string[] {
 }
 /** Unit occupancy is separate from edge construction: roads can skirt peaks. */
 export const canOccupy = (tile: Hex | undefined, naval = false): boolean =>
-  !!tile &&
-  tile.resource !== "peaks" &&
-  (tile.surface ? tile.surface === "open" : tile.resource === "water") ===
-    naval;
+  pieceAccess(tile, { naval, kind: naval ? "transport" : "heavy", tier: 1 });
 export const walkableAtVertex = (world: World, v: string) =>
   world.vertices[v]?.tiles.filter((id) => canOccupy(world.tiles[id])) ?? [];
 /** Towns and towers need habitable ground; roads may still follow peak edges. */
 export const solidAtVertex = (world: World, v: string) =>
   landAtVertex(world, v).filter(
-    (t) => !["ice", "peaks"].includes(world.tiles[t].resource),
+    (t) =>
+      !["ice", "peaks"].includes(world.tiles[t].resource) &&
+      !world.tiles[t].geography?.pass,
   );
 export const waterAtVertex = (world: World, v: string) =>
   world.vertices[v]?.tiles.filter((t) => canOccupy(world.tiles[t], true)) ?? [];

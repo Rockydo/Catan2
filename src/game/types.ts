@@ -38,8 +38,15 @@ export const RAW_SUBSTITUTES: Partial<Record<Good, readonly Raw[]>> = {
 };
 export type Family = "forest" | "rugged" | "flat" | "water";
 export type UnitClass =
-  "heavy" | "light" | "cavalry" | "artillery" | "merchant" | "settler";
+  | "heavy"
+  | "light"
+  | "cavalry"
+  | "artillery"
+  | "merchant"
+  | "settler"
+  | "hunter";
 export type ShipClass =
+  | "riverboat"
   | "transport"
   | "convoy"
   | "galley"
@@ -50,6 +57,7 @@ export type ShipClass =
 export type Phase =
   "setup-town" | "setup-route" | "roll" | "economy" | "military" | "finished";
 export interface Hex {
+  geography?: import("./geography").Geography;
   /** Seasonal sea surface; resource/biome remain the permanent geology. */
   surface?: "frozen" | "open";
   /** Stable local cold spot, separate from dice and other random streams. */
@@ -86,6 +94,7 @@ export interface Edge {
   harbor?: Raw | "generic";
 }
 export interface World {
+  geographyVersion?: number;
   climatePlan?: Record<string, Climate>;
   tiles: Record<string, Hex>;
   vertices: Record<string, Vertex>;
@@ -152,6 +161,7 @@ export interface Watchtower {
   tier: number;
 }
 export interface Piece {
+  harborBoost?: boolean;
   seasonStatus?: "icebound" | "adrift";
   /** Persistent AI deployment, retained across moves and saved campaigns. */
   campaign?: { enemy: number; target: string };
@@ -301,6 +311,8 @@ export interface Event {
   tile?: string;
 }
 export interface Game extends World {
+  wildlife?: import("./geography").Wildlife[];
+  environmentRound?: number;
   /** Seasons begin at this full-round boundary; older saves default to Spring. */
   calendar?: {
     startRound: number;

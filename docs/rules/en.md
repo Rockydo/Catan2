@@ -36,7 +36,11 @@ Goods are stored in individual towns but spent from a common pool. Armies can ra
 
 ## Map and dice
 
-### Climate generation
+### Generation versions
+
+New campaigns use connected relief and migrating wildlife. Read Geography and wildlife for rivers, floods, passes and local improvements. The climate-zone compatibility, dice, port and setup rules below still apply. Independent land/water percentages and fixed animal tiles describe older campaigns only.
+
+### Legacy climate generation
 
 The initial map contains 125 tiles in Classic or 300 in Grand campaign. Climate is assigned before terrain. Pick a random starting tile, then choose among twenty climates using relative weights: 1 for each of the seventeen non-extreme climates and 0.35 each for Glacial, Hyperarid and Monsoon. Normalize these weights for the initial draw. Grow outward through neighbors. If all assigned immediate neighbors agree, retain that climate with 88% probability. On a switch, intersect the compatible climates of assigned immediate neighbors only. Destination weights start at 1. From the seven original climates, newly compatible Oceanic, Alpine, Subtropical and Savanna destinations have weight 0.5. Temperate and Steppe favor Cold at 1.5. Mediterranean gives Steppe and Desert weight 0.5. Tropical to Desert, Desert to Tropical and Cold to Arctic have weight 2. Oceanic favors Temperate at 2; Alpine favors Cold and Arctic at 2 each; Subtropical and Savanna favor Tropical at 2. Entering a compatible extreme climate has weight 0.5. Glacial exits to Arctic at 2 or Alpine at 1; Hyperarid exits to Desert at 2; Monsoon exits to Tropical at 2, Subtropical or Savanna at 1. Entering a compatible American region from an older climate has weight 0.75. Andean favors Alpine, Prairie favors Steppe and Mesoamerican favors Subtropical with weight 2; their other exits have weight 1. Eligible weights are normalized for each draw. Continuity is 88%, giving slightly larger regions on average. Entering Tundra, Temperate Rainforest or Equatorial Wetlands has weight 0.75. Their favored exits have weight 2: Tundra to Arctic, Temperate Rainforest to Oceanic, Equatorial Wetlands to Tropical. Their other exits have weight 1. At mixed borders, prefer an existing adjacent compatible climate. If no candidate exists, copy an immediate neighbor.
 Before rolling terrain, a final repair pass leaves intermediate compatible climates as buffer zones where needed. Adjacent climates are always compatible. Climate reservations include an unseen collar, so future expeditions cannot create incompatible seams. The underlying terrain never changes. Its appearance, yield and sea surface follow the seasonal calendar. The same seed and discovery sequence reproduce the same world. Different expedition sequences may extend climate zones differently.
@@ -83,7 +87,76 @@ Eligible fully revealed coastal edges have a 10% port-candidate chance. Ports re
 
 An extreme map may lack enough legal starting sites. The game rejects a seed with insufficient legal starting sites. During setup a placement cannot make it impossible to finish everyone's two settlements. A missing resource alone does not invalidate a map: the reserve can supply it through trade.
 
+## Geography and wildlife
+
+### Living geography: new campaigns
+
+New five-player and twelve-player campaigns use connected landforms, river courses, regional weather and migrating wildlife. Existing saves retain their terrain generation and fixed animal resources; loading does not remove their production or replace occupied terrain. The new maps still have 125 or 300 initial hexes. Expeditions extend the same geography. There are no new resource cards, upkeep costs, wind rules or permanent mountain-crossing projects.
+
+### Landforms and river courses
+
+A seed selects continental, archipelago, inland-sea or peninsula geography. Correlated height fields create coastlines and mountain belts. Inland-sea worlds have broad enclosed lake basins, with freshwater fish rather than marine cod or whales; peninsulas favor elongated landforms. A fixed survey around the starting area sets a usable coast level. Climate is still assigned first and determines eligible resources. Land and water now follow height and drainage instead of independent per-hex water rolls. The historical climate land/water percentages describe older campaigns only.
+Each watershed follows downhill neighbors toward sea or an inland depression. Rivers reserve water hexes; depressions can form lakes. River courses and heights are fixed by seed and coordinates, even beyond the revealed map. Revealing another frontier cannot reroll an existing coast or redirect a river. Resources and dice numbers remain random. No raw resource is guaranteed.
+
+### River crossings and mountain passes
+
+A river is water, not a road. Armies can enter only while it is frozen, while a natural ford is open, or after a bridge is built. Thirty percent of river hexes have a potential ford. It opens at water level 0 or 1. Floods and seasonal rain can close it. Ships can still navigate an open ford or bridge; an enemy force on a shared crossing must be fought, not bypassed.
+Some highland hexes are mountain passes. Temperate and cold passes close in Winter and during cold spells in Spring or Autumn. Tropical-group and Andean passes close in wet Summers; Mediterranean and desert passes close in wet Winters. Arctic and Glacial passes open only in Summer. Bare Peaks always remain impassable. Neither bridges nor any other project can convert a peak or permanently open a pass. Roads may still follow peak edges under the ordinary rules.
+When ice melts, a ford closes, a flood rises or a pass closes under an army, it automatically seeks accessible solid land through the previously open area. A safe landing is preferred; an unavoidable enemy landing starts a normal battle. If none exists, the force waits for rescue. Ships trapped by ice or stranded when floodwater recedes cannot move or retreat and fight at one-quarter power, rounded up. A friendly land army on the same hex defends at full strength. Reopening water releases the ship.
+
+### Regional water levels and weather
+
+Weather covers broad areas of the same climate, not isolated hex rolls. It changes at the start of a season and remains through its early and late halves. The Weather view shows these regions; the Access view shows the resulting crossings and closures. Individual ice transitions remain probabilistic within a shared weather region.
+Baseline water levels, Spring / Summer / Autumn / Winter: Cold, Arctic, Glacial, Alpine, Tundra and Prairie 3 / 2 / 1 / 0; Tropical, Subtropical, Savanna, Monsoon, Mesoamerican and Equatorial Wetlands 1 / 3 / 2 / 0; Mediterranean 1 / 0 / 1 / 3; Desert and Hyperarid 0 / 0 / 0 / 1; Andean 2 / 3 / 1 / 0; Oceanic and Temperate Rainforest 2 / 1 / 2 / 3; other climates 3 / 1 / 1 / 2.
+A wet season adds 1 to water level; a dry spell subtracts 1, with a 0–4 range. Tropical-group weather is 55% ordinary, 30% wet and 15% dry. Desert-group weather is 60% ordinary, 30% dry and 10% wet. Cold-group weather outside Summer is 50% ordinary, 30% cold and 20% mild. Other cases are 55% ordinary, 20% wet, 15% dry and 10% mild. Cold spells multiply freezing chances by 1.5 and halve thaw chances; mild seasons halve freezing chances and multiply thaw chances by 1.4. Probabilities are capped at 100%.
+
+### Floodplains and deltas
+
+Low river-adjacent land can become a floodplain. Land beside a river mouth can become a delta. At water level 3 or 4, an unprotected floodplain becomes shallow navigable water: land movement and production stop. Buildings, routes and stored cards survive. A levee prevents these effects on its hex. Existing road-edge construction still follows the underlying solid terrain; engineering never changes the resource identity.
+Fertile river resources replace part of the local ordinary resource roll: Alluvial clay, Riverside woods, river crops and Water meadow. Chinampa gardens and Sago groves require river or lake adjacency. Arctic, Glacial and Tundra floodplains do not create cereal fields. Mesoamerican river agriculture uses Chinampa gardens; Andean agriculture uses Potato fields. This does not introduce potatoes or maize outside the Americas.
+Alluvial wheat has a baseline of 3 Grain and harvests 12 in Summer. Recession sorghum has a baseline of 3 and harvests 12 in Autumn. River rice has a baseline of 4 and yields 4 / 0 / 4 / 8: its large harvest follows the wet-season flood. Delta gardens have a baseline of 4, yielding 4 / 4 / 8 / 0 in cool regions and 4 / 0 / 4 / 8 in warm wet regions. Water meadow has baseline 2 Wool and follows the local livestock calendar. These amounts are per producer before town/camp/collector multipliers. Floods can reduce realized output. Protection costs resources and does not remove the dice risk.
+
+### Mobile wildlife
+
+Wild grasslands, wild cattle ranges, reindeer and musk-ox ranges, seal grounds and other wild hunting terrain have no fixed animal output. Without animals, open wild terrain is empty. Forests and jungles retain timber: at least 1 Wood each season before producer multipliers. Better timber retains its higher baseline. Domestic sheep, cattle, alpacas and other farm livestock stay on their tiles and use their existing harvest calendars.
+A suitable new wild land hex has a 13% chance to originate one population. Water has an 18% population chance except deep water at 11%. Coastal populations have a 22% chance to be whales; deep-water populations have a 72% chance, giving about twice the overall whale occurrence. Rivers and lakes have fish, never whales. Cod favor cold and cool marine climates. No population is guaranteed on a particular map.
+On its matching roll, each present population adds: Fish 3 Fish; Cod 5 Fish; Whales 3 Hides + 3 Oil; Deer 2 Hides + 2 Meat; Wild cattle 2 Hides + 3 Meat; Reindeer 2 Hides + 2 Meat; Musk ox 2 Wool + 2 Meat; Seals 2 Hides + 2 Oil; Forest game 3 Hides + 1 Meat; Wild turkeys 3 Meat. Every listed component receives ordinary producer multipliers and advanced city/merchant processing. Frozen or flooded harvesting remains subject to the normal access and production rules.
+At the start of each season, marine populations consider connected water within four hexes and land animals consider connected traversable habitat within three. Species stay in suitable climate and habitat: whales cannot travel through rivers, seals require cold coastlines, and cold or tropical species keep appropriate ranges. They may stay or move. Development at cities, roads, camps and towers lowers destination preference; nearby development also matters. Crowding, freezing, floods and seasonal shelter affect preference. Hunting never deletes a population. Existing groups remain somewhere on the revealed map; expeditions can reveal new populations. Several groups can share a hex. The Wildlife view and resource icons show their current location and output.
+Camps and workshops remain built when animals migrate away. They resume production if a suitable population returns. A workshop keeps the product chosen at construction. Migration never grants resources by itself or changes a tile's dice number.
+
+### Hunters and shallow-draft ships
+
+Hunters move 2 hexes per turn. Their four tiers have power 0 / 1 / 2 / 3, hunting radius 1 / 2 / 3 / 4 through connected accessible land, and output multipliers 1 / 2 / 3 / 4. They collect animal products only, including multiple animal resources from one tile. They do not cut timber or process goods. Enemy armies block hunting. Tier I hunters are destroyed when their force enters battle, as other unarmed civilians are. Costs and portraits are in the recruitment catalogue.
+Rivers, shoals, reefs and flooded ground admit Riverboats, Fishing ships, Transports, Settler ships and Galley tiers I–II. Higher Galleys, Carracks, Convoys and Merchant ships need deeper water. Lakes and ordinary coastal/deep sea accept all classes when ice-free. A mixed fleet follows its most restrictive member. Riverboats have power 1 / 2 / 3 / 5, speed 3 / 3 / 4 / 4 and capacity 1 / 2 / 3 / 4. They have no siege power. Large transports and warships retain their existing advantages in speed, capacity, fighting power or coastal siege.
+
+### Local improvements
+
+Build from a clear adjacent owned town or route. Harbors and granaries require a town. Improvements cannot be built on peaks or passes. There is one of each type per tile; they do not stack. Bridge, irrigation and levee benefits apply to the shared tile. Harbor and granary benefits belong to their builder.
+
+- Bridge: 3 Stone + 2 Planks + 1 Steel. Permanent army crossing of one river hex, without blocking ships. Cannot cross ordinary sea or peaks.
+- Irrigation: 2 Stone + 2 Clay + 1 Iron ore. River crop gains 1 Grain per producer on each productive roll and may use a spread harvest schedule.
+- Levee: 3 Stone + 2 Planks. Keeps a floodplain dry and productive during high water. A vessel already on that flooded ground becomes stranded when the levee dries it.
+- Harbor: 2 Blocks + 2 Planks + 1 Steel. Ships recruited on this water hex gain 1 movement point on their first active turn. No recurring free movement and no extra harbor trade rate.
+- Raised granary: 2 Stone + 2 Wood. Each adjacent town of its owner retains up to 8 food cards per town level when raided. Protection takes Grain, then Fish, then Meat. Multiple granaries do not increase the cap. Destruction still transfers all stored goods.
+  Irrigated crops can keep concentrated harvests or spread the same baseline annual total across all four seasons, with remainder cards in the earlier seasons. The irrigation bonus applies on each productive season. Choose at most once per calendar year; it takes effect next year. You cannot switch repeatedly to collect both calendars. Crop identity stays unchanged.
+
+### Economic disruption
+
+An armed land force on an enemy crop hex may spend 1 movement point to disrupt production until two rounds later. No own or allied producer may use the target hex. The field, buildings and dice number remain. An owner connected by town or route can repair the field for 1 Wood + 1 Stone after clearing enemy occupation. This creates a limited raiding objective without allowing arbitrary terrain conversion.
+
+### Rare landmarks
+
+Eligible land has a 1.2% landmark-candidate chance. Sites must suit their effect, so actual frequency is lower. Thermal springs keep adjacent ordinary water ice-free but never melt permanent Glacial pack ice. Natural harbors give ships built in adjacent water the same one-time movement bonus as a built harbor; the bonuses do not stack. Fertile basins add 1 Grain to productive harvests. Rich mineral veins add 1 of the tile's mineral before seasonal and producer multipliers. Ancient groves add 1 Wood before those multipliers. These are shared location benefits, not faction-wide bonuses. Landmarks cannot be moved, bought or created by terraforming.
+
+### Planning and AI
+
+The AI values current mobile harvest locations, sends hunters and fishing ships toward useful reachable populations, avoids forecast seasonal closures, chooses legal vessel drafts, and evaluates bridges, irrigation, levees, harbors, granaries and crop repairs against their cost and local benefit. It can disrupt enemy crops during military operations. It uses visible geography and public seasonal probabilities; it does not inspect future migration or weather draws. No weather system adds an AI resource subsidy.
+
 ## Seasons and harvests
+
+### New geography campaigns
+
+The Geography and wildlife chapter defines rivers, flooding, migrating animals, hunters, ship draft and local improvements. Its geography rules take precedence over the fixed hunting and marine tiles described for older campaigns. Forests produce timber; animal goods require a population. The tables distinguish baseline production from current wildlife.
 
 ### Calendar
 
@@ -163,6 +236,10 @@ Select a season in the calendar to preview its landscape, then pan and inspect t
 
 ## Goods, storage and trade
 
+### New geography campaigns
+
+The Geography and wildlife chapter defines rivers, flooding, migrating animals, hunters, ship draft and local improvements. Its geography rules take precedence over the fixed hunting and marine tiles described for older campaigns. Forests produce timber; animal goods require a population. The tables distinguish baseline production from current wildlife.
+
 ### Production and storage
 
 There are thirteen raw goods and ten processed goods. On a matching roll, towns receive each adjacent tile’s current seasonal output multiplied by town level. All goods of a multi-resource tile are multiplied. Off-season output is zero. Town levels 3 and 4 also add 1× and 2× every seasonal raw component as its processed good, without an extension. In Summer, a level-4 town beside Golden fields receives 32 Grain plus 16 Rations. The bonus scales with the tile’s yield. Extensions add their own processed output without consuming or reducing the raw harvest. All factions produce on every roll. New buildings and collectors can produce on the next matching roll. See Seasons and harvests for the full calendar.
@@ -205,6 +282,10 @@ Each faction chooses Wood or Hides separately for each Woods tile it harvests. D
 
 ## Construction and upgrades
 
+### New geography campaigns
+
+The Geography and wildlife chapter defines rivers, flooding, migrating animals, hunters, ship draft and local improvements. Its geography rules take precedence over the fixed hunting and marine tiles described for older campaigns. Forests produce timber; animal goods require a population. The tables distinguish baseline production from current wildlife.
+
 ### Routes and settlements
 
 A new route must connect to your own road, sea route or town. Roads and sea routes connect directly without requiring a coastal town between them. Another faction's town or tower interrupts your junction; allied infrastructure is not yours to build from. A settlement must connect to your network after setup, touch land and obey the one-empty-intersection distance rule. Troops do not found remote settlements.
@@ -232,6 +313,10 @@ Select the unit in Forces, choose Found settlement, then select a highlighted co
 Land settlers can be carried by transports and must disembark before founding. Settler ships carry no passengers. Neither type harvests resources, provides combat power, blocks production, protects towns or conducts raids alone. Exposed settlers and settler ships are destroyed when their tile enters battle, even when escorted by the winning force. Embarked land settlers follow the normal passenger-loss rules. Settlers do not prevent elimination after the last town is lost. The AI can recruit and move colonists toward reachable, productive sites, prioritizing scarce resources and avoiding hostile positions.
 
 ## Armies and battles
+
+### New geography campaigns
+
+The Geography and wildlife chapter defines rivers, flooding, migrating animals, hunters, ship draft and local improvements. Its geography rules take precedence over the fixed hunting and marine tiles described for older campaigns. Forests produce timber; animal goods require a population. The tables distinguish baseline production from current wildlife.
 
 ### Units and movement
 
@@ -286,6 +371,10 @@ Carracks have 1/2/3/4 siege power at tiers I/II/III/IV. Galleys have 0/0/1/2: on
 A siege fleet must occupy an open-water tile touching the town. Clear defending or allied land armies and armed fleets on every adjacent tile first. Use the normal defense total, siege progress, 1-movement-point operation cost, one operation per town per attacker turn, whole-warehouse raid and next-turn destruction rules. Destruction requires a fresh siege fleet. There is no ranged town attack, no instant capture and no damage based on naval combat power. Icebound ships cannot operate. At least one siege-capable ship must remain adjacent, unless a land army maintains the siege. Naval batteries do not attack watchtowers or land roads.
 
 ## Fleets and sea harvests
+
+### New geography campaigns
+
+The Geography and wildlife chapter defines rivers, flooding, migrating animals, hunters, ship draft and local improvements. Its geography rules take precedence over the fixed hunting and marine tiles described for older campaigns. Forests produce timber; animal goods require a population. The tables distinguish baseline production from current wildlife.
 
 ### Routes are not fleets
 
@@ -453,7 +542,7 @@ Use Show climates in the map controls to color climate regions. Tile inspection 
 
 Click the season beside the round number for the yearly calendar and read-only landscape previews. Select a tile to see its harvest calendar and current surface. Cold sea tiles also show freeze/thaw chances and an eight-round ice outlook. The map’s resource labels show current seasonal quantities; zero means the tile is out of season, not that it has lost its resource.
 
-## Climate tables
+## Legacy climate probabilities
 
 ### Temperate: 50% land / 50% water
 
@@ -1015,330 +1104,328 @@ Open water (no adjacent land): Whale check 6%; effective share 4.2%. Table above
 
 ## Terrain yields
 
+Geography campaigns: permanent terrain only. Migrating animals add the yields in the Living geography chapter. Earlier climate probabilities describe legacy maps.
+
 Current annual baselines include climate-specific crop productivity. Each seasonal calendar totals four times that baseline, not necessarily the value used by an earlier game version.
 
-| Terrain               | Climates                                                                                                                                                                                                                                  | Base yield        | Family |
-| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------- | ------ |
-| Woods                 | Temperate / Steppe / Mediterranean / Oceanic                                                                                                                                                                                              | 1 Wood OR 1 Hides | forest |
-| Forest                | Cold / Alpine                                                                                                                                                                                                                             | 2 Wood            | forest |
-| Hunting forest        | Cold                                                                                                                                                                                                                                      | 2 Hides           | forest |
-| Golden fields         | Temperate / Mediterranean / Oceanic                                                                                                                                                                                                       | 2 Grain           | flat   |
-| Black-soil wheat      | Temperate / Steppe                                                                                                                                                                                                                        | 3 Grain           | flat   |
-| Pasture               | Temperate / Steppe                                                                                                                                                                                                                        | 2 Wool            | flat   |
-| Rough pasture         | Cold / Mediterranean / Savanna                                                                                                                                                                                                            | 1 Wool            | rugged |
-| Clay hills            | Temperate / Cold / Steppe / Tropical / Oceanic / Alpine / Savanna / Andean / Prairie / Mesoamerican                                                                                                                                       | 1 Clay            | rugged |
-| Gold mountains        | Temperate / Cold / Steppe / Mediterranean / Tropical / Desert / Oceanic / Alpine / Subtropical / Savanna / Hyperarid / Monsoon / Andean / Prairie / Mesoamerican / Temperate Rainforest / Equatorial Wetlands                             | 1 Gold            | rugged |
-| Iron mountains        | Temperate / Cold / Steppe / Mediterranean / Tropical / Desert / Oceanic / Alpine / Subtropical / Savanna / Hyperarid / Monsoon / Andean / Prairie / Mesoamerican / Temperate Rainforest / Equatorial Wetlands                             | 1 Iron ore        | rugged |
-| Stone quarry          | Temperate / Cold / Steppe / Tropical / Desert / Subtropical / Savanna / Hyperarid / Monsoon / Prairie / Equatorial Wetlands                                                                                                               | 1 Stone           | rugged |
-| Coal hills            | Temperate / Cold / Steppe / Mediterranean / Tropical / Desert / Oceanic / Alpine / Subtropical / Hyperarid / Monsoon / Prairie / Mesoamerican                                                                                             | 1 Coal            | rugged |
-| Salt flats            | Temperate / Mediterranean / Tropical / Desert / Subtropical / Savanna / Hyperarid / Andean / Prairie / Mesoamerican                                                                                                                       | 1 Salt            | flat   |
-| Snow plain            | Arctic / Glacial / Tundra                                                                                                                                                                                                                 | 0                 | flat   |
-| Seal hunting grounds  | Arctic / Glacial                                                                                                                                                                                                                          | 1 Hides + 1 Oil   | flat   |
-| Arctic iron mountains | Arctic / Glacial / Tundra                                                                                                                                                                                                                 | 1 Iron ore        | rugged |
-| Arctic stone ridge    | Arctic / Glacial / Tundra                                                                                                                                                                                                                 | 1 Stone           | rugged |
-| Arctic gold mountains | Arctic / Glacial / Tundra                                                                                                                                                                                                                 | 1 Gold            | rugged |
-| Steppe plain          | Steppe / Prairie                                                                                                                                                                                                                          | 1 Hides + 1 Wool  | flat   |
-| Olive grove           | Mediterranean                                                                                                                                                                                                                             | 1 Grain           | forest |
-| Escarpment            | Mediterranean                                                                                                                                                                                                                             | 1 Stone           | rugged |
-| Jungle                | Tropical / Subtropical / Monsoon                                                                                                                                                                                                          | 1 Hides           | forest |
-| Tropical woods        | Tropical / Monsoon / Mesoamerican                                                                                                                                                                                                         | 1 Wood            | forest |
-| Rice field            | Tropical                                                                                                                                                                                                                                  | 3 Grain           | flat   |
-| Rice field            | Subtropical                                                                                                                                                                                                                               | 2 Grain           | flat   |
-| Rice field            | Monsoon                                                                                                                                                                                                                                   | 1 Grain           | flat   |
-| Desert                | Desert / Hyperarid                                                                                                                                                                                                                        | 0                 | flat   |
-| Oasis                 | Desert / Hyperarid                                                                                                                                                                                                                        | 1 Wood + 1 Grain  | forest |
-| Water                 | Temperate / Cold / Arctic / Steppe / Mediterranean / Tropical / Desert / Oceanic / Alpine / Subtropical / Savanna / Glacial / Hyperarid / Monsoon / Andean / Prairie / Mesoamerican / Tundra / Temperate Rainforest / Equatorial Wetlands | 0                 | water  |
-| Fishing grounds       | Temperate / Cold / Arctic / Steppe / Mediterranean / Tropical / Desert / Oceanic / Alpine / Subtropical / Savanna / Glacial / Hyperarid / Monsoon / Andean / Prairie / Mesoamerican / Tundra / Temperate Rainforest / Equatorial Wetlands | 1 Fish            | water  |
-| Cod grounds           | Cold / Arctic / Oceanic / Alpine / Glacial / Tundra / Temperate Rainforest                                                                                                                                                                | 2 Fish            | water  |
-| Whale grounds         | Temperate / Cold / Arctic / Steppe / Mediterranean / Tropical / Desert / Oceanic / Alpine / Subtropical / Savanna / Glacial / Hyperarid / Monsoon / Mesoamerican / Tundra / Temperate Rainforest / Equatorial Wetlands                    | 1 Hides + 1 Oil   | water  |
-| Frozen sea            | Arctic / Glacial                                                                                                                                                                                                                          | 0                 | flat   |
-| Coastal pasture       | Oceanic / Temperate Rainforest                                                                                                                                                                                                            | 2 Wool            | flat   |
-| Coastal cliffs        | Oceanic / Temperate Rainforest                                                                                                                                                                                                            | 1 Stone           | rugged |
-| Mountain quarry       | Alpine / Andean                                                                                                                                                                                                                           | 2 Stone           | rugged |
-| Alpine pasture        | Alpine                                                                                                                                                                                                                                    | 1 Wool            | rugged |
-| Bare Peaks            | Alpine / Glacial / Hyperarid / Monsoon / Andean                                                                                                                                                                                           | 0                 | rugged |
-| Alluvial clay banks   | Subtropical / Monsoon / Temperate Rainforest / Equatorial Wetlands                                                                                                                                                                        | 2 Clay            | flat   |
-| River woods           | Subtropical / Monsoon / Andean / Prairie / Equatorial Wetlands                                                                                                                                                                            | 1 Wood            | forest |
-| Wildlife grassland    | Savanna                                                                                                                                                                                                                                   | 2 Hides           | flat   |
-| Dry woodland          | Savanna                                                                                                                                                                                                                                   | 1 Wood            | forest |
-| Barley fields         | Cold / Mediterranean / Alpine                                                                                                                                                                                                             | 1 Grain           | flat   |
-| Barley fields         | Oceanic                                                                                                                                                                                                                                   | 2 Grain           | flat   |
-| Potato fields         | Andean                                                                                                                                                                                                                                    | 2 Grain           | flat   |
-| Turnip fields         | Temperate / Oceanic                                                                                                                                                                                                                       | 2 Grain           | flat   |
-| Turnip fields         | Cold / Alpine                                                                                                                                                                                                                             | 1 Grain           | flat   |
-| Oat fields            | Temperate                                                                                                                                                                                                                                 | 2 Grain           | flat   |
-| Sorghum fields        | Subtropical                                                                                                                                                                                                                               | 2 Grain           | flat   |
-| Alpaca pasture        | Andean                                                                                                                                                                                                                                    | 1 Wool + 1 Meat   | flat   |
-| Sunflower fields      | Prairie                                                                                                                                                                                                                                   | 1 Oil             | flat   |
-| Bison range           | Prairie                                                                                                                                                                                                                                   | 1 Meat + 1 Hides  | flat   |
-| Chinampa gardens      | Mesoamerican                                                                                                                                                                                                                              | 3 Grain           | flat   |
-| Turkey grounds        | Mesoamerican                                                                                                                                                                                                                              | 2 Meat            | forest |
-| Cloud forest          | Mesoamerican                                                                                                                                                                                                                              | 1 Wood + 1 Hides  | forest |
-| Volcanic quarry       | Mesoamerican                                                                                                                                                                                                                              | 2 Stone           | rugged |
-| Millet fields         | Steppe / Savanna                                                                                                                                                                                                                          | 1 Grain           | flat   |
-| Maize fields          | Prairie / Mesoamerican                                                                                                                                                                                                                    | 2 Grain           | flat   |
-| Cattle pasture        | Temperate / Oceanic / Subtropical                                                                                                                                                                                                         | 2 Meat            | flat   |
-| Goat pasture          | Mediterranean / Desert / Alpine                                                                                                                                                                                                           | 1 Meat            | rugged |
-| Reindeer range        | Cold / Arctic / Tundra                                                                                                                                                                                                                    | 1 Meat + 1 Hides  | flat   |
-| Cattle range          | Steppe / Savanna                                                                                                                                                                                                                          | 1 Meat + 1 Hides  | flat   |
-| Berry heath           | Tundra                                                                                                                                                                                                                                    | 1 Grain           | flat   |
-| Musk ox range         | Tundra                                                                                                                                                                                                                                    | 1 Wool + 1 Meat   | flat   |
-| Peat bog              | Tundra / Temperate Rainforest / Equatorial Wetlands                                                                                                                                                                                       | 1 Coal            | flat   |
-| Old-growth forest     | Temperate Rainforest                                                                                                                                                                                                                      | 3 Wood            | forest |
-| Fern hunting grounds  | Temperate Rainforest                                                                                                                                                                                                                      | 1 Hides + 1 Meat  | forest |
-| Mangroves             | Equatorial Wetlands                                                                                                                                                                                                                       | 1 Wood + 1 Fish   | forest |
-| Sago grove            | Equatorial Wetlands                                                                                                                                                                                                                       | 1 Grain           | forest |
+| Terrain               | Climates                                                                                                                                                                                                                                  | Base yield       | Family |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- | ------ |
+| Woods                 | Temperate / Steppe / Mediterranean / Oceanic                                                                                                                                                                                              | 1 Wood           | forest |
+| Forest                | Cold / Alpine                                                                                                                                                                                                                             | 2 Wood           | forest |
+| Hunting forest        | Cold                                                                                                                                                                                                                                      | 2 Wood           | forest |
+| Golden fields         | Temperate / Mediterranean / Oceanic                                                                                                                                                                                                       | 2 Grain          | flat   |
+| Black-soil wheat      | Temperate / Steppe                                                                                                                                                                                                                        | 3 Grain          | flat   |
+| Pasture               | Temperate / Steppe                                                                                                                                                                                                                        | 2 Wool           | flat   |
+| Rough pasture         | Cold / Mediterranean / Savanna                                                                                                                                                                                                            | 1 Wool           | rugged |
+| Clay hills            | Temperate / Cold / Steppe / Tropical / Oceanic / Alpine / Savanna / Andean / Prairie / Mesoamerican                                                                                                                                       | 1 Clay           | rugged |
+| Gold mountains        | Temperate / Cold / Steppe / Mediterranean / Tropical / Desert / Oceanic / Alpine / Subtropical / Savanna / Hyperarid / Monsoon / Andean / Prairie / Mesoamerican / Temperate Rainforest / Equatorial Wetlands                             | 1 Gold           | rugged |
+| Iron mountains        | Temperate / Cold / Steppe / Mediterranean / Tropical / Desert / Oceanic / Alpine / Subtropical / Savanna / Hyperarid / Monsoon / Andean / Prairie / Mesoamerican / Temperate Rainforest / Equatorial Wetlands                             | 1 Iron ore       | rugged |
+| Stone quarry          | Temperate / Cold / Steppe / Tropical / Desert / Subtropical / Savanna / Hyperarid / Monsoon / Prairie / Equatorial Wetlands                                                                                                               | 1 Stone          | rugged |
+| Coal hills            | Temperate / Cold / Steppe / Mediterranean / Tropical / Desert / Oceanic / Alpine / Subtropical / Hyperarid / Monsoon / Prairie / Mesoamerican                                                                                             | 1 Coal           | rugged |
+| Salt flats            | Temperate / Mediterranean / Tropical / Desert / Subtropical / Savanna / Hyperarid / Andean / Prairie / Mesoamerican                                                                                                                       | 1 Salt           | flat   |
+| Snow plain            | Arctic / Glacial / Tundra                                                                                                                                                                                                                 | 0                | flat   |
+| Seal hunting grounds  | Arctic / Glacial                                                                                                                                                                                                                          | 0                | flat   |
+| Arctic iron mountains | Arctic / Glacial / Tundra                                                                                                                                                                                                                 | 1 Iron ore       | rugged |
+| Arctic stone ridge    | Arctic / Glacial / Tundra                                                                                                                                                                                                                 | 1 Stone          | rugged |
+| Arctic gold mountains | Arctic / Glacial / Tundra                                                                                                                                                                                                                 | 1 Gold           | rugged |
+| Steppe plain          | Steppe / Prairie                                                                                                                                                                                                                          | 0                | flat   |
+| Olive grove           | Mediterranean                                                                                                                                                                                                                             | 1 Grain + 1 Wood | forest |
+| Escarpment            | Mediterranean                                                                                                                                                                                                                             | 1 Stone          | rugged |
+| Jungle                | Tropical / Subtropical / Monsoon                                                                                                                                                                                                          | 1 Wood           | forest |
+| Tropical woods        | Tropical / Monsoon / Mesoamerican                                                                                                                                                                                                         | 1 Wood           | forest |
+| Rice field            | Tropical                                                                                                                                                                                                                                  | 3 Grain          | flat   |
+| Rice field            | Subtropical                                                                                                                                                                                                                               | 2 Grain          | flat   |
+| Rice field            | Monsoon                                                                                                                                                                                                                                   | 1 Grain          | flat   |
+| Desert                | Desert / Hyperarid                                                                                                                                                                                                                        | 0                | flat   |
+| Oasis                 | Desert / Hyperarid                                                                                                                                                                                                                        | 1 Wood + 1 Grain | forest |
+| Water                 | Temperate / Cold / Arctic / Steppe / Mediterranean / Tropical / Desert / Oceanic / Alpine / Subtropical / Savanna / Glacial / Hyperarid / Monsoon / Andean / Prairie / Mesoamerican / Tundra / Temperate Rainforest / Equatorial Wetlands | 0                | water  |
+| Fishing grounds       | Temperate / Cold / Arctic / Steppe / Mediterranean / Tropical / Desert / Oceanic / Alpine / Subtropical / Savanna / Glacial / Hyperarid / Monsoon / Andean / Prairie / Mesoamerican / Tundra / Temperate Rainforest / Equatorial Wetlands | 0                | water  |
+| Cod grounds           | Cold / Arctic / Oceanic / Alpine / Glacial / Tundra / Temperate Rainforest                                                                                                                                                                | 0                | water  |
+| Whale grounds         | Temperate / Cold / Arctic / Steppe / Mediterranean / Tropical / Desert / Oceanic / Alpine / Subtropical / Savanna / Glacial / Hyperarid / Monsoon / Mesoamerican / Tundra / Temperate Rainforest / Equatorial Wetlands                    | 0                | water  |
+| Frozen sea            | Arctic / Glacial                                                                                                                                                                                                                          | 0                | flat   |
+| Coastal pasture       | Oceanic / Temperate Rainforest                                                                                                                                                                                                            | 2 Wool           | flat   |
+| Coastal cliffs        | Oceanic / Temperate Rainforest                                                                                                                                                                                                            | 1 Stone          | rugged |
+| Mountain quarry       | Alpine / Andean                                                                                                                                                                                                                           | 2 Stone          | rugged |
+| Alpine pasture        | Alpine                                                                                                                                                                                                                                    | 1 Wool           | rugged |
+| Bare Peaks            | Alpine / Glacial / Hyperarid / Monsoon / Andean                                                                                                                                                                                           | 0                | rugged |
+| Alluvial clay banks   | Subtropical / Monsoon / Temperate Rainforest / Equatorial Wetlands                                                                                                                                                                        | 2 Clay           | flat   |
+| River woods           | Subtropical / Monsoon / Andean / Prairie / Equatorial Wetlands                                                                                                                                                                            | 1 Wood           | forest |
+| Wildlife grassland    | Savanna                                                                                                                                                                                                                                   | 0                | flat   |
+| Dry woodland          | Savanna                                                                                                                                                                                                                                   | 1 Wood           | forest |
+| Barley fields         | Cold / Mediterranean / Alpine                                                                                                                                                                                                             | 1 Grain          | flat   |
+| Barley fields         | Oceanic                                                                                                                                                                                                                                   | 2 Grain          | flat   |
+| Potato fields         | Andean                                                                                                                                                                                                                                    | 2 Grain          | flat   |
+| Turnip fields         | Temperate / Oceanic                                                                                                                                                                                                                       | 2 Grain          | flat   |
+| Turnip fields         | Cold / Alpine                                                                                                                                                                                                                             | 1 Grain          | flat   |
+| Oat fields            | Temperate                                                                                                                                                                                                                                 | 2 Grain          | flat   |
+| Sorghum fields        | Subtropical                                                                                                                                                                                                                               | 2 Grain          | flat   |
+| Alpaca pasture        | Andean                                                                                                                                                                                                                                    | 1 Wool + 1 Meat  | flat   |
+| Sunflower fields      | Prairie                                                                                                                                                                                                                                   | 1 Oil            | flat   |
+| Bison range           | Prairie                                                                                                                                                                                                                                   | 0                | flat   |
+| Chinampa gardens      | Mesoamerican                                                                                                                                                                                                                              | 3 Grain          | flat   |
+| Turkey grounds        | Mesoamerican                                                                                                                                                                                                                              | 1 Wood           | forest |
+| Cloud forest          | Mesoamerican                                                                                                                                                                                                                              | 1 Wood           | forest |
+| Volcanic quarry       | Mesoamerican                                                                                                                                                                                                                              | 2 Stone          | rugged |
+| Millet fields         | Steppe / Savanna                                                                                                                                                                                                                          | 1 Grain          | flat   |
+| Maize fields          | Prairie / Mesoamerican                                                                                                                                                                                                                    | 2 Grain          | flat   |
+| Cattle pasture        | Temperate / Oceanic / Subtropical                                                                                                                                                                                                         | 2 Meat           | flat   |
+| Goat pasture          | Mediterranean / Desert / Alpine                                                                                                                                                                                                           | 1 Meat           | rugged |
+| Reindeer range        | Cold / Arctic / Tundra                                                                                                                                                                                                                    | 0                | flat   |
+| Cattle range          | Steppe / Savanna                                                                                                                                                                                                                          | 1 Meat + 1 Hides | flat   |
+| Berry heath           | Tundra                                                                                                                                                                                                                                    | 1 Grain          | flat   |
+| Musk ox range         | Tundra                                                                                                                                                                                                                                    | 0                | flat   |
+| Peat bog              | Tundra / Temperate Rainforest / Equatorial Wetlands                                                                                                                                                                                       | 1 Coal           | flat   |
+| Old-growth forest     | Temperate Rainforest                                                                                                                                                                                                                      | 3 Wood           | forest |
+| Fern hunting grounds  | Temperate Rainforest                                                                                                                                                                                                                      | 1 Wood           | forest |
+| Mangroves             | Equatorial Wetlands                                                                                                                                                                                                                       | 1 Wood + 1 Fish  | forest |
+| Sago grove            | Equatorial Wetlands                                                                                                                                                                                                                       | 1 Grain + 1 Wood | forest |
 
 Bare Peaks: no production and no unit entry, including recruitment, retreat or disembarkation. Roads may follow their edges; towns need adjacent walkable solid land.
 
 ## Complete seasonal harvest tables
 
-Each season lasts two full rounds, early and late, with the same scheduled yield per matching roll in both halves. Marine rows show the established harvest calendar before actual ice blocks production; individual tiles retain their existing Summer concentration. No missed harvest is repaid. Physical ice changes independently at each half-season boundary using the tables below. Select a tile for its current surface, harvest values and next weather risks.
+Each season lasts two full rounds, early and late, with the same scheduled yield per matching roll in both halves. These are permanent terrain outputs. Migrating fish, whales and wild game add their current population yields; ice and floods can block production. No missed harvest is repaid. Physical ice changes independently at each half-season boundary using the tables below. Select a tile for its current surface, harvest values and next weather risks.
 
 ### Temperate
 
-| Terrain          | Spring     | Summer          | Autumn          | Winter          |
-| ---------------- | ---------- | --------------- | --------------- | --------------- |
-| Golden fields    | 0          | 8 Grain         | 0               | 0               |
-| Black-soil wheat | 0          | 12 Grain        | 0               | 0               |
-| Oat fields       | 0          | 6 Grain         | 2 Grain         | 0               |
-| Turnip fields    | 0          | 2 Grain         | 6 Grain         | 0               |
-| Pasture          | 4 Wool     | 4 Wool          | 0               | 0               |
-| Cattle pasture   | 1 Meat     | 1 Meat          | 4 Meat          | 2 Meat          |
-| Woods (Wood)     | 1 Wood     | 1 Wood          | 2 Wood          | 0               |
-| Woods (Hides)    | 1 Hides    | 1 Hides         | 2 Hides         | 0               |
-| Gold mountains   | 1 Gold     | 1 Gold          | 1 Gold          | 1 Gold          |
-| Clay hills       | 1 Clay     | 1 Clay          | 1 Clay          | 1 Clay          |
-| Stone quarry     | 1 Stone    | 1 Stone         | 1 Stone         | 1 Stone         |
-| Iron mountains   | 1 Iron ore | 1 Iron ore      | 1 Iron ore      | 1 Iron ore      |
-| Coal hills       | 1 Coal     | 1 Coal          | 1 Coal          | 1 Coal          |
-| Salt flats       | 1 Salt     | 2 Salt          | 1 Salt          | 0               |
-| Fishing grounds  | 1 Fish     | 2 Fish          | 1 Fish          | 0               |
-| Whale grounds    | 0          | 1 Hides + 1 Oil | 2 Hides + 2 Oil | 1 Hides + 1 Oil |
+| Terrain          | Spring     | Summer     | Autumn     | Winter     |
+| ---------------- | ---------- | ---------- | ---------- | ---------- |
+| Golden fields    | 0          | 8 Grain    | 0          | 0          |
+| Black-soil wheat | 0          | 12 Grain   | 0          | 0          |
+| Oat fields       | 0          | 6 Grain    | 2 Grain    | 0          |
+| Turnip fields    | 0          | 2 Grain    | 6 Grain    | 0          |
+| Pasture          | 4 Wool     | 4 Wool     | 0          | 0          |
+| Cattle pasture   | 1 Meat     | 1 Meat     | 4 Meat     | 2 Meat     |
+| Woods            | 1 Wood     | 1 Wood     | 1 Wood     | 1 Wood     |
+| Gold mountains   | 1 Gold     | 1 Gold     | 1 Gold     | 1 Gold     |
+| Clay hills       | 1 Clay     | 1 Clay     | 1 Clay     | 1 Clay     |
+| Stone quarry     | 1 Stone    | 1 Stone    | 1 Stone    | 1 Stone    |
+| Iron mountains   | 1 Iron ore | 1 Iron ore | 1 Iron ore | 1 Iron ore |
+| Coal hills       | 1 Coal     | 1 Coal     | 1 Coal     | 1 Coal     |
+| Salt flats       | 1 Salt     | 2 Salt     | 1 Salt     | 0          |
+| Fishing grounds  | 0          | 0          | 0          | 0          |
+| Whale grounds    | 0          | 0          | 0          | 0          |
 
 ### Cold
 
-| Terrain         | Spring           | Summer           | Autumn           | Winter           |
-| --------------- | ---------------- | ---------------- | ---------------- | ---------------- |
-| Forest          | 2 Wood           | 2 Wood           | 3 Wood           | 1 Wood           |
-| Hunting forest  | 2 Hides          | 0                | 2 Hides          | 4 Hides          |
-| Reindeer range  | 1 Meat + 1 Hides | 1 Meat + 1 Hides | 1 Meat + 1 Hides | 1 Meat + 1 Hides |
-| Barley fields   | 0                | 0                | 4 Grain          | 0                |
-| Turnip fields   | 0                | 1 Grain          | 3 Grain          | 0                |
-| Rough pasture   | 2 Wool           | 2 Wool           | 0                | 0                |
-| Gold mountains  | 1 Gold           | 2 Gold           | 1 Gold           | 0                |
-| Coal hills      | 1 Coal           | 1 Coal           | 1 Coal           | 1 Coal           |
-| Iron mountains  | 1 Iron ore       | 2 Iron ore       | 1 Iron ore       | 0                |
-| Stone quarry    | 1 Stone          | 2 Stone          | 1 Stone          | 0                |
-| Clay hills      | 1 Clay           | 2 Clay           | 1 Clay           | 0                |
-| Fishing grounds | 1 Fish           | 2 Fish           | 1 Fish           | 0                |
-| Cod grounds     | 2 Fish           | 4 Fish           | 2 Fish           | 0                |
-| Whale grounds   | 1 Hides + 1 Oil  | 2 Hides + 2 Oil  | 1 Hides + 1 Oil  | 0                |
+| Terrain         | Spring     | Summer     | Autumn     | Winter |
+| --------------- | ---------- | ---------- | ---------- | ------ |
+| Forest          | 2 Wood     | 2 Wood     | 3 Wood     | 1 Wood |
+| Hunting forest  | 2 Wood     | 2 Wood     | 3 Wood     | 1 Wood |
+| Reindeer range  | 0          | 0          | 0          | 0      |
+| Barley fields   | 0          | 0          | 4 Grain    | 0      |
+| Turnip fields   | 0          | 1 Grain    | 3 Grain    | 0      |
+| Rough pasture   | 2 Wool     | 2 Wool     | 0          | 0      |
+| Gold mountains  | 1 Gold     | 2 Gold     | 1 Gold     | 0      |
+| Coal hills      | 1 Coal     | 1 Coal     | 1 Coal     | 1 Coal |
+| Iron mountains  | 1 Iron ore | 2 Iron ore | 1 Iron ore | 0      |
+| Stone quarry    | 1 Stone    | 2 Stone    | 1 Stone    | 0      |
+| Clay hills      | 1 Clay     | 2 Clay     | 1 Clay     | 0      |
+| Fishing grounds | 0          | 0          | 0          | 0      |
+| Cod grounds     | 0          | 0          | 0          | 0      |
+| Whale grounds   | 0          | 0          | 0          | 0      |
 
 ### Arctic
 
-| Terrain               | Spring           | Summer           | Autumn           | Winter           |
-| --------------------- | ---------------- | ---------------- | ---------------- | ---------------- |
-| Snow plain            | 0                | 0                | 0                | 0                |
-| Reindeer range        | 1 Meat + 1 Hides | 1 Meat + 1 Hides | 1 Meat + 1 Hides | 1 Meat + 1 Hides |
-| Seal hunting grounds  | 1 Hides + 1 Oil  | 1 Hides + 1 Oil  | 1 Hides + 1 Oil  | 1 Hides + 1 Oil  |
-| Arctic iron mountains | 1 Iron ore       | 2 Iron ore       | 1 Iron ore       | 0                |
-| Arctic stone ridge    | 1 Stone          | 2 Stone          | 1 Stone          | 0                |
-| Arctic gold mountains | 1 Gold           | 2 Gold           | 1 Gold           | 0                |
-| Frozen sea            | 0                | 0                | 0                | 0                |
-| Fishing grounds       | 1 Fish           | 2 Fish           | 1 Fish           | 0                |
-| Cod grounds           | 2 Fish           | 4 Fish           | 2 Fish           | 0                |
-| Whale grounds         | 1 Hides + 1 Oil  | 2 Hides + 2 Oil  | 1 Hides + 1 Oil  | 0                |
+| Terrain               | Spring     | Summer     | Autumn     | Winter |
+| --------------------- | ---------- | ---------- | ---------- | ------ |
+| Snow plain            | 0          | 0          | 0          | 0      |
+| Reindeer range        | 0          | 0          | 0          | 0      |
+| Seal hunting grounds  | 0          | 0          | 0          | 0      |
+| Arctic iron mountains | 1 Iron ore | 2 Iron ore | 1 Iron ore | 0      |
+| Arctic stone ridge    | 1 Stone    | 2 Stone    | 1 Stone    | 0      |
+| Arctic gold mountains | 1 Gold     | 2 Gold     | 1 Gold     | 0      |
+| Frozen sea            | 0          | 0          | 0          | 0      |
+| Fishing grounds       | 0          | 0          | 0          | 0      |
+| Cod grounds           | 0          | 0          | 0          | 0      |
+| Whale grounds         | 0          | 0          | 0          | 0      |
 
 ### Steppe
 
-| Terrain          | Spring           | Summer          | Autumn           | Winter           |
-| ---------------- | ---------------- | --------------- | ---------------- | ---------------- |
-| Steppe plain     | 1 Hides + 2 Wool | 2 Wool          | 1 Hides          | 2 Hides          |
-| Black-soil wheat | 0                | 12 Grain        | 0                | 0                |
-| Cattle range     | 1 Meat + 1 Hides | 0               | 2 Meat + 2 Hides | 1 Meat + 1 Hides |
-| Millet fields    | 0                | 0               | 4 Grain          | 0                |
-| Pasture          | 4 Wool           | 4 Wool          | 0                | 0                |
-| Woods (Wood)     | 1 Wood           | 1 Wood          | 2 Wood           | 0                |
-| Woods (Hides)    | 1 Hides          | 1 Hides         | 2 Hides          | 0                |
-| Stone quarry     | 1 Stone          | 1 Stone         | 1 Stone          | 1 Stone          |
-| Iron mountains   | 1 Iron ore       | 1 Iron ore      | 1 Iron ore       | 1 Iron ore       |
-| Coal hills       | 1 Coal           | 1 Coal          | 1 Coal           | 1 Coal           |
-| Clay hills       | 1 Clay           | 1 Clay          | 1 Clay           | 1 Clay           |
-| Gold mountains   | 1 Gold           | 1 Gold          | 1 Gold           | 1 Gold           |
-| Fishing grounds  | 1 Fish           | 2 Fish          | 1 Fish           | 0                |
-| Whale grounds    | 0                | 1 Hides + 1 Oil | 2 Hides + 2 Oil  | 1 Hides + 1 Oil  |
+| Terrain          | Spring           | Summer     | Autumn           | Winter           |
+| ---------------- | ---------------- | ---------- | ---------------- | ---------------- |
+| Steppe plain     | 0                | 0          | 0                | 0                |
+| Black-soil wheat | 0                | 12 Grain   | 0                | 0                |
+| Cattle range     | 1 Meat + 1 Hides | 0          | 2 Meat + 2 Hides | 1 Meat + 1 Hides |
+| Millet fields    | 0                | 0          | 4 Grain          | 0                |
+| Pasture          | 4 Wool           | 4 Wool     | 0                | 0                |
+| Woods            | 1 Wood           | 1 Wood     | 1 Wood           | 1 Wood           |
+| Stone quarry     | 1 Stone          | 1 Stone    | 1 Stone          | 1 Stone          |
+| Iron mountains   | 1 Iron ore       | 1 Iron ore | 1 Iron ore       | 1 Iron ore       |
+| Coal hills       | 1 Coal           | 1 Coal     | 1 Coal           | 1 Coal           |
+| Clay hills       | 1 Clay           | 1 Clay     | 1 Clay           | 1 Clay           |
+| Gold mountains   | 1 Gold           | 1 Gold     | 1 Gold           | 1 Gold           |
+| Fishing grounds  | 0                | 0          | 0                | 0                |
+| Whale grounds    | 0                | 0          | 0                | 0                |
 
 ### Mediterranean
 
-| Terrain         | Spring     | Summer          | Autumn          | Winter          |
-| --------------- | ---------- | --------------- | --------------- | --------------- |
-| Golden fields   | 0          | 8 Grain         | 0               | 0               |
-| Barley fields   | 0          | 4 Grain         | 0               | 0               |
-| Olive grove     | 0          | 0               | 2 Grain         | 2 Grain         |
-| Escarpment      | 1 Stone    | 1 Stone         | 1 Stone         | 1 Stone         |
-| Woods (Wood)    | 1 Wood     | 1 Wood          | 2 Wood          | 0               |
-| Woods (Hides)   | 1 Hides    | 1 Hides         | 2 Hides         | 0               |
-| Rough pasture   | 2 Wool     | 2 Wool          | 0               | 0               |
-| Goat pasture    | 1 Meat     | 0               | 2 Meat          | 1 Meat          |
-| Salt flats      | 1 Salt     | 2 Salt          | 1 Salt          | 0               |
-| Gold mountains  | 1 Gold     | 1 Gold          | 1 Gold          | 1 Gold          |
-| Coal hills      | 1 Coal     | 1 Coal          | 1 Coal          | 1 Coal          |
-| Iron mountains  | 1 Iron ore | 1 Iron ore      | 1 Iron ore      | 1 Iron ore      |
-| Fishing grounds | 1 Fish     | 1 Fish          | 1 Fish          | 1 Fish          |
-| Whale grounds   | 0          | 1 Hides + 1 Oil | 2 Hides + 2 Oil | 1 Hides + 1 Oil |
+| Terrain         | Spring     | Summer     | Autumn           | Winter           |
+| --------------- | ---------- | ---------- | ---------------- | ---------------- |
+| Golden fields   | 0          | 8 Grain    | 0                | 0                |
+| Barley fields   | 0          | 4 Grain    | 0                | 0                |
+| Olive grove     | 1 Wood     | 1 Wood     | 2 Grain + 1 Wood | 2 Grain + 1 Wood |
+| Escarpment      | 1 Stone    | 1 Stone    | 1 Stone          | 1 Stone          |
+| Woods           | 1 Wood     | 1 Wood     | 1 Wood           | 1 Wood           |
+| Rough pasture   | 2 Wool     | 2 Wool     | 0                | 0                |
+| Goat pasture    | 1 Meat     | 0          | 2 Meat           | 1 Meat           |
+| Salt flats      | 1 Salt     | 2 Salt     | 1 Salt           | 0                |
+| Gold mountains  | 1 Gold     | 1 Gold     | 1 Gold           | 1 Gold           |
+| Coal hills      | 1 Coal     | 1 Coal     | 1 Coal           | 1 Coal           |
+| Iron mountains  | 1 Iron ore | 1 Iron ore | 1 Iron ore       | 1 Iron ore       |
+| Fishing grounds | 0          | 0          | 0                | 0                |
+| Whale grounds   | 0          | 0          | 0                | 0                |
 
 ### Tropical
 
-| Terrain         | Spring     | Summer          | Autumn          | Winter          |
-| --------------- | ---------- | --------------- | --------------- | --------------- |
-| Jungle          | 1 Hides    | 1 Hides         | 1 Hides         | 1 Hides         |
-| Tropical woods  | 1 Wood     | 1 Wood          | 1 Wood          | 1 Wood          |
-| Rice field      | 4 Grain    | 4 Grain         | 4 Grain         | 0               |
-| Clay hills      | 1 Clay     | 1 Clay          | 1 Clay          | 1 Clay          |
-| Gold mountains  | 1 Gold     | 1 Gold          | 1 Gold          | 1 Gold          |
-| Stone quarry    | 1 Stone    | 1 Stone         | 1 Stone         | 1 Stone         |
-| Coal hills      | 1 Coal     | 1 Coal          | 1 Coal          | 1 Coal          |
-| Iron mountains  | 1 Iron ore | 1 Iron ore      | 1 Iron ore      | 1 Iron ore      |
-| Salt flats      | 1 Salt     | 0               | 1 Salt          | 2 Salt          |
-| Fishing grounds | 1 Fish     | 1 Fish          | 1 Fish          | 1 Fish          |
-| Whale grounds   | 0          | 1 Hides + 1 Oil | 2 Hides + 2 Oil | 1 Hides + 1 Oil |
+| Terrain         | Spring     | Summer     | Autumn     | Winter     |
+| --------------- | ---------- | ---------- | ---------- | ---------- |
+| Jungle          | 1 Wood     | 1 Wood     | 1 Wood     | 1 Wood     |
+| Tropical woods  | 1 Wood     | 1 Wood     | 1 Wood     | 1 Wood     |
+| Rice field      | 4 Grain    | 4 Grain    | 4 Grain    | 0          |
+| Clay hills      | 1 Clay     | 1 Clay     | 1 Clay     | 1 Clay     |
+| Gold mountains  | 1 Gold     | 1 Gold     | 1 Gold     | 1 Gold     |
+| Stone quarry    | 1 Stone    | 1 Stone    | 1 Stone    | 1 Stone    |
+| Coal hills      | 1 Coal     | 1 Coal     | 1 Coal     | 1 Coal     |
+| Iron mountains  | 1 Iron ore | 1 Iron ore | 1 Iron ore | 1 Iron ore |
+| Salt flats      | 1 Salt     | 0          | 1 Salt     | 2 Salt     |
+| Fishing grounds | 0          | 0          | 0          | 0          |
+| Whale grounds   | 0          | 0          | 0          | 0          |
 
 ### Desert
 
-| Terrain         | Spring     | Summer          | Autumn           | Winter          |
-| --------------- | ---------- | --------------- | ---------------- | --------------- |
-| Desert          | 0          | 0               | 0                | 0               |
-| Goat pasture    | 1 Meat     | 0               | 2 Meat           | 1 Meat          |
-| Gold mountains  | 1 Gold     | 1 Gold          | 1 Gold           | 1 Gold          |
-| Iron mountains  | 1 Iron ore | 1 Iron ore      | 1 Iron ore       | 1 Iron ore      |
-| Stone quarry    | 1 Stone    | 1 Stone         | 1 Stone          | 1 Stone         |
-| Coal hills      | 1 Coal     | 1 Coal          | 1 Coal           | 1 Coal          |
-| Oasis           | 1 Wood     | 1 Wood          | 1 Wood + 4 Grain | 1 Wood          |
-| Salt flats      | 1 Salt     | 1 Salt          | 1 Salt           | 1 Salt          |
-| Fishing grounds | 1 Fish     | 1 Fish          | 1 Fish           | 1 Fish          |
-| Whale grounds   | 0          | 1 Hides + 1 Oil | 2 Hides + 2 Oil  | 1 Hides + 1 Oil |
+| Terrain         | Spring     | Summer     | Autumn           | Winter     |
+| --------------- | ---------- | ---------- | ---------------- | ---------- |
+| Desert          | 0          | 0          | 0                | 0          |
+| Goat pasture    | 1 Meat     | 0          | 2 Meat           | 1 Meat     |
+| Gold mountains  | 1 Gold     | 1 Gold     | 1 Gold           | 1 Gold     |
+| Iron mountains  | 1 Iron ore | 1 Iron ore | 1 Iron ore       | 1 Iron ore |
+| Stone quarry    | 1 Stone    | 1 Stone    | 1 Stone          | 1 Stone    |
+| Coal hills      | 1 Coal     | 1 Coal     | 1 Coal           | 1 Coal     |
+| Oasis           | 1 Wood     | 1 Wood     | 1 Wood + 4 Grain | 1 Wood     |
+| Salt flats      | 1 Salt     | 1 Salt     | 1 Salt           | 1 Salt     |
+| Fishing grounds | 0          | 0          | 0                | 0          |
+| Whale grounds   | 0          | 0          | 0                | 0          |
 
 ### Oceanic
 
-| Terrain         | Spring     | Summer          | Autumn          | Winter          |
-| --------------- | ---------- | --------------- | --------------- | --------------- |
-| Coastal pasture | 4 Wool     | 4 Wool          | 0               | 0               |
-| Cattle pasture  | 1 Meat     | 1 Meat          | 4 Meat          | 2 Meat          |
-| Woods (Wood)    | 1 Wood     | 1 Wood          | 2 Wood          | 0               |
-| Woods (Hides)   | 1 Hides    | 1 Hides         | 2 Hides         | 0               |
-| Barley fields   | 0          | 8 Grain         | 0               | 0               |
-| Turnip fields   | 0          | 2 Grain         | 6 Grain         | 0               |
-| Golden fields   | 0          | 0               | 8 Grain         | 0               |
-| Clay hills      | 1 Clay     | 1 Clay          | 1 Clay          | 1 Clay          |
-| Coastal cliffs  | 1 Stone    | 1 Stone         | 1 Stone         | 1 Stone         |
-| Coal hills      | 1 Coal     | 1 Coal          | 1 Coal          | 1 Coal          |
-| Iron mountains  | 1 Iron ore | 1 Iron ore      | 1 Iron ore      | 1 Iron ore      |
-| Gold mountains  | 1 Gold     | 1 Gold          | 1 Gold          | 1 Gold          |
-| Fishing grounds | 1 Fish     | 2 Fish          | 1 Fish          | 0               |
-| Cod grounds     | 2 Fish     | 4 Fish          | 2 Fish          | 0               |
-| Whale grounds   | 0          | 1 Hides + 1 Oil | 2 Hides + 2 Oil | 1 Hides + 1 Oil |
+| Terrain         | Spring     | Summer     | Autumn     | Winter     |
+| --------------- | ---------- | ---------- | ---------- | ---------- |
+| Coastal pasture | 4 Wool     | 4 Wool     | 0          | 0          |
+| Cattle pasture  | 1 Meat     | 1 Meat     | 4 Meat     | 2 Meat     |
+| Woods           | 1 Wood     | 1 Wood     | 1 Wood     | 1 Wood     |
+| Barley fields   | 0          | 8 Grain    | 0          | 0          |
+| Turnip fields   | 0          | 2 Grain    | 6 Grain    | 0          |
+| Golden fields   | 0          | 0          | 8 Grain    | 0          |
+| Clay hills      | 1 Clay     | 1 Clay     | 1 Clay     | 1 Clay     |
+| Coastal cliffs  | 1 Stone    | 1 Stone    | 1 Stone    | 1 Stone    |
+| Coal hills      | 1 Coal     | 1 Coal     | 1 Coal     | 1 Coal     |
+| Iron mountains  | 1 Iron ore | 1 Iron ore | 1 Iron ore | 1 Iron ore |
+| Gold mountains  | 1 Gold     | 1 Gold     | 1 Gold     | 1 Gold     |
+| Fishing grounds | 0          | 0          | 0          | 0          |
+| Cod grounds     | 0          | 0          | 0          | 0          |
+| Whale grounds   | 0          | 0          | 0          | 0          |
 
 ### Alpine
 
-| Terrain         | Spring          | Summer          | Autumn          | Winter |
-| --------------- | --------------- | --------------- | --------------- | ------ |
-| Mountain quarry | 2 Stone         | 4 Stone         | 2 Stone         | 0      |
-| Iron mountains  | 1 Iron ore      | 2 Iron ore      | 1 Iron ore      | 0      |
-| Coal hills      | 1 Coal          | 1 Coal          | 1 Coal          | 1 Coal |
-| Alpine pasture  | 2 Wool          | 2 Wool          | 0               | 0      |
-| Goat pasture    | 1 Meat          | 0               | 2 Meat          | 1 Meat |
-| Barley fields   | 0               | 0               | 4 Grain         | 0      |
-| Turnip fields   | 0               | 1 Grain         | 3 Grain         | 0      |
-| Forest          | 2 Wood          | 2 Wood          | 3 Wood          | 1 Wood |
-| Gold mountains  | 1 Gold          | 2 Gold          | 1 Gold          | 0      |
-| Clay hills      | 1 Clay          | 2 Clay          | 1 Clay          | 0      |
-| Bare Peaks      | 0               | 0               | 0               | 0      |
-| Fishing grounds | 1 Fish          | 2 Fish          | 1 Fish          | 0      |
-| Cod grounds     | 2 Fish          | 4 Fish          | 2 Fish          | 0      |
-| Whale grounds   | 1 Hides + 1 Oil | 2 Hides + 2 Oil | 1 Hides + 1 Oil | 0      |
+| Terrain         | Spring     | Summer     | Autumn     | Winter |
+| --------------- | ---------- | ---------- | ---------- | ------ |
+| Mountain quarry | 2 Stone    | 4 Stone    | 2 Stone    | 0      |
+| Iron mountains  | 1 Iron ore | 2 Iron ore | 1 Iron ore | 0      |
+| Coal hills      | 1 Coal     | 1 Coal     | 1 Coal     | 1 Coal |
+| Alpine pasture  | 2 Wool     | 2 Wool     | 0          | 0      |
+| Goat pasture    | 1 Meat     | 0          | 2 Meat     | 1 Meat |
+| Barley fields   | 0          | 0          | 4 Grain    | 0      |
+| Turnip fields   | 0          | 1 Grain    | 3 Grain    | 0      |
+| Forest          | 2 Wood     | 2 Wood     | 3 Wood     | 1 Wood |
+| Gold mountains  | 1 Gold     | 2 Gold     | 1 Gold     | 0      |
+| Clay hills      | 1 Clay     | 2 Clay     | 1 Clay     | 0      |
+| Bare Peaks      | 0          | 0          | 0          | 0      |
+| Fishing grounds | 0          | 0          | 0          | 0      |
+| Cod grounds     | 0          | 0          | 0          | 0      |
+| Whale grounds   | 0          | 0          | 0          | 0      |
 
 ### Subtropical
 
-| Terrain             | Spring     | Summer          | Autumn          | Winter          |
-| ------------------- | ---------- | --------------- | --------------- | --------------- |
-| Alluvial clay banks | 2 Clay     | 1 Clay          | 2 Clay          | 3 Clay          |
-| Rice field          | 0          | 4 Grain         | 4 Grain         | 0               |
-| Sorghum fields      | 0          | 0               | 8 Grain         | 0               |
-| River woods         | 1 Wood     | 1 Wood          | 1 Wood          | 1 Wood          |
-| Cattle pasture      | 1 Meat     | 1 Meat          | 4 Meat          | 2 Meat          |
-| Jungle              | 1 Hides    | 1 Hides         | 1 Hides         | 1 Hides         |
-| Stone quarry        | 1 Stone    | 1 Stone         | 1 Stone         | 1 Stone         |
-| Coal hills          | 1 Coal     | 1 Coal          | 1 Coal          | 1 Coal          |
-| Iron mountains      | 1 Iron ore | 1 Iron ore      | 1 Iron ore      | 1 Iron ore      |
-| Salt flats          | 1 Salt     | 0               | 1 Salt          | 2 Salt          |
-| Gold mountains      | 1 Gold     | 1 Gold          | 1 Gold          | 1 Gold          |
-| Fishing grounds     | 1 Fish     | 1 Fish          | 1 Fish          | 1 Fish          |
-| Whale grounds       | 0          | 1 Hides + 1 Oil | 2 Hides + 2 Oil | 1 Hides + 1 Oil |
+| Terrain             | Spring     | Summer     | Autumn     | Winter     |
+| ------------------- | ---------- | ---------- | ---------- | ---------- |
+| Alluvial clay banks | 2 Clay     | 1 Clay     | 2 Clay     | 3 Clay     |
+| Rice field          | 0          | 4 Grain    | 4 Grain    | 0          |
+| Sorghum fields      | 0          | 0          | 8 Grain    | 0          |
+| River woods         | 1 Wood     | 1 Wood     | 1 Wood     | 1 Wood     |
+| Cattle pasture      | 1 Meat     | 1 Meat     | 4 Meat     | 2 Meat     |
+| Jungle              | 1 Wood     | 1 Wood     | 1 Wood     | 1 Wood     |
+| Stone quarry        | 1 Stone    | 1 Stone    | 1 Stone    | 1 Stone    |
+| Coal hills          | 1 Coal     | 1 Coal     | 1 Coal     | 1 Coal     |
+| Iron mountains      | 1 Iron ore | 1 Iron ore | 1 Iron ore | 1 Iron ore |
+| Salt flats          | 1 Salt     | 0          | 1 Salt     | 2 Salt     |
+| Gold mountains      | 1 Gold     | 1 Gold     | 1 Gold     | 1 Gold     |
+| Fishing grounds     | 0          | 0          | 0          | 0          |
+| Whale grounds       | 0          | 0          | 0          | 0          |
 
 ### Savanna
 
-| Terrain            | Spring           | Summer          | Autumn           | Winter           |
-| ------------------ | ---------------- | --------------- | ---------------- | ---------------- |
-| Wildlife grassland | 2 Hides          | 1 Hides         | 3 Hides          | 2 Hides          |
-| Cattle range       | 1 Meat + 1 Hides | 0               | 2 Meat + 2 Hides | 1 Meat + 1 Hides |
-| Millet fields      | 0                | 0               | 4 Grain          | 0                |
-| Dry woodland       | 1 Wood           | 1 Wood          | 1 Wood           | 1 Wood           |
-| Rough pasture      | 1 Wool           | 1 Wool          | 1 Wool           | 1 Wool           |
-| Iron mountains     | 1 Iron ore       | 1 Iron ore      | 1 Iron ore       | 1 Iron ore       |
-| Clay hills         | 1 Clay           | 1 Clay          | 1 Clay           | 1 Clay           |
-| Stone quarry       | 1 Stone          | 1 Stone         | 1 Stone          | 1 Stone          |
-| Gold mountains     | 1 Gold           | 1 Gold          | 1 Gold           | 1 Gold           |
-| Salt flats         | 1 Salt           | 0               | 1 Salt           | 2 Salt           |
-| Fishing grounds    | 1 Fish           | 1 Fish          | 1 Fish           | 1 Fish           |
-| Whale grounds      | 0                | 1 Hides + 1 Oil | 2 Hides + 2 Oil  | 1 Hides + 1 Oil  |
+| Terrain            | Spring           | Summer     | Autumn           | Winter           |
+| ------------------ | ---------------- | ---------- | ---------------- | ---------------- |
+| Wildlife grassland | 0                | 0          | 0                | 0                |
+| Cattle range       | 1 Meat + 1 Hides | 0          | 2 Meat + 2 Hides | 1 Meat + 1 Hides |
+| Millet fields      | 0                | 0          | 4 Grain          | 0                |
+| Dry woodland       | 1 Wood           | 1 Wood     | 1 Wood           | 1 Wood           |
+| Rough pasture      | 1 Wool           | 1 Wool     | 1 Wool           | 1 Wool           |
+| Iron mountains     | 1 Iron ore       | 1 Iron ore | 1 Iron ore       | 1 Iron ore       |
+| Clay hills         | 1 Clay           | 1 Clay     | 1 Clay           | 1 Clay           |
+| Stone quarry       | 1 Stone          | 1 Stone    | 1 Stone          | 1 Stone          |
+| Gold mountains     | 1 Gold           | 1 Gold     | 1 Gold           | 1 Gold           |
+| Salt flats         | 1 Salt           | 0          | 1 Salt           | 2 Salt           |
+| Fishing grounds    | 0                | 0          | 0                | 0                |
+| Whale grounds      | 0                | 0          | 0                | 0                |
 
 ### Glacial
 
-| Terrain               | Spring          | Summer          | Autumn          | Winter          |
-| --------------------- | --------------- | --------------- | --------------- | --------------- |
-| Snow plain            | 0               | 0               | 0               | 0               |
-| Bare Peaks            | 0               | 0               | 0               | 0               |
-| Seal hunting grounds  | 1 Hides + 1 Oil | 1 Hides + 1 Oil | 1 Hides + 1 Oil | 1 Hides + 1 Oil |
-| Arctic iron mountains | 0               | 4 Iron ore      | 0               | 0               |
-| Arctic stone ridge    | 0               | 4 Stone         | 0               | 0               |
-| Arctic gold mountains | 0               | 4 Gold          | 0               | 0               |
-| Frozen sea            | 0               | 0               | 0               | 0               |
-| Fishing grounds       | 0               | 4 Fish          | 0               | 0               |
-| Cod grounds           | 0               | 8 Fish          | 0               | 0               |
-| Whale grounds         | 0               | 4 Hides + 4 Oil | 0               | 0               |
+| Terrain               | Spring | Summer     | Autumn | Winter |
+| --------------------- | ------ | ---------- | ------ | ------ |
+| Snow plain            | 0      | 0          | 0      | 0      |
+| Bare Peaks            | 0      | 0          | 0      | 0      |
+| Seal hunting grounds  | 0      | 0          | 0      | 0      |
+| Arctic iron mountains | 0      | 4 Iron ore | 0      | 0      |
+| Arctic stone ridge    | 0      | 4 Stone    | 0      | 0      |
+| Arctic gold mountains | 0      | 4 Gold     | 0      | 0      |
+| Frozen sea            | 0      | 0          | 0      | 0      |
+| Fishing grounds       | 0      | 0          | 0      | 0      |
+| Cod grounds           | 0      | 0          | 0      | 0      |
+| Whale grounds         | 0      | 0          | 0      | 0      |
 
 ### Hyperarid
 
-| Terrain         | Spring     | Summer          | Autumn           | Winter          |
-| --------------- | ---------- | --------------- | ---------------- | --------------- |
-| Desert          | 0          | 0               | 0                | 0               |
-| Bare Peaks      | 0          | 0               | 0                | 0               |
-| Salt flats      | 1 Salt     | 1 Salt          | 1 Salt           | 1 Salt          |
-| Iron mountains  | 1 Iron ore | 1 Iron ore      | 1 Iron ore       | 1 Iron ore      |
-| Stone quarry    | 1 Stone    | 1 Stone         | 1 Stone          | 1 Stone         |
-| Gold mountains  | 1 Gold     | 1 Gold          | 1 Gold           | 1 Gold          |
-| Oasis           | 1 Wood     | 1 Wood          | 1 Wood + 4 Grain | 1 Wood          |
-| Coal hills      | 1 Coal     | 1 Coal          | 1 Coal           | 1 Coal          |
-| Fishing grounds | 1 Fish     | 1 Fish          | 1 Fish           | 1 Fish          |
-| Whale grounds   | 0          | 1 Hides + 1 Oil | 2 Hides + 2 Oil  | 1 Hides + 1 Oil |
+| Terrain         | Spring     | Summer     | Autumn           | Winter     |
+| --------------- | ---------- | ---------- | ---------------- | ---------- |
+| Desert          | 0          | 0          | 0                | 0          |
+| Bare Peaks      | 0          | 0          | 0                | 0          |
+| Salt flats      | 1 Salt     | 1 Salt     | 1 Salt           | 1 Salt     |
+| Iron mountains  | 1 Iron ore | 1 Iron ore | 1 Iron ore       | 1 Iron ore |
+| Stone quarry    | 1 Stone    | 1 Stone    | 1 Stone          | 1 Stone    |
+| Gold mountains  | 1 Gold     | 1 Gold     | 1 Gold           | 1 Gold     |
+| Oasis           | 1 Wood     | 1 Wood     | 1 Wood + 4 Grain | 1 Wood     |
+| Coal hills      | 1 Coal     | 1 Coal     | 1 Coal           | 1 Coal     |
+| Fishing grounds | 0          | 0          | 0                | 0          |
+| Whale grounds   | 0          | 0          | 0                | 0          |
 
 ### Monsoon
 
-| Terrain             | Spring     | Summer          | Autumn          | Winter          |
-| ------------------- | ---------- | --------------- | --------------- | --------------- |
-| Jungle              | 1 Hides    | 1 Hides         | 1 Hides         | 1 Hides         |
-| Tropical woods      | 1 Wood     | 1 Wood          | 1 Wood          | 1 Wood          |
-| River woods         | 1 Wood     | 1 Wood          | 1 Wood          | 1 Wood          |
-| Rice field          | 0          | 0               | 4 Grain         | 0               |
-| Alluvial clay banks | 2 Clay     | 1 Clay          | 2 Clay          | 3 Clay          |
-| Bare Peaks          | 0          | 0               | 0               | 0               |
-| Stone quarry        | 1 Stone    | 1 Stone         | 1 Stone         | 1 Stone         |
-| Iron mountains      | 1 Iron ore | 1 Iron ore      | 1 Iron ore      | 1 Iron ore      |
-| Coal hills          | 1 Coal     | 1 Coal          | 1 Coal          | 1 Coal          |
-| Gold mountains      | 1 Gold     | 1 Gold          | 1 Gold          | 1 Gold          |
-| Fishing grounds     | 1 Fish     | 1 Fish          | 1 Fish          | 1 Fish          |
-| Whale grounds       | 0          | 1 Hides + 1 Oil | 2 Hides + 2 Oil | 1 Hides + 1 Oil |
+| Terrain             | Spring     | Summer     | Autumn     | Winter     |
+| ------------------- | ---------- | ---------- | ---------- | ---------- |
+| Jungle              | 1 Wood     | 1 Wood     | 1 Wood     | 1 Wood     |
+| Tropical woods      | 1 Wood     | 1 Wood     | 1 Wood     | 1 Wood     |
+| River woods         | 1 Wood     | 1 Wood     | 1 Wood     | 1 Wood     |
+| Rice field          | 0          | 0          | 4 Grain    | 0          |
+| Alluvial clay banks | 2 Clay     | 1 Clay     | 2 Clay     | 3 Clay     |
+| Bare Peaks          | 0          | 0          | 0          | 0          |
+| Stone quarry        | 1 Stone    | 1 Stone    | 1 Stone    | 1 Stone    |
+| Iron mountains      | 1 Iron ore | 1 Iron ore | 1 Iron ore | 1 Iron ore |
+| Coal hills          | 1 Coal     | 1 Coal     | 1 Coal     | 1 Coal     |
+| Gold mountains      | 1 Gold     | 1 Gold     | 1 Gold     | 1 Gold     |
+| Fishing grounds     | 0          | 0          | 0          | 0          |
+| Whale grounds       | 0          | 0          | 0          | 0          |
 
 ### Andean
 
@@ -1351,91 +1438,91 @@ Each season lasts two full rounds, early and late, with the same scheduled yield
 | Gold mountains  | 1 Gold          | 1 Gold     | 1 Gold     | 1 Gold     |
 | Salt flats      | 1 Salt          | 2 Salt     | 1 Salt     | 0          |
 | Clay hills      | 1 Clay          | 1 Clay     | 1 Clay     | 1 Clay     |
-| River woods     | 1 Wood          | 1 Wood     | 2 Wood     | 0          |
+| River woods     | 1 Wood          | 1 Wood     | 1 Wood     | 1 Wood     |
 | Bare Peaks      | 0               | 0          | 0          | 0          |
-| Fishing grounds | 1 Fish          | 2 Fish     | 1 Fish     | 0          |
+| Fishing grounds | 0               | 0          | 0          | 0          |
 
 ### Prairie
 
-| Terrain          | Spring           | Summer     | Autumn           | Winter           |
-| ---------------- | ---------------- | ---------- | ---------------- | ---------------- |
-| Steppe plain     | 1 Hides + 2 Wool | 2 Wool     | 1 Hides          | 2 Hides          |
-| Maize fields     | 0                | 0          | 8 Grain          | 0                |
-| Sunflower fields | 0                | 0          | 4 Oil            | 0                |
-| Bison range      | 1 Meat + 1 Hides | 0          | 2 Meat + 2 Hides | 1 Meat + 1 Hides |
-| River woods      | 1 Wood           | 1 Wood     | 2 Wood           | 0                |
-| Clay hills       | 1 Clay           | 2 Clay     | 1 Clay           | 0                |
-| Stone quarry     | 1 Stone          | 2 Stone    | 1 Stone          | 0                |
-| Coal hills       | 1 Coal           | 1 Coal     | 1 Coal           | 1 Coal           |
-| Iron mountains   | 1 Iron ore       | 2 Iron ore | 1 Iron ore       | 0                |
-| Gold mountains   | 1 Gold           | 2 Gold     | 1 Gold           | 0                |
-| Salt flats       | 1 Salt           | 2 Salt     | 1 Salt           | 0                |
-| Fishing grounds  | 1 Fish           | 2 Fish     | 1 Fish           | 0                |
+| Terrain          | Spring     | Summer     | Autumn     | Winter |
+| ---------------- | ---------- | ---------- | ---------- | ------ |
+| Steppe plain     | 0          | 0          | 0          | 0      |
+| Maize fields     | 0          | 0          | 8 Grain    | 0      |
+| Sunflower fields | 0          | 0          | 4 Oil      | 0      |
+| Bison range      | 0          | 0          | 0          | 0      |
+| River woods      | 1 Wood     | 1 Wood     | 1 Wood     | 1 Wood |
+| Clay hills       | 1 Clay     | 2 Clay     | 1 Clay     | 0      |
+| Stone quarry     | 1 Stone    | 2 Stone    | 1 Stone    | 0      |
+| Coal hills       | 1 Coal     | 1 Coal     | 1 Coal     | 1 Coal |
+| Iron mountains   | 1 Iron ore | 2 Iron ore | 1 Iron ore | 0      |
+| Gold mountains   | 1 Gold     | 2 Gold     | 1 Gold     | 0      |
+| Salt flats       | 1 Salt     | 2 Salt     | 1 Salt     | 0      |
+| Fishing grounds  | 0          | 0          | 0          | 0      |
 
 ### Mesoamerican
 
-| Terrain          | Spring           | Summer           | Autumn           | Winter           |
-| ---------------- | ---------------- | ---------------- | ---------------- | ---------------- |
-| Maize fields     | 0                | 0                | 8 Grain          | 0                |
-| Chinampa gardens | 4 Grain          | 4 Grain          | 4 Grain          | 0                |
-| Turkey grounds   | 1 Meat           | 1 Meat           | 4 Meat           | 2 Meat           |
-| Cloud forest     | 1 Wood + 1 Hides | 1 Wood + 1 Hides | 1 Wood + 1 Hides | 1 Wood + 1 Hides |
-| Tropical woods   | 1 Wood           | 1 Wood           | 1 Wood           | 1 Wood           |
-| Clay hills       | 1 Clay           | 1 Clay           | 1 Clay           | 1 Clay           |
-| Volcanic quarry  | 2 Stone          | 2 Stone          | 2 Stone          | 2 Stone          |
-| Iron mountains   | 1 Iron ore       | 1 Iron ore       | 1 Iron ore       | 1 Iron ore       |
-| Gold mountains   | 1 Gold           | 1 Gold           | 1 Gold           | 1 Gold           |
-| Salt flats       | 1 Salt           | 0                | 1 Salt           | 2 Salt           |
-| Coal hills       | 1 Coal           | 1 Coal           | 1 Coal           | 1 Coal           |
-| Fishing grounds  | 1 Fish           | 1 Fish           | 1 Fish           | 1 Fish           |
-| Whale grounds    | 0                | 1 Hides + 1 Oil  | 2 Hides + 2 Oil  | 1 Hides + 1 Oil  |
+| Terrain          | Spring     | Summer     | Autumn     | Winter     |
+| ---------------- | ---------- | ---------- | ---------- | ---------- |
+| Maize fields     | 0          | 0          | 8 Grain    | 0          |
+| Chinampa gardens | 4 Grain    | 4 Grain    | 4 Grain    | 0          |
+| Turkey grounds   | 1 Wood     | 1 Wood     | 1 Wood     | 1 Wood     |
+| Cloud forest     | 1 Wood     | 1 Wood     | 1 Wood     | 1 Wood     |
+| Tropical woods   | 1 Wood     | 1 Wood     | 1 Wood     | 1 Wood     |
+| Clay hills       | 1 Clay     | 1 Clay     | 1 Clay     | 1 Clay     |
+| Volcanic quarry  | 2 Stone    | 2 Stone    | 2 Stone    | 2 Stone    |
+| Iron mountains   | 1 Iron ore | 1 Iron ore | 1 Iron ore | 1 Iron ore |
+| Gold mountains   | 1 Gold     | 1 Gold     | 1 Gold     | 1 Gold     |
+| Salt flats       | 1 Salt     | 0          | 1 Salt     | 2 Salt     |
+| Coal hills       | 1 Coal     | 1 Coal     | 1 Coal     | 1 Coal     |
+| Fishing grounds  | 0          | 0          | 0          | 0          |
+| Whale grounds    | 0          | 0          | 0          | 0          |
 
 ### Tundra
 
-| Terrain               | Spring           | Summer           | Autumn           | Winter           |
-| --------------------- | ---------------- | ---------------- | ---------------- | ---------------- |
-| Berry heath           | 0                | 2 Grain          | 2 Grain          | 0                |
-| Musk ox range         | 1 Wool + 1 Meat  | 3 Wool + 1 Meat  | 1 Meat           | 1 Meat           |
-| Reindeer range        | 1 Meat + 1 Hides | 1 Meat + 1 Hides | 1 Meat + 1 Hides | 1 Meat + 1 Hides |
-| Peat bog              | 0                | 2 Coal           | 2 Coal           | 0                |
-| Arctic iron mountains | 1 Iron ore       | 2 Iron ore       | 1 Iron ore       | 0                |
-| Arctic stone ridge    | 1 Stone          | 2 Stone          | 1 Stone          | 0                |
-| Arctic gold mountains | 1 Gold           | 2 Gold           | 1 Gold           | 0                |
-| Snow plain            | 0                | 0                | 0                | 0                |
-| Fishing grounds       | 1 Fish           | 2 Fish           | 1 Fish           | 0                |
-| Cod grounds           | 2 Fish           | 4 Fish           | 2 Fish           | 0                |
-| Whale grounds         | 1 Hides + 1 Oil  | 2 Hides + 2 Oil  | 1 Hides + 1 Oil  | 0                |
+| Terrain               | Spring     | Summer     | Autumn     | Winter |
+| --------------------- | ---------- | ---------- | ---------- | ------ |
+| Berry heath           | 0          | 2 Grain    | 2 Grain    | 0      |
+| Musk ox range         | 0          | 0          | 0          | 0      |
+| Reindeer range        | 0          | 0          | 0          | 0      |
+| Peat bog              | 0          | 2 Coal     | 2 Coal     | 0      |
+| Arctic iron mountains | 1 Iron ore | 2 Iron ore | 1 Iron ore | 0      |
+| Arctic stone ridge    | 1 Stone    | 2 Stone    | 1 Stone    | 0      |
+| Arctic gold mountains | 1 Gold     | 2 Gold     | 1 Gold     | 0      |
+| Snow plain            | 0          | 0          | 0          | 0      |
+| Fishing grounds       | 0          | 0          | 0          | 0      |
+| Cod grounds           | 0          | 0          | 0          | 0      |
+| Whale grounds         | 0          | 0          | 0          | 0      |
 
 ### Temperate Rainforest
 
-| Terrain              | Spring           | Summer           | Autumn           | Winter           |
-| -------------------- | ---------------- | ---------------- | ---------------- | ---------------- |
-| Old-growth forest    | 3 Wood           | 4 Wood           | 3 Wood           | 2 Wood           |
-| Fern hunting grounds | 1 Hides + 1 Meat | 1 Hides + 1 Meat | 1 Hides + 1 Meat | 1 Hides + 1 Meat |
-| Coastal pasture      | 4 Wool           | 4 Wool           | 0                | 0                |
-| Peat bog             | 1 Coal           | 1 Coal           | 1 Coal           | 1 Coal           |
-| Alluvial clay banks  | 2 Clay           | 2 Clay           | 2 Clay           | 2 Clay           |
-| Coastal cliffs       | 1 Stone          | 1 Stone          | 1 Stone          | 1 Stone          |
-| Iron mountains       | 1 Iron ore       | 1 Iron ore       | 1 Iron ore       | 1 Iron ore       |
-| Gold mountains       | 1 Gold           | 1 Gold           | 1 Gold           | 1 Gold           |
-| Fishing grounds      | 1 Fish           | 1 Fish           | 1 Fish           | 1 Fish           |
-| Cod grounds          | 2 Fish           | 2 Fish           | 2 Fish           | 2 Fish           |
-| Whale grounds        | 0                | 1 Hides + 1 Oil  | 2 Hides + 2 Oil  | 1 Hides + 1 Oil  |
+| Terrain              | Spring     | Summer     | Autumn     | Winter     |
+| -------------------- | ---------- | ---------- | ---------- | ---------- |
+| Old-growth forest    | 3 Wood     | 3 Wood     | 3 Wood     | 3 Wood     |
+| Fern hunting grounds | 1 Wood     | 1 Wood     | 1 Wood     | 1 Wood     |
+| Coastal pasture      | 4 Wool     | 4 Wool     | 0          | 0          |
+| Peat bog             | 1 Coal     | 1 Coal     | 1 Coal     | 1 Coal     |
+| Alluvial clay banks  | 2 Clay     | 2 Clay     | 2 Clay     | 2 Clay     |
+| Coastal cliffs       | 1 Stone    | 1 Stone    | 1 Stone    | 1 Stone    |
+| Iron mountains       | 1 Iron ore | 1 Iron ore | 1 Iron ore | 1 Iron ore |
+| Gold mountains       | 1 Gold     | 1 Gold     | 1 Gold     | 1 Gold     |
+| Fishing grounds      | 0          | 0          | 0          | 0          |
+| Cod grounds          | 0          | 0          | 0          | 0          |
+| Whale grounds        | 0          | 0          | 0          | 0          |
 
 ### Equatorial Wetlands
 
-| Terrain             | Spring          | Summer          | Autumn          | Winter          |
-| ------------------- | --------------- | --------------- | --------------- | --------------- |
-| Mangroves           | 1 Wood + 1 Fish | 1 Wood + 1 Fish | 1 Wood + 1 Fish | 1 Wood + 1 Fish |
-| Sago grove          | 1 Grain         | 1 Grain         | 1 Grain         | 1 Grain         |
-| River woods         | 1 Wood          | 1 Wood          | 1 Wood          | 1 Wood          |
-| Alluvial clay banks | 2 Clay          | 1 Clay          | 2 Clay          | 3 Clay          |
-| Peat bog            | 1 Coal          | 1 Coal          | 1 Coal          | 1 Coal          |
-| Stone quarry        | 1 Stone         | 1 Stone         | 1 Stone         | 1 Stone         |
-| Iron mountains      | 1 Iron ore      | 1 Iron ore      | 1 Iron ore      | 1 Iron ore      |
-| Gold mountains      | 1 Gold          | 1 Gold          | 1 Gold          | 1 Gold          |
-| Fishing grounds     | 1 Fish          | 1 Fish          | 1 Fish          | 1 Fish          |
-| Whale grounds       | 0               | 1 Hides + 1 Oil | 2 Hides + 2 Oil | 1 Hides + 1 Oil |
+| Terrain             | Spring           | Summer           | Autumn           | Winter           |
+| ------------------- | ---------------- | ---------------- | ---------------- | ---------------- |
+| Mangroves           | 1 Wood + 1 Fish  | 1 Wood + 1 Fish  | 1 Wood + 1 Fish  | 1 Wood + 1 Fish  |
+| Sago grove          | 1 Grain + 1 Wood | 1 Grain + 1 Wood | 1 Grain + 1 Wood | 1 Grain + 1 Wood |
+| River woods         | 1 Wood           | 1 Wood           | 1 Wood           | 1 Wood           |
+| Alluvial clay banks | 2 Clay           | 1 Clay           | 2 Clay           | 3 Clay           |
+| Peat bog            | 1 Coal           | 1 Coal           | 1 Coal           | 1 Coal           |
+| Stone quarry        | 1 Stone          | 1 Stone          | 1 Stone          | 1 Stone          |
+| Iron mountains      | 1 Iron ore       | 1 Iron ore       | 1 Iron ore       | 1 Iron ore       |
+| Gold mountains      | 1 Gold           | 1 Gold           | 1 Gold           | 1 Gold           |
+| Fishing grounds     | 0                | 0                | 0                | 0                |
+| Whale grounds       | 0                | 0                | 0                | 0                |
 
 ## Half-season freeze and thaw chances
 
@@ -1697,11 +1784,23 @@ Prices are paid per construction or upgrade step. Watchtower I offers two altern
 | Scholars' Guild III                    | 4 Blocks + 2 Fuel + 3 Cloth                             |
 | Settlers                               | 2 Hides + 2 Wool + 3 Grain + 1 Wood + 1 Clay            |
 | Settler Ship                           | 3 Wood + 2 Wool + 2 Hides + 1 Clay + 1 Grain            |
+| Tracker                                | 1 Wood + 1 Hides + 1 Grain                              |
+| Huntsman                               | 1 Wood + 1 Hides + 1 Leather                            |
+| Ranger                                 | 1 Planks + 1 Leather + 1 Rations                        |
+| Master Hunter                          | 2 Planks + 2 Leather + 1 Steel                          |
+| River Skiff                            | 2 Wood + 1 Wool + 1 Iron ore                            |
+| River Barge                            | 2 Wood + 1 Cloth + 1 Iron ore                           |
+| River Patrol                           | 2 Planks + 1 Cloth + 1 Steel                            |
+| Armored Riverboat                      | 2 Planks + 2 Steel + 1 Fuel                             |
 
 ## Land roster
 
 | Unit                | Tier | Power | Movement | Terrain bonus |
 | ------------------- | ---- | ----- | -------- | ------------- |
+| Tracker             | I    | 0     | 2        | 0             |
+| Huntsman            | II   | 1     | 2        | 0             |
+| Ranger              | III  | 2     | 2        | 0             |
+| Master Hunter       | IV   | 3     | 2        | 0             |
 | Settlers            | I    | 0     | 1        | 0             |
 | Peddler             | I    | 0     | 1        | 0             |
 | Trader              | II   | 0     | 1        | 0             |
@@ -1728,6 +1827,10 @@ Prices are paid per construction or upgrade step. Watchtower I offers two altern
 
 | Ship              | Tier | Power / casualty points | Movement | Berths | Siege |
 | ----------------- | ---- | ----------------------- | -------- | ------ | ----- |
+| River Skiff       | I    | 1                       | 3        | 1      | 0     |
+| River Barge       | II   | 2                       | 3        | 2      | 0     |
+| River Patrol      | III  | 3                       | 4        | 3      | 0     |
+| Armored Riverboat | IV   | 5                       | 4        | 4      | 0     |
 | Settler Ship      | I    | 0                       | 2        | 0      | 0     |
 | Fishing Skiff     | I    | 0                       | 2        | 0      | 0     |
 | Fishing Cutter    | II   | 1                       | 2        | 0      | 0     |

@@ -158,7 +158,7 @@ export function HarvestPanel({
                   )}
                 </p>
               )}
-              {u.kind !== "fishing" && u.tier >= 3 && (
+              {!["fishing", "hunter"].includes(u.kind) && u.tier >= 3 && (
                 <p>
                   {tx(
                     `Adds ${u.tier - 2} times the harvested base yield as processed goods.`,
@@ -167,15 +167,19 @@ export function HarvestPanel({
               )}
               <small>
                 {tx(
-                  u.kind === "fishing"
-                    ? "Fish and Whales (Hides + Oil) · enemy fleets block harvest."
-                    : "Collects despite enemy occupation.",
+                  u.kind === "hunter"
+                    ? "Hunting radius equals tier. Collects animal goods only; enemy armies block hunting."
+                    : u.kind === "fishing"
+                      ? "Fish and Whales (Hides + Oil) · enemy fleets block harvest."
+                      : "Collects despite enemy occupation.",
                 )}
                 {tx(" ")}
                 {tx(
-                  u.kind === "merchant"
-                    ? "Zero power · destroyed when its army enters battle."
-                    : "Economic ship · vulnerable without an escort.",
+                  u.kind === "hunter"
+                    ? "Hunter power: tier minus one. Tier I is lost when its force enters battle."
+                    : u.kind === "merchant"
+                      ? "Zero power · destroyed when its army enters battle."
+                      : "Economic ship · vulnerable without an escort.",
                 )}
               </small>
               <div
@@ -191,8 +195,37 @@ export function HarvestPanel({
                             s.tiles[id],
                             u.owner,
                             u.tier,
-                            u.kind !== "fishing",
-                            seasonalYield(s.tiles[id], u.owner, seasonAt(s)),
+                            !["fishing", "hunter"].includes(u.kind),
+                            u.kind === "hunter"
+                              ? Object.fromEntries(
+                                  Object.entries(
+                                    seasonalYield(
+                                      s.tiles[id],
+                                      u.owner,
+                                      seasonAt(s),
+                                    ),
+                                  )
+                                    .filter(
+                                      ([raw]) =>
+                                        s.tiles[id].geography?.fauna?.[
+                                          raw as Good
+                                        ],
+                                    )
+                                    .map(([raw, n]) => [
+                                      raw,
+                                      Math.min(
+                                        n ?? 0,
+                                        s.tiles[id].geography?.fauna?.[
+                                          raw as Good
+                                        ] ?? 0,
+                                      ),
+                                    ]),
+                                )
+                              : seasonalYield(
+                                  s.tiles[id],
+                                  u.owner,
+                                  seasonAt(s),
+                                ),
                           ),
                         )
                           .map(

@@ -220,6 +220,13 @@ export const UNIT_INFO: Record<
     icon: string;
   }
 > = {
+  hunter: {
+    name: "Hunter",
+    speed: 2,
+    family: null,
+    names: ["Tracker", "Huntsman", "Ranger", "Master Hunter"],
+    icon: "bow",
+  },
   settler: {
     name: "Settlers",
     speed: 1,
@@ -278,6 +285,7 @@ export const SHIP_INFO: Record<
     level: number;
   }
 > = {
+  riverboat: { name: "Riverboat", speed: 3, power: 1, capacity: 1, level: 1 },
   settlership: {
     name: "Settler ship",
     speed: 2,
@@ -556,6 +564,12 @@ export const TOWER_COSTS: Stock[] = [
 export const isSettler = (kind: string) =>
   kind === "settler" || kind === "settlership";
 export const SHIP_NAMES: Record<ShipClass, string[]> = {
+  riverboat: [
+    "River Skiff",
+    "River Barge",
+    "River Patrol",
+    "Armored Riverboat",
+  ],
   settlership: ["Settler Ship"],
   transport: [
     "Coastal Transport",
@@ -586,6 +600,11 @@ export const SHIP_NAMES: Record<ShipClass, string[]> = {
 };
 // Shared numeric tables; each public shipStats result remains independent.
 const SHIP_STATS = {
+  riverboat: {
+    power: [1, 2, 3, 5],
+    speed: [3, 3, 4, 4],
+    capacity: [1, 2, 3, 4],
+  },
   settlership: { power: [0], speed: [2], capacity: [0] },
   transport: {
     power: [1, 2, 3, 4],

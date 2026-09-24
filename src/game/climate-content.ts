@@ -24,6 +24,16 @@ export const CLIMATES = [
 ] as const;
 export type Climate = (typeof CLIMATES)[number];
 export const BIOMES = [
+  "river",
+  "lake",
+  "shoal",
+  "reef",
+  "mountain-pass",
+  "flood-wheat",
+  "flood-rice",
+  "flood-sorghum",
+  "delta-gardens",
+  "flood-meadow",
   "woods",
   "forest",
   "hunting-forest",
@@ -110,6 +120,59 @@ const b = (
   color: string,
 ): BiomeInfo => ({ name, resource, yield: yield_, family, art, color });
 export const BIOME_INFO: Record<Biome, BiomeInfo> = {
+  river: b("River", "water", {}, "water", "river", "#438b9c"),
+  lake: b("Lake", "water", {}, "water", "lake", "#467c94"),
+  shoal: b("Shallows", "water", {}, "water", "shoal", "#69b6ba"),
+  reef: b("Reef", "water", {}, "water", "reef", "#418d92"),
+  "mountain-pass": b(
+    "Mountain pass",
+    "stone",
+    {},
+    "rugged",
+    "mountain-pass",
+    "#8c9190",
+  ),
+  "flood-wheat": b(
+    "Alluvial wheat",
+    "grain",
+    { grain: 3 },
+    "flat",
+    "flood-wheat",
+    "#b7ac5b",
+  ),
+  "flood-rice": b(
+    "River rice",
+    "grain",
+    { grain: 4 },
+    "flat",
+    "flood-rice",
+    "#79a557",
+  ),
+  "flood-sorghum": b(
+    "Recession sorghum",
+    "grain",
+    { grain: 3 },
+    "flat",
+    "flood-sorghum",
+    "#a9a25b",
+  ),
+  "delta-gardens": b(
+    "Delta gardens",
+    "grain",
+    { grain: 4 },
+    "flat",
+    "delta-gardens",
+    "#79a564",
+  ),
+  "flood-meadow": b(
+    "Water meadow",
+    "wool",
+    { wool: 2 },
+    "flat",
+    "flood-meadow",
+    "#8da567",
+  ),
+
   "tundra-heath": b(
     "Berry heath",
     "grain",

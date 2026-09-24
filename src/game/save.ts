@@ -20,6 +20,8 @@ import { packColumns, unpackColumns } from "./save-columns";
 import { packMembers, unpackMembers } from "./save-members";
 import { SAVE_KEY, BACKUP_KEY } from "./save-keys";
 export { SAVE_KEY, BACKUP_KEY } from "./save-keys";
+import { pieceAccess } from "./geography";
+import { validateGeography } from "./geography-save";
 import { syncEmergencyCoalition } from "./emergency-coalition";
 import {
   SEASONS,
@@ -325,7 +327,8 @@ function validateInvariants(
       );
       const info = CLIMATE_INFO[t.climate!];
       rule(
-        t.biome === "water" ||
+        !!t.geography ||
+          t.biome === "water" ||
           [...info.terrain, ...info.water].some(([b]) => b === t.biome),
         "Terrain does not belong to its climate.",
       );
@@ -495,6 +498,7 @@ function validateInvariants(
       "Invalid harbor.",
     );
   }
+  validateGeography(s);
   const occupied = new Set<string>();
   for (const [key, t] of Object.entries(s.towns)) {
     object(t);
@@ -638,7 +642,8 @@ function validateInvariants(
     object(t.extensions);
     for (const [tile, tier] of Object.entries(t.extensions)) {
       rule(
-        s.vertices[t.vertex].tiles.includes(tile) && !!tileGood(s.tiles[tile]),
+        s.vertices[t.vertex].tiles.includes(tile) &&
+          tileOptions(s.tiles[tile]).length > 0,
         "Invalid extension link.",
       );
       int(tier, 1, t.level - 1);
@@ -709,7 +714,8 @@ function validateInvariants(
     for (const [tile, tier] of Object.entries(r.camps)) {
       rule(
         s.edges[key].tiles.includes(tile) &&
-          (marineResource(s.tiles[tile]) ||
+          ((s.tiles[tile].geography && s.tiles[tile].resource === "water") ||
+            marineResource(s.tiles[tile]) ||
             (r.kind === "road" && s.tiles[tile].resource !== "water")),
         "Invalid camp link.",
       );
@@ -758,7 +764,7 @@ function validateInvariants(
               (id) =>
                 neighbors(u.tile).includes(id) &&
                 s.tiles[id] &&
-                tileGood(s.tiles[id]),
+                tileOptions(s.tiles[id]).length > 0,
             ),
           "Invalid merchant coverage.",
         );
@@ -775,13 +781,20 @@ function validateInvariants(
           !!s.calendar &&
             !u.carrier &&
             (u.seasonStatus === "icebound"
-              ? u.naval && s.tiles[u.tile].surface === "frozen"
+              ? u.naval && !pieceAccess(s.tiles[u.tile], u)
               : u.seasonStatus === "adrift" &&
                 !u.naval &&
-                s.tiles[u.tile].surface === "open" &&
-                ["water", "ice"].includes(s.tiles[u.tile].resource)),
+                ((s.tiles[u.tile].surface === "open" &&
+                  ["water", "ice"].includes(s.tiles[u.tile].resource)) ||
+                  ["flooded", "closed"].includes(
+                    s.tiles[u.tile].geography?.access ?? "",
+                  ))),
           "Invalid stranded unit state.",
         );
+      if (u.harborBoost !== undefined) {
+        bool(u.harborBoost);
+        rule(u.naval, "Only ships receive harbor preparation.");
+      }
       if (u.guildSupplied !== undefined) bool(u.guildSupplied);
       if (u.guildSiege !== undefined) {
         // Human guild contracts stack. Transfers can leave these temporary
@@ -805,7 +818,7 @@ function validateInvariants(
         );
       } else {
         rule(
-          canOccupy(s.tiles[u.tile], u.naval) || !!u.seasonStatus,
+          pieceAccess(s.tiles[u.tile], u) || !!u.seasonStatus,
           "A unit is on impassable terrain.",
         );
         const owners = tileOwners.get(u.tile);
@@ -1127,10 +1140,10 @@ function validateInvariants(
     if (b.thawRetreat)
       rule(
         !!s.thawRetreats &&
-          s.phase === "roll" &&
+          ["roll", "economy", "military"].includes(s.phase) &&
           !b.bombardment &&
           !b.naval &&
-          s.tiles[b.origin].surface === "open" &&
+          !canOccupy(s.tiles[b.origin], false) &&
           !["water", "ice"].includes(s.tiles[b.target].resource) &&
           canOccupy(s.tiles[b.target], false) &&
           b.attackers.length > 0 &&
@@ -1177,14 +1190,11 @@ function validateInvariants(
     object(r);
     rule(
       r.round === s.round &&
-        s.phase === "roll" &&
+        ["roll", "economy", "military"].includes(s.phase) &&
         s.battle?.thawRetreat === true &&
         Array.isArray(r.ice) &&
         new Set(r.ice).size === r.ice.length &&
-        r.ice.every(
-          (id) =>
-            s.tiles[id] && ["water", "ice"].includes(s.tiles[id].resource),
-        ) &&
+        r.ice.every((id) => !!s.tiles[id]) &&
         Array.isArray(r.pending),
       "Invalid thaw retreat queue.",
     );
@@ -1194,7 +1204,8 @@ function validateInvariants(
       int(group.owner, 0, s.players.length - 1);
       rule(
         s.players[group.owner].alive &&
-          s.tiles[group.origin]?.surface === "open" &&
+          !!s.tiles[group.origin] &&
+          !canOccupy(s.tiles[group.origin], false) &&
           Array.isArray(group.ids) &&
           group.ids.length > 0,
         "Invalid thaw retreat queue.",

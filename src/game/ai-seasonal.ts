@@ -1,3 +1,5 @@
+import { environmentRisk } from "./environment";
+import { pieceAccess } from "./geography";
 import type { Command, Game, Good, Piece, ShipClass, Stock } from "./types";
 import { shipStats } from "./content";
 import { canApplyCommand } from "./engine";
@@ -86,23 +88,47 @@ function outputsIn(s: Game, season: Season, round?: number): Outputs {
   if (found) return found;
   const forecastWeather =
     s.calendar?.iceModel === 2 && round !== undefined && round > s.round;
-  const view: Game = forecastWeather
-    ? Object.assign(Object.create(s), {
-        round: round!,
-        tiles: Object.fromEntries(
-          Object.entries(s.tiles).map(([id, tile]) => [
-            id,
-            ["water", "ice"].includes(tile.resource)
-              ? {
-                  ...tile,
-                  surface: "open" as const,
-                  iceWeather: { round: round!, season, half: "early" as const },
-                }
-              : tile,
-          ]),
-        ),
-      })
-    : s;
+  const futureSeason =
+    round === undefined
+      ? season !== seasonAt(s)
+      : round > s.round && season !== seasonAt(s);
+  const view: Game =
+    forecastWeather || futureSeason
+      ? Object.assign(Object.create(s), {
+          ...(round !== undefined ? { round } : {}),
+          tiles: Object.fromEntries(
+            Object.entries(s.tiles).map(([id, tile]) => [
+              id,
+              {
+                ...tile,
+                ...(forecastWeather && ["water", "ice"].includes(tile.resource)
+                  ? {
+                      surface: "open" as const,
+                      iceWeather: {
+                        round: round!,
+                        season,
+                        half: "early" as const,
+                      },
+                    }
+                  : {}),
+                ...(tile.geography
+                  ? {
+                      geography: {
+                        ...tile.geography,
+                        ...(futureSeason ? { access: "normal" as const } : {}),
+                        ...(tile.geography.damagedUntil &&
+                        round !== undefined &&
+                        round >= tile.geography.damagedUntil
+                          ? { damagedUntil: undefined }
+                          : {}),
+                      },
+                    }
+                  : {}),
+              },
+            ]),
+          ),
+        })
+      : s;
   // Weather depends on a tile and forecast round, not the number of producers.
   const weather = new Map<string, number>();
   const result = forecastProduction(
@@ -116,6 +142,12 @@ function outputsIn(s: Game, season: Season, round?: number): Outputs {
           forecastWeather && ["water", "ice"].includes(terrain.resource)
             ? 1 - iceRisk(s, terrain, round)
             : 1;
+        if (
+          futureSeason &&
+          terrain.geography?.floodplain &&
+          !terrain.geography.projects?.levee
+        )
+          factor *= 1 - environmentRisk(terrain, season);
         weather.set(tile, factor);
       }
       return amount * probability(s.tiles[tile].number) * factor;
@@ -210,8 +242,35 @@ export function seasonalDiversityBonus(
   );
 }
 
+function nextAccessRisk(
+  s: Game,
+  tile: Game["tiles"][string],
+  season: Season,
+): number {
+  if (season !== seasonAt(s)) return environmentRisk(tile, season);
+  const g = tile.geography;
+  if (!g) return 0;
+  return Number(
+    g.access === "closed" ||
+      g.access === "flooded" ||
+      (!!g.ford && !g.projects?.bridge && g.access !== "ford"),
+  );
+}
 function safeAfter(s: Game, tile: Game["tiles"][string], naval: boolean) {
   if (!tile) return false;
+  const next = seasonAt({ calendar: s.calendar, round: s.round + 1 });
+  if (!naval && next && nextAccessRisk(s, tile, next) >= 0.25) return false;
+  if (tile.geography?.projects?.bridge)
+    return !naval || iceRisk(s, tile) < 0.15;
+  if (
+    !naval &&
+    tile.geography?.access === "ford" &&
+    next &&
+    nextAccessRisk(s, tile, next) < 0.25
+  )
+    return true;
+  if (naval && tile.geography?.access === "flooded" && next)
+    return nextAccessRisk(s, tile, next) > 0.85;
   if (!["water", "ice"].includes(tile.resource))
     return !naval && canOccupy(tile, false);
   const frozen = iceRisk(s, tile);
@@ -313,7 +372,7 @@ function rescueStranded(s: Game): Command | undefined {
         for (const to of neighbors(at)) {
           if (
             paths.has(to) ||
-            !canOccupy(s.tiles[to], true) ||
+            !pieceAccess(s.tiles[to], ship) ||
             piecesAt(s, to).some((u) => !friendly(s, u.owner, s.active))
           )
             continue;
@@ -339,8 +398,17 @@ export function seasonalEvacuation(s: Game): Command | undefined {
     const tile = s.tiles[unit.tile];
     const risk = iceRisk(s, tile);
     const danger = unit.naval
-      ? risk >= 0.25
-      : (tile.resource === "ice" || tile.resource === "water") && risk <= 0.75;
+      ? risk >= 0.25 ||
+        (tile.geography?.access === "flooded" &&
+          nextAccessRisk(s, tile, next) < 0.85)
+      : nextAccessRisk(s, tile, next) >= 0.25 ||
+        ((tile.resource === "ice" || tile.resource === "water") &&
+          !tile.geography?.projects?.bridge &&
+          !(
+            tile.geography?.access === "ford" &&
+            nextAccessRisk(s, tile, next) < 0.25
+          ) &&
+          risk <= 0.75);
     if (!danger && unit.seasonStatus !== "adrift") continue;
     const key = `${unit.naval}/${unit.tile}`;
     if (!groups.has(key)) groups.set(key, []);
@@ -364,7 +432,7 @@ export function seasonalEvacuation(s: Game): Command | undefined {
       for (const to of neighbors(at)) {
         if (
           paths.has(to) ||
-          !canOccupy(s.tiles[to], first.naval) ||
+          !pieceAccess(s.tiles[to], first) ||
           piecesAt(s, to).some((u) => !friendly(s, u.owner, first.owner))
         )
           continue;

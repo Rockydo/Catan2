@@ -1,5 +1,5 @@
 import { expect, it, vi } from "vitest";
-import { newGame } from "../src/game/engine";
+import { climateGame as newGame } from "./helpers";
 import {
   collector,
   defaultCoverage,

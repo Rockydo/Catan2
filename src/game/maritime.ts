@@ -1,3 +1,4 @@
+import { baseGeographicYield, habitatKind, WILDLIFE_GOODS } from "./geography";
 import { BIOMES, BIOME_INFO, biomeYield } from "./climate-content";
 import { TERRAIN, processedFor, type TerrainKey } from "./content";
 import { friendly } from "./relations";
@@ -15,6 +16,12 @@ export function tileYield(
   tile: Hex,
   owner?: number,
 ): Partial<Record<Raw, number>> {
+  if (tile.geography) {
+    const output = baseGeographicYield(tile);
+    for (const [raw, n] of Object.entries(tile.geography.fauna ?? {}))
+      output[raw as Raw] = (output[raw as Raw] ?? 0) + n!;
+    return output;
+  }
   if (tile.biome) {
     if (tile.biome === "woods")
       return { [tile.woodsChoices?.[owner ?? -1] ?? "lumber"]: 1 };
@@ -55,7 +62,9 @@ export function workshopYield(
   seasonalBase?: number,
 ): number {
   const base =
-    tile.biome === "woods" && (raw === "lumber" || raw === "hides")
+    !tile.geography &&
+    tile.biome === "woods" &&
+    (raw === "lumber" || raw === "hides")
       ? 1
       : (tileYield(tile, owner)[raw] ?? 0);
   return (seasonalBase ?? base) * tier;
@@ -66,6 +75,8 @@ const primaryGoods = Object.fromEntries(
   BIOMES.map((biome) => [biome, Object.keys(BIOME_INFO[biome].yield)[0]]),
 ) as Partial<Record<(typeof BIOMES)[number], Raw>>;
 export function tileGood(tile: Hex, owner?: number): Raw | undefined {
+  if (tile.geography)
+    return Object.keys(tileYield(tile, owner))[0] as Raw | undefined;
   if (tile.biome === "woods")
     return tile.woodsChoices?.[owner ?? -1] ?? "lumber";
   if (tile.biome) return primaryGoods[tile.biome];
@@ -81,7 +92,20 @@ export function tileGood(tile: Hex, owner?: number): Raw | undefined {
   return tile.resource;
 }
 export const tileOptions = (tile: Hex): Raw[] =>
-  tile.biome === "woods" ? ["lumber", "hides"] : tileGoods(tile);
+  tile.geography
+    ? ([
+        ...new Set([
+          ...tileGoods(tile),
+          ...Object.keys(
+            tile.resource === "water"
+              ? { fish: 1, hides: 1, oil: 1 }
+              : (WILDLIFE_GOODS[habitatKind(tile)!] ?? {}),
+          ),
+        ]),
+      ] as Raw[])
+    : tile.biome === "woods"
+      ? ["lumber", "hides"]
+      : tileGoods(tile);
 export const tileTerrain = (tile: Hex): TerrainKey =>
   tile.biome ??
   (tile.resource === "water"
@@ -92,17 +116,38 @@ export const tileTerrain = (tile: Hex): TerrainKey =>
         : "water"
     : tile.resource);
 export const terrainFamily = (tile: Hex) =>
-  tile.surface === "frozen"
+  tile.geography?.access === "ford" || tile.geography?.projects?.bridge
     ? "flat"
-    : tile.surface === "open"
+    : tile.geography?.access === "flooded"
       ? "water"
-      : TERRAIN[tileTerrain(tile)].family;
-export const terrainName = (tile: Hex) => TERRAIN[tileTerrain(tile)].name;
+      : tile.surface === "frozen"
+        ? "flat"
+        : tile.surface === "open"
+          ? "water"
+          : TERRAIN[tileTerrain(tile)].family;
+export const terrainName = (tile: Hex) =>
+  tile.geography &&
+  ["steppe-plain", "bison-range", "wildlife-grassland"].includes(
+    tile.biome ?? "",
+  )
+    ? "Wild grassland"
+    : tile.geography &&
+        ["hunting-forest", "fern-hunting-grounds"].includes(tile.biome ?? "")
+      ? "Wild forest"
+      : TERRAIN[tileTerrain(tile)].name;
 export const marineResource = (tile: Hex) =>
   tile.resource === "water" &&
-  !!(tile.fish || tile.whale || tile.biome === "cod");
+  !!(
+    tile.fish ||
+    tile.whale ||
+    tile.biome === "cod" ||
+    tile.geography?.animals?.some((k) => ["fish", "cod", "whale"].includes(k))
+  );
 export const collector = (u: Pick<Piece, "kind">) =>
-  u.kind === "merchant" || u.kind === "fishing" || u.kind === "merchantship";
+  u.kind === "merchant" ||
+  u.kind === "fishing" ||
+  u.kind === "merchantship" ||
+  u.kind === "hunter";
 export const productiveAtVertex = (s: Game, vertex: string) =>
   s.vertices[vertex].tiles.filter((id) => tileGood(s.tiles[id]));
 export function defaultCoverage(s: Game, u: Pick<Piece, "tile" | "tier">) {
@@ -151,6 +196,25 @@ function collectorTiles(
     return neighbors(u.tile).filter(
       (id) => s.tiles[id] && s.tiles[id].resource !== "water",
     );
+  if (u.kind === "hunter") {
+    const found = new Set([u.tile]),
+      queue = [{ id: u.tile, depth: 0 }];
+    for (let i = 0; i < queue.length; i++) {
+      const at = queue[i];
+      if (at.depth >= u.tier) continue;
+      for (const id of neighbors(at.id))
+        if (!found.has(id) && canOccupy(s.tiles[id])) {
+          found.add(id);
+          queue.push({ id, depth: at.depth + 1 });
+        }
+    }
+    return [...found].filter(
+      (id) =>
+        !!s.tiles[id]?.geography?.animals?.some(
+          (k) => !["fish", "cod", "whale"].includes(k),
+        ),
+    );
+  }
   // A fishing radius follows connected water: nets do not cross land or ice.
   if (!canOccupy(s.tiles[u.tile], true)) return [];
   const reached = new Set([u.tile]),

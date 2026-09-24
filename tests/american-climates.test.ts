@@ -13,7 +13,8 @@ import {
   type Climate,
 } from "../src/game/climate-content";
 import { climateTerrain } from "../src/game/climate";
-import { applyCommand, newGame } from "../src/game/engine";
+import { climateGame as newGame } from "./helpers";
+import { applyCommand } from "../src/game/engine";
 import { chooseAIAction, economyProjects } from "../src/game/ai";
 import { campCost, extensionCost, unitCost } from "../src/game/content";
 import { inventory, recipePayment } from "../src/game/selectors";

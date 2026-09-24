@@ -1,3 +1,4 @@
+import { climateGame } from "./helpers";
 import { climateTerrain } from "../src/game/climate";
 import { CLIMATE_INFO } from "../src/game/climate-content";
 import { describe, it, expect } from "vitest";
@@ -31,7 +32,7 @@ describe("world and setup", () => {
     expect(snowPorts).toBeGreaterThan(0);
   });
   it("removes saved ice ports without removing valid snow ports or changing terrain", () => {
-    const s = newGame("ice-port-save");
+    const s = climateGame("ice-port-save");
     Object.assign(s, generateWorld(s.seed, 2000));
     syncSeasonSurfaces(s);
     const coast = (resource: "ice" | "snow") =>

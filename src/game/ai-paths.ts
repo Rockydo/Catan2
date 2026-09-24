@@ -1,6 +1,12 @@
+import { pieceAccess } from "./geography";
 import type { Game } from "./types";
 import { neighbors, canOccupy } from "./world";
-import { hostileAt, planningValue, movementOccupationKeys } from "./selectors";
+import {
+  hostileAt,
+  planningValue,
+  movementOccupationKeys,
+  piecesAt,
+} from "./selectors";
 
 interface RouteTree {
   previous: Map<string, string>;
@@ -24,6 +30,7 @@ function networkRoutes(s: Game) {
         t.id,
         canOccupy(t),
         canOccupy(t, true),
+        t.geography?.waterway,
       ]),
       movementOccupationKeys(s),
       s.alliances,
@@ -47,7 +54,19 @@ function routeTree(
     frame = networkRoutes(s);
     cache.set(s, frame);
   }
-  const key = `${from}/${naval}/${owner}/${max}`;
+  const profiles = naval
+    ? [
+        ...new Map(
+          piecesAt(s, from)
+            .filter((u) => u.owner === owner && u.naval)
+            .map((u) => [`${u.kind}/${u.tier}`, u]),
+        ).values(),
+      ]
+    : [];
+  const key = `${from}/${naval}/${owner}/${max}/${profiles
+    .map((u) => u.kind + u.tier)
+    .sort()
+    .join(",")}`;
   let tree = frame.trees.get(key);
   if (!tree) {
     const previous = new Map([[from, from]]),
@@ -58,7 +77,12 @@ function routeTree(
         d = depth.get(current)!;
       if (d >= max) continue;
       for (const next of neighbors(current)) {
-        if (previous.has(next) || !canOccupy(s.tiles[next], naval)) continue;
+        if (
+          previous.has(next) ||
+          !canOccupy(s.tiles[next], naval) ||
+          !profiles.every((u) => pieceAccess(s.tiles[next], u))
+        )
+          continue;
         previous.set(next, current);
         depth.set(next, d + 1);
         // An enemy tile is a valid attack destination, never a transit tile.

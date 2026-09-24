@@ -176,7 +176,7 @@ export function ArmyComposition({
                 <span
                   title={tx(
                     force.some((u) => u.seasonStatus === "icebound")
-                      ? "Icebound ships: one-quarter power per ship, rounded up. Watchtower support is added normally."
+                      ? "Stranded ships: one-quarter power per ship, rounded up. Watchtower support is added normally."
                       : `${base} base power + ${actual - base - support} terrain bonus + ${support} watchtower support`,
                   )}
                 >
@@ -224,9 +224,9 @@ export function ArmyComposition({
                 <p className="season-force-warning">
                   <Snowflake size={16} />
                   <span>
-                    <b>{tx("Icebound")}</b>
+                    <b>{tx("Stranded")}</b>
                     {tx(
-                      " · Icebound ships fight at one-quarter power (rounded up) and cannot move or retreat. Friendly land armies on this hex defend them at full strength. Passengers remain aboard.",
+                      " · Stranded ships fight at one-quarter power (rounded up) and cannot move or retreat. Friendly land armies on this hex defend them at full strength. Passengers remain aboard.",
                     )}
                   </span>
                 </p>

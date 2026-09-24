@@ -85,7 +85,9 @@ export function Recruitment({
   const count = naval ? quantity : Math.min(quantity, 100);
   const bonus = s.players[viewer].bonuses;
   const kinds = Object.keys(naval ? SHIP_INFO : UNIT_INFO).filter(
-    (kind) => !isSettler(kind) || tier === 1,
+    (kind) =>
+      (!isSettler(kind) || tier === 1) &&
+      (kind !== "hunter" || !!s.geographyVersion),
   ) as (UnitClass | ShipClass)[];
   function changeDomain(value: boolean) {
     setNaval(value);
@@ -314,7 +316,11 @@ export function Recruitment({
                     <Shield size={12} />
                     {tx(
                       ship?.power ??
-                        (kind === "merchant" || isSettler(kind) ? 0 : tier),
+                        (kind === "merchant" || isSettler(kind)
+                          ? 0
+                          : kind === "hunter"
+                            ? tier - 1
+                            : tier),
                     )}
                   </span>
                   <span title={tx("Movement per turn")}>
@@ -335,6 +341,7 @@ export function Recruitment({
                         ? "Founds a settlement"
                         : kind === "merchant" ||
                             kind === "merchantship" ||
+                            kind === "hunter" ||
                             kind === "fishing"
                           ? `×${tier} harvest`
                           : ship?.siege
@@ -346,7 +353,9 @@ export function Recruitment({
                                 : "",
                     )}
                   </span>
-                  {kind === "fishing" && <span>{tx(`Range ${tier}`)}</span>}
+                  {(kind === "fishing" || kind === "hunter") && (
+                    <span>{tx(`Range ${tier}`)}</span>
+                  )}
                   {(kind === "merchant" || kind === "merchantship") &&
                     tier >= 3 && <span>{tx(`×${tier - 2} processed`)}</span>}
                 </div>

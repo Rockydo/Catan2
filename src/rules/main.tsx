@@ -1,3 +1,4 @@
+import { GeographyReference } from "./GeographyReference";
 import { SeasonReference } from "./SeasonReference";
 import { CalendarDays } from "lucide-react";
 import { CLIMATES } from "../game/climate-content";
@@ -59,6 +60,7 @@ import "./rules.css";
 setLocale(location.pathname.endsWith("rules-fr.html") ? "fr" : "en");
 const icons = [
   Compass,
+  Map,
   Map,
   CalendarDays,
   Sprout,
@@ -325,15 +327,24 @@ function PrintedRoster() {
               ? `×2 ${tx(u.family)}`
               : kind === "merchant" || isSettler(kind)
                 ? labels("No combat power.", "Aucune puissance de combat.")
-                : labels(
-                    "Siege power equals tier.",
-                    "Puissance de siège égale au palier.",
-                  )}
+                : kind === "hunter"
+                  ? labels(
+                      "Hunts within its tier in tiles. Animal goods only; no processing.",
+                      "Chasse dans un rayon égal à son palier. Produits animaux uniquement ; aucune transformation.",
+                    )
+                  : labels(
+                      "Siege power equals tier.",
+                      "Puissance de siège égale au palier.",
+                    )}
           </p>
           {u.names.map((n, i) => (
             <p key={n}>
               {ROMAN[i + 1]} · {tx(n)} · {labels("Power", "Puissance")}:{" "}
-              {kind === "merchant" || isSettler(kind) ? 0 : i + 1}
+              {kind === "merchant" || isSettler(kind)
+                ? 0
+                : kind === "hunter"
+                  ? i
+                  : i + 1}
             </p>
           ))}
         </article>
@@ -542,7 +553,11 @@ function Catalogue({ initial = "goods" }: { initial?: CatalogSection }) {
                   <div className="stats">
                     <span>
                       <Sword size={15} />
-                      {k === "merchant" || isSettler(k) ? 0 : tier}{" "}
+                      {k === "merchant" || isSettler(k)
+                        ? 0
+                        : k === "hunter"
+                          ? tier - 1
+                          : tier}{" "}
                       {labels("power", "puissance")}
                     </span>
                     <span>
@@ -560,15 +575,20 @@ function Catalogue({ initial = "goods" }: { initial?: CatalogSection }) {
                         ? tx(
                             "Founds a settlement. Consumed on use; no road or further payment.",
                           )
-                        : k === "artillery"
+                        : k === "hunter"
                           ? labels(
-                              `−${tier} siege turns`,
-                              `−${tier} tours de siège`,
+                              `Hunting radius ${tier} · ×${tier} animal output · no processing`,
+                              `Rayon de chasse ${tier} · production animale ×${tier} · aucune transformation`,
                             )
-                          : labels(
-                              `Current tile + ${tier} neighbours · ×${tier} raw output${tier >= 3 ? ` + ×${tier - 2} seasonal yield as processed goods` : ""}`,
-                              `Tuile actuelle + ${tier} voisines · production brute ×${tier}${tier >= 3 ? ` + ×${tier - 2} production de base en produits transformés` : ""}`,
-                            )}
+                          : k === "artillery"
+                            ? labels(
+                                `−${tier} siege turns`,
+                                `−${tier} tours de siège`,
+                              )
+                            : labels(
+                                `Current tile + ${tier} neighbours · ×${tier} raw output${tier >= 3 ? ` + ×${tier - 2} seasonal yield as processed goods` : ""}`,
+                                `Tuile actuelle + ${tier} voisines · production brute ×${tier}${tier >= 3 ? ` + ×${tier - 2} production de base en produits transformés` : ""}`,
+                              )}
                   </p>
                   <Cost stock={unitCost(k, tier)} />
                 </article>
@@ -808,6 +828,7 @@ function App() {
           <h1>{c.title[locale]}</h1>
           <p>{c.summary[locale]}</p>
         </div>
+        {c.id === "geography" && <GeographyReference />}
         {c.id === "seasons" && <SeasonReference />}
         {c.id === "economy" && <TerrainReference />}
         {c.id === "sea" && <TerrainReference seaOnly />}
@@ -937,6 +958,7 @@ function App() {
                   CLIMATES.map((climate) => (
                     <SeasonReference key={climate} initial={climate} readOnly />
                   ))}
+                {c.id === "geography" && <GeographyReference />}
                 {c.id === "economy" && <TerrainReference />}
                 <Prose body={c.body[locale]} />
               </section>
