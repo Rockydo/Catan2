@@ -46,16 +46,25 @@ catalog has been retired. Do not attempt to fill every possible terrain state:
 prioritize common sources and complete their seasonal sets; leave uncovered
 sources alone instead of merging or substituting them.
 
-The first local-Qwen batch covers:
+Completed local-Qwen families (each has all four seasons and three levels):
 
 - Temperate golden wheat fields: 4 exact seasonal originals × 3 levels.
 - Cold conifer forest, without current wildlife: 4 originals × 3 levels.
 - Temperate broadleaf woods, without current wildlife: 4 originals × 3 levels.
 - Tropical jungle, without current wildlife: 4 originals × 3 levels.
+- Tropical rice paddies: 4 exact seasonal originals × 3 levels.
+- Cold-climate barley fields: 4 originals × 3 levels.
+- Temperate coal mines: 4 originals × 3 levels.
 
-That is **48 active paintings** plus five retired irrigation experiments, 53 image
-files total. The remaining crops, minerals, pastures, wildlife-present scenes and
-water infrastructure are intentionally not claimed as complete.
+That is **84 active paintings** plus five retired irrigation experiments, 89 image
+files total. Rice keeps its paddy layout and tropical winter; barley retains its
+growth stages and snowy winter; coal mines retain their coal seams and entrance.
+The remaining crops, minerals, pastures, wildlife-present scenes and water
+infrastructure are intentionally not claimed as complete.
+
+Further generation is paused at the user's request after this batch. The planned
+clay, cattle and Arctic quarry expansion was not started; those tiles retain
+their original artwork.
 
 `npx tsx scripts/infrastructure-art-inventory.ts` ranks exact source files on eight
 deterministic 320-tile maps sampled across all four seasons. It writes

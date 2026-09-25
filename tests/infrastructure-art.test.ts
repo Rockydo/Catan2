@@ -82,6 +82,31 @@ it("uses the matching source in every season, including winter snow", () => {
       `infra-temperate-wheat-${season}-industrial`,
     );
 });
+it.each([
+  ["tropical", "rice-field", "tropical-rice", "irrigation"],
+  ["cold", "barley-fields", "cold-barley", "soil"],
+  ["temperate", "coal", "temperate-coal", "mining"],
+] as const)(
+  "resolves all development seasons for %s/%s",
+  (climate, biome, family, project) => {
+    const tile = wheat();
+    tile.climate = climate;
+    tile.biome = biome;
+    tile.resource = BIOME_INFO[biome].resource;
+    for (const [tier, level] of [
+      [1, "worked"],
+      [2, "worked"],
+      [3, "mechanized"],
+      [4, "industrial"],
+    ] as const) {
+      tile.geography!.projects = { [project]: { owner: 0, born: 1, tier } };
+      for (const season of ["spring", "summer", "autumn", "winter"] as const)
+        expect(seasonalTerrainPattern(tile, season)).toBe(
+          `infra-${family}-${season}-${level}`,
+        );
+    }
+  },
+);
 it("does not turn fishery riverbanks into developed forests", () => {
   const river = wheat();
   river.biome = "river";
@@ -118,6 +143,7 @@ it("leaves unpainted crops, climate identities and wildlife intact instead of su
     "hunting-forest",
   ] as const) {
     tile.biome = biome;
+    tile.climate = biome === "rice-field" ? "subtropical" : "temperate";
     tile.resource = BIOME_INFO[biome].resource;
     const natural = {
       ...tile,

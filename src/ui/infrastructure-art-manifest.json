@@ -1,4 +1,44 @@
 {
+  "seasons/cold-barley-fields-autumn.webp": {
+    "1": "cold-barley-autumn-worked",
+    "2": "cold-barley-autumn-mechanized",
+    "3": "cold-barley-autumn-industrial"
+  },
+  "seasons/cold-barley-fields-spring.webp": {
+    "1": "cold-barley-spring-worked",
+    "2": "cold-barley-spring-mechanized",
+    "3": "cold-barley-spring-industrial"
+  },
+  "seasons/cold-barley-fields-summer.webp": {
+    "1": "cold-barley-summer-worked",
+    "2": "cold-barley-summer-mechanized",
+    "3": "cold-barley-summer-industrial"
+  },
+  "seasons/cold-barley-fields-winter.webp": {
+    "1": "cold-barley-winter-worked",
+    "2": "cold-barley-winter-mechanized",
+    "3": "cold-barley-winter-industrial"
+  },
+  "seasons/temperate-coal-autumn.webp": {
+    "1": "temperate-coal-autumn-worked",
+    "2": "temperate-coal-autumn-mechanized",
+    "3": "temperate-coal-autumn-industrial"
+  },
+  "seasons/temperate-coal-spring.webp": {
+    "1": "temperate-coal-spring-worked",
+    "2": "temperate-coal-spring-mechanized",
+    "3": "temperate-coal-spring-industrial"
+  },
+  "seasons/temperate-coal-summer.webp": {
+    "1": "temperate-coal-summer-worked",
+    "2": "temperate-coal-summer-mechanized",
+    "3": "temperate-coal-summer-industrial"
+  },
+  "seasons/temperate-coal-winter.webp": {
+    "1": "temperate-coal-winter-worked",
+    "2": "temperate-coal-winter-mechanized",
+    "3": "temperate-coal-winter-industrial"
+  },
   "seasons/temperate-golden-fields-autumn.webp": {
     "1": "temperate-wheat-autumn-worked",
     "2": "temperate-wheat-autumn-mechanized",
@@ -18,6 +58,26 @@
     "1": "temperate-wheat-winter-worked",
     "2": "temperate-wheat-winter-mechanized",
     "3": "temperate-wheat-winter-industrial"
+  },
+  "seasons/tropical-rice-field-autumn.webp": {
+    "1": "tropical-rice-autumn-worked",
+    "2": "tropical-rice-autumn-mechanized",
+    "3": "tropical-rice-autumn-industrial"
+  },
+  "seasons/tropical-rice-field-spring.webp": {
+    "1": "tropical-rice-spring-worked",
+    "2": "tropical-rice-spring-mechanized",
+    "3": "tropical-rice-spring-industrial"
+  },
+  "seasons/tropical-rice-field-summer.webp": {
+    "1": "tropical-rice-summer-worked",
+    "2": "tropical-rice-summer-mechanized",
+    "3": "tropical-rice-summer-industrial"
+  },
+  "seasons/tropical-rice-field-winter.webp": {
+    "1": "tropical-rice-winter-worked",
+    "2": "tropical-rice-winter-mechanized",
+    "3": "tropical-rice-winter-industrial"
   },
   "wildlife-terrain/empty-0d9b2fed03ed.webp": {
     "1": "temperate-woods-winter-worked",
