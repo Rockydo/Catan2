@@ -199,6 +199,7 @@ export function ConnectedWater({
             className={
               fordOpen ? "open-ford-crossing" : "submerged-ford-crossing"
             }
+            opacity={fordOpen ? 1 : 0.82}
             clipPath={`url(#${riverClipId(connections)})`}
           >
             {/* A gravel sill across a real channel mouth, always clipped to water.

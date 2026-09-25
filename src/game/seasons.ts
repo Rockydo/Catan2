@@ -1,3 +1,11 @@
+import {
+  isInfrastructure,
+  effectiveTier,
+  improvedGoods,
+  annualInfrastructureBonus,
+  allocateAnnual,
+  cropHarvestWindow,
+} from "./infrastructure";
 import { weatherAdjustedYield } from "./weather-yields";
 import {
   syncEnvironment,
@@ -511,19 +519,50 @@ export function seasonalProfile(
       for (const [raw, n] of Object.entries(tile.geography.fauna ?? {}))
         result[season][raw as Raw] = (result[season][raw as Raw] ?? 0) + n!;
     const g = tile.geography;
-    if (g.harvestMode === "spread" && g.projects?.irrigation) {
-      const grain = SEASONS.reduce(
-        (sum, season) => sum + (result[season].grain ?? 0),
-        0,
-      );
-      const each = Math.floor(grain / 4);
-      SEASONS.forEach((season, i) => {
-        result[season].grain = each + Number(i < grain % 4);
-      });
-    }
-    if (g.projects?.irrigation || g.landmark === "fertile-basin")
+    if (g.landmark === "fertile-basin")
       for (const season of SEASONS)
         if (result[season].grain) result[season].grain! += 1;
+    // Add fixed annual increments to the native calendar, before redistributing.
+    // Each track uses the original resource schedule, avoiding compounded bonuses.
+    const projects = Object.keys(g.projects ?? {}).filter(isInfrastructure);
+    if (projects.length) {
+      const native = Object.fromEntries(
+        SEASONS.map((season) => [season, { ...result[season] }]),
+      ) as Record<Season, Stock>;
+      for (const kind of projects) {
+        const tier = effectiveTier(tile, kind, owner);
+        const bonus = annualInfrastructureBonus(tile, kind, tier);
+        if (!bonus) continue;
+        for (const good of improvedGoods(tile, kind)) {
+          const amounts = SEASONS.map((season) => native[season][good] ?? 0);
+          if (!amounts.some(Boolean)) continue;
+          const extra = allocateAnnual(bonus, amounts);
+          SEASONS.forEach((season, i) => {
+            result[season][good] = (result[season][good] ?? 0) + extra[i];
+          });
+        }
+      }
+    }
+    if (
+      g.harvestMode === "spread" &&
+      effectiveTier(tile, "irrigation", owner)
+    ) {
+      const window = cropHarvestWindow(tile);
+      for (const good of ["grain", "oil"] as const) {
+        const total = SEASONS.reduce(
+          (sum, season) => sum + (result[season][good] ?? 0),
+          0,
+        );
+        if (!total || !window.length) continue;
+        const amounts = allocateAnnual(
+          total,
+          SEASONS.map((season) => Number(window.includes(season))),
+        );
+        SEASONS.forEach((season, i) => {
+          result[season][good] = amounts[i];
+        });
+      }
+    }
   }
   return result;
 }
@@ -538,7 +577,12 @@ export function seasonalYield(
   if (season && tile.iceWeather?.season === season && tile.surface === "frozen")
     return {};
   return season
-    ? weatherAdjustedYield(tile, seasonalProfile(tile, owner)[season], season)
+    ? weatherAdjustedYield(
+        tile,
+        seasonalProfile(tile, owner)[season],
+        season,
+        owner,
+      )
     : tileYield(tile, owner);
 }
 /** Woods workshops keep their chosen product, independently of the raw choice. */

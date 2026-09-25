@@ -48,13 +48,17 @@ Choose **English** or **Français** on the main menu or in campaign settings. Th
 
 This is a substantial variant, so read the short first-game chapter even if you know Catan. There is no online multiplayer or matchmaking. Sharing a save transfers a campaign; it does not connect two players.
 
+## Resource infrastructure
+
+Ten production tracks now support four tiers, with adjacent city requirements, climate-specific irrigation calendars, diminishing upgrade returns and large one-time industrial coal costs, with no upkeep. Enemy armies ravage local works after combat. See the [complete infrastructure guide](docs/resource-infrastructure.md) for siting, yields, calendars, costs and balance rationale. Both harvest modes are previewed directly in the inspector.
+
 ## Controls and saves
 
 Drag to pan; use the wheel to zoom. Click a town, route, tile, army or fleet to inspect it. The action rail provides construction, forces, trade, research and exploration. Keyboard shortcuts are `B`, `F`, `T`, `R` and `E`; `Escape` closes panels. Touch users can use the on-screen controls.
 
 The inspector opens on **Actions**: build, recruit, move and trade controls come first. **Terrain & seasons** retains full harvest forecasts, wildlife, flood and crossing details, and local improvements; **Town details** shows defenses. Current harvests and access/weather warnings remain in the compact header. Switching action tabs resets scrolling; reading details preserves an unfinished trade or recruitment order. Movement stays above the troop roster.
 
-Fords retain a visible stony riverbed when closed, with submerged rocks and flowing water; open fords expose brighter stepping stones, with explicit **Ford open**, **Ford closed**, **Ice crossing** or **Bridge open** labels in Terrain and Access views. The yellow **F** on a formation means it contains harvesting units (fishing vessels or hunters); **M** means merchants. Hover over the formation for the explanation.
+Fords retain a visible stony riverbed when closed, with submerged rocks and flowing water; open fords expose brighter stepping stones, without text labels on the map. Closed stones are slightly muted. The inspector and accessible tile descriptions retain **Ford open**, **Ford closed**, **Ice crossing** or **Bridge open** status. The yellow **F** on a formation means it contains harvesting units (fishing vessels or hunters); **M** means merchants. Hover over the formation for the explanation.
 
 Campaigns autosave as compressed records in browser IndexedDB, with an atomic previous-save backup. Large campaigns do not use the small localStorage quota. Existing browser saves migrate automatically after a successful write. Saving, compression and load validation run in a background worker. If you refresh before the latest write completes, the browser asks you to wait or confirm leaving.
 

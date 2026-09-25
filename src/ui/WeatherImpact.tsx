@@ -23,11 +23,11 @@ export function WeatherImpact({
   if (!g) return null;
   const weather = g.weather ?? "normal";
   const base = seasonalProfile(tile, owner)[season];
-  const adjusted = weatherAdjustedYield(tile, base, season);
+  const adjusted = weatherAdjustedYield(tile, base, season, owner);
   const actual = seasonalYield(tile, owner, season);
   const affected = Object.keys(base).filter(
     (raw) =>
-      weatherYieldFactor(tile, raw as Raw, season, weather) !== 1 &&
+      weatherYieldFactor(tile, raw as Raw, season, weather, owner) !== 1 &&
       (base[raw as Raw] ?? 0) > (g.fauna?.[raw as Raw] ?? 0),
   ) as Raw[];
   const blocked =
@@ -45,7 +45,7 @@ export function WeatherImpact({
           </strong>
           <small>
             {Math.round(
-              (weatherYieldFactor(tile, raw, season, weather) - 1) * 100,
+              (weatherYieldFactor(tile, raw, season, weather, owner) - 1) * 100,
             )}
             %
           </small>
@@ -60,9 +60,15 @@ export function WeatherImpact({
               : "No weather adjustment to this tile’s current harvest.",
         )}
       </small>
-      {!!g.projects?.irrigation && weather === "dry" && (
-        <small>{tx("Irrigation halves the drought penalty.")}</small>
-      )}
+      {!!g.projects?.irrigation &&
+        (owner === undefined || g.projects.irrigation.owner === owner) &&
+        weather === "dry" && (
+          <small>
+            {tx(
+              "Irrigation reduces drought losses according to its operating tier.",
+            )}
+          </small>
+        )}
     </div>
   );
 }

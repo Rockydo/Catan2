@@ -1,3 +1,4 @@
+import { INFRASTRUCTURE, type InfrastructureKind } from "./infrastructure";
 import { convergeRiverCourse } from "./river-course";
 import {
   physicalElevation,
@@ -25,7 +26,8 @@ export type Landmark =
   | "mineral-vein"
   | "ancient-grove";
 export type Weather = "normal" | "wet" | "dry" | "cold" | "mild";
-export type Project = "bridge" | "irrigation" | "levee" | "harbor" | "granary";
+export type Project =
+  "bridge" | "levee" | "harbor" | "granary" | InfrastructureKind;
 export type WildlifeKind =
   | "fish"
   | "cod"
@@ -57,7 +59,16 @@ export interface Geography {
   access?: "normal" | "ford" | "flooded" | "closed";
   fauna?: Stock;
   animals?: WildlifeKind[];
-  projects?: Partial<Record<Project, { owner: number; born: number }>>;
+  projects?: Partial<
+    Record<
+      Project,
+      {
+        owner: number;
+        born: number;
+        tier?: number;
+      }
+    >
+  >;
   damagedUntil?: number;
   newlyRevealed?: boolean;
   gazelleSurveyed?: boolean;
@@ -669,12 +680,7 @@ export const PROJECTS: Record<
     description:
       "Permanent river crossing for armies. Ships retain passage. Does not cross peaks or sea.",
   },
-  irrigation: {
-    name: "Irrigation",
-    cost: { stone: 2, brick: 2, ore: 1 },
-    description:
-      "River-fed fields gain 1 Grain per producer on productive rolls. Allows a spread harvest calendar.",
-  },
+  ...INFRASTRUCTURE,
   levee: {
     name: "Flood levee",
     cost: { stone: 3, planks: 2 },

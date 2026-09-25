@@ -1,3 +1,4 @@
+import { effectiveTier, isCrop } from "./infrastructure";
 import type { Hex, Raw, Stock } from "./types";
 import type { Season } from "./seasons";
 import type { Weather } from "./geography";
@@ -42,12 +43,15 @@ export function weatherYieldFactor(
   raw: Raw,
   season: Season,
   weather: Weather,
+  owner?: number,
 ): number {
   const climate = tile.climate ?? "temperate",
     biome = tile.biome ?? "";
   if (raw === "salt")
     return weather === "wet"
-      ? 0.5
+      ? effectiveTier(tile, "saltworks", owner) >= 3
+        ? 0.9
+        : 0.5
       : weather === "dry"
         ? 1.5
         : weather === "cold"
@@ -57,10 +61,11 @@ export function weatherYieldFactor(
     return weather === "wet" || (weather === "cold" && cool.has(climate))
       ? 0.75
       : 1;
-  if (raw === "grain") {
+  if (raw === "grain" || (raw === "oil" && isCrop(tile))) {
     if (weather === "dry") {
       const factor = resilient.has(biome) ? 1 : thirsty.has(biome) ? 0.5 : 0.75;
-      return tile.geography?.projects?.irrigation ? (1 + factor) / 2 : factor;
+      const tier = effectiveTier(tile, "irrigation", owner);
+      return factor + (1 - factor) * (tier ? 0.4 + 0.1 * tier : 0);
     }
     if (weather === "cold")
       return warm.has(climate) || thirsty.has(biome) ? 0.5 : 0.75;
@@ -82,7 +87,8 @@ export function weatherYieldFactor(
         )
       )
         return 1.25;
-      return 0.75;
+      const tier = effectiveTier(tile, "drainage", owner);
+      return 0.75 + 0.25 * (tier ? 0.4 + 0.1 * tier : 0);
     }
     if (
       weather === "mild" &&
@@ -92,7 +98,10 @@ export function weatherYieldFactor(
       return 1.25;
   }
   if (["wool", "meat", "hides"].includes(raw)) {
-    if (weather === "dry" || weather === "cold") return 0.75;
+    if (weather === "dry" || weather === "cold") {
+      const tier = effectiveTier(tile, "husbandry", owner);
+      return 0.75 + 0.25 * (tier ? 0.4 + 0.1 * tier : 0);
+    }
     if (
       weather === "wet" &&
       [
@@ -118,6 +127,7 @@ export function weatherAdjustedYield(
   tile: Hex,
   stock: Stock,
   season: Season,
+  owner?: number,
 ): Stock {
   const weather = tile.geography?.weather;
   if (
@@ -133,7 +143,7 @@ export function weatherAdjustedYield(
     const base = amount! - wildlife;
     // Wild animals react by migration. Weather does not multiply herd size.
     const adjusted = Math.round(
-      base * weatherYieldFactor(tile, raw, season, weather),
+      base * weatherYieldFactor(tile, raw, season, weather, owner),
     );
     output[raw] =
       wildlife +

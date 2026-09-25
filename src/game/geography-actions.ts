@@ -1,3 +1,10 @@
+import {
+  infrastructureSuitable,
+  infrastructureCost,
+  isInfrastructure,
+  tierOf,
+} from "./infrastructure";
+import { neighbors } from "./world";
 import type { Game, Command, Hex, Town, Stock } from "./types";
 import {
   PROJECTS,
@@ -25,7 +32,15 @@ export function projectSite(
   owner = s.active,
 ): boolean {
   const g = tile.geography;
-  if (!g || g.projects?.[kind] || tile.resource === "peaks" || g.pass)
+  if (
+    !g ||
+    (g.projects?.[kind] &&
+      (!isInfrastructure(kind) ||
+        g.projects[kind]!.owner !== owner ||
+        tierOf(tile, kind) >= 4)) ||
+    tile.resource === "peaks" ||
+    g.pass
+  )
     return false;
   const town = ownTowns(s, owner).some(
     (t) => s.vertices[t.vertex].tiles.includes(tile.id) && !besieged(s, t.id),
@@ -34,14 +49,46 @@ export function projectSite(
   if (!(town || road) || hostileAt(s, tile.id, owner, canOccupy(tile, true)))
     return false;
   if (kind === "bridge") return g.waterway === "river";
-  if (kind === "irrigation")
-    return !!g.floodplain && (baseGeographicYield(tile).grain ?? 0) > 0;
+  if (isInfrastructure(kind)) {
+    const next = tierOf(tile, kind) + 1;
+    if (!infrastructureSuitable(tile, kind)) return false;
+    if (
+      !ownTowns(s, owner).some(
+        (t) =>
+          t.level >= next &&
+          s.vertices[t.vertex].tiles.includes(tile.id) &&
+          !besieged(s, t.id),
+      )
+    )
+      return false;
+    if (kind === "irrigation" && !freshwaterSite(s, tile)) return false;
+    return true;
+  }
   if (kind === "levee") return !!g.floodplain;
   if (kind === "harbor")
     return (
       town && ["coast", "lake", "river", "shoal"].includes(g.waterway ?? "")
     );
   return town && tile.resource !== "water" && tile.resource !== "ice";
+}
+/** Freshwater access is local: ocean and salt water never count as irrigation. */
+export function freshwaterSite(s: Game, tile: Hex): boolean {
+  return (
+    tile.biome === "oasis" ||
+    [tile.id, ...neighbors(tile.id)].some((id) => {
+      const g = s.tiles[id]?.geography;
+      return (
+        g?.waterway === "river" ||
+        g?.waterway === "lake" ||
+        g?.landmark === "thermal-spring"
+      );
+    })
+  );
+}
+export function projectCost(tile: Hex, kind: Project): Stock {
+  return isInfrastructure(kind)
+    ? infrastructureCost(kind, tierOf(tile, kind) + 1)
+    : PROJECTS[kind].cost;
 }
 export function geographyCommand(s: Game, c: Command): boolean {
   if (
@@ -61,8 +108,13 @@ export function geographyCommand(s: Game, c: Command): boolean {
       projectSite(s, tile, kind),
       "This site cannot support that improvement or is not connected to your faction.",
     );
-    pay(s, PROJECTS[kind].cost);
-    (g.projects ??= {})[kind] = { owner: s.active, born: s.round };
+    pay(s, projectCost(tile, kind));
+    const tier = isInfrastructure(kind) ? tierOf(tile, kind) + 1 : 1;
+    (g.projects ??= {})[kind] = {
+      owner: s.active,
+      born: s.round,
+      tier,
+    };
     if (kind === "levee" && g.access === "flooded") g.access = "normal";
     for (const unit of Object.values(s.pieces))
       if (unit.tile === tile.id && !unit.carrier) {
@@ -71,7 +123,7 @@ export function geographyCommand(s: Game, c: Command): boolean {
       }
     log(
       s,
-      `${s.players[s.active].name} built ${PROJECTS[kind].name} at ${tile.id}.`,
+      `${s.players[s.active].name} built ${PROJECTS[kind].name}${isInfrastructure(kind) ? ` tier ${tier}` : ""} at ${tile.id}.`,
       "build",
       s.active,
       tile.id,

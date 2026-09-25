@@ -506,6 +506,10 @@ describe("crossings, local projects and ships", () => {
     hex.resource = "grain";
     hex.biome = "flood-wheat";
     hex.geography!.floodplain = true;
+    hex.climate = "temperate";
+    const river = s.tiles[neighbors(id).find((n) => s.tiles[n])!];
+    river.resource = "water";
+    river.geography!.waterway = "river";
     const before = JSON.stringify(s);
     s = run(s, { type: "project", tile: id, kind: "irrigation" });
     expect(before).not.toBe(JSON.stringify(s));
@@ -523,7 +527,7 @@ describe("crossings, local projects and ships", () => {
     const crop = s.tiles[id];
     crop.geography!.harvestMode = "spread";
     const p = seasonalProfile(crop);
-    expect(SEASONS.map((season) => p[season].grain)).toEqual([4, 4, 4, 4]);
+    expect(SEASONS.map((season) => p[season].grain)).toEqual([0, 7, 7, 0]);
   });
   it("blocks flooded production and restores it with a levee without changing resources", () => {
     const t = tile("flood-rice", "grain");
@@ -545,6 +549,9 @@ describe("crossings, local projects and ships", () => {
     s.tiles[id].geography!.floodplain = true;
     s.tiles[id].geography!.floodThreshold = 3;
     s.tiles[id].climate = "cold";
+    const river = s.tiles[neighbors(id).find((n) => s.tiles[n])!];
+    river.resource = "water";
+    river.geography!.waterway = "river";
     const before = JSON.stringify(s);
     expect(
       canApplyCommand(s, { type: "project", tile: id, kind: "irrigation" }),
@@ -660,6 +667,9 @@ describe("crossings, local projects and ships", () => {
     s.tiles[id].geography!.floodplain = true;
     s.tiles[id].geography!.floodThreshold = 3;
     s.tiles[id].climate = "cold";
+    const river = s.tiles[neighbors(id).find((n) => s.tiles[n])!];
+    river.resource = "water";
+    river.geography!.waterway = "river";
     t.level = t.turnLevel = 4;
     const plans = withPlanningFrame(s, () => economyProjects(s));
     expect(

@@ -1,3 +1,4 @@
+import { isInfrastructure } from "./infrastructure";
 import type { Game, Good } from "./types";
 import { BIOME_INFO } from "./climate-content";
 import { PROJECTS, WILDLIFE_GOODS } from "./geography";
@@ -172,11 +173,18 @@ export function validateGeography(s: Game): void {
           "Invalid improvement.",
         );
         rule(
+          project.tier === undefined ||
+            (Number.isSafeInteger(project.tier) &&
+              project.tier >= 1 &&
+              project.tier <= (isInfrastructure(kind) ? 4 : 1)),
+          "Invalid infrastructure tier.",
+        );
+        rule(
           kind !== "bridge" || g.waterway === "river",
           "Bridges must cross rivers.",
         );
         rule(
-          !["levee", "irrigation"].includes(kind) ||
+          kind !== "levee" ||
             g.floodplain ||
             (tile.biome && BIOME_INFO[tile.biome].family === "rugged"),
           "This improvement requires a floodplain.",

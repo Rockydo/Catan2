@@ -121,7 +121,7 @@ La météo humide ajoute 2 en Tempéré, Semi-aride, Tropical, Tropical maritime
 
 La météo modifie une récolte saisonnière productive avant les multiplicateurs des villes, camps et collecteurs. Elle ne crée aucune récolte hors saison. Arrondissez à la carte entière la plus proche ; les bois naturels conservent au moins 1 Bois lorsqu’ils produisent. Les biens transformés suivent le rendement brut final. Les animaux sauvages réagissent par migration, sans multiplicateur météo. Les mines ne subissent aucun multiplicateur météorologique ordinaire.
 
-- Sécheresse : riz, riz fluvial, jardins du delta, pommes de terre, chinampas et sagoutiers perdent 50 % de Blé. Les autres céréales perdent 25 %, sauf millet, sorgho et olives, inchangés. L’irrigation divise la perte par deux. Produits d’élevage : −25 %. Sel : +50 %.
+- Sécheresse : riz, riz fluvial, jardins du delta, pommes de terre, chinampas et sagoutiers perdent 50 % de Blé. Les autres céréales perdent 25 %, sauf millet, sorgho et olives, inchangés. L’irrigation réduit cette perte de 50–80 % selon son niveau. Produits d’élevage : −25 %. Sel : +50 %.
 - Humide : riz, riz fluvial, jardins du delta, chinampas et sagoutiers gagnent 25 % de Blé. Les autres cultures gagnent 25 % en Désert, Hyperaride, Steppe et Savane ; ailleurs elles perdent 25 %. Bois : −25 %. Sel : −50 %. Produits d’élevage : +25 % dans ces climats secs et en Méditerranéen.
 - Vague de froid : Blé −50 % dans les climats chauds et pour les cultures sensibles à l’eau citées ci-dessus ; sinon −25 %. Élevage et Sel : −25 %. Bois : −25 % dans les climats frais.
 - Doux : les récoltes productives de Blé et d’élevage gagnent 25 % au Printemps et en Automne dans les climats Froid, Arctique, Glaciaire, Toundra, Alpin, Prairie et Andin. Autres rendements inchangés.
@@ -162,14 +162,20 @@ Les navires à fort tirant d’eau peuvent aussi entrer dans les rivières, haut
 
 ### Aménagements locaux
 
-Construisez depuis une agglomération ou une route de votre faction, sans ennemi sur le site. Ports et greniers exigent une agglomération. Aucun aménagement sur un pic ou un col. Un seul ouvrage de chaque type par tuile, sans cumul. Ponts, irrigation et digues profitent au terrain partagé ; ports et greniers profitent à leur constructeur.
+Les infrastructures productives exigent votre agglomération adjacente non assiégée : un ouvrage I–IV nécessite une agglomération I–IV. Une route seule ne permet que les ouvrages utilitaires admissibles. Chaque type d’ouvrage s’améliore successivement. Les bonus productifs appartiennent au constructeur ; ponts et digues protègent le terrain partagé.
 
 - Pont : 3 Pierres + 2 Planches + 1 Acier. Passage terrestre permanent sur une rivière, sans bloquer les navires. Aucun franchissement de mer ordinaire ni de pic.
-- Irrigation : 2 Pierres + 2 Argiles + 1 Minerai. Ajoute 1 Blé par producteur aux jets productifs d’une culture riveraine et permet d’étaler les récoltes.
+- Irrigation I : 2 Pierres + 2 Argiles + 1 Minerai. Cultures non polaires avec rivière, lac ou source adjacente, ou oasis. Ajoute 1–5 unités annuelles de Blé/Huile selon le climat, réparties entre récoltes existantes ; les climats secs gagnent plus. Les niveaux I–IV réduisent les pertes de sécheresse de 50/60/70/80 %.
 - Digue : 3 Pierres + 2 Planches. Maintient une plaine sèche et productive pendant les crues. Un navire déjà présent s’échoue lorsque la digue assèche son terrain.
 - Port aménagé : 2 Blocs + 2 Planches + 1 Acier. Les navires recrutés sur cet hexagone gagnent 1 mouvement à leur premier tour actif. Aucun bonus récurrent ni nouveau taux commercial.
 - Grenier surélevé : 2 Pierres + 2 Bois. Chaque agglomération voisine du propriétaire conserve jusqu’à 8 cartes d’aliments par niveau lors d’un pillage : Blé, puis Poisson, puis Viande. Plusieurs greniers n’augmentent pas ce plafond. La destruction prend toujours tous les stocks.
-  Une culture irriguée peut garder ses récoltes concentrées ou répartir sa base annuelle entre les quatre saisons, avec les cartes restantes dans les premières saisons. Le bonus d’irrigation s’applique à chaque saison productive. Un seul choix par année, appliqué l’année suivante. Impossible de cumuler deux calendriers par des changements répétés. La culture ne change pas d’identité.
+  Les calendriers concentré et étalé conservent le même total annuel amélioré. L’étalement respecte la culture et le climat : été/automne pour les cultures continentales et montagnardes, été/automne pour le riz subtropical, toute l’année possible pour le riz tropical, printemps uniquement pour le blé chaud et aride. Aucun blé hivernal magique en climat froid. La fiche compare les deux calendriers. Un choix par année de campagne, appliqué à la prochaine année affichée. Dés, météo, glace et crues restent applicables.
+
+Autres filières : sols, drainage, terrasses, élevage, forêt, mines, carrières, salines et pêche. Elles améliorent uniquement les ressources existantes adaptées au site. Le climat détermine le bonus I ; II ajoute 2 unités annuelles, III puis IV ajoutent chacun 1. Les bonus s’additionnent. La faune n’est pas multipliée ; la pêche améliorée exige des poissons présents. Le drainage réduit les pertes dues à la pluie, l’élevage celles dues au froid et à la sécheresse, les salines chauffées celles dues à la pluie.
+
+II coûte 5 Planches + 4 Blocs + 3 Aciers + 3 Ors. III coûte 10 Planches + 10 Blocs + 12 Aciers + 40 Charbons + 4 Lingots. IV coûte 20 Planches + 24 Blocs + 28 Aciers + 100 Charbons + 12 Combustibles + 12 Lingots. Tous les coûts sont payés une seule fois, à la construction ou à l’amélioration. Aucun entretien, aucune consommation saisonnière ni pénalité de manque de combustible. Les ouvrages fonctionnent toujours à leur niveau complet.
+
+Une armée terrestre ennemie survivante ravage les ouvrages hostiles après le combat, y compris industriels et utilitaires. Les défenseurs alliés les protègent jusqu’à leur défaite. Les civils ne ravagent pas. L’irrigation détruite perd son calendrier en attente ; la reconstruction repart de I.
 
 ### Perturbation économique
 
@@ -197,7 +203,7 @@ Le Semi-aride chaud relie Désert, Savane, Méditerranéen et Steppe. Il connaî
 
 Poids de base des terrains : prairie naturelle 24, bois sec 10, orge 12, pâturage de chèvres 10, désert stérile 8, argile 10, pierre 10, fer 6, charbon 3, or 3, sel 4. Total : 100. La géographie modifie ces poids : les reliefs favorisent les minerais et les rives basses disposent de choix fertiles supplémentaires. Ce ne sont pas des pourcentages garantis sur la carte. Aucune ressource n’est garantie. Terres et mers restent dessinées par le générateur physique.
 
-L’orge pluviale produit 4 Blés lorsque son numéro sort au Printemps, puis rien les autres saisons, avant multiplicateurs du producteur et de météo. Moyenne annuelle : 1 Blé. Une période sèche réduit la récolte de 25 % ; une saison humide l’augmente de 25 %. L’irrigation, lorsqu’elle est constructible, divise la pénalité de sécheresse par deux. Chèvres, bois, minerais et faune conservent leurs règles ordinaires.
+L’orge pluviale produit 4 Blés lorsque son numéro sort au Printemps, puis rien les autres saisons, avant multiplicateurs du producteur et de météo. Moyenne annuelle : 1 Blé. Une période sèche réduit la récolte de 25 % ; une saison humide l’augmente de 25 %. L’irrigation, lorsqu’elle est constructible, réduit la pénalité de sécheresse de 50–80 % selon son niveau. Chèvres, bois, minerais et faune conservent leurs règles ordinaires.
 
 Niveaux d’eau de base : Printemps 1, Été 0, Automne 1, Hiver 2. Météo hivernale : 50 % normale, 35 % humide, 15 % sèche. Été : 50 % normale, 5 % humide, 45 % sèche. Printemps et automne : 55 % normale, 15 % humide, 30 % sèche. Le risque de crue se concentre donc sur les hivers humides. Le tirage aquatique est de 12 % de poissons puis 4 % de baleines, avec les mêmes corrections de densité océanique et de haute mer que les autres climats.
 

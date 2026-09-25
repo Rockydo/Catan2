@@ -1,3 +1,9 @@
+import {
+  isInfrastructure,
+  annualInfrastructureBonus,
+  tierOf,
+} from "./infrastructure";
+import { projectCost } from "./geography-actions";
 import { PROJECTS, pieceAccess, baseGeographicYield } from "./geography";
 import { projectSite } from "./geography-actions";
 import { environmentRisk } from "./environment";
@@ -1252,29 +1258,32 @@ export function economyProjects(s: Game): Project[] {
         );
       for (const kind of Object.keys(PROJECTS) as (keyof typeof PROJECTS)[]) {
         if (!projectSite(s, tile, kind)) continue;
+        const nextTier = isInfrastructure(kind) ? tierOf(tile, kind) + 1 : 1;
         const floodRisk =
           SEASONS.reduce((n, season) => n + environmentRisk(tile, season), 0) /
           4;
-        const score =
-          kind === "levee"
+        const score = isInfrastructure(kind)
+          ? (production *
+              (annualInfrastructureBonus(tile, kind, nextTier) -
+                annualInfrastructureBonus(tile, kind, nextTier - 1)) *
+              1.5) /
+            (nextTier * nextTier)
+          : kind === "levee"
             ? production * floodRisk * 12
-            : kind === "irrigation"
-              ? production * 3.5
-              : kind === "granary"
-                ? nearby.some((t) => townThreats(s, t).length)
-                  ? 14
+            : kind === "granary"
+              ? nearby.some((t) => townThreats(s, t).length)
+                ? 14
+                : 1
+              : kind === "harbor"
+                ? units.some((u) => u.naval && u.tile === id)
+                  ? 7
                   : 1
-                : kind === "harbor"
-                  ? units.some((u) => u.naval && u.tile === id)
-                    ? 7
-                    : 1
-                  : neighbors(id).filter((n) => canOccupy(s.tiles[n])).length >=
-                      2
-                    ? 12
-                    : 2;
+                : neighbors(id).filter((n) => canOccupy(s.tiles[n])).length >= 2
+                  ? 12
+                  : 2;
         add(
           { type: "project", tile: id, kind },
-          PROJECTS[kind].cost,
+          projectCost(tile, kind),
           score,
           `Adapt to local geography: ${PROJECTS[kind].name}`,
         );

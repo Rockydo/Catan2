@@ -7,7 +7,7 @@ import { generateWorld } from "../src/game/world";
 import { syncSeasonSurfaces } from "../src/game/seasons";
 
 for (const locale of ["en", "fr"])
-  test(`ford status is readable on the map and panel in ${locale}`, async ({
+  test(`ford stones stay visible without map labels, with accessible status in ${locale}`, async ({
     page,
   }) => {
     let s = newGame("ford-clarity");
@@ -57,41 +57,21 @@ for (const locale of ["en", "fr"])
     await page.getByTestId("inspector-details-toggle").click();
     await expect(page.locator(".open-ford-crossing")).toHaveCount(1);
     await expect(page.locator(".submerged-ford-crossing")).toHaveCount(1);
-    for (const state of ["open", "closed", "ice", "bridge"])
-      await expect(page.locator(`[data-ford-status="${state}"]`)).toHaveCount(
-        1,
-      );
-    // A cached image can exist in the DOM yet be transparent if map coordinates
-    // are accidentally baked into its local sprite bounds.
-    for (const kind of ["open", "closed", "ice", "bridge"]) {
-      const image = page.locator(`[data-ford-status="${kind}"] image`);
-      await expect(image).toHaveCount(1);
-      expect(
-        await image.evaluate(async (el) => {
-          const bitmap = new Image();
-          bitmap.src = el.getAttribute("href")!;
-          await bitmap.decode();
-          const canvas = document.createElement("canvas");
-          canvas.width = 58;
-          canvas.height = 16;
-          const context = canvas.getContext("2d")!;
-          context.drawImage(bitmap, 0, 0, 58, 16);
-          const rgba = context.getImageData(0, 0, 58, 16).data;
-          let visible = 0;
-          for (let i = 3; i < rgba.length; i += 4) if (rgba[i] > 100) visible++;
-          return visible;
-        }),
-      ).toBeGreaterThan(500);
-    }
+    await expect(page.locator("[data-ford-status]")).toHaveCount(0);
+    await expect(page.locator(".submerged-ford-crossing")).toHaveAttribute(
+      "opacity",
+      "0.82",
+    );
+    await expect(page.locator(".open-ford-crossing")).toHaveAttribute(
+      "opacity",
+      "1",
+    );
     await page.screenshot({
       path: `output/fords/ford-status-${locale}.png`,
       fullPage: true,
     });
     await page.locator(".map-view-select").selectOption("access");
-    for (const state of ["open", "closed", "ice", "bridge"])
-      await expect(page.locator(`[data-ford-status="${state}"]`)).toHaveCount(
-        1,
-      );
+    await expect(page.locator("[data-ford-status]")).toHaveCount(0);
     expect(errors).toEqual([]);
   });
 

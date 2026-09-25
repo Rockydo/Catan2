@@ -114,7 +114,7 @@ Wet weather adds 2 in Temperate, Semi-arid, Tropical, Tropical Maritime, Subtrop
 
 Weather modifies a productive seasonal yield before city, camp and collector multipliers. It cannot create an off-season harvest. Round to the nearest whole card; natural woodland retains at least 1 Wood when productive. Processed goods follow the resulting raw yield. Animal populations respond through migration, not a weather multiplier. Ordinary weather does not modify mines.
 
-- Dry: Rice, river rice, delta gardens, potatoes, chinampas and sago lose 50% Grain. Other cereals lose 25%, except millet, sorghum and olives, which are unchanged. Irrigation halves the loss. Farm animal products lose 25%; Salt gains 50%.
+- Dry: Rice, river rice, delta gardens, potatoes, chinampas and sago lose 50% Grain. Other cereals lose 25%, except millet, sorghum and olives, which are unchanged. Irrigation reduces the loss by 50–80%, depending on its tier. Farm animal products lose 25%; Salt gains 50%.
 - Wet: Rice, river rice, delta gardens, chinampas and sago gain 25% Grain. Other grain gains 25% in Desert, Hyperarid, Steppe and Savanna; elsewhere it loses 25%. Logging loses 25%; Salt loses 50%. Farm animal products gain 25% in these dry climates and Mediterranean.
 - Cold spell: Grain loses 50% in warm climates and for the water-sensitive crop group listed above; otherwise 25%. Farm animal products and Salt lose 25%. Logging loses 25% in cool climates.
 - Mild: Productive Spring and Autumn grain and farm animal yields gain 25% in Cold, Arctic, Glacial, Tundra, Alpine, Prairie and Andean climates. Other yields are unchanged.
@@ -155,14 +155,20 @@ Shallows follow shallow seabed close to land, with wider sediment shelves at riv
 
 ### Local improvements
 
-Build from a clear adjacent owned town or route. Harbors and granaries require a town. Improvements cannot be built on peaks or passes. There is one of each type per tile; they do not stack. Bridge, irrigation and levee benefits apply to the shared tile. Harbor and granary benefits belong to their builder.
+Production infrastructure requires your adjacent, unbesieged settlement/city: tier I–IV works require settlement/city tier I–IV. Roads alone only support eligible utility works. Each tile can have one project of each type, upgraded sequentially. Irrigation and other production benefits belong to their builder; bridges and levees protect the shared tile.
 
 - Bridge: 3 Stone + 2 Planks + 1 Steel. Permanent army crossing of one river hex, without blocking ships. Cannot cross ordinary sea or peaks.
-- Irrigation: 2 Stone + 2 Clay + 1 Iron ore. River crop gains 1 Grain per producer on each productive roll and may use a spread harvest schedule.
+- Irrigation I: 2 Stone + 2 Clay + 1 Iron ore. Existing nonpolar crops need an adjacent river, lake or spring, or an oasis. Adds 1–5 annual Grain/Oil units by climate, distributed over existing harvests; dry climates gain more. It reduces drought losses by 50/60/70/80% at tiers I–IV.
 - Levee: 3 Stone + 2 Planks. Keeps a floodplain dry and productive during high water. A vessel already on that flooded ground becomes stranded when the levee dries it.
 - Harbor: 2 Blocks + 2 Planks + 1 Steel. Ships recruited on this water hex gain 1 movement point on their first active turn. No recurring free movement and no extra harbor trade rate.
 - Raised granary: 2 Stone + 2 Wood. Each adjacent town of its owner retains up to 8 food cards per town level when raided. Protection takes Grain, then Fish, then Meat. Multiple granaries do not increase the cap. Destruction still transfers all stored goods.
-  Irrigated crops can keep concentrated harvests or spread the same baseline annual total across all four seasons, with remainder cards in the earlier seasons. The irrigation bonus applies on each productive season. Choose at most once per calendar year; it takes effect next year. You cannot switch repeatedly to collect both calendars. Crop identity stays unchanged.
+  Irrigation preserves the same improved annual total in both concentrated and spread mode. Spread harvests use crop/climate-specific temperature windows: continental and highland crops keep summer/autumn harvests, subtropical rice summer/autumn, tropical rice can spread across the year, and hot-dry wheat remains in spring. No magical winter cereals in cold climates. Both calendars are previewed in the inspector. Queue one change per campaign year; it activates at the next displayed year boundary. Matching dice rolls, flooding, freezing and weather still apply.
+
+Other tracks: soil management, drainage, terraces, husbandry, forestry, mining, quarrying, saltworks and fisheries. Each improves only existing eligible resources. Site/climate controls eligibility and the tier I bonus; tier II adds 2 annual units, III adds 1 more, IV adds 1 more. Track bonuses add without compounding. Wild animals are not multiplied; fisheries improve usable fish only while shoals are present. Drainage reduces adverse rain penalties, husbandry reduces domestic cold/drought losses, and industrial saltworks reduce rain losses.
+
+Tier II costs 5 Planks + 4 Blocks + 3 Steel + 3 Gold. Tier III costs 10 Planks + 10 Blocks + 12 Steel + 40 Coal + 4 Gold bars. Tier IV costs 20 Planks + 24 Blocks + 28 Steel + 100 Coal + 12 Fuel + 12 Gold bars. All costs are paid once, when building or upgrading. There is no upkeep, seasonal consumption or fuel shortage penalty. Installed infrastructure always operates at its full tier.
+
+Surviving enemy land armies ravage all hostile local projects after combat, including industrial works and utility projects. Defending friendly armies protect them until defeated. Civilians cannot ravage. Destroyed irrigation loses its queued calendar, and rebuilding starts at I.
 
 ### Economic disruption
 
@@ -198,7 +204,7 @@ Hot Semi-Arid is a warm, dry transition between Desert, Savanna, Mediterranean a
 
 Its baseline land weights are: natural grassland 24, dry woodland 10, barley 12, goat pasture 10, barren desert 8, clay 10, stone 10, iron 6, coal 3, gold 3, salt 4. These total 100, but physical geography modifies the draw: hills favor minerals, and low riverbanks use a separate fertile-terrain pool. These weights are not guaranteed percentages of a generated map. No resource is guaranteed. Land and sea shapes still come from the physical world generator.
 
-Rainfed barley produces 4 Grain on its number in Spring and nothing in the other seasons, before producer and weather multipliers. Its annual average remains 1 Grain. A dry spell reduces this crop by 25%; wet weather increases it by 25%. Irrigation, where buildable, halves the drought penalty. Goats, timber, minerals and wildlife use their normal production rules.
+Rainfed barley produces 4 Grain on its number in Spring and nothing in the other seasons, before producer and weather multipliers. Its annual average remains 1 Grain. A dry spell reduces this crop by 25%; wet weather increases it by 25%. Irrigation, where buildable, reduces drought losses by 50–80% according to its tier. Goats, timber, minerals and wildlife use their normal production rules.
 
 Hot Semi-Arid base water levels are Spring 1, Summer 0, Autumn 1, Winter 2. Winter weather is 50% normal, 35% wet and 15% dry; summer is 50% normal, 5% wet and 45% dry; spring and autumn are 55% normal, 15% wet and 30% dry. Flood risk is concentrated in wet winters. The water-resource draw uses 12% fish followed by 4% whale, with the same ocean population-density and open-water adjustments as other climates.
 

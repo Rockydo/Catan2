@@ -1,3 +1,5 @@
+import { InfrastructurePanel, IrrigationCalendar } from "./Infrastructure";
+import { isInfrastructure } from "../game/infrastructure";
 import { regionalLandform } from "../game/physical-landforms";
 import { LANDFORM_LABELS } from "./landform-labels";
 import { FloodplainStatus } from "./FloodplainStatus";
@@ -169,58 +171,18 @@ export function GeographyMarker({
 }) {
   const g = tile.geography;
   if (!g) return null;
-  const ford = fordStatus(tile);
-  if (ford)
-    return (
-      <g transform={`translate(${x} ${y + 23})`} pointerEvents="none">
-        <MapSprite
-          assetKey={`ford-marker/${ford.kind}`}
-          bounds={{ x: -29, y: -8, width: 58, height: 16 }}
-          data-ford-status={ford.kind}
-          pointerEvents="none"
-        >
-          <rect
-            x="-27"
-            y="-7"
-            width="54"
-            height="14"
-            rx="5"
-            fill={
-              ford.kind === "closed"
-                ? "#334c55"
-                : ford.kind === "ice"
-                  ? "#d4edf2"
-                  : "#f6dd92"
-            }
-            stroke={ford.kind === "closed" ? "#cad4d3" : "#36584d"}
-            strokeWidth="1.3"
-          />
-          <text
-            y="2.5"
-            textAnchor="middle"
-            fontSize={ford.kind === "ice" ? "6.3" : "7.1"}
-            fontWeight="bold"
-            fill={ford.kind === "closed" ? "#fff2d4" : "#203f36"}
-          >
-            {tx(ford.label)}
-          </text>
-        </MapSprite>
-      </g>
-    );
   const symbol =
     g.access === "closed"
       ? "×"
       : g.projects?.bridge
         ? "╪"
-        : g.access === "ford"
-          ? "≋"
-          : g.access === "flooded"
-            ? "≈"
-            : g.landmark
-              ? "✦"
-              : g.pass
-                ? "⌃"
-                : undefined;
+        : g.access === "flooded"
+          ? "≈"
+          : g.landmark
+            ? "✦"
+            : g.pass
+              ? "⌃"
+              : undefined;
   if (!symbol) return null;
   return (
     <g transform={`translate(${x + 23} ${y - 19})`}>
@@ -262,8 +224,8 @@ export function GeographyPanel({
   const g = tile.geography;
   if (!g) return null;
   const ford = fordStatus(tile);
-  const sites = (Object.keys(PROJECTS) as Project[]).filter((kind) =>
-    projectSite(s, tile, kind, viewer),
+  const sites = (Object.keys(PROJECTS) as Project[]).filter(
+    (kind) => !isInfrastructure(kind) && projectSite(s, tile, kind, viewer),
   );
   const own =
     ownTowns(s, viewer).some((t) =>
@@ -391,6 +353,13 @@ export function GeographyPanel({
             .join(" · ")}
         </p>
       )}
+      <InfrastructurePanel
+        game={s}
+        tile={tile}
+        viewer={viewer}
+        interactive={interactive}
+        onAction={onAction}
+      />
       {!!sites.length && (
         <details>
           <summary>{tx("Local improvements")}</summary>
@@ -415,6 +384,7 @@ export function GeographyPanel({
       )}
       {g.projects?.irrigation?.owner === viewer && (
         <div>
+          <IrrigationCalendar game={s} tile={tile} viewer={viewer} />
           <label>
             {tx("Next year’s harvest")}
             <select
@@ -434,7 +404,7 @@ export function GeographyPanel({
           </label>
           <small>
             {tx(
-              "Same baseline annual output. One change per year, effective next year.",
+              "Same annual output in suitable growing seasons. One change per year, effective next year.",
             )}
           </small>
         </div>

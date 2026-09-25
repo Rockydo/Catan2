@@ -1,3 +1,4 @@
+import { ravageOccupiedInfrastructure } from "./infrastructure-runtime";
 import { shipTierAllowed } from "./content";
 import { geographyCommand } from "./geography-actions";
 import { pieceAccess } from "./geography";
@@ -847,7 +848,9 @@ function advanceCommand(
     breakSieges(s, { reuseFrame: sharePieces });
     eliminate(s);
     if (!preview) syncEmergencyCoalition(s, { sharePieces });
-    afterCleanup?.(sharePieces);
+    const changedPieces =
+      !preservesTroopRecords(c) && ravageOccupiedInfrastructure(s);
+    afterCleanup?.(sharePieces && !changedPieces);
   };
   // Cleanup can edit sieges, alliances and logs without changing troops. Share
   // their indexes through that interval only when no faction can be eliminated.
@@ -863,6 +866,7 @@ function advanceCommand(
 }
 export function execute(s: Game, c: Command, preview = false) {
   executeOrder(s, c, preview);
+  if (!preview && !preservesTroopRecords(c)) ravageOccupiedInfrastructure(s);
 }
 /** Full transactions perform final siege cleanup in advanceCommand, where its
  * occupation index also serves coalition checks. Standalone execution keeps
