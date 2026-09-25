@@ -86,9 +86,9 @@ export function freshwaterSite(s: Game, tile: Hex): boolean {
   );
 }
 export function projectCost(tile: Hex, kind: Project): Stock {
-  return isInfrastructure(kind)
-    ? infrastructureCost(kind, tierOf(tile, kind) + 1)
-    : PROJECTS[kind].cost;
+  if (!isInfrastructure(kind)) return PROJECTS[kind].cost;
+  const next = tierOf(tile, kind) + 1;
+  return next > 4 ? {} : infrastructureCost(kind, next);
 }
 export function geographyCommand(s: Game, c: Command): boolean {
   if (

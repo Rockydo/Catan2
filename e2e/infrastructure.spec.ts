@@ -82,6 +82,9 @@ for (const locale of ["en", "fr"])
     await expect(page.locator(".infrastructure-panel")).toContainText(
       locale === "en" ? "No upkeep" : "Aucun entretien",
     );
+    await irrigation.getByRole("button").click();
+    await expect(irrigation.locator("b").first()).toContainText("IV");
+    await expect(irrigation.getByRole("button")).toHaveCount(0);
     await page.screenshot({
       path: `output/infrastructure/${locale}.png`,
       fullPage: true,

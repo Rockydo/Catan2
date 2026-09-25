@@ -18,12 +18,16 @@ import {
 } from "../src/game/infrastructure";
 import { seasonalProfile, SEASONS } from "../src/game/seasons";
 import { generateHex, neighbors } from "../src/game/world";
-import { projectSite, geographyCommand } from "../src/game/geography-actions";
+import {
+  projectSite,
+  projectCost,
+  geographyCommand,
+} from "../src/game/geography-actions";
 import { ravageOccupiedInfrastructure } from "../src/game/infrastructure-runtime";
 import { weatherYieldFactor } from "../src/game/weather-yields";
 import { funded, piece, run } from "./helpers";
 import { ownTowns, inventory } from "../src/game/selectors";
-import type { Hex, Game } from "../src/game/types";
+import { GOODS, type Hex, type Game } from "../src/game/types";
 
 function crop(
   biome: Biome = "flood-wheat",
@@ -150,8 +154,10 @@ describe("climate-specific infrastructure", () => {
         tile: tile.id,
         kind: "irrigation",
       });
-    expect(inventory(s, 0).coal).toBe(before - 40 - 100);
+    expect(inventory(s, 0).coal).toBe(before - 6 - 40 - 100);
     expect(effectiveTier(tile, "irrigation", 0)).toBe(4);
+    expect(projectCost(tile, "irrigation")).toEqual({});
+    expect(projectSite(s, tile, "irrigation")).toBe(false);
   });
   it("never charges upkeep or reduces an industrial tier when coal runs out", async () => {
     const { syncEnvironment } = await import("../src/game/environment");
@@ -194,8 +200,52 @@ describe("climate-specific infrastructure", () => {
         Object.values(infrastructureCost(kind, t)).reduce((a, b) => a + b!, 0),
       );
       expect(costs[1]).toBeGreaterThan(costs[0]);
+      expect(costs[2]).toBeGreaterThan(costs[1]);
       expect(costs[3]).toBeGreaterThan(costs[2]);
     }
+  });
+  it("uses valid construction materials and increasing upfront coal instead of precious metals on every track", () => {
+    const recipes = new Set<string>();
+    for (const kind of Object.keys(
+      INFRASTRUCTURE,
+    ) as (keyof typeof INFRASTRUCTURE)[]) {
+      let previousCoal = 0;
+      for (const tier of [1, 2, 3, 4]) {
+        const cost = infrastructureCost(kind, tier);
+        expect(cost.gold ?? 0).toBe(0);
+        expect(cost.goldbars ?? 0).toBe(0);
+        for (const [good, amount] of Object.entries(cost)) {
+          expect(GOODS).toContain(good);
+          expect(Number.isInteger(amount) && amount! > 0).toBe(true);
+        }
+        if (tier >= 2) {
+          expect(cost.coal).toBeGreaterThan(previousCoal);
+          previousCoal = cost.coal!;
+          const signature = JSON.stringify(Object.entries(cost).sort());
+          expect(recipes.has(signature)).toBe(false);
+          recipes.add(signature);
+        }
+      }
+    }
+  });
+  it("charges the complete tier II mine recipe without requiring any gold", () => {
+    const { s, town, tile } = site();
+    town.level = 2;
+    tile.biome = "coal";
+    tile.resource = "coal";
+    tile.geography!.projects = { mining: { owner: 0, born: 1, tier: 1 } };
+    for (const owned of ownTowns(s, 0)) owned.stock = {};
+    town.stock = { planks: 6, masonry: 3, steel: 5, leather: 2, coal: 9 };
+    const before = JSON.stringify(town.stock);
+    expect(() =>
+      geographyCommand(s, { type: "project", tile: tile.id, kind: "mining" }),
+    ).toThrow();
+    expect(JSON.stringify(town.stock)).toBe(before);
+    expect(effectiveTier(tile, "mining", 0)).toBe(1);
+    town.stock.coal = 10;
+    geographyCommand(s, { type: "project", tile: tile.id, kind: "mining" });
+    expect(effectiveTier(tile, "mining", 0)).toBe(2);
+    expect(Object.values(inventory(s, 0)).reduce((a, b) => a + b!, 0)).toBe(0);
   });
   it("does not improve migrating animals when improving woods", () => {
     const t = crop("hunting-forest");

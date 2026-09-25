@@ -29,12 +29,35 @@ Different tracks add their bonuses; they do not multiply each other's bonuses. F
 
 Costs below are **incremental**, paid on each upgrade, not the price for skipping earlier levels.
 
-| Tier | Adjacent settlement/city | One-time construction cost |
+A settlement/city must be at least the target infrastructure tier (I–IV).
+Tier I uses each track's basic recipe. Soil husbandry now uses wood, grain and
+iron tools rather than hides. All later bills are specific to the work being built:
+**no infrastructure recipe requires gold or gold bars**.
+
+| Track | Main materials and purpose | Coal at II / III / IV |
 |---|---|---|
-| I | I or higher | Track-specific basic resources, shown in the interface |
-| II | II or higher | 5 planks, 4 blocks, 3 steel, 3 gold |
-| III | III or higher | 10 planks, 10 blocks, 12 steel, 40 coal, 4 gold bars |
-| IV | IV | 20 planks, 24 blocks, 28 steel, 100 coal, 12 fuel, 12 gold bars |
+| Irrigation | Blocks and pottery for channels/pipes, steel pumping gear | 6 / 40 / 100 |
+| Husbandry | Planks, feed grain and shelter blocks; machinery and late veterinary chemicals | 4 / 30 / 80 |
+| Soil husbandry | Seed grain and tools; later machinery and fertilizer chemicals | 4 / 30 / 80 |
+| Drainage | Pottery drains, blocks and pumping gear | 8 / 40 / 100 |
+| Terraces | Large quantities of stone/blocks, timber and steel construction gear | 4 / 30 / 80 |
+| Forestry | Timber structures, steel saws/haulage gear and leather belts/harnesses | 8 / 40 / 100 |
+| Mining | Timber supports, blocks, steel lifting/pumping gear and leather belts/harnesses | 10 / 40 / 100 |
+| Quarrying | Timber frames, blocks, steel cutting/lifting gear and leather belts/harnesses | 10 / 40 / 100 |
+| Saltworks | Blocks, pottery pans/linings and metal equipment | 8 / 45 / 110 |
+| Fishery | Timber landing works, insulated block stores, netting cloth and cooling machinery | 6 / 40 / 100 |
+
+Tier II coal is a one-time construction/fabrication allowance for fittings, tools,
+fired drains and masonry. It does not imply every tier II project has a steam
+engine. Industrial tiers require much larger coal investments and tier IV also
+uses 8–12 processed fuel. These quantities are game balance abstractions.
+
+For example, **mining II** costs 6 planks, 3 blocks, 5 steel, 2 leather and 10 coal;
+**III** costs 10 planks, 8 blocks, 16 steel, 4 leather and 40 coal;
+**IV** costs 18 planks, 20 blocks, 36 steel, 6 leather, 100 coal and 12 fuel.
+All bills are displayed directly from the same `infrastructureCost` function used
+for payment and AI planning. Existing constructed works are retained without a
+retroactive charge; new builds/upgrades use the corrected bills immediately.
 
 **No upkeep of any kind.** Coal and fuel are paid only when constructing or upgrading. Nothing is consumed on dice rolls, season changes, turn changes or reloads. An empty coal stock does not reduce output or deactivate an improvement.
 

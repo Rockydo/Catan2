@@ -29,7 +29,7 @@ export const INFRASTRUCTURE = {
   },
   soil: {
     name: "Soil husbandry",
-    cost: { lumber: 2, grain: 2, hides: 1 },
+    cost: { lumber: 2, grain: 2, ore: 1 },
     description:
       "Rotations, manure and soil cover improve existing crops, especially depleted tropical soils.",
     stages: [
@@ -142,24 +142,80 @@ export const effectiveTier = (
   if (!p || (owner !== undefined && owner !== p.owner)) return 0;
   return tierOf(tile, kind);
 };
+// Incremental construction bills, not operating fuel. Tier II coal covers
+// making tools, fittings, fired drains and masonry; steam works use much more.
+// Each track has its own materials instead of a generic precious-metal fee.
+const UPGRADE_COSTS: Record<
+  InfrastructureKind,
+  readonly [Stock, Stock, Stock]
+> = {
+  irrigation: [
+    { planks: 2, masonry: 6, ceramics: 4, steel: 2, coal: 6 },
+    { planks: 6, masonry: 12, ceramics: 6, steel: 10, coal: 40 },
+    { planks: 12, masonry: 28, ceramics: 12, steel: 24, coal: 100, coke: 8 },
+  ],
+  husbandry: [
+    { planks: 6, masonry: 2, steel: 2, grain: 4, coal: 4 },
+    { planks: 10, masonry: 6, steel: 8, grain: 8, coal: 30 },
+    {
+      planks: 18,
+      masonry: 16,
+      steel: 18,
+      grain: 12,
+      reagents: 6,
+      coal: 80,
+      coke: 8,
+    },
+  ],
+  soil: [
+    { planks: 4, steel: 2, grain: 4, coal: 4 },
+    { planks: 8, masonry: 4, steel: 8, reagents: 8, coal: 30 },
+    { planks: 14, masonry: 16, steel: 18, reagents: 20, coal: 80, coke: 8 },
+  ],
+  drainage: [
+    { masonry: 4, ceramics: 6, steel: 2, coal: 8 },
+    { planks: 4, masonry: 10, ceramics: 10, steel: 10, coal: 40 },
+    { planks: 8, masonry: 24, ceramics: 20, steel: 24, coal: 100, coke: 8 },
+  ],
+  terraces: [
+    { stone: 8, planks: 3, masonry: 4, steel: 2, coal: 4 },
+    { stone: 16, planks: 6, masonry: 14, steel: 8, coal: 30 },
+    { stone: 24, planks: 12, masonry: 32, steel: 20, coal: 80, coke: 8 },
+  ],
+  forestry: [
+    { planks: 6, steel: 4, leather: 2, coal: 8 },
+    { planks: 12, masonry: 6, steel: 12, leather: 4, coal: 40 },
+    { planks: 24, masonry: 16, steel: 30, leather: 6, coal: 100, coke: 12 },
+  ],
+  mining: [
+    { planks: 6, masonry: 3, steel: 5, leather: 2, coal: 10 },
+    { planks: 10, masonry: 8, steel: 16, leather: 4, coal: 40 },
+    { planks: 18, masonry: 20, steel: 36, leather: 6, coal: 100, coke: 12 },
+  ],
+  quarrying: [
+    { planks: 5, masonry: 3, steel: 5, leather: 2, coal: 10 },
+    { planks: 8, masonry: 8, steel: 16, leather: 4, coal: 40 },
+    { planks: 16, masonry: 20, steel: 32, leather: 6, coal: 100, coke: 12 },
+  ],
+  saltworks: [
+    { masonry: 6, ceramics: 4, steel: 2, coal: 8 },
+    { planks: 4, masonry: 12, ceramics: 6, steel: 10, coal: 45 },
+    { planks: 8, masonry: 24, ceramics: 12, steel: 24, coal: 110, coke: 12 },
+  ],
+  fishery: [
+    { planks: 6, masonry: 4, cloth: 3, steel: 2, coal: 6 },
+    { planks: 10, masonry: 10, cloth: 4, steel: 12, coal: 40 },
+    { planks: 20, masonry: 24, cloth: 6, steel: 28, coal: 100, coke: 12 },
+  ],
+};
 export function infrastructureCost(
   kind: InfrastructureKind,
   tier: number,
 ): Stock {
   if (tier === 1) return { ...INFRASTRUCTURE[kind].cost };
-  // Incremental costs: later increments cost much more for smaller output gains.
-  return tier === 2
-    ? { planks: 5, masonry: 4, steel: 3, gold: 3 }
-    : tier === 3
-      ? { planks: 10, masonry: 10, steel: 12, coal: 40, goldbars: 4 }
-      : {
-          planks: 20,
-          masonry: 24,
-          steel: 28,
-          coal: 100,
-          coke: 12,
-          goldbars: 12,
-        };
+  const cost = UPGRADE_COSTS[kind][tier - 2];
+  if (!cost) throw new Error(`Invalid infrastructure tier: ${tier}`);
+  return { ...cost };
 }
 
 type Agronomy = {
