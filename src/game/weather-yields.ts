@@ -2,9 +2,12 @@ import {
   infrastructureProtection,
   huntingYield,
   isCrop,
+  installedRotation,
+  rotationExtras,
 } from "./infrastructure";
 import type { Hex, Raw, Stock } from "./types";
-import type { Season } from "./seasons";
+import { ordinarySeasonalProfile, type Season } from "./seasons";
+import type { Biome } from "./climate-content";
 import type { Weather } from "./geography";
 
 const warm = new Set([
@@ -128,7 +131,7 @@ function nativeWeatherFactor(
   }
   return 1;
 }
-/** Resilience is the strongest applicable local method, never stacked immunity. */
+/** Primary protection plus diminishing specialist protection, capped below immunity. */
 export function weatherYieldFactor(
   tile: Hex,
   raw: Raw,
@@ -164,19 +167,39 @@ export function weatherAdjustedYield(
     return stock;
   const output: Stock = {};
   const game = huntingYield(tile, owner, season);
+  const rotation = installedRotation(tile, owner);
+  const secondary =
+    rotation && rotation.rotation!.seasons.includes(season)
+      ? (rotationExtras(tile, ordinarySeasonalProfile(tile, owner), owner)[
+          season
+        ].grain ?? 0)
+      : 0;
   for (const [good, amount] of Object.entries(stock)) {
     const raw = good as Raw,
       wildlife = Math.min(
         amount!,
         game[raw] ?? tile.geography?.fauna?.[raw] ?? 0,
       );
-    const base = amount! - wildlife;
+    const rotationAmount =
+      raw === "grain" ? Math.min(amount! - wildlife, secondary) : 0;
+    const base = amount! - wildlife - rotationAmount;
     // Wild animals react by migration. Weather does not multiply herd size.
     const adjusted = Math.round(
       base * weatherYieldFactor(tile, raw, season, weather, owner),
     );
     output[raw] =
       wildlife +
+      (rotationAmount && rotation
+        ? Math.round(
+            rotationAmount *
+              nativeWeatherFactor(
+                { ...tile, biome: rotation.rotation!.secondaryBiome as Biome },
+                raw,
+                season,
+                weather,
+              ),
+          )
+        : 0) +
       (raw === "lumber" && base > 0 ? Math.max(1, adjusted) : adjusted);
   }
   return output;

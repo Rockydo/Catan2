@@ -1,3 +1,8 @@
+import {
+  isSpecialist,
+  SPECIALIST_PROJECTS,
+  specialistId,
+} from "./infrastructure-specialists";
 import { isInfrastructure } from "./infrastructure";
 import type { Game, Good } from "./types";
 import { BIOME_INFO } from "./climate-content";
@@ -161,6 +166,7 @@ export function validateGeography(s: Game): void {
           !Array.isArray(g.projects),
         "Invalid improvements.",
       );
+      const rotations = new Set<string>();
       for (const [kind, project] of Object.entries(g.projects)) {
         rule(
           Object.hasOwn(PROJECTS, kind) &&
@@ -179,6 +185,23 @@ export function validateGeography(s: Game): void {
               project.tier <= (isInfrastructure(kind) ? 4 : 1)),
           "Invalid infrastructure tier.",
         );
+        if (isSpecialist(kind)) {
+          const { branch, tier } = SPECIALIST_PROJECTS[kind];
+          for (let stage = 1; stage < tier; stage++) {
+            const preceding = g.projects[specialistId(branch, stage)];
+            rule(
+              preceding &&
+                preceding.owner === project.owner &&
+                preceding.born <= project.born,
+              "Incomplete specialist improvement chain.",
+            );
+          }
+          if (branch.rotation) rotations.add(branch.id);
+          rule(
+            rotations.size <= 1,
+            "A field can follow only one secondary-crop rotation.",
+          );
+        }
         rule(
           kind !== "bridge" || g.waterway === "river",
           "Bridges must cross rivers.",

@@ -36,7 +36,7 @@ const BASE_TECHNIQUES = {
   oasis: t(
     "oasis",
     "Oasis water distribution",
-    "Covered channels conserve scarce freshwater; dry sites gain most, but still need an oasis, river, lake or spring.",
+    "Covered channels conserve scarce freshwater.",
     [5, 7, 8, 9],
     [
       "Spring channels",
@@ -52,7 +52,7 @@ const BASE_TECHNIQUES = {
   paddy: t(
     "paddy",
     "Paddy water control",
-    "Bunds and sluices regulate water on existing rice plots. Warmth limits additional planting; water cannot create a winter crop in a cold climate.",
+    "Bunds and sluices regulate water on rice plots.",
     [3, 5, 6, 7],
     [
       "Paddy bunds",
@@ -65,7 +65,7 @@ const BASE_TECHNIQUES = {
   gardens: t(
     "canal-gardens",
     "Canal-fed raised gardens",
-    "Canals supply raised garden beds without flooding the roots. Sediment and controlled water support existing mixed crops; these are not rice paddies.",
+    "Canals supply raised garden beds without flooding the roots.",
     [3, 5, 6, 7],
     [
       "Garden feeder channels",
@@ -81,7 +81,7 @@ const BASE_TECHNIQUES = {
   recession: t(
     "recession",
     "Recession-water management",
-    "Diversion gates retain useful water after floods recede. They improve the existing harvest without preventing flooding.",
+    "Diversion gates retain useful water after floods recede.",
     [4, 6, 7, 8],
     [
       "Diversion channels",
@@ -94,7 +94,7 @@ const BASE_TECHNIQUES = {
   orchard: t(
     "orchard",
     "Orchard basin irrigation",
-    "Tree basins direct scarce water to roots. Fruit and oil retain their native ripening seasons.",
+    "Tree basins direct scarce water to roots.",
     [3, 4, 5, 6],
     [
       "Tree basins",
@@ -107,7 +107,7 @@ const BASE_TECHNIQUES = {
   supplemental: t(
     "supplemental",
     "Supplemental field irrigation",
-    "Reliable supplementary water helps existing fields; cool or already wet climates have limited extra cropping potential.",
+    "Reliable supplementary water helps fields.",
     [1, 2, 3, 4],
     [
       "Field channels",
@@ -120,7 +120,7 @@ const BASE_TECHNIQUES = {
   continental: t(
     "continental",
     "Seasonal field irrigation",
-    "Stored and diverted freshwater supports continental summer crops without extending the growing season into winter.",
+    "Stored freshwater sustains continental summer crops through dry spells.",
     [2, 4, 5, 6],
     [
       "Field channels",
@@ -133,7 +133,7 @@ const BASE_TECHNIQUES = {
   dryFields: t(
     "dry-fields",
     "Dryland field irrigation",
-    "Freshwater irrigation has high returns in dry farming areas. It remains distinct from rain-dependent runoff harvesting.",
+    "Freshwater irrigation has high returns in dry farming areas.",
     [4, 6, 7, 8],
     [
       "Field channels",
@@ -146,7 +146,7 @@ const BASE_TECHNIQUES = {
   mulch: t(
     "mulch",
     "Dryland mulch and rotations",
-    "Ground cover and organic matter conserve moisture. Drought-tolerant crops gain less from extra water but benefit from soil care.",
+    "Ground cover and organic matter conserve moisture.",
     [2, 3, 4, 5],
     [
       "Mulch and manure",
@@ -162,7 +162,7 @@ const BASE_TECHNIQUES = {
   fertile: t(
     "fertile",
     "Black-soil rotations",
-    "Already fertile black soils need careful rotations more than large fertilizer inputs. Improvements have deliberately modest returns.",
+    "Crop rotations and retained residues preserve the rich structure of black-earth soils.",
     [1, 2, 3, 4],
     [
       "Crop rotations",
@@ -175,7 +175,7 @@ const BASE_TECHNIQUES = {
   tropicalSoil: t(
     "tropical-soil",
     "Tropical nutrient cycling",
-    "Mulch, compost and cover crops conserve nutrients under heavy rain. This supports the existing crop, without planting a new forest.",
+    "Mulch, compost and cover crops conserve nutrients under heavy rain.",
     [3, 5, 6, 7],
     [
       "Compost and ground cover",
@@ -191,7 +191,7 @@ const BASE_TECHNIQUES = {
   roots: t(
     "roots",
     "Root-crop rotations",
-    "Seed selection, ridging and rotations improve existing tubers and roots while keeping their climate-limited harvest calendar.",
+    "Seed selection, ridging and rotations improve tubers and roots while keeping their climate-limited harvest calendar.",
     [3, 4, 5, 6],
     [
       "Seed selection",
@@ -207,7 +207,7 @@ const BASE_TECHNIQUES = {
   rotation: t(
     "rotation",
     "Mixed-field rotations",
-    "Rotations and selected seed improve existing cereals and perennial crops. Mechanization improves recovery, not the number of winter harvests.",
+    "Rotations and selected seed improve cereals and perennial crops.",
     [2, 4, 5, 6],
     [
       "Rotations and manure",
@@ -219,7 +219,7 @@ const BASE_TECHNIQUES = {
   wetDrain: t(
     "wet-drain",
     "Wet-field drainage",
-    "Ditches and fired drains relieve waterlogging; river floods still require levees.",
+    "Ditches and fired drains relieve waterlogging.",
     [3, 5, 6, 7],
     [
       "Field ditches",
@@ -232,7 +232,7 @@ const BASE_TECHNIQUES = {
   paddyDrain: t(
     "paddy-drain",
     "Controlled paddy drawdown",
-    "Gates allow managed drainage without treating rice as a dryland cereal. Small output gains complement water control.",
+    "Gates allow managed drainage.",
     [1, 2, 3, 4],
     [
       "Paddy outlets",
@@ -248,7 +248,7 @@ const BASE_TECHNIQUES = {
   raised: t(
     "raised",
     "Raised beds and drains",
-    "Raised growing beds and drainage reduce waterlogging in cool lowlands; they do not warm an entire climate or stop river floods.",
+    "Raised growing beds and drainage reduce waterlogging in cool lowlands.",
     [2, 4, 5, 6],
     [
       "Raised beds",
@@ -264,7 +264,7 @@ const BASE_TECHNIQUES = {
   andean: t(
     "andean",
     "Highland stone terraces",
-    "Retaining walls conserve soil and water on cultivated slopes. Sheltered plots reduce cold-spell losses without opening winter harvests.",
+    "Retaining walls conserve soil and water on cultivated slopes.",
     [3, 5, 6, 7],
     [
       "Contour stone walls",
@@ -283,7 +283,7 @@ const BASE_TECHNIQUES = {
   riceTerraces: t(
     "rice-terraces",
     "Cascaded rice terraces",
-    "Level basins and dividing sluices hold water on existing hillside rice plots. No new farmland or mountain crossings are created.",
+    "Level basins and dividing sluices hold water on hillside rice plots.",
     [3, 4, 5, 6],
     [
       "Paddy contour walls",
@@ -299,7 +299,7 @@ const BASE_TECHNIQUES = {
   dryTerraces: t(
     "dry-terraces",
     "Dry-stone contour terraces",
-    "Contour walls slow runoff and soil loss on existing dry slopes. Benefits favor dry spells rather than extra harvest seasons.",
+    "Contour walls slow runoff and soil loss on dry slopes.",
     [2, 4, 5, 6],
     [
       "Dry-stone walls",
@@ -315,7 +315,7 @@ const BASE_TECHNIQUES = {
   terraces: t(
     "terraces",
     "Hillside erosion control",
-    "Cultivated slopes benefit from retaining works; flat land cannot build terraces.",
+    "Retaining walls stabilize cultivated slopes and hold soil around the crop roots.",
     [2, 3, 4, 5],
     [
       "Contour walls",
@@ -328,7 +328,7 @@ const BASE_TECHNIQUES = {
   hay: t(
     "hay",
     "Hay meadows and winter shelter",
-    "Stored fodder and shelter favor cold-season livestock recovery. Domestic herds stay on their tile; wild herds are not fed by these works.",
+    "Stored fodder and shelter favor cold-season livestock recovery.",
     [4, 6, 7, 8],
     [
       "Hay and shelter",
@@ -345,7 +345,7 @@ const BASE_TECHNIQUES = {
   pastoral: t(
     "pastoral",
     "Dryland fodder reserves",
-    "Managed fodder and watering facilities buffer dry-season grazing shortages. This improves existing domestic stock, not wild herd abundance.",
+    "Managed fodder and watering facilities buffer dry-season grazing shortages.",
     [3, 5, 6, 7],
     [
       "Fodder and watering pens",
@@ -361,7 +361,7 @@ const BASE_TECHNIQUES = {
   pasture: t(
     "pasture",
     "Managed pasture and stock care",
-    "Pasture rotation and feed preparation improve domestic meat, hides and wool within one shared output budget.",
+    "Rotational grazing and prepared feed improve the health and productivity of domestic herds.",
     [3, 5, 6, 7],
     [
       "Fodder and shelters",
@@ -374,7 +374,7 @@ const BASE_TECHNIQUES = {
   boreal: t(
     "boreal",
     "Winter timber haulage",
-    "Frozen-ground haulage favors winter timber recovery. Saws and prepared tracks reduce access losses; they do not increase game populations.",
+    "Frozen-ground haulage favors winter timber recovery.",
     [2, 4, 5, 6],
     [
       "Managed winter cutting",
@@ -391,7 +391,7 @@ const BASE_TECHNIQUES = {
   tropicalLogging: t(
     "tropical-logging",
     "Selective tropical logging",
-    "Planned felling and short extraction routes improve recovery under wet conditions. Existing forest composition and wildlife remain unchanged.",
+    "Planned felling and short extraction routes improve recovery under wet conditions.",
     [2, 4, 5, 6],
     [
       "Marked selective felling",
@@ -404,7 +404,7 @@ const BASE_TECHNIQUES = {
   coppice: t(
     "coppice",
     "Managed broadleaf woodland",
-    "Coppice and high-forest management improve timber recovery, with more work in the dormant season rather than a blanket wildlife bonus.",
+    "Managed coupes and careful haulage improve timber recovery during the woodland’s dormant season.",
     [3, 5, 6, 7],
     [
       "Managed cutting coupes",
@@ -417,7 +417,7 @@ const BASE_TECHNIQUES = {
   coal: t(
     "coal",
     "Ventilated coal workings",
-    "Supports, ventilation and pumping support coal extraction. Drainage equipment increasingly reduces wet-spell losses.",
+    "Supports, ventilation and pumping support coal extraction.",
     [4, 6, 7, 8],
     [
       "Supported workings",
@@ -430,7 +430,7 @@ const BASE_TECHNIQUES = {
   ore: t(
     "ore",
     "Hard-rock ore dressing",
-    "Crushing, sorting and lifting recover more ore from the existing vein. No new deposit is created.",
+    "Crushing, sorting and lifting recover more ore from the vein.",
     [3, 5, 6, 7],
     [
       "Sorted workings",
@@ -443,7 +443,7 @@ const BASE_TECHNIQUES = {
   gold: t(
     "gold",
     "Gold-vein recovery",
-    "Careful sorting and crushing improve precious-metal recovery. Gold receives a smaller card bonus than bulk coal or stone.",
+    "Careful sorting and crushing recover more precious metal from the worked rock.",
     [2, 3, 4, 5],
     [
       "Selective vein working",
@@ -456,7 +456,7 @@ const BASE_TECHNIQUES = {
   polarMine: t(
     "polar-mine",
     "Cold-region mineral workings",
-    "Thawing and protected lifting are expensive in frozen ground. Steam equipment reduces cold-spell losses but never opens impassable terrain.",
+    "Thawing and protected lifting are expensive in frozen ground.",
     [2, 3, 4, 5],
     [
       "Protected workings",
@@ -473,7 +473,7 @@ const BASE_TECHNIQUES = {
   clay: t(
     "clay",
     "Clay winning and settling",
-    "Covered sorting and drained workings improve raw clay recovery. These works do not turn the tile's output into pottery.",
+    "Covered sorting and drained workings improve raw clay recovery.",
     [3, 5, 6, 7],
     [
       "Organized clay pits",
@@ -486,7 +486,7 @@ const BASE_TECHNIQUES = {
   peat: t(
     "peat",
     "Peat cutting and drying",
-    "Cutting, raised drying racks and covered stores suit wet peat ground. Wet spells remain a risk until advanced drying works.",
+    "Cutting, raised drying racks and covered stores suit wet peat ground.",
     [2, 4, 5, 6],
     [
       "Cutting and drying racks",
@@ -503,7 +503,7 @@ const BASE_TECHNIQUES = {
   stone: t(
     "stone",
     "Dimension-stone quarrying",
-    "Cutting benches, cranes and sawing improve stone recovery. Wet and cold spells hamper exposed workings.",
+    "Cutting benches, cranes and sawing improve stone recovery.",
     [3, 5, 6, 7],
     [
       "Organized workings",
@@ -519,7 +519,7 @@ const BASE_TECHNIQUES = {
   solarSalt: t(
     "solar-salt",
     "Solar evaporation saltworks",
-    "Sun and dry air favor evaporation; rain dilutes exposed pans. Advanced covered and heated works reduce that risk.",
+    "Sun and dry air favor evaporation.",
     [4, 6, 7, 8],
     [
       "Evaporation beds",
@@ -536,7 +536,7 @@ const BASE_TECHNIQUES = {
   heatedSalt: t(
     "heated-salt",
     "Sheltered brine concentration",
-    "Cool or wet climates have weaker natural evaporation. Heated pans matter more, with a higher upfront coal bill.",
+    "Cool or wet climates have weaker natural evaporation.",
     [1, 2, 4, 5],
     [
       "Sheltered brine beds",
@@ -552,7 +552,7 @@ const BASE_TECHNIQUES = {
   riverFish: t(
     "river-fish",
     "Freshwater landing and curing",
-    "Landing stages and careful handling improve the fish currently using the river or lake. They do not dam navigation or create permanent fish.",
+    "Landing stages and clean sorting tables preserve more of the river and lake catch.",
     [2, 4, 5, 6],
     [
       "Net landings",
@@ -565,7 +565,7 @@ const BASE_TECHNIQUES = {
   warmFish: t(
     "warm-fish",
     "Tropical catch preservation",
-    "Shade, curing and refrigeration reduce warm-climate catch losses. Benefits disappear when the shoal migrates away.",
+    "Shade, curing and refrigeration reduce warm-climate catch losses.",
     [3, 5, 6, 7],
     [
       "Shaded curing racks",
@@ -578,7 +578,7 @@ const BASE_TECHNIQUES = {
   coldFish: t(
     "cold-fish",
     "Cold-coast fish handling",
-    "Landing gear, curing stores and icehouses improve existing catches. Frozen water and absent shoals still stop production.",
+    "Landing gear, curing stores and icehouses improve catches.",
     [2, 3, 4, 5],
     [
       "Landing and curing",
@@ -591,7 +591,7 @@ const BASE_TECHNIQUES = {
   catchments: t(
     "catchments",
     "Runoff basins and stone bunds",
-    "Planting pits, small bunds and stored runoff support rainfed dryland crops. They need seasonal rain, cannot irrigate a true desert and do not add harvest seasons.",
+    "Planting pits, small bunds and stored runoff support rainfed dryland crops.",
     [2, 3, 4, 5],
     [
       "Runoff planting basins",
@@ -604,7 +604,7 @@ const BASE_TECHNIQUES = {
   woodlandHunt: t(
     "woodland-hunt",
     "Woodland tracking and game recovery",
-    "Trails, hides and curing facilities improve meat and hides only while wild animals are here. Logging and development still discourage visiting herds.",
+    "Tracking shelters and curing facilities help hunters follow woodland game and preserve their catch.",
     [4, 6, 7, 8],
     [
       "Tracking shelters",
@@ -616,7 +616,7 @@ const BASE_TECHNIQUES = {
   plainsHunt: t(
     "plains-hunt",
     "Open-country hunting stations",
-    "Scouting shelters and communal game handling improve recovery from passing herds. No herd is created, held in place or hunted to extinction.",
+    "Scouting shelters and communal game handling improve recovery from passing herds.",
     [4, 6, 7, 8],
     [
       "Scouting shelters",
@@ -629,7 +629,7 @@ const BASE_TECHNIQUES = {
   polarHunt: t(
     "polar-hunt",
     "Cold-country hunting caches",
-    "Tracking routes, stone markers and protected caches improve passing reindeer, musk ox and coastal seals. Empty snow plains still yield nothing.",
+    "Marked routes and protected caches support hunters following reindeer, musk ox and coastal seals.",
     [4, 6, 7, 8],
     [
       "Tracking and stone caches",
@@ -642,7 +642,7 @@ const BASE_TECHNIQUES = {
   desertHunt: t(
     "desert-hunt",
     "Dryland tracking and shaded curing",
-    "Small tracking shelters near scrub and oases improve recovery from visiting gazelles. They never create a permanent herd or water source.",
+    "Small tracking shelters near scrub and oases improve recovery from visiting gazelles.",
     [4, 6, 7, 8],
     [
       "Tracking shelters",

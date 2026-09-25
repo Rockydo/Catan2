@@ -1,4 +1,8 @@
 import {
+  isSpecialist,
+  SPECIALIST_PROJECTS,
+} from "./infrastructure-specialists";
+import {
   isInfrastructure,
   annualInfrastructureBonus,
   infrastructureProtection,
@@ -6,7 +10,7 @@ import {
   tierOf,
 } from "./infrastructure";
 import { localTechnique } from "./infrastructure-techniques";
-import { projectCost } from "./geography-actions";
+import { candidateProjects, projectCost } from "./geography-actions";
 import { PROJECTS, pieceAccess, baseGeographicYield } from "./geography";
 import { projectSite } from "./geography-actions";
 import { environmentRisk } from "./environment";
@@ -1259,7 +1263,7 @@ export function economyProjects(s: Game): Project[] {
               : 0),
           0,
         );
-      for (const kind of Object.keys(PROJECTS) as (keyof typeof PROJECTS)[]) {
+      for (const kind of candidateProjects(tile, s.active)) {
         if (!projectSite(s, tile, kind)) continue;
         const nextTier = isInfrastructure(kind) ? tierOf(tile, kind) + 1 : 1;
         const floodRisk =
@@ -1304,27 +1308,43 @@ export function economyProjects(s: Game): Project[] {
                     ),
                 );
         }
-        const score = isInfrastructure(kind)
+        const specialist = isSpecialist(kind)
+          ? SPECIALIST_PROJECTS[kind]
+          : undefined;
+        const specialistAvailability =
+          specialist &&
+          ["hunting", "whaling", "fishery"].includes(specialist.branch.track)
+            ? specialist.branch.goods.some((raw) => g.fauna?.[raw])
+              ? 0.35
+              : 0.02
+            : 1;
+        const score = specialist
           ? (production *
-              availability *
-              (annualInfrastructureBonus(tile, kind, nextTier) -
-                annualInfrastructureBonus(tile, kind, nextTier - 1) +
-                resilience) *
-              1.5) /
-            (nextTier * nextTier)
-          : kind === "levee"
-            ? production * floodRisk * 12
-            : kind === "granary"
-              ? nearby.some((t) => townThreats(s, t).length)
-                ? 14
-                : 1
-              : kind === "harbor"
-                ? units.some((u) => u.naval && u.tile === id)
-                  ? 7
+              specialistAvailability *
+              (specialist.branch.effect === "yield" ? 0.6 : 0.2)) /
+            (specialist.tier * specialist.tier)
+          : isInfrastructure(kind)
+            ? (production *
+                availability *
+                (annualInfrastructureBonus(tile, kind, nextTier) -
+                  annualInfrastructureBonus(tile, kind, nextTier - 1) +
+                  resilience) *
+                1.5) /
+              (nextTier * nextTier)
+            : kind === "levee"
+              ? production * floodRisk * 12
+              : kind === "granary"
+                ? nearby.some((t) => townThreats(s, t).length)
+                  ? 14
                   : 1
-                : neighbors(id).filter((n) => canOccupy(s.tiles[n])).length >= 2
-                  ? 12
-                  : 2;
+                : kind === "harbor"
+                  ? units.some((u) => u.naval && u.tile === id)
+                    ? 7
+                    : 1
+                  : neighbors(id).filter((n) => canOccupy(s.tiles[n])).length >=
+                      2
+                    ? 12
+                    : 2;
         add(
           { type: "project", tile: id, kind },
           projectCost(tile, kind),

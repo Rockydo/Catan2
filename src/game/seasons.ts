@@ -2,6 +2,8 @@ import {
   isInfrastructure,
   effectiveTier,
   infrastructureExtras,
+  specialistExtras,
+  rotationExtras,
   allocateAnnual,
   cropHarvestWindow,
 } from "./infrastructure";
@@ -482,7 +484,7 @@ function schedule(tile: Hex, raw: Raw, base: number): Year {
   return times([1, 1, 1, 1]);
 }
 
-export function seasonalProfile(
+export function ordinarySeasonalProfile(
   tile: Hex,
   owner?: number,
 ): Record<Season, Stock> {
@@ -524,10 +526,14 @@ export function seasonalProfile(
     // Add fixed annual increments to the native calendar, before redistributing.
     // Each track uses the original resource schedule, avoiding compounded bonuses.
     const projects = Object.keys(g.projects ?? {}).filter(isInfrastructure);
-    if (projects.length) {
+    if (Object.keys(g.projects ?? {}).length) {
       const native = Object.fromEntries(
         SEASONS.map((season) => [season, { ...result[season] }]),
       ) as Record<Season, Stock>;
+      const side = specialistExtras(tile, native, owner);
+      for (const season of SEASONS)
+        for (const [raw, n] of Object.entries(side[season]))
+          result[season][raw as Raw] = (result[season][raw as Raw] ?? 0) + n!;
       for (const kind of projects) {
         const tier = effectiveTier(tile, kind, owner);
         const extra = infrastructureExtras(tile, kind, tier, native);
@@ -558,6 +564,19 @@ export function seasonalProfile(
       }
     }
   }
+  return result;
+}
+export function seasonalProfile(
+  tile: Hex,
+  owner?: number,
+): Record<Season, Stock> {
+  const result = ordinarySeasonalProfile(tile, owner),
+    extra = rotationExtras(tile, result, owner);
+  for (const season of SEASONS)
+    for (const good of ["grain", "oil"] as const)
+      if (extra[season][good])
+        result[season][good] =
+          (result[season][good] ?? 0) + extra[season][good]!;
   return result;
 }
 export function seasonalYield(

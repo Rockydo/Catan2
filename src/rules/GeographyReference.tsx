@@ -1,3 +1,8 @@
+import { ROTATION_BRANCHES } from "../game/infrastructure-rotations";
+import {
+  SPECIALIST_BRANCHES,
+  isSpecialist,
+} from "../game/infrastructure-specialists";
 import { FloodComparison } from "../ui/FloodArt";
 import { useState } from "react";
 import {
@@ -174,14 +179,70 @@ export function GeographyReference() {
       </div>
       <h2>{l("Build for the site", "Construire selon le terrain")}</h2>
       <div className="geography-wildlife-grid">
-        {Object.entries(PROJECTS).map(([k, p]) => (
-          <article key={k}>
-            <h3>{tx(p.name)}</h3>
-            <Goods stock={p.cost} />
-            <p>{tx(p.description)}</p>
-          </article>
-        ))}
+        {Object.entries(PROJECTS)
+          .filter(([id]) => !isSpecialist(id))
+          .map(([k, p]) => (
+            <article key={k}>
+              <h3>{tx(p.name)}</h3>
+              <Goods stock={p.cost} />
+              <p>{tx(p.description)}</p>
+            </article>
+          ))}
       </div>
+      <h2>
+        {l(
+          "Specialist investments and crop rotations",
+          "Compléments et rotations culturales",
+        )}
+      </h2>
+      <p>
+        {l(
+          "Specialists complement the main works. Each has four separately purchased stages, requiring an adjacent city of the matching tier. The tile inspector shows the local price and seasonal benefit.",
+          "Les compléments s’ajoutent aux ouvrages principaux. Leurs quatre étapes s’achètent séparément et nécessitent une ville adjacente du niveau correspondant. La fiche du terrain indique le prix local et le gain saisonnier.",
+        )}
+      </p>
+      {[
+        {
+          name: l(
+            "67 specialist branches · 268 projects",
+            "67 branches complémentaires · 268 projets",
+          ),
+          branches: SPECIALIST_BRANCHES,
+        },
+        {
+          name: l(
+            "16 secondary-crop rotations",
+            "16 rotations de cultures secondaires",
+          ),
+          branches: ROTATION_BRANCHES,
+        },
+      ].map((group) => (
+        <details key={group.name}>
+          <summary>{group.name}</summary>
+          <div className="geography-wildlife-grid">
+            {group.branches.map((branch) => (
+              <article key={branch.id}>
+                <h3>{tx(branch.name)}</h3>
+                <p>{tx(branch.description)}</p>
+                <ol>
+                  {branch.stages.map((stage) => (
+                    <li key={stage}>{tx(stage)}</li>
+                  ))}
+                </ol>
+                {branch.rotation && (
+                  <p>
+                    {branch.rotation.seasons
+                      .map((season) =>
+                        tx(season[0].toUpperCase() + season.slice(1)),
+                      )
+                      .join(" · ")}
+                  </p>
+                )}
+              </article>
+            ))}
+          </div>
+        </details>
+      ))}
       <h2>{l("Rare landmarks", "Sites remarquables")}</h2>
       <div className="geography-landmarks">
         {Object.entries(LANDMARKS).map(([k, v]) => (

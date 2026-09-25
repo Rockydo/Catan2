@@ -1,3 +1,4 @@
+import { UTILITY_PROJECTS } from "../game/geography-actions";
 import { InfrastructurePanel, IrrigationCalendar } from "./Infrastructure";
 import { isInfrastructure } from "../game/infrastructure";
 import { regionalLandform } from "../game/physical-landforms";
@@ -224,7 +225,7 @@ export function GeographyPanel({
   const g = tile.geography;
   if (!g) return null;
   const ford = fordStatus(tile);
-  const sites = (Object.keys(PROJECTS) as Project[]).filter(
+  const sites = UTILITY_PROJECTS.filter(
     (kind) => !isInfrastructure(kind) && projectSite(s, tile, kind, viewer),
   );
   const own =
@@ -344,14 +345,20 @@ export function GeographyPanel({
         </div>
       )}
       {!!Object.keys(g.projects ?? {}).length && (
-        <p>
-          {Object.entries(g.projects!)
-            .map(
-              ([kind, p]) =>
-                `${tx(PROJECTS[kind as Project].name)} (${s.players[p!.owner].name})`,
-            )
-            .join(" · ")}
-        </p>
+        <details className="infrastructure-installed">
+          <summary>
+            {locale === "fr" ? "Ouvrages en service" : "Installed improvements"}{" "}
+            · {Object.keys(g.projects!).length}
+          </summary>
+          <p>
+            {Object.entries(g.projects!)
+              .map(
+                ([kind, p]) =>
+                  `${tx(PROJECTS[kind as Project].name)} (${s.players[p!.owner].name})`,
+              )
+              .join(" · ")}
+          </p>
+        </details>
       )}
       <InfrastructurePanel
         game={s}

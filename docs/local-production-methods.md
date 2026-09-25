@@ -102,7 +102,7 @@ The catalogue below is generated from the same definitions used by the game (`np
 
 ### Oasis water distribution
 
-Covered channels conserve scarce freshwater; dry sites gain most, but still need an oasis, river, lake or spring.
+Covered channels conserve scarce freshwater.
 
 - Site selection: General/legacy fallback; specific matching methods take priority.
 - Stages I–IV: Spring channels → Covered distribution galleries → Lift pumps → Lined oasis network.
@@ -114,7 +114,7 @@ Covered channels conserve scarce freshwater; dry sites gain most, but still need
 
 ### Paddy water control
 
-Bunds and sluices regulate water on existing rice plots. Warmth limits additional planting; water cannot create a winter crop in a cold climate.
+Bunds and sluices regulate water on rice plots.
 
 - Site selection: General/legacy fallback; specific matching methods take priority.
 - Stages I–IV: Paddy bunds → Dividing sluices → Paddy pumping station → Controlled paddy network.
@@ -126,7 +126,7 @@ Bunds and sluices regulate water on existing rice plots. Warmth limits additiona
 
 ### Canal-fed raised gardens
 
-Canals supply raised garden beds without flooding the roots. Sediment and controlled water support existing mixed crops; these are not rice paddies.
+Canals supply raised garden beds without flooding the roots.
 
 - Site selection: General/legacy fallback; specific matching methods take priority.
 - Stages I–IV: Garden feeder channels → Raised beds and sluices → Garden return pumps → Integrated garden waterways.
@@ -138,7 +138,7 @@ Canals supply raised garden beds without flooding the roots. Sediment and contro
 
 ### Recession-water management
 
-Diversion gates retain useful water after floods recede. They improve the existing harvest without preventing flooding.
+Diversion gates retain useful water after floods recede.
 
 - Site selection: General/legacy fallback; specific matching methods take priority.
 - Stages I–IV: Diversion channels → Recession gates → Lift and return pumps → Regulated recession network.
@@ -150,7 +150,7 @@ Diversion gates retain useful water after floods recede. They improve the existi
 
 ### Orchard basin irrigation
 
-Tree basins direct scarce water to roots. Fruit and oil retain their native ripening seasons.
+Tree basins direct scarce water to roots.
 
 - Site selection: General/legacy fallback; specific matching methods take priority.
 - Stages I–IV: Tree basins → Lined orchard channels → Orchard lift pumps → Root-zone distribution.
@@ -162,7 +162,7 @@ Tree basins direct scarce water to roots. Fruit and oil retain their native ripe
 
 ### Supplemental field irrigation
 
-Reliable supplementary water helps existing fields; cool or already wet climates have limited extra cropping potential.
+Reliable supplementary water helps fields.
 
 - Site selection: General/legacy fallback; specific matching methods take priority.
 - Stages I–IV: Field channels → Managed canals → Steam pumping station → Integrated irrigation works.
@@ -174,7 +174,7 @@ Reliable supplementary water helps existing fields; cool or already wet climates
 
 ### Seasonal field irrigation
 
-Stored and diverted freshwater supports continental summer crops without extending the growing season into winter.
+Stored freshwater sustains continental summer crops through dry spells.
 
 - Site selection: General/legacy fallback; specific matching methods take priority.
 - Stages I–IV: Field channels → Managed canals → Steam pumping station → Integrated irrigation works.
@@ -186,7 +186,7 @@ Stored and diverted freshwater supports continental summer crops without extendi
 
 ### Dryland field irrigation
 
-Freshwater irrigation has high returns in dry farming areas. It remains distinct from rain-dependent runoff harvesting.
+Freshwater irrigation has high returns in dry farming areas.
 
 - Site selection: General/legacy fallback; specific matching methods take priority.
 - Stages I–IV: Field channels → Lined field canals → Steam lift pumps → Integrated field network.
@@ -198,7 +198,7 @@ Freshwater irrigation has high returns in dry farming areas. It remains distinct
 
 ### Dryland mulch and rotations
 
-Ground cover and organic matter conserve moisture. Drought-tolerant crops gain less from extra water but benefit from soil care.
+Ground cover and organic matter conserve moisture.
 
 - Site selection: General/legacy fallback; specific matching methods take priority.
 - Stages I–IV: Mulch and manure → Fallow rotations → Seed drills and soil amendments → Dryland agronomy station.
@@ -210,7 +210,7 @@ Ground cover and organic matter conserve moisture. Drought-tolerant crops gain l
 
 ### Black-soil rotations
 
-Already fertile black soils need careful rotations more than large fertilizer inputs. Improvements have deliberately modest returns.
+Crop rotations and retained residues preserve the rich structure of black-earth soils.
 
 - Site selection: General/legacy fallback; specific matching methods take priority.
 - Stages I–IV: Crop rotations → Seed selection → Precision sowing → Soil-testing station.
@@ -222,7 +222,7 @@ Already fertile black soils need careful rotations more than large fertilizer in
 
 ### Tropical nutrient cycling
 
-Mulch, compost and cover crops conserve nutrients under heavy rain. This supports the existing crop, without planting a new forest.
+Mulch, compost and cover crops conserve nutrients under heavy rain.
 
 - Site selection: General/legacy fallback; specific matching methods take priority.
 - Stages I–IV: Compost and ground cover → Cover-crop rotations → Amendment preparation → Nutrient recovery works.
@@ -234,7 +234,7 @@ Mulch, compost and cover crops conserve nutrients under heavy rain. This support
 
 ### Root-crop rotations
 
-Seed selection, ridging and rotations improve existing tubers and roots while keeping their climate-limited harvest calendar.
+Seed selection, ridging and rotations improve tubers and roots while keeping their climate-limited harvest calendar.
 
 - Site selection: General/legacy fallback; specific matching methods take priority.
 - Stages I–IV: Seed selection → Ridged rotations → Mechanical lifting → Seed and root stores.
@@ -246,7 +246,7 @@ Seed selection, ridging and rotations improve existing tubers and roots while ke
 
 ### Mixed-field rotations
 
-Rotations and selected seed improve existing cereals and perennial crops. Mechanization improves recovery, not the number of winter harvests.
+Rotations and selected seed improve cereals and perennial crops.
 
 - Site selection: General/legacy fallback; specific matching methods take priority.
 - Stages I–IV: Rotations and manure → Seed and soil management → Steam threshing and fertilizers → Agricultural research works.
@@ -258,7 +258,7 @@ Rotations and selected seed improve existing cereals and perennial crops. Mechan
 
 ### Wet-field drainage
 
-Ditches and fired drains relieve waterlogging; river floods still require levees.
+Ditches and fired drains relieve waterlogging.
 
 - Site selection: General/legacy fallback; specific matching methods take priority.
 - Stages I–IV: Field ditches → Tile drainage → Steam drainage pumps → Managed drainage network.
@@ -270,7 +270,7 @@ Ditches and fired drains relieve waterlogging; river floods still require levees
 
 ### Controlled paddy drawdown
 
-Gates allow managed drainage without treating rice as a dryland cereal. Small output gains complement water control.
+Gates allow managed drainage.
 
 - Site selection: General/legacy fallback; specific matching methods take priority.
 - Stages I–IV: Paddy outlets → Drawdown sluices → Return pumps → Paddy drainage network.
@@ -282,7 +282,7 @@ Gates allow managed drainage without treating rice as a dryland cereal. Small ou
 
 ### Raised beds and drains
 
-Raised growing beds and drainage reduce waterlogging in cool lowlands; they do not warm an entire climate or stop river floods.
+Raised growing beds and drainage reduce waterlogging in cool lowlands.
 
 - Site selection: General/legacy fallback; specific matching methods take priority.
 - Stages I–IV: Raised beds → Linked field drains → Lowland pumps → Managed raised-field network.
@@ -294,7 +294,7 @@ Raised growing beds and drainage reduce waterlogging in cool lowlands; they do n
 
 ### Highland stone terraces
 
-Retaining walls conserve soil and water on cultivated slopes. Sheltered plots reduce cold-spell losses without opening winter harvests.
+Retaining walls conserve soil and water on cultivated slopes.
 
 - Site selection: General/legacy fallback; specific matching methods take priority.
 - Stages I–IV: Contour stone walls → Bench and water terraces → Engineered retaining works → Integrated highland estate.
@@ -306,7 +306,7 @@ Retaining walls conserve soil and water on cultivated slopes. Sheltered plots re
 
 ### Cascaded rice terraces
 
-Level basins and dividing sluices hold water on existing hillside rice plots. No new farmland or mountain crossings are created.
+Level basins and dividing sluices hold water on hillside rice plots.
 
 - Site selection: General/legacy fallback; specific matching methods take priority.
 - Stages I–IV: Paddy contour walls → Cascaded basins → Engineered paddy walls → Integrated terrace catchment.
@@ -318,7 +318,7 @@ Level basins and dividing sluices hold water on existing hillside rice plots. No
 
 ### Dry-stone contour terraces
 
-Contour walls slow runoff and soil loss on existing dry slopes. Benefits favor dry spells rather than extra harvest seasons.
+Contour walls slow runoff and soil loss on dry slopes.
 
 - Site selection: General/legacy fallback; specific matching methods take priority.
 - Stages I–IV: Dry-stone walls → Bench terraces → Engineered hillside works → Integrated terrace estate.
@@ -330,7 +330,7 @@ Contour walls slow runoff and soil loss on existing dry slopes. Benefits favor d
 
 ### Hillside erosion control
 
-Cultivated slopes benefit from retaining works; flat land cannot build terraces.
+Retaining walls stabilize cultivated slopes and hold soil around the crop roots.
 
 - Site selection: General/legacy fallback; specific matching methods take priority.
 - Stages I–IV: Contour walls → Bench terraces → Engineered hillside works → Integrated terrace estate.
@@ -342,7 +342,7 @@ Cultivated slopes benefit from retaining works; flat land cannot build terraces.
 
 ### Hay meadows and winter shelter
 
-Stored fodder and shelter favor cold-season livestock recovery. Domestic herds stay on their tile; wild herds are not fed by these works.
+Stored fodder and shelter favor cold-season livestock recovery.
 
 - Site selection: General/legacy fallback; specific matching methods take priority.
 - Stages I–IV: Hay and shelter → Winter fodder stores → Mechanized feed mill → Veterinary and feed complex.
@@ -354,7 +354,7 @@ Stored fodder and shelter favor cold-season livestock recovery. Domestic herds s
 
 ### Dryland fodder reserves
 
-Managed fodder and watering facilities buffer dry-season grazing shortages. This improves existing domestic stock, not wild herd abundance.
+Managed fodder and watering facilities buffer dry-season grazing shortages.
 
 - Site selection: General/legacy fallback; specific matching methods take priority.
 - Stages I–IV: Fodder and watering pens → Managed grazing paddocks → Fodder processing mill → Veterinary and fodder depot.
@@ -366,7 +366,7 @@ Managed fodder and watering facilities buffer dry-season grazing shortages. This
 
 ### Managed pasture and stock care
 
-Pasture rotation and feed preparation improve domestic meat, hides and wool within one shared output budget.
+Rotational grazing and prepared feed improve the health and productivity of domestic herds.
 
 - Site selection: General/legacy fallback; specific matching methods take priority.
 - Stages I–IV: Fodder and shelters → Managed pasture → Mechanized feed mill → Veterinary and feed complex.
@@ -378,7 +378,7 @@ Pasture rotation and feed preparation improve domestic meat, hides and wool with
 
 ### Winter timber haulage
 
-Frozen-ground haulage favors winter timber recovery. Saws and prepared tracks reduce access losses; they do not increase game populations.
+Frozen-ground haulage favors winter timber recovery.
 
 - Site selection: General/legacy fallback; specific matching methods take priority.
 - Stages I–IV: Managed winter cutting → Sled haulage routes → Steam saw and haulage → Boreal timber depot.
@@ -390,7 +390,7 @@ Frozen-ground haulage favors winter timber recovery. Saws and prepared tracks re
 
 ### Selective tropical logging
 
-Planned felling and short extraction routes improve recovery under wet conditions. Existing forest composition and wildlife remain unchanged.
+Planned felling and short extraction routes improve recovery under wet conditions.
 
 - Site selection: General/legacy fallback; specific matching methods take priority.
 - Stages I–IV: Marked selective felling → Planned extraction routes → Compact steam sawworks → Selective timber depot.
@@ -402,7 +402,7 @@ Planned felling and short extraction routes improve recovery under wet condition
 
 ### Managed broadleaf woodland
 
-Coppice and high-forest management improve timber recovery, with more work in the dormant season rather than a blanket wildlife bonus.
+Managed coupes and careful haulage improve timber recovery during the woodland’s dormant season.
 
 - Site selection: General/legacy fallback; specific matching methods take priority.
 - Stages I–IV: Managed cutting coupes → Timber haulage → Steam logging works → Industrial forestry depot.
@@ -414,7 +414,7 @@ Coppice and high-forest management improve timber recovery, with more work in th
 
 ### Ventilated coal workings
 
-Supports, ventilation and pumping support coal extraction. Drainage equipment increasingly reduces wet-spell losses.
+Supports, ventilation and pumping support coal extraction.
 
 - Site selection: General/legacy fallback; specific matching methods take priority.
 - Stages I–IV: Supported workings → Ventilation and winding → Steam mine pumps → Integrated ventilated mine.
@@ -426,7 +426,7 @@ Supports, ventilation and pumping support coal extraction. Drainage equipment in
 
 ### Hard-rock ore dressing
 
-Crushing, sorting and lifting recover more ore from the existing vein. No new deposit is created.
+Crushing, sorting and lifting recover more ore from the vein.
 
 - Site selection: General/legacy fallback; specific matching methods take priority.
 - Stages I–IV: Sorted workings → Crushing and winding → Steam ore-dressing mill → Integrated ore works.
@@ -438,7 +438,7 @@ Crushing, sorting and lifting recover more ore from the existing vein. No new de
 
 ### Gold-vein recovery
 
-Careful sorting and crushing improve precious-metal recovery. Gold receives a smaller card bonus than bulk coal or stone.
+Careful sorting and crushing recover more precious metal from the worked rock.
 
 - Site selection: General/legacy fallback; specific matching methods take priority.
 - Stages I–IV: Selective vein working → Stamping and sorting → Steam stamp mill → Integrated gold recovery.
@@ -450,7 +450,7 @@ Careful sorting and crushing improve precious-metal recovery. Gold receives a sm
 
 ### Cold-region mineral workings
 
-Thawing and protected lifting are expensive in frozen ground. Steam equipment reduces cold-spell losses but never opens impassable terrain.
+Thawing and protected lifting are expensive in frozen ground.
 
 - Site selection: General/legacy fallback; specific matching methods take priority.
 - Stages I–IV: Protected workings → Insulated winding gear → Steam thawing and pumping → Cold-region extraction works.
@@ -462,7 +462,7 @@ Thawing and protected lifting are expensive in frozen ground. Steam equipment re
 
 ### Clay winning and settling
 
-Covered sorting and drained workings improve raw clay recovery. These works do not turn the tile's output into pottery.
+Covered sorting and drained workings improve raw clay recovery.
 
 - Site selection: General/legacy fallback; specific matching methods take priority.
 - Stages I–IV: Organized clay pits → Settling and haulage → Steam clay excavators → Integrated clay workings.
@@ -474,7 +474,7 @@ Covered sorting and drained workings improve raw clay recovery. These works do n
 
 ### Peat cutting and drying
 
-Cutting, raised drying racks and covered stores suit wet peat ground. Wet spells remain a risk until advanced drying works.
+Cutting, raised drying racks and covered stores suit wet peat ground.
 
 - Site selection: General/legacy fallback; specific matching methods take priority.
 - Stages I–IV: Cutting and drying racks → Covered peat stores → Mechanical pressing → Integrated peat drying.
@@ -486,7 +486,7 @@ Cutting, raised drying racks and covered stores suit wet peat ground. Wet spells
 
 ### Dimension-stone quarrying
 
-Cutting benches, cranes and sawing improve stone recovery. Wet and cold spells hamper exposed workings.
+Cutting benches, cranes and sawing improve stone recovery.
 
 - Site selection: General/legacy fallback; specific matching methods take priority.
 - Stages I–IV: Organized workings → Cranes and haulage → Steam stone saws → Industrial extraction works.
@@ -498,7 +498,7 @@ Cutting benches, cranes and sawing improve stone recovery. Wet and cold spells h
 
 ### Solar evaporation saltworks
 
-Sun and dry air favor evaporation; rain dilutes exposed pans. Advanced covered and heated works reduce that risk.
+Sun and dry air favor evaporation.
 
 - Site selection: General/legacy fallback; specific matching methods take priority.
 - Stages I–IV: Evaporation beds → Divided crystallizer pans → Covered heated pans → Integrated salt refinery.
@@ -510,7 +510,7 @@ Sun and dry air favor evaporation; rain dilutes exposed pans. Advanced covered a
 
 ### Sheltered brine concentration
 
-Cool or wet climates have weaker natural evaporation. Heated pans matter more, with a higher upfront coal bill.
+Cool or wet climates have weaker natural evaporation.
 
 - Site selection: General/legacy fallback; specific matching methods take priority.
 - Stages I–IV: Sheltered brine beds → Brine concentration pans → Coal-fired salt pans → Covered salt refinery.
@@ -522,7 +522,7 @@ Cool or wet climates have weaker natural evaporation. Heated pans matter more, w
 
 ### Freshwater landing and curing
 
-Landing stages and careful handling improve the fish currently using the river or lake. They do not dam navigation or create permanent fish.
+Landing stages and clean sorting tables preserve more of the river and lake catch.
 
 - Site selection: General/legacy fallback; specific matching methods take priority.
 - Stages I–IV: Net landings → Landing and curing stores → Steam ice plant → Freshwater cold chain.
@@ -534,7 +534,7 @@ Landing stages and careful handling improve the fish currently using the river o
 
 ### Tropical catch preservation
 
-Shade, curing and refrigeration reduce warm-climate catch losses. Benefits disappear when the shoal migrates away.
+Shade, curing and refrigeration reduce warm-climate catch losses.
 
 - Site selection: General/legacy fallback; specific matching methods take priority.
 - Stages I–IV: Shaded curing racks → Covered landing stores → Steam ice plant → Tropical cold chain.
@@ -546,7 +546,7 @@ Shade, curing and refrigeration reduce warm-climate catch losses. Benefits disap
 
 ### Cold-coast fish handling
 
-Landing gear, curing stores and icehouses improve existing catches. Frozen water and absent shoals still stop production.
+Landing gear, curing stores and icehouses improve catches.
 
 - Site selection: General/legacy fallback; specific matching methods take priority.
 - Stages I–IV: Landing and curing → Icehouse and landing gear → Steam refrigeration → Industrial cold chain.
@@ -558,7 +558,7 @@ Landing gear, curing stores and icehouses improve existing catches. Frozen water
 
 ### Runoff basins and stone bunds
 
-Planting pits, small bunds and stored runoff support rainfed dryland crops. They need seasonal rain, cannot irrigate a true desert and do not add harvest seasons.
+Planting pits, small bunds and stored runoff support rainfed dryland crops.
 
 - Site selection: General/legacy fallback; specific matching methods take priority.
 - Stages I–IV: Runoff planting basins → Contour bunds and cisterns → Runoff distribution pumps → Managed microcatchments.
@@ -570,7 +570,7 @@ Planting pits, small bunds and stored runoff support rainfed dryland crops. They
 
 ### Woodland tracking and game recovery
 
-Trails, hides and curing facilities improve meat and hides only while wild animals are here. Logging and development still discourage visiting herds.
+Tracking shelters and curing facilities help hunters follow woodland game and preserve their catch.
 
 - Site selection: General/legacy fallback; specific matching methods take priority.
 - Stages I–IV: Tracking shelters → Hides and curing racks → Game-handling depot → Regional game cold store.
@@ -582,7 +582,7 @@ Trails, hides and curing facilities improve meat and hides only while wild anima
 
 ### Open-country hunting stations
 
-Scouting shelters and communal game handling improve recovery from passing herds. No herd is created, held in place or hunted to extinction.
+Scouting shelters and communal game handling improve recovery from passing herds.
 
 - Site selection: General/legacy fallback; specific matching methods take priority.
 - Stages I–IV: Scouting shelters → Drive lanes and curing racks → Game-handling depot → Regional game cold store.
@@ -594,7 +594,7 @@ Scouting shelters and communal game handling improve recovery from passing herds
 
 ### Cold-country hunting caches
 
-Tracking routes, stone markers and protected caches improve passing reindeer, musk ox and coastal seals. Empty snow plains still yield nothing.
+Marked routes and protected caches support hunters following reindeer, musk ox and coastal seals.
 
 - Site selection: General/legacy fallback; specific matching methods take priority.
 - Stages I–IV: Tracking and stone caches → Drive markers and shelters → Protected game depot → Insulated game stores.
@@ -606,7 +606,7 @@ Tracking routes, stone markers and protected caches improve passing reindeer, mu
 
 ### Dryland tracking and shaded curing
 
-Small tracking shelters near scrub and oases improve recovery from visiting gazelles. They never create a permanent herd or water source.
+Small tracking shelters near scrub and oases improve recovery from visiting gazelles.
 
 - Site selection: General/legacy fallback; specific matching methods take priority.
 - Stages I–IV: Tracking shelters → Shaded curing stations → Game-handling depot → Dryland game cold store.
@@ -618,7 +618,7 @@ Small tracking shelters near scrub and oases improve recovery from visiting gaze
 
 ### Mediterranean hillside feeder lifts
 
-Small lifts and contour feeders deliver existing freshwater uphill to wheat.
+Small lifts and contour feeders deliver freshwater uphill to wheat.
 
 - Investment track: Irrigation.
 - Site selection: Golden fields; Mediterranean; Elevation ≥0.72.
@@ -644,7 +644,7 @@ Shallow checked plots distribute scarce freshwater evenly across low barley fiel
 
 ### Alpine meadow-fed barley channels
 
-Short protected channels reduce cold-season damage to highland water distribution; the crop still needs summer warmth.
+Short protected channels reduce cold-season damage to highland water distribution.
 
 - Investment track: Irrigation.
 - Site selection: Barley fields; Alpine; Elevation ≥0.72.
@@ -696,7 +696,7 @@ Plateau wheat needs more lifting equipment and gets less benefit than naturally 
 
 ### Savanna millet pulse irrigation
 
-Small doses limit runoff and evaporation on existing millet plots; no river is created.
+Small doses limit runoff and evaporation on millet plots.
 
 - Investment track: Irrigation.
 - Site selection: Millet fields; Savanna; Elevation <0.52.
@@ -722,7 +722,7 @@ Partitioned gates retain useful recession water after flood access returns.
 
 ### Monsoon delta paddy divisions
 
-Separate field inlets make variable delta freshwater easier to distribute; levees still determine flood access.
+Separate field inlets make variable delta freshwater easier to distribute.
 
 - Investment track: Irrigation.
 - Site selection: Rice field / River rice; Monsoon; Delta.
@@ -735,7 +735,7 @@ Separate field inlets make variable delta freshwater easier to distribute; levee
 
 ### Coastal raised-garden freshwater gates
 
-Gates distribute available freshwater to raised gardens; seawater is never an irrigation source.
+Gates distribute available freshwater to raised gardens.
 
 - Investment track: Irrigation.
 - Site selection: Chinampa gardens; Mesoamerican; Coastal.
@@ -748,7 +748,7 @@ Gates distribute available freshwater to raised gardens; seawater is never an ir
 
 ### Island breadfruit lift basins
 
-Small upland basins deliver freshwater to established island trees without changing fruit seasons.
+Small upland basins deliver freshwater to established island trees.
 
 - Investment track: Irrigation.
 - Site selection: Breadfruit grove; Tropical Maritime; Elevation ≥0.72.
@@ -761,7 +761,7 @@ Small upland basins deliver freshwater to established island trees without chang
 
 ### Delta sago channel regulation
 
-Controlled feeder cuts stabilize water distribution through existing sago stands; abundant water limits added yield.
+Controlled feeder cuts stabilize water distribution through sago stands.
 
 - Investment track: Irrigation.
 - Site selection: Sago grove; Equatorial Wetlands; Delta.
@@ -787,7 +787,7 @@ Field-edge residue strips and careful seedbeds reduce exposure and preserve soil
 
 ### Plateau black-earth residue retention
 
-Retained cereal residues protect exposed fertile topsoil; high native fertility limits added returns.
+Retained cereal residues protect exposed fertile topsoil.
 
 - Investment track: Soil husbandry.
 - Site selection: Black-soil wheat; Steppe; Elevation ≥0.72.
@@ -813,7 +813,7 @@ Locally selected seed and sheltered seed stores improve the short barley growing
 
 ### Coastal dry-barley residue beds
 
-Residue cover conserves moisture in coastal dryland barley without adding water.
+Residue cover conserves moisture in coastal dryland barley.
 
 - Investment track: Soil husbandry.
 - Site selection: Barley fields; Hot Semi-Arid; Coastal.
@@ -826,7 +826,7 @@ Residue cover conserves moisture in coastal dryland barley without adding water.
 
 ### Rainforest oat aerated beds
 
-Raised seed rows and organic structure improve wet lowland oat roots; flood closures still apply.
+Raised seed rows and organic structure improve wet lowland oat roots.
 
 - Investment track: Soil husbandry.
 - Site selection: Oat fields; Temperate Rainforest; Elevation <0.52.
@@ -839,7 +839,7 @@ Raised seed rows and organic structure improve wet lowland oat roots; flood clos
 
 ### Alpine root seed stores
 
-Protected seed handling and root-bed preparation reduce cold losses in the existing short season.
+Protected seed handling and root-bed preparation reduce cold losses in the short season.
 
 - Investment track: Soil husbandry.
 - Site selection: Turnip fields; Alpine; Elevation ≥0.72.
@@ -878,7 +878,7 @@ Raised maize rows aerate low soils while retaining organic matter between rows.
 
 ### High puna potato seed shelters
 
-Sheltered seed-tuber selection improves recovery in high cold fields without creating winter growth.
+Sheltered seed-tuber selection improves recovery in high cold fields.
 
 - Investment track: Soil husbandry.
 - Site selection: Potato fields; Andean; Elevation ≥0.72.
@@ -904,7 +904,7 @@ Residue cover and deeper-root rotations support exposed oilseed fields.
 
 ### Coastal tropical rice compost beds
 
-Composted crop residues replenish existing paddies while controlled incorporation limits wet losses.
+Composted crop residues replenish paddies while controlled incorporation limits wet losses.
 
 - Investment track: Soil husbandry.
 - Site selection: Rice field; Tropical; Coastal.
@@ -917,7 +917,7 @@ Composted crop residues replenish existing paddies while controlled incorporatio
 
 ### High-slope olive pruning terraces
 
-Pruned material and ground cover protect existing olive roots on exposed slopes.
+Pruned material and ground cover protect olive roots on exposed slopes.
 
 - Investment track: Soil husbandry.
 - Site selection: Olive grove; Mediterranean; Elevation ≥0.72.
@@ -969,7 +969,7 @@ Shallow underdrains protect root crops from prolonged wet-soil losses.
 
 ### Mediterranean delta wheat outfalls
 
-Outfall gates empty agricultural drains after high river levels fall; they do not stop deep floods.
+Outfall gates empty agricultural drains after high river levels fall.
 
 - Investment track: Field drainage.
 - Site selection: Alluvial wheat; Mediterranean; Delta.
@@ -982,7 +982,7 @@ Outfall gates empty agricultural drains after high river levels fall; they do no
 
 ### Steppe recession-field outlets
 
-Low field outlets remove residual water after recession without permitting winter flooding or winter crops.
+Low field outlets drain residual water after the river recedes.
 
 - Investment track: Field drainage.
 - Site selection: Recession sorghum; Steppe; Elevation <0.52.
@@ -995,7 +995,7 @@ Low field outlets remove residual water after recession without permitting winte
 
 ### Subtropical paddy drawdown trenches
 
-Separate drawdown trenches improve paddy drying and root conditions between existing crops.
+Separate drawdown trenches improve paddy drying and root conditions between crops.
 
 - Investment track: Field drainage.
 - Site selection: Rice field; Subtropical; Elevation <0.52.
@@ -1008,7 +1008,7 @@ Separate drawdown trenches improve paddy drying and root conditions between exis
 
 ### Coastal monsoon paddy escape drains
 
-Controlled escape drains reduce losses during wet spells but cannot override a flooded tile.
+Controlled escape drains carry excess rainwater away from paddy roots.
 
 - Investment track: Field drainage.
 - Site selection: River rice; Monsoon; Coastal.
@@ -1021,7 +1021,7 @@ Controlled escape drains reduce losses during wet spells but cannot override a f
 
 ### Coastal sago access drains
 
-Limited drainage improves harvest access around wetland palms without draining or converting the whole habitat.
+Limited drainage improves harvest access around wetland palms.
 
 - Investment track: Field drainage.
 - Site selection: Sago grove; Equatorial Wetlands; Coastal.
@@ -1047,7 +1047,7 @@ Raised bed outlets improve root aeration above persistent canal water.
 
 ### Tropical clay-bank field drains
 
-Collectors improve drainage beside existing clay banks.
+Collectors improve drainage beside clay banks.
 
 - Investment track: Quarry infrastructure.
 - Site selection: Alluvial clay banks; Tropical; Delta.
@@ -1099,7 +1099,7 @@ Retaining walls with permeable backfill keep high potato soils usable during wet
 
 ### Highland maize vegetated benches
 
-Vegetated terrace lips retain soil and slow runoff across existing highland maize.
+Vegetated terrace lips retain soil and slow runoff across highland maize.
 
 - Investment track: Agricultural terraces.
 - Site selection: Maize fields; Mesoamerican; Elevation ≥0.72.
@@ -1125,7 +1125,7 @@ Stone-supported benches protect exposed orchard soils and hold useful rainwater.
 
 ### Mediterranean wheat rubble terraces
 
-Rubble walls support existing cereal plots without opening mountain passes.
+Rubble walls support cereal plots.
 
 - Investment track: Agricultural terraces.
 - Site selection: Golden fields; Mediterranean; Elevation ≥0.72.
@@ -1138,7 +1138,7 @@ Rubble walls support existing cereal plots without opening mountain passes.
 
 ### Semiarid barley runoff benches
 
-Contour banks retain runoff and topsoil on existing dry barley slopes.
+Contour banks retain runoff and topsoil on dry barley slopes.
 
 - Investment track: Agricultural terraces.
 - Site selection: Barley fields; Hot Semi-Arid; Elevation ≥0.72.
@@ -1164,7 +1164,7 @@ Grassed terrace margins slow intense seasonal runoff around millet plots.
 
 ### Upper monsoon paddy spillway terraces
 
-Linked spillways reduce wet-spell losses between high paddy benches; real freshwater is still needed for irrigation.
+Linked spillways reduce wet-spell losses between high paddy benches.
 
 - Investment track: Agricultural terraces.
 - Site selection: Rice field; Monsoon; Elevation ≥0.72.
@@ -1177,7 +1177,7 @@ Linked spillways reduce wet-spell losses between high paddy benches; real freshw
 
 ### Island breadfruit contour ledges
 
-Short planted ledges retain soil beneath existing island fruit trees.
+Short planted ledges retain soil beneath island fruit trees.
 
 - Investment track: Agricultural terraces.
 - Site selection: Breadfruit grove; Tropical Maritime; Elevation ≥0.72.
@@ -1190,7 +1190,7 @@ Short planted ledges retain soil beneath existing island fruit trees.
 
 ### Savanna millet stone lines
 
-Permeable stone lines spread slope runoff into millet seedbeds without storing an extra harvest.
+Permeable stone lines spread hillside runoff through millet seedbeds.
 
 - Investment track: Rainwater harvesting.
 - Site selection: Millet fields; Savanna; Elevation ≥0.72.
@@ -1203,7 +1203,7 @@ Permeable stone lines spread slope runoff into millet seedbeds without storing a
 
 ### Dry barley contour furrows
 
-Contour furrows intercept runoff on existing upland barley fields.
+Contour furrows intercept runoff on upland barley fields.
 
 - Investment track: Rainwater harvesting.
 - Site selection: Barley fields; Hot Semi-Arid; Elevation ≥0.72.
@@ -1216,7 +1216,7 @@ Contour furrows intercept runoff on existing upland barley fields.
 
 ### Mediterranean wheat runoff checks
 
-Small checked furrows hold winter rain for the native cereal harvest.
+Small checked furrows hold winter rain for the cereal harvest.
 
 - Investment track: Rainwater harvesting.
 - Site selection: Golden fields; Mediterranean; Elevation ≥0.72.
@@ -1229,7 +1229,7 @@ Small checked furrows hold winter rain for the native cereal harvest.
 
 ### Lowland olive crescent basins
 
-Crescent earth banks concentrate nearby runoff around existing tree roots.
+Crescent earth banks concentrate nearby runoff around tree roots.
 
 - Investment track: Rainwater harvesting.
 - Site selection: Olive grove; Mediterranean; Elevation <0.52.
@@ -1255,7 +1255,7 @@ Standing stubble traps drifting snow whose melt supplies the next growing season
 
 ### Low-steppe millet meltwater strips
 
-Residue strips retain local meltwater for summer millet without generating winter grain.
+Residue strips retain local meltwater for summer millet.
 
 - Investment track: Rainwater harvesting.
 - Site selection: Millet fields; Steppe; Elevation <0.52.
@@ -1294,7 +1294,7 @@ Shallow basin strips retain runoff around oilseed plots.
 
 ### Exposed-steppe fleece shelters
 
-Wind shelters and clean sorting improve existing sheep wool recovery.
+Wind shelters and clean sorting improve sheep wool recovery.
 
 - Investment track: Livestock improvements.
 - Site selection: Pasture; Steppe; Elevation ≥0.72.
@@ -1346,7 +1346,7 @@ Stored spring fodder supports domestic flocks during the dry summer.
 
 ### Semiarid slope goat browse stores
 
-Cut browse and protected pens support existing goats on dry slopes.
+Cut browse and protected pens support goats on dry slopes.
 
 - Investment track: Livestock improvements.
 - Site selection: Goat pasture; Hot Semi-Arid; Elevation ≥0.72.
@@ -1359,7 +1359,7 @@ Cut browse and protected pens support existing goats on dry slopes.
 
 ### Desert goat shaded fodder courts
 
-Shade and covered fodder storage improve recovery in extreme dry heat; they do not create grazing land.
+Shade and covered fodder storage improve recovery in extreme dry heat.
 
 - Investment track: Livestock improvements.
 - Site selection: Goat pasture; Desert; Elevation <0.52.
@@ -1411,7 +1411,7 @@ Protected fodder stores stabilize domestic cattle output across humid and dry sp
 
 ### Savanna plateau cattle hay yards
 
-Dry-season fodder reserves use the existing grass harvest to support cattle through seasonal scarcity.
+Dry-season fodder reserves use the grass harvest to support cattle through seasonal scarcity.
 
 - Investment track: Livestock improvements.
 - Site selection: Cattle range; Savanna; Elevation ≥0.72.
@@ -1424,7 +1424,7 @@ Dry-season fodder reserves use the existing grass harvest to support cattle thro
 
 ### High puna alpaca fleece shelters
 
-Protected highland sorting keeps more usable fleece from existing alpaca production.
+Protected highland sorting keeps more usable fleece from alpaca production.
 
 - Investment track: Livestock improvements.
 - Site selection: Alpaca pasture; Andean; Elevation ≥0.72.
@@ -1515,7 +1515,7 @@ Prepared short sled approaches favor winter timber recovery on frozen ground.
 
 ### Alpine skyline timber yards
 
-Cable-supported extraction reduces difficult highland timber losses without making mountain roads.
+Cable-supported extraction reduces difficult highland timber losses.
 
 - Investment track: Forestry infrastructure.
 - Site selection: Forest; Alpine; Elevation ≥0.72.
@@ -1528,7 +1528,7 @@ Cable-supported extraction reduces difficult highland timber losses without maki
 
 ### Cold-coast mixed woodland yards
 
-Roofed handling protects coastal timber; hunting returns remain separate.
+Roofed handling protects coastal timber.
 
 - Investment track: Forestry infrastructure.
 - Site selection: Hunting forest; Cold; Coastal.
@@ -1541,7 +1541,7 @@ Roofed handling protects coastal timber; hunting returns remain separate.
 
 ### Rainforest upland skyline extraction
 
-Selective cable extraction handles difficult upland logs; extra machinery costs keep gains modest.
+Selective cable extraction handles difficult upland logs.
 
 - Investment track: Forestry infrastructure.
 - Site selection: Old-growth forest; Temperate Rainforest; Elevation ≥0.72.
@@ -1554,7 +1554,7 @@ Selective cable extraction handles difficult upland logs; extra machinery costs 
 
 ### Fern woodland raised haulways
 
-Short raised haulways preserve access over wet ground; wildlife is not increased.
+Short raised haulways preserve access over wet ground.
 
 - Investment track: Forestry infrastructure.
 - Site selection: Fern hunting grounds; Temperate Rainforest; Elevation <0.52.
@@ -1580,7 +1580,7 @@ Covered bank landings improve wood handling where river woodland reaches the coa
 
 ### Andean river-gorge timber cables
 
-Local cable lifts recover timber from high river woodland without creating crossings.
+Local cable lifts recover timber from high river woodland.
 
 - Investment track: Forestry infrastructure.
 - Site selection: River woods; Andean; Elevation ≥0.72.
@@ -1619,7 +1619,7 @@ Roofed landings and raised stacks protect cut timber from wet-season exposure.
 
 ### Delta mangrove pole platforms
 
-Raised sorting platforms improve existing mangrove wood recovery while flood access remains unchanged.
+Raised sorting platforms keep mangrove timber above the wet ground during handling.
 
 - Investment track: Forestry infrastructure.
 - Site selection: Mangroves; Equatorial Wetlands; Delta.
@@ -1632,7 +1632,7 @@ Raised sorting platforms improve existing mangrove wood recovery while flood acc
 
 ### Temperate lowland iron drainage
 
-Sumps and staged pumps reduce groundwater-related recovery losses in existing lowland iron workings.
+Sumps and staged pumps reduce groundwater-related recovery losses in lowland iron workings.
 
 - Investment track: Mining infrastructure.
 - Site selection: Iron mountains; Temperate; Elevation <0.52.
@@ -1645,7 +1645,7 @@ Sumps and staged pumps reduce groundwater-related recovery losses in existing lo
 
 ### Oceanic coastal iron sump works
 
-Protected sump equipment handles wet coastal conditions without creating new ore.
+Protected sump equipment handles wet coastal conditions.
 
 - Investment track: Mining infrastructure.
 - Site selection: Iron mountains; Oceanic; Coastal.
@@ -1658,7 +1658,7 @@ Protected sump equipment handles wet coastal conditions without creating new ore
 
 ### Boreal ridge iron covered workings
 
-Protected entrances and thawing equipment preserve access to existing iron during cold spells.
+Protected entrances and thawing equipment preserve access to iron during cold spells.
 
 - Investment track: Mining infrastructure.
 - Site selection: Iron mountains; Cold; Elevation ≥0.72.
@@ -1684,7 +1684,7 @@ Staged winding gear reduces difficult highland ore haulage losses.
 
 ### High Andean iron dry dressing
 
-Dry crushing and screening suit scarce highland water; no ore washing is assumed.
+Dry crushing and screening recover iron ore where highland water is scarce.
 
 - Investment track: Mining infrastructure.
 - Site selection: Iron mountains; Andean; Elevation ≥0.72.
@@ -1723,7 +1723,7 @@ Dry screening and covered ore floors avoid dependence on absent wash water.
 
 ### Temperate coal ventilation shafts
 
-Airways and mechanical fans improve usable extraction from existing lowland coal seams.
+Airways and mechanical fans improve usable extraction from lowland coal seams.
 
 - Investment track: Mining infrastructure.
 - Site selection: Coal hills; Temperate; Elevation <0.52.
@@ -1749,7 +1749,7 @@ Protected drift entrances and thawing gear reduce cold-working losses.
 
 ### Monsoon coal staged sump pumps
 
-Successive sump stages handle heavy wet-season inflow; deep flood closures remain.
+Successive sump stages handle heavy wet-season inflow.
 
 - Investment track: Mining infrastructure.
 - Site selection: Coal hills; Monsoon; Elevation <0.52.
@@ -1775,7 +1775,7 @@ Prepared airways and hoisting plant improve recovery on elevated prairie coal si
 
 ### Desert coal dry sorting sheds
 
-Shade and dry screening separate usable coal without an invented water supply.
+Shaded screening floors separate usable coal from dust and waste rock.
 
 - Investment track: Mining infrastructure.
 - Site selection: Coal hills; Desert; Elevation ≥0.72.
@@ -1788,7 +1788,7 @@ Shade and dry screening separate usable coal without an invented water supply.
 
 ### Andean high-vein dry crushing
 
-Covered crushing and sorting recover more existing vein material on water-limited high ground.
+Covered crushing and sorting recover more vein material on water-limited high ground.
 
 - Investment track: Mining infrastructure.
 - Site selection: Gold mountains; Andean; Elevation ≥0.72.
@@ -1801,7 +1801,7 @@ Covered crushing and sorting recover more existing vein material on water-limite
 
 ### Humid lowland gold sump galleries
 
-Drainage protects existing hard-rock gold workings; this does not turn veins into placer deposits.
+Drainage protects hard-rock gold workings.
 
 - Investment track: Mining infrastructure.
 - Site selection: Gold mountains; Tropical; Elevation <0.52.
@@ -1814,7 +1814,7 @@ Drainage protects existing hard-rock gold workings; this does not turn veins int
 
 ### Hyperarid gold hand-sort terraces
 
-Dry sorting platforms and protected crushers minimize material losses without wash water.
+Dry sorting platforms and protected crushers recover fine gold in water-scarce country.
 
 - Investment track: Mining infrastructure.
 - Site selection: Gold mountains; Hyperarid; Elevation ≥0.72.
@@ -1827,7 +1827,7 @@ Dry sorting platforms and protected crushers minimize material losses without wa
 
 ### Arctic coastal gold thawing sheds
 
-Protected coastal workings use costly heat and tools to recover existing cold-region gold.
+Protected coastal workings use costly heat and tools to recover cold-region gold.
 
 - Investment track: Mining infrastructure.
 - Site selection: Arctic gold mountains; Arctic; Coastal.
@@ -1840,7 +1840,7 @@ Protected coastal workings use costly heat and tools to recover existing cold-re
 
 ### Temperate ridge stone derricks
 
-Derricks lift sound blocks from elevated existing stone faces.
+Derricks lift sound blocks from elevated stone faces.
 
 - Investment track: Quarry infrastructure.
 - Site selection: Stone quarry; Temperate; Elevation ≥0.72.
@@ -1853,7 +1853,7 @@ Derricks lift sound blocks from elevated existing stone faces.
 
 ### Boreal stone covered splitting floors
 
-Protected splitting floors reduce cold losses in existing low stone sites.
+Protected splitting floors reduce cold losses in low stone sites.
 
 - Investment track: Quarry infrastructure.
 - Site selection: Stone quarry; Cold; Elevation <0.52.
@@ -1879,7 +1879,7 @@ Controlled wedges and bench cutting improve block recovery with little water dem
 
 ### Desert stone shaded working floors
 
-Shade and protected handling reduce damage during recovery from existing desert stone.
+Shade and protected handling reduce damage during recovery from desert stone.
 
 - Investment track: Quarry infrastructure.
 - Site selection: Stone quarry; Desert; Elevation <0.52.
@@ -1892,7 +1892,7 @@ Shade and protected handling reduce damage during recovery from existing desert 
 
 ### Mediterranean escarpment landing cranes
 
-Staged cranes lower existing escarpment stone toward coastal handling yards.
+Staged cranes lower escarpment stone toward coastal handling yards.
 
 - Investment track: Quarry infrastructure.
 - Site selection: Escarpment; Mediterranean; Coastal.
@@ -1918,7 +1918,7 @@ Sheltered coastal loading and lifting reduce wet-weather block losses.
 
 ### Andean high quarry gravity inclines
 
-Short gravity inclines move quarried stone to local yards without crossing a mountain pass.
+Short gravity inclines bring quarried stone down to sheltered loading yards.
 
 - Investment track: Quarry infrastructure.
 - Site selection: Mountain quarry; Andean; Elevation ≥0.72.
@@ -1931,7 +1931,7 @@ Short gravity inclines move quarried stone to local yards without crossing a mou
 
 ### Mesoamerican volcanic block benches
 
-Bench cutting follows existing volcanic rock rather than assuming limestone or marble.
+Bench cutting follows volcanic rock.
 
 - Investment track: Quarry infrastructure.
 - Site selection: Volcanic quarry; Mesoamerican; Elevation ≥0.72.
@@ -1944,7 +1944,7 @@ Bench cutting follows existing volcanic rock rather than assuming limestone or m
 
 ### Island volcanic quay cranes
 
-Compact lifting stages recover island stone at existing coastal quarries.
+Compact lifting stages recover island stone at coastal quarries.
 
 - Investment track: Quarry infrastructure.
 - Site selection: Volcanic quarry; Tropical Maritime; Coastal.
@@ -1983,7 +1983,7 @@ Roofed settling and lifting equipment protect workable clay during persistent ra
 
 ### Hyperarid clay shaded sorting courts
 
-Shaded sorting and covered stockpiles handle existing clay without constructing new deposits.
+Shaded sorting and covered stockpiles handle clay.
 
 - Investment track: Quarry infrastructure.
 - Site selection: Clay hills; Hyperarid; Elevation <0.52.
@@ -2009,7 +2009,7 @@ Sheltered racks preserve a short seasonal peat-working window.
 
 ### Upland Mediterranean salt grading
 
-Covered grading handles an existing inland salt deposit without assuming seawater channels.
+Covered grading handles an inland salt deposit.
 
 - Investment track: Saltworks.
 - Site selection: Salt flats; Mediterranean; Elevation ≥0.72.
@@ -2022,7 +2022,7 @@ Covered grading handles an existing inland salt deposit without assuming seawate
 
 ### Desert coastal sequential salt pans
 
-Sequential shallow pans use strong evaporation at existing coastal salt sites.
+Sequential shallow pans use strong evaporation at coastal salt sites.
 
 - Investment track: Saltworks.
 - Site selection: Salt flats; Desert; Coastal.
@@ -2035,7 +2035,7 @@ Sequential shallow pans use strong evaporation at existing coastal salt sites.
 
 ### Hyperarid upland salt crust sheds
 
-Dry crust screening improves native salt recovery without new brine water.
+Dry screening separates clean salt crystals from broken surface crusts.
 
 - Investment track: Saltworks.
 - Site selection: Salt flats; Hyperarid; Elevation ≥0.72.
@@ -2061,7 +2061,7 @@ Controlled pan connections and covered stockpiles separate evaporation from wet-
 
 ### Island coastal salt rain shelters
 
-Movable covers protect existing island brine and harvested salt from frequent rain.
+Movable covers protect island brine and harvested salt from frequent rain.
 
 - Investment track: Saltworks.
 - Site selection: Salt flats; Tropical Maritime; Coastal.
@@ -2074,7 +2074,7 @@ Movable covers protect existing island brine and harvested salt from frequent ra
 
 ### Prairie upland salt protected pans
 
-Covered concentration and drying preserve native salt through continental cold and rain.
+Covered concentration and drying preserve salt through continental cold and rain.
 
 - Investment track: Saltworks.
 - Site selection: Salt flats; Prairie; Elevation ≥0.72.
@@ -2087,7 +2087,7 @@ Covered concentration and drying preserve native salt through continental cold a
 
 ### Andean high salt grading floors
 
-Dry sorting and covered drying fit an existing highland salt site.
+Dry sorting and covered drying fit an highland salt site.
 
 - Investment track: Saltworks.
 - Site selection: Salt flats; Andean; Elevation ≥0.72.
@@ -2100,7 +2100,7 @@ Dry sorting and covered drying fit an existing highland salt site.
 
 ### Savanna seasonal salt pans
 
-Seasonal pan divisions concentrate native brine during dry work periods.
+Seasonal pan divisions concentrate brine during dry work periods.
 
 - Investment track: Saltworks.
 - Site selection: Salt flats; Savanna; Elevation <0.52.
@@ -2113,7 +2113,7 @@ Seasonal pan divisions concentrate native brine during dry work periods.
 
 ### Polar shore fish shelter stages
 
-Sheltered handling improves a visiting catch only when water is accessible; ice remains a closure.
+Sheltered handling improves a visiting catch only when water is accessible.
 
 - Investment track: Fishery infrastructure.
 - Site selection: Arctic / Glacial; coast.
@@ -2126,7 +2126,7 @@ Sheltered handling improves a visiting catch only when water is accessible; ice 
 
 ### Boreal lake catch ice stores
 
-Insulated stores preserve fish landed on cold lakes without freezing new water or generating fish.
+Insulated stores preserve fish landed on cold lakes.
 
 - Investment track: Fishery infrastructure.
 - Site selection: Cold / Tundra; lake.
@@ -2152,7 +2152,7 @@ Covered landing and rapid sorting improve usable catch in wet coastal weather.
 
 ### Mediterranean shoal curing sheds
 
-Shaded curing and rapid handling improve fish from existing shoals.
+Shaded curing and rapid handling improve fish from shoals.
 
 - Investment track: Fishery infrastructure.
 - Site selection: Mediterranean; shoal.
@@ -2191,7 +2191,7 @@ Protected smoking and covered racks preserve visiting river catches in humid con
 
 ### Continental lake seasonal fish stores
 
-Seasonal curing and protected storage improve available inland catch; freeze closures still apply.
+Seasonal curing and protected storage improve available inland catch.
 
 - Investment track: Fishery infrastructure.
 - Site selection: Steppe / Prairie; lake.
@@ -2217,7 +2217,7 @@ Raised drying and smoking structures improve fish handling during wet-season acc
 
 ### Steppe ridge game observation shelters
 
-Lookouts and shaded recovery yards improve passing game without holding animals in place.
+Lookouts and shaded recovery yards improve passing game.
 
 - Investment track: Hunting infrastructure.
 - Site selection: Steppe plain; Steppe; Elevation ≥0.72.
@@ -2230,7 +2230,7 @@ Lookouts and shaded recovery yards improve passing game without holding animals 
 
 ### Prairie lowland communal game yards
 
-Communal handling improves meat recovered from whatever eligible wildlife visits.
+Communal handling yards help hunters preserve meat from passing prairie herds.
 
 - Investment track: Hunting infrastructure.
 - Site selection: Bison range; Prairie; Elevation <0.52.
@@ -2243,7 +2243,7 @@ Communal handling improves meat recovered from whatever eligible wildlife visits
 
 ### Boreal ridge game caches
 
-Cold protected caches preserve visiting woodland game while leaving timber production unchanged.
+Cold, sheltered caches preserve game brought in from the surrounding woodland.
 
 - Investment track: Hunting infrastructure.
 - Site selection: Hunting forest; Cold; Elevation ≥0.72.
@@ -2256,7 +2256,7 @@ Cold protected caches preserve visiting woodland game while leaving timber produ
 
 ### Mesoamerican upland game smokehouses
 
-Protected smoking improves the existing small-game catch on wet highland habitat.
+Protected smoking improves the small-game catch on wet highland habitat.
 
 - Investment track: Hunting infrastructure.
 - Site selection: Turkey grounds; Mesoamerican; Elevation ≥0.72.
@@ -2269,7 +2269,7 @@ Protected smoking improves the existing small-game catch on wet highland habitat
 
 ### Coastal oasis game curing shelters
 
-Shaded handling recovers visiting game products; date and wood production are unaffected.
+Shaded curing shelters preserve game brought in from the coastal oasis.
 
 - Investment track: Hunting infrastructure.
 - Site selection: Oasis; Desert / Hyperarid; Coastal.
@@ -2282,7 +2282,7 @@ Shaded handling recovers visiting game products; date and wood production are un
 
 ### Polar seal shore product shelters
 
-Protected shore handling favors existing seal oil while animals are present.
+Protected shore handling favors seal oil while animals are present.
 
 - Investment track: Hunting infrastructure.
 - Site selection: Seal hunting grounds; Glacial; Coastal.
@@ -2295,7 +2295,7 @@ Protected shore handling favors existing seal oil while animals are present.
 
 ### Coastal tundra berry wind shelters
 
-Small wind shelters and clean sorting improve the existing short berry harvest without enclosing the habitat.
+Small wind shelters and clean sorting improve the short berry harvest.
 
 - Investment track: Wild harvest infrastructure.
 - Site selection: Berry heath; Tundra; Coastal.
@@ -2321,7 +2321,7 @@ Protected picking baskets and sorting caches reduce losses during the brief high
 
 ### Island coastal whale recovery slips
 
-Sheltered shore slips and rendering pots improve products of visiting whales; no whales are created or held in place.
+Sheltered shore slips and rendering pots improve products of visiting whales.
 
 - Investment track: Whale-product infrastructure.
 - Site selection: Tropical Maritime; coast.
@@ -2334,7 +2334,7 @@ Sheltered shore slips and rendering pots improve products of visiting whales; no
 
 ### Cold offshore whale landing works
 
-Heavy landing tackle improves existing whale recovery beside an eligible city on deep coastal water.
+Heavy landing tackle improves whale recovery beside an city on deep coastal water.
 
 - Investment track: Whale-product infrastructure.
 - Site selection: Cold / Oceanic; deep.
@@ -2347,7 +2347,7 @@ Heavy landing tackle improves existing whale recovery beside an eligible city on
 
 ### Oceanic barley field collectors
 
-Graded collectors drain existing low barley soils after persistent rain without adding a harvest season.
+Graded collectors drain low barley soils after persistent rain.
 
 - Investment track: Field drainage.
 - Site selection: Barley fields; Oceanic; Elevation <0.52.
@@ -2360,7 +2360,7 @@ Graded collectors drain existing low barley soils after persistent rain without 
 
 ### Layered oasis channels
 
-Small basins irrigate existing date gardens beneath the palms; evaporation control matters more than extra harvest dates.
+Small basins irrigate date gardens beneath the palms.
 
 - Investment track: Irrigation.
 - Site selection: Oasis.
@@ -2373,7 +2373,7 @@ Small basins irrigate existing date gardens beneath the palms; evaporation contr
 
 ### Hyperarid seepage control
 
-Lined, covered channels conserve an existing freshwater supply in extreme aridity. They cannot discover groundwater.
+Lined, covered channels conserve an freshwater supply in extreme aridity.
 
 - Investment track: Irrigation.
 - Site selection: Except Oasis; Hyperarid.
@@ -2386,7 +2386,7 @@ Lined, covered channels conserve an existing freshwater supply in extreme aridit
 
 ### Monsoon paddy reservoirs
 
-Seasonal storage and timed gates support rice between rains; sluices cannot stop a river flood.
+Seasonal storage and timed gates support rice between rains.
 
 - Investment track: Irrigation.
 - Site selection: Rice field / River rice; Monsoon.
@@ -2399,7 +2399,7 @@ Seasonal storage and timed gates support rice between rains; sluices cannot stop
 
 ### Warm-season paddy division
 
-Dividing channels regulate staggered rice plots where warmth permits; the existing harvest-mode choice controls timing.
+Dividing channels regulate staggered rice plots where warmth permits.
 
 - Investment track: Irrigation.
 - Site selection: Rice field / River rice; Tropical / Equatorial Wetlands / Tropical Maritime.
@@ -2412,7 +2412,7 @@ Dividing channels regulate staggered rice plots where warmth permits; the existi
 
 ### Subtropical nursery channels
 
-Separate seedling beds and planting-water channels improve the two warm harvests; winter stays outside the rice window.
+Separate seedling beds and planting-water channels improve the two warm harvests.
 
 - Investment track: Irrigation.
 - Site selection: Rice field / River rice; Subtropical.
@@ -2425,7 +2425,7 @@ Separate seedling beds and planting-water channels improve the two warm harvests
 
 ### Maize furrow irrigation
 
-Measured furrow water supports maize without ponding its roots; dry-weather protection leaves the native harvest dates intact.
+Measured furrow water supports maize without ponding its roots.
 
 - Investment track: Irrigation.
 - Site selection: Maize fields.
@@ -2451,7 +2451,7 @@ Narrow watering furrows protect potato ridges from drought while keeping the tub
 
 ### Olive root-zone basins
 
-Deep localized watering supports existing olives with a small output gain. Ordinary dry spells already spare this drought-tolerant crop.
+Deep localized watering supports olives with a small output gain.
 
 - Investment track: Irrigation.
 - Site selection: Olive grove.
@@ -2464,7 +2464,7 @@ Deep localized watering supports existing olives with a small output gain. Ordin
 
 ### Alluvial wheat basin gates
 
-Basin gates retain receding river water for existing wheat. Productive alluvium remains exposed to high-water closures.
+Basin gates retain receding river water for wheat.
 
 - Investment track: Irrigation.
 - Site selection: Alluvial wheat; Desert / Hot Semi-Arid.
@@ -2477,7 +2477,7 @@ Basin gates retain receding river water for existing wheat. Productive alluvium 
 
 ### Delta garden distributaries
 
-Short channels distribute existing freshwater among delta beds; more gates are needed than on an ordinary field.
+Short channels distribute freshwater among delta beds.
 
 - Investment track: Irrigation.
 - Site selection: Delta gardens; Delta.
@@ -2490,7 +2490,7 @@ Short channels distribute existing freshwater among delta beds; more gates are n
 
 ### Millet planting-pocket husbandry
 
-Localized manure and surface cover conserve scarce nutrients around millet; the crop keeps its existing drought resistance.
+Localized manure and surface cover conserve scarce nutrients around millet.
 
 - Investment track: Soil husbandry.
 - Site selection: Millet fields; Steppe / Savanna / Hot Semi-Arid.
@@ -2503,7 +2503,7 @@ Localized manure and surface cover conserve scarce nutrients around millet; the 
 
 ### Sorghum stubble management
 
-Retained stubble and legume rotations protect soil between sorghum harvests; no second harvest is invented.
+Retained stubble and legume rotations protect soil between sorghum harvests.
 
 - Investment track: Soil husbandry.
 - Site selection: Sorghum fields / Recession sorghum.
@@ -2516,7 +2516,7 @@ Retained stubble and legume rotations protect soil between sorghum harvests; no 
 
 ### Maize intercropping beds
 
-Rotations and complementary crop cover improve maize soil; companion crops contribute to the existing Grain budget, not new resources.
+Legume rotations and complementary ground cover enrich the soil beneath maize.
 
 - Investment track: Soil husbandry.
 - Site selection: Maize fields.
@@ -2529,7 +2529,7 @@ Rotations and complementary crop cover improve maize soil; companion crops contr
 
 ### Sunflower oilseed rotation
 
-Wide rotations and careful seed grading improve existing oilseed recovery, favoring Oil within the shared crop bonus.
+Wide crop rotations and careful seed grading improve sunflower oil recovery.
 
 - Investment track: Soil husbandry.
 - Site selection: Sunflower fields.
@@ -2542,7 +2542,7 @@ Wide rotations and careful seed grading improve existing oilseed recovery, favor
 
 ### Short-season barley selection
 
-Seed grading and rotations improve barley within the short growing season; modest cold protection never makes winter productive.
+Seed grading and rotations improve barley within the short growing season.
 
 - Investment track: Soil husbandry.
 - Site selection: Barley fields; Cold / Alpine / Andean / Oceanic.
@@ -2555,7 +2555,7 @@ Seed grading and rotations improve barley within the short growing season; modes
 
 ### Oat and grass-ley rotation
 
-Grass leys and oat rotations improve soil structure in moist farming country; no livestock products are created on the crop tile.
+Grass leys and oat rotations improve soil structure in moist farming country.
 
 - Investment track: Soil husbandry.
 - Site selection: Oat fields.
@@ -2568,7 +2568,7 @@ Grass leys and oat rotations improve soil structure in moist farming country; no
 
 ### Turnip folding and rotations
 
-Manure incorporation and root rotations improve turnips; existing summer and autumn lifting dates remain unchanged.
+Manure incorporation and root rotations improve turnips.
 
 - Investment track: Soil husbandry.
 - Site selection: Turnip fields; Temperate / Oceanic.
@@ -2581,7 +2581,7 @@ Manure incorporation and root rotations improve turnips; existing summer and aut
 
 ### Andean potato seed stewardship
 
-Separate seed stocks and local variety selection improve tubers in their existing altitude window, with modest cold-loss protection.
+Separate seed stocks and local variety selection improve tubers in their altitude window, with modest cold-loss protection.
 
 - Investment track: Soil husbandry.
 - Site selection: Potato fields; Andean.
@@ -2594,7 +2594,7 @@ Separate seed stocks and local variety selection improve tubers in their existin
 
 ### Olive pruning and soil cover
 
-Pruning, ground cover and composted residues improve the existing olive crop; recovery favors Oil without adding harvest dates.
+Pruning, ground cover and composted residues improve the olive crop.
 
 - Investment track: Soil husbandry.
 - Site selection: Olive grove.
@@ -2607,7 +2607,7 @@ Pruning, ground cover and composted residues improve the existing olive crop; re
 
 ### Breadfruit orchard litter cycling
 
-Mulch and managed orchard litter sustain existing island food trees. The method does not plant a new grove.
+Mulch and managed orchard litter sustain island food trees.
 
 - Investment track: Soil husbandry.
 - Site selection: Breadfruit grove.
@@ -2620,7 +2620,7 @@ Mulch and managed orchard litter sustain existing island food trees. The method 
 
 ### Sago stand renewal
 
-Managed suckers and organic recycling improve starch recovery from existing sago stands; wetland habitat remains intact.
+Managed suckers and organic recycling improve starch recovery from sago stands.
 
 - Investment track: Soil husbandry.
 - Site selection: Sago grove.
@@ -2633,7 +2633,7 @@ Managed suckers and organic recycling improve starch recovery from existing sago
 
 ### Chinampa sediment renewal
 
-Canal sediment and compost renew existing raised beds. This improves established gardens without reclaiming new land.
+Canal sediment and compost renew raised beds.
 
 - Investment track: Soil husbandry.
 - Site selection: Chinampa gardens.
@@ -2646,7 +2646,7 @@ Canal sediment and compost renew existing raised beds. This improves established
 
 ### Delta outfall drainage
 
-Outfall gates remove local waterlogging from delta beds. They do not protect against a river overtopping its banks.
+Outfall gates remove local waterlogging from delta beds.
 
 - Investment track: Field drainage.
 - Site selection: Delta gardens; Delta.
@@ -2659,7 +2659,7 @@ Outfall gates remove local waterlogging from delta beds. They do not protect aga
 
 ### Monsoon paddy spillways
 
-Small spillways and outlets improve paddy management between rain events; beneficial rain remains beneficial.
+Small spillways and outlets improve paddy management between rain events.
 
 - Investment track: Field drainage.
 - Site selection: Rice field / River rice; Monsoon.
@@ -2672,7 +2672,7 @@ Small spillways and outlets improve paddy management between rain events; benefi
 
 ### Wetland raised planting beds
 
-Organic raised beds and small drains keep existing garden roots aerated. Flooded terrain still requires a levee.
+Organic raised beds and small drains keep garden roots aerated.
 
 - Investment track: Field drainage.
 - Site selection: Chinampa gardens.
@@ -2698,7 +2698,7 @@ Fired drains improve field access and root aeration in persistently wet farming 
 
 ### Coastal field sluices
 
-Gated outlets control local drainage on coastal farmland without desalinating the sea or preventing major flooding.
+Gated outlets regulate drainage across low coastal farmland.
 
 - Investment track: Field drainage.
 - Site selection: Coastal.
@@ -2711,7 +2711,7 @@ Gated outlets control local drainage on coastal farmland without desalinating th
 
 ### Root-bed underdrainage
 
-Underdrains keep tuber beds workable in damp lowlands, concentrating recovery in the existing lifting season.
+Underdrains keep tuber beds workable in damp lowlands, concentrating recovery in the lifting season.
 
 - Investment track: Field drainage.
 - Site selection: Turnip fields / Potato fields; Elevation <0.58.
@@ -2724,7 +2724,7 @@ Underdrains keep tuber beds workable in damp lowlands, concentrating recovery in
 
 ### Andean potato retaining terraces
 
-Stone benches retain soil and buffer exposed potato plots; their short growing season stays unchanged.
+Stone benches retain soil and buffer exposed potato plots.
 
 - Investment track: Agricultural terraces.
 - Site selection: Potato fields; Andean.
@@ -2737,7 +2737,7 @@ Stone benches retain soil and buffer exposed potato plots; their short growing s
 
 ### Highland barley benches
 
-Narrow stone benches reduce soil loss around barley; shelter is useful but does not remove highland frost.
+Narrow stone benches reduce soil loss around barley.
 
 - Investment track: Agricultural terraces.
 - Site selection: Barley fields; Alpine / Andean / Cold.
@@ -2750,7 +2750,7 @@ Narrow stone benches reduce soil loss around barley; shelter is useful but does 
 
 ### Olive dry-stone terraces
 
-Dry-stone shelves hold existing olive soil on slopes. Recovery favors Oil; no new trees or harvest seasons are created.
+Dry-stone shelves hold olive soil on slopes.
 
 - Investment track: Agricultural terraces.
 - Site selection: Olive grove.
@@ -2776,7 +2776,7 @@ Closely stepped paddies need substantial retaining masonry and carefully divided
 
 ### Mesoamerican maize contour walls
 
-Contour strips retain cultivated slope soil under seasonal rain; maize keeps its native harvest calendar.
+Contour strips retain cultivated slope soil under seasonal rain.
 
 - Investment track: Agricultural terraces.
 - Site selection: Maize fields; Mesoamerican.
@@ -2789,7 +2789,7 @@ Contour strips retain cultivated slope soil under seasonal rain; maize keeps its
 
 ### Dry-cereal contour banks
 
-Low contour banks slow runoff on existing dry cereal slopes; shallow works cost less stone than major highland terraces.
+Low contour banks slow runoff on dry cereal slopes.
 
 - Investment track: Agricultural terraces.
 - Site selection: Millet fields / Sorghum fields / Golden fields; Hot Semi-Arid / Steppe / Savanna.
@@ -2802,7 +2802,7 @@ Low contour banks slow runoff on existing dry cereal slopes; shallow works cost 
 
 ### Millet runoff planting pits
 
-Small planting pits capture seasonal rain near roots. They improve establishment without creating irrigation or a new harvest.
+Small planting pits capture seasonal rain near roots.
 
 - Investment track: Rainwater harvesting.
 - Site selection: Millet fields; Hot Semi-Arid / Savanna.
@@ -2815,7 +2815,7 @@ Small planting pits capture seasonal rain near roots. They improve establishment
 
 ### Dry-cereal half-moon bunds
 
-Crescent bunds gather short rainy-season runoff for dryland cereals; no permanent water source is added.
+Crescent bunds gather short rainy-season runoff for dryland cereals.
 
 - Investment track: Rainwater harvesting.
 - Site selection: Golden fields / Barley fields; Savanna / Hot Semi-Arid.
@@ -2828,7 +2828,7 @@ Crescent bunds gather short rainy-season runoff for dryland cereals; no permanen
 
 ### Olive hillside runoff terraces
 
-Small hillside retaining banks collect rain around existing olives, inspired by jessour; they do not dam navigable rivers.
+Small hillside retaining banks gather seasonal runoff around olive roots.
 
 - Investment track: Rainwater harvesting.
 - Site selection: Olive grove; Elevation ≥0.58.
@@ -2841,7 +2841,7 @@ Small hillside retaining banks collect rain around existing olives, inspired by 
 
 ### Steppe snow-retention strips
 
-Residue strips retain winter snow for the next growing season. The extra harvest stays in summer and autumn, never winter.
+Residue strips retain winter snow for the next growing season.
 
 - Investment track: Rainwater harvesting.
 - Site selection: Steppe.
@@ -2854,7 +2854,7 @@ Residue strips retain winter snow for the next growing season. The extra harvest
 
 ### Prairie contour runoff strips
 
-Contour cultivation spreads seasonal runoff through existing fields and reduces drought losses without changing the crop.
+Contour cultivation spreads seasonal runoff through fields and reduces drought losses.
 
 - Investment track: Rainwater harvesting.
 - Site selection: Prairie.
@@ -2867,7 +2867,7 @@ Contour cultivation spreads seasonal runoff through existing fields and reduces 
 
 ### Highland alpaca fleece stations
 
-Sheltered sorting pens improve fleece recovery from existing alpacas; no wet pasture is created without water.
+Sheltered sorting pens improve fleece recovery from alpacas.
 
 - Investment track: Livestock improvements.
 - Site selection: Alpaca pasture.
@@ -2893,7 +2893,7 @@ Stored browse and sheltered kidding pens support goats on dry or broken ground, 
 
 ### Coastal sheep shelter yards
 
-Shelter and dry fleece handling suit wet exposed coasts; wool gains share one budget with any other domestic products.
+Shelter and dry fleece handling suit wet exposed coasts.
 
 - Investment track: Livestock improvements.
 - Site selection: Coastal pasture.
@@ -2906,7 +2906,7 @@ Shelter and dry fleece handling suit wet exposed coasts; wool gains share one bu
 
 ### Savanna cattle fodder yards
 
-Dry-season fodder reserves and handling yards improve existing cattle returns; they cannot hold wild herds.
+Dry-season fodder reserves and handling yards improve cattle returns.
 
 - Investment track: Livestock improvements.
 - Site selection: Cattle range; Savanna.
@@ -2932,7 +2932,7 @@ Hay stacks and wind shelter concentrate cattle gains in the lean cold season.
 
 ### Flood-meadow hay lofts
 
-Raised hay storage recovers fodder after the meadow dries; it does not make flooded grazing productive.
+Raised hay storage recovers fodder after the meadow dries.
 
 - Investment track: Livestock improvements.
 - Site selection: Water meadow.
@@ -2945,7 +2945,7 @@ Raised hay storage recovers fodder after the meadow dries; it does not make floo
 
 ### Alpine stall and hay system
 
-Stone winter stalls and hay lofts buffer cold-season livestock production; domestic animals remain on their tile.
+Stone winter stalls and hay lofts buffer cold-season livestock production.
 
 - Investment track: Livestock improvements.
 - Site selection: Alpine pasture.
@@ -2958,7 +2958,7 @@ Stone winter stalls and hay lofts buffer cold-season livestock production; domes
 
 ### Temperate sheep folding
 
-Rotating folds and clean shearing floors improve fleece recovery on existing pasture.
+Rotating folds and clean shearing floors improve fleece recovery on pasture.
 
 - Investment track: Livestock improvements.
 - Site selection: Pasture / Rough pasture; Temperate / Oceanic.
@@ -2971,7 +2971,7 @@ Rotating folds and clean shearing floors improve fleece recovery on existing pas
 
 ### Ancient-grove selective coupes
 
-Carefully separated coupes recover timber around an ancient grove without multiplying its landmark bonus.
+Carefully separated coupes recover timber around an ancient grove.
 
 - Investment track: Forestry infrastructure.
 - Site selection: ancient-grove.
@@ -2984,7 +2984,7 @@ Carefully separated coupes recover timber around an ancient grove without multip
 
 ### Mangrove timber access platforms
 
-Raised handling platforms reduce wet-ground extraction losses; drainage never converts the mangrove into farmland.
+Raised handling platforms reduce wet-ground extraction losses.
 
 - Investment track: Forestry infrastructure.
 - Site selection: Mangroves.
@@ -2997,7 +2997,7 @@ Raised handling platforms reduce wet-ground extraction losses; drainage never co
 
 ### River woodland timber landings
 
-Short haul routes and bank landings improve recovery beside rivers; no dam or navigation obstruction is added.
+Short haul routes and bank landings improve recovery beside rivers.
 
 - Investment track: Forestry infrastructure.
 - Site selection: River woods.
@@ -3049,7 +3049,7 @@ Managed coppice and small sheltered stacks favor recoverable wood on low-yield d
 
 ### Island palm timber handling
 
-Palm stems need careful sorting and sheltered cutting; the existing island woodland remains unchanged.
+Palm stems need careful sorting and sheltered cutting.
 
 - Investment track: Forestry infrastructure.
 - Site selection: Island palms.
@@ -3075,7 +3075,7 @@ Covered coastal loading yards reduce wet handling losses where tropical woodland
 
 ### Rich-vein selective dressing
 
-Careful ore sorting improves an existing rich vein. Its landmark yield is not multiplied by the investment.
+Careful ore sorting improves an rich vein.
 
 - Investment track: Mining infrastructure.
 - Site selection: mineral-vein.
@@ -3088,7 +3088,7 @@ Careful ore sorting improves an existing rich vein. Its landmark yield is not mu
 
 ### Polar iron thawing works
 
-Protected ore faces and costly thawing equipment favor the accessible warm season in frozen ground.
+Protected ore faces and thawing equipment support seasonal work in frozen ground.
 
 - Investment track: Mining infrastructure.
 - Site selection: Arctic iron mountains; Arctic / Glacial / Tundra.
@@ -3101,7 +3101,7 @@ Protected ore faces and costly thawing equipment favor the accessible warm seaso
 
 ### Boreal coal drift protection
 
-Insulated winding and ventilation improve existing cold-region coal access; no new coal seam is opened on barren snow.
+Insulated winding and ventilation improve cold-region coal access.
 
 - Investment track: Mining infrastructure.
 - Site selection: Coal hills; Cold / Arctic / Glacial / Tundra.
@@ -3114,7 +3114,7 @@ Insulated winding and ventilation improve existing cold-region coal access; no n
 
 ### Andean gold crushing floors
 
-Stone grinding and later stamp machinery improve highland gold recovery, with modest precious-metal card returns.
+Stone mills and powered stamps recover gold from highland ore.
 
 - Investment track: Mining infrastructure.
 - Site selection: Gold mountains / Arctic gold mountains; Andean.
@@ -3127,7 +3127,7 @@ Stone grinding and later stamp machinery improve highland gold recovery, with mo
 
 ### Desert dry-ore sorting
 
-Dry sorting and sheltered crushing recover ore without assuming a water supply for wet concentration.
+Dry sorting and sheltered crushing recover ore.
 
 - Investment track: Mining infrastructure.
 - Site selection: Iron mountains; Desert / Hyperarid / Hot Semi-Arid.
@@ -3166,7 +3166,7 @@ Steep working sites need staged hoists and retaining platforms rather than lowla
 
 ### Polar stone working shelters
 
-Protected cutting floors and seasonal lifting gear improve the existing cold quarry, without removing frozen access limits.
+Protected cutting floors and seasonal lifting gear improve the cold quarry,.
 
 - Investment track: Quarry infrastructure.
 - Site selection: Arctic stone ridge.
@@ -3179,7 +3179,7 @@ Protected cutting floors and seasonal lifting gear improve the existing cold qua
 
 ### Volcanic block splitting
 
-Selected joints, wedges and powered cutting improve existing volcanic stone; no eruption or new deposit is introduced.
+Selected joints, wedges and powered cutting improve volcanic stone.
 
 - Investment track: Quarry infrastructure.
 - Site selection: Volcanic quarry.
@@ -3192,7 +3192,7 @@ Selected joints, wedges and powered cutting improve existing volcanic stone; no 
 
 ### Coastal cliff derricks
 
-Lifting stages and sheltered loading recover stone from exposed coastal faces; the cliff is not turned into a harbor.
+Lifting stages and sheltered loading recover stone from exposed coastal faces.
 
 - Investment track: Quarry infrastructure.
 - Site selection: Coastal cliffs.
@@ -3205,7 +3205,7 @@ Lifting stages and sheltered loading recover stone from exposed coastal faces; t
 
 ### Alluvial clay settling beds
 
-Settling and covered handling recover clay after river levels fall. Flood closures still override production.
+Settling and covered handling recover clay after river levels fall.
 
 - Investment track: Quarry infrastructure.
 - Site selection: Alluvial clay banks.
@@ -3218,7 +3218,7 @@ Settling and covered handling recover clay after river levels fall. Flood closur
 
 ### Dry-clay shaded workings
 
-Covered sorting and protected pit access recover clay without requiring invented ponds in dry terrain.
+Covered sorting floors and sheltered pit entrances suit clay working in dry country.
 
 - Investment track: Quarry infrastructure.
 - Site selection: Clay hills; Desert / Hyperarid / Hot Semi-Arid.
@@ -3231,7 +3231,7 @@ Covered sorting and protected pit access recover clay without requiring invented
 
 ### Mountain quarry inclines
 
-Inclined haulage and block cradles suit steep existing quarries. They grant no road or unit passage through peaks.
+Inclined haulage and block cradles suit steep quarries.
 
 - Investment track: Quarry infrastructure.
 - Site selection: Mountain quarry / Escarpment.
@@ -3244,7 +3244,7 @@ Inclined haulage and block cradles suit steep existing quarries. They grant no r
 
 ### Cold-region peat drying lofts
 
-Ventilated covered lofts improve peat drying during a short warm work season; thaw and wet weather still matter.
+Ventilated covered lofts improve peat drying during a short warm work season.
 
 - Investment track: Quarry infrastructure.
 - Site selection: Peat bog; Tundra / Cold.
@@ -3257,7 +3257,7 @@ Ventilated covered lofts improve peat drying during a short warm work season; th
 
 ### Sheltered-harbor salt yards
 
-Sheltered landing yards and covered stores improve recovery from an existing coastal salt site. A harbor alone creates no salt.
+Sheltered landing yards and covered stores improve recovery from an coastal salt site.
 
 - Investment track: Saltworks.
 - Site selection: natural-harbor.
@@ -3270,7 +3270,7 @@ Sheltered landing yards and covered stores improve recovery from an existing coa
 
 ### Hyperarid salt-crust recovery
 
-Crust grading and dry covered stores suit strong evaporation; gains favor the warm work season rather than creating water.
+Crust grading and dry covered stores suit strong evaporation.
 
 - Investment track: Saltworks.
 - Site selection: Hyperarid.
@@ -3283,7 +3283,7 @@ Crust grading and dry covered stores suit strong evaporation; gains favor the wa
 
 ### Desert crystallizer cells
 
-Separated cells grade existing saline material and improve evaporation control in dry basins.
+Separated cells grade saline material and improve evaporation control in dry basins.
 
 - Investment track: Saltworks.
 - Site selection: Desert / Hot Semi-Arid.
@@ -3296,7 +3296,7 @@ Separated cells grade existing saline material and improve evaporation control i
 
 ### Mediterranean coastal salines
 
-Graded evaporation pans exploit dry summers on existing coastal salt ground; rainy winters remain less favorable.
+Graded evaporation pans exploit dry summers on coastal salt ground.
 
 - Investment track: Saltworks.
 - Site selection: Mediterranean; Coastal.
@@ -3309,7 +3309,7 @@ Graded evaporation pans exploit dry summers on existing coastal salt ground; rai
 
 ### Cold-season covered brine pans
 
-Covered concentration and heating matter more than sunshine at cold-season salt sites; advanced works require much more coal.
+Covered concentration and heating matter more than sunshine at cold-season salt sites.
 
 - Investment track: Saltworks.
 - Site selection: Andean / Prairie / Arctic / Glacial / Tundra.
@@ -3335,7 +3335,7 @@ Raised landing stages and sorting sheds recover more of visiting shoals where ri
 
 ### Reef-edge catch handling
 
-Small landing stages and shaded handling improve existing reef fish catches without damming or farming the reef.
+Small landing stages and shaded sorting areas preserve delicate reef catches.
 
 - Investment track: Fishery infrastructure.
 - Site selection: reef.
@@ -3348,7 +3348,7 @@ Small landing stages and shaded handling improve existing reef fish catches with
 
 ### Shoal net and curing yards
 
-Net repair, sorting and curing recover more from visiting shallow-water shoals; fish can still migrate away.
+Net repair, sorting and curing recover more from visiting shallow-water shoals.
 
 - Investment track: Fishery infrastructure.
 - Site selection: shoal.
@@ -3361,7 +3361,7 @@ Net repair, sorting and curing recover more from visiting shallow-water shoals; 
 
 ### Cold-coast fish drying racks
 
-Air-drying frames and covered stores suit cold coasts. The works preserve only visiting fish, never thaw frozen water.
+Air-drying frames and covered stores preserve landed fish in the cool coastal air.
 
 - Investment track: Fishery infrastructure.
 - Site selection: Cold / Arctic / Tundra; coast.
@@ -3374,7 +3374,7 @@ Air-drying frames and covered stores suit cold coasts. The works preserve only v
 
 ### Humid-river fish smoking sheds
 
-Covered smoke-drying suits humid river landings better than exposed sun racks; no extra shoal is created.
+Covered smoke-drying suits humid river landings better than exposed sun racks.
 
 - Investment track: Fishery infrastructure.
 - Site selection: Monsoon / Equatorial Wetlands / Tropical; river.
@@ -3387,7 +3387,7 @@ Covered smoke-drying suits humid river landings better than exposed sun racks; n
 
 ### Highland lake fish stores
 
-Protected lake landings and cold storage improve fish handling when water is accessible; closed ice still prevents harvest.
+Protected lake landings and cold storage improve fish handling when water is accessible.
 
 - Investment track: Fishery infrastructure.
 - Site selection: Cold / Alpine / Andean / Tundra / Arctic; lake.
@@ -3400,7 +3400,7 @@ Protected lake landings and cold storage improve fish handling when water is acc
 
 ### Coastal seal handling caches
 
-Protected shore caches improve visiting seal recovery, favoring Oil. Empty coastal ground still gives nothing.
+Protected shore caches improve visiting seal recovery, favoring Oil.
 
 - Investment track: Hunting infrastructure.
 - Site selection: Seal hunting grounds; Coastal.
@@ -3413,7 +3413,7 @@ Protected shore caches improve visiting seal recovery, favoring Oil. Empty coast
 
 ### Polar open-ground tracking shelters
 
-Small caches and tracking shelters improve recovery when animals cross open snow. They do not attract permanent herds.
+Low tracking shelters and insulated caches support hunting across exposed snow plains.
 
 - Investment track: Hunting infrastructure.
 - Site selection: Snow plain; Arctic / Glacial / Tundra.
@@ -3426,7 +3426,7 @@ Small caches and tracking shelters improve recovery when animals cross open snow
 
 ### Reindeer route markers
 
-Stone route markers and communal handling improve passing animals without trapping them on the range.
+Stone route markers guide hunters following reindeer, while communal yards preserve their catch.
 
 - Investment track: Hunting infrastructure.
 - Site selection: Reindeer range.
@@ -3439,7 +3439,7 @@ Stone route markers and communal handling improve passing animals without trappi
 
 ### Musk-ox product sorting caches
 
-Protected handling and sorting improve the wool component of animals visiting this habitat; no domestication is implied.
+Protected handling and sorting preserve the valuable fleece gathered from musk ox.
 
 - Investment track: Hunting infrastructure.
 - Site selection: Musk ox range.
@@ -3452,7 +3452,7 @@ Protected handling and sorting improve the wool component of animals visiting th
 
 ### Wood-edge turkey tracking
 
-Observation shelters and clean game handling favor meat recovery from animals using woodland edges; birds remain migratory.
+Observation shelters and clean game handling favor meat recovery from animals using woodland edges.
 
 - Investment track: Hunting infrastructure.
 - Site selection: Turkey grounds / Cloud forest; Mesoamerican.
@@ -3465,7 +3465,7 @@ Observation shelters and clean game handling favor meat recovery from animals us
 
 ### River woodland game stations
 
-Raised shelters and clean handling improve recovery along wooded migration corridors without blocking animal movement.
+Raised shelters and clean handling stations support hunters along wooded migration corridors.
 
 - Investment track: Hunting infrastructure.
 - Site selection: River woods.
@@ -3478,7 +3478,7 @@ Raised shelters and clean handling improve recovery along wooded migration corri
 
 ### Oasis-edge gazelle stations
 
-Small shaded stations recover more from gazelles visiting permanent water, without fencing them in or changing oasis crops.
+Shaded observation posts and clean handling shelters support gazelle hunters around the oasis.
 
 - Investment track: Hunting infrastructure.
 - Site selection: Oasis.
@@ -3491,7 +3491,7 @@ Small shaded stations recover more from gazelles visiting permanent water, witho
 
 ### Berry-heath gathering shelters
 
-Picking shelters, clean baskets and sorting recover more of the existing brief berry harvest. No winter crop or new berry heath is created.
+Picking shelters, clean baskets and sorting recover more of the brief berry harvest.
 
 - Investment track: Wild harvest infrastructure.
 - Site selection: Berry heath.
@@ -3504,7 +3504,7 @@ Picking shelters, clean baskets and sorting recover more of the existing brief b
 
 ### Cold-coast whale tryworks
 
-Insulated shore handling and rendering recover more Oil from visiting whales. Ice closure and migration still stop production.
+Insulated shore yards and sheltered rendering pots preserve whale oil in the cold.
 
 - Investment track: Whale-product infrastructure.
 - Site selection: Arctic / Glacial / Tundra / Cold.
@@ -3517,7 +3517,7 @@ Insulated shore handling and rendering recover more Oil from visiting whales. Ic
 
 ### Warm-coast whale handling
 
-Shaded rapid handling and rendering limit warm-weather catch losses. No whales are created and ordinary fish gain nothing.
+Shaded landing slips and prompt rendering preserve whale oil and hides in warm coastal weather.
 
 - Investment track: Whale-product infrastructure.
 - Site selection: Tropical / Tropical Maritime / Subtropical / Monsoon / Savanna / Mesoamerican / Equatorial Wetlands / Desert / Hot Semi-Arid / Hyperarid.
@@ -3530,7 +3530,7 @@ Shaded rapid handling and rendering limit warm-weather catch losses. No whales a
 
 ### Temperate shore tryworks
 
-Shore kettles and careful product handling improve existing whale Oil and Hides while the animals remain in reach.
+Shore kettles, settling tanks and careful handling recover more oil and hides from landed whales.
 
 - Investment track: Whale-product infrastructure.
 - Site selection: All otherwise eligible sites.

@@ -34,8 +34,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
     method: {
       id: "layered-oasis",
       name: "Layered oasis channels",
-      description:
-        "Small basins irrigate existing date gardens beneath the palms; evaporation control matters more than extra harvest dates.",
+      description: "Small basins irrigate date gardens beneath the palms.",
       annual: [5, 7, 8, 9],
       stages: [
         "Palm basins",
@@ -62,7 +61,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "desert-lined-canals",
       name: "Hyperarid seepage control",
       description:
-        "Lined, covered channels conserve an existing freshwater supply in extreme aridity. They cannot discover groundwater.",
+        "Lined, covered channels conserve an freshwater supply in extreme aridity.",
       annual: [4, 6, 7, 8],
       stages: [
         "Sealed feeder channels",
@@ -89,7 +88,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "monsoon-paddy-gates",
       name: "Monsoon paddy reservoirs",
       description:
-        "Seasonal storage and timed gates support rice between rains; sluices cannot stop a river flood.",
+        "Seasonal storage and timed gates support rice between rains.",
       annual: [4, 6, 7, 8],
       stages: [
         "Storage bunds",
@@ -117,7 +116,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "tropical-paddy-division",
       name: "Warm-season paddy division",
       description:
-        "Dividing channels regulate staggered rice plots where warmth permits; the existing harvest-mode choice controls timing.",
+        "Dividing channels regulate staggered rice plots where warmth permits.",
       annual: [3, 5, 6, 7],
       stages: [
         "Field dividing boards",
@@ -144,7 +143,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "subtropical-paddy-nurseries",
       name: "Subtropical nursery channels",
       description:
-        "Separate seedling beds and planting-water channels improve the two warm harvests; winter stays outside the rice window.",
+        "Separate seedling beds and planting-water channels improve the two warm harvests.",
       annual: [3, 4, 5, 6],
       stages: [
         "Watered nursery beds",
@@ -171,7 +170,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "maize-furrows",
       name: "Maize furrow irrigation",
       description:
-        "Measured furrow water supports maize without ponding its roots; dry-weather protection leaves the native harvest dates intact.",
+        "Measured furrow water supports maize without ponding its roots.",
       annual: [3, 5, 6, 7],
       stages: [
         "Maize feeder furrows",
@@ -223,7 +222,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "olive-root-basins",
       name: "Olive root-zone basins",
       description:
-        "Deep localized watering supports existing olives with a small output gain. Ordinary dry spells already spare this drought-tolerant crop.",
+        "Deep localized watering supports olives with a small output gain.",
       annual: [2, 3, 4, 5],
       stages: [
         "Olive root basins",
@@ -249,8 +248,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
     method: {
       id: "desert-basin-wheat",
       name: "Alluvial wheat basin gates",
-      description:
-        "Basin gates retain receding river water for existing wheat. Productive alluvium remains exposed to high-water closures.",
+      description: "Basin gates retain receding river water for wheat.",
       annual: [5, 7, 8, 9],
       stages: [
         "Basin feeder cuts",
@@ -276,8 +274,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
     method: {
       id: "delta-garden-distribution",
       name: "Delta garden distributaries",
-      description:
-        "Short channels distribute existing freshwater among delta beds; more gates are needed than on an ordinary field.",
+      description: "Short channels distribute freshwater among delta beds.",
       annual: [3, 5, 6, 7],
       stages: [
         "Garden feeder branches",
@@ -305,7 +302,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "millet-microbasins",
       name: "Millet planting-pocket husbandry",
       description:
-        "Localized manure and surface cover conserve scarce nutrients around millet; the crop keeps its existing drought resistance.",
+        "Localized manure and surface cover conserve scarce nutrients around millet.",
       annual: [2, 3, 4, 5],
       stages: [
         "Manured planting pockets",
@@ -328,7 +325,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "sorghum-stubble",
       name: "Sorghum stubble management",
       description:
-        "Retained stubble and legume rotations protect soil between sorghum harvests; no second harvest is invented.",
+        "Retained stubble and legume rotations protect soil between sorghum harvests.",
       annual: [2, 4, 5, 6],
       stages: [
         "Retained sorghum stubble",
@@ -354,7 +351,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "maize-intercropping",
       name: "Maize intercropping beds",
       description:
-        "Rotations and complementary crop cover improve maize soil; companion crops contribute to the existing Grain budget, not new resources.",
+        "Legume rotations and complementary ground cover enrich the soil beneath maize.",
       annual: [3, 5, 6, 7],
       stages: [
         "Mixed planting beds",
@@ -380,7 +377,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "sunflower-oilseed-rotation",
       name: "Sunflower oilseed rotation",
       description:
-        "Wide rotations and careful seed grading improve existing oilseed recovery, favoring Oil within the shared crop bonus.",
+        "Wide crop rotations and careful seed grading improve sunflower oil recovery.",
       annual: [2, 4, 5, 6],
       stages: [
         "Graded oilseed plots",
@@ -410,7 +407,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "barley-short-season-seed",
       name: "Short-season barley selection",
       description:
-        "Seed grading and rotations improve barley within the short growing season; modest cold protection never makes winter productive.",
+        "Seed grading and rotations improve barley within the short growing season.",
       annual: [2, 3, 4, 5],
       stages: [
         "Barley seed grading",
@@ -436,7 +433,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "oat-ley-rotation",
       name: "Oat and grass-ley rotation",
       description:
-        "Grass leys and oat rotations improve soil structure in moist farming country; no livestock products are created on the crop tile.",
+        "Grass leys and oat rotations improve soil structure in moist farming country.",
       annual: [3, 4, 5, 6],
       stages: [
         "Oat ley strips",
@@ -462,8 +459,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
     method: {
       id: "turnip-folding",
       name: "Turnip folding and rotations",
-      description:
-        "Manure incorporation and root rotations improve turnips; existing summer and autumn lifting dates remain unchanged.",
+      description: "Manure incorporation and root rotations improve turnips.",
       annual: [3, 5, 6, 7],
       stages: [
         "Manured root beds",
@@ -491,7 +487,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "andean-potato-seed",
       name: "Andean potato seed stewardship",
       description:
-        "Separate seed stocks and local variety selection improve tubers in their existing altitude window, with modest cold-loss protection.",
+        "Separate seed stocks and local variety selection improve tubers in their altitude window, with modest cold-loss protection.",
       annual: [3, 5, 6, 7],
       stages: [
         "Selected seed tubers",
@@ -517,7 +513,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "olive-pruning-mulch",
       name: "Olive pruning and soil cover",
       description:
-        "Pruning, ground cover and composted residues improve the existing olive crop; recovery favors Oil without adding harvest dates.",
+        "Pruning, ground cover and composted residues improve the olive crop.",
       annual: [2, 3, 4, 5],
       stages: [
         "Pruned olive plots",
@@ -546,7 +542,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "breadfruit-orchard-litter",
       name: "Breadfruit orchard litter cycling",
       description:
-        "Mulch and managed orchard litter sustain existing island food trees. The method does not plant a new grove.",
+        "Mulch and managed orchard litter sustain island food trees.",
       annual: [2, 4, 5, 6],
       stages: [
         "Orchard litter basins",
@@ -572,7 +568,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "sago-palm-stand-care",
       name: "Sago stand renewal",
       description:
-        "Managed suckers and organic recycling improve starch recovery from existing sago stands; wetland habitat remains intact.",
+        "Managed suckers and organic recycling improve starch recovery from sago stands.",
       annual: [2, 4, 5, 6],
       stages: [
         "Selected palm suckers",
@@ -597,8 +593,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
     method: {
       id: "chinampa-sediment-renewal",
       name: "Chinampa sediment renewal",
-      description:
-        "Canal sediment and compost renew existing raised beds. This improves established gardens without reclaiming new land.",
+      description: "Canal sediment and compost renew raised beds.",
       annual: [3, 5, 6, 7],
       stages: [
         "Composted garden beds",
@@ -625,8 +620,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
     method: {
       id: "delta-outfall-drains",
       name: "Delta outfall drainage",
-      description:
-        "Outfall gates remove local waterlogging from delta beds. They do not protect against a river overtopping its banks.",
+      description: "Outfall gates remove local waterlogging from delta beds.",
       annual: [3, 5, 6, 7],
       stages: [
         "Garden outfall ditches",
@@ -653,7 +647,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "monsoon-paddy-spillways",
       name: "Monsoon paddy spillways",
       description:
-        "Small spillways and outlets improve paddy management between rain events; beneficial rain remains beneficial.",
+        "Small spillways and outlets improve paddy management between rain events.",
       annual: [2, 3, 4, 5],
       stages: [
         "Paddy overflow cuts",
@@ -679,7 +673,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "wetland-raised-crop-beds",
       name: "Wetland raised planting beds",
       description:
-        "Organic raised beds and small drains keep existing garden roots aerated. Flooded terrain still requires a levee.",
+        "Organic raised beds and small drains keep garden roots aerated.",
       annual: [3, 5, 6, 7],
       stages: [
         "Organic raised beds",
@@ -732,7 +726,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "coastal-field-sluices",
       name: "Coastal field sluices",
       description:
-        "Gated outlets control local drainage on coastal farmland without desalinating the sea or preventing major flooding.",
+        "Gated outlets regulate drainage across low coastal farmland.",
       annual: [2, 4, 5, 6],
       stages: [
         "Coastal field outlets",
@@ -759,7 +753,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "root-bed-underdrains",
       name: "Root-bed underdrainage",
       description:
-        "Underdrains keep tuber beds workable in damp lowlands, concentrating recovery in the existing lifting season.",
+        "Underdrains keep tuber beds workable in damp lowlands, concentrating recovery in the lifting season.",
       annual: [3, 4, 5, 6],
       stages: [
         "Root-bed ditches",
@@ -786,8 +780,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
     method: {
       id: "andean-potato-terraces",
       name: "Andean potato retaining terraces",
-      description:
-        "Stone benches retain soil and buffer exposed potato plots; their short growing season stays unchanged.",
+      description: "Stone benches retain soil and buffer exposed potato plots.",
       annual: [3, 5, 6, 7],
       stages: [
         "Potato contour walls",
@@ -814,8 +807,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
     method: {
       id: "highland-barley-benches",
       name: "Highland barley benches",
-      description:
-        "Narrow stone benches reduce soil loss around barley; shelter is useful but does not remove highland frost.",
+      description: "Narrow stone benches reduce soil loss around barley.",
       annual: [2, 4, 5, 6],
       stages: [
         "Barley contour stones",
@@ -840,8 +832,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
     method: {
       id: "olive-dry-stone-terraces",
       name: "Olive dry-stone terraces",
-      description:
-        "Dry-stone shelves hold existing olive soil on slopes. Recovery favors Oil; no new trees or harvest seasons are created.",
+      description: "Dry-stone shelves hold olive soil on slopes.",
       annual: [2, 3, 4, 5],
       stages: [
         "Olive retaining rings",
@@ -899,7 +890,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "mesoamerican-maize-terraces",
       name: "Mesoamerican maize contour walls",
       description:
-        "Contour strips retain cultivated slope soil under seasonal rain; maize keeps its native harvest calendar.",
+        "Contour strips retain cultivated slope soil under seasonal rain.",
       annual: [3, 4, 5, 6],
       stages: [
         "Maize contour strips",
@@ -925,8 +916,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
     method: {
       id: "dry-cereal-contour-banks",
       name: "Dry-cereal contour banks",
-      description:
-        "Low contour banks slow runoff on existing dry cereal slopes; shallow works cost less stone than major highland terraces.",
+      description: "Low contour banks slow runoff on dry cereal slopes.",
       annual: [2, 3, 4, 5],
       stages: [
         "Cereal contour banks",
@@ -953,8 +943,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
     method: {
       id: "millet-zai",
       name: "Millet runoff planting pits",
-      description:
-        "Small planting pits capture seasonal rain near roots. They improve establishment without creating irrigation or a new harvest.",
+      description: "Small planting pits capture seasonal rain near roots.",
       annual: [2, 3, 4, 5],
       stages: [
         "Runoff seed pockets",
@@ -979,7 +968,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "dry-cereal-halfmoons",
       name: "Dry-cereal half-moon bunds",
       description:
-        "Crescent bunds gather short rainy-season runoff for dryland cereals; no permanent water source is added.",
+        "Crescent bunds gather short rainy-season runoff for dryland cereals.",
       annual: [3, 4, 5, 6],
       stages: [
         "Cereal half-moons",
@@ -1003,7 +992,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "olive-jessour",
       name: "Olive hillside runoff terraces",
       description:
-        "Small hillside retaining banks collect rain around existing olives, inspired by jessour; they do not dam navigable rivers.",
+        "Small hillside retaining banks gather seasonal runoff around olive roots.",
       annual: [2, 3, 4, 5],
       stages: [
         "Olive runoff crescents",
@@ -1029,7 +1018,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "steppe-snow-retention",
       name: "Steppe snow-retention strips",
       description:
-        "Residue strips retain winter snow for the next growing season. The extra harvest stays in summer and autumn, never winter.",
+        "Residue strips retain winter snow for the next growing season.",
       annual: [2, 4, 5, 6],
       stages: [
         "Standing residue strips",
@@ -1055,7 +1044,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "prairie-contour-catchments",
       name: "Prairie contour runoff strips",
       description:
-        "Contour cultivation spreads seasonal runoff through existing fields and reduces drought losses without changing the crop.",
+        "Contour cultivation spreads seasonal runoff through fields and reduces drought losses.",
       annual: [2, 3, 4, 5],
       stages: [
         "Contour seed strips",
@@ -1081,7 +1070,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "alpaca-fleece-stations",
       name: "Highland alpaca fleece stations",
       description:
-        "Sheltered sorting pens improve fleece recovery from existing alpacas; no wet pasture is created without water.",
+        "Sheltered sorting pens improve fleece recovery from alpacas.",
       annual: [3, 5, 6, 7],
       stages: [
         "Alpaca sorting pens",
@@ -1140,8 +1129,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
     method: {
       id: "coastal-sheep-shelters",
       name: "Coastal sheep shelter yards",
-      description:
-        "Shelter and dry fleece handling suit wet exposed coasts; wool gains share one budget with any other domestic products.",
+      description: "Shelter and dry fleece handling suit wet exposed coasts.",
       annual: [3, 5, 6, 7],
       stages: [
         "Coastal sheep folds",
@@ -1173,7 +1161,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "savanna-cattle-fodder",
       name: "Savanna cattle fodder yards",
       description:
-        "Dry-season fodder reserves and handling yards improve existing cattle returns; they cannot hold wild herds.",
+        "Dry-season fodder reserves and handling yards improve cattle returns.",
       annual: [3, 5, 6, 7],
       stages: [
         "Dry-season fodder yards",
@@ -1233,8 +1221,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
     method: {
       id: "flood-meadow-hay",
       name: "Flood-meadow hay lofts",
-      description:
-        "Raised hay storage recovers fodder after the meadow dries; it does not make flooded grazing productive.",
+      description: "Raised hay storage recovers fodder after the meadow dries.",
       annual: [3, 5, 6, 7],
       stages: [
         "Raised meadow hay racks",
@@ -1264,7 +1251,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "alpine-stall-fodder",
       name: "Alpine stall and hay system",
       description:
-        "Stone winter stalls and hay lofts buffer cold-season livestock production; domestic animals remain on their tile.",
+        "Stone winter stalls and hay lofts buffer cold-season livestock production.",
       annual: [4, 6, 7, 8],
       stages: [
         "Alpine hay shelters",
@@ -1295,7 +1282,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "temperate-sheep-folding",
       name: "Temperate sheep folding",
       description:
-        "Rotating folds and clean shearing floors improve fleece recovery on existing pasture.",
+        "Rotating folds and clean shearing floors improve fleece recovery on pasture.",
       annual: [3, 5, 6, 7],
       stages: [
         "Movable sheep folds",
@@ -1325,7 +1312,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "ancient-grove-selection",
       name: "Ancient-grove selective coupes",
       description:
-        "Carefully separated coupes recover timber around an ancient grove without multiplying its landmark bonus.",
+        "Carefully separated coupes recover timber around an ancient grove.",
       annual: [2, 3, 4, 5],
       stages: [
         "Marked grove coupes",
@@ -1352,7 +1339,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "mangrove-access-platforms",
       name: "Mangrove timber access platforms",
       description:
-        "Raised handling platforms reduce wet-ground extraction losses; drainage never converts the mangrove into farmland.",
+        "Raised handling platforms reduce wet-ground extraction losses.",
       annual: [2, 4, 5, 6],
       stages: [
         "Raised timber platforms",
@@ -1378,7 +1365,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "river-woodland-landings",
       name: "River woodland timber landings",
       description:
-        "Short haul routes and bank landings improve recovery beside rivers; no dam or navigation obstruction is added.",
+        "Short haul routes and bank landings improve recovery beside rivers.",
       annual: [3, 5, 6, 7],
       stages: [
         "Bank timber landings",
@@ -1484,8 +1471,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
     method: {
       id: "island-palm-sawing",
       name: "Island palm timber handling",
-      description:
-        "Palm stems need careful sorting and sheltered cutting; the existing island woodland remains unchanged.",
+      description: "Palm stems need careful sorting and sheltered cutting.",
       annual: [2, 4, 5, 6],
       stages: [
         "Palm stem sorting",
@@ -1537,8 +1523,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
     method: {
       id: "rich-vein-selective-dressing",
       name: "Rich-vein selective dressing",
-      description:
-        "Careful ore sorting improves an existing rich vein. Its landmark yield is not multiplied by the investment.",
+      description: "Careful ore sorting improves an rich vein.",
       annual: [2, 3, 4, 5],
       stages: [
         "Marked rich-vein faces",
@@ -1565,7 +1550,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "polar-iron-thawing",
       name: "Polar iron thawing works",
       description:
-        "Protected ore faces and costly thawing equipment favor the accessible warm season in frozen ground.",
+        "Protected ore faces and thawing equipment support seasonal work in frozen ground.",
       annual: [2, 4, 5, 6],
       stages: [
         "Sheltered iron faces",
@@ -1595,7 +1580,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "boreal-coal-drift",
       name: "Boreal coal drift protection",
       description:
-        "Insulated winding and ventilation improve existing cold-region coal access; no new coal seam is opened on barren snow.",
+        "Insulated winding and ventilation improve cold-region coal access.",
       annual: [3, 5, 6, 7],
       stages: [
         "Protected coal drifts",
@@ -1624,7 +1609,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "andean-gold-stamps",
       name: "Andean gold crushing floors",
       description:
-        "Stone grinding and later stamp machinery improve highland gold recovery, with modest precious-metal card returns.",
+        "Stone mills and powered stamps recover gold from highland ore.",
       annual: [2, 3, 4, 5],
       stages: [
         "Stone crushing floors",
@@ -1651,8 +1636,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
     method: {
       id: "desert-dry-ore-sorting",
       name: "Desert dry-ore sorting",
-      description:
-        "Dry sorting and sheltered crushing recover ore without assuming a water supply for wet concentration.",
+      description: "Dry sorting and sheltered crushing recover ore.",
       annual: [2, 4, 5, 6],
       stages: [
         "Dry sorting tables",
@@ -1740,7 +1724,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "polar-stone-shelters",
       name: "Polar stone working shelters",
       description:
-        "Protected cutting floors and seasonal lifting gear improve the existing cold quarry, without removing frozen access limits.",
+        "Protected cutting floors and seasonal lifting gear improve the cold quarry,.",
       annual: [2, 4, 5, 6],
       stages: [
         "Sheltered cutting floors",
@@ -1767,7 +1751,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "volcanic-block-cutting",
       name: "Volcanic block splitting",
       description:
-        "Selected joints, wedges and powered cutting improve existing volcanic stone; no eruption or new deposit is introduced.",
+        "Selected joints, wedges and powered cutting improve volcanic stone.",
       annual: [3, 5, 6, 7],
       stages: [
         "Joint-marked stone faces",
@@ -1793,7 +1777,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "coastal-cliff-derricks",
       name: "Coastal cliff derricks",
       description:
-        "Lifting stages and sheltered loading recover stone from exposed coastal faces; the cliff is not turned into a harbor.",
+        "Lifting stages and sheltered loading recover stone from exposed coastal faces.",
       annual: [2, 4, 5, 6],
       stages: [
         "Cliff loading ledges",
@@ -1820,7 +1804,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "alluvial-clay-settling",
       name: "Alluvial clay settling beds",
       description:
-        "Settling and covered handling recover clay after river levels fall. Flood closures still override production.",
+        "Settling and covered handling recover clay after river levels fall.",
       annual: [3, 5, 6, 7],
       stages: [
         "Clay settling hollows",
@@ -1848,7 +1832,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "dry-clay-shaded-pits",
       name: "Dry-clay shaded workings",
       description:
-        "Covered sorting and protected pit access recover clay without requiring invented ponds in dry terrain.",
+        "Covered sorting floors and sheltered pit entrances suit clay working in dry country.",
       annual: [2, 4, 5, 6],
       stages: [
         "Shaded clay sorting",
@@ -1873,8 +1857,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
     method: {
       id: "mountain-quarry-inclines",
       name: "Mountain quarry inclines",
-      description:
-        "Inclined haulage and block cradles suit steep existing quarries. They grant no road or unit passage through peaks.",
+      description: "Inclined haulage and block cradles suit steep quarries.",
       annual: [3, 5, 6, 7],
       stages: [
         "Block haul inclines",
@@ -1902,7 +1885,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "cold-peat-drying-lofts",
       name: "Cold-region peat drying lofts",
       description:
-        "Ventilated covered lofts improve peat drying during a short warm work season; thaw and wet weather still matter.",
+        "Ventilated covered lofts improve peat drying during a short warm work season.",
       annual: [2, 3, 4, 5],
       stages: [
         "Raised peat drying rails",
@@ -1930,7 +1913,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "sheltered-harbor-salt",
       name: "Sheltered-harbor salt yards",
       description:
-        "Sheltered landing yards and covered stores improve recovery from an existing coastal salt site. A harbor alone creates no salt.",
+        "Sheltered landing yards and covered stores improve recovery from an coastal salt site.",
       annual: [3, 5, 6, 7],
       stages: [
         "Sheltered salt landing",
@@ -1957,7 +1940,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "hyperarid-salt-crusts",
       name: "Hyperarid salt-crust recovery",
       description:
-        "Crust grading and dry covered stores suit strong evaporation; gains favor the warm work season rather than creating water.",
+        "Crust grading and dry covered stores suit strong evaporation.",
       annual: [4, 6, 7, 8],
       stages: [
         "Salt-crust grading beds",
@@ -1984,7 +1967,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "desert-crystallizer-cells",
       name: "Desert crystallizer cells",
       description:
-        "Separated cells grade existing saline material and improve evaporation control in dry basins.",
+        "Separated cells grade saline material and improve evaporation control in dry basins.",
       annual: [4, 6, 7, 8],
       stages: [
         "Saline grading cells",
@@ -2012,7 +1995,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "mediterranean-coastal-salines",
       name: "Mediterranean coastal salines",
       description:
-        "Graded evaporation pans exploit dry summers on existing coastal salt ground; rainy winters remain less favorable.",
+        "Graded evaporation pans exploit dry summers on coastal salt ground.",
       annual: [4, 6, 7, 8],
       stages: [
         "Coastal evaporation plots",
@@ -2039,7 +2022,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "cold-season-covered-salt-pans",
       name: "Cold-season covered brine pans",
       description:
-        "Covered concentration and heating matter more than sunshine at cold-season salt sites; advanced works require much more coal.",
+        "Covered concentration and heating matter more than sunshine at cold-season salt sites.",
       annual: [1, 2, 4, 5],
       stages: [
         "Sheltered salt beds",
@@ -2090,7 +2073,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "reef-fish-handling",
       name: "Reef-edge catch handling",
       description:
-        "Small landing stages and shaded handling improve existing reef fish catches without damming or farming the reef.",
+        "Small landing stages and shaded sorting areas preserve delicate reef catches.",
       annual: [2, 4, 5, 6],
       stages: [
         "Shaded reef catch tables",
@@ -2114,7 +2097,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "shoal-net-mending-yards",
       name: "Shoal net and curing yards",
       description:
-        "Net repair, sorting and curing recover more from visiting shallow-water shoals; fish can still migrate away.",
+        "Net repair, sorting and curing recover more from visiting shallow-water shoals.",
       annual: [3, 4, 5, 6],
       stages: [
         "Shoal net drying frames",
@@ -2139,7 +2122,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "cold-coast-stockfish-racks",
       name: "Cold-coast fish drying racks",
       description:
-        "Air-drying frames and covered stores suit cold coasts. The works preserve only visiting fish, never thaw frozen water.",
+        "Air-drying frames and covered stores preserve landed fish in the cool coastal air.",
       annual: [2, 3, 4, 5],
       stages: [
         "Raised fish drying racks",
@@ -2165,7 +2148,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "monsoon-river-smoking",
       name: "Humid-river fish smoking sheds",
       description:
-        "Covered smoke-drying suits humid river landings better than exposed sun racks; no extra shoal is created.",
+        "Covered smoke-drying suits humid river landings better than exposed sun racks.",
       annual: [3, 5, 6, 7],
       stages: [
         "Raised smoking racks",
@@ -2190,7 +2173,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "lake-icehouse-landings",
       name: "Highland lake fish stores",
       description:
-        "Protected lake landings and cold storage improve fish handling when water is accessible; closed ice still prevents harvest.",
+        "Protected lake landings and cold storage improve fish handling when water is accessible.",
       annual: [2, 4, 5, 6],
       stages: [
         "Sheltered lake landings",
@@ -2216,7 +2199,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "coastal-seal-caches",
       name: "Coastal seal handling caches",
       description:
-        "Protected shore caches improve visiting seal recovery, favoring Oil. Empty coastal ground still gives nothing.",
+        "Protected shore caches improve visiting seal recovery, favoring Oil.",
       annual: [4, 6, 7, 8],
       stages: [
         "Shore handling shelters",
@@ -2243,7 +2226,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "polar-open-ground-tracking",
       name: "Polar open-ground tracking shelters",
       description:
-        "Small caches and tracking shelters improve recovery when animals cross open snow. They do not attract permanent herds.",
+        "Low tracking shelters and insulated caches support hunting across exposed snow plains.",
       annual: [4, 6, 7, 8],
       stages: [
         "Snow tracking shelters",
@@ -2270,7 +2253,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "reindeer-drive-markers",
       name: "Reindeer route markers",
       description:
-        "Stone route markers and communal handling improve passing animals without trapping them on the range.",
+        "Stone route markers guide hunters following reindeer, while communal yards preserve their catch.",
       annual: [4, 6, 7, 8],
       stages: [
         "Reindeer scouting markers",
@@ -2297,7 +2280,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "musk-ox-fleece-recovery",
       name: "Musk-ox product sorting caches",
       description:
-        "Protected handling and sorting improve the wool component of animals visiting this habitat; no domestication is implied.",
+        "Protected handling and sorting preserve the valuable fleece gathered from musk ox.",
       annual: [4, 6, 7, 8],
       stages: [
         "Musk-ox scouting shelters",
@@ -2324,7 +2307,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "turkey-cover-tracking",
       name: "Wood-edge turkey tracking",
       description:
-        "Observation shelters and clean game handling favor meat recovery from animals using woodland edges; birds remain migratory.",
+        "Observation shelters and clean game handling favor meat recovery from animals using woodland edges.",
       annual: [4, 6, 7, 8],
       stages: [
         "Wood-edge observation shelters",
@@ -2350,7 +2333,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "river-woodland-tracking",
       name: "River woodland game stations",
       description:
-        "Raised shelters and clean handling improve recovery along wooded migration corridors without blocking animal movement.",
+        "Raised shelters and clean handling stations support hunters along wooded migration corridors.",
       annual: [4, 6, 7, 8],
       stages: [
         "Raised tracking shelters",
@@ -2376,7 +2359,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "oasis-gazelle-observation",
       name: "Oasis-edge gazelle stations",
       description:
-        "Small shaded stations recover more from gazelles visiting permanent water, without fencing them in or changing oasis crops.",
+        "Shaded observation posts and clean handling shelters support gazelle hunters around the oasis.",
       annual: [4, 6, 7, 8],
       stages: [
         "Oasis-edge observation hides",
@@ -2402,7 +2385,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "heath-berry-gathering",
       name: "Berry-heath gathering shelters",
       description:
-        "Picking shelters, clean baskets and sorting recover more of the existing brief berry harvest. No winter crop or new berry heath is created.",
+        "Picking shelters, clean baskets and sorting recover more of the brief berry harvest.",
       annual: [1, 2, 3, 4],
       stages: [
         "Berry picking shelters",
@@ -2427,7 +2410,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "polar-whale-tryworks",
       name: "Cold-coast whale tryworks",
       description:
-        "Insulated shore handling and rendering recover more Oil from visiting whales. Ice closure and migration still stop production.",
+        "Insulated shore yards and sheltered rendering pots preserve whale oil in the cold.",
       annual: [2, 3, 4, 5],
       stages: [
         "Protected whale-product landings",
@@ -2464,7 +2447,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "warm-whale-tryworks",
       name: "Warm-coast whale handling",
       description:
-        "Shaded rapid handling and rendering limit warm-weather catch losses. No whales are created and ordinary fish gain nothing.",
+        "Shaded landing slips and prompt rendering preserve whale oil and hides in warm coastal weather.",
       annual: [3, 4, 5, 6],
       stages: [
         "Shaded whale-product slips",
@@ -2488,7 +2471,7 @@ export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
       id: "temperate-whale-tryworks",
       name: "Temperate shore tryworks",
       description:
-        "Shore kettles and careful product handling improve existing whale Oil and Hides while the animals remain in reach.",
+        "Shore kettles, settling tanks and careful handling recover more oil and hides from landed whales.",
       annual: [2, 4, 5, 6],
       stages: [
         "Whale-product handling slips",

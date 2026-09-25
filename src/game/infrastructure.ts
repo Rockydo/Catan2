@@ -1,3 +1,11 @@
+import {
+  SPECIALIST_PROJECTS,
+  SPECIALISTS_BY_TRACK,
+  isSpecialist,
+  specialistId,
+  type SpecialistBranch,
+  type SpecialistProject,
+} from "./infrastructure-specialists";
 import { BIOME_INFO, biomeYield, type Climate } from "./climate-content";
 import type { Hex, Stock, Raw } from "./types";
 import type { Season } from "./seasons";
@@ -9,7 +17,7 @@ export const INFRASTRUCTURE = {
     name: "Irrigation",
     cost: { stone: 2, brick: 2, ore: 1 },
     description:
-      "Freshwater channels improve suitable crops and reduce drought losses. Planting remains limited by crop and climate.",
+      "Channels and reservoirs deliver freshwater to the roots and sustain crops through dry spells.",
     stages: [
       "Field channels",
       "Managed canals",
@@ -21,7 +29,7 @@ export const INFRASTRUCTURE = {
     name: "Livestock improvements",
     cost: { lumber: 3, grain: 2, wool: 1 },
     description:
-      "Fodder stores, shelter and veterinary care improve domestic herds. Wild animals remain migratory.",
+      "Fodder stores, shelters and veterinary care support healthy, productive livestock.",
     stages: [
       "Fodder and shelters",
       "Managed pasture",
@@ -33,7 +41,7 @@ export const INFRASTRUCTURE = {
     name: "Soil husbandry",
     cost: { lumber: 2, grain: 2, ore: 1 },
     description:
-      "Rotations, manure and soil cover improve existing crops, especially depleted tropical soils.",
+      "Rotations, manure and ground cover restore fertility and improve crop growth.",
     stages: [
       "Rotations and manure",
       "Seed and soil management",
@@ -45,7 +53,7 @@ export const INFRASTRUCTURE = {
     name: "Field drainage",
     cost: { stone: 2, brick: 2, lumber: 1 },
     description:
-      "Ditches and drains reduce wet-weather crop losses on damp ground. They do not stop river floods.",
+      "Ditches and buried drains carry excess rainwater away from the crop roots.",
     stages: [
       "Field ditches",
       "Tile drainage",
@@ -57,7 +65,7 @@ export const INFRASTRUCTURE = {
     name: "Agricultural terraces",
     cost: { stone: 4, lumber: 2 },
     description:
-      "Retaining walls conserve soil and water on cultivated slopes. No new farmland or mountain passages are created.",
+      "Retaining walls conserve soil and water on cultivated slopes.",
     stages: [
       "Contour walls",
       "Bench terraces",
@@ -69,7 +77,7 @@ export const INFRASTRUCTURE = {
     name: "Forestry infrastructure",
     cost: { lumber: 3, ore: 1, grain: 1 },
     description:
-      "Managed felling, haulage and saws improve timber recovery without adding trees or animals.",
+      "Planned felling, prepared haulage and sharp saws recover more useful timber from the woodland.",
     stages: [
       "Managed woodland",
       "Timber haulage",
@@ -81,7 +89,7 @@ export const INFRASTRUCTURE = {
     name: "Mining infrastructure",
     cost: { lumber: 3, ore: 2, stone: 1 },
     description:
-      "Supports, ventilation, drainage and powered winding improve existing ore, coal and gold deposits.",
+      "Supports, ventilation, drainage and winding gear improve recovery from mineral workings.",
     stages: [
       "Supported workings",
       "Winding and drainage",
@@ -93,7 +101,7 @@ export const INFRASTRUCTURE = {
     name: "Quarry infrastructure",
     cost: { lumber: 2, stone: 2, ore: 2 },
     description:
-      "Lifting equipment and cutting tools improve existing stone, clay and peat workings.",
+      "Lifting equipment and specialized tools improve recovery from stone, clay and peat workings.",
     stages: [
       "Organized workings",
       "Cranes and haulage",
@@ -105,7 +113,7 @@ export const INFRASTRUCTURE = {
     name: "Saltworks",
     cost: { stone: 2, brick: 2, lumber: 1 },
     description:
-      "Managed evaporation beds favor dry climates; industrial heated pans reduce rain losses.",
+      "Managed evaporation beds gather salt in dry weather; sheltered, heated pans extend the working season.",
     stages: [
       "Evaporation beds",
       "Managed pans",
@@ -117,7 +125,7 @@ export const INFRASTRUCTURE = {
     name: "Rainwater harvesting",
     cost: { stone: 3, lumber: 1, ore: 1 },
     description:
-      "Runoff basins and bunds support existing rainfed dryland crops without creating a river or another harvest season.",
+      "Runoff basins and contour bunds gather seasonal rain around dryland crops.",
     stages: [
       "Runoff planting basins",
       "Contour bunds and cisterns",
@@ -129,7 +137,7 @@ export const INFRASTRUCTURE = {
     name: "Hunting infrastructure",
     cost: { lumber: 2, stone: 1, hides: 1, salt: 1 },
     description:
-      "Tracking shelters and game handling improve returns from visiting wildlife. Empty habitat still produces nothing.",
+      "Tracking shelters and curing yards help hunters follow passing game and preserve their catch.",
     stages: [
       "Tracking shelters",
       "Hides and curing racks",
@@ -141,7 +149,7 @@ export const INFRASTRUCTURE = {
     name: "Wild harvest infrastructure",
     cost: { lumber: 2, wool: 1, ore: 1 },
     description:
-      "Gathering and sorting improve existing berry heaths in their natural harvest season.",
+      "Gathering shelters and sorting benches preserve more berries during the brief heath harvest.",
     stages: [
       "Gathering shelters",
       "Harvest sorting stores",
@@ -153,7 +161,7 @@ export const INFRASTRUCTURE = {
     name: "Whale-product infrastructure",
     cost: { lumber: 3, stone: 2, ore: 1 },
     description:
-      "Shore handling and rendering improve visiting whale products; no whales are created or retained.",
+      "Shore slips, rendering kettles and settling tanks recover oil and hides from landed whales.",
     stages: [
       "Shore product slips",
       "Rendering yards",
@@ -165,7 +173,7 @@ export const INFRASTRUCTURE = {
     name: "Fishery infrastructure",
     cost: { lumber: 3, salt: 2, wool: 1 },
     description:
-      "Landing and preservation facilities improve fish recovery only while fish are present. No extra whales or permanent shoals.",
+      "Clean landing stages, curing sheds and cold stores preserve more of the catch.",
     stages: [
       "Landing and curing",
       "Icehouse and landing gear",
@@ -541,7 +549,11 @@ export function infrastructureProtection(
       localTechnique(tile, kind).protection?.[weather]?.[tier - 1] ?? 0,
     );
   }
-  return protection;
+  for (const [branch, tier] of installedSpecialists(tile, owner)) {
+    if (branch.effect === weather && branch.goods.includes(raw))
+      protection = 1 - (1 - protection) * Math.pow(0.9, tier);
+  }
+  return Math.min(0.9, protection);
 }
 
 /** One shared budget per track, split over eligible seasons, then existing goods.
@@ -622,15 +634,21 @@ export function huntingYield(
   );
   if (!season) return result;
   const tier = effectiveTier(tile, kind, owner);
-  if (!tier) return result;
   const extra = infrastructureExtras(tile, kind, tier, {
     spring: fauna,
     summer: fauna,
     autumn: fauna,
     winter: fauna,
   })[season];
+  const side = specialistExtras(
+    tile,
+    { spring: fauna, summer: fauna, autumn: fauna, winter: fauna },
+    owner,
+    kind,
+  )[season];
   for (const raw of improvedGoods(tile, kind))
-    if (extra[raw]) result[raw] = (result[raw] ?? 0) + extra[raw]!;
+    if (extra[raw] || side[raw])
+      result[raw] = (result[raw] ?? 0) + (extra[raw] ?? 0) + (side[raw] ?? 0);
   return result;
 }
 
@@ -645,5 +663,336 @@ export function allocateAnnual(total: number, weights: number[]): number[] {
     .filter((x) => weights[x.i] > 0)
     .sort((a, b) => b.rest - a.rest || a.i - b.i);
   for (const { i } of order) if (left-- > 0) result[i]++;
+  return result;
+}
+
+/** Specialist investments retain the main track and share its site restrictions. */
+export function specialistSuitable(
+  tile: Hex,
+  branch: SpecialistBranch,
+): boolean {
+  if (!infrastructureSuitable(tile, branch.track)) return false;
+  const biome = tile.biome ?? "",
+    climate = tile.climate ?? "temperate";
+  const g = tile.geography!,
+    a = AGRONOMY[climate],
+    native = biomeYield(tile.biome!, climate);
+  const cereal =
+    /fields|maize-field|rice-field/.test(biome) ||
+    ["flood-wheat", "flood-rice", "flood-sorghum"].includes(biome);
+  const rice = ["rice-field", "flood-rice"].includes(biome);
+  const wetCrop =
+    !["desert", "hyperarid", "semiarid", "steppe", "savanna"].includes(
+      climate,
+    ) &&
+    ![
+      "rice-field",
+      "flood-rice",
+      "delta-gardens",
+      "sago-grove",
+      "chinampa-gardens",
+      "breadfruit-grove",
+    ].includes(biome);
+  if (branch.rotation) {
+    const r = branch.rotation;
+    return (
+      r.biomes.includes(biome) &&
+      r.climates.includes(climate) &&
+      (r.maxElevation === undefined || g.elevation < r.maxElevation) &&
+      (!r.fertile ||
+        !!g.floodplain ||
+        !!g.delta ||
+        biome === "chernozem-wheat" ||
+        g.landmark === "fertile-basin")
+    );
+  }
+  if (
+    branch.effect === "yield" &&
+    !["hunting", "whaling", "fishery"].includes(branch.track) &&
+    !branch.goods.some((raw) => native[raw])
+  )
+    return false;
+  switch (branch.site) {
+    case "any":
+      return true;
+    case "cereal":
+      return (
+        cereal &&
+        !["potato-fields", "turnip-fields", "sunflower-fields"].includes(biome)
+      );
+    case "dry-crop":
+      return ![
+        "millet-fields",
+        "sorghum-fields",
+        "flood-sorghum",
+        "olive-grove",
+      ].includes(biome);
+    case "wet-cereal":
+      return cereal && wetCrop;
+    case "roots":
+      return ["potato-fields", "turnip-fields"].includes(biome);
+    case "gardens":
+      return ["delta-gardens", "chinampa-gardens", "turnip-fields"].includes(
+        biome,
+      );
+    case "orchard":
+      return [
+        "olive-grove",
+        "oasis",
+        "breadfruit-grove",
+        "sago-grove",
+      ].includes(biome);
+    case "oilseed":
+      return ["olive-grove", "sunflower-fields"].includes(biome);
+    case "rice":
+      return rice;
+    case "maize":
+      return biome === "maize-field";
+    case "wet-crop":
+      return wetCrop;
+    case "non-rice":
+      return !rice && biome !== "sago-grove";
+    case "continental-cereal":
+      return (
+        cereal &&
+        ["steppe", "prairie", "cold"].includes(climate) &&
+        ![
+          "millet-fields",
+          "sorghum-fields",
+          "flood-sorghum",
+          "sunflower-fields",
+          "potato-fields",
+        ].includes(biome)
+      );
+    case "thirsty-orchard":
+      return ["oasis", "breadfruit-grove", "sago-grove"].includes(biome);
+    case "wool":
+      return !!native.wool;
+    case "warm":
+      return ["hot", "warm"].includes(a.heat);
+    case "upland":
+      return g.elevation >= 0.65 || ["alpine", "andean"].includes(climate);
+    case "cold":
+      return [
+        "cold",
+        "arctic",
+        "glacial",
+        "tundra",
+        "alpine",
+        "prairie",
+        "andean",
+      ].includes(climate);
+    case "wetland":
+      return a.moisture === "wet" || !!g.floodplain;
+    case "ore":
+      return !!native.ore;
+    case "coal":
+      return !!native.coal;
+    case "gold":
+      return !!native.gold;
+    case "lowland":
+      return g.elevation < 0.52;
+    case "stone":
+      return !!native.stone;
+    case "clay":
+      return !!native.brick;
+    case "peat":
+      return biome === "peat-bog";
+    case "river":
+      return g.waterway === "river";
+    case "reef":
+      return g.waterway === "reef";
+    case "lake":
+      return g.waterway === "lake";
+    case "forest":
+      return BIOME_INFO[tile.biome!]?.family === "forest";
+    case "open":
+      return BIOME_INFO[tile.biome!]?.family !== "forest";
+    case "seal":
+      return (
+        !!g.coastal && ["arctic", "glacial", "tundra", "cold"].includes(climate)
+      );
+  }
+}
+export function specialistBranches(tile: Hex): SpecialistBranch[] {
+  return (Object.keys(INFRASTRUCTURE) as InfrastructureKind[]).flatMap(
+    (kind) =>
+      infrastructureSuitable(tile, kind)
+        ? (SPECIALISTS_BY_TRACK.get(kind) ?? []).filter((branch) =>
+            specialistSuitable(tile, branch),
+          )
+        : [],
+  );
+}
+/** Every stage is its own saved purchase. An incomplete/foreign chain has no effect. */
+export function specialistTier(
+  tile: Hex,
+  branch: SpecialistBranch,
+  owner?: number,
+): number {
+  let tier = 0,
+    builder: number | undefined = owner;
+  for (let stage = 1; stage <= 4; stage++) {
+    const project = tile.geography?.projects?.[specialistId(branch, stage)];
+    if (!project || (builder !== undefined && builder !== project.owner)) break;
+    builder ??= project.owner;
+    tier = stage;
+  }
+  return tier;
+}
+export function specialistCost(tile: Hex, id: SpecialistProject): Stock {
+  const { branch, tier } = SPECIALIST_PROJECTS[id];
+  // At least twice the local primary recipe for a smaller annual increment.
+  // Fuel here represents construction and commissioning, never upkeep.
+  const cost: Stock = Object.fromEntries(
+    Object.entries(infrastructureCost(branch.track, tier, tile)).map(
+      ([good, n]) => [good, Math.ceil(n! * 2.25)],
+    ),
+  );
+  const extra =
+    branch.id.includes("curing") || branch.id.includes("hide")
+      ? "salt"
+      : branch.effect === "wet"
+        ? tier === 1
+          ? "stone"
+          : "ceramics"
+        : branch.effect === "cold"
+          ? tier === 1
+            ? "wool"
+            : "cloth"
+          : tier === 1
+            ? "lumber"
+            : "planks";
+  cost[extra] = (cost[extra] ?? 0) + tier * 2;
+  return cost;
+}
+/** Only inspect installed projects during production, never the whole catalogue. */
+function installedSpecialists(
+  tile: Hex,
+  owner?: number,
+): [SpecialistBranch, number][] {
+  const seen = new Set<string>(),
+    result: [SpecialistBranch, number][] = [];
+  for (const id of Object.keys(tile.geography?.projects ?? {})) {
+    if (!isSpecialist(id)) continue;
+    const branch = SPECIALIST_PROJECTS[id].branch;
+    if (seen.has(branch.id)) continue;
+    seen.add(branch.id);
+    const tier = specialistTier(tile, branch, owner);
+    if (tier && specialistSuitable(tile, branch)) result.push([branch, tier]);
+  }
+  return result;
+}
+export function specialistExtras(
+  tile: Hex,
+  native: Record<Season, Stock>,
+  owner?: number,
+  onlyTrack?: InfrastructureKind,
+): Record<Season, Stock> {
+  const seasons = ["spring", "summer", "autumn", "winter"] as const;
+  const output: Record<Season, Stock> = {
+    spring: {},
+    summer: {},
+    autumn: {},
+    winter: {},
+  };
+  for (const [branch, tier] of installedSpecialists(tile, owner)) {
+    if (
+      branch.rotation ||
+      branch.effect !== "yield" ||
+      (onlyTrack && branch.track !== onlyTrack)
+    )
+      continue;
+    const wild = ["hunting", "whaling", "fishery"].includes(branch.track);
+    const amounts = seasons.map((season) =>
+      branch.goods.map((raw) =>
+        wild ? (tile.geography?.fauna?.[raw] ?? 0) : (native[season][raw] ?? 0),
+      ),
+    );
+    const budgets = allocateInfrastructureBonus(
+      tier,
+      amounts.map((row) => row.reduce((a, b) => a + b, 0)),
+    );
+    seasons.forEach((season, i) => {
+      const extra = allocateInfrastructureBonus(budgets[i], amounts[i]);
+      branch.goods.forEach((raw, j) => {
+        if (extra[j])
+          output[season][raw] = (output[season][raw] ?? 0) + extra[j];
+      });
+    });
+  }
+  return output;
+}
+
+export function installedRotation(
+  tile: Hex,
+  owner?: number,
+): SpecialistBranch | undefined {
+  return installedSpecialists(tile, owner).find(
+    ([branch]) => branch.rotation,
+  )?.[0];
+}
+export function rotationPrerequisites(
+  tile: Hex,
+  branch: SpecialistBranch,
+  owner?: number,
+): boolean {
+  const r = branch.rotation;
+  if (!r) return true;
+  return (
+    (!r.water || effectiveTier(tile, "irrigation", owner) > 0) &&
+    (!r.drainage ||
+      effectiveTier(tile, "drainage", owner) > 0 ||
+      (!tile.geography?.floodplain &&
+        AGRONOMY[tile.climate ?? "temperate"].moisture !== "wet"))
+  );
+}
+export function rotationExtras(
+  tile: Hex,
+  ordinary: Record<Season, Stock>,
+  owner?: number,
+): Record<Season, Stock> {
+  const result: Record<Season, Stock> = {
+    spring: {},
+    summer: {},
+    autumn: {},
+    winter: {},
+  };
+  const branch = installedRotation(tile, owner);
+  if (!branch || !rotationPrerequisites(tile, branch, owner)) return result;
+  const r = branch.rotation!,
+    tier = specialistTier(tile, branch, owner);
+  const seasons = r.seasons.filter(
+    (season) => !(ordinary[season].grain || ordinary[season].oil),
+  );
+  // The catch crop occupies a small portion of the field. No main-harvest cards
+  // are removed, and a full irrigation calendar leaves no free seasonal window.
+  const amounts = allocateInfrastructureBonus(
+    Math.ceil(tier / 2),
+    seasons.map(() => 1),
+  );
+  seasons.forEach((season, i) => {
+    if (amounts[i]) result[season].grain = amounts[i];
+  });
+  if (seasons.length) {
+    // Alternate catch-crop improvements with benefits to the main crop from
+    // rotation, residue incorporation and improved soil structure.
+    const mainSeasons = ["spring", "summer", "autumn", "winter"] as const;
+    const weights = mainSeasons.map(
+      (season) => (ordinary[season].grain ?? 0) + (ordinary[season].oil ?? 0),
+    );
+    const budgets = allocateInfrastructureBonus(Math.floor(tier / 2), weights);
+    mainSeasons.forEach((season, i) => {
+      const goods = ["grain", "oil"] as const;
+      const portions = allocateInfrastructureBonus(
+        budgets[i],
+        goods.map((good) => ordinary[season][good] ?? 0),
+      );
+      goods.forEach((good, j) => {
+        if (portions[j])
+          result[season][good] = (result[season][good] ?? 0) + portions[j];
+      });
+    });
+  }
   return result;
 }

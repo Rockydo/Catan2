@@ -14,7 +14,7 @@ export const REGIONAL_METHODS = [
       id: "regional-mediterranean-hillside-feeder-lifts",
       name: "Mediterranean hillside feeder lifts",
       description:
-        "Small lifts and contour feeders deliver existing freshwater uphill to wheat.",
+        "Small lifts and contour feeders deliver freshwater uphill to wheat.",
       annual: [3, 4, 5, 6],
       stages: [
         "Mediterranean hillside feeder lifts",
@@ -73,7 +73,7 @@ export const REGIONAL_METHODS = [
       id: "regional-alpine-meadow-fed-barley-channels",
       name: "Alpine meadow-fed barley channels",
       description:
-        "Short protected channels reduce cold-season damage to highland water distribution; the crop still needs summer warmth.",
+        "Short protected channels reduce cold-season damage to highland water distribution.",
       annual: [1, 2, 3, 4],
       stages: [
         "Alpine meadow-fed barley channels",
@@ -186,8 +186,7 @@ export const REGIONAL_METHODS = [
     method: {
       id: "regional-savanna-millet-pulse-irrigation",
       name: "Savanna millet pulse irrigation",
-      description:
-        "Small doses limit runoff and evaporation on existing millet plots; no river is created.",
+      description: "Small doses limit runoff and evaporation on millet plots.",
       annual: [3, 4, 5, 6],
       stages: [
         "Savanna millet pulse irrigation",
@@ -245,7 +244,7 @@ export const REGIONAL_METHODS = [
       id: "regional-monsoon-delta-paddy-divisions",
       name: "Monsoon delta paddy divisions",
       description:
-        "Separate field inlets make variable delta freshwater easier to distribute; levees still determine flood access.",
+        "Separate field inlets make variable delta freshwater easier to distribute.",
       annual: [4, 5, 6, 7],
       stages: [
         "Monsoon delta paddy divisions",
@@ -273,8 +272,7 @@ export const REGIONAL_METHODS = [
     method: {
       id: "regional-coastal-raised-garden-freshwater-gates",
       name: "Coastal raised-garden freshwater gates",
-      description:
-        "Gates distribute available freshwater to raised gardens; seawater is never an irrigation source.",
+      description: "Gates distribute available freshwater to raised gardens.",
       annual: [3, 4, 5, 6],
       stages: [
         "Coastal raised-garden freshwater gates",
@@ -303,7 +301,7 @@ export const REGIONAL_METHODS = [
       id: "regional-island-breadfruit-lift-basins",
       name: "Island breadfruit lift basins",
       description:
-        "Small upland basins deliver freshwater to established island trees without changing fruit seasons.",
+        "Small upland basins deliver freshwater to established island trees.",
       annual: [2, 3, 4, 5],
       stages: [
         "Island breadfruit lift basins",
@@ -332,7 +330,7 @@ export const REGIONAL_METHODS = [
       id: "regional-delta-sago-channel-regulation",
       name: "Delta sago channel regulation",
       description:
-        "Controlled feeder cuts stabilize water distribution through existing sago stands; abundant water limits added yield.",
+        "Controlled feeder cuts stabilize water distribution through sago stands.",
       annual: [1, 2, 3, 4],
       stages: [
         "Delta sago channel regulation",
@@ -389,8 +387,7 @@ export const REGIONAL_METHODS = [
     method: {
       id: "regional-plateau-black-earth-residue-retention",
       name: "Plateau black-earth residue retention",
-      description:
-        "Retained cereal residues protect exposed fertile topsoil; high native fertility limits added returns.",
+      description: "Retained cereal residues protect exposed fertile topsoil.",
       annual: [1, 2, 3, 4],
       stages: [
         "Plateau black-earth residue retention",
@@ -448,7 +445,7 @@ export const REGIONAL_METHODS = [
       id: "regional-coastal-dry-barley-residue-beds",
       name: "Coastal dry-barley residue beds",
       description:
-        "Residue cover conserves moisture in coastal dryland barley without adding water.",
+        "Residue cover conserves moisture in coastal dryland barley.",
       annual: [2, 3, 4, 5],
       stages: [
         "Coastal dry-barley residue beds",
@@ -477,7 +474,7 @@ export const REGIONAL_METHODS = [
       id: "regional-rainforest-oat-aerated-beds",
       name: "Rainforest oat aerated beds",
       description:
-        "Raised seed rows and organic structure improve wet lowland oat roots; flood closures still apply.",
+        "Raised seed rows and organic structure improve wet lowland oat roots.",
       annual: [2, 3, 4, 5],
       stages: [
         "Rainforest oat aerated beds",
@@ -505,7 +502,7 @@ export const REGIONAL_METHODS = [
       id: "regional-alpine-root-seed-stores",
       name: "Alpine root seed stores",
       description:
-        "Protected seed handling and root-bed preparation reduce cold losses in the existing short season.",
+        "Protected seed handling and root-bed preparation reduce cold losses in the short season.",
       annual: [2, 3, 4, 5],
       stages: [
         "Alpine root seed stores",
@@ -591,7 +588,7 @@ export const REGIONAL_METHODS = [
       id: "regional-high-puna-potato-seed-shelters",
       name: "High puna potato seed shelters",
       description:
-        "Sheltered seed-tuber selection improves recovery in high cold fields without creating winter growth.",
+        "Sheltered seed-tuber selection improves recovery in high cold fields.",
       annual: [3, 4, 5, 6],
       stages: [
         "High puna potato seed shelters",
@@ -652,7 +649,7 @@ export const REGIONAL_METHODS = [
       id: "regional-coastal-tropical-rice-compost-beds",
       name: "Coastal tropical rice compost beds",
       description:
-        "Composted crop residues replenish existing paddies while controlled incorporation limits wet losses.",
+        "Composted crop residues replenish paddies while controlled incorporation limits wet losses.",
       annual: [3, 4, 5, 6],
       stages: [
         "Coastal tropical rice compost beds",
@@ -682,7 +679,7 @@ export const REGIONAL_METHODS = [
       id: "regional-high-slope-olive-pruning-terraces",
       name: "High-slope olive pruning terraces",
       description:
-        "Pruned material and ground cover protect existing olive roots on exposed slopes.",
+        "Pruned material and ground cover protect olive roots on exposed slopes.",
       annual: [2, 3, 4, 5],
       stages: [
         "High-slope olive pruning terraces",
@@ -798,7 +795,7 @@ export const REGIONAL_METHODS = [
       id: "regional-mediterranean-delta-wheat-outfalls",
       name: "Mediterranean delta wheat outfalls",
       description:
-        "Outfall gates empty agricultural drains after high river levels fall; they do not stop deep floods.",
+        "Outfall gates empty agricultural drains after high river levels fall.",
       annual: [3, 4, 5, 6],
       stages: [
         "Mediterranean delta wheat outfalls",
@@ -827,7 +824,7 @@ export const REGIONAL_METHODS = [
       id: "regional-steppe-recession-field-outlets",
       name: "Steppe recession-field outlets",
       description:
-        "Low field outlets remove residual water after recession without permitting winter flooding or winter crops.",
+        "Low field outlets drain residual water after the river recedes.",
       annual: [2, 3, 4, 5],
       stages: [
         "Steppe recession-field outlets",
@@ -856,7 +853,7 @@ export const REGIONAL_METHODS = [
       id: "regional-subtropical-paddy-drawdown-trenches",
       name: "Subtropical paddy drawdown trenches",
       description:
-        "Separate drawdown trenches improve paddy drying and root conditions between existing crops.",
+        "Separate drawdown trenches improve paddy drying and root conditions between crops.",
       annual: [2, 3, 4, 5],
       stages: [
         "Subtropical paddy drawdown trenches",
@@ -884,7 +881,7 @@ export const REGIONAL_METHODS = [
       id: "regional-coastal-monsoon-paddy-escape-drains",
       name: "Coastal monsoon paddy escape drains",
       description:
-        "Controlled escape drains reduce losses during wet spells but cannot override a flooded tile.",
+        "Controlled escape drains carry excess rainwater away from paddy roots.",
       annual: [3, 4, 5, 6],
       stages: [
         "Coastal monsoon paddy escape drains",
@@ -912,7 +909,7 @@ export const REGIONAL_METHODS = [
       id: "regional-coastal-sago-access-drains",
       name: "Coastal sago access drains",
       description:
-        "Limited drainage improves harvest access around wetland palms without draining or converting the whole habitat.",
+        "Limited drainage improves harvest access around wetland palms.",
       annual: [1, 2, 3, 4],
       stages: [
         "Coastal sago access drains",
@@ -968,7 +965,7 @@ export const REGIONAL_METHODS = [
     method: {
       id: "regional-tropical-clay-bank-field-drains",
       name: "Tropical clay-bank field drains",
-      description: "Collectors improve drainage beside existing clay banks.",
+      description: "Collectors improve drainage beside clay banks.",
       annual: [2, 3, 4, 5],
       stages: [
         "Tropical clay-bank field drains",
@@ -1087,7 +1084,7 @@ export const REGIONAL_METHODS = [
       id: "regional-highland-maize-vegetated-benches",
       name: "Highland maize vegetated benches",
       description:
-        "Vegetated terrace lips retain soil and slow runoff across existing highland maize.",
+        "Vegetated terrace lips retain soil and slow runoff across highland maize.",
       annual: [3, 4, 5, 6],
       stages: [
         "Highland maize vegetated benches",
@@ -1149,8 +1146,7 @@ export const REGIONAL_METHODS = [
     method: {
       id: "regional-mediterranean-wheat-rubble-terraces",
       name: "Mediterranean wheat rubble terraces",
-      description:
-        "Rubble walls support existing cereal plots without opening mountain passes.",
+      description: "Rubble walls support cereal plots.",
       annual: [2, 3, 4, 5],
       stages: [
         "Mediterranean wheat rubble terraces",
@@ -1180,7 +1176,7 @@ export const REGIONAL_METHODS = [
       id: "regional-semiarid-barley-runoff-benches",
       name: "Semiarid barley runoff benches",
       description:
-        "Contour banks retain runoff and topsoil on existing dry barley slopes.",
+        "Contour banks retain runoff and topsoil on dry barley slopes.",
       annual: [3, 4, 5, 6],
       stages: [
         "Semiarid barley runoff benches",
@@ -1240,7 +1236,7 @@ export const REGIONAL_METHODS = [
       id: "regional-upper-monsoon-paddy-spillway-terraces",
       name: "Upper monsoon paddy spillway terraces",
       description:
-        "Linked spillways reduce wet-spell losses between high paddy benches; real freshwater is still needed for irrigation.",
+        "Linked spillways reduce wet-spell losses between high paddy benches.",
       annual: [3, 4, 5, 6],
       stages: [
         "Upper monsoon paddy spillway terraces",
@@ -1269,7 +1265,7 @@ export const REGIONAL_METHODS = [
       id: "regional-island-breadfruit-contour-ledges",
       name: "Island breadfruit contour ledges",
       description:
-        "Short planted ledges retain soil beneath existing island fruit trees.",
+        "Short planted ledges retain soil beneath island fruit trees.",
       annual: [2, 3, 4, 5],
       stages: [
         "Island breadfruit contour ledges",
@@ -1299,7 +1295,7 @@ export const REGIONAL_METHODS = [
       id: "regional-savanna-millet-stone-lines",
       name: "Savanna millet stone lines",
       description:
-        "Permeable stone lines spread slope runoff into millet seedbeds without storing an extra harvest.",
+        "Permeable stone lines spread hillside runoff through millet seedbeds.",
       annual: [3, 4, 5, 6],
       stages: [
         "Savanna millet stone lines",
@@ -1326,8 +1322,7 @@ export const REGIONAL_METHODS = [
     method: {
       id: "regional-dry-barley-contour-furrows",
       name: "Dry barley contour furrows",
-      description:
-        "Contour furrows intercept runoff on existing upland barley fields.",
+      description: "Contour furrows intercept runoff on upland barley fields.",
       annual: [3, 4, 5, 6],
       stages: [
         "Dry barley contour furrows",
@@ -1355,7 +1350,7 @@ export const REGIONAL_METHODS = [
       id: "regional-mediterranean-wheat-runoff-checks",
       name: "Mediterranean wheat runoff checks",
       description:
-        "Small checked furrows hold winter rain for the native cereal harvest.",
+        "Small checked furrows hold winter rain for the cereal harvest.",
       annual: [2, 3, 4, 5],
       stages: [
         "Mediterranean wheat runoff checks",
@@ -1383,7 +1378,7 @@ export const REGIONAL_METHODS = [
       id: "regional-lowland-olive-crescent-basins",
       name: "Lowland olive crescent basins",
       description:
-        "Crescent earth banks concentrate nearby runoff around existing tree roots.",
+        "Crescent earth banks concentrate nearby runoff around tree roots.",
       annual: [3, 4, 5, 6],
       stages: [
         "Lowland olive crescent basins",
@@ -1442,8 +1437,7 @@ export const REGIONAL_METHODS = [
     method: {
       id: "regional-low-steppe-millet-meltwater-strips",
       name: "Low-steppe millet meltwater strips",
-      description:
-        "Residue strips retain local meltwater for summer millet without generating winter grain.",
+      description: "Residue strips retain local meltwater for summer millet.",
       annual: [2, 3, 4, 5],
       stages: [
         "Low-steppe millet meltwater strips",
@@ -1530,7 +1524,7 @@ export const REGIONAL_METHODS = [
       id: "regional-exposed-steppe-fleece-shelters",
       name: "Exposed-steppe fleece shelters",
       description:
-        "Wind shelters and clean sorting improve existing sheep wool recovery.",
+        "Wind shelters and clean sorting improve sheep wool recovery.",
       annual: [3, 4, 5, 6],
       stages: [
         "Exposed-steppe fleece shelters",
@@ -1652,8 +1646,7 @@ export const REGIONAL_METHODS = [
     method: {
       id: "regional-semiarid-slope-goat-browse-stores",
       name: "Semiarid slope goat browse stores",
-      description:
-        "Cut browse and protected pens support existing goats on dry slopes.",
+      description: "Cut browse and protected pens support goats on dry slopes.",
       annual: [3, 4, 5, 6],
       stages: [
         "Semiarid slope goat browse stores",
@@ -1685,7 +1678,7 @@ export const REGIONAL_METHODS = [
       id: "regional-desert-goat-shaded-fodder-courts",
       name: "Desert goat shaded fodder courts",
       description:
-        "Shade and covered fodder storage improve recovery in extreme dry heat; they do not create grazing land.",
+        "Shade and covered fodder storage improve recovery in extreme dry heat.",
       annual: [2, 3, 4, 5],
       stages: [
         "Desert goat shaded fodder courts",
@@ -1802,7 +1795,7 @@ export const REGIONAL_METHODS = [
       id: "regional-savanna-plateau-cattle-hay-yards",
       name: "Savanna plateau cattle hay yards",
       description:
-        "Dry-season fodder reserves use the existing grass harvest to support cattle through seasonal scarcity.",
+        "Dry-season fodder reserves use the grass harvest to support cattle through seasonal scarcity.",
       annual: [4, 5, 6, 7],
       stages: [
         "Savanna plateau cattle hay yards",
@@ -1831,7 +1824,7 @@ export const REGIONAL_METHODS = [
       id: "regional-high-puna-alpaca-fleece-shelters",
       name: "High puna alpaca fleece shelters",
       description:
-        "Protected highland sorting keeps more usable fleece from existing alpaca production.",
+        "Protected highland sorting keeps more usable fleece from alpaca production.",
       annual: [3, 4, 5, 6],
       stages: [
         "High puna alpaca fleece shelters",
@@ -2035,7 +2028,7 @@ export const REGIONAL_METHODS = [
       id: "regional-alpine-skyline-timber-yards",
       name: "Alpine skyline timber yards",
       description:
-        "Cable-supported extraction reduces difficult highland timber losses without making mountain roads.",
+        "Cable-supported extraction reduces difficult highland timber losses.",
       annual: [3, 4, 5, 6],
       stages: [
         "Alpine skyline timber yards",
@@ -2063,8 +2056,7 @@ export const REGIONAL_METHODS = [
     method: {
       id: "regional-cold-coast-mixed-woodland-yards",
       name: "Cold-coast mixed woodland yards",
-      description:
-        "Roofed handling protects coastal timber; hunting returns remain separate.",
+      description: "Roofed handling protects coastal timber.",
       annual: [2, 3, 4, 5],
       stages: [
         "Cold-coast mixed woodland yards",
@@ -2091,8 +2083,7 @@ export const REGIONAL_METHODS = [
     method: {
       id: "regional-rainforest-upland-skyline-extraction",
       name: "Rainforest upland skyline extraction",
-      description:
-        "Selective cable extraction handles difficult upland logs; extra machinery costs keep gains modest.",
+      description: "Selective cable extraction handles difficult upland logs.",
       annual: [2, 3, 4, 5],
       stages: [
         "Rainforest upland skyline extraction",
@@ -2120,8 +2111,7 @@ export const REGIONAL_METHODS = [
     method: {
       id: "regional-fern-woodland-raised-haulways",
       name: "Fern woodland raised haulways",
-      description:
-        "Short raised haulways preserve access over wet ground; wildlife is not increased.",
+      description: "Short raised haulways preserve access over wet ground.",
       annual: [2, 3, 4, 5],
       stages: [
         "Fern woodland raised haulways",
@@ -2176,8 +2166,7 @@ export const REGIONAL_METHODS = [
     method: {
       id: "regional-andean-river-gorge-timber-cables",
       name: "Andean river-gorge timber cables",
-      description:
-        "Local cable lifts recover timber from high river woodland without creating crossings.",
+      description: "Local cable lifts recover timber from high river woodland.",
       annual: [2, 3, 4, 5],
       stages: [
         "Andean river-gorge timber cables",
@@ -2263,7 +2252,7 @@ export const REGIONAL_METHODS = [
       id: "regional-delta-mangrove-pole-platforms",
       name: "Delta mangrove pole platforms",
       description:
-        "Raised sorting platforms improve existing mangrove wood recovery while flood access remains unchanged.",
+        "Raised sorting platforms keep mangrove timber above the wet ground during handling.",
       annual: [2, 3, 4, 5],
       stages: [
         "Delta mangrove pole platforms",
@@ -2291,7 +2280,7 @@ export const REGIONAL_METHODS = [
       id: "regional-temperate-lowland-iron-drainage",
       name: "Temperate lowland iron drainage",
       description:
-        "Sumps and staged pumps reduce groundwater-related recovery losses in existing lowland iron workings.",
+        "Sumps and staged pumps reduce groundwater-related recovery losses in lowland iron workings.",
       annual: [3, 4, 5, 6],
       stages: [
         "Temperate lowland iron drainage",
@@ -2319,8 +2308,7 @@ export const REGIONAL_METHODS = [
     method: {
       id: "regional-oceanic-coastal-iron-sump-works",
       name: "Oceanic coastal iron sump works",
-      description:
-        "Protected sump equipment handles wet coastal conditions without creating new ore.",
+      description: "Protected sump equipment handles wet coastal conditions.",
       annual: [3, 4, 5, 6],
       stages: [
         "Oceanic coastal iron sump works",
@@ -2349,7 +2337,7 @@ export const REGIONAL_METHODS = [
       id: "regional-boreal-ridge-iron-covered-workings",
       name: "Boreal ridge iron covered workings",
       description:
-        "Protected entrances and thawing equipment preserve access to existing iron during cold spells.",
+        "Protected entrances and thawing equipment preserve access to iron during cold spells.",
       annual: [2, 3, 4, 5],
       stages: [
         "Boreal ridge iron covered workings",
@@ -2407,7 +2395,7 @@ export const REGIONAL_METHODS = [
       id: "regional-high-andean-iron-dry-dressing",
       name: "High Andean iron dry dressing",
       description:
-        "Dry crushing and screening suit scarce highland water; no ore washing is assumed.",
+        "Dry crushing and screening recover iron ore where highland water is scarce.",
       annual: [3, 4, 5, 6],
       stages: [
         "High Andean iron dry dressing",
@@ -2494,7 +2482,7 @@ export const REGIONAL_METHODS = [
       id: "regional-temperate-coal-ventilation-shafts",
       name: "Temperate coal ventilation shafts",
       description:
-        "Airways and mechanical fans improve usable extraction from existing lowland coal seams.",
+        "Airways and mechanical fans improve usable extraction from lowland coal seams.",
       annual: [3, 4, 5, 6],
       stages: [
         "Temperate coal ventilation shafts",
@@ -2551,8 +2539,7 @@ export const REGIONAL_METHODS = [
     method: {
       id: "regional-monsoon-coal-staged-sump-pumps",
       name: "Monsoon coal staged sump pumps",
-      description:
-        "Successive sump stages handle heavy wet-season inflow; deep flood closures remain.",
+      description: "Successive sump stages handle heavy wet-season inflow.",
       annual: [4, 5, 6, 7],
       stages: [
         "Monsoon coal staged sump pumps",
@@ -2610,7 +2597,7 @@ export const REGIONAL_METHODS = [
       id: "regional-desert-coal-dry-sorting-sheds",
       name: "Desert coal dry sorting sheds",
       description:
-        "Shade and dry screening separate usable coal without an invented water supply.",
+        "Shaded screening floors separate usable coal from dust and waste rock.",
       annual: [2, 3, 4, 5],
       stages: [
         "Desert coal dry sorting sheds",
@@ -2639,7 +2626,7 @@ export const REGIONAL_METHODS = [
       id: "regional-andean-high-vein-dry-crushing",
       name: "Andean high-vein dry crushing",
       description:
-        "Covered crushing and sorting recover more existing vein material on water-limited high ground.",
+        "Covered crushing and sorting recover more vein material on water-limited high ground.",
       annual: [3, 4, 5, 6],
       stages: [
         "Andean high-vein dry crushing",
@@ -2667,8 +2654,7 @@ export const REGIONAL_METHODS = [
     method: {
       id: "regional-humid-lowland-gold-sump-galleries",
       name: "Humid lowland gold sump galleries",
-      description:
-        "Drainage protects existing hard-rock gold workings; this does not turn veins into placer deposits.",
+      description: "Drainage protects hard-rock gold workings.",
       annual: [3, 4, 5, 6],
       stages: [
         "Humid lowland gold sump galleries",
@@ -2697,7 +2683,7 @@ export const REGIONAL_METHODS = [
       id: "regional-hyperarid-gold-hand-sort-terraces",
       name: "Hyperarid gold hand-sort terraces",
       description:
-        "Dry sorting platforms and protected crushers minimize material losses without wash water.",
+        "Dry sorting platforms and protected crushers recover fine gold in water-scarce country.",
       annual: [2, 3, 4, 5],
       stages: [
         "Hyperarid gold hand-sort terraces",
@@ -2726,7 +2712,7 @@ export const REGIONAL_METHODS = [
       id: "regional-arctic-coastal-gold-thawing-sheds",
       name: "Arctic coastal gold thawing sheds",
       description:
-        "Protected coastal workings use costly heat and tools to recover existing cold-region gold.",
+        "Protected coastal workings use costly heat and tools to recover cold-region gold.",
       annual: [2, 3, 4, 5],
       stages: [
         "Arctic coastal gold thawing sheds",
@@ -2754,8 +2740,7 @@ export const REGIONAL_METHODS = [
     method: {
       id: "regional-temperate-ridge-stone-derricks",
       name: "Temperate ridge stone derricks",
-      description:
-        "Derricks lift sound blocks from elevated existing stone faces.",
+      description: "Derricks lift sound blocks from elevated stone faces.",
       annual: [3, 4, 5, 6],
       stages: [
         "Temperate ridge stone derricks",
@@ -2784,7 +2769,7 @@ export const REGIONAL_METHODS = [
       id: "regional-boreal-stone-covered-splitting-floors",
       name: "Boreal stone covered splitting floors",
       description:
-        "Protected splitting floors reduce cold losses in existing low stone sites.",
+        "Protected splitting floors reduce cold losses in low stone sites.",
       annual: [2, 3, 4, 5],
       stages: [
         "Boreal stone covered splitting floors",
@@ -2840,7 +2825,7 @@ export const REGIONAL_METHODS = [
       id: "regional-desert-stone-shaded-working-floors",
       name: "Desert stone shaded working floors",
       description:
-        "Shade and protected handling reduce damage during recovery from existing desert stone.",
+        "Shade and protected handling reduce damage during recovery from desert stone.",
       annual: [2, 3, 4, 5],
       stages: [
         "Desert stone shaded working floors",
@@ -2868,7 +2853,7 @@ export const REGIONAL_METHODS = [
       id: "regional-mediterranean-escarpment-landing-cranes",
       name: "Mediterranean escarpment landing cranes",
       description:
-        "Staged cranes lower existing escarpment stone toward coastal handling yards.",
+        "Staged cranes lower escarpment stone toward coastal handling yards.",
       annual: [3, 4, 5, 6],
       stages: [
         "Mediterranean escarpment landing cranes",
@@ -2926,7 +2911,7 @@ export const REGIONAL_METHODS = [
       id: "regional-andean-high-quarry-gravity-inclines",
       name: "Andean high quarry gravity inclines",
       description:
-        "Short gravity inclines move quarried stone to local yards without crossing a mountain pass.",
+        "Short gravity inclines bring quarried stone down to sheltered loading yards.",
       annual: [3, 4, 5, 6],
       stages: [
         "Andean high quarry gravity inclines",
@@ -2954,8 +2939,7 @@ export const REGIONAL_METHODS = [
     method: {
       id: "regional-mesoamerican-volcanic-block-benches",
       name: "Mesoamerican volcanic block benches",
-      description:
-        "Bench cutting follows existing volcanic rock rather than assuming limestone or marble.",
+      description: "Bench cutting follows volcanic rock.",
       annual: [3, 4, 5, 6],
       stages: [
         "Mesoamerican volcanic block benches",
@@ -2983,7 +2967,7 @@ export const REGIONAL_METHODS = [
       id: "regional-island-volcanic-quay-cranes",
       name: "Island volcanic quay cranes",
       description:
-        "Compact lifting stages recover island stone at existing coastal quarries.",
+        "Compact lifting stages recover island stone at coastal quarries.",
       annual: [2, 3, 4, 5],
       stages: [
         "Island volcanic quay cranes",
@@ -3069,8 +3053,7 @@ export const REGIONAL_METHODS = [
     method: {
       id: "regional-hyperarid-clay-shaded-sorting-courts",
       name: "Hyperarid clay shaded sorting courts",
-      description:
-        "Shaded sorting and covered stockpiles handle existing clay without constructing new deposits.",
+      description: "Shaded sorting and covered stockpiles handle clay.",
       annual: [2, 3, 4, 5],
       stages: [
         "Hyperarid clay shaded sorting courts",
@@ -3126,8 +3109,7 @@ export const REGIONAL_METHODS = [
     method: {
       id: "regional-upland-mediterranean-salt-grading",
       name: "Upland Mediterranean salt grading",
-      description:
-        "Covered grading handles an existing inland salt deposit without assuming seawater channels.",
+      description: "Covered grading handles an inland salt deposit.",
       annual: [3, 4, 5, 6],
       stages: [
         "Upland Mediterranean salt grading",
@@ -3157,7 +3139,7 @@ export const REGIONAL_METHODS = [
       id: "regional-desert-coastal-sequential-salt-pans",
       name: "Desert coastal sequential salt pans",
       description:
-        "Sequential shallow pans use strong evaporation at existing coastal salt sites.",
+        "Sequential shallow pans use strong evaporation at coastal salt sites.",
       annual: [4, 5, 6, 7],
       stages: [
         "Desert coastal sequential salt pans",
@@ -3187,7 +3169,7 @@ export const REGIONAL_METHODS = [
       id: "regional-hyperarid-upland-salt-crust-sheds",
       name: "Hyperarid upland salt crust sheds",
       description:
-        "Dry crust screening improves native salt recovery without new brine water.",
+        "Dry screening separates clean salt crystals from broken surface crusts.",
       annual: [3, 4, 5, 6],
       stages: [
         "Hyperarid upland salt crust sheds",
@@ -3246,7 +3228,7 @@ export const REGIONAL_METHODS = [
       id: "regional-island-coastal-salt-rain-shelters",
       name: "Island coastal salt rain shelters",
       description:
-        "Movable covers protect existing island brine and harvested salt from frequent rain.",
+        "Movable covers protect island brine and harvested salt from frequent rain.",
       annual: [2, 3, 4, 5],
       stages: [
         "Island coastal salt rain shelters",
@@ -3276,7 +3258,7 @@ export const REGIONAL_METHODS = [
       id: "regional-prairie-upland-salt-protected-pans",
       name: "Prairie upland salt protected pans",
       description:
-        "Covered concentration and drying preserve native salt through continental cold and rain.",
+        "Covered concentration and drying preserve salt through continental cold and rain.",
       annual: [2, 3, 4, 5],
       stages: [
         "Prairie upland salt protected pans",
@@ -3305,8 +3287,7 @@ export const REGIONAL_METHODS = [
     method: {
       id: "regional-andean-high-salt-grading-floors",
       name: "Andean high salt grading floors",
-      description:
-        "Dry sorting and covered drying fit an existing highland salt site.",
+      description: "Dry sorting and covered drying fit an highland salt site.",
       annual: [3, 4, 5, 6],
       stages: [
         "Andean high salt grading floors",
@@ -3336,7 +3317,7 @@ export const REGIONAL_METHODS = [
       id: "regional-savanna-seasonal-salt-pans",
       name: "Savanna seasonal salt pans",
       description:
-        "Seasonal pan divisions concentrate native brine during dry work periods.",
+        "Seasonal pan divisions concentrate brine during dry work periods.",
       annual: [3, 4, 5, 6],
       stages: [
         "Savanna seasonal salt pans",
@@ -3365,7 +3346,7 @@ export const REGIONAL_METHODS = [
       id: "regional-polar-shore-fish-shelter-stages",
       name: "Polar shore fish shelter stages",
       description:
-        "Sheltered handling improves a visiting catch only when water is accessible; ice remains a closure.",
+        "Sheltered handling improves a visiting catch only when water is accessible.",
       annual: [1, 2, 3, 4],
       stages: [
         "Polar shore fish shelter stages",
@@ -3390,8 +3371,7 @@ export const REGIONAL_METHODS = [
     method: {
       id: "regional-boreal-lake-catch-ice-stores",
       name: "Boreal lake catch ice stores",
-      description:
-        "Insulated stores preserve fish landed on cold lakes without freezing new water or generating fish.",
+      description: "Insulated stores preserve fish landed on cold lakes.",
       annual: [2, 3, 4, 5],
       stages: [
         "Boreal lake catch ice stores",
@@ -3440,8 +3420,7 @@ export const REGIONAL_METHODS = [
     method: {
       id: "regional-mediterranean-shoal-curing-sheds",
       name: "Mediterranean shoal curing sheds",
-      description:
-        "Shaded curing and rapid handling improve fish from existing shoals.",
+      description: "Shaded curing and rapid handling improve fish from shoals.",
       annual: [3, 4, 5, 6],
       stages: [
         "Mediterranean shoal curing sheds",
@@ -3516,7 +3495,7 @@ export const REGIONAL_METHODS = [
       id: "regional-continental-lake-seasonal-fish-stores",
       name: "Continental lake seasonal fish stores",
       description:
-        "Seasonal curing and protected storage improve available inland catch; freeze closures still apply.",
+        "Seasonal curing and protected storage improve available inland catch.",
       annual: [2, 3, 4, 5],
       stages: [
         "Continental lake seasonal fish stores",
@@ -3566,8 +3545,7 @@ export const REGIONAL_METHODS = [
     method: {
       id: "regional-steppe-ridge-game-observation-shelters",
       name: "Steppe ridge game observation shelters",
-      description:
-        "Lookouts and shaded recovery yards improve passing game without holding animals in place.",
+      description: "Lookouts and shaded recovery yards improve passing game.",
       annual: [3, 4, 5, 6],
       stages: [
         "Steppe ridge game observation shelters",
@@ -3595,7 +3573,7 @@ export const REGIONAL_METHODS = [
       id: "regional-prairie-lowland-communal-game-yards",
       name: "Prairie lowland communal game yards",
       description:
-        "Communal handling improves meat recovered from whatever eligible wildlife visits.",
+        "Communal handling yards help hunters preserve meat from passing prairie herds.",
       annual: [3, 4, 5, 6],
       stages: [
         "Prairie lowland communal game yards",
@@ -3623,7 +3601,7 @@ export const REGIONAL_METHODS = [
       id: "regional-boreal-ridge-game-caches",
       name: "Boreal ridge game caches",
       description:
-        "Cold protected caches preserve visiting woodland game while leaving timber production unchanged.",
+        "Cold, sheltered caches preserve game brought in from the surrounding woodland.",
       annual: [3, 4, 5, 6],
       stages: [
         "Boreal ridge game caches",
@@ -3650,7 +3628,7 @@ export const REGIONAL_METHODS = [
       id: "regional-mesoamerican-upland-game-smokehouses",
       name: "Mesoamerican upland game smokehouses",
       description:
-        "Protected smoking improves the existing small-game catch on wet highland habitat.",
+        "Protected smoking improves the small-game catch on wet highland habitat.",
       annual: [2, 3, 4, 5],
       stages: [
         "Mesoamerican upland game smokehouses",
@@ -3678,7 +3656,7 @@ export const REGIONAL_METHODS = [
       id: "regional-coastal-oasis-game-curing-shelters",
       name: "Coastal oasis game curing shelters",
       description:
-        "Shaded handling recovers visiting game products; date and wood production are unaffected.",
+        "Shaded curing shelters preserve game brought in from the coastal oasis.",
       annual: [2, 3, 4, 5],
       stages: [
         "Coastal oasis game curing shelters",
@@ -3706,7 +3684,7 @@ export const REGIONAL_METHODS = [
       id: "regional-polar-seal-shore-product-shelters",
       name: "Polar seal shore product shelters",
       description:
-        "Protected shore handling favors existing seal oil while animals are present.",
+        "Protected shore handling favors seal oil while animals are present.",
       annual: [2, 3, 4, 5],
       stages: [
         "Polar seal shore product shelters",
@@ -3735,7 +3713,7 @@ export const REGIONAL_METHODS = [
       id: "regional-coastal-tundra-berry-wind-shelters",
       name: "Coastal tundra berry wind shelters",
       description:
-        "Small wind shelters and clean sorting improve the existing short berry harvest without enclosing the habitat.",
+        "Small wind shelters and clean sorting improve the short berry harvest.",
       annual: [1, 2, 3, 4],
       stages: [
         "Coastal tundra berry wind shelters",
@@ -3790,7 +3768,7 @@ export const REGIONAL_METHODS = [
       id: "regional-island-coastal-whale-recovery-slips",
       name: "Island coastal whale recovery slips",
       description:
-        "Sheltered shore slips and rendering pots improve products of visiting whales; no whales are created or held in place.",
+        "Sheltered shore slips and rendering pots improve products of visiting whales.",
       annual: [3, 4, 5, 6],
       stages: [
         "Island coastal whale recovery slips",
@@ -3818,7 +3796,7 @@ export const REGIONAL_METHODS = [
       id: "regional-cold-offshore-whale-landing-works",
       name: "Cold offshore whale landing works",
       description:
-        "Heavy landing tackle improves existing whale recovery beside an eligible city on deep coastal water.",
+        "Heavy landing tackle improves whale recovery beside an city on deep coastal water.",
       annual: [2, 3, 4, 5],
       stages: [
         "Cold offshore whale landing works",
@@ -3847,7 +3825,7 @@ export const REGIONAL_METHODS = [
       id: "regional-oceanic-barley-field-collectors",
       name: "Oceanic barley field collectors",
       description:
-        "Graded collectors drain existing low barley soils after persistent rain without adding a harvest season.",
+        "Graded collectors drain low barley soils after persistent rain.",
       annual: [2, 3, 4, 5],
       stages: [
         "Oceanic barley field collectors",

@@ -1,3 +1,7 @@
+import {
+  SPECIALIST_PROJECTS,
+  type SpecialistProject,
+} from "./infrastructure-specialists";
 import { wildHabitat, gazelleHabitat, WILD_BIOMES } from "./wildlife-habitat";
 export { wildHabitat, gazelleHabitat } from "./wildlife-habitat";
 import { INFRASTRUCTURE, type InfrastructureKind } from "./infrastructure";
@@ -29,7 +33,12 @@ export type Landmark =
   | "ancient-grove";
 export type Weather = "normal" | "wet" | "dry" | "cold" | "mild";
 export type Project =
-  "bridge" | "levee" | "harbor" | "granary" | InfrastructureKind;
+  | "bridge"
+  | "levee"
+  | "harbor"
+  | "granary"
+  | InfrastructureKind
+  | SpecialistProject;
 export type WildlifeKind =
   | "fish"
   | "cod"
@@ -646,6 +655,7 @@ export const PROJECTS: Record<
       "Permanent river crossing for armies. Ships retain passage. Does not cross peaks or sea.",
   },
   ...INFRASTRUCTURE,
+  ...SPECIALIST_PROJECTS,
   levee: {
     name: "Flood levee",
     cost: { stone: 3, planks: 2 },

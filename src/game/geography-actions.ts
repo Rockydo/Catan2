@@ -1,5 +1,17 @@
 import {
+  isSpecialist,
+  SPECIALIST_PROJECTS,
+  specialistId,
+} from "./infrastructure-specialists";
+import {
   infrastructureSuitable,
+  installedRotation,
+  rotationPrerequisites,
+  INFRASTRUCTURE,
+  specialistSuitable,
+  specialistCost,
+  specialistTier,
+  specialistBranches,
   infrastructureCost,
   isInfrastructure,
   tierOf,
@@ -12,7 +24,7 @@ import {
   baseGeographicYield,
   type Project,
 } from "./geography";
-import { seasonYear } from "./seasons";
+import { ordinarySeasonalProfile, seasonYear } from "./seasons";
 import { canOccupy } from "./world";
 import { friendly } from "./relations";
 import { pay, rule, log } from "./economy";
@@ -64,6 +76,32 @@ export function projectSite(
     if (kind === "irrigation" && !freshwaterSite(s, tile)) return false;
     return true;
   }
+  if (isSpecialist(kind)) {
+    const { branch, tier } = SPECIALIST_PROJECTS[kind];
+    if (branch.rotation) {
+      const other = installedRotation(tile);
+      const ordinary = ordinarySeasonalProfile(tile, owner);
+      if (
+        (other && other.id !== branch.id) ||
+        !rotationPrerequisites(tile, branch, owner) ||
+        !branch.rotation.seasons.some(
+          (season) => !(ordinary[season].grain || ordinary[season].oil),
+        )
+      )
+        return false;
+    }
+    return (
+      specialistSuitable(tile, branch) &&
+      specialistTier(tile, branch, owner) === tier - 1 &&
+      (branch.track !== "irrigation" || freshwaterSite(s, tile)) &&
+      ownTowns(s, owner).some(
+        (t) =>
+          t.level >= tier &&
+          s.vertices[t.vertex].tiles.includes(tile.id) &&
+          !besieged(s, t.id),
+      )
+    );
+  }
   if (kind === "levee") return !!g.floodplain;
   if (kind === "harbor")
     return (
@@ -86,6 +124,7 @@ export function freshwaterSite(s: Game, tile: Hex): boolean {
   );
 }
 export function projectCost(tile: Hex, kind: Project): Stock {
+  if (isSpecialist(kind)) return specialistCost(tile, kind);
   if (!isInfrastructure(kind)) return PROJECTS[kind].cost;
   const next = tierOf(tile, kind) + 1;
   return next > 4 ? {} : infrastructureCost(kind, next, tile);
@@ -231,4 +270,22 @@ export function protectedFood(s: Game, town: Town): Stock {
     capacity -= keep;
   }
   return protected_;
+}
+
+export const UTILITY_PROJECTS = [
+  "bridge",
+  "levee",
+  "harbor",
+  "granary",
+] as const;
+/** At most one next stage per locally relevant branch, rather than 268 project probes. */
+export function candidateProjects(tile: Hex, owner?: number): Project[] {
+  return [
+    ...UTILITY_PROJECTS,
+    ...(Object.keys(INFRASTRUCTURE) as (keyof typeof INFRASTRUCTURE)[]),
+    ...specialistBranches(tile).flatMap((branch) => {
+      const tier = specialistTier(tile, branch, owner);
+      return tier < 4 ? [specialistId(branch, tier + 1)] : [];
+    }),
+  ];
 }

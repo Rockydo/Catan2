@@ -639,3 +639,194 @@
   margin: 6px 0;
   line-height: 1.4;
 }
+
+/* Production cards: identity, benefit, then an anchored cost/action footer. */
+.infrastructure-panel .infrastructure-intro,
+.infrastructure-panel .infrastructure-category-note {
+  margin: 6px 0 12px;
+  color: #526658;
+}
+.infrastructure-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: #e5e8dc;
+  border-radius: 9px;
+  margin: 10px 0;
+}
+.infrastructure-tabs button {
+  flex: 1;
+  min-width: 0;
+  padding: 7px 4px;
+  border: 0;
+  background: transparent;
+  color: #526658;
+  font-size: 11px;
+}
+.infrastructure-tabs button[aria-selected="true"] {
+  background: #fffdf5;
+  color: #214d3d;
+  box-shadow: 0 1px 3px #183b2420;
+}
+.infrastructure-tabs button span {
+  margin-left: 4px;
+  opacity: 0.7;
+  font-size: 10px;
+}
+.infrastructure-card {
+  margin: 10px 0;
+  overflow: hidden;
+  border: 1px solid #d2d8c7;
+  border-radius: 11px;
+  background: #fffdf6;
+  padding: 13px;
+  box-shadow: 0 2px 4px #16382506;
+}
+.infrastructure-card header {
+  display: flex;
+  gap: 8px;
+  align-items: start;
+  justify-content: space-between;
+}
+.infrastructure-card header > div {
+  min-width: 0;
+}
+.infrastructure-card header b {
+  color: #6c765f;
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.025em;
+}
+.infrastructure-card h4 {
+  margin: 3px 0 6px;
+  font-size: 14px;
+  line-height: 1.35;
+  color: #253e35;
+}
+.infrastructure-tier {
+  flex: none;
+  white-space: nowrap;
+  background: #e9e5d3;
+  color: #675b3e;
+  border-radius: 5px;
+  padding: 4px 6px;
+  font-size: 10px;
+}
+.infrastructure-tier.complete {
+  background: #dfeadd;
+  color: #386244;
+}
+.infrastructure-card .infrastructure-site {
+  font-size: 10px;
+  color: #74816d;
+}
+.infrastructure-card .infrastructure-description {
+  font-size: 12px;
+  line-height: 1.55;
+  margin: 9px 0;
+  letter-spacing: normal;
+}
+.infrastructure-benefits {
+  background: #edf2e5;
+  border-left: 3px solid #86a26c;
+  border-radius: 5px;
+  padding: 8px 10px;
+  margin: 11px 0 5px;
+}
+.infrastructure-benefit-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.055em;
+  margin-bottom: 3px;
+}
+.infrastructure-gain {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+}
+.infrastructure-gain > span:first-child {
+  font-weight: 700;
+  font-size: 16px;
+}
+.infrastructure-gain .goods-list {
+  margin: 0;
+}
+.infrastructure-card .infrastructure-conditional {
+  font-style: italic;
+  font-size: 11px;
+}
+.infrastructure-card .infrastructure-protection {
+  margin-top: 4px;
+}
+.infrastructure-card .infrastructure-protection small {
+  font-size: 11px;
+}
+.infrastructure-card .infrastructure-effects > summary {
+  padding: 8px 0;
+  font-size: 11px;
+  font-weight: 600;
+  color: #526c57;
+}
+.infrastructure-card footer {
+  display: grid;
+  gap: 7px;
+  border-top: 1px solid #e3e5d9;
+  padding-top: 10px;
+  margin-top: 4px;
+}
+.infrastructure-card footer > small:first-child {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.055em;
+}
+.infrastructure-card .cost {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 9px;
+}
+.infrastructure-card footer button {
+  width: 100%;
+  margin: 0;
+  min-height: 34px;
+  font-size: 12px;
+}
+.infrastructure-card .infrastructure-requirement {
+  color: #7a6546;
+  font-size: 11px;
+  line-height: 1.4;
+}
+.infrastructure-card .geography-calendar {
+  margin: 5px 0;
+  gap: 3px;
+}
+.infrastructure-card .geography-calendar > div {
+  min-width: 0;
+  padding: 4px;
+}
+.infrastructure-card .geography-calendar .goods-list {
+  font-size: 11px;
+}
+.infrastructure-card .infrastructure-rotation-seasons {
+  font-weight: 600;
+  color: #5a6e46;
+}
+.infrastructure-rules {
+  border-top: 1px solid #d3dac8;
+  margin-top: 12px;
+}
+.infrastructure-rules > summary {
+  font-size: 11px;
+}
+.infrastructure-rules p {
+  font-size: 11px;
+  color: #64725e;
+}
+.infrastructure-complete,
+.infrastructure-empty {
+  padding: 7px 0;
+  color: #66765d;
+}
