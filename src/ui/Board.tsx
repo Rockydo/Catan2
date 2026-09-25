@@ -195,6 +195,7 @@ const TerrainArt = memo(function TerrainArt({
   if (
     resource.startsWith("season-") ||
     resource.startsWith("geo-") ||
+    resource.startsWith("infra-") ||
     resource.startsWith("wild-")
   )
     return (
@@ -295,7 +296,12 @@ const TerrainLayer = memo(function TerrainLayer({
         ...new Set(
           tiles.map((tile) => seasonalTerrainPattern(tile, artworkSeason)),
         ),
-      ].filter((key) => key !== "water" && !key.startsWith("season-")),
+      ].filter(
+        (key) =>
+          key !== "water" &&
+          !key.startsWith("season-") &&
+          !key.startsWith("infra-"),
+      ),
     [tiles, artworkSeason],
   );
   return (

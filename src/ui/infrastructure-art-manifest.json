@@ -1,0 +1,9 @@
+{
+  "seasons/temperate-golden-fields-summer.webp": {
+    "irrigation:1": "temperate-wheat-summer-irrigation-1",
+    "irrigation:2": "temperate-wheat-summer-irrigation-2",
+    "irrigation:2+soil:1": "temperate-wheat-summer-irrigation-2-soil-1",
+    "irrigation:3": "temperate-wheat-summer-irrigation-3",
+    "irrigation:4": "temperate-wheat-summer-irrigation-4"
+  }
+}

@@ -1,4 +1,5 @@
 import wildlifeManifest from "./wildlife-terrain-manifest.json" with { type: "json" };
+import { infrastructurePainting } from "./infrastructure-art";
 import { wildHabitat } from "../game/geography";
 import seasonalManifest from "./season-art-manifest.json" with { type: "json" };
 import { frozenInSeason, type Season } from "../game/seasons";
@@ -80,6 +81,11 @@ export const REGIONAL_ART_KEYS = Object.values(regionalArt).flatMap(
 /** Use the tile's forecast, including patchy ice, for actual and preview art. */
 const wildlifeTiles: Record<string, string> = wildlifeManifest;
 export function seasonalTerrainPattern(tile: Hex, season?: Season): string {
+  const natural = naturalTerrainPattern(tile, season);
+  if (!tile.geography?.projects) return natural;
+  return infrastructurePainting(tile, terrainArtFile(natural)) ?? natural;
+}
+function naturalTerrainPattern(tile: Hex, season?: Season): string {
   const base = baseSeasonalTerrainPattern(tile, season);
   if (!tile.geography || !wildHabitat(tile)) return base;
   const file = terrainArtFile(base);
@@ -355,6 +361,7 @@ export function terrainPatternKey(
   );
 }
 export function terrainArtFile(art: string): string {
+  if (art.startsWith("infra-")) return `infrastructure/${art.slice(6)}.webp`;
   if (art.startsWith("wild-")) return `wildlife-terrain/${art.slice(5)}.webp`;
   if (art.startsWith("geo-")) return `geography/${art.slice(4)}.webp`;
   if (seasonalFiles[art]) return seasonalFiles[art];
