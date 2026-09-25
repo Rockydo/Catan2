@@ -505,7 +505,8 @@ function SpecialistCard(props: PanelProps & { branch: SpecialistBranch }) {
     ? ordinarySeasonalProfile(tile, viewer)
     : undefined;
   const blocked =
-    branch.track === "irrigation" && !freshwaterSite(props.game, tile)
+    (branch.track === "irrigation" || branch.freshwater) &&
+    !freshwaterSite(props.game, tile)
       ? fr
         ? "Rivière, lac, source ou oasis requis."
         : "Requires a river, lake, spring or oasis."
@@ -584,6 +585,26 @@ function SpecialistCard(props: PanelProps & { branch: SpecialistBranch }) {
         "data-side-project": id,
       }}
     >
+      {branch.freshwater && (
+        <small>
+          {fr ? "Eau douce locale requise" : "Requires local fresh water"}
+        </small>
+      )}
+      {branch.seasonalWeights && (
+        <small>
+          {fr ? "Rendement favorisé en " : "Harvest emphasis: "}
+          {SEASONS.filter(
+            (_, i) =>
+              branch.seasonalWeights![i] ===
+              branch.seasonalWeights!.reduce(
+                (max, weight) => Math.max(max, weight),
+                0,
+              ),
+          )
+            .map((season) => tx(season[0].toUpperCase() + season.slice(1)))
+            .join(" · ")}
+        </small>
+      )}
       {branch.rotation && (
         <small className="infrastructure-rotation-seasons">
           {fr ? "Récolte secondaire : " : "Secondary harvest: "}

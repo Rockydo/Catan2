@@ -145,6 +145,6 @@ Automated coverage audits every generated climate/terrain combination against al
 
 ## Optional specialists and secondary crops
 
-The 268 main local methods above are preserved. The new **67 specialist branches add 268 separate stage purchases**, allowing several optional investments on one tile. They have smaller marginal returns and higher costs than main improvements. **16 alternative crop rotations** add another 64 stages with small seasonal food harvests and main-crop soil benefits. See [the full specialist and rotation guide](specialist-investments.md) for requirements, exact balance rules, all names and research.
+The 268 main local methods above are preserved. The new **99 specialist branches add 396 separate stage purchases**, allowing several optional investments on one tile. They have smaller marginal returns and higher costs than main improvements. **16 alternative crop rotations** add another 64 stages with small seasonal food harvests and main-crop soil benefits. See [the full specialist and rotation guide](specialist-investments.md) for requirements, exact balance rules, all names and research.
 
 Main weather protection remains strongest-only; specialists then reduce the residual weather loss multiplicatively, capped at 90% total protection. Irrigation keeps the primary crop’s annual total, but its calendar may occupy a secondary rotation’s harvest window.

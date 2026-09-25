@@ -1,3 +1,5 @@
+import { NICHE_BRANCHES } from "./infrastructure-niches";
+import type { Biome, Climate } from "./climate-content";
 import {
   ROTATION_BRANCHES,
   type RotationPattern,
@@ -39,6 +41,17 @@ export type SpecialistSite =
   | "seal";
 export interface SpecialistBranch {
   rotation?: RotationPattern;
+  biomes?: readonly Biome[];
+  climates?: readonly Climate[];
+  minElevation?: number;
+  maxElevation?: number;
+  coastal?: boolean;
+  fertile?: boolean;
+  freshwater?: boolean;
+  /** Relative emphasis; never creates a harvest outside native productive seasons. */
+  seasonalWeights?: readonly [number, number, number, number];
+  /** Additional one-time materials, multiplied by stage. */
+  finishing?: Stock;
   id: string;
   track: InfrastructureKind;
   name: string;
@@ -54,6 +67,7 @@ export interface SpecialistBranch {
 /** Independent investments; each branch has four separately purchased projects.
  * Site selection never depends on current weather or visiting animals. */
 export const SPECIALIST_BRANCHES: readonly SpecialistBranch[] = [
+  ...NICHE_BRANCHES,
   {
     id: "seed-selection",
     track: "soil",

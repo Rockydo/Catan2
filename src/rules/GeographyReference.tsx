@@ -204,8 +204,8 @@ export function GeographyReference() {
       {[
         {
           name: l(
-            "67 specialist branches · 268 projects",
-            "67 branches complémentaires · 268 projets",
+            `${SPECIALIST_BRANCHES.length} specialist branches · ${SPECIALIST_BRANCHES.length * 4} projects`,
+            `${SPECIALIST_BRANCHES.length} branches complémentaires · ${SPECIALIST_BRANCHES.length * 4} projets`,
           ),
           branches: SPECIALIST_BRANCHES,
         },

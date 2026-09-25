@@ -1,3 +1,5 @@
+import { NICHE_BRANCHES } from "../src/game/infrastructure-niches";
+import { weatherYieldFactor } from "../src/game/weather-yields";
 import { newGame } from "../src/game/engine";
 import { describe, it, expect } from "vitest";
 import {
@@ -9,6 +11,7 @@ import {
 import { ROTATION_BRANCHES } from "../src/game/infrastructure-rotations";
 import {
   specialistBranches,
+  specialistExtras,
   specialistSuitable,
   specialistTier,
   specialistCost,
@@ -147,16 +150,16 @@ function site(b: Biome = "golden-fields", c: Climate = "temperate") {
   return { s, t, town };
 }
 describe("independent specialist investments", () => {
-  it("adds exactly 268 purchases in 67 branches, plus 16 separate rotation choices", () => {
-    expect(SPECIALIST_BRANCHES).toHaveLength(67);
+  it("adds 396 purchases in 99 branches, plus 16 separate rotation choices", () => {
+    expect(SPECIALIST_BRANCHES).toHaveLength(99);
     expect(ROTATION_BRANCHES).toHaveLength(16);
     expect(
       Object.values(SPECIALIST_PROJECTS).filter((p) => !p.branch.rotation),
-    ).toHaveLength(268);
+    ).toHaveLength(396);
     expect(
       new Set([...SPECIALIST_BRANCHES, ...ROTATION_BRANCHES].map((b) => b.id))
         .size,
-    ).toBe(83);
+    ).toBe(115);
     for (const p of Object.values(SPECIALIST_PROJECTS)) {
       expect(p.branch.stages).toHaveLength(4);
       expect(p.branch.stagesFr).toHaveLength(4);
@@ -164,7 +167,7 @@ describe("independent specialist investments", () => {
       expect(p.branch.descriptionFr).toBeTruthy();
     }
   });
-  it("makes all 67 branches reachable on native resource habitats, with several simultaneous choices", () => {
+  it("makes all 99 branches reachable on native resource habitats, with several simultaneous choices", () => {
     for (const b of SPECIALIST_BRANCHES)
       expect(
         habitats().some((t) => specialistSuitable(t, b)),
@@ -417,6 +420,125 @@ describe("small secondary-crop rotations", () => {
     t.surface = "frozen";
     t.iceWeather = { season: "spring", half: "early", round: 1 };
     expect(seasonalYield(t, 0, "spring")).toEqual({});
+  });
+  it("requires actual freshwater for washing works, rather than a nearby sea", () => {
+    for (const id of [
+      "ore-jigging",
+      "coal-washing",
+      "gold-riffle-boxes",
+      "clay-levigation",
+      "wool-washing",
+      "sago-washing",
+    ]) {
+      const b = branch(id),
+        sample = habitats().find((t) => specialistSuitable(t, b))!;
+      const { s, t } = site(sample.biome!, sample.climate!);
+      Object.assign(t.geography!, { elevation: sample.geography!.elevation });
+      const project = specialistId(b, 1);
+      expect(projectSite(s, t, project, 0), id).toBe(true);
+      for (const n of neighbors(t.id)) {
+        const g = s.tiles[n]?.geography;
+        if (g) {
+          g.waterway = "deep";
+          g.landmark = undefined;
+        }
+      }
+      expect(projectSite(s, t, project, 0), id).toBe(false);
+      const n = neighbors(t.id).find((n) => s.tiles[n])!;
+      s.tiles[n].geography!.waterway = "lake";
+      expect(projectSite(s, t, project, 0), id).toBe(true);
+    }
+  });
+  it("keeps niche crop, climate, coast, fertility and slope limits independent of weather", () => {
+    const olive = tile("olive-grove", "mediterranean");
+    expect(specialistSuitable(olive, branch("olive-catching-nets"))).toBe(true);
+    expect(
+      specialistSuitable(
+        tile("sunflower-fields", "prairie"),
+        branch("olive-catching-nets"),
+      ),
+    ).toBe(false);
+    const salt = tile("salt-flats", "mediterranean");
+    expect(specialistSuitable(salt, branch("coastal-brine-feeders"))).toBe(
+      false,
+    );
+    salt.geography!.coastal = true;
+    expect(specialistSuitable(salt, branch("coastal-brine-feeders"))).toBe(
+      true,
+    );
+    salt.climate = "arctic";
+    expect(specialistSuitable(salt, branch("coastal-brine-feeders"))).toBe(
+      false,
+    );
+    const garden = tile("chinampa-gardens", "mesoamerican");
+    expect(specialistSuitable(garden, branch("chinampa-silt-nurseries"))).toBe(
+      false,
+    );
+    garden.geography!.delta = true;
+    expect(specialistSuitable(garden, branch("chinampa-silt-nurseries"))).toBe(
+      true,
+    );
+    const forest = tile("forest", "alpine");
+    forest.geography!.elevation = 0.64;
+    expect(specialistSuitable(forest, branch("slope-log-chutes"))).toBe(false);
+    forest.geography!.elevation = 0.65;
+    forest.geography!.weather = "dry";
+    expect(specialistSuitable(forest, branch("slope-log-chutes"))).toBe(true);
+  });
+  it("emphasizes seasonal work without growing the shared budget or rewarding absent wildlife", () => {
+    const t = tile("snow-plain", "arctic"),
+      b = branch("snow-game-sledges");
+    t.geography!.fauna = { meat: 3 };
+    install(t, b, 4);
+    const native = {
+      spring: { meat: 3 },
+      summer: { meat: 3 },
+      autumn: { meat: 3 },
+      winter: { meat: 3 },
+    };
+    const output = specialistExtras(t, native, 0);
+    expect(SEASONS.reduce((n, season) => n + sum(output[season]), 0)).toBe(4);
+    expect(output.winter.meat).toBeGreaterThan(output.summer.meat ?? 0);
+    expect(
+      SEASONS.reduce(
+        (n, season) => n + sum(specialistExtras(t, native, 1)[season]),
+        0,
+      ),
+    ).toBe(0);
+    t.geography!.fauna = {};
+    expect(
+      SEASONS.reduce(
+        (n, season) => n + sum(specialistExtras(t, native, 0)[season]),
+        0,
+      ),
+    ).toBe(0);
+  });
+  it("gives every new weather-protection branch an actual weather loss to mitigate", () => {
+    for (const b of NICHE_BRANCHES.filter((b) => b.effect !== "yield")) {
+      let checked = 0;
+      for (const original of habitats().filter((t) =>
+        specialistSuitable(t, b),
+      )) {
+        const t = structuredClone(original),
+          weather = b.effect as "dry" | "wet" | "cold";
+        for (const raw of b.goods) {
+          const profile = ordinarySeasonalProfile(t, 0);
+          const season = SEASONS.find((s) => (profile[s][raw] ?? 0) > 0);
+          if (!season) continue;
+          const before = weatherYieldFactor(t, raw, season, weather, 0);
+          expect(before, `${b.id}/${t.biome}/${t.climate}/${raw}`).toBeLessThan(
+            1,
+          );
+          install(t, b, 4);
+          expect(
+            weatherYieldFactor(t, raw, season, weather, 0),
+          ).toBeGreaterThan(before);
+          t.geography!.projects = {};
+          checked++;
+        }
+      }
+      expect(checked, b.id).toBeGreaterThan(0);
+    }
   });
   it("localizes every new project name and description", () => {
     for (const p of Object.values(SPECIALIST_PROJECTS))

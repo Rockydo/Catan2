@@ -677,6 +677,19 @@ export function specialistSuitable(
   const g = tile.geography!,
     a = AGRONOMY[climate],
     native = biomeYield(tile.biome!, climate);
+  if (
+    (branch.biomes && !branch.biomes.includes(tile.biome!)) ||
+    (branch.climates && !branch.climates.includes(climate)) ||
+    (branch.minElevation !== undefined && g.elevation < branch.minElevation) ||
+    (branch.maxElevation !== undefined && g.elevation >= branch.maxElevation) ||
+    (branch.coastal && !g.coastal) ||
+    (branch.fertile &&
+      !g.floodplain &&
+      !g.delta &&
+      biome !== "chernozem-wheat" &&
+      g.landmark !== "fertile-basin")
+  )
+    return false;
   const cereal =
     /fields|maize-field|rice-field/.test(biome) ||
     ["flood-wheat", "flood-rice", "flood-sorghum"].includes(biome);
@@ -864,6 +877,9 @@ export function specialistCost(tile: Hex, id: SpecialistProject): Stock {
             ? "lumber"
             : "planks";
   cost[extra] = (cost[extra] ?? 0) + tier * 2;
+  for (const [good, amount] of Object.entries(branch.finishing ?? {}))
+    cost[good as keyof Stock] =
+      (cost[good as keyof Stock] ?? 0) + amount! * tier;
   return cost;
 }
 /** Only inspect installed projects during production, never the whole catalogue. */
@@ -911,7 +927,10 @@ export function specialistExtras(
     );
     const budgets = allocateInfrastructureBonus(
       tier,
-      amounts.map((row) => row.reduce((a, b) => a + b, 0)),
+      amounts.map(
+        (row, i) =>
+          row.reduce((a, b) => a + b, 0) * (branch.seasonalWeights?.[i] ?? 1),
+      ),
     );
     seasons.forEach((season, i) => {
       const extra = allocateInfrastructureBonus(budgets[i], amounts[i]);

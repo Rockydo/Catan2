@@ -1,8 +1,8 @@
 # Specialist investments and secondary crops
 
-The existing **14 main tracks and 268 local methods are retained**. Alongside them, **67 independent specialist branches add 268 separately purchased projects** (four stages per branch). A tile can build several different specialist branches at once. These are additional investments, not replacements for its local main method.
+The existing **14 main tracks and 268 local methods are retained**. Alongside them, **99 independent specialist branches add 396 separately purchased projects** (four stages per branch). A tile can build several different specialist branches at once. These are additional investments, not replacements for its local main method.
 
-The later rotation request adds **16 alternative secondary-crop rotations, each with four stages**. A field can follow only one rotation. The combined addition is 332 stage purchases, comprising the requested 268 specialist projects plus 64 rotation stages.
+The later rotation request adds **16 alternative secondary-crop rotations, each with four stages**. A field can follow only one rotation. Together, specialists and rotations offer 460 stage purchases. The latest expansion adds 32 specialist branches (128 stages), preserving the previous 67 branches and all rotations.
 
 ## Finding and building them
 
@@ -14,9 +14,11 @@ Each stage needs your adjacent, unbesieged settlement/city of at least the same 
 
 Each stage costs **2.25 times its matching local main-track construction materials**, rounded up, plus branch-specific finishing materials: timber/planks, drainage pottery, cold-weather insulation, or curing salt. Coal is included from tier II, with much larger industrial construction bills at III–IV. These are one-time bills: **no upkeep, gold or gold bars**.
 
-A yield specialist adds **one shared card across the four seasonal profiles per stage**, for totals of 1/2/3/4. Multiple eligible products share that increment. Native productive seasons and products determine its allocation. Harvest handling, sorting, grading and better recovery are represented by these modest extra cards; there is no separate inventory-spoilage simulation.
+A yield specialist adds **one shared card across the four seasonal profiles per stage**, for totals of 1/2/3/4. Multiple eligible products share that increment. Native productive seasons and products determine its allocation. Some specialists emphasize particular seasons: peat drying favors summer, while snow-country game hauling favors winter. These weights redistribute the same small annual increment, never creating a new native harvest season. All four seasonal weights stay positive, so a viable native harvest remains eligible. Harvest handling, sorting, grading and better recovery are represented by these modest extra cards; there is no separate inventory-spoilage simulation.
 
 Risk specialists remove **10% of the remaining loss per stage** for the stated dry, wet or cold spell. Four stages protect 34.39% of the loss remaining after main protection. All combined protection is capped at 90%; flood access and ice closures remain separate. Whole-card weather rounding can make a small improvement invisible on a low-yield roll.
+
+Water-washing projects require a local river, lake, spring or oasis; seawater does not qualify. Coastal works need a coastal site. Crop-specific projects retain their exact crop restrictions, and some additionally require fertile floodplain/delta soils or suitable elevation. Their material bills also include dedicated fittings, such as wool-washing pottery, cloth for orchard nets, or salt and timber for smokehouses.
 
 These coefficients are deliberately game balance values, not claims of measured historical productivity. The main works normally offer better returns per construction resource. Specialists are expensive ways to develop an important protected site further or hedge a particular weather risk.
 
@@ -37,8 +39,25 @@ Only seasons with **no main Grain or Oil harvest** can carry the secondary crop.
 
 The system does not assume an extra crop is possible in every climate. Exposed high Andean sites and polar or short cold growing seasons do not gain an automatic winter food crop. The Andean option is restricted to sheltered, fertile, irrigated low valley ground and represents young quinoa leaves, not an extra full grain harvest.
 
+## Latest specialist branches
+
+- Agriculture: oasis pollination and date bunch covers; sago starch washing; breadfruit fermentation; olive catching nets; sunflower dehulling; chinampa mud-block nurseries; potato sprouting stores; paddy levelling; dryland surface cultivation.
+- Livestock: mountain haylofts; dry-season browse reserves; fleece washing; flood-meadow hay recovery.
+- Forestry: river timber collection; humid-forest seasoning; mountain log chutes.
+- Mines: ore jigging; coal washing; gold sluices; cold-climate mine portals.
+- Quarries: clay settling; controlled stone splitting; peat-stack ventilation.
+- Salt: coastal brine forepans and salt-crystal draining.
+- Wild resources: coastal fish smokehouses; tropical fish-drying racks; snow-country game hauling; woodland game smokehouses; heath berry drying; whale blubber cutting.
+
 ## Evidence and abstraction
 
+- [IRRI field levelling](https://www.knowledgebank.irri.org/training/fact-sheets/land-preparation/land-leveling): level paddies distribute water more evenly.
+- [FAO haymaking](https://www.fao.org/4/x7660e/x7660e06.htm): rack drying and careful handling inform fodder recovery.
+- [FAO timber extraction](https://www.fao.org/4/v6530e/v6530e08.htm): gravity chutes guide timber downhill and reduce damage.
+- [FAO tropical staple processing](https://www.fao.org/4/x5045e/x5045E08.HTM): water extraction of sago and breadfruit pit fermentation inform their specialist works. Preservation represents recovered harvest rather than a new stored-food mechanic.
+- [FAO date pollination and bunch management](https://www.fao.org/4/y4360e/y4360e0c.htm): pollen handling, climbing access and bunch care inform oasis improvements.
+- [NPS Kantishna gold mining](https://home.nps.gov/articles/kantishna-gold.htm): water-driven separation of dense gold informs local freshwater requirements for sluice works.
+- [FAO fish handling and processing](https://www.fao.org/4/x5927e/x5927e01.htm): salting, drying and smoke exposure inform catch preservation.
 - [FAO grain storage guidance](https://www.fao.org/4/x5065e/x5065E06.htm): drying, ventilation and storage design inform harvest handling and shelter investments.
 - [FAO grain drying](https://www.fao.org/4/s1250e/S1250E0v.htm): natural and assisted drying inform the progression from racks to controlled drying houses.
 - [FAO fish handling](https://www.fao.org/4/v7180e/v7180e08.htm): clean handling, shade and cooling inform catch-recovery projects.
@@ -50,7 +69,525 @@ The system does not assume an extra crop is possible in every climate. Exposed h
 
 The seasonal mappings are broad strategy-game abstractions of these mechanisms. Hemisphere, cultivar, exact sowing dates and local soil measurements are not simulated. Existing mining, livestock and forestry evidence is catalogued in [local production methods](local-production-methods.md).
 
-## The 268 specialist projects
+## The 396 specialist projects
+
+### Oasis pollination
+
+Carefully stored pollen and climbing platforms improve fruit set in the date palms.
+
+- Main track: Soil husbandry.
+- Additional site filter: `orchard` (in addition to the main track’s resource and climate eligibility).
+- Terrains: Oasis.
+- Climates: Desert, Hyperarid, Hot Semi-Arid, Savanna, Steppe, Mediterranean.
+- Additional fittings per stage number: 1 cloth.
+- Products: grain.
+- Effect: +1 shared annual-profile card per purchased stage.
+
+1. **Pollen baskets** — adjacent settlement/city tier 1.
+2. **Palm climbing platforms** — adjacent settlement/city tier 2.
+3. **Pollen drying house** — adjacent settlement/city tier 3.
+4. **Mechanical pollination platform** — adjacent settlement/city tier 4.
+
+### Date bunch shelters
+
+Breathable covers shelter ripening dates from untimely rain while leaving air around the fruit.
+
+- Main track: Soil husbandry.
+- Additional site filter: `orchard` (in addition to the main track’s resource and climate eligibility).
+- Terrains: Oasis.
+- Climates: Desert, Hyperarid, Hot Semi-Arid, Savanna, Steppe, Mediterranean.
+- Additional fittings per stage number: 2 cloth.
+- Products: grain.
+- Effect: +1 shared annual-profile card per purchased stage.
+
+1. **Woven bunch hoods** — adjacent settlement/city tier 1.
+2. **Covered bunch frames** — adjacent settlement/city tier 2.
+3. **Canvas bunch workshop** — adjacent settlement/city tier 3.
+4. **Ventilated fruit shelters** — adjacent settlement/city tier 4.
+
+### Sago starch washing
+
+Freshwater troughs separate starch from palm pith; successive settling basins recover finer meal.
+
+- Main track: Soil husbandry.
+- Additional site filter: `orchard` (in addition to the main track’s resource and climate eligibility).
+- Terrains: Sago grove.
+- Local fresh water (river, lake, spring or oasis).
+- Additional fittings per stage number: 2 ceramics.
+- Products: grain.
+- Effect: +1 shared annual-profile card per purchased stage.
+
+1. **Pith washing trough** — adjacent settlement/city tier 1.
+2. **Starch settling basins** — adjacent settlement/city tier 2.
+3. **Mechanical pith rasp** — adjacent settlement/city tier 3.
+4. **Starch washing works** — adjacent settlement/city tier 4.
+
+### Breadfruit fermentation
+
+Leaf-lined pits preserve sound breadfruit pulp, recovering more food from the grove’s harvest.
+
+- Main track: Soil husbandry.
+- Additional site filter: `orchard` (in addition to the main track’s resource and climate eligibility).
+- Terrains: Breadfruit grove.
+- Elevation index below 0.65.
+- Additional fittings per stage number: 2 stone.
+- Products: grain.
+- Effect: +1 shared annual-profile card per purchased stage.
+
+1. **Leaf-lined pits** — adjacent settlement/city tier 1.
+2. **Stone-lined fermentation pits** — adjacent settlement/city tier 2.
+3. **Covered pulp house** — adjacent settlement/city tier 3.
+4. **Fermentation chambers** — adjacent settlement/city tier 4.
+
+### Olive catching nets
+
+Nets beneath the trees collect sound olives before they are bruised or lost among stones.
+
+- Main track: Soil husbandry.
+- Additional site filter: `oilseed` (in addition to the main track’s resource and climate eligibility).
+- Terrains: Olive grove.
+- Additional fittings per stage number: 2 cloth.
+- Products: grain.
+- Effect: +1 shared annual-profile card per purchased stage.
+
+1. **Woven catching sheets** — adjacent settlement/city tier 1.
+2. **Terrace net anchors** — adjacent settlement/city tier 2.
+3. **Mechanical net reels** — adjacent settlement/city tier 3.
+4. **Orchard collection gantries** — adjacent settlement/city tier 4.
+
+### Sunflower seed preparation
+
+Cleanly hulled seeds give the presses a richer charge with fewer woody husks.
+
+- Main track: Soil husbandry.
+- Additional site filter: `oilseed` (in addition to the main track’s resource and climate eligibility).
+- Terrains: Sunflower fields.
+- Products: oil.
+- Effect: +1 shared annual-profile card per purchased stage.
+
+1. **Seed rubbing boards** — adjacent settlement/city tier 1.
+2. **Hulling rollers** — adjacent settlement/city tier 2.
+3. **Mechanical dehuller** — adjacent settlement/city tier 3.
+4. **Seed preparation mill** — adjacent settlement/city tier 4.
+
+### Canal-mud seedbeds
+
+Moist blocks of canal mud shelter young plants before they are moved to the garden beds.
+
+- Main track: Soil husbandry.
+- Additional site filter: `gardens` (in addition to the main track’s resource and climate eligibility).
+- Terrains: Chinampa gardens.
+- Local fresh water (river, lake, spring or oasis).
+- Fertile floodplain, delta, black earth or fertile basin.
+- Products: grain.
+- Effect: +1 shared annual-profile card per purchased stage.
+
+1. **Mud-block nursery** — adjacent settlement/city tier 1.
+2. **Sheltered transplant beds** — adjacent settlement/city tier 2.
+3. **Nursery lifting frames** — adjacent settlement/city tier 3.
+4. **Garden propagation house** — adjacent settlement/city tier 4.
+
+### Potato seed stores
+
+Cool, softly lit stores keep seed tubers sound and encourage sturdy sprouts before planting.
+
+- Main track: Soil husbandry.
+- Additional site filter: `roots` (in addition to the main track’s resource and climate eligibility).
+- Terrains: Potato fields.
+- Climates: Andean, Prairie, Mesoamerican.
+- Products: grain.
+- Effect: +1 shared annual-profile card per purchased stage.
+
+1. **Sprouting trays** — adjacent settlement/city tier 1.
+2. **Ventilated seed loft** — adjacent settlement/city tier 2.
+3. **Seed-tuber grader** — adjacent settlement/city tier 3.
+4. **Controlled sprouting house** — adjacent settlement/city tier 4.
+
+### Paddy water levelling
+
+Level marks and carefully graded beds spread scarce irrigation water evenly between rice plants.
+
+- Main track: Irrigation.
+- Additional site filter: `rice` (in addition to the main track’s resource and climate eligibility).
+- Products: grain.
+- Effect: 10% of remaining dry-spell losses removed per stage.
+
+1. **Water-level stakes** — adjacent settlement/city tier 1.
+2. **Surveyed field beds** — adjacent settlement/city tier 2.
+3. **Precision levelling gear** — adjacent settlement/city tier 3.
+4. **Coordinated paddy levelling** — adjacent settlement/city tier 4.
+
+### Dryland surface cultivation
+
+Shallow cultivation breaks surface crusts after rain and limits moisture loss before the crop closes its canopy.
+
+- Main track: Rainwater harvesting.
+- Additional site filter: `dry-crop` (in addition to the main track’s resource and climate eligibility).
+- Climates: Desert, Hyperarid, Hot Semi-Arid, Savanna, Steppe, Mediterranean.
+- Elevation index below 0.65.
+- Products: grain.
+- Effect: 10% of remaining dry-spell losses removed per stage.
+
+1. **Light surface hoes** — adjacent settlement/city tier 1.
+2. **Shallow tine harrows** — adjacent settlement/city tier 2.
+3. **Depth-controlled cultivator** — adjacent settlement/city tier 3.
+4. **Precision surface cultivation** — adjacent settlement/city tier 4.
+
+### Mountain haylofts
+
+Raised, airy haylofts keep mountain fodder dry through wet spells and preserve winter feed for the herds.
+
+- Main track: Livestock improvements.
+- Additional site filter: `upland` (in addition to the main track’s resource and climate eligibility).
+- Climates: Alpine, Andean, Cold, Oceanic.
+- Products: meat, wool.
+- Effect: 10% of remaining cold-spell losses removed per stage.
+
+1. **Raised hay racks** — adjacent settlement/city tier 1.
+2. **Ventilated mountain loft** — adjacent settlement/city tier 2.
+3. **Hay lifting gear** — adjacent settlement/city tier 3.
+4. **Fan-ventilated hay barn** — adjacent settlement/city tier 4.
+
+### Dry-season browse reserves
+
+Cut branches and carefully stored leaves supplement dry-season grazing for browsing livestock.
+
+- Main track: Livestock improvements.
+- Additional site filter: `warm` (in addition to the main track’s resource and climate eligibility).
+- Terrains: Goat pasture, Cattle range.
+- Climates: Desert, Hyperarid, Hot Semi-Arid, Savanna, Steppe, Mediterranean.
+- Products: meat, hides.
+- Effect: 10% of remaining dry-spell losses removed per stage.
+
+1. **Leaf fodder racks** — adjacent settlement/city tier 1.
+2. **Browse storage yard** — adjacent settlement/city tier 2.
+3. **Branch chaff cutter** — adjacent settlement/city tier 3.
+4. **Covered browse depot** — adjacent settlement/city tier 4.
+
+### Fleece washing yards
+
+Freshwater washing troughs and draining screens recover clean fleece with less handling waste.
+
+- Main track: Livestock improvements.
+- Additional site filter: `wool` (in addition to the main track’s resource and climate eligibility).
+- Local fresh water (river, lake, spring or oasis).
+- Additional fittings per stage number: 2 ceramics.
+- Products: wool.
+- Effect: +1 shared annual-profile card per purchased stage.
+
+1. **Fleece washing trough** — adjacent settlement/city tier 1.
+2. **Draining wool screens** — adjacent settlement/city tier 2.
+3. **Mechanical fleece washer** — adjacent settlement/city tier 3.
+4. **Wool washing house** — adjacent settlement/city tier 4.
+
+### Flood-meadow hay recovery
+
+Raised drying frames help bring in meadow hay between wet periods without leaving it on soaked ground.
+
+- Main track: Livestock improvements.
+- Additional site filter: `any` (in addition to the main track’s resource and climate eligibility).
+- Terrains: Water meadow.
+- Seasonal emphasis (spring/summer/autumn/winter): 1 / 3 / 2 / 0.5.
+- Products: meat, wool.
+- Effect: +1 shared annual-profile card per purchased stage.
+
+1. **Meadow hay trestles** — adjacent settlement/city tier 1.
+2. **Raised mowing depot** — adjacent settlement/city tier 2.
+3. **Hay turning machinery** — adjacent settlement/city tier 3.
+4. **Meadow drying barn** — adjacent settlement/city tier 4.
+
+### River timber collection
+
+Booms and sorting landings gather timber along the riverbank before logs are lost downstream.
+
+- Main track: Forestry infrastructure.
+- Additional site filter: `forest` (in addition to the main track’s resource and climate eligibility).
+- Terrains: River woods.
+- Local fresh water (river, lake, spring or oasis).
+- Additional fittings per stage number: 1 leather.
+- Products: lumber.
+- Effect: +1 shared annual-profile card per purchased stage.
+
+1. **Timber catch boom** — adjacent settlement/city tier 1.
+2. **Sorting boom pens** — adjacent settlement/city tier 2.
+3. **Mechanical log winch** — adjacent settlement/city tier 3.
+4. **Timber sorting basin** — adjacent settlement/city tier 4.
+
+### Humid-forest seasoning
+
+Spaced stacks and cross-ventilated sheds help freshly cut timber dry evenly despite damp weather.
+
+- Main track: Forestry infrastructure.
+- Additional site filter: `forest` (in addition to the main track’s resource and climate eligibility).
+- Climates: Oceanic, Temperate Rainforest, Tropical, Monsoon, Equatorial Wetlands, Tropical Maritime.
+- Products: lumber.
+- Effect: 10% of remaining wet-spell losses removed per stage.
+
+1. **Spacing battens** — adjacent settlement/city tier 1.
+2. **Cross-ventilated stacks** — adjacent settlement/city tier 2.
+3. **Adjustable drying shutters** — adjacent settlement/city tier 3.
+4. **Ventilated seasoning hall** — adjacent settlement/city tier 4.
+
+### Mountain log chutes
+
+Lined chutes guide felled timber down wooded slopes, reducing breakage on the way to the landing.
+
+- Main track: Forestry infrastructure.
+- Additional site filter: `upland` (in addition to the main track’s resource and climate eligibility).
+- Elevation index at least 0.65.
+- Seasonal emphasis (spring/summer/autumn/winter): 2 / 2 / 1 / 0.5.
+- Additional fittings per stage number: 2 stone.
+- Products: lumber.
+- Effect: +1 shared annual-profile card per purchased stage.
+
+1. **Timber slide** — adjacent settlement/city tier 1.
+2. **Lined log chute** — adjacent settlement/city tier 2.
+3. **Controlled chute gates** — adjacent settlement/city tier 3.
+4. **Integrated chute landings** — adjacent settlement/city tier 4.
+
+### Water-jig ore separation
+
+Pulsing water sorts crushed ore by density, retaining useful heavy fragments from mixed material.
+
+- Main track: Mining infrastructure.
+- Additional site filter: `ore` (in addition to the main track’s resource and climate eligibility).
+- Local fresh water (river, lake, spring or oasis).
+- Additional fittings per stage number: 1 ceramics.
+- Products: ore.
+- Effect: +1 shared annual-profile card per purchased stage.
+
+1. **Washing basket jig** — adjacent settlement/city tier 1.
+2. **Timber jig boxes** — adjacent settlement/city tier 2.
+3. **Mechanical ore jig** — adjacent settlement/city tier 3.
+4. **Graded separation house** — adjacent settlement/city tier 4.
+
+### Coal washery
+
+Washing channels separate saleable coal from heavier stone and clay before loading.
+
+- Main track: Mining infrastructure.
+- Additional site filter: `coal` (in addition to the main track’s resource and climate eligibility).
+- Local fresh water (river, lake, spring or oasis).
+- Additional fittings per stage number: 2 stone.
+- Products: coal.
+- Effect: +1 shared annual-profile card per purchased stage.
+
+1. **Coal washing channel** — adjacent settlement/city tier 1.
+2. **Settling wash yard** — adjacent settlement/city tier 2.
+3. **Mechanical coal jig** — adjacent settlement/city tier 3.
+4. **Coal preparation works** — adjacent settlement/city tier 4.
+
+### Riffled gold sluices
+
+Riffles and collection mats catch dense gold particles while lighter washed material passes downstream.
+
+- Main track: Mining infrastructure.
+- Additional site filter: `gold` (in addition to the main track’s resource and climate eligibility).
+- Local fresh water (river, lake, spring or oasis).
+- Elevation index below 0.65.
+- Additional fittings per stage number: 2 cloth.
+- Products: gold.
+- Effect: +1 shared annual-profile card per purchased stage.
+
+1. **Riffled sluice box** — adjacent settlement/city tier 1.
+2. **Mat-lined sluice run** — adjacent settlement/city tier 2.
+3. **Adjustable recovery tables** — adjacent settlement/city tier 3.
+4. **Fine-gold separation works** — adjacent settlement/city tier 4.
+
+### Sheltered mine portals
+
+Recessed entrances and insulated doors keep drifting snow and biting winds away from the workings.
+
+- Main track: Mining infrastructure.
+- Additional site filter: `cold` (in addition to the main track’s resource and climate eligibility).
+- Additional fittings per stage number: 2 stone.
+- Products: ore, coal, gold.
+- Effect: 10% of remaining cold-spell losses removed per stage.
+
+1. **Portal wind screens** — adjacent settlement/city tier 1.
+2. **Double mine doors** — adjacent settlement/city tier 2.
+3. **Insulated entrance gallery** — adjacent settlement/city tier 3.
+4. **Frost-sheltered portal vestibule** — adjacent settlement/city tier 4.
+
+### Clay settling beds
+
+Successive freshwater settling beds remove coarse grit and recover workable clay from mixed deposits.
+
+- Main track: Quarry infrastructure.
+- Additional site filter: `clay` (in addition to the main track’s resource and climate eligibility).
+- Local fresh water (river, lake, spring or oasis).
+- Additional fittings per stage number: 2 stone.
+- Products: brick.
+- Effect: +1 shared annual-profile card per purchased stage.
+
+1. **Clay washing pit** — adjacent settlement/city tier 1.
+2. **Paired settling beds** — adjacent settlement/city tier 2.
+3. **Clay slurry agitator** — adjacent settlement/city tier 3.
+4. **Clay preparation house** — adjacent settlement/city tier 4.
+
+### Controlled stone splitting
+
+Regular wedge holes split suitable rock along planned faces and leave fewer shattered blocks.
+
+- Main track: Quarry infrastructure.
+- Additional site filter: `stone` (in addition to the main track’s resource and climate eligibility).
+- Terrains: Stone quarry, Arctic stone ridge, Mountain quarry, Volcanic quarry.
+- Additional fittings per stage number: 2 ore.
+- Products: stone.
+- Effect: +1 shared annual-profile card per purchased stage.
+
+1. **Matched wedge sets** — adjacent settlement/city tier 1.
+2. **Guided splitting benches** — adjacent settlement/city tier 2.
+3. **Pneumatic wedge drills** — adjacent settlement/city tier 3.
+4. **Precision splitting yard** — adjacent settlement/city tier 4.
+
+### Peat stack ventilation
+
+Open-centred stacks and covered drying alleys expose more cut peat to moving air during the workable season.
+
+- Main track: Quarry infrastructure.
+- Additional site filter: `peat` (in addition to the main track’s resource and climate eligibility).
+- Seasonal emphasis (spring/summer/autumn/winter): 1 / 4 / 2 / 0.5.
+- Products: coal.
+- Effect: +1 shared annual-profile card per purchased stage.
+
+1. **Open-centred peat stacks** — adjacent settlement/city tier 1.
+2. **Covered drying alleys** — adjacent settlement/city tier 2.
+3. **Peat turning frames** — adjacent settlement/city tier 3.
+4. **Ventilated peat store** — adjacent settlement/city tier 4.
+
+### Coastal brine forepans
+
+Seaward forepans settle suspended mud and concentrate incoming brine before it reaches the crystallising beds.
+
+- Main track: Saltworks.
+- Additional site filter: `any` (in addition to the main track’s resource and climate eligibility).
+- Climates: Desert, Hyperarid, Hot Semi-Arid, Savanna, Steppe, Mediterranean.
+- Coastal site.
+- Seasonal emphasis (spring/summer/autumn/winter): 1 / 4 / 2 / 0.5.
+- Additional fittings per stage number: 2 brick.
+- Products: salt.
+- Effect: +1 shared annual-profile card per purchased stage.
+
+1. **Brine forepan** — adjacent settlement/city tier 1.
+2. **Linked forepan banks** — adjacent settlement/city tier 2.
+3. **Adjustable brine feeders** — adjacent settlement/city tier 3.
+4. **Coordinated salt-pan supply** — adjacent settlement/city tier 4.
+
+### Salt crystal draining
+
+Perforated baskets and raised draining floors separate harvested crystals from excess bitter brine.
+
+- Main track: Saltworks.
+- Additional site filter: `any` (in addition to the main track’s resource and climate eligibility).
+- Terrains: Salt flats.
+- Additional fittings per stage number: 2 ceramics.
+- Products: salt.
+- Effect: +1 shared annual-profile card per purchased stage.
+
+1. **Draining salt baskets** — adjacent settlement/city tier 1.
+2. **Raised salt floors** — adjacent settlement/city tier 2.
+3. **Crystal draining screens** — adjacent settlement/city tier 3.
+4. **Salt draining hall** — adjacent settlement/city tier 4.
+
+### Coastal fish smoking
+
+Salted catches pass through ventilated smoke racks, preserving a larger share of landed fish in damp coastal air.
+
+- Main track: Fishery infrastructure.
+- Additional site filter: `any` (in addition to the main track’s resource and climate eligibility).
+- Climates: Cold, Oceanic, Temperate Rainforest, Temperate.
+- Coastal site.
+- Additional fittings per stage number: 2 salt, 2 lumber.
+- Products: fish.
+- Effect: +1 shared annual-profile card per purchased stage.
+
+1. **Sheltered smoke rack** — adjacent settlement/city tier 1.
+2. **Masonry fish kiln** — adjacent settlement/city tier 2.
+3. **Controlled-draught smokehouse** — adjacent settlement/city tier 3.
+4. **Ventilated smoking hall** — adjacent settlement/city tier 4.
+
+### Raised tropical fish drying
+
+Raised mesh racks keep catches clear of wet sand and let dry-season breezes pass beneath the fish.
+
+- Main track: Fishery infrastructure.
+- Additional site filter: `any` (in addition to the main track’s resource and climate eligibility).
+- Climates: Tropical, Monsoon, Tropical Maritime, Savanna, Hot Semi-Arid.
+- Coastal site.
+- Additional fittings per stage number: 2 cloth, 1 salt.
+- Products: fish.
+- Effect: +1 shared annual-profile card per purchased stage.
+
+1. **Raised mesh racks** — adjacent settlement/city tier 1.
+2. **Screened drying yard** — adjacent settlement/city tier 2.
+3. **Adjustable drying frames** — adjacent settlement/city tier 3.
+4. **Covered catch-drying hall** — adjacent settlement/city tier 4.
+
+### Snow-country game hauling
+
+Low sledges and sheltered field depots bring more of a winter kill back from the open snow country.
+
+- Main track: Hunting infrastructure.
+- Additional site filter: `open` (in addition to the main track’s resource and climate eligibility).
+- Climates: Arctic, Tundra, Cold, Glacial.
+- Seasonal emphasis (spring/summer/autumn/winter): 1 / 0.5 / 2 / 4.
+- Additional fittings per stage number: 2 leather.
+- Products: meat.
+- Effect: +1 shared annual-profile card per purchased stage.
+
+1. **Game dragging sledge** — adjacent settlement/city tier 1.
+2. **Covered sledge depot** — adjacent settlement/city tier 2.
+3. **Improved hauling runners** — adjacent settlement/city tier 3.
+4. **Winter game transport yard** — adjacent settlement/city tier 4.
+
+### Woodland game smokehouses
+
+Sheltered smoking hearths beside the hunting paths preserve more meat from visiting woodland game.
+
+- Main track: Hunting infrastructure.
+- Additional site filter: `forest` (in addition to the main track’s resource and climate eligibility).
+- Additional fittings per stage number: 2 salt, 2 lumber.
+- Products: meat.
+- Effect: +1 shared annual-profile card per purchased stage.
+
+1. **Game smoking hearth** — adjacent settlement/city tier 1.
+2. **Covered game smokehouse** — adjacent settlement/city tier 2.
+3. **Adjustable smoke flues** — adjacent settlement/city tier 3.
+4. **Forest curing hall** — adjacent settlement/city tier 4.
+
+### Heath berry drying
+
+Thin drying layers and sheltered airways recover more edible berries from the short heath harvest.
+
+- Main track: Wild harvest infrastructure.
+- Additional site filter: `any` (in addition to the main track’s resource and climate eligibility).
+- Terrains: Berry heath.
+- Climates: Tundra, Cold, Arctic.
+- Additional fittings per stage number: 1 cloth.
+- Products: grain.
+- Effect: +1 shared annual-profile card per purchased stage.
+
+1. **Berry drying mats** — adjacent settlement/city tier 1.
+2. **Sheltered berry racks** — adjacent settlement/city tier 2.
+3. **Warm-air drying cabinet** — adjacent settlement/city tier 3.
+4. **Berry drying house** — adjacent settlement/city tier 4.
+
+### Blubber cutting yards
+
+Evenly cut blubber exposes more material to the rendering kettles and improves oil recovery from each landed whale.
+
+- Main track: Whale-product infrastructure.
+- Additional site filter: `any` (in addition to the main track’s resource and climate eligibility).
+- Coastal site.
+- Additional fittings per stage number: 2 ore.
+- Products: oil.
+- Effect: +1 shared annual-profile card per purchased stage.
+
+1. **Blubber cutting benches** — adjacent settlement/city tier 1.
+2. **Raised cutting stages** — adjacent settlement/city tier 2.
+3. **Mechanical blubber slicer** — adjacent settlement/city tier 3.
+4. **Integrated cutting house** — adjacent settlement/city tier 4.
 
 ### Seed selection
 

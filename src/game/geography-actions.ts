@@ -93,7 +93,8 @@ export function projectSite(
     return (
       specialistSuitable(tile, branch) &&
       specialistTier(tile, branch, owner) === tier - 1 &&
-      (branch.track !== "irrigation" || freshwaterSite(s, tile)) &&
+      ((branch.track !== "irrigation" && !branch.freshwater) ||
+        freshwaterSite(s, tile)) &&
       ownTowns(s, owner).some(
         (t) =>
           t.level >= tier &&
