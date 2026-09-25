@@ -56,10 +56,33 @@ for (const locale of ["en", "fr"])
     await page.getByTestId(`hex-${river[0].id}`).click();
     await page.getByTestId("inspector-details-toggle").click();
     await expect(page.locator(".open-ford-crossing")).toHaveCount(1);
+    await expect(page.locator(".submerged-ford-crossing")).toHaveCount(1);
     for (const state of ["open", "closed", "ice", "bridge"])
       await expect(page.locator(`[data-ford-status="${state}"]`)).toHaveCount(
         1,
       );
+    // A cached image can exist in the DOM yet be transparent if map coordinates
+    // are accidentally baked into its local sprite bounds.
+    for (const kind of ["open", "closed", "ice", "bridge"]) {
+      const image = page.locator(`[data-ford-status="${kind}"] image`);
+      await expect(image).toHaveCount(1);
+      expect(
+        await image.evaluate(async (el) => {
+          const bitmap = new Image();
+          bitmap.src = el.getAttribute("href")!;
+          await bitmap.decode();
+          const canvas = document.createElement("canvas");
+          canvas.width = 58;
+          canvas.height = 16;
+          const context = canvas.getContext("2d")!;
+          context.drawImage(bitmap, 0, 0, 58, 16);
+          const rgba = context.getImageData(0, 0, 58, 16).data;
+          let visible = 0;
+          for (let i = 3; i < rgba.length; i += 4) if (rgba[i] > 100) visible++;
+          return visible;
+        }),
+      ).toBeGreaterThan(500);
+    }
     await page.screenshot({
       path: `output/fords/ford-status-${locale}.png`,
       fullPage: true,
@@ -72,7 +95,7 @@ for (const locale of ["en", "fr"])
     expect(errors).toEqual([]);
   });
 
-test("open ford decorations preserve the accelerated renderer on large maps", async ({
+test("open and submerged ford decorations preserve the accelerated renderer on large maps", async ({
   page,
 }) => {
   const s = newGame("ford-clarity");
@@ -82,9 +105,9 @@ test("open ford decorations preserve the accelerated renderer on large maps", as
     (t) => t.geography?.waterway === "river",
   );
   expect(rivers.length).toBeGreaterThan(0);
-  for (const t of rivers.slice(0, 8)) {
+  for (const [i, t] of rivers.slice(0, 8).entries()) {
     t.geography!.ford = true;
-    t.geography!.access = "ford";
+    t.geography!.access = i % 2 ? "normal" : "ford";
     t.surface = "open";
   }
   await page.addInitScript(({ key, data }) => localStorage.setItem(key, data), {
@@ -94,6 +117,7 @@ test("open ford decorations preserve the accelerated renderer on large maps", as
   await page.goto("/");
   await page.getByRole("button", { name: /Continue campaign/ }).click();
   await expect(page.locator(".open-ford-crossing").first()).toBeAttached();
+  await expect(page.locator(".submerged-ford-crossing").first()).toBeAttached();
   await expect(page.locator(".terrain-canvas")).toHaveAttribute(
     "data-terrain-status",
     "ready",

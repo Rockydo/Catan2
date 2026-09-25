@@ -958,6 +958,14 @@ export function seaShelf(
   };
 }
 
+/** Candidate probability precedes bank geometry and spacing checks. */
+function fordCandidate(seed: string, id: string, version: number): number {
+  const moisture = climateSetting(seed, id, version).moisture;
+  const chance = moisture < 0.35 ? 0.18 : moisture > 0.65 ? 0.05 : 0.1;
+  const roll = randomAt(seed, id, "ford");
+  return roll < chance ? roll : Infinity;
+}
+
 /** Geographic constraints select from existing resource cards. River specialization
  * never creates a new fungible currency or changes vanilla construction costs. */
 export function geographicTerrain(
@@ -996,16 +1004,35 @@ export function geographicTerrain(
           ? "coast"
           : "deep";
     geo.downstream = at.downstream;
-    geo.ford =
-      geo.waterway === "river" &&
-      randomAt(seed, id, "ford") <
-        (version < 3
-          ? 0.3
-          : climateSetting(seed, id, version).moisture < 0.35
-            ? 0.5
-            : climateSetting(seed, id, version).moisture > 0.65
-              ? 0.15
-              : 0.3);
+    if (version >= 8 && geo.waterway === "river") {
+      const roll = fordCandidate(seed, id, version);
+      const banks = around.filter((n) => !n.water);
+      geo.ford =
+        geo.waterway === "river" &&
+        !at.mouth &&
+        around.filter((n) => n.downstream === id).length <= 1 &&
+        // Two separated banks form a crossing, rather than a coastal inlet.
+        banks.some((a) => banks.some((b) => distance(a.id, b.id) === 2)) &&
+        Number.isFinite(roll) &&
+        // Compare the underlying world, including unrevealed river neighbors.
+        // This keeps crossings separated regardless of expedition reveal order.
+        around.every((n) => {
+          if (!n.downstream || n.lake) return true;
+          const other = fordCandidate(seed, n.id, version);
+          return roll < other || (roll === other && id < n.id);
+        });
+    } else {
+      geo.ford =
+        geo.waterway === "river" &&
+        randomAt(seed, id, "ford") <
+          (version < 3
+            ? 0.3
+            : climateSetting(seed, id, version).moisture < 0.35
+              ? 0.5
+              : climateSetting(seed, id, version).moisture > 0.65
+                ? 0.15
+                : 0.3);
+    }
     if (version >= 2 && !["river", "lake"].includes(geo.waterway)) {
       const shelf = seaShelf(seed, id, climate, version);
       geo.depth = shelf.depth;

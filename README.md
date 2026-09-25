@@ -54,7 +54,7 @@ Drag to pan; use the wheel to zoom. Click a town, route, tile, army or fleet to 
 
 The inspector opens on **Actions**: build, recruit, move and trade controls come first. **Terrain & seasons** retains full harvest forecasts, wildlife, flood and crossing details, and local improvements; **Town details** shows defenses. Current harvests and access/weather warnings remain in the compact header. Switching action tabs resets scrolling; reading details preserves an unfinished trade or recruitment order. Movement stays above the troop roster.
 
-Open fords show a gravel crossing and stepping stones, with explicit **Ford open**, **Ford closed**, **Ice crossing** or **Bridge open** labels in Terrain and Access views. The yellow **F** on a formation means it contains harvesting units (fishing vessels or hunters); **M** means merchants. Hover over the formation for the explanation.
+Fords retain a visible stony riverbed when closed, with submerged rocks and flowing water; open fords expose brighter stepping stones, with explicit **Ford open**, **Ford closed**, **Ice crossing** or **Bridge open** labels in Terrain and Access views. The yellow **F** on a formation means it contains harvesting units (fishing vessels or hunters); **M** means merchants. Hover over the formation for the explanation.
 
 Campaigns autosave as compressed records in browser IndexedDB, with an atomic previous-save backup. Large campaigns do not use the small localStorage quota. Existing browser saves migrate automatically after a successful write. Saving, compression and load validation run in a background worker. If you refresh before the latest write completes, the browser asks you to wait or confirm leaving.
 

@@ -172,39 +172,40 @@ export function GeographyMarker({
   const ford = fordStatus(tile);
   if (ford)
     return (
-      <MapSprite
-        assetKey={`ford-marker/${ford.kind}`}
-        bounds={{ x: -29, y: -8, width: 58, height: 16 }}
-        transform={`translate(${x} ${y + 23})`}
-        data-ford-status={ford.kind}
-        pointerEvents="none"
-      >
-        <rect
-          x="-27"
-          y="-7"
-          width="54"
-          height="14"
-          rx="5"
-          fill={
-            ford.kind === "closed"
-              ? "#334c55"
-              : ford.kind === "ice"
-                ? "#d4edf2"
-                : "#f6dd92"
-          }
-          stroke={ford.kind === "closed" ? "#cad4d3" : "#36584d"}
-          strokeWidth="1.3"
-        />
-        <text
-          y="2.5"
-          textAnchor="middle"
-          fontSize={ford.kind === "ice" ? "6.3" : "7.1"}
-          fontWeight="bold"
-          fill={ford.kind === "closed" ? "#fff2d4" : "#203f36"}
+      <g transform={`translate(${x} ${y + 23})`} pointerEvents="none">
+        <MapSprite
+          assetKey={`ford-marker/${ford.kind}`}
+          bounds={{ x: -29, y: -8, width: 58, height: 16 }}
+          data-ford-status={ford.kind}
+          pointerEvents="none"
         >
-          {tx(ford.label)}
-        </text>
-      </MapSprite>
+          <rect
+            x="-27"
+            y="-7"
+            width="54"
+            height="14"
+            rx="5"
+            fill={
+              ford.kind === "closed"
+                ? "#334c55"
+                : ford.kind === "ice"
+                  ? "#d4edf2"
+                  : "#f6dd92"
+            }
+            stroke={ford.kind === "closed" ? "#cad4d3" : "#36584d"}
+            strokeWidth="1.3"
+          />
+          <text
+            y="2.5"
+            textAnchor="middle"
+            fontSize={ford.kind === "ice" ? "6.3" : "7.1"}
+            fontWeight="bold"
+            fill={ford.kind === "closed" ? "#fff2d4" : "#203f36"}
+          >
+            {tx(ford.label)}
+          </text>
+        </MapSprite>
+      </g>
     );
   const symbol =
     g.access === "closed"
@@ -222,23 +223,24 @@ export function GeographyMarker({
                 : undefined;
   if (!symbol) return null;
   return (
-    <MapSprite
-      assetKey={`geography/${symbol}`}
-      bounds={{ x: -9, y: -9, width: 18, height: 18 }}
-      transform={`translate(${x + 23} ${y - 19})`}
-    >
-      <circle r="8" fill="#183f43" stroke="#eddcad" strokeWidth="1" />
-      <text
-        x="0"
-        y="4"
-        textAnchor="middle"
-        fontSize="12"
-        fontWeight="bold"
-        fill="#f6e6b8"
+    <g transform={`translate(${x + 23} ${y - 19})`}>
+      <MapSprite
+        assetKey={`geography/${symbol}`}
+        bounds={{ x: -9, y: -9, width: 18, height: 18 }}
       >
-        {symbol}
-      </text>
-    </MapSprite>
+        <circle r="8" fill="#183f43" stroke="#eddcad" strokeWidth="1" />
+        <text
+          x="0"
+          y="4"
+          textAnchor="middle"
+          fontSize="12"
+          fontWeight="bold"
+          fill="#f6e6b8"
+        >
+          {symbol}
+        </text>
+      </MapSprite>
+    </g>
   );
 }
 export function GeographyPanel({

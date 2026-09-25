@@ -6,8 +6,11 @@ import { environmentSummary } from "../src/game/environment";
 
 it("describes open, submerged, frozen and bridged fords consistently with land movement", () => {
   const s = newGame("ford-clarity");
-  const tile = Object.values(s.tiles).find((t) => t.geography?.ford)!;
+  const tile = Object.values(s.tiles).find(
+    (t) => t.geography?.waterway === "river",
+  )!;
   const unit = { kind: "heavy", naval: false, tier: 1 } as const;
+  tile.geography!.ford = true;
   tile.surface = "open";
   tile.geography!.access = "ford";
   expect(fordStatus(tile)?.label).toBe("Ford open");

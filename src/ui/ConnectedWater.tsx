@@ -133,6 +133,7 @@ export function ConnectedWater({
     river ||
     ["river", "shoal", "reef"].includes(tile.geography?.waterway ?? "");
   const fordSide = channel ? Math.log2(channel & -channel) : 0;
+  const fordOpen = tile.geography?.access === "ford";
   return (
     <g
       className="connected-water"
@@ -192,21 +193,24 @@ export function ConnectedWater({
         ))}
       {river &&
         !frozen &&
-        tile.geography?.access === "ford" &&
+        tile.geography?.ford &&
         !tile.geography.projects?.bridge && (
           <g
-            className="open-ford-crossing"
+            className={
+              fordOpen ? "open-ford-crossing" : "submerged-ford-crossing"
+            }
             clipPath={`url(#${riverClipId(connections)})`}
           >
             {/* A gravel sill across a real channel mouth, always clipped to water.
-              Fixed vector geometry is baked into the existing terrain cache. */}
+              A submerged sill remains visible at high water so future crossings
+              can be defended. Geometry is baked into the existing terrain cache. */}
             <g transform={`rotate(${fordSide * 60}) translate(18 0)`}>
               <path
                 d="M0 -30Q-3 -12 0 0T0 30"
                 fill="none"
-                stroke="#d1ce98"
-                strokeWidth="10"
-                opacity=".5"
+                stroke={fordOpen ? "#d1ce98" : "#a7b9a7"}
+                strokeWidth={fordOpen ? 14 : 18}
+                opacity={fordOpen ? 0.6 : 0.5}
               />
               <path
                 d="M5 -30Q2 -12 5 0T5 30"
@@ -227,18 +231,41 @@ export function ConnectedWater({
                   />
                   <path
                     d="M-3 -2 0 -3 3 -1 3 1 0 2-3 1Z"
-                    fill={i % 2 ? "#e4d5aa" : "#c9c5a3"}
+                    fill={
+                      fordOpen
+                        ? i % 2
+                          ? "#e4d5aa"
+                          : "#c9c5a3"
+                        : i % 2
+                          ? "#a4bcb7"
+                          : "#8da8a7"
+                    }
                     stroke="#6d806b"
                     strokeWidth=".55"
                   />
                   <path
+                    d="M-7 -4-4 -5-3 -3-5 -1-7 -2Z M4 2 7 1 8 3 6 5 4 4Z"
+                    fill={fordOpen ? "#b7b595" : "#849f9c"}
+                    stroke="#698b88"
+                    strokeWidth=".4"
+                  />
+                  <path
                     d="M-2 -1 0 -2 2 -1"
-                    stroke="#fff0c9"
+                    stroke={fordOpen ? "#fff0c9" : "#c5dcd3"}
                     strokeWidth=".55"
                     fill="none"
                   />
                 </g>
               ))}
+              {!fordOpen && (
+                <path
+                  d="M-10 -19Q0 -22 11 -19 M-11 -3Q0 -6 12 -3 M-10 13Q0 10 11 13 M-8 25Q0 23 9 25"
+                  fill="none"
+                  stroke="#d0e8e2"
+                  strokeWidth="1.2"
+                  opacity=".7"
+                />
+              )}
             </g>
           </g>
         )}
