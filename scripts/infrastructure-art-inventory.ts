@@ -1,100 +1,74 @@
-/** Read-only coverage audit. Counts painted files, not runtime overlays. */
-import { mkdirSync, writeFileSync } from "node:fs";
-import {
-  CLIMATES,
-  CLIMATE_INFO,
-  BIOME_INFO,
-  type Biome,
-} from "../src/game/climate-content";
-import { RIPARIAN_TERRAIN } from "../src/game/geography";
+/** Rank exact source paintings on deterministic sample maps. No terrain merging. */
+import { mkdirSync, writeFileSync, readdirSync } from "node:fs";
 import {
   INFRASTRUCTURE,
   infrastructureSuitable,
   type InfrastructureKind,
 } from "../src/game/infrastructure";
-import { generateHex } from "../src/game/world";
+import { generateWorld } from "../src/game/world";
 import { SEASONS } from "../src/game/seasons";
 import { seasonalTerrainPattern, terrainArtFile } from "../src/ui/terrain-art";
-import type { Hex } from "../src/game/types";
-const files = new Map<
+import { DEVELOPMENT_ART_LIMIT } from "../src/ui/development-level";
+import manifest from "../src/ui/infrastructure-art-manifest.json";
+const installed: Record<string, Record<string, string>> = manifest;
+const sources = new Map<
   string,
-  { source: string; kinds: InfrastructureKind[]; contexts: string[] }
+  {
+    source: string;
+    occurrences: number;
+    contexts: Set<string>;
+    kinds: Set<string>;
+  }
 >();
-for (const climate of CLIMATES) {
-  const biomes = new Set<Biome>(
-    [
-      ...CLIMATE_INFO[climate].terrain,
-      ...CLIMATE_INFO[climate].water,
-      ...RIPARIAN_TERRAIN[climate],
-    ].map(([b]) => b),
-  );
-  for (const biome of biomes)
+for (let seed = 0; seed < 8; seed++) {
+  const world = generateWorld(`development-art-priority-${seed}`, 320, true);
+  for (const tile of Object.values(world.tiles)) {
+    const kinds = (Object.keys(INFRASTRUCTURE) as InfrastructureKind[]).filter(
+      (kind) => infrastructureSuitable(tile, kind),
+    );
+    if (!kinds.length) continue;
+    // Connected water needs geometry-specific review, never a flat replacement.
+    if (tile.resource === "water" || tile.resource === "ice") continue;
     for (const season of SEASONS) {
-      const tile: Hex = {
-        ...generateHex("art-audit", "0,0"),
-        biome,
-        climate,
-        resource: BIOME_INFO[biome].resource,
-        geography: {
-          elevation: 0.65,
-          region: climate,
-          floodplain: true,
-          coastal: true,
-          access: "normal",
-          animals: [],
-          fauna: {},
-          ...(BIOME_INFO[biome].resource === "water"
-            ? {
-                waterway:
-                  biome === "river"
-                    ? "river"
-                    : biome === "lake"
-                      ? "lake"
-                      : "coast",
-              }
-            : {}),
-        },
-      };
-      const kinds = (
-        Object.keys(INFRASTRUCTURE) as InfrastructureKind[]
-      ).filter((kind) => infrastructureSuitable(tile, kind));
-      if (!kinds.length) continue;
       const source = terrainArtFile(seasonalTerrainPattern(tile, season));
-      const key = source + "|" + kinds.join("+");
-      const entry = files.get(key) ?? { source, kinds, contexts: [] };
-      entry.contexts.push(`${climate}/${biome}/${season}`);
-      files.set(key, entry);
+      const entry = sources.get(source) ?? {
+        source,
+        occurrences: 0,
+        contexts: new Set<string>(),
+        kinds: new Set<string>(),
+      };
+      entry.occurrences++;
+      entry.contexts.add(`${tile.climate}/${tile.biome}/${season}`);
+      for (const kind of kinds) entry.kinds.add(kind);
+      sources.set(source, entry);
     }
+  }
 }
-// Union signatures across shared source files rather than counting aliases twice.
-const signatures = new Map<string, Set<string>>();
-for (const entry of files.values()) {
-  const seen = signatures.get(entry.source) ?? new Set<string>();
-  const visit = (i: number, parts: string[]) => {
-    if (i === entry.kinds.length) {
-      if (parts.length) seen.add(parts.join("+"));
-      return;
-    }
-    visit(i + 1, parts);
-    for (let tier = 1; tier <= 4; tier++)
-      visit(i + 1, [...parts, `${entry.kinds[i]}:${tier}`]);
-  };
-  visit(0, []);
-  signatures.set(entry.source, seen);
-}
+const shipped = readdirSync("public/assets/infrastructure", {
+  recursive: true,
+}).filter((f) => /\.(webp|png|jpe?g)$/i.test(String(f))).length;
+if (shipped > DEVELOPMENT_ART_LIMIT)
+  throw Error("Development artwork exceeds the 1,000-image ceiling");
 const report = {
-  scope:
-    "Production tracks only; suitable existing crop/mineral/pasture/forest/water artwork. Maximum legal crop investment on elevated freshwater-adjacent floodplain sites. Excludes utility projects, flood variants, wildlife-present variants, and connected-water geometries. Shared base art aliases deduplicated.",
-  sources: signatures.size,
-  fullPaintedVariants: [...signatures.values()].reduce((n, x) => n + x.size, 0),
-  singleUpgradeVariants: [...signatures.values()].reduce(
-    (n, x) => n + [...x].filter((k) => !k.includes("+")).length,
-    0,
-  ),
-  bySource: [...files.values()].map((x) => ({
-    ...x,
-    variants: signatures.get(x.source)!.size,
-  })),
+  method:
+    "Eight deterministic 320-tile geography maps, each sampled in all four seasons. Rank exact existing source files; do not merge crops, climates, wildlife or seasons. Complete seasonal sets before expanding families. Connected-water artwork requires separate geometry review.",
+  maximumImages: DEVELOPMENT_ART_LIMIT,
+  shippedImages: shipped,
+  remainingBudget: DEVELOPMENT_ART_LIMIT - shipped,
+  paintedSources: Object.keys(manifest).length,
+  visualLevels: ["Worked (I–II)", "Mechanized (III)", "Industrial (IV)"],
+  bySource: [...sources.values()]
+    .sort(
+      (a, b) =>
+        b.occurrences - a.occurrences || a.source.localeCompare(b.source),
+    )
+    .map((e) => ({
+      ...e,
+      contexts: [...e.contexts].sort(),
+      kinds: [...e.kinds].sort(),
+      completedLevels: Object.keys(installed[e.source] ?? {}),
+      missingLevels: [1, 2, 3].filter((level) => !installed[e.source]?.[level]),
+    })),
 };
 mkdirSync("output/infrastructure-art", { recursive: true });
 writeFileSync(
@@ -104,16 +78,12 @@ writeFileSync(
 console.log(
   JSON.stringify(
     {
-      sources: report.sources,
-      fullPaintedVariants: report.fullPaintedVariants,
-      singleUpgradeVariants: report.singleUpgradeVariants,
+      maximumImages: report.maximumImages,
+      shippedImages: shipped,
+      rankedSources: sources.size,
+      next: report.bySource.slice(0, 12),
     },
     null,
     2,
-  ),
-);
-console.log(
-  report.bySource.find((e) =>
-    e.contexts.includes("temperate/golden-fields/summer"),
   ),
 );

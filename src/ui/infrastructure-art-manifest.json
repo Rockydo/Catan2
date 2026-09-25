@@ -1,9 +1,82 @@
 {
+  "seasons/temperate-golden-fields-autumn.webp": {
+    "1": "temperate-wheat-autumn-worked",
+    "2": "temperate-wheat-autumn-mechanized",
+    "3": "temperate-wheat-autumn-industrial"
+  },
+  "seasons/temperate-golden-fields-spring.webp": {
+    "1": "temperate-wheat-spring-worked",
+    "2": "temperate-wheat-spring-mechanized",
+    "3": "temperate-wheat-spring-industrial"
+  },
   "seasons/temperate-golden-fields-summer.webp": {
-    "irrigation:1": "temperate-wheat-summer-irrigation-1",
-    "irrigation:2": "temperate-wheat-summer-irrigation-2",
-    "irrigation:2+soil:1": "temperate-wheat-summer-irrigation-2-soil-1",
-    "irrigation:3": "temperate-wheat-summer-irrigation-3",
-    "irrigation:4": "temperate-wheat-summer-irrigation-4"
+    "1": "temperate-wheat-summer-worked",
+    "2": "temperate-wheat-summer-mechanized",
+    "3": "temperate-wheat-summer-industrial"
+  },
+  "seasons/temperate-golden-fields-winter.webp": {
+    "1": "temperate-wheat-winter-worked",
+    "2": "temperate-wheat-winter-mechanized",
+    "3": "temperate-wheat-winter-industrial"
+  },
+  "wildlife-terrain/empty-0d9b2fed03ed.webp": {
+    "1": "temperate-woods-winter-worked",
+    "2": "temperate-woods-winter-mechanized",
+    "3": "temperate-woods-winter-industrial"
+  },
+  "wildlife-terrain/empty-38bc7780b87b.webp": {
+    "1": "temperate-woods-spring-worked",
+    "2": "temperate-woods-spring-mechanized",
+    "3": "temperate-woods-spring-industrial"
+  },
+  "wildlife-terrain/empty-43cce8893bce.webp": {
+    "1": "cold-forest-spring-worked",
+    "2": "cold-forest-spring-mechanized",
+    "3": "cold-forest-spring-industrial"
+  },
+  "wildlife-terrain/empty-456f3275bc46.webp": {
+    "1": "temperate-woods-autumn-worked",
+    "2": "temperate-woods-autumn-mechanized",
+    "3": "temperate-woods-autumn-industrial"
+  },
+  "wildlife-terrain/empty-62067daedd84.webp": {
+    "1": "tropical-jungle-summer-worked",
+    "2": "tropical-jungle-summer-mechanized",
+    "3": "tropical-jungle-summer-industrial"
+  },
+  "wildlife-terrain/empty-77022cc8b2ed.webp": {
+    "1": "tropical-jungle-autumn-worked",
+    "2": "tropical-jungle-autumn-mechanized",
+    "3": "tropical-jungle-autumn-industrial"
+  },
+  "wildlife-terrain/empty-7dff85d02ebf.webp": {
+    "1": "tropical-jungle-spring-worked",
+    "2": "tropical-jungle-spring-mechanized",
+    "3": "tropical-jungle-spring-industrial"
+  },
+  "wildlife-terrain/empty-7e2911ed5356.webp": {
+    "1": "cold-forest-summer-worked",
+    "2": "cold-forest-summer-mechanized",
+    "3": "cold-forest-summer-industrial"
+  },
+  "wildlife-terrain/empty-8fbcd8768eca.webp": {
+    "1": "cold-forest-autumn-worked",
+    "2": "cold-forest-autumn-mechanized",
+    "3": "cold-forest-autumn-industrial"
+  },
+  "wildlife-terrain/empty-99de1a0cf871.webp": {
+    "1": "temperate-woods-summer-worked",
+    "2": "temperate-woods-summer-mechanized",
+    "3": "temperate-woods-summer-industrial"
+  },
+  "wildlife-terrain/empty-c397819587f3.webp": {
+    "1": "cold-forest-winter-worked",
+    "2": "cold-forest-winter-mechanized",
+    "3": "cold-forest-winter-industrial"
+  },
+  "wildlife-terrain/empty-f8319f67dc70.webp": {
+    "1": "tropical-jungle-winter-worked",
+    "2": "tropical-jungle-winter-mechanized",
+    "3": "tropical-jungle-winter-industrial"
   }
 }

@@ -1,22 +1,18 @@
 import manifest from "./infrastructure-art-manifest.json" with { type: "json" };
 import type { Hex } from "../game/types";
+import { developmentLevel } from "./development-level";
 
 const paintings: Record<string, Record<string, string>> = manifest;
 
-/** Exact state only: never paint another season, hide wildlife, or portray a
- * combination using just one of its upgrades. Each entry is a complete image. */
+/** Share development levels, never terrain identities. An unpainted source or
+ * level stays unchanged, including its exact season and migrating wildlife. */
 export function infrastructurePainting(
   tile: Hex,
   source: string,
 ): string | undefined {
-  const projects = tile.geography?.projects;
   const variants = paintings[source];
-  if (!projects || !variants) return;
-  const signature = Object.entries(projects)
-    .filter(([, project]) => project != null)
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([kind, project]) => `${kind}:${project!.tier ?? 1}`)
-    .join("+");
-  const painting = variants[signature];
+  if (!variants) return;
+  const level = developmentLevel(tile);
+  const painting = variants[level];
   return painting ? `infra-${painting}` : undefined;
 }

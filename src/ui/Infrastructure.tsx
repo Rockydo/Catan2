@@ -14,6 +14,11 @@ import { SEASONS, seasonalProfile, seasonYear } from "../game/seasons";
 import { affordable } from "../game/selectors";
 import { Cost, GoodsList } from "./components";
 import { localize as tx, useLocale } from "../i18n";
+import {
+  developmentLevel,
+  DEVELOPMENT_NAMES,
+  DEVELOPMENT_NAMES_FR,
+} from "./development-level";
 
 export function InfrastructurePanel({
   game: s,
@@ -55,6 +60,17 @@ export function InfrastructurePanel({
       <summary>
         {fr ? "Infrastructure de production" : "Production infrastructure"}
       </summary>
+      <small data-development-level={developmentLevel(tile)}>
+        {fr ? "Développement visuel : " : "Visual development: "}
+        {
+          (fr ? DEVELOPMENT_NAMES_FR : DEVELOPMENT_NAMES)[
+            developmentLevel(tile)
+          ]
+        }
+        {fr
+          ? ". Apparence déterminée par l’amélioration la plus avancée ; les bonus restent propres à chaque projet."
+          : ". Appearance follows the highest upgrade tier; each project keeps its own benefits."}
+      </small>
       <p>
         {fr
           ? "Un bâtiment adjacent du même niveau est requis. Le charbon se paie uniquement à la construction. Aucun entretien. Une armée ennemie détruit les améliorations après le combat."

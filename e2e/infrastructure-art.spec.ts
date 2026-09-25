@@ -57,6 +57,12 @@ for (const size of [120, 850])
       '.terrain-map image.terrain-texture[href*="/infrastructure/"]',
     );
     await expect(paintings).toHaveCount(5);
+    // Tiers I/II and their combinations share Worked; III/IV remain distinct.
+    expect(
+      await paintings.evaluateAll(
+        (nodes) => new Set(nodes.map((node) => node.getAttribute("href"))).size,
+      ),
+    ).toBe(3);
     expect(
       await paintings.evaluateAll(async (nodes) =>
         Promise.all(

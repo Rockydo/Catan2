@@ -312,6 +312,9 @@ export function bankArt(tile: Hex, season?: Season) {
           ...tile.geography!,
           access: "normal",
           waterway: undefined,
+          // A bank material is not a developed forest: do not copy a fishery's
+          // development tier into the synthetic bank terrain.
+          projects: undefined,
         },
       },
       evergreen ? "spring" : season,
