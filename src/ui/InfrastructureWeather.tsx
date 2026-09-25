@@ -33,13 +33,15 @@ export function WeatherBenefits({
                 : " maximum per harvest, shared across eligible resources."}
             </small>
           )}
-          {!c.loss.length && c.recoveryAfter === c.recoveryBefore && (
-            <small>
-              {fr
-                ? "Aucune protection supplémentaire ici avec les ouvrages actuels."
-                : "No additional protection here with the current works."}
-            </small>
-          )}
+          {!c.improved &&
+            !c.loss.length &&
+            c.recoveryAfter === c.recoveryBefore && (
+              <small>
+                {fr
+                  ? "Aucune protection supplémentaire ici avec les ouvrages actuels."
+                  : "No additional protection here with the current works."}
+              </small>
+            )}
           {!c.improved && (
             <small className="infrastructure-no-change">
               {fr

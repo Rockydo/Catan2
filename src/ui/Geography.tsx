@@ -150,7 +150,7 @@ export function GeographyLegend({ view }: { view: GeographyView }) {
       <small>
         {tx(
           view === "flooding"
-            ? "Low basins flood at level 3; higher riverbanks at level 4. Flooded tiles stop producing. Select a tile to see its threshold. A levee keeps it dry."
+            ? "Low basins flood at level 3; higher riverbanks at level 4. Flooding stops normal harvests; specialist works can salvage a limited amount. Select a tile for details. A levee keeps it dry."
             : view === "weather"
               ? "Weather affects whole regions. Dry spells reduce sensitive crops and improve salt; rain helps rice but slows logging and salt. Cold reduces crops and pasture. Select a tile for exact harvest changes."
               : view === "wildlife"

@@ -1,3 +1,7 @@
+import {
+  SERVICE_BY_BRANCH,
+  type SpecialistService,
+} from "./infrastructure-service-rules";
 import { NICHE_BRANCHES } from "./infrastructure-niches";
 import type { Biome, Climate } from "./climate-content";
 import {
@@ -40,6 +44,7 @@ export type SpecialistSite =
   | "open"
   | "seal";
 export interface SpecialistBranch {
+  service?: SpecialistService;
   rotation?: RotationPattern;
   specialty?: "pantry" | "refuge" | "recovery" | "aggregate";
   biomes?: readonly Biome[];
@@ -67,7 +72,7 @@ export interface SpecialistBranch {
 }
 /** Independent investments; each branch has four separately purchased projects.
  * Site selection never depends on current weather or visiting animals. */
-export const SPECIALIST_BRANCHES: readonly SpecialistBranch[] = [
+const BASE_BRANCHES: readonly SpecialistBranch[] = [
   ...NICHE_BRANCHES,
   {
     id: "seed-selection",
@@ -1755,6 +1760,11 @@ export const SPECIALIST_BRANCHES: readonly SpecialistBranch[] = [
     ],
   },
 ];
+export const SPECIALIST_BRANCHES: readonly SpecialistBranch[] =
+  BASE_BRANCHES.map((branch) => ({
+    ...branch,
+    service: SERVICE_BY_BRANCH[branch.id],
+  }));
 export type SpecialistProject = `specialist-${string}-${1 | 2 | 3 | 4}`;
 export const specialistId = (branch: SpecialistBranch, tier: number) =>
   `specialist-${branch.id}-${tier}` as SpecialistProject;

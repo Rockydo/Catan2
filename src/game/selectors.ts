@@ -1,3 +1,8 @@
+import {
+  specialistServiceProfile,
+  hasSpecialistHarvestService,
+} from "./infrastructure-services";
+import { ordinarySeasonalProfile } from "./seasons";
 import { huntingYield } from "./infrastructure";
 import { fishingRange } from "./content";
 import { pieceAccess } from "./geography";
@@ -1061,6 +1066,23 @@ function readProduction(
     let output = yields.get(key);
     if (!output) {
       output = huntingYield(tiles[id], owner, season);
+      const g = tiles[id].geography;
+      if (
+        season &&
+        g?.weather === "cold" &&
+        hasSpecialistHarvestService(tiles[id], owner) &&
+        (!g.weatherSeason || g.weatherSeason === season)
+      ) {
+        const extra = specialistServiceProfile(
+          tiles[id],
+          ordinarySeasonalProfile(tiles[id], owner),
+          owner,
+          "cold",
+          "hunting",
+        )[season];
+        for (const [raw, n] of Object.entries(extra))
+          output[raw as Raw] = (output[raw as Raw] ?? 0) + n!;
+      }
       yields.set(key, output);
     }
     return output;

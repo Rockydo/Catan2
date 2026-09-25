@@ -1,6 +1,12 @@
+import { specialistFloodSalvage } from "../game/infrastructure-services";
 import { specialistRecovery } from "../game/infrastructure";
 import type { Hex, Raw, Stock } from "../game/types";
-import { SEASONS, seasonalProfile, type Season } from "../game/seasons";
+import {
+  SEASONS,
+  seasonalProfile,
+  ordinarySeasonalProfile,
+  type Season,
+} from "../game/seasons";
 import {
   weatherAdjustedYield,
   weatherYieldFactor,
@@ -88,4 +94,23 @@ export function weatherComparison(
     recoveryBefore: specialistRecovery(before, weather, owner).budget,
     recoveryAfter: specialistRecovery(after, weather, owner).budget,
   };
+}
+
+export function floodComparison(
+  before: Hex,
+  after: Hex,
+  owner: number,
+  current: HarvestProfile,
+  future: HarvestProfile,
+) {
+  const compare = (tile: Hex, profile: HarvestProfile): HarvestProfile => {
+    const field = ordinarySeasonalProfile(tile, owner);
+    return Object.fromEntries(
+      SEASONS.map((season) => [
+        season,
+        specialistFloodSalvage(tile, profile[season], owner, field[season]),
+      ]),
+    ) as HarvestProfile;
+  };
+  return { current: compare(before, current), future: compare(after, future) };
 }

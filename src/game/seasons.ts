@@ -1,4 +1,9 @@
 import {
+  specialistServiceProfile,
+  specialistFloodSalvage,
+  hasSpecialistFloodRescue,
+} from "./infrastructure-services";
+import {
   isInfrastructure,
   effectiveTier,
   infrastructureExtras,
@@ -573,7 +578,8 @@ export function seasonalProfile(
 ): Record<Season, Stock> {
   const result = ordinarySeasonalProfile(tile, owner),
     extra = rotationExtras(tile, result, owner),
-    utility = specialistUtilityExtras(tile, result, owner);
+    utility = specialistUtilityExtras(tile, result, owner),
+    services = specialistServiceProfile(tile, result, owner);
   for (const season of SEASONS)
     for (const good of ["grain", "oil"] as const)
       if (extra[season][good])
@@ -585,6 +591,9 @@ export function seasonalProfile(
     if (food) result[season].grain = (result[season].grain ?? 0) + food;
     if (stone) result[season].stone = (result[season].stone ?? 0) + stone;
   }
+  for (const season of SEASONS)
+    for (const [raw, n] of Object.entries(services[season]))
+      result[season][raw as Raw] = (result[season][raw as Raw] ?? 0) + n!;
   return result;
 }
 export function seasonalYield(
@@ -593,11 +602,12 @@ export function seasonalYield(
   season?: Season,
 ): Stock {
   if (tile.geography?.damagedUntil) return {};
-  if (tile.geography?.access === "flooded" && !tile.geography.projects?.levee)
-    return {};
+  const flooded =
+    tile.geography?.access === "flooded" && !tile.geography.projects?.levee;
+  if (flooded && !hasSpecialistFloodRescue(tile, owner)) return {};
   if (season && tile.iceWeather?.season === season && tile.surface === "frozen")
     return {};
-  return season
+  const stock = season
     ? weatherAdjustedYield(
         tile,
         seasonalProfile(tile, owner)[season],
@@ -605,6 +615,16 @@ export function seasonalYield(
         owner,
       )
     : tileYield(tile, owner);
+  return flooded
+    ? specialistFloodSalvage(
+        tile,
+        stock,
+        owner,
+        season
+          ? ordinarySeasonalProfile(tile, owner)[season]
+          : tileYield(tile, owner),
+      )
+    : stock;
 }
 /** Woods workshops keep their chosen product, independently of the raw choice. */
 export function seasonalWorkshopBase(

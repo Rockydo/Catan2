@@ -1,4 +1,8 @@
 import {
+  hasSpecialistHarvestService,
+  specialistServiceProfile,
+} from "./infrastructure-services";
+import {
   infrastructureProtection,
   huntingYield,
   isCrop,
@@ -170,10 +174,19 @@ export function weatherAdjustedYield(
     return stock;
   const output: Stock = {};
   const recovery = specialistRecovery(tile, weather, owner);
+  const native = hasSpecialistHarvestService(tile, owner)
+    ? ordinarySeasonalProfile(tile, owner)
+    : undefined;
+  const service = native
+    ? specialistServiceProfile(tile, native, owner)[season]
+    : {};
+  const opportunity = native
+    ? specialistServiceProfile(tile, native, owner, weather)[season]
+    : {};
   const stored = specialistPantryCapacity(tile, owner)
     ? (specialistUtilityExtras(
         tile,
-        ordinarySeasonalProfile(tile, owner),
+        native ?? ordinarySeasonalProfile(tile, owner),
         owner,
       ).pantry[season].grain ?? 0)
     : 0;
@@ -182,9 +195,11 @@ export function weatherAdjustedYield(
   const rotation = installedRotation(tile, owner);
   const secondary =
     rotation && rotation.rotation!.seasons.includes(season)
-      ? (rotationExtras(tile, ordinarySeasonalProfile(tile, owner), owner)[
-          season
-        ].grain ?? 0)
+      ? (rotationExtras(
+          tile,
+          native ?? ordinarySeasonalProfile(tile, owner),
+          owner,
+        )[season].grain ?? 0)
       : 0;
   for (const [good, amount] of Object.entries(stock)) {
     const raw = good as Raw,
@@ -198,7 +213,12 @@ export function weatherAdjustedYield(
       raw === "grain"
         ? Math.min(stored, amount! - wildlife - rotationAmount)
         : 0;
-    const base = amount! - wildlife - rotationAmount - preserved;
+    const serviceAmount = Math.min(
+      service[raw] ?? 0,
+      amount! - wildlife - rotationAmount - preserved,
+    );
+    const base =
+      amount! - wildlife - rotationAmount - preserved - serviceAmount;
     // Wild animals react by migration. Weather does not multiply herd size.
     const adjusted = Math.round(
       base * weatherYieldFactor(tile, raw, season, weather, owner),
@@ -206,6 +226,7 @@ export function weatherAdjustedYield(
     output[raw] =
       wildlife +
       preserved +
+      serviceAmount +
       (rotationAmount && rotation
         ? Math.round(
             rotationAmount *
@@ -235,5 +256,7 @@ export function weatherAdjustedYield(
     if (kept) output[raw as Raw] = (output[raw as Raw] ?? 0) + kept;
     left -= kept;
   }
+  for (const [raw, n] of Object.entries(opportunity))
+    output[raw as Raw] = (output[raw as Raw] ?? 0) + n!;
   return output;
 }

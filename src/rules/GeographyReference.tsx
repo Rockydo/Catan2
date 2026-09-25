@@ -1,3 +1,4 @@
+import { SERVICE_RULES } from "../game/infrastructure-service-rules";
 import { ROTATION_BRANCHES } from "../game/infrastructure-rotations";
 import {
   SPECIALIST_BRANCHES,
@@ -224,6 +225,14 @@ export function GeographyReference() {
               <article key={branch.id}>
                 <h3>{tx(branch.name)}</h3>
                 <p>{tx(branch.description)}</p>
+                {branch.service && (
+                  <p>
+                    {l(
+                      SERVICE_RULES[branch.service].en,
+                      SERVICE_RULES[branch.service].fr,
+                    )}
+                  </p>
+                )}
                 <ol>
                   {branch.stages.map((stage) => (
                     <li key={stage}>{tx(stage)}</li>

@@ -1,3 +1,7 @@
+import {
+  SERVICE_BY_BRANCH,
+  SERVICE_RULES,
+} from "../src/game/infrastructure-service-rules";
 import fs from "node:fs";
 import { SPECIALIST_BRANCHES } from "../src/game/infrastructure-specialists";
 import { ROTATION_BRANCHES } from "../src/game/infrastructure-rotations";
@@ -46,6 +50,34 @@ Twelve branches now have an additional role while retaining their original yield
 
 For example, a one-Wood tile already retains its Wood during rain because of the forest production floor. Covered stacks cannot rescue an additional card there: the card explicitly reports unchanged rounded harvest. On a larger forest that loses Wood during rain, the salvage allowance can have an immediate visible benefit. A 10% reduction in remaining losses means a 25% loss becomes 22.5%, not a flat +10% yield.
 
+## Working practices: 28 further branches
+
+A further **28 existing branches (112 stages)** now offer **nine additional services**, taking the number of branches with dedicated secondary roles to **40**. Every original primary yield/protection, construction price and saved project remains. All the following bonuses are owner-specific. Normal by-products are recovered output, sheltered from subsequent weather penalties; closures still apply unless flood salvage is explicitly listed. These small bonuses do not consume resources each turn.
+
+${Object.entries(SERVICE_RULES)
+  .map(
+    ([role, rule]) => `### ${role}
+
+${rule.en}
+
+Branches: ${Object.entries(SERVICE_BY_BRANCH)
+      .filter(([, value]) => value === role)
+      .map(([id]) => SPECIALIST_BRANCHES.find((b) => b.id === id)!.name)
+      .join(", ")}.`,
+  )
+  .join("\n\n")}
+
+These are shared four-season budgets, **not +2 on every seasonal harvest**. Normal by-products and weather opportunities begin at II (one extra card), increase at IV (two), and preserve the original branch progression at I and III. Weather windows activate only in the stated weather and season; the calendar previews show the actual before/after output under that condition. An older saved investment receives its new service automatically.
+
+- **Fodder:** meat from well-fed domestic stock is allocated to the lowest ordinary Wool/Meat/Hides grazing yields. It is not wild-game attraction or a new herd.
+- **Prunings:** only olive groves, date oases and breadfruit groves qualify; recovery avoids maximum-yield fruit seasons where there is a seasonal peak.
+- **Wool grease:** Sheep pastures and water meadows qualify; alpaca and wild musk-ox wool do not. Wool wax shares the existing Oil supply category.
+- **Whale preparation:** current visiting whale Hides and Oil are both required. Fishing without whales supplies no whale meat; migration changes this preview immediately.
+- **Wet working:** freshwater sluices, sago washing and river log collection exploit available flow. This is not permission to operate under a flood.
+- **Winter hauling:** cold, tundra, arctic, glacial, alpine, Andean, steppe and prairie climates qualify, only in winter during a cold spell. Hunters receive the same owned snow-haulage improvement as settlement producers.
+- **Low water:** a river/lake waterway or floodplain is required; ordinary upland clay works do not receive this bonus. No winter benefit.
+- **Flood salvage:** raised rows, field outfalls and swamp timber walks recover only an actually productive resource up to the shared cap. Grain and Oil share the cap; two rescue branches do not double it. Movement remains blocked. Levees remain the way to retain a full harvest and normal access. Ice, damage and enemy blockade still prevent collection.
+
 ## Secondary-crop rotations
 
 Rotations represent small catch-crop plots, relay sowings or intercropped strips. They preserve the original main harvest. Crop, climate, lowland/upland setting and fertile river soils determine the available patterns; some require owned irrigation and drainage before construction. Drainage is required on wet-climate or floodplain sites for patterns that call for it. Naturally drained nonfloodplain sites do not need an artificial drainage project.
@@ -72,6 +104,10 @@ The system does not assume an extra crop is possible in every climate. Exposed h
 - Wild resources: coastal fish smokehouses; tropical fish-drying racks; snow-country game hauling; woodland game smokehouses; heath berry drying; whale blubber cutting.
 
 ## Evidence and abstraction
+
+- [FAO conserved fodder](https://www.fao.org/4/x7660e/x7660e0e.htm): storing peak-season forage supports stock when grazing is scarce. Our small Meat supplement abstracts that effect.
+- [FAO wool processing glossary](https://www.fao.org/4/v9384e/v9384e13.htm): wool scouring can recover grease for lanolin manufacture; the game groups recovered grease with Oil.
+- [US Forest Service winter timber harvesting](https://research.fs.usda.gov/nrs/products/multimedia/webinars/winter-timber-harvesting): frozen ground and snow can support seasonal hauling. Our winter/cold-spell gate is a coarse climate abstraction.
 
 - [FHWA mineral-processing wastes](https://www.fhwa.dot.gov/publications/research/infrastructure/structures/97148/mwst1.cfm): selected sound waste rock can serve as aggregate; not every waste stream is suitable.
 - [US Forest Service buffers and corridors](https://www.fs.usda.gov/nac/buffers/guidelines/2_biodiversity/8.html): habitat buffers can reduce external disturbance; the game coefficients are balance choices.
@@ -102,6 +138,7 @@ function conditions(b: (typeof SPECIALIST_BRANCHES)[number]) {
       `Terrains: ${b.biomes.map((x) => BIOME_INFO[x].name).join(", ")}`,
     b.climates &&
       `Climates: ${b.climates.map((x) => CLIMATE_INFO[x].name).join(", ")}`,
+    b.service && `Additional working practice: ${b.service}`,
     b.freshwater && "Local fresh water (river, lake, spring or oasis)",
     b.coastal && "Coastal site",
     b.fertile && "Fertile floodplain, delta, black earth or fertile basin",

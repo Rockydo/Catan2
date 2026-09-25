@@ -91,6 +91,17 @@ for (const locale of ["en", "fr"] as const)
         await row.getByRole("button").click();
         await expect(row.locator("b").first()).toContainText(" · I");
       }
+      const rescue = page.locator('[data-specialist-branch="raised-rows"]');
+      await expect(
+        rescue.locator('[data-specialist-service="flood-rescue"]'),
+      ).toBeVisible();
+      await expect(
+        rescue.locator("[data-flood-benefit] .geography-calendar > div"),
+      ).toHaveCount(4);
+      await expect(rescue.locator("[data-flood-benefit]")).toContainText("1");
+      expect(
+        await rescue.evaluate((el) => el.scrollWidth <= el.clientWidth + 2),
+      ).toBe(true);
       await page
         .locator('[data-specialist-branch="seed-selection"]')
         .scrollIntoViewIfNeeded();
@@ -304,4 +315,101 @@ for (const [locale, large] of [
         : "Effet des quatre étapes",
     );
     await expect(card.getByRole("button")).toHaveCount(0);
+  });
+
+for (const locale of ["en", "fr"] as const)
+  test(`livestock service byproducts are clear and buildable ${locale}`, async ({
+    page,
+  }) => {
+    let s = newGame("infrastructure-browser");
+    while (s.phase.startsWith("setup")) s = run(s, chooseAIAction(s));
+    s.active = 0;
+    s.phase = "economy";
+    s.pieces = {};
+    const town = ownTowns(s, 0)[0];
+    town.level = town.turnLevel = 4;
+    for (const good of GOODS) town.stock[good] = 5000;
+    const id = s.vertices[town.vertex].tiles.find(
+      (id) => !["water", "ice", "peaks"].includes(s.tiles[id].resource),
+    )!;
+    const tile = s.tiles[id];
+    Object.assign(tile, {
+      biome: "pasture",
+      climate: "temperate",
+      resource: "wool",
+    });
+    s.climatePlan![id] = "temperate";
+    Object.assign(tile.geography!, {
+      pass: false,
+      waterway: undefined,
+      access: "normal",
+      floodplain: false,
+      landmark: "thermal-spring",
+      projects: {},
+      fauna: {},
+      animals: [],
+    });
+    s.wildlife = s.wildlife!.filter((w) => w.tile !== id);
+    syncSeasonSurfaces(s);
+    assertInvariants(s);
+    const errors: string[] = [];
+    page.on("pageerror", (e) => errors.push(e.message));
+    await page.addInitScript(
+      ({ data, key, locale }) => {
+        if (!localStorage.getItem(key)) localStorage.setItem(key, data);
+        localStorage.setItem("catane-language", locale);
+      },
+      { data: serialize(s), key: SAVE_KEY, locale },
+    );
+    await page.setViewportSize({ width: 768, height: 1000 });
+    await page.goto("/");
+    const open = async () => {
+      await page
+        .getByRole("button", {
+          name: locale === "en" ? /Continue campaign/ : /Reprendre/,
+        })
+        .click();
+      await page.getByTestId(`hex-${id}`).click();
+      await page.getByTestId("inspector-details-toggle").click();
+      await page.locator(".infrastructure-panel > summary").click();
+      await page
+        .getByRole("tab", {
+          name: locale === "en" ? /Specialists/ : /Compléments/,
+        })
+        .click();
+    };
+    await open();
+    for (const [id, role, resource] of [
+      ["wool-washing", "wool-oil", locale === "en" ? "Oil" : "Huile"],
+      ["fodder-reserves", "fodder", locale === "en" ? "Meat" : "Viande"],
+    ]) {
+      const card = page.locator(`[data-specialist-branch="${id}"]`);
+      await expect(
+        card.locator(`[data-specialist-service="${role}"]`),
+      ).toBeVisible();
+      await card.getByRole("button").click();
+      await expect(card.locator(".infrastructure-gain")).toContainText(
+        resource,
+      );
+      await card.getByRole("button").click();
+      await expect(card.locator("b").first()).toContainText(" · II");
+      await card.locator(".infrastructure-effects summary").click();
+      await expect(card.locator(".infrastructure-comparison")).not.toHaveCount(
+        0,
+      );
+      expect(
+        await card.evaluate((el) => el.scrollWidth <= el.clientWidth + 2),
+      ).toBe(true);
+      await card.scrollIntoViewIfNeeded();
+      await page.screenshot({
+        path: `output/infrastructure/service-${role}-${locale}.png`,
+      });
+    }
+    await page.waitForTimeout(1500);
+    await page.reload();
+    await open();
+    await expect(
+      page.locator('[data-specialist-branch="wool-washing"] b').first(),
+    ).toContainText(" · II");
+    expect(errors).toEqual([]);
   });

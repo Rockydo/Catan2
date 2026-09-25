@@ -883,7 +883,7 @@ export function specialistCost(tile: Hex, id: SpecialistProject): Stock {
   return cost;
 }
 /** Only inspect installed projects during production, never the whole catalogue. */
-function installedSpecialists(
+export function installedSpecialists(
   tile: Hex,
   owner?: number,
 ): [SpecialistBranch, number][] {
@@ -1100,7 +1100,16 @@ export function specialistRoleGain(
   tier: number,
   owner?: number,
 ): number {
-  if (!branch.specialty) return 0;
+  let serviceGain = 0;
+  if (branch.service) {
+    const capacity = (n: number) =>
+      branch.service === "flood-rescue" ? Math.ceil(n / 2) : Math.floor(n / 2);
+    let prior = 0;
+    for (const [b, n] of installedSpecialists(tile, owner))
+      if (b.service === branch.service) prior = Math.max(prior, capacity(n));
+    serviceGain = Math.max(0, capacity(tier) - prior);
+  }
+  if (!branch.specialty) return serviceGain;
   const level = (n: number) =>
     branch.specialty === "recovery"
       ? Math.ceil(n / 2)
@@ -1118,5 +1127,5 @@ export function specialistRoleGain(
     )
       current = Math.max(current, level(n));
   }
-  return Math.max(0, level(tier) - current);
+  return serviceGain + Math.max(0, level(tier) - current);
 }

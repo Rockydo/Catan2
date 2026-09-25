@@ -1,4 +1,9 @@
 import {
+  SERVICE_RULES,
+  serviceWeather,
+} from "../game/infrastructure-service-rules";
+import {
+  floodComparison,
   weatherComparison,
   withoutInvestment,
   type WeatherRisk,
@@ -215,6 +220,7 @@ function ProjectCard({
   attributes,
   conditional,
   stage,
+  floodRescue,
   children,
 }: PanelProps & {
   id: Project;
@@ -229,6 +235,7 @@ function ProjectCard({
   attributes?: Record<string, string>;
   conditional?: string;
   stage?: string;
+  floodRescue?: boolean;
   children?: ReactNode;
 }) {
   const fr = useLocale() === "fr",
@@ -262,6 +269,9 @@ function ProjectCard({
   const weather = (protection ?? []).map((risk) =>
     weatherComparison(beforeTile, preview, viewer, risk, current, future),
   );
+  const flood = floodRescue
+    ? floodComparison(beforeTile, preview, viewer, current, future)
+    : undefined;
   return (
     <article className="infrastructure-card" {...attributes}>
       <header>
@@ -299,8 +309,8 @@ function ProjectCard({
         tile.surface === "frozen") && (
         <small className="infrastructure-no-change">
           {fr
-            ? "Récolte actuellement bloquée. Les prévisions supposent un terrain accessible et intact."
-            : "Harvest is currently blocked. Forecasts assume an accessible, undamaged site."}
+            ? "Récolte normale actuellement bloquée. Seul un éventuel sauvetage en crue reste possible ; les prévisions supposent un terrain accessible et intact."
+            : "Normal harvesting is currently blocked. Only applicable flood salvage may remain; forecasts assume an accessible, undamaged site."}
         </small>
       )}
       {!foreign && (
@@ -350,6 +360,22 @@ function ProjectCard({
               </small>
             )}
             {!!weather.length && <WeatherBenefits comparisons={weather} />}
+            {flood && (
+              <div data-flood-benefit>
+                <strong>
+                  {fr ? "Récolte pendant une crue" : "Harvest during a flood"}
+                </strong>
+                <HarvestComparison
+                  current={flood.current}
+                  future={flood.future}
+                />
+                <small>
+                  {fr
+                    ? "Ressources sauvées, par producteur et au bon jet de dé. Les déplacements restent bloqués."
+                    : "Resources rescued per producer on the matching roll. Movement remains blocked."}
+                </small>
+              </div>
+            )}
             <small>
               {fr
                 ? "Par producteur, au bon jet de dé ; les gains sont répartis entre les saisons indiquées."
@@ -393,9 +419,13 @@ function ProjectCard({
               </div>
             ))}
             <small>
-              {fr
-                ? "Quantités réellement récoltées après arrondi, par producteur. Crue, glace et occupation peuvent toujours bloquer la récolte. Les abris météo ne protègent pas des crues."
-                : "Actual rounded harvest per producer. Flooding, ice and occupation can still block production. Weather shelters do not protect against floods."}
+              {floodRescue
+                ? fr
+                  ? "Quantités arrondies avant multiplicateurs. En crue, seule la part sauvée est récoltée. Glace et occupation bloquent toujours la collecte."
+                  : "Rounded amounts before producer multipliers. During floods, only the rescued share is collected. Ice and occupation still block collection."
+                : fr
+                  ? "Quantités réellement récoltées après arrondi, par producteur. Crue, glace et occupation peuvent toujours bloquer la récolte. Les abris météo ne protègent pas des crues."
+                  : "Actual rounded harvest per producer. Flooding, ice and occupation can still block production. Weather shelters do not protect against floods."}
             </small>
             {conditional && (
               <small>
@@ -596,12 +626,28 @@ function SpecialistCard(props: PanelProps & { branch: SpecialistBranch }) {
             : "Harvests resume when wildlife returns."
           : undefined
       }
-      protection={branch.effect !== "yield" ? [branch.effect] : undefined}
+      protection={Array.from(
+        new Set<WeatherRisk>([
+          ...(branch.effect !== "yield" ? [branch.effect] : []),
+          ...(serviceWeather(branch.service)
+            ? [serviceWeather(branch.service)!]
+            : []),
+        ]),
+      )}
+      floodRescue={branch.service === "flood-rescue"}
       attributes={{
         "data-specialist-branch": branch.id,
         "data-side-project": id,
       }}
     >
+      {branch.service && (
+        <p
+          className="infrastructure-special-role"
+          data-specialist-service={branch.service}
+        >
+          {SERVICE_RULES[branch.service][fr ? "fr" : "en"]}
+        </p>
+      )}
       {branch.specialty && (
         <p
           className="infrastructure-special-role"

@@ -37,6 +37,75 @@ Twelve branches now have an additional role while retaining their original yield
 
 For example, a one-Wood tile already retains its Wood during rain because of the forest production floor. Covered stacks cannot rescue an additional card there: the card explicitly reports unchanged rounded harvest. On a larger forest that loses Wood during rain, the salvage allowance can have an immediate visible benefit. A 10% reduction in remaining losses means a 25% loss becomes 22.5%, not a flat +10% yield.
 
+## Working practices: 28 further branches
+
+A further **28 existing branches (112 stages)** now offer **nine additional services**, taking the number of branches with dedicated secondary roles to **40**. Every original primary yield/protection, construction price and saved project remains. All the following bonuses are owner-specific. Normal by-products are recovered output, sheltered from subsequent weather penalties; closures still apply unless flood salvage is explicitly listed. These small bonuses do not consume resources each turn.
+
+### fodder
+
+Lean-season feeding: at II, +1 Meat across the poorest grazing seasons; at IV, +2. Conserved fodder shelters this additional output from weather. Best fodder reserve applies.
+
+Branches: Fodder reserves, Mountain haylofts, Dry-season browse reserves, Flood-meadow hay recovery.
+
+### prunings
+
+Pruning recovery: at II, +1 Wood outside the orchard’s busiest harvest season; at IV, +2. Only woody orchards qualify. Best collection works apply.
+
+Branches: Orchard handling, Olive catching nets.
+
+### wool-oil
+
+Wool grease recovery: at II, +1 Oil across sheep-shearing seasons; at IV, +2. Alpaca fleece does not qualify. Best scouring works apply.
+
+Branches: Fleece washing yards.
+
+### whole-catch
+
+Whole-catch preparation: at II, +1 Meat across the seasons while whales visit; at IV, +2. Production stops when the whales leave. Best shore preparation works apply.
+
+Branches: Blubber cutting yards, Whale hide handling.
+
+### water-work
+
+High-water working: wet spells unlock +1 additional resource across productive seasons at II, +2 at IV. Fresh-water washing works or river timber yards use the additional flow; floods still close the site. Best flow-assisted works apply.
+
+Branches: Riffled gold sluices, Sago starch washing, River timber collection.
+
+### winter-haul
+
+Snow haulage: during a winter cold spell, +1 resource at II, +2 at IV, from existing timber, ore or visiting game. Requires a cold continental or mountain climate. Best winter haulage works apply.
+
+Branches: Winter logging shelters, Snow-country game hauling, Upland ore ramps.
+
+### sun-drying
+
+Drying window: a dry spell outside winter unlocks +1 resource across productive seasons at II, +2 at IV. Visiting fish or game is still required for catch drying. Best drying works apply.
+
+Branches: Peat stack ventilation, Peat drying racks, Raised tropical fish drying, Heath berry drying, Salt crystal draining, Coastal brine forepans, Salt grading.
+
+### low-water
+
+Low-water access: during dry spells outside winter, river or lake sites gain +1 resource across productive seasons at II, +2 at IV. Exposed workings and accessible fishing grounds improve recovery. Best low-water works apply.
+
+Branches: River net yards, Lake landing stations, Clay settling beds.
+
+### flood-rescue
+
+Flood salvage: recover up to 1 existing crop or timber resource per flooded harvest at I–II, 2 at III–IV, before town and unit multipliers. Shared allowance; no harvest from dormant fields. Ice and occupation still close the site. Best rescue works apply.
+
+Branches: Raised crop rows, Field outfalls, Wetland timber access.
+
+These are shared four-season budgets, **not +2 on every seasonal harvest**. Normal by-products and weather opportunities begin at II (one extra card), increase at IV (two), and preserve the original branch progression at I and III. Weather windows activate only in the stated weather and season; the calendar previews show the actual before/after output under that condition. An older saved investment receives its new service automatically.
+
+- **Fodder:** meat from well-fed domestic stock is allocated to the lowest ordinary Wool/Meat/Hides grazing yields. It is not wild-game attraction or a new herd.
+- **Prunings:** only olive groves, date oases and breadfruit groves qualify; recovery avoids maximum-yield fruit seasons where there is a seasonal peak.
+- **Wool grease:** Sheep pastures and water meadows qualify; alpaca and wild musk-ox wool do not. Wool wax shares the existing Oil supply category.
+- **Whale preparation:** current visiting whale Hides and Oil are both required. Fishing without whales supplies no whale meat; migration changes this preview immediately.
+- **Wet working:** freshwater sluices, sago washing and river log collection exploit available flow. This is not permission to operate under a flood.
+- **Winter hauling:** cold, tundra, arctic, glacial, alpine, Andean, steppe and prairie climates qualify, only in winter during a cold spell. Hunters receive the same owned snow-haulage improvement as settlement producers.
+- **Low water:** a river/lake waterway or floodplain is required; ordinary upland clay works do not receive this bonus. No winter benefit.
+- **Flood salvage:** raised rows, field outfalls and swamp timber walks recover only an actually productive resource up to the shared cap. Grain and Oil share the cap; two rescue branches do not double it. Movement remains blocked. Levees remain the way to retain a full harvest and normal access. Ice, damage and enemy blockade still prevent collection.
+
 ## Secondary-crop rotations
 
 Rotations represent small catch-crop plots, relay sowings or intercropped strips. They preserve the original main harvest. Crop, climate, lowland/upland setting and fertile river soils determine the available patterns; some require owned irrigation and drainage before construction. Drainage is required on wet-climate or floodplain sites for patterns that call for it. Naturally drained nonfloodplain sites do not need an artificial drainage project.
@@ -63,6 +132,10 @@ The system does not assume an extra crop is possible in every climate. Exposed h
 - Wild resources: coastal fish smokehouses; tropical fish-drying racks; snow-country game hauling; woodland game smokehouses; heath berry drying; whale blubber cutting.
 
 ## Evidence and abstraction
+
+- [FAO conserved fodder](https://www.fao.org/4/x7660e/x7660e0e.htm): storing peak-season forage supports stock when grazing is scarce. Our small Meat supplement abstracts that effect.
+- [FAO wool processing glossary](https://www.fao.org/4/v9384e/v9384e13.htm): wool scouring can recover grease for lanolin manufacture; the game groups recovered grease with Oil.
+- [US Forest Service winter timber harvesting](https://research.fs.usda.gov/nrs/products/multimedia/webinars/winter-timber-harvesting): frozen ground and snow can support seasonal hauling. Our winter/cold-spell gate is a coarse climate abstraction.
 
 - [FHWA mineral-processing wastes](https://www.fhwa.dot.gov/publications/research/infrastructure/structures/97148/mwst1.cfm): selected sound waste rock can serve as aggregate; not every waste stream is suitable.
 - [US Forest Service buffers and corridors](https://www.fs.usda.gov/nac/buffers/guidelines/2_biodiversity/8.html): habitat buffers can reduce external disturbance; the game coefficients are balance choices.
@@ -127,6 +200,7 @@ Freshwater troughs separate starch from palm pith; successive settling basins re
 - Main track: Soil husbandry.
 - Additional site filter: `orchard` (in addition to the main track’s resource and climate eligibility).
 - Terrains: Sago grove.
+- Additional working practice: water-work.
 - Local fresh water (river, lake, spring or oasis).
 - Additional fittings per stage number: 2 ceramics.
 - Products: grain.
@@ -161,6 +235,7 @@ Nets beneath the trees collect sound olives before they are bruised or lost amon
 - Main track: Soil husbandry.
 - Additional site filter: `oilseed` (in addition to the main track’s resource and climate eligibility).
 - Terrains: Olive grove.
+- Additional working practice: prunings.
 - Additional fittings per stage number: 2 cloth.
 - Products: grain.
 - Effect: +1 shared annual-profile card per purchased stage.
@@ -255,6 +330,7 @@ Raised, airy haylofts keep mountain fodder dry through wet spells and preserve w
 - Main track: Livestock improvements.
 - Additional site filter: `upland` (in addition to the main track’s resource and climate eligibility).
 - Climates: Alpine, Andean, Cold, Oceanic.
+- Additional working practice: fodder.
 - Products: meat, wool.
 - Effect: 10% of remaining cold-spell losses removed per stage.
 
@@ -271,6 +347,7 @@ Cut branches and carefully stored leaves supplement dry-season grazing for brows
 - Additional site filter: `warm` (in addition to the main track’s resource and climate eligibility).
 - Terrains: Goat pasture, Cattle range.
 - Climates: Desert, Hyperarid, Hot Semi-Arid, Savanna, Steppe, Mediterranean.
+- Additional working practice: fodder.
 - Products: meat, hides.
 - Effect: 10% of remaining dry-spell losses removed per stage.
 
@@ -285,6 +362,7 @@ Freshwater washing troughs and draining screens recover clean fleece with less h
 
 - Main track: Livestock improvements.
 - Additional site filter: `wool` (in addition to the main track’s resource and climate eligibility).
+- Additional working practice: wool-oil.
 - Local fresh water (river, lake, spring or oasis).
 - Additional fittings per stage number: 2 ceramics.
 - Products: wool.
@@ -302,6 +380,7 @@ Raised drying frames help bring in meadow hay between wet periods without leavin
 - Main track: Livestock improvements.
 - Additional site filter: `any` (in addition to the main track’s resource and climate eligibility).
 - Terrains: Water meadow.
+- Additional working practice: fodder.
 - Seasonal emphasis (spring/summer/autumn/winter): 1 / 3 / 2 / 0.5.
 - Products: meat, wool.
 - Effect: +1 shared annual-profile card per purchased stage.
@@ -318,6 +397,7 @@ Booms and sorting landings gather timber along the riverbank before logs are los
 - Main track: Forestry infrastructure.
 - Additional site filter: `forest` (in addition to the main track’s resource and climate eligibility).
 - Terrains: River woods.
+- Additional working practice: water-work.
 - Local fresh water (river, lake, spring or oasis).
 - Additional fittings per stage number: 1 leather.
 - Products: lumber.
@@ -398,6 +478,7 @@ Riffles and collection mats catch dense gold particles while lighter washed mate
 
 - Main track: Mining infrastructure.
 - Additional site filter: `gold` (in addition to the main track’s resource and climate eligibility).
+- Additional working practice: water-work.
 - Local fresh water (river, lake, spring or oasis).
 - Elevation index below 0.65.
 - Additional fittings per stage number: 2 cloth.
@@ -430,6 +511,7 @@ Successive freshwater settling beds remove coarse grit and recover workable clay
 
 - Main track: Quarry infrastructure.
 - Additional site filter: `clay` (in addition to the main track’s resource and climate eligibility).
+- Additional working practice: low-water.
 - Local fresh water (river, lake, spring or oasis).
 - Additional fittings per stage number: 2 stone.
 - Products: brick.
@@ -462,6 +544,7 @@ Open-centred stacks and covered drying alleys expose more cut peat to moving air
 
 - Main track: Quarry infrastructure.
 - Additional site filter: `peat` (in addition to the main track’s resource and climate eligibility).
+- Additional working practice: sun-drying.
 - Seasonal emphasis (spring/summer/autumn/winter): 1 / 4 / 2 / 0.5.
 - Products: coal.
 - Effect: +1 shared annual-profile card per purchased stage.
@@ -478,6 +561,7 @@ Seaward forepans settle suspended mud and concentrate incoming brine before it r
 - Main track: Saltworks.
 - Additional site filter: `any` (in addition to the main track’s resource and climate eligibility).
 - Climates: Desert, Hyperarid, Hot Semi-Arid, Savanna, Steppe, Mediterranean.
+- Additional working practice: sun-drying.
 - Coastal site.
 - Seasonal emphasis (spring/summer/autumn/winter): 1 / 4 / 2 / 0.5.
 - Additional fittings per stage number: 2 brick.
@@ -496,6 +580,7 @@ Perforated baskets and raised draining floors separate harvested crystals from e
 - Main track: Saltworks.
 - Additional site filter: `any` (in addition to the main track’s resource and climate eligibility).
 - Terrains: Salt flats.
+- Additional working practice: sun-drying.
 - Additional fittings per stage number: 2 ceramics.
 - Products: salt.
 - Effect: +1 shared annual-profile card per purchased stage.
@@ -529,6 +614,7 @@ Raised mesh racks keep catches clear of wet sand and let dry-season breezes pass
 - Main track: Fishery infrastructure.
 - Additional site filter: `any` (in addition to the main track’s resource and climate eligibility).
 - Climates: Tropical, Monsoon, Tropical Maritime, Savanna, Hot Semi-Arid.
+- Additional working practice: sun-drying.
 - Coastal site.
 - Additional fittings per stage number: 2 cloth, 1 salt.
 - Products: fish.
@@ -546,6 +632,7 @@ Low sledges and sheltered field depots bring more of a winter kill back from the
 - Main track: Hunting infrastructure.
 - Additional site filter: `open` (in addition to the main track’s resource and climate eligibility).
 - Climates: Arctic, Tundra, Cold, Glacial.
+- Additional working practice: winter-haul.
 - Seasonal emphasis (spring/summer/autumn/winter): 1 / 0.5 / 2 / 4.
 - Additional fittings per stage number: 2 leather.
 - Products: meat.
@@ -579,6 +666,7 @@ Thin drying layers and sheltered airways recover more edible berries from the sh
 - Additional site filter: `any` (in addition to the main track’s resource and climate eligibility).
 - Terrains: Berry heath.
 - Climates: Tundra, Cold, Arctic.
+- Additional working practice: sun-drying.
 - Additional fittings per stage number: 1 cloth.
 - Products: grain.
 - Effect: +1 shared annual-profile card per purchased stage.
@@ -594,6 +682,7 @@ Evenly cut blubber exposes more material to the rendering kettles and improves o
 
 - Main track: Whale-product infrastructure.
 - Additional site filter: `any` (in addition to the main track’s resource and climate eligibility).
+- Additional working practice: whole-catch.
 - Coastal site.
 - Additional fittings per stage number: 2 ore.
 - Products: oil.
@@ -694,6 +783,7 @@ Padded baskets and grading tables reduce bruising between picking and storage.
 
 - Main track: Soil husbandry.
 - Additional site filter: `orchard` (in addition to the main track’s resource and climate eligibility).
+- Additional working practice: prunings.
 - Products: grain, oil.
 - Effect: +1 shared annual-profile card per purchased stage.
 
@@ -834,6 +924,7 @@ Clear outlets carry excess rainwater away from the root zone.
 
 - Main track: Field drainage.
 - Additional site filter: `wet-crop` (in addition to the main track’s resource and climate eligibility).
+- Additional working practice: flood-rescue.
 - Products: grain, oil.
 - Effect: 10% of remaining wet-spell losses removed per stage.
 
@@ -848,6 +939,7 @@ Raised rows improve root aeration and working access on damp cultivated ground.
 
 - Main track: Field drainage.
 - Additional site filter: `non-rice` (in addition to the main track’s resource and climate eligibility).
+- Additional working practice: flood-rescue.
 - Products: grain, oil.
 - Effect: +1 shared annual-profile card per purchased stage.
 
@@ -890,6 +982,7 @@ Stored hay and dry fodder sustain domestic herds when grazing thins.
 
 - Main track: Livestock improvements.
 - Additional site filter: `any` (in addition to the main track’s resource and climate eligibility).
+- Additional working practice: fodder.
 - Products: meat, wool, hides.
 - Effect: 10% of remaining dry-spell losses removed per stage.
 
@@ -1030,6 +1123,7 @@ Protected workshops and haulage shelters keep logging crews supplied through col
 
 - Main track: Forestry infrastructure.
 - Additional site filter: `cold` (in addition to the main track’s resource and climate eligibility).
+- Additional working practice: winter-haul.
 - Products: lumber.
 - Effect: 10% of remaining cold-spell losses removed per stage.
 
@@ -1072,6 +1166,7 @@ Raised work platforms and short timber tracks ease extraction from saturated woo
 
 - Main track: Forestry infrastructure.
 - Additional site filter: `wetland` (in addition to the main track’s resource and climate eligibility).
+- Additional working practice: flood-rescue.
 - Products: lumber.
 - Effect: +1 shared annual-profile card per purchased stage.
 
@@ -1198,6 +1293,7 @@ Stable loading ramps and short cable lifts ease haulage on steep mineral ground.
 
 - Main track: Mining infrastructure.
 - Additional site filter: `upland` (in addition to the main track’s resource and climate eligibility).
+- Additional working practice: winter-haul.
 - Products: ore, coal, gold.
 - Effect: +1 shared annual-profile card per purchased stage.
 
@@ -1268,6 +1364,7 @@ Raised racks and airy sheds dry cut peat evenly before it reaches the store.
 
 - Main track: Quarry infrastructure.
 - Additional site filter: `peat` (in addition to the main track’s resource and climate eligibility).
+- Additional working practice: sun-drying.
 - Products: coal.
 - Effect: +1 shared annual-profile card per purchased stage.
 
@@ -1310,6 +1407,7 @@ Raking screens and grading tables recover clean salt crystals with less waste.
 
 - Main track: Saltworks.
 - Additional site filter: `any` (in addition to the main track’s resource and climate eligibility).
+- Additional working practice: sun-drying.
 - Products: salt.
 - Effect: +1 shared annual-profile card per purchased stage.
 
@@ -1380,6 +1478,7 @@ Net repair benches and riverside drying frames keep river fishing gear in good o
 
 - Main track: Fishery infrastructure.
 - Additional site filter: `river` (in addition to the main track’s resource and climate eligibility).
+- Additional working practice: low-water.
 - Products: fish.
 - Effect: +1 shared annual-profile card per purchased stage.
 
@@ -1408,6 +1507,7 @@ Short lake landing stages and sheltered sorting bays speed the handling of fresh
 
 - Main track: Fishery infrastructure.
 - Additional site filter: `lake` (in addition to the main track’s resource and climate eligibility).
+- Additional working practice: low-water.
 - Products: fish.
 - Effect: +1 shared annual-profile card per purchased stage.
 
@@ -1534,6 +1634,7 @@ Stretching beds and lifting gear preserve large hides during shore handling.
 
 - Main track: Whale-product infrastructure.
 - Additional site filter: `any` (in addition to the main track’s resource and climate eligibility).
+- Additional working practice: whole-catch.
 - Products: hides.
 - Effect: +1 shared annual-profile card per purchased stage.
 

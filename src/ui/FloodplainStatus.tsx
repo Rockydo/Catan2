@@ -7,7 +7,12 @@ import {
   waterLevelModifier,
   WEATHER_NAMES,
 } from "../game/environment";
-import { seasonAt, seasonalProfile, SEASONS } from "../game/seasons";
+import {
+  seasonAt,
+  seasonalProfile,
+  seasonalYield,
+  SEASONS,
+} from "../game/seasons";
 import { weatherAdjustedYield } from "../game/weather-yields";
 import { ResourceIcon } from "./ResourceIcon";
 import { useLocale, localize as tx } from "../i18n";
@@ -37,7 +42,9 @@ export function FloodplainStatus({
     tile,
     seasonalProfile(tile, viewer)[season],
     season,
+    viewer,
   );
+  const actual = seasonalYield(tile, viewer, season);
   return (
     <div className={`floodplain-status ${flooded ? "is-flooded" : ""}`}>
       <strong>
@@ -96,7 +103,7 @@ export function FloodplainStatus({
           .map(([good, n]) => (
             <span key={good}>
               <ResourceIcon good={good as Good} size={19} />
-              {n} → <strong>{flooded ? 0 : n}</strong>
+              {n} → <strong>{actual[good as Good] ?? 0}</strong>
             </span>
           ))}
         {!Object.values(harvest).some((n) => n! > 0) && (
@@ -112,8 +119,8 @@ export function FloodplainStatus({
         <summary>{l("Effects and protection", "Effets et protection")}</summary>
         <p>
           {l(
-            "Flooding stops every raw and processed yield from this tile, including towns, camps, workshops and collectors. Other adjacent tiles still produce normally. Nothing is banked for later.",
-            "La crue arrête toute production brute et transformée de cette tuile : agglomérations, camps, ateliers et collecteurs. Les autres tuiles voisines produisent normalement. Rien n’est reporté à plus tard.",
+            "Flooding stops normal production. Raised rows, field outfalls and swamp timber walks can rescue up to 1 resource at tiers I–II, or 2 at III–IV, before town and unit multipliers, from a harvest that is in season. Equivalent works share this allowance. Other adjacent tiles still produce normally.",
+            "La crue arrête la production normale. Les planches surélevées, exutoires et passerelles forestières peuvent sauver jusqu’à 1 ressource aux niveaux I–II, ou 2 aux III–IV, avant les multiplicateurs des villes et unités, si une récolte est de saison. Les ouvrages équivalents partagent cette capacité. Les autres tuiles voisines produisent normalement.",
           )}
         </p>
         <p>
