@@ -163,7 +163,7 @@ for (const locale of ["en", "fr"])
     const forestry = page.locator('[data-infrastructure="forestry"]');
     await forestry.locator(".infrastructure-effects summary").click();
     await expect(forestry).toContainText(
-      locale === "en" ? "Wet-spell losses reduced" : "Pertes de pluie réduites",
+      locale === "en" ? "Wet spell" : "Période pluvieuse",
     );
     await forestry.scrollIntoViewIfNeeded();
     await page.screenshot({
@@ -271,7 +271,9 @@ for (const locale of ["en", "fr"])
         );
       } else await expect(row.locator("[data-method-site]")).toBeVisible();
       await row.locator(".infrastructure-effects summary").click();
-      await expect(row.locator(".geography-calendar > div")).toHaveCount(4);
+      await expect(
+        row.locator(".geography-calendar").first().locator(":scope > div"),
+      ).toHaveCount(4);
       if (kind !== "whaling")
         await expect(row).toHaveAttribute(
           "data-infrastructure-method",

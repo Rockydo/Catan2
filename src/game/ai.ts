@@ -5,6 +5,7 @@ import {
 import {
   isInfrastructure,
   annualInfrastructureBonus,
+  specialistRoleGain,
   infrastructureProtection,
   improvedGoods,
   tierOf,
@@ -1316,12 +1317,21 @@ export function economyProjects(s: Game): Project[] {
           ["hunting", "whaling", "fishery"].includes(specialist.branch.track)
             ? specialist.branch.goods.some((raw) => g.fauna?.[raw])
               ? 0.35
-              : 0.02
+              : specialist.branch.specialty === "refuge"
+                ? 0.12
+                : 0.02
             : 1;
         const score = specialist
           ? (production *
               specialistAvailability *
-              (specialist.branch.effect === "yield" ? 0.6 : 0.2)) /
+              ((specialist.branch.effect === "yield" ? 0.6 : 0.2) +
+                specialistRoleGain(
+                  tile,
+                  specialist.branch,
+                  specialist.tier,
+                  s.active,
+                ) *
+                  0.3)) /
             (specialist.tier * specialist.tier)
           : isInfrastructure(kind)
             ? (production *

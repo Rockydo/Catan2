@@ -15,7 +15,7 @@ The later rotation request adds **16 alternative secondary-crop rotations, each 
 
 ## Finding and building them
 
-Open **Terrain & seasons → Production infrastructure**. The **Main**, **Specialists** and **Rotations** tabs separate the choices. Each card shows the next stage, what it adds, the exact local material bill and any unmet requirements. The seasonal breakdown shows additional output rather than the entire tile harvest.
+Open **Terrain & seasons → Production infrastructure**. The **Main**, **Specialists** and **Rotations** tabs separate the choices. Each card shows the next stage, what it adds, the exact local material bill and any unmet requirements. The summary shows the marginal gain; the calendar shows the whole per-producer harvest **before → after**, including real weather rounding. Protection-only cards show the relevant bad-weather calendar instead of four misleading empty seasons. Completed works retain an effect summary comparing the site with and without that branch.
 
 Each stage needs your adjacent, unbesieged settlement/city of at least the same tier. Build stages in order. Different branches coexist with each other and with main improvements. An enemy army can ravage all these works after defeating the defenders. Allied and rival producers do not inherit your benefits.
 
@@ -25,13 +25,26 @@ Each stage costs **2.25 times its matching local main-track construction materia
 
 A yield specialist adds **one shared card across the four seasonal profiles per stage**, for totals of 1/2/3/4. Multiple eligible products share that increment. Native productive seasons and products determine its allocation. Some specialists emphasize particular seasons: peat drying favors summer, while snow-country game hauling favors winter. These weights redistribute the same small annual increment, never creating a new native harvest season. All four seasonal weights stay positive, so a viable native harvest remains eligible. Harvest handling, sorting, grading and better recovery are represented by these modest extra cards; there is no separate inventory-spoilage simulation.
 
-Risk specialists remove **10% of the remaining loss per stage** for the stated dry, wet or cold spell. Four stages protect 34.39% of the loss remaining after main protection. All combined protection is capped at 90%; flood access and ice closures remain separate. Whole-card weather rounding can make a small improvement invisible on a low-yield roll.
+Risk specialists remove **10% of the remaining loss per stage** for the stated dry, wet or cold spell. Four stages protect 34.39% of the loss remaining after main protection. Percentage protection is capped at 90%; selected salvage shelters then recover a bounded number of whole resources actually lost. Flood access and ice closures remain separate. Whole-card weather rounding can make a small improvement invisible on a low-yield roll.
 
 Water-washing projects require a local river, lake, spring or oasis; seawater does not qualify. Coastal works need a coastal site. Crop-specific projects retain their exact crop restrictions, and some additionally require fertile floodplain/delta soils or suitable elevation. Their material bills also include dedicated fittings, such as wool-washing pottery, cloth for orchard nets, or salt and timber for smokehouses.
 
 These coefficients are deliberately game balance values, not claims of measured historical productivity. The main works normally offer better returns per construction resource. Specialists are expensive ways to develop an important protected site further or hedge a particular weather risk.
 
 Wildlife specialists require visiting animals and the relevant products. Empty habitat produces no hunting bonus. Hunters receive the same owned hunting improvements as other producers. Fish and whale products are separate. No artwork or terrain is replaced.
+
+## Distinct specialist services
+
+Twelve branches now have an additional role while retaining their original yield or percentage protection. All benefits stay owner-specific except the ecological effect of quieter habitat. Equivalent services use the strongest installed capacity, preventing duplicate stacking. Existing purchases gain their service immediately.
+
+| Role | Branches | Rules |
+| --- | --- | --- |
+| Pantries | Harvest drying, root clamps, breadfruit fermentation | At II, +1 Grain across the leanest ordinary crop seasons; at IV, +2. Food is protected from weather penalties, but access closures still apply. Matching dice rolls are required. This abstracts preserved food into seasonal production, without a stored-stock counter or upkeep. |
+| Quiet habitat | Woodland tracking, open-range scouting | Development disturbance is reduced by 15/30/45/60%. Habitat suitability, crowding, weather and migration randomness remain. It changes destination weights, not population size, and benefits visiting wildlife irrespective of faction. |
+| Weather salvage | Covered timber, mine runoff, mine shelters, lambing shelters, pasture shade | After percentage protection and rounding, recover at most 1 actually lost resource per harvest at I–II, 2 at III–IV. Capacity is shared across eligible goods; the strongest capacity applies for each weather condition. Never exceeds the unaffected harvest or bypasses floods/ice. |
+| Rock recovery | Ore sorting, water-jig ore separation | At II, +1 Stone across ore-producing seasons; at IV, +2. Represents selected usable waste rock, not all mine tailings. Best recovery works apply. |
+
+For example, a one-Wood tile already retains its Wood during rain because of the forest production floor. Covered stacks cannot rescue an additional card there: the card explicitly reports unchanged rounded harvest. On a larger forest that loses Wood during rain, the salvage allowance can have an immediate visible benefit. A 10% reduction in remaining losses means a 25% loss becomes 22.5%, not a flat +10% yield.
 
 ## Secondary-crop rotations
 
@@ -60,6 +73,8 @@ The system does not assume an extra crop is possible in every climate. Exposed h
 
 ## Evidence and abstraction
 
+- [FHWA mineral-processing wastes](https://www.fhwa.dot.gov/publications/research/infrastructure/structures/97148/mwst1.cfm): selected sound waste rock can serve as aggregate; not every waste stream is suitable.
+- [US Forest Service buffers and corridors](https://www.fs.usda.gov/nac/buffers/guidelines/2_biodiversity/8.html): habitat buffers can reduce external disturbance; the game coefficients are balance choices.
 - [IRRI field levelling](https://www.knowledgebank.irri.org/training/fact-sheets/land-preparation/land-leveling): level paddies distribute water more evenly.
 - [FAO haymaking](https://www.fao.org/4/x7660e/x7660e06.htm): rack drying and careful handling inform fodder recovery.
 - [FAO timber extraction](https://www.fao.org/4/v6530e/v6530e08.htm): gravity chutes guide timber downhill and reduce damage.

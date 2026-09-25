@@ -4,6 +4,9 @@ import {
   isCrop,
   installedRotation,
   rotationExtras,
+  specialistUtilityExtras,
+  specialistRecovery,
+  specialistPantryCapacity,
 } from "./infrastructure";
 import type { Hex, Raw, Stock } from "./types";
 import { ordinarySeasonalProfile, type Season } from "./seasons";
@@ -166,6 +169,15 @@ export function weatherAdjustedYield(
   )
     return stock;
   const output: Stock = {};
+  const recovery = specialistRecovery(tile, weather, owner);
+  const stored = specialistPantryCapacity(tile, owner)
+    ? (specialistUtilityExtras(
+        tile,
+        ordinarySeasonalProfile(tile, owner),
+        owner,
+      ).pantry[season].grain ?? 0)
+    : 0;
+  const recoverable: Stock = {};
   const game = huntingYield(tile, owner, season);
   const rotation = installedRotation(tile, owner);
   const secondary =
@@ -182,13 +194,18 @@ export function weatherAdjustedYield(
       );
     const rotationAmount =
       raw === "grain" ? Math.min(amount! - wildlife, secondary) : 0;
-    const base = amount! - wildlife - rotationAmount;
+    const preserved =
+      raw === "grain"
+        ? Math.min(stored, amount! - wildlife - rotationAmount)
+        : 0;
+    const base = amount! - wildlife - rotationAmount - preserved;
     // Wild animals react by migration. Weather does not multiply herd size.
     const adjusted = Math.round(
       base * weatherYieldFactor(tile, raw, season, weather, owner),
     );
     output[raw] =
       wildlife +
+      preserved +
       (rotationAmount && rotation
         ? Math.round(
             rotationAmount *
@@ -201,6 +218,22 @@ export function weatherAdjustedYield(
           )
         : 0) +
       (raw === "lumber" && base > 0 ? Math.max(1, adjusted) : adjusted);
+    // Preserve only cards actually lost to this weather; never add fair-weather
+    // yield or amplify wild animals and stored/secondary food.
+    recoverable[raw] = Math.min(
+      recovery.caps[raw] ?? 0,
+      Math.max(
+        0,
+        base -
+          (raw === "lumber" && base > 0 ? Math.max(1, adjusted) : adjusted),
+      ),
+    );
+  }
+  let left = recovery.budget;
+  for (const [raw, n] of Object.entries(recoverable)) {
+    const kept = Math.min(left, n!);
+    if (kept) output[raw as Raw] = (output[raw as Raw] ?? 0) + kept;
+    left -= kept;
   }
   return output;
 }

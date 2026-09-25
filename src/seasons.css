@@ -830,3 +830,69 @@
   padding: 7px 0;
   color: #66765d;
 }
+
+.infrastructure-card .infrastructure-no-change {
+  display: block;
+  color: #79532e;
+  background: #f6ecda;
+  border-radius: 4px;
+  padding: 6px 8px;
+  margin-top: 6px;
+}
+.infrastructure-protection > div + div {
+  margin-top: 8px;
+}
+.infrastructure-protection strong,
+.infrastructure-effects strong {
+  font-size: 11px;
+}
+.infrastructure-card .infrastructure-special-role {
+  font-size: 11px;
+  line-height: 1.5;
+  padding: 8px;
+  background: #eff1e8;
+  border-radius: 5px;
+  letter-spacing: normal;
+}
+.infrastructure-comparison > div {
+  min-width: 0;
+}
+.infrastructure-comparison .goods-list {
+  justify-content: center;
+  font-size: 11px;
+  flex-wrap: wrap;
+}
+.infrastructure-comparison > div > span {
+  color: #6d806f;
+  font-size: 13px;
+}
+.infrastructure-harvest-pairs {
+  display: grid;
+  gap: 5px;
+  padding: 4px 0;
+}
+.infrastructure-harvest-pairs > span {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  font-size: 11px;
+  line-height: 1.4;
+}
+.infrastructure-harvest-pairs > span > span {
+  white-space: nowrap;
+}
+.infrastructure-weather-example {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-top: 4px;
+}
+.infrastructure-weather-example > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+}

@@ -214,3 +214,94 @@ for (const locale of ["en", "fr"] as const)
     });
     expect(errors).toEqual([]);
   });
+
+for (const [locale, large] of [
+  ["en", false],
+  ["fr", true],
+] as const)
+  test(`weather-only specialists explain rounded effects ${locale}`, async ({
+    page,
+  }) => {
+    let s = newGame("infrastructure-browser");
+    while (s.phase.startsWith("setup")) s = run(s, chooseAIAction(s));
+    s.active = 0;
+    s.phase = "economy";
+    s.pieces = {};
+    const town = ownTowns(s, 0)[0];
+    town.level = town.turnLevel = 4;
+    for (const good of GOODS) town.stock[good] = 5000;
+    const id = s.vertices[town.vertex].tiles.find(
+      (id) => !["water", "ice", "peaks"].includes(s.tiles[id].resource),
+    )!;
+    const tile = s.tiles[id];
+    tile.biome = large ? "old-growth-forest" : "woods";
+    tile.climate = "temperate";
+    tile.resource = "lumber";
+    s.climatePlan![id] = tile.climate;
+    Object.assign(tile.geography!, {
+      pass: false,
+      waterway: undefined,
+      access: "normal",
+      floodplain: false,
+      projects: {},
+      fauna: {},
+      animals: [],
+    });
+    s.wildlife = s.wildlife!.filter((w) => w.tile !== id);
+    syncSeasonSurfaces(s);
+    assertInvariants(s);
+    await page.addInitScript(
+      ({ data, key, locale }) => {
+        localStorage.setItem(key, data);
+        localStorage.setItem("catane-language", locale);
+      },
+      { data: serialize(s), key: SAVE_KEY, locale },
+    );
+    await page.setViewportSize({ width: 1280, height: 1000 });
+    await page.goto("/");
+    await page
+      .getByRole("button", {
+        name: locale === "en" ? /Continue campaign/ : /Reprendre/,
+      })
+      .click();
+    await page.getByTestId(`hex-${id}`).click();
+    await page.getByTestId("inspector-details-toggle").click();
+    await page.locator(".infrastructure-panel > summary").click();
+    await page
+      .getByRole("tab", {
+        name: locale === "en" ? /Specialists/ : /Compléments/,
+      })
+      .click();
+    const card = page.locator('[data-specialist-branch="covered-timber"]');
+    await expect(card).toContainText(
+      locale === "en"
+        ? "Normal-weather harvest unchanged"
+        : "Récolte normale inchangée",
+    );
+    await expect(card).toContainText("25% → 22.5%");
+    await expect(card).toContainText(
+      locale === "en"
+        ? "Lost-resource recovery: 0 → 1"
+        : "Récupération des pertes : 0 → 1",
+    );
+    if (!large)
+      await expect(card).toContainText("rounded harvest stays the same");
+    await card.locator(".infrastructure-effects summary").click();
+    await expect(card.locator('[data-weather-calendar="wet"]')).toBeVisible();
+    await expect(card).not.toContainText("No extra harvest");
+    await expect(card.locator(".geography-calendar > div")).toHaveCount(4);
+    await card.scrollIntoViewIfNeeded();
+    expect(
+      await card.evaluate((el) => el.scrollWidth <= el.clientWidth + 2),
+    ).toBe(true);
+    await page.screenshot({
+      path: `output/infrastructure/weather-clarity-${locale}.png`,
+    });
+    for (let i = 0; i < 4; i++) await card.getByRole("button").click();
+    await expect(card).toContainText(
+      locale === "en"
+        ? "Benefit from all four stages"
+        : "Effet des quatre étapes",
+    );
+    await expect(card.getByRole("button")).toHaveCount(0);
+  });

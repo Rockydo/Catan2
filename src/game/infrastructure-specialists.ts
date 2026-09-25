@@ -41,6 +41,7 @@ export type SpecialistSite =
   | "seal";
 export interface SpecialistBranch {
   rotation?: RotationPattern;
+  specialty?: "pantry" | "refuge" | "recovery" | "aggregate";
   biomes?: readonly Biome[];
   climates?: readonly Climate[];
   minElevation?: number;
@@ -145,6 +146,7 @@ export const SPECIALIST_BRANCHES: readonly SpecialistBranch[] = [
   },
   {
     id: "harvest-drying",
+    specialty: "pantry",
     track: "soil",
     name: "Harvest drying",
     fr: "Séchage des récoltes",
@@ -170,6 +172,7 @@ export const SPECIALIST_BRANCHES: readonly SpecialistBranch[] = [
   },
   {
     id: "root-clamps",
+    specialty: "pantry",
     track: "soil",
     name: "Root storage",
     fr: "Conservation des racines",
@@ -595,6 +598,7 @@ export const SPECIALIST_BRANCHES: readonly SpecialistBranch[] = [
   },
   {
     id: "lambing-shelters",
+    specialty: "recovery",
     track: "husbandry",
     name: "Birthing shelters",
     fr: "Abris de mise bas",
@@ -670,6 +674,7 @@ export const SPECIALIST_BRANCHES: readonly SpecialistBranch[] = [
   },
   {
     id: "pasture-shade",
+    specialty: "recovery",
     track: "husbandry",
     name: "Pasture shade",
     fr: "Ombrage des pâturages",
@@ -795,6 +800,7 @@ export const SPECIALIST_BRANCHES: readonly SpecialistBranch[] = [
   },
   {
     id: "covered-timber",
+    specialty: "recovery",
     track: "forestry",
     name: "Covered timber yards",
     fr: "Parcs à bois couverts",
@@ -920,6 +926,7 @@ export const SPECIALIST_BRANCHES: readonly SpecialistBranch[] = [
   },
   {
     id: "ore-sorting",
+    specialty: "aggregate",
     track: "mining",
     name: "Ore sorting",
     fr: "Tri des minerais",
@@ -945,6 +952,7 @@ export const SPECIALIST_BRANCHES: readonly SpecialistBranch[] = [
   },
   {
     id: "mine-runoff",
+    specialty: "recovery",
     track: "mining",
     name: "Mine runoff diversion",
     fr: "Dérivation des eaux minières",
@@ -970,6 +978,7 @@ export const SPECIALIST_BRANCHES: readonly SpecialistBranch[] = [
   },
   {
     id: "mine-shelters",
+    specialty: "recovery",
     track: "mining",
     name: "Cold-weather mine shelters",
     fr: "Abris miniers hivernaux",
@@ -1570,6 +1579,7 @@ export const SPECIALIST_BRANCHES: readonly SpecialistBranch[] = [
   },
   {
     id: "woodland-tracking",
+    specialty: "refuge",
     track: "hunting",
     name: "Woodland tracking posts",
     fr: "Postes de chasse forestière",
@@ -1577,9 +1587,9 @@ export const SPECIALIST_BRANCHES: readonly SpecialistBranch[] = [
     site: "forest",
     goods: ["meat", "hides"],
     description:
-      "Marked trails and discreet shelters help hunters follow game through dense woodland.",
+      "Marked hunting paths concentrate foot traffic, leaving quiet woodland refuges for passing game.",
     descriptionFr:
-      "Des sentiers balisés et des abris discrets aident les chasseurs à suivre le gibier forestier.",
+      "Les sentiers de chasse balisés concentrent les passages et préservent des refuges forestiers calmes pour le gibier.",
     stages: [
       "Trail markers",
       "Woodland tracking shelters",
@@ -1595,6 +1605,7 @@ export const SPECIALIST_BRANCHES: readonly SpecialistBranch[] = [
   },
   {
     id: "open-range-tracking",
+    specialty: "refuge",
     track: "hunting",
     name: "Open-range scouting",
     fr: "Reconnaissance des plaines",
@@ -1602,9 +1613,9 @@ export const SPECIALIST_BRANCHES: readonly SpecialistBranch[] = [
     site: "open",
     goods: ["meat", "hides", "wool"],
     description:
-      "Low shelters and scouting posts help hunters intercept passing herds on open ground.",
+      "Discreet observation posts guide hunters while leaving herd resting grounds sheltered from nearby settlement activity.",
     descriptionFr:
-      "Des abris bas et des postes de reconnaissance aident à intercepter les troupeaux des plaines.",
+      "Des postes discrets guident les chasseurs tout en préservant les lieux de repos des troupeaux de l’activité des établissements voisins.",
     stages: [
       "Low scouting shelters",
       "Range observation posts",

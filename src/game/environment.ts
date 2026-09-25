@@ -1,3 +1,4 @@
+import { specialistRefuge } from "./infrastructure";
 import type { Game, Hex, Stock } from "./types";
 import { randomAt, neighbors, canOccupy, distance } from "./world";
 import {
@@ -628,7 +629,8 @@ export function syncEnvironment(s: Game): void {
   escapeFormingIce(s);
   if (advance && seasonHalf(s) === "early") {
     const developed = development(s),
-      crowding = new Map<string, number>();
+      crowding = new Map<string, number>(),
+      refuges = new Map<string, number>();
     for (const herd of s.wildlife) {
       if (herd.dormant) continue;
       if (herd.lastRound === s.round) continue;
@@ -642,9 +644,17 @@ export function syncEnvironment(s: Game): void {
       const weights = candidates.map((id) => {
         const tile = s.tiles[id],
           g = tile.geography!;
+        let refuge = refuges.get(id);
+        if (refuge === undefined) {
+          refuge = specialistRefuge(tile);
+          refuges.set(id, refuge);
+        }
         let weight =
           1 /
-          (1 + (developed.get(id) ?? 0) * 0.22) /
+          (1 +
+            (developed.get(id) ?? 0) *
+              0.22 *
+              (marine(herd.kind) ? 1 : 1 - refuge)) /
           (1 + (crowding.get(id) ?? 0) * 1.5);
         if (
           tile.surface === "frozen" ||

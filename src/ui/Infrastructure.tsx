@@ -1,3 +1,13 @@
+import {
+  weatherComparison,
+  withoutInvestment,
+  type WeatherRisk,
+} from "./infrastructure-preview";
+import {
+  WeatherBenefits,
+  HarvestComparison,
+  weatherName,
+} from "./InfrastructureWeather";
 import { useState, type ReactNode } from "react";
 import type { Game, Hex, Command, Good, Stock } from "../game/types";
 import {
@@ -214,7 +224,7 @@ function ProjectCard({
   description: string;
   site?: string;
   priority?: string;
-  protection?: ReactNode;
+  protection?: WeatherRisk[];
   blocked?: string;
   attributes?: Record<string, string>;
   conditional?: string;
@@ -228,23 +238,29 @@ function ProjectCard({
     full = tier >= 4;
   const allowed = !blocked && projectSite(s, tile, id, viewer),
     cost = full ? {} : projectCost(tile, id);
-  const current = seasonalProfile(tile, viewer);
+  const beforeTile = full ? withoutInvestment(tile, id) : tile;
+  const current = seasonalProfile(beforeTile, viewer);
   const main = Object.hasOwn(INFRASTRUCTURE, id);
-  const preview: Hex = {
-    ...tile,
-    geography: {
-      ...tile.geography!,
-      projects: {
-        ...tile.geography?.projects,
-        [id]: { owner: viewer, born: s.round, tier: main ? next : 1 },
-      },
-    },
-  };
-  const future = full ? current : seasonalProfile(preview, viewer),
+  const preview: Hex = full
+    ? tile
+    : {
+        ...tile,
+        geography: {
+          ...tile.geography!,
+          projects: {
+            ...tile.geography?.projects,
+            [id]: { owner: viewer, born: s.round, tier: main ? next : 1 },
+          },
+        },
+      };
+  const future = seasonalProfile(preview, viewer),
     delta = difference(annual(future), annual(current));
   const gains = Object.keys(delta).length > 0;
   const gainSeasons = SEASONS.filter(
     (season) => Object.keys(difference(future[season], current[season])).length,
+  );
+  const weather = (protection ?? []).map((risk) =>
+    weatherComparison(beforeTile, preview, viewer, risk, current, future),
   );
   return (
     <article className="infrastructure-card" {...attributes}>
@@ -277,11 +293,27 @@ function ProjectCard({
         </small>
       )}
       {children}
-      {!full && !foreign && (
+      {((tile.geography?.access === "flooded" &&
+        !tile.geography.projects?.levee) ||
+        tile.geography?.damagedUntil ||
+        tile.surface === "frozen") && (
+        <small className="infrastructure-no-change">
+          {fr
+            ? "Récolte actuellement bloquée. Les prévisions supposent un terrain accessible et intact."
+            : "Harvest is currently blocked. Forecasts assume an accessible, undamaged site."}
+        </small>
+      )}
+      {!foreign && (
         <>
           <div className="infrastructure-benefits">
             <small className="infrastructure-benefit-label">
-              {fr ? "Gain de la prochaine étape" : "Next-stage benefit"}
+              {full
+                ? fr
+                  ? "Effet des quatre étapes"
+                  : "Benefit from all four stages"
+                : fr
+                  ? "Gain de la prochaine étape"
+                  : "Next-stage benefit"}
             </small>
             {gains ? (
               <div className="infrastructure-gain">
@@ -304,8 +336,8 @@ function ProjectCard({
                 <span>
                   {protection
                     ? fr
-                      ? "Protection des récoltes"
-                      : "Harvest protection"
+                      ? "Récolte normale inchangée"
+                      : "Normal-weather harvest unchanged"
                     : fr
                       ? "Aucun gain dans les conditions actuelles"
                       : "No added harvest under current conditions"}
@@ -317,29 +349,53 @@ function ProjectCard({
                 {conditional}
               </small>
             )}
-            {protection && (
-              <div className="infrastructure-protection">{protection}</div>
-            )}
+            {!!weather.length && <WeatherBenefits comparisons={weather} />}
+            <small>
+              {fr
+                ? "Par producteur, au bon jet de dé ; les gains sont répartis entre les saisons indiquées."
+                : "Per producer, on the matching dice roll; gains are split between the listed seasons."}
+            </small>
           </div>
           <details className="infrastructure-effects">
             <summary>
               {fr ? "Calendrier et détails" : "Harvest calendar & details"}
             </summary>
-            <div className="geography-calendar">
-              {SEASONS.map((season) => (
-                <div key={season}>
-                  <small>{tx(season[0].toUpperCase() + season.slice(1))}</small>
-                  <GoodsList
-                    stock={difference(future[season], current[season])}
-                    empty="No extra harvest"
-                  />
-                </div>
-              ))}
-            </div>
+            <small>
+              {full
+                ? fr
+                  ? "Sans ces ouvrages → Avec les quatre étapes"
+                  : "Without these works → With all four stages"
+                : fr
+                  ? "Avant → Après la prochaine étape"
+                  : "Before → After the next stage"}
+            </small>
+            {(gains || !weather.length) && (
+              <>
+                <strong>{fr ? "Météo normale" : "Normal weather"}</strong>
+                <HarvestComparison current={current} future={future} />
+              </>
+            )}
+            {weather.map((c) => (
+              <div key={c.weather} data-weather-calendar={c.weather}>
+                <strong>{weatherName(c.weather, fr)}</strong>
+                <HarvestComparison
+                  current={
+                    Object.fromEntries(
+                      c.seasons.map((s) => [s.season, s.from]),
+                    ) as typeof current
+                  }
+                  future={
+                    Object.fromEntries(
+                      c.seasons.map((s) => [s.season, s.to]),
+                    ) as typeof future
+                  }
+                />
+              </div>
+            ))}
             <small>
               {fr
-                ? "Gains par producteur, avant météo et inondation. Récolte au bon jet de dé."
-                : "Per producer, before weather and flooding. Harvest on the matching dice roll."}
+                ? "Quantités réellement récoltées après arrondi, par producteur. Crue, glace et occupation peuvent toujours bloquer la récolte. Les abris météo ne protègent pas des crues."
+                : "Actual rounded harvest per producer. Flooding, ice and occupation can still block production. Weather shelters do not protect against floods."}
             </small>
             {conditional && (
               <small>
@@ -349,34 +405,36 @@ function ProjectCard({
               </small>
             )}
           </details>
-          <footer>
-            <small>{fr ? "Coût de construction" : "Construction cost"}</small>
-            <Cost cost={cost} available={inventory(s, viewer)} />
-            {!allowed && (
-              <small className="infrastructure-requirement">
-                {blocked ??
-                  (id === "irrigation" && !freshwaterSite(s, tile)
-                    ? fr
-                      ? "Rivière, lac, source ou oasis requis."
-                      : "Requires a river, lake, spring or oasis."
-                    : fr
-                      ? `Établissement adjacent de niveau ${ROMAN[next]}, sans siège ni ennemi sur le terrain.`
-                      : `Requires an adjacent tier ${ROMAN[next]} settlement/city, free of siege and enemy occupation.`)}
-              </small>
-            )}
-            <button
-              className="primary"
-              disabled={
-                !interactive || !allowed || !affordable(s, cost, viewer)
-              }
-              onClick={() =>
-                onAction({ type: "project", tile: tile.id, kind: id })
-              }
-            >
-              {tier ? (fr ? "Améliorer" : "Upgrade") : tx("Build")}
-              {` · ${ROMAN[next]}`}
-            </button>
-          </footer>
+          {!full && (
+            <footer>
+              <small>{fr ? "Coût de construction" : "Construction cost"}</small>
+              <Cost cost={cost} available={inventory(s, viewer)} />
+              {!allowed && (
+                <small className="infrastructure-requirement">
+                  {blocked ??
+                    (id === "irrigation" && !freshwaterSite(s, tile)
+                      ? fr
+                        ? "Rivière, lac, source ou oasis requis."
+                        : "Requires a river, lake, spring or oasis."
+                      : fr
+                        ? `Établissement adjacent de niveau ${ROMAN[next]}, sans siège ni ennemi sur le terrain.`
+                        : `Requires an adjacent tier ${ROMAN[next]} settlement/city, free of siege and enemy occupation.`)}
+                </small>
+              )}
+              <button
+                className="primary"
+                disabled={
+                  !interactive || !allowed || !affordable(s, cost, viewer)
+                }
+                onClick={() =>
+                  onAction({ type: "project", tile: tile.id, kind: id })
+                }
+              >
+                {tier ? (fr ? "Améliorer" : "Upgrade") : tx("Build")}
+                {` · ${ROMAN[next]}`}
+              </button>
+            </footer>
+          )}
         </>
       )}
       {foreign && (
@@ -451,27 +509,7 @@ function MainCard(props: PanelProps & { kind: InfrastructureKind }) {
             ? "Aucun animal actuellement. Les chasseurs attendent le passage du gibier."
             : "No animals currently. Hunters await the next passing herd."
           : undefined;
-  const protection = Object.entries(method.protection ?? {}).map(
-    ([weather, curve]) => (
-      <small key={weather}>
-        {
-          (fr
-            ? {
-                dry: "Pertes de sécheresse réduites",
-                wet: "Pertes de pluie réduites",
-                cold: "Pertes de froid réduites",
-              }
-            : {
-                dry: "Dry-spell losses reduced",
-                wet: "Wet-spell losses reduced",
-                cold: "Cold-spell losses reduced",
-              })[weather as "dry" | "wet" | "cold"]
-        }
-        : {Math.round((curve[tier - 1] ?? 0) * 100)}% →{" "}
-        {Math.round((curve[tier] ?? curve[3]) * 100)}%
-      </small>
-    ),
-  );
+  const protection = Object.keys(method.protection ?? {}) as WeatherRisk[];
   return (
     <ProjectCard
       {...props}
@@ -558,33 +596,42 @@ function SpecialistCard(props: PanelProps & { branch: SpecialistBranch }) {
             : "Harvests resume when wildlife returns."
           : undefined
       }
-      protection={
-        branch.effect !== "yield" ? (
-          <small>
-            {fr
-              ? "Réduit de 10 % les pertes restantes dues "
-              : "Reduces remaining losses from "}
-            {
-              (fr
-                ? {
-                    dry: "à la sécheresse",
-                    wet: "à la pluie",
-                    cold: "au froid",
-                  }
-                : {
-                    dry: "dry spells by 10%",
-                    wet: "wet spells by 10%",
-                    cold: "cold spells by 10%",
-                  })[branch.effect]
-            }
-          </small>
-        ) : undefined
-      }
+      protection={branch.effect !== "yield" ? [branch.effect] : undefined}
       attributes={{
         "data-specialist-branch": branch.id,
         "data-side-project": id,
       }}
     >
+      {branch.specialty && (
+        <p
+          className="infrastructure-special-role"
+          data-specialist-role={branch.specialty}
+        >
+          {
+            (fr
+              ? {
+                  pantry:
+                    "Réserves : +1 nourriture répartie entre les saisons creuses au niveau II, +2 au IV, à l’abri des pénalités météo. Seul le meilleur garde-manger s’applique.",
+                  refuge:
+                    "Corridors calmes : perturbation due aux villes et routes réduite de 15/30/45/60 %. Les troupeaux restent libres de migrer ; le meilleur corridor s’applique.",
+                  recovery:
+                    "Sauvetage : récupère jusqu’à 1 ressource perdue par récolte aux niveaux I–II, 2 aux III–IV, après la protection météo. Capacité partagée ; seuls les meilleurs abris s’appliquent.",
+                  aggregate:
+                    "Valorisation des stériles : +1 pierre répartie entre les saisons minières au niveau II, +2 au IV. Seuls les meilleurs ateliers de récupération s’appliquent.",
+                }
+              : {
+                  pantry:
+                    "Pantry: +1 food across the lean seasons at tier II, +2 at IV, protected from weather penalties. Only the best pantry applies.",
+                  refuge:
+                    "Quiet corridors: reduce disturbance from towns and roads by 15/30/45/60%. Herds remain free to migrate; only the best corridor applies.",
+                  recovery:
+                    "Salvage: recovers up to 1 lost resource per harvest at tiers I–II, 2 at III–IV, after weather protection. Shared capacity; only the best shelters apply.",
+                  aggregate:
+                    "Rock recovery: +1 stone across ore-producing seasons at tier II, +2 at IV. Only the best recovery works apply.",
+                })[branch.specialty]
+          }
+        </p>
+      )}
       {branch.freshwater && (
         <small>
           {fr ? "Eau douce locale requise" : "Requires local fresh water"}

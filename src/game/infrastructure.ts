@@ -1015,3 +1015,108 @@ export function rotationExtras(
   }
   return result;
 }
+
+/** Quiet hunting corridors soften development pressure, without creating animals. */
+export function specialistRefuge(tile: Hex): number {
+  let tier = 0;
+  for (const [b, n] of installedSpecialists(tile))
+    if (b.specialty === "refuge") tier = Math.max(tier, n);
+  return tier * 0.15;
+}
+/** Shared rescue capacity: overlapping shelters never multiply the allowance. */
+export function specialistRecovery(tile: Hex, weather: string, owner?: number) {
+  let budget = 0;
+  const caps: Partial<Record<Raw, number>> = {};
+  for (const [b, tier] of installedSpecialists(tile, owner)) {
+    if (b.specialty !== "recovery" || b.effect !== weather) continue;
+    const n = Math.ceil(tier / 2);
+    budget = Math.max(budget, n);
+    for (const raw of b.goods) caps[raw] = Math.max(caps[raw] ?? 0, n);
+  }
+  return { budget, caps };
+}
+/** Secondary uses of the harvest. Best works of each kind apply, not every
+ * overlapping branch; their existing primary benefits continue to coexist. */
+export function specialistUtilityExtras(
+  tile: Hex,
+  native: Record<Season, Stock>,
+  owner?: number,
+) {
+  const seasons = ["spring", "summer", "autumn", "winter"] as const;
+  const pantry: Record<Season, Stock> = {
+    spring: {},
+    summer: {},
+    autumn: {},
+    winter: {},
+  };
+  const aggregate: Record<Season, Stock> = {
+    spring: {},
+    summer: {},
+    autumn: {},
+    winter: {},
+  };
+  let food = 0,
+    rubble = 0;
+  for (const [b, tier] of installedSpecialists(tile, owner)) {
+    if (b.specialty === "pantry") food = Math.max(food, Math.floor(tier / 2));
+    if (b.specialty === "aggregate")
+      rubble = Math.max(rubble, Math.floor(tier / 2));
+  }
+  const crops = seasons.map((s) => native[s].grain ?? 0);
+  if (food && crops.some(Boolean)) {
+    const least = crops.reduce((n, v) => Math.min(n, v), Infinity);
+    const shares = allocateInfrastructureBonus(
+      food,
+      crops.map((n) => Number(n === least)),
+    );
+    seasons.forEach((s, i) => {
+      if (shares[i]) pantry[s].grain = shares[i];
+    });
+  }
+  if (rubble) {
+    const shares = allocateInfrastructureBonus(
+      rubble,
+      seasons.map((s) => native[s].ore ?? 0),
+    );
+    seasons.forEach((s, i) => {
+      if (shares[i]) aggregate[s].stone = shares[i];
+    });
+  }
+  return { pantry, aggregate };
+}
+
+export function specialistPantryCapacity(tile: Hex, owner?: number): number {
+  let capacity = 0;
+  for (const [b, tier] of installedSpecialists(tile, owner))
+    if (b.specialty === "pantry")
+      capacity = Math.max(capacity, Math.floor(tier / 2));
+  return capacity;
+}
+
+/** Small AI credit for the distinct service, beyond any already installed equivalent. */
+export function specialistRoleGain(
+  tile: Hex,
+  branch: SpecialistBranch,
+  tier: number,
+  owner?: number,
+): number {
+  if (!branch.specialty) return 0;
+  const level = (n: number) =>
+    branch.specialty === "recovery"
+      ? Math.ceil(n / 2)
+      : branch.specialty === "refuge"
+        ? n * 0.15
+        : Math.floor(n / 2);
+  let current = 0;
+  for (const [b, n] of installedSpecialists(
+    tile,
+    branch.specialty === "refuge" ? undefined : owner,
+  )) {
+    if (
+      b.specialty === branch.specialty &&
+      (branch.specialty !== "recovery" || b.effect === branch.effect)
+    )
+      current = Math.max(current, level(n));
+  }
+  return Math.max(0, level(tier) - current);
+}

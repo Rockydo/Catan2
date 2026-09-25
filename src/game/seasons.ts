@@ -3,6 +3,7 @@ import {
   effectiveTier,
   infrastructureExtras,
   specialistExtras,
+  specialistUtilityExtras,
   rotationExtras,
   allocateAnnual,
   cropHarvestWindow,
@@ -571,12 +572,19 @@ export function seasonalProfile(
   owner?: number,
 ): Record<Season, Stock> {
   const result = ordinarySeasonalProfile(tile, owner),
-    extra = rotationExtras(tile, result, owner);
+    extra = rotationExtras(tile, result, owner),
+    utility = specialistUtilityExtras(tile, result, owner);
   for (const season of SEASONS)
     for (const good of ["grain", "oil"] as const)
       if (extra[season][good])
         result[season][good] =
           (result[season][good] ?? 0) + extra[season][good]!;
+  for (const season of SEASONS) {
+    const food = utility.pantry[season].grain ?? 0;
+    const stone = utility.aggregate[season].stone ?? 0;
+    if (food) result[season].grain = (result[season].grain ?? 0) + food;
+    if (stone) result[season].stone = (result[season].stone ?? 0) + stone;
+  }
   return result;
 }
 export function seasonalYield(

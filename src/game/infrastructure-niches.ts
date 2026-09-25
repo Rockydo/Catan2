@@ -100,6 +100,7 @@ export const NICHE_BRANCHES: readonly SpecialistBranch[] = [
     "Leaf-lined pits|Stone-lined fermentation pits|Covered pulp house|Fermentation chambers",
     "Fosses tapissées de feuilles|Fosses maçonnées|Halle à pulpe|Chambres de fermentation",
     {
+      specialty: "pantry",
       biomes: ["breadfruit-grove"],
       maxElevation: 0.65,
       finishing: { stone: 2 },
@@ -296,7 +297,7 @@ export const NICHE_BRANCHES: readonly SpecialistBranch[] = [
     "L’eau pulsée trie le minerai concassé par densité et retient les fragments lourds utiles.",
     "Washing basket jig|Timber jig boxes|Mechanical ore jig|Graded separation house",
     "Panier de lavage|Bacs de séparation|Jig mécanique|Atelier de séparation graduée",
-    { freshwater: true, finishing: { ceramics: 1 } },
+    { specialty: "aggregate", freshwater: true, finishing: { ceramics: 1 } },
   ),
   niche(
     "coal-washing",

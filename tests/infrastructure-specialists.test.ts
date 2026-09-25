@@ -12,6 +12,9 @@ import { ROTATION_BRANCHES } from "../src/game/infrastructure-rotations";
 import {
   specialistBranches,
   specialistExtras,
+  specialistUtilityExtras,
+  specialistRefuge,
+  specialistRecovery,
   specialistSuitable,
   specialistTier,
   specialistCost,
@@ -203,7 +206,7 @@ describe("independent specialist investments", () => {
       }
     }
   });
-  it("adds exactly one shared annual card per yield stage without new products, seasons or compounded gains", () => {
+  it("preserves primary yield budgets and adds only the specified bounded secondary uses", () => {
     for (const b of SPECIALIST_BRANCHES.filter((b) => b.effect === "yield")) {
       const t = structuredClone(
         habitats().find((t) => specialistSuitable(t, b))!,
@@ -214,13 +217,29 @@ describe("independent specialist investments", () => {
       for (let stage = 1; stage <= 4; stage++) {
         install(t, b, stage);
         const profile = seasonalProfile(t, 0);
-        expect(total(t) - baseline, b.id).toBe(stage);
+        const utility = specialistUtilityExtras(
+          t,
+          ordinarySeasonalProfile(t, 0),
+          0,
+        );
+        const addedUtility = SEASONS.reduce(
+          (n, season) =>
+            n + sum(utility.pantry[season]) + sum(utility.aggregate[season]),
+          0,
+        );
+        expect(total(t) - baseline, b.id).toBe(stage + addedUtility);
         for (const season of SEASONS)
           for (const [raw, n] of Object.entries(profile[season])) {
             expect(n!, `${b.id}/${season}/${raw}`).toBeGreaterThanOrEqual(
               prior[season][raw as keyof Stock] ?? 0,
             );
-            if (n! > (native[season][raw as keyof Stock] ?? 0))
+            if (
+              n! > (native[season][raw as keyof Stock] ?? 0) &&
+              !(
+                utility.pantry[season][raw as keyof Stock] ||
+                utility.aggregate[season][raw as keyof Stock]
+              )
+            )
               expect(native[season][raw as keyof Stock]).toBeGreaterThan(0);
           }
         expect(total(t, 1)).toBe(baseline);
@@ -544,5 +563,84 @@ describe("small secondary-crop rotations", () => {
     for (const p of Object.values(SPECIALIST_PROJECTS))
       for (const text of [p.name, p.description])
         expect(fr, text).toHaveProperty(text);
+  });
+});
+
+describe("distinct specialist roles", () => {
+  it("buffers lean seasons without removing the main crop or stacking duplicate pantries", () => {
+    const t = tile("potato-fields", "andean");
+    const original = seasonalProfile(t, 0);
+    install(t, branch("root-clamps"), 2);
+    const base = ordinarySeasonalProfile(t, 0);
+    const food = specialistUtilityExtras(t, base, 0).pantry;
+    expect(SEASONS.reduce((n, s) => n + sum(food[s]), 0)).toBe(1);
+    for (const season of SEASONS)
+      expect(seasonalProfile(t, 0)[season].grain ?? 0).toBeGreaterThanOrEqual(
+        original[season].grain ?? 0,
+      );
+    install(t, branch("root-clamps"), 4);
+    install(t, branch("harvest-drying"), 4);
+    expect(
+      SEASONS.reduce(
+        (n, s) =>
+          n +
+          sum(
+            specialistUtilityExtras(t, ordinarySeasonalProfile(t, 0), 0).pantry[
+              s
+            ],
+          ),
+        0,
+      ),
+    ).toBe(2);
+    const season = SEASONS.find(
+      (s) =>
+        specialistUtilityExtras(t, ordinarySeasonalProfile(t, 0), 0).pantry[s]
+          .grain,
+    )!;
+    t.geography!.weather = "cold";
+    t.geography!.weatherSeason = season;
+    expect(seasonalYield(t, 0, season).grain).toBeGreaterThanOrEqual(1);
+    t.geography!.access = "flooded";
+    expect(seasonalYield(t, 0, season)).toEqual({});
+  });
+  it("recovers actual weather losses, shares capacity, and never grants fair-weather output", () => {
+    const t = tile("old-growth-forest", "temperate-rainforest");
+    t.geography!.weather = "wet";
+    t.geography!.weatherSeason = "summer";
+    const before = seasonalYield(t, 0, "summer").lumber!;
+    const normal = seasonalProfile(t, 0).summer.lumber!;
+    install(t, branch("covered-timber"), 1);
+    expect(seasonalYield(t, 0, "summer").lumber).toBeGreaterThan(before);
+    expect(seasonalYield(t, 0, "summer").lumber).toBeLessThanOrEqual(normal);
+    expect(seasonalProfile(t, 0).summer.lumber).toBe(normal);
+    expect(specialistRecovery(t, "wet", 1).budget).toBe(0);
+    install(t, branch("covered-timber"), 4);
+    expect(specialistRecovery(t, "wet", 0).budget).toBe(2);
+    expect(specialistRecovery(t, "dry", 0).budget).toBe(0);
+  });
+  it("reclaims bounded mine stone at II and IV without giving stone to empty or foreign projects", () => {
+    const t = tile("iron");
+    install(t, branch("ore-sorting"), 1);
+    expect(
+      SEASONS.reduce((n, s) => n + (seasonalProfile(t, 0)[s].stone ?? 0), 0),
+    ).toBe(0);
+    install(t, branch("ore-sorting"), 4);
+    install(t, branch("ore-jigging"), 4);
+    expect(
+      SEASONS.reduce((n, s) => n + (seasonalProfile(t, 0)[s].stone ?? 0), 0),
+    ).toBe(2);
+    expect(
+      SEASONS.reduce((n, s) => n + (seasonalProfile(t, 1)[s].stone ?? 0), 0),
+    ).toBe(0);
+  });
+  it("makes refuges reduce disturbance without generating animals or combining duplicate corridors", () => {
+    const t = tile("hunting-forest");
+    install(t, branch("woodland-tracking"), 1);
+    expect(specialistRefuge(t)).toBe(0.15);
+    install(t, branch("woodland-tracking"), 4);
+    expect(specialistRefuge(t)).toBe(0.6);
+    expect(huntingYield(t, 0, "summer")).toEqual({});
+    t.geography!.projects = {};
+    expect(specialistRefuge(t)).toBe(0);
   });
 });
