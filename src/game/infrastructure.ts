@@ -137,6 +137,30 @@ export const INFRASTRUCTURE = {
       "Regional game cold store",
     ],
   },
+  foraging: {
+    name: "Wild harvest infrastructure",
+    cost: { lumber: 2, wool: 1, ore: 1 },
+    description:
+      "Gathering and sorting improve existing berry heaths in their natural harvest season.",
+    stages: [
+      "Gathering shelters",
+      "Harvest sorting stores",
+      "Harvest handling equipment",
+      "Wild harvest preservation works",
+    ],
+  },
+  whaling: {
+    name: "Whale-product infrastructure",
+    cost: { lumber: 3, stone: 2, ore: 1 },
+    description:
+      "Shore handling and rendering improve visiting whale products; no whales are created or retained.",
+    stages: [
+      "Shore product slips",
+      "Rendering yards",
+      "Steam tryworks",
+      "Whale-product handling complex",
+    ],
+  },
   fishery: {
     name: "Fishery infrastructure",
     cost: { lumber: 3, salt: 2, wool: 1 },
@@ -245,6 +269,16 @@ const UPGRADE_COSTS: Record<
       coal: 60,
       coke: 6,
     },
+  ],
+  foraging: [
+    { planks: 4, cloth: 2, steel: 2, coal: 4 },
+    { planks: 8, masonry: 4, cloth: 3, steel: 6, coal: 24 },
+    { planks: 12, masonry: 12, cloth: 6, steel: 16, coal: 60, coke: 6 },
+  ],
+  whaling: [
+    { planks: 6, masonry: 4, ceramics: 3, steel: 4, coal: 8 },
+    { planks: 12, masonry: 12, ceramics: 6, steel: 12, coal: 40 },
+    { planks: 20, masonry: 26, ceramics: 12, steel: 28, coal: 100, coke: 10 },
   ],
   fishery: [
     { planks: 6, masonry: 4, cloth: 3, steel: 2, coal: 6 },
@@ -430,6 +464,15 @@ export function infrastructureSuitable(
       return !!(yields.stone || yields.brick) || b === "peat-bog";
     case "saltworks":
       return !!yields.salt;
+    case "foraging":
+      return b === "tundra-heath";
+    case "whaling":
+      return (
+        tile.resource === "water" &&
+        ["coast", "deep", "shoal", "reef"].includes(
+          tile.geography.waterway ?? "",
+        )
+      );
     case "fishery":
       return (
         tile.resource === "water" &&
@@ -459,6 +502,10 @@ export function improvedGoods(tile: Hex, kind: InfrastructureKind): Raw[] {
       return tile.biome === "peat-bog" ? ["coal"] : ["stone", "brick"];
     case "saltworks":
       return ["salt"];
+    case "foraging":
+      return ["grain"];
+    case "whaling":
+      return ["oil", "hides"];
     case "fishery":
       return ["fish"];
   }
@@ -517,10 +564,11 @@ export function infrastructureExtras(
   const goods = improvedGoods(tile, kind),
     profile = localTechnique(tile, kind);
   const amounts = seasons.map((season) =>
-    goods.map((raw) =>
-      kind === "hunting"
-        ? (tile.geography?.fauna?.[raw] ?? 0)
-        : (native[season][raw] ?? 0),
+    goods.map(
+      (raw) =>
+        (kind === "hunting" || kind === "whaling"
+          ? (tile.geography?.fauna?.[raw] ?? 0)
+          : (native[season][raw] ?? 0)) * (profile.goods?.[raw] ?? 1),
     ),
   );
   const totals = amounts.map(
@@ -541,21 +589,22 @@ export function huntingYield(
   season?: Season,
 ): Stock {
   const fauna = tile.geography?.fauna ?? {};
+  const kind = tile.resource === "water" ? "whaling" : "hunting";
   const result: Stock = Object.fromEntries(
-    improvedGoods(tile, "hunting")
+    improvedGoods(tile, kind)
       .filter((g) => fauna[g])
       .map((g) => [g, fauna[g]]),
   );
   if (!season) return result;
-  const tier = effectiveTier(tile, "hunting", owner);
+  const tier = effectiveTier(tile, kind, owner);
   if (!tier) return result;
-  const extra = infrastructureExtras(tile, "hunting", tier, {
+  const extra = infrastructureExtras(tile, kind, tier, {
     spring: fauna,
     summer: fauna,
     autumn: fauna,
     winter: fauna,
   })[season];
-  for (const raw of improvedGoods(tile, "hunting"))
+  for (const raw of improvedGoods(tile, kind))
     if (extra[raw]) result[raw] = (result[raw] ?? 0) + extra[raw]!;
   return result;
 }

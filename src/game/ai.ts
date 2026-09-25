@@ -1267,15 +1267,19 @@ export function economyProjects(s: Game): Project[] {
           4;
         // Migratory output is conditional; a sighting is not a permanent farm.
         const availability =
-          kind === "hunting"
-            ? Object.values(g.fauna ?? {}).some((n) => n && n > 0)
-              ? 0.35
+          kind === "whaling"
+            ? g.fauna?.oil
+              ? 0.45
               : 0.08
-            : kind === "fishery"
-              ? g.fauna?.fish
-                ? 0.7
-                : 0.15
-              : 1;
+            : kind === "hunting"
+              ? Object.values(g.fauna ?? {}).some((n) => n && n > 0)
+                ? 0.35
+                : 0.08
+              : kind === "fishery"
+                ? g.fauna?.fish
+                  ? 0.7
+                  : 0.15
+                : 1;
         // Modest expected-value credit for weather resilience. Count only the
         // improvement beyond the strongest existing protection, not every track.
         let resilience = 0;

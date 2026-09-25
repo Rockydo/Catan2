@@ -173,13 +173,13 @@ Les infrastructures productives exigent votre agglomération adjacente non assi�
 
 ### Infrastructures adaptées au climat
 
-Douze filières utilisent 43 méthodes locales. Terrain et saisons → Infrastructure de production montre la technique, le niveau urbain requis, les matériaux exacts, les gains annuels et saisonniers et les protections météo.
+Quatorze filières utilisent 134 méthodes locales (91 ajouts spécialisés et 43 méthodes générales conservées). Terrain et saisons → Infrastructure de production montre la technique, le niveau urbain requis, les matériaux exacts, les gains annuels et saisonniers et les protections météo.
 
 - L’agriculture distingue rizières régulées, jardins surélevés alimentés par canaux, oasis, gestion de décrue, vergers, rotations des terres noires, nutriments tropicaux, racines et paillage sec. Les terrasses diffèrent entre hautes terres pierreuses, rizières en cascade et versants secs.
-- La collecte des eaux pluviales est une filière distincte : cuvettes, cordons et citernes soutiennent les cultures pluviales existantes en Semi-aride, Savane, Steppe, Prairie et Méditerranéen. Aucune rivière requise, mais plaines inondables, rizières, chinampas, jardins du delta, sagoutiers et oasis sont exclus. Ni irrigation du désert absolu ni saison supplémentaire. Bonus annuel I–IV : 2/3/4/5.
+- La collecte des eaux pluviales est une filière distincte : cuvettes, cordons et citernes soutiennent les cultures pluviales existantes en Semi-aride, Savane, Steppe, Prairie et Méditerranéen. Aucune rivière requise, mais plaines inondables, rizières, chinampas, jardins du delta, sagoutiers et oasis sont exclus. Ni irrigation du désert absolu ni saison supplémentaire. Bonus annuel général I–IV : 2/3/4/5 ; les méthodes spécialisées varient.
 - L’élevage utilise foin et abris hivernaux, réserves sèches ou pâturages gérés. La forêt utilise débardage hivernal, coupe tropicale sélective ou gestion des feuillus. Saisons des gains et protections diffèrent.
 - Les mines distinguent houillères ventilées, préparation du minerai, récupération aurifère et chantiers froids coûteux. Les carrières distinguent pierre, décantation de l’argile et séchage de la tourbe. Le sel sec privilégie l’évaporation solaire ; les sites frais/humides profitent davantage d’ouvrages chauffés coûteux. La pêche distingue débarquement en eau douce et conservation des côtes chaudes/froides.
-- La chasse s’aménage dans les habitats naturels : plaines, steppes, neige, bois/jungles et broussailles/oasis désertiques admissibles. Abris de pistage, stations de traitement, caches froides ou salaison ombragée améliorent la récupération des animaux de passage, jamais leur nombre. Budget annuel I–IV : 4/6/7/8, partagé entre les produits présents. Sans animaux, aucun gain. Villes, camps et chasseurs du constructeur en profitent. Migration et évitement des zones développées continuent ; aucun troupeau créé, fixé ou exterminé.
+- La chasse s’aménage dans les habitats naturels : plaines, steppes, neige, bois/jungles et broussailles/oasis désertiques admissibles. Abris de pistage, stations de traitement, caches froides ou salaison ombragée améliorent la récupération des animaux de passage, jamais leur nombre. Budget annuel général I–IV : 4/6/7/8, partagé entre les produits présents ; les méthodes spécialisées ont leurs courbes et priorités. Sans animaux, aucun gain. Villes, camps et chasseurs du constructeur en profitent. Migration et évitement des zones développées continuent ; aucun troupeau créé, fixé ou exterminé.
 
 Chaque filière possède un seul budget entier entre ses produits et ses quatre profils saisonniers. Les bonus s’ajoutent à la base native sans se multiplier. Une tuile Viande/Peaux/Laine ne reçoit pas trois copies du bonus. Les poids saisonniers favorisent les périodes adaptées, comme le débardage hivernal ou le séchage estival du sel/de la tourbe. Le bon numéro doit sortir ; animaux, glace et crues restent déterminants. Aucune récolte hors saison ; l’irrigation étalée conserve ses fenêtres culturales légales.
 
@@ -290,6 +290,14 @@ Quatre nouveaux reliefs interviennent avant le choix des climats et ressources :
 
 Intérieurs continentaux ; archipels ; mers intérieures ; côtes à péninsules ; chapelets d’îles ; îlots rocheux ; fjords ; cordons littoraux et lagunes ; atolls ; vallées de rift ; rias ; arcs volcaniques ; bassins et chaînes parallèles ; plateaux entaillés.
 Les rivières et affluents, lacs compacts, deltas, plaines inondables, hauts-fonds, récifs, pics et cols saisonniers s’intègrent à ces reliefs. Les sources thermales, ports naturels, bassins fertiles, filons minéraux et bosquets anciens restent des sites rares soumis à leurs règles habituelles.
+
+### Investissements adaptés au site
+
+Les méthodes distinguent cultures, climat, côtes, deltas, cours d’eau, altitude et sites rares : bassins d’oliviers, poquets de mil, captage des prairies, terrasses de pommes de terre andines, abris ovins côtiers, plateformes de mangrove, tri du minerai désertique ou dégel des mines polaires. Le panneau indique la méthode et son contexte ; migrations et météo ne changent pas les recettes. L’admissibilité et le niveau urbain adjacent restent requis.
+
+La cueillette des landes à baies ajoute 1/2/3/4 cartes annuelles partagées aux niveaux I–IV, pendant la courte récolte native. Les ateliers baleiniers marins nécessitent un bâtiment adjacent et le passage de baleines. Les méthodes froides/chaudes/tempérées ajoutent respectivement 2/3/4/5, 3/4/5/6 ou 2/4/5/6 cartes annuelles partagées, en privilégiant l’Huile. Sans baleine, aucun gain ; rivières, lacs et accès gelés restent exclus. Les priorités répartissent un seul bonus entre les produits existants, sans multiplier son total. Ces ouvrages conservent l’image du terrain.
+
+Tous les ouvrages industriels paient leur charbon à la construction dès le niveau II ; aucun entretien ni coût en Or ou Lingots. Les niveaux supérieurs coûtent de plus en plus cher pour des gains marginaux décroissants. Les projets existants gardent propriétaire et niveau, avec la méthode locale actuelle. Une nouvelle campagne n’est pas nécessaire.
 
 ## Saisons et récoltes
 

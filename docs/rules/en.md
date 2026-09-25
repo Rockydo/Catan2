@@ -166,13 +166,13 @@ Production infrastructure requires your adjacent, unbesieged settlement/city: ti
 
 ### Climate-specific production infrastructure
 
-Twelve investment tracks use 43 local methods. Open Terrain & seasons → Production infrastructure to see the technique, required city tier, exact material bill, annual and seasonal extra harvest, and weather protection.
+Fourteen investment tracks use 134 local methods (91 specific additions and 43 retained general methods). Open Terrain & seasons → Production infrastructure to see the technique, required city tier, exact material bill, annual and seasonal extra harvest, and weather protection.
 
 - Agriculture distinguishes paddy water control, canal-fed raised gardens, oasis distribution, recession-water gates, orchard basins, black-soil rotations, tropical nutrient cycling, root-crop rotations and dryland mulch. Terraces distinguish highland stonework, rice cascades and dry-stone slopes.
-- Rainwater harvesting is a separate track: runoff basins, bunds and cisterns improve existing rainfed crops in Semiarid, Savanna, Steppe, Prairie and Mediterranean settings. No river is required, but floodplains, paddies, chinampas, delta gardens, sago and oases are excluded. It cannot irrigate true desert or add harvest seasons. Annual extra I–IV: 2/3/4/5.
+- Rainwater harvesting is a separate track: runoff basins, bunds and cisterns improve existing rainfed crops in Semiarid, Savanna, Steppe, Prairie and Mediterranean settings. No river is required, but floodplains, paddies, chinampas, delta gardens, sago and oases are excluded. It cannot irrigate true desert or add harvest seasons. General-method annual extra I–IV: 2/3/4/5; specialized methods vary.
 - Domestic livestock uses cold-season hay and shelter, dryland fodder reserves or managed pasture. Forestry uses winter haulage, tropical selective logging or broadleaf management. Their seasonal gains and weather resilience differ.
 - Mining distinguishes coal ventilation/pumping, ore dressing, gold-vein recovery and expensive cold-region workings. Quarrying distinguishes stone cutting, clay settling and peat drying. Dry saltworks exploit solar evaporation; cool/wet sites benefit more from expensive heated works. Fisheries distinguish freshwater landings and warm/cold coastal preservation.
-- Hunting infrastructure works on natural wildlife habitat: grasslands, steppe, snow plains, woodland/jungle and eligible desert scrub/oases. It uses tracking shelters, game-handling stations, cold caches or shaded curing according to climate. It increases recovery from visiting animals, not animal numbers. Annual extra I–IV: 4/6/7/8, shared across the animal products present. No animals means no return. The builder’s towns, camps and hunter units benefit. Migration and development avoidance continue normally; a herd is never created, trapped or exterminated by the project.
+- Hunting infrastructure works on natural wildlife habitat: grasslands, steppe, snow plains, woodland/jungle and eligible desert scrub/oases. It uses tracking shelters, game-handling stations, cold caches or shaded curing according to climate. It increases recovery from visiting animals, not animal numbers. General-method annual extra I–IV: 4/6/7/8, shared across the animal products present; specialized methods have their own curves and product priorities. No animals means no return. The builder’s towns, camps and hunter units benefit. Migration and development avoidance continue normally; a herd is never created, trapped or exterminated by the project.
 
 Each track has one whole-card bonus budget across its affected resources and four seasonal profiles. Bonuses add from the native baseline; they never multiply one another. A meat/hides/wool tile does not receive three copies of one bonus. Seasonal weights favor suitable work periods, such as winter timber haulage or summer salt/peat drying. The matching number must still roll; migratory output requires animals and flood/ice access rules still apply. Crop improvements do not create off-season harvests; irrigation's spread mode follows its existing legal crop windows.
 
@@ -305,6 +305,14 @@ Four new patterns are blended into physical relief before climate and resources 
 - **Basin and range:** alternating narrow uplifts and broader interior valleys.
 - **Dissected plateaus:** raised tablelands cut by lower corridors.
   Rivers and tributaries, compact lakes, deltas, floodplains, coastal shelves, reefs, bare peaks and seasonal mountain passes are local features within these regional formations. Rare thermal springs, natural harbors, fertile basins, mineral veins and ancient groves remain available under their existing rules.
+
+### Site-specific production investments
+
+Methods now distinguish crops, climate, coasts, deltas, waterways, elevation and rare landmarks. Examples include olive runoff basins, millet planting pits, prairie contour catchments, Andean potato terraces, coastal sheep shelters, mangrove access platforms, desert ore sorting and polar mine thawing. The panel shows the applicable method and site conditions; migration and weather do not change construction recipes. Eligibility and adjacent city-tier requirements still apply.
+
+Berry-heath gathering adds 1/2/3/4 shared annual extra cards at tiers I–IV, within the existing short berry season. Marine whale works require nearby owned settlements/cities and visiting whales. Cold/warm/temperate methods add respectively 2/3/4/5, 3/4/5/6 or 2/4/5/6 shared annual cards, favoring Oil recovery. No whales means no extra output; rivers, lakes and frozen access are excluded. Product preferences allocate a single shared bonus across existing goods, not a full bonus per good. These works preserve existing artwork.
+
+All industrial works use upfront coal from tier II; there is no upkeep and no gold or gold-bar construction charge. Higher tiers remain increasingly expensive for diminishing extra returns. Existing projects keep their owner and level and use the current local method. No new campaign is required.
 
 ## Seasons and harvests
 

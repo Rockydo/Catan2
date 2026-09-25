@@ -1,4 +1,8 @@
-import type { Hex, Good } from "./types";
+import {
+  SPECIALIZATIONS,
+  specializedTechnique,
+} from "./infrastructure-specializations";
+import type { Hex, Good, Raw } from "./types";
 import type { InfrastructureKind } from "./infrastructure";
 
 export type Curve = readonly [number, number, number, number];
@@ -11,6 +15,8 @@ export type LocalTechnique = {
   seasons?: Curve;
   protection?: Partial<Record<"dry" | "wet" | "cold", Curve>>;
   materials?: Partial<Record<Good, number>>;
+  /** Relative recovery priority within the same shared annual bonus. */
+  goods?: Partial<Record<Raw, number>>;
 };
 const t = (
   id: string,
@@ -26,7 +32,7 @@ const pumps: Curve = [0, 0.25, 0.65, 0.8];
 
 /** Historical methods inspire effects; all card amounts are game coefficients.
  * No profile manufactures a deposit, forest, water source or resident herd. */
-export const TECHNIQUES = {
+const BASE_TECHNIQUES = {
   oasis: t(
     "oasis",
     "Oasis water distribution",
@@ -648,6 +654,13 @@ export const TECHNIQUES = {
   ),
 } satisfies Record<string, LocalTechnique>;
 
+export const TECHNIQUES: Record<string, LocalTechnique> = {
+  ...BASE_TECHNIQUES,
+  ...Object.fromEntries(
+    SPECIALIZATIONS.map(({ method }) => [method.id, method]),
+  ),
+};
+
 const polar = new Set(["arctic", "glacial", "tundra"]);
 const cool = new Set(["cold", "alpine", "andean", ...polar]);
 const wet = new Set([
@@ -679,10 +692,16 @@ export function localTechnique(
   tile: Hex,
   kind: InfrastructureKind,
 ): LocalTechnique {
+  const special = specializedTechnique(tile, kind);
+  if (special) return special;
   const c = tile.climate ?? "temperate",
     b = tile.biome ?? "",
     g = tile.geography;
   switch (kind) {
+    case "foraging":
+      return TECHNIQUES["heath-berry-gathering"];
+    case "whaling":
+      return TECHNIQUES["temperate-whale-tryworks"];
     case "irrigation":
       if (["desert", "hyperarid"].includes(c) || b === "oasis")
         return TECHNIQUES.oasis;

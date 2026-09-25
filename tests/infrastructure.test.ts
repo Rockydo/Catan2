@@ -269,6 +269,8 @@ describe("ravaging infrastructure", () => {
     tile.geography!.projects = {
       soil: { owner: 0, born: 1, tier: 4 },
       irrigation: { owner: 0, born: 1, tier: 2 },
+      foraging: { owner: 0, born: 1, tier: 3 },
+      whaling: { owner: 0, born: 1, tier: 2 },
     };
     tile.geography!.nextHarvestMode = "spread";
     piece(s, tile.id, 1);
@@ -316,6 +318,8 @@ it("round-trips legacy and industrial projects through compact saves and rejects
   t.geography!.projects = {
     soil: { owner: 0, born: 1 },
     mining: { owner: 0, born: 1, tier: 4 },
+    foraging: { owner: 0, born: 1, tier: 3 },
+    whaling: { owner: 0, born: 1, tier: 2 },
   };
   const copy = deserialize(serializePacked(s));
   expect(copy.tiles[t.id].geography!.projects).toEqual(t.geography!.projects);

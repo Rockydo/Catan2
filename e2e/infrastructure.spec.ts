@@ -172,3 +172,93 @@ for (const locale of ["en", "fr"])
     });
     expect(errors).toEqual([]);
   });
+
+for (const locale of ["en", "fr"])
+  for (const kind of ["foraging", "whaling"] as const)
+    test(`${kind} upgrades persist and explain their site in ${locale}`, async ({
+      page,
+    }) => {
+      let s = newGame(`new-production-${kind}`);
+      while (s.phase.startsWith("setup")) s = run(s, chooseAIAction(s));
+      s.active = 0;
+      s.phase = "economy";
+      s.pieces = {};
+      const town = ownTowns(s, 0)[0];
+      town.level = town.turnLevel = 4;
+      for (const good of GOODS) town.stock[good] = 500;
+      const id = s.vertices[town.vertex].tiles.find(
+        (id) => s.tiles[id].resource !== "peaks",
+      )!;
+      const tile = s.tiles[id];
+      tile.resource = kind === "whaling" ? "water" : "grain";
+      tile.biome = kind === "whaling" ? "water" : "tundra-heath";
+      Object.assign(tile.geography!, {
+        pass: false,
+        waterway: kind === "whaling" ? "coast" : undefined,
+        access: "normal",
+        floodplain: false,
+        projects: {},
+        fauna: {},
+        animals: [],
+      });
+      s.wildlife = s.wildlife!.filter((w) => w.tile !== id);
+      syncSeasonSurfaces(s);
+      assertInvariants(s);
+      await page.addInitScript(
+        ({ data, key, locale }) => {
+          if (!localStorage.getItem(key)) localStorage.setItem(key, data);
+          localStorage.setItem("catane-language", locale);
+        },
+        { data: serialize(s), key: SAVE_KEY, locale },
+      );
+      const errors: string[] = [];
+      page.on("pageerror", (e) => errors.push(e.message));
+      await page.setViewportSize({ width: 1440, height: 1000 });
+      await page.goto("/");
+      const open = async () => {
+        await page
+          .getByRole("button", {
+            name: locale === "en" ? /Continue campaign/ : /Reprendre/,
+          })
+          .click();
+        await page.getByTestId(`hex-${id}`).click();
+        await page.getByTestId("inspector-details-toggle").click();
+        await page.locator(".infrastructure-panel > summary").click();
+      };
+      await open();
+      const row = page.locator(`[data-infrastructure="${kind}"]`);
+      if (kind === "whaling") {
+        await expect(row).toContainText(
+          locale === "en"
+            ? "No whales currently"
+            : "Aucune baleine actuellement",
+        );
+        await expect(row.locator("[data-recovery-priority]")).toContainText(
+          locale === "en" ? "Oil" : "Huile",
+        );
+      } else await expect(row.locator("[data-method-site]")).toBeVisible();
+      await row.locator(".infrastructure-effects summary").click();
+      await expect(row.locator(".geography-calendar > div")).toHaveCount(4);
+      for (const tier of ["I", "II", "III", "IV"]) {
+        await row.getByRole("button").click();
+        await expect(row.locator("b").first()).toContainText(` · ${tier}`);
+      }
+      await expect(row.getByRole("button")).toHaveCount(0);
+      await expect(page.locator("[data-development-level]")).toHaveAttribute(
+        "data-development-level",
+        "0",
+      );
+      await row.scrollIntoViewIfNeeded();
+      await page.screenshot({
+        path: `output/infrastructure/${kind}-${locale}.png`,
+        fullPage: true,
+      });
+      // Let the ordinary autosave finish, then exercise its real browser reload path.
+      await expect
+        .poll(() => page.evaluate((key) => localStorage.getItem(key), SAVE_KEY))
+        .not.toBe(serialize(s));
+      await page.reload();
+      await open();
+      await expect(row.locator("b").first()).toContainText(" · IV");
+      expect(errors).toEqual([]);
+    });

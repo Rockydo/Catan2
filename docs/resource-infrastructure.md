@@ -6,26 +6,29 @@ Select a tile, open **Terrain & seasons → Production infrastructure**. The pan
 
 Improvements belong to their builder. Their extra production and weather protection apply only to that faction's producers. Rival or allied settlements sharing a tile do not inherit the investment. The dice number still has to roll. Cities, camps and merchants apply their ordinary production multipliers; processed output follows the resulting raw harvest.
 
-## Twelve investment tracks, 43 local methods
+## Fourteen investment tracks, 134 local methods
 
 The track is the investment category; the **local method** determines its actual technique, seasonal returns, weather protection and material bill. The inspector shows the method and its four development stages. A rice paddy, an oasis, a black-soil wheat field and a cold mine no longer use interchangeable improvements.
 
-| Track | Local variations and purpose | Annual extra-output budget at I → IV |
-|---|---|---|
-| Irrigation | Oasis distribution, paddy control, canal-fed raised gardens, recession gates, orchard basins, supplemental/continental/dryland irrigation | +1–5 → +4–9, depending on site |
-| Rainwater harvesting **new** | Planting basins, stone bunds, cisterns and microcatchments for existing rainfed dryland crops | +2 / 3 / 4 / 5 |
-| Soil husbandry | Dryland mulch, black-soil rotations, tropical nutrient cycling, root-crop or mixed-field rotations | +1–3 → +4–7 |
-| Drainage | Wet-field drains, controlled paddy drawdown, raised beds | +1–3 → +4–7 |
-| Terraces | Highland stone terraces, cascaded rice terraces, dry-stone contours, general hillside retention | +2–3 → +5–7 |
-| Husbandry | Hay and winter shelter, dryland fodder reserves, managed pasture | +3–4 → +7–8, shared across domestic products |
-| Forestry | Winter haulage in cold regions, selective tropical logging, managed broadleaf woodland | +2–3 → +6–7, wood only |
-| Mining | Coal ventilation/pumps, hard-rock ore dressing, gold-vein recovery, cold-region workings | +2–4 → +5–8 |
-| Quarrying | Dimension stone, clay winning/settling, peat cutting/drying | +2–3 → +6–7 |
-| Saltworks | Solar evaporation versus sheltered/heated brine concentration | Dry: +4 / 6 / 7 / 8; cool/wet: +1 / 2 / 4 / 5 |
-| Fishery | Freshwater landings, tropical preservation, cold-coast handling | +2–3 → +5–7, fish only while present |
-| Hunting **new** | Woodland tracking, open-country stations, cold-country caches, dryland tracking/curing | +4 / 6 / 7 / 8, only while wildlife visits |
+| Track | Specific additions and distinct choices |
+|---|---|
+| Irrigation | 10 new methods: layered oases, hyperarid lined canals, three rice settings, maize/potato furrows, olive basins, desert alluvial wheat and delta garden distribution |
+| Soil husbandry | 12: millet, sorghum, maize, sunflower, barley, oats, turnips, Andean potatoes, olives, breadfruit, sago and chinampas |
+| Drainage | 6: delta outfalls, monsoon paddy spillways, raised wetland beds, oceanic tile drains, coastal field sluices and root-bed underdrains |
+| Terraces | 6: Andean potatoes, highland barley, olives, high rice cascades, Mesoamerican maize and dry cereal contours |
+| Rainwater harvesting | 5: millet planting pits, dry cereal half-moons, olive jessour, steppe snow retention and prairie contour catchments |
+| Husbandry | 8: alpaca fleece, goat browse, coastal sheep, savanna cattle, continental cattle, flood-meadow hay, alpine fodder and temperate sheep |
+| Forestry | 8: ancient groves, mangroves, river woodlands, cloud forest cable haulage, rainforest spars, dry coppice, island palms and tropical coastal yards |
+| Mining | 7: rich-vein dressing, polar iron thawing, boreal coal drifts, Andean gold stamps, desert dry sorting, wet-coal pumps and highland winding |
+| Quarrying | 7: polar stone shelters, volcanic blocks, coastal derricks, alluvial clay settling, shaded dry-clay pits, mountain inclines and cold peat lofts |
+| Saltworks | 5: sheltered-harbor salt yards, hyperarid crusts, desert crystallizers, Mediterranean salines and cold-season covered pans |
+| Fishery | 6: delta landings, reef handling, shoal net yards, cold-coast stockfish racks, monsoon-river smoking and lake icehouses |
+| Hunting | 7: coastal seal caches, polar tracking, reindeer drive markers, musk-ox fleece recovery, turkey cover, river woodland tracking and oasis gazelle observation |
+| Wild harvest **new track** | Berry gathering and preservation on existing tundra heath only |
+| Whale products **new track** | Polar, warm and temperate tryworks; Oil receives priority within the shared bonus |
 
-See the [complete method catalogue and research](local-production-methods.md) for all 43 methods, exact seasonal weights, protection percentages, costs and selection rules.
+These are **91 new methods**, supplementing the 43 general methods and fallbacks. Four stages per method retain the existing city-tier system. Exact budgets vary by method; the inspector previews the actual tile and its current wildlife.
+See the [complete method catalogue and research](local-production-methods.md) for all 134 methods, exact seasonal weights, protection percentages, costs and selection rules.
 
 Annual additions mean the sum of the four **per-roll seasonal amounts**, before weather, access and producer multipliers. Each season normally lasts two rounds. This is not a guaranteed annual payout: the matching number must roll. **Each track has one shared budget across its affected goods**, not a separate bonus for each good. A livestock tile cannot multiply one investment into three full bonuses for meat, hides and wool.
 
@@ -37,11 +40,19 @@ Hunting is available on natural wildlife habitat: grasslands, steppe, cold plain
 
 ### Hunting and migration
 
-Tracking shelters and communal handling improve **recovery from a passing herd**, not herd numbers. Tier I adds a total four cards across the four seasonal profiles while animals are present (usually one per season); II/III/IV raise that budget to six/seven/eight. The bonus is shared among the animal products actually present. It applies to the builder's settlements, camps and hunter units using the tile. Hunter unit tiers retain their existing multiplier.
+Tracking shelters and communal handling improve **recovery from a passing herd**, not herd numbers. The general hunting method adds four cards across the four seasonal profiles at tier I and six/seven/eight at II/III/IV; the new local methods can have different, more modest curves and recovery priorities. The bonus is shared among the animal products actually present. It applies to the builder's settlements, camps and hunter units using the tile. Hunter unit tiers retain their existing multiplier.
 
 No animals means **zero hunting output**, even with tier IV infrastructure. The inspector explicitly marks empty habitat and explains that its preview is conditional on migration. Animals retain their existing movement, climate preferences, ice rules and aversion to heavily developed areas. Hunting construction does not pin, spawn or exterminate herds. These intermittent returns and the same steep upgrade costs keep hunting less dependable than agriculture. The AI discounts intermittent wildlife income rather than treating a sighting as a permanent farm.
 
-Hunting-only upgrades retain the original wildlife artwork: they do not display a forestry depot. No new paintings are generated for this rework.
+Hunting, berry and whale-only upgrades retain the original artwork: they do not display a forestry depot. No new paintings are generated for this rework.
+
+### Berry gathering and whale products
+
+Berry heath supports gathering, sorting, stores and late preservation, adding a shared annual budget of **1 / 2 / 3 / 4** at tiers I–IV, only during native berry harvests. It cannot be built on other empty plains or make winter productive.
+
+Whale works are eligible on marine coast, deep-water, shoal and reef tiles adjacent to an owned settlement/city of the required level. Rivers and lakes are excluded. They add **2 / 3 / 4 / 5** in cold waters, **3 / 4 / 5 / 6** in warm waters, or **2 / 4 / 5 / 6** in other marine settings. The bonus is shared across currently present whale products and favors oil recovery. Absent whales mean no benefit; fish do not activate whale works. Frozen-water and other access restrictions still apply. The AI discounts the uncertain returns.
+
+Product priorities also distinguish some domestic and hunting methods. They redirect the existing shared bonus toward an affected good, such as fleece; they never multiply the total budget or create a missing good.
 
 ## City requirements, construction and coal
 
@@ -54,6 +65,8 @@ iron tools rather than hides. All later bills are specific to the work being bui
 
 | Track | Main materials and purpose | Coal at II / III / IV |
 |---|---|---|
+| Wild harvest | Gathering tools, baskets/cloth, storage and late preservation gear | 4 / 24 / 60 |
+| Whale products | Timber handling yards, masonry tryworks, pottery vessels and steel equipment | 8 / 40 / 100 |
 | Irrigation | Blocks and pottery for channels/pipes, steel pumping gear | 6 / 40 / 100 |
 | Husbandry | Planks, feed grain and shelter blocks; machinery and late veterinary chemicals | 4 / 30 / 80 |
 | Soil husbandry | Seed grain and tools; later machinery and fertilizer chemicals | 4 / 30 / 80 |
@@ -72,7 +85,7 @@ These are base recipes; the local method modifies relevant materials with whole-
 Tier II coal is a one-time construction/fabrication allowance for fittings, tools,
 fired drains and masonry. It does not imply every tier II project has a steam
 engine. Industrial tiers require much larger coal investments and tier IV also
-uses 8–12 processed fuel. These quantities are game balance abstractions.
+uses 6–12 processed fuel. These quantities are game balance abstractions.
 
 For example, **mining II** costs 6 planks, 3 blocks, 5 steel, 2 leather and 10 coal;
 **III** costs 10 planks, 8 blocks, 16 steel, 4 leather and 40 coal;
@@ -89,7 +102,7 @@ High tiers are deliberately expensive for small incremental gains. Their one-tim
 
 Water alone cannot create a growing season. Irrigation requires real nearby freshwater; ocean water and a bare road do not qualify. Polar climates cannot build new irrigation. It improves existing crops without converting terrain.
 
-Irrigation now selects a method from **crop and climate together**. Oasis distribution adds +5 at tier I; paddies and raised gardens +3; dryland fields and warm recession crops +4; temperate continental fields +2; supplemental irrigation in cool/already wet settings +1. Orchard basins add +3 while preserving fruit/oil ripening seasons. These are per-roll profile budgets, not tonnes-per-hectare claims. Polar climates remain ineligible for new irrigation.
+Irrigation selects a method from **crop and climate together**. For the general fallback methods, oasis distribution adds +5 at tier I; paddies and raised gardens +3; dryland fields and warm recession crops +4; temperate continental fields +2; supplemental irrigation in cool/already wet settings +1. Orchard basins add +3 while preserving fruit/oil ripening seasons. More specific techniques override these general curves; consult the actual tile preview and full catalogue. These are per-roll profile budgets, not tonnes-per-hectare claims. Polar climates remain ineligible for new irrigation.
 
 **Concentrated** retains the crop's existing harvest dates. **Spread** distributes exactly the same improved annual grain/oil budget across suitable harvest seasons. It represents staggered plots and planting dates across a tile, not four mature crops on every individual field. It therefore lowers dependence on one season's dice rolls without creating extra output by switching modes.
 

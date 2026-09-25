@@ -13,6 +13,9 @@ import {
 import { SEASONS, seasonalProfile, seasonYear } from "../game/seasons";
 import { affordable } from "../game/selectors";
 import { localTechnique } from "../game/infrastructure-techniques";
+import { techniqueSite } from "../game/infrastructure-specializations";
+import { CLIMATE_INFO, BIOME_INFO } from "../game/climate-content";
+import { GOOD_INFO } from "../game/content";
 import { Cost, GoodsList } from "./components";
 import { localize as tx, useLocale } from "../i18n";
 import {
@@ -69,8 +72,8 @@ export function InfrastructurePanel({
           ]
         }
         {fr
-          ? ". Les peintures disponibles suivent le niveau admissible le plus élevé ; la chasse conserve l’image originale. Chaque projet garde ses propres bonus."
-          : ". Available paintings follow the highest eligible tier; hunting preserves the original art. Each project keeps its own benefits."}
+          ? ". Les peintures disponibles suivent le niveau admissible le plus élevé ; la chasse, la cueillette et la baleine conservent l’image originale. Chaque projet garde ses propres bonus."
+          : ". Available paintings follow the highest eligible tier; hunting, foraging and whaling preserve the original art. Each project keeps its own benefits."}
       </small>
       <p>
         {fr
@@ -79,6 +82,54 @@ export function InfrastructurePanel({
       </p>
       {kinds.map((kind) => {
         const method = localTechnique(tile, kind);
+        const site = techniqueSite(method.id);
+        const setting = site
+          ? [
+              ...(site.biomes ? [tx(BIOME_INFO[tile.biome!].name)] : []),
+              ...(site.climates
+                ? [tx(CLIMATE_INFO[tile.climate ?? "temperate"].name)]
+                : []),
+              ...(site.waterways
+                ? [
+                    tx(
+                      tile.geography!.waterway === "river"
+                        ? "River"
+                        : tile.geography!.waterway === "lake"
+                          ? "Lake"
+                          : tile.geography!.waterway === "reef"
+                            ? "Reef"
+                            : tile.geography!.waterway === "shoal"
+                              ? "Shallows"
+                              : "Coast",
+                    ),
+                  ]
+                : []),
+              ...(site.coastal ? [fr ? "Côte" : "Coastal"] : []),
+              ...(site.delta ? ["Delta"] : []),
+              ...(site.minElevation !== undefined
+                ? [fr ? "Terrain élevé" : "High ground"]
+                : []),
+              ...(site.maxElevation !== undefined
+                ? [fr ? "Basses terres" : "Low ground"]
+                : []),
+              ...(site.landmark
+                ? [
+                    tx(
+                      site.landmark === "ancient-grove"
+                        ? "Ancient grove"
+                        : site.landmark === "natural-harbor"
+                          ? "Natural harbor"
+                          : site.landmark === "thermal-spring"
+                            ? "Thermal spring"
+                            : "Mineral vein",
+                    ),
+                  ]
+                : []),
+            ]
+          : [];
+        const favored = Object.entries(method.goods ?? {})
+          .filter(([, n]) => n > 1)
+          .map(([good]) => tx(GOOD_INFO[good as Good].name));
         const tier = tierOf(tile, kind),
           next = tier + 1,
           installed = tile.geography?.projects?.[kind];
@@ -122,6 +173,32 @@ export function InfrastructurePanel({
               <strong>{tx(method.name)}</strong>
             </small>
             <p>{tx(method.description)}</p>
+            {!!setting.length && (
+              <small data-method-site>
+                {fr ? "Site : " : "Setting: "}
+                {setting.join(" · ")}
+              </small>
+            )}
+            {!!favored.length && (
+              <small data-recovery-priority>
+                {fr ? "Le bonus partagé favorise : " : "Shared bonus favors: "}
+                {favored.join(", ")}.
+              </small>
+            )}
+            {kind === "whaling" && !tile.geography?.fauna?.oil && (
+              <small>
+                {fr
+                  ? "Aucune baleine actuellement : aucun gain avant leur retour."
+                  : "No whales currently: no return until whales visit."}
+              </small>
+            )}
+            {kind === "fishery" && !tile.geography?.fauna?.fish && (
+              <small>
+                {fr
+                  ? "Aucun banc actuellement : aucun gain avant son retour."
+                  : "No shoal currently: no return until fish visit."}
+              </small>
+            )}
             {kind === "hunting" &&
               !Object.values(tile.geography?.fauna ?? {}).some(Boolean) && (
                 <small>
@@ -148,7 +225,7 @@ export function InfrastructurePanel({
                       ? "Gains saisonniers et protection"
                       : "Seasonal gains and protection"}
                   </summary>
-                  {["hunting", "fishery"].includes(kind) && (
+                  {["hunting", "fishery", "whaling"].includes(kind) && (
                     <small>
                       {fr
                         ? "Selon les animaux présents ; les migrations peuvent changer ces gains."

@@ -109,3 +109,5 @@ GPU terrain cache key, so upgrading, seasonal changes and destruction refresh
 the corresponding painting without adding per-frame composition work.
 
 Hunting improvements do not select forestry development paintings. Hunting alone leaves the original habitat and wildlife art intact; a separate forestry investment can still select its own exact-source painting. This remains an artwork-only distinction and has no effect on production.
+
+Hunting, wild-berry gathering and whale-product works retain the original tile artwork at every tier. The expanded production catalogue adds no paintings and does not borrow unrelated farming or forestry art.

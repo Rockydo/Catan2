@@ -63,8 +63,10 @@ describe("local production methods", () => {
     const desert = tile("flood-wheat", "desert"),
       wet = tile("golden-fields", "oceanic"),
       rice = tile("rice-field", "tropical");
-    expect(localTechnique(desert, "irrigation").id).toBe("oasis");
-    expect(localTechnique(rice, "irrigation").id).toBe("paddy");
+    expect(localTechnique(desert, "irrigation").id).toBe("desert-basin-wheat");
+    expect(localTechnique(rice, "irrigation").id).toBe(
+      "tropical-paddy-division",
+    );
     expect(annualInfrastructureBonus(desert, "irrigation", 1)).toBeGreaterThan(
       annualInfrastructureBonus(wet, "irrigation", 1),
     );
