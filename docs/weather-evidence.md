@@ -6,13 +6,13 @@ These are deliberately coarse game modifiers. The scientific sources support the
 
 | Condition           | Effect before rounding                                                                                                                                                                                                                         |
 | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Dry spell           | Rice, potatoes, chinampas and sago: -50% grain. Other crops: -25%, except millet, sorghum and olives, which resist this ordinary dry spell. Irrigation halves the penalty. Farm animal products: -25%. Salt: +50%.                             |
+| Dry spell           | Rice, potatoes, chinampas and sago: -50% grain. Other crops: -25%, except millet, sorghum and olives, which resist this ordinary dry spell. Local irrigation and soil/runoff methods mitigate the penalty according to their tier. Farm animal products: -25%. Salt: +50%.                             |
 | Wet spell           | Rice, chinampas and sago: +25% grain. Other crops in Desert, Hyperarid, Steppe and Savanna: +25%; other climates: -25% from wet harvesting or waterlogged soil. Logging: -25%. Salt: -50%. Farm animal products in dry grazing climates: +25%. |
 | Cold spell          | Warm-climate crops and sensitive rice/root crops: -50% grain. Other crops: -25%. Farm animal products: -25%. Logging in cold climates: -25%. Salt: -25%.                                                                                       |
 | Mild spell          | Productive spring/autumn crops and farm animal products in cold climates: +25%. No extra harvest outside their calendar.                                                                                                                       |
 | Seasonal conditions | No adjustment.                                                                                                                                                                                                                                 |
 
-Round to the nearest whole resource, halves upward. Productive logging retains at least one Wood. Very small harvests may therefore show no change. Wildlife output is unchanged: populations move, avoid development and flee forming ice when nearby open water is reachable. Flooded, frozen or disrupted ground can still stop production. Mining has no ordinary weather multiplier; seasonal access and the existing climate calendar still matter. Automatic processed output follows every adjusted raw yield.
+Round to the nearest whole resource, halves upward. Productive logging retains at least one Wood. Very small harvests may therefore show no change. Wildlife output is unchanged: populations move, avoid development and flee forming ice when nearby open water is reachable. Flooded, frozen or disrupted ground can still stop production. Exposed ore/coal/gold/clay workings lose 25% in wet spells, stone 10%, and peat 50%; dry weather helps peat drying by 25%. Cold spells reduce extraction in cool climates by 25%. Local pumps, covers and thawing mitigate the relevant loss; seasonal access still matters. Automatic processed output follows every adjusted raw yield.
 
 ## Agricultural evidence
 
@@ -28,4 +28,8 @@ Round to the nearest whole resource, halves upward. Productive logging retains a
 
 [UK Forest Research water guidance](https://cdn.forestresearch.gov.uk/2021/03/FCPG025B-WEB-compressed.pdf) recommends suspending extraction on vulnerable ground during heavy rainfall. The timber penalty represents access and hauling, not trees suddenly shrinking.
 
-[FAO solar salt production](https://www.fao.org/4/w3732e/w3732e0q.htm) describes rainy-season interruption of salt production. Dry weather improves evaporation; rain dilutes brine. The game's mineral mines do not share that mechanism.
+[FAO solar salt production](https://www.fao.org/4/w3732e/w3732e0q.htm) describes rainy-season interruption of salt production. Dry weather improves evaporation; rain dilutes brine. Mine penalties instead represent working access and water in workings; they do not use salt's evaporation mechanism.
+
+## Local investment and weather resilience
+
+See [local production methods](local-production-methods.md) for the full technique-to-evidence mapping. Rain, pumping, cold-ground thawing and peat drying are represented by deliberately conservative whole-card game modifiers, not measured universal productivity losses. Only the strongest applicable owned protection mitigates a negative factor. Good weather is not reduced. Migrating animals and hunting-recovery bonuses are excluded from these weather multipliers; population movement already represents wildlife response.

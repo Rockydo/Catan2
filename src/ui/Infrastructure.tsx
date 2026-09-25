@@ -1,4 +1,4 @@
-import type { Game, Hex, Command } from "../game/types";
+import type { Game, Hex, Command, Good } from "../game/types";
 import {
   INFRASTRUCTURE,
   tierOf,
@@ -12,6 +12,7 @@ import {
 } from "../game/geography-actions";
 import { SEASONS, seasonalProfile, seasonYear } from "../game/seasons";
 import { affordable } from "../game/selectors";
+import { localTechnique } from "../game/infrastructure-techniques";
 import { Cost, GoodsList } from "./components";
 import { localize as tx, useLocale } from "../i18n";
 import {
@@ -68,15 +69,16 @@ export function InfrastructurePanel({
           ]
         }
         {fr
-          ? ". Apparence déterminée par l’amélioration la plus avancée ; les bonus restent propres à chaque projet."
-          : ". Appearance follows the highest upgrade tier; each project keeps its own benefits."}
+          ? ". Les peintures disponibles suivent le niveau admissible le plus élevé ; la chasse conserve l’image originale. Chaque projet garde ses propres bonus."
+          : ". Available paintings follow the highest eligible tier; hunting preserves the original art. Each project keeps its own benefits."}
       </small>
       <p>
         {fr
-          ? "Un bâtiment adjacent du même niveau est requis. Le charbon se paie uniquement à la construction. Aucun entretien. Une armée ennemie détruit les améliorations après le combat."
-          : "Requires an adjacent settlement/city of the same tier. Coal is paid only at construction. No upkeep. Enemy armies destroy improvements after combat."}
+          ? "Un bâtiment adjacent du même niveau est requis. Le charbon se paie uniquement à la construction. Aucun entretien. Le bon numéro doit toujours sortir aux dés. Une armée ennemie détruit les améliorations après le combat."
+          : "Requires an adjacent settlement/city of the same tier. Coal is paid only at construction. No upkeep. The matching dice roll is still required. Enemy armies destroy improvements after combat."}
       </p>
       {kinds.map((kind) => {
+        const method = localTechnique(tile, kind);
         const tier = tierOf(tile, kind),
           next = tier + 1,
           installed = tile.geography?.projects?.[kind];
@@ -97,8 +99,9 @@ export function InfrastructurePanel({
             },
           },
         };
-        const future =
-          next <= 4 ? annual(seasonalProfile(preview, viewer)) : total;
+        const futureProfile =
+          next <= 4 ? seasonalProfile(preview, viewer) : current;
+        const future = annual(futureProfile);
         const delta = Object.fromEntries(
           Object.entries(future)
             .filter(([g, n]) => n > (total[g as keyof typeof total] ?? 0))
@@ -109,24 +112,99 @@ export function InfrastructurePanel({
             className="geography-project"
             key={kind}
             data-infrastructure={kind}
+            data-infrastructure-method={method.id}
           >
             <b>
               {tx(INFRASTRUCTURE[kind].name)}
               {tier > 0 ? ` · ${["", "I", "II", "III", "IV"][tier]}` : ""}
             </b>
-            <p>{tx(INFRASTRUCTURE[kind].description)}</p>
+            <small>
+              <strong>{tx(method.name)}</strong>
+            </small>
+            <p>{tx(method.description)}</p>
+            {kind === "hunting" &&
+              !Object.values(tile.geography?.fauna ?? {}).some(Boolean) && (
+                <small>
+                  {fr
+                    ? "Aucun animal actuellement : gain nul tant qu’une migration ne revient pas."
+                    : "No animals currently: no return until wildlife visits again."}
+                </small>
+              )}
             {installed && <small>{s.players[installed.owner].name}</small>}
             {!foreign && next <= 4 && (
               <>
                 <strong>
-                  {tx(INFRASTRUCTURE[kind].stages[next - 1])} · {next}
+                  {tx(method.stages[next - 1])} · {next}
                 </strong>
                 <small>
                   {fr
                     ? "Gain annuel théorique, par producteur et par cycle des quatre saisons, avant météo et inondations :"
                     : "Added harvest across four seasons, per producer, before weather and flooding:"}
                 </small>
-                <GoodsList stock={delta} />
+                <GoodsList stock={delta} empty="No extra harvest" />
+                <details className="infrastructure-effects">
+                  <summary>
+                    {fr
+                      ? "Gains saisonniers et protection"
+                      : "Seasonal gains and protection"}
+                  </summary>
+                  {["hunting", "fishery"].includes(kind) && (
+                    <small>
+                      {fr
+                        ? "Selon les animaux présents ; les migrations peuvent changer ces gains."
+                        : "Uses current wildlife; migration can change these gains."}
+                    </small>
+                  )}
+                  <div className="geography-calendar">
+                    {SEASONS.map((season) => (
+                      <div key={season}>
+                        <small>
+                          {tx(season[0].toUpperCase() + season.slice(1))}
+                        </small>
+                        <GoodsList
+                          empty="No extra harvest"
+                          stock={Object.fromEntries(
+                            Object.entries(futureProfile[season]).map(
+                              ([good, n]) => [
+                                good,
+                                Math.max(
+                                  0,
+                                  n! - (current[season][good as Good] ?? 0),
+                                ),
+                              ],
+                            ),
+                          )}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                  {Object.entries(method.protection ?? {}).map(
+                    ([weather, curve]) => (
+                      <small key={weather}>
+                        {
+                          (fr
+                            ? {
+                                dry: "Pertes de sécheresse réduites",
+                                wet: "Pertes de pluie réduites",
+                                cold: "Pertes de froid réduites",
+                              }
+                            : {
+                                dry: "Dry-spell losses reduced",
+                                wet: "Wet-spell losses reduced",
+                                cold: "Cold-spell losses reduced",
+                              })[weather as "dry" | "wet" | "cold"]
+                        }
+                        : {Math.round((curve[tier - 1] ?? 0) * 100)}% →{" "}
+                        {Math.round(curve[next - 1] * 100)}%
+                      </small>
+                    ),
+                  )}
+                  <small>
+                    {fr
+                      ? "La meilleure protection s’applique, sans cumul. Pas de protection contre l’inondation ou la glace."
+                      : "The strongest applicable protection wins; protections do not stack. Floods and ice still block harvests."}
+                  </small>
+                </details>
                 <Cost cost={cost} />
                 {!allowed && (
                   <small>

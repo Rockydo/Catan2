@@ -1,8 +1,11 @@
 import {
   isInfrastructure,
   annualInfrastructureBonus,
+  infrastructureProtection,
+  improvedGoods,
   tierOf,
 } from "./infrastructure";
+import { localTechnique } from "./infrastructure-techniques";
 import { projectCost } from "./geography-actions";
 import { PROJECTS, pieceAccess, baseGeographicYield } from "./geography";
 import { projectSite } from "./geography-actions";
@@ -1262,10 +1265,47 @@ export function economyProjects(s: Game): Project[] {
         const floodRisk =
           SEASONS.reduce((n, season) => n + environmentRisk(tile, season), 0) /
           4;
+        // Migratory output is conditional; a sighting is not a permanent farm.
+        const availability =
+          kind === "hunting"
+            ? Object.values(g.fauna ?? {}).some((n) => n && n > 0)
+              ? 0.35
+              : 0.08
+            : kind === "fishery"
+              ? g.fauna?.fish
+                ? 0.7
+                : 0.15
+              : 1;
+        // Modest expected-value credit for weather resilience. Count only the
+        // improvement beyond the strongest existing protection, not every track.
+        let resilience = 0;
+        if (isInfrastructure(kind)) {
+          const method = localTechnique(tile, kind),
+            native = baseGeographicYield(tile);
+          for (const [weather, curve] of Object.entries(
+            method.protection ?? {},
+          ))
+            for (const raw of improvedGoods(tile, kind))
+              resilience +=
+                (native[raw] ?? 0) *
+                0.6 *
+                Math.max(
+                  0,
+                  curve[nextTier - 1] -
+                    infrastructureProtection(
+                      tile,
+                      raw,
+                      weather as "dry" | "wet" | "cold",
+                      s.active,
+                    ),
+                );
+        }
         const score = isInfrastructure(kind)
           ? (production *
+              availability *
               (annualInfrastructureBonus(tile, kind, nextTier) -
-                annualInfrastructureBonus(tile, kind, nextTier - 1)) *
+                annualInfrastructureBonus(tile, kind, nextTier - 1) +
+                resilience) *
               1.5) /
             (nextTier * nextTier)
           : kind === "levee"

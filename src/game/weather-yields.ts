@@ -1,4 +1,8 @@
-import { effectiveTier, isCrop } from "./infrastructure";
+import {
+  infrastructureProtection,
+  huntingYield,
+  isCrop,
+} from "./infrastructure";
 import type { Hex, Raw, Stock } from "./types";
 import type { Season } from "./seasons";
 import type { Weather } from "./geography";
@@ -38,20 +42,24 @@ const resilient = new Set([
 /** Directions follow FAO crop-water sensitivity, IRRI cold damage, grass growth
  * and forestry/salt evaporation guidance. Percentages are game balance values,
  * not claimed field measurements. See docs/weather-evidence.md. */
-export function weatherYieldFactor(
+function nativeWeatherFactor(
   tile: Hex,
   raw: Raw,
   season: Season,
   weather: Weather,
-  owner?: number,
 ): number {
   const climate = tile.climate ?? "temperate",
     biome = tile.biome ?? "";
+  if (["ore", "coal", "gold", "stone", "brick"].includes(raw)) {
+    if (weather === "wet")
+      return biome === "peat-bog" ? 0.5 : raw === "stone" ? 0.9 : 0.75;
+    if (weather === "cold" && cool.has(climate)) return 0.75;
+    if (weather === "dry" && biome === "peat-bog") return 1.25;
+    return 1;
+  }
   if (raw === "salt")
     return weather === "wet"
-      ? effectiveTier(tile, "saltworks", owner) >= 3
-        ? 0.9
-        : 0.5
+      ? 0.5
       : weather === "dry"
         ? 1.5
         : weather === "cold"
@@ -64,8 +72,7 @@ export function weatherYieldFactor(
   if (raw === "grain" || (raw === "oil" && isCrop(tile))) {
     if (weather === "dry") {
       const factor = resilient.has(biome) ? 1 : thirsty.has(biome) ? 0.5 : 0.75;
-      const tier = effectiveTier(tile, "irrigation", owner);
-      return factor + (1 - factor) * (tier ? 0.4 + 0.1 * tier : 0);
+      return factor;
     }
     if (weather === "cold")
       return warm.has(climate) || thirsty.has(biome) ? 0.5 : 0.75;
@@ -87,8 +94,7 @@ export function weatherYieldFactor(
         )
       )
         return 1.25;
-      const tier = effectiveTier(tile, "drainage", owner);
-      return 0.75 + 0.25 * (tier ? 0.4 + 0.1 * tier : 0);
+      return 0.75;
     }
     if (
       weather === "mild" &&
@@ -99,8 +105,7 @@ export function weatherYieldFactor(
   }
   if (["wool", "meat", "hides"].includes(raw)) {
     if (weather === "dry" || weather === "cold") {
-      const tier = effectiveTier(tile, "husbandry", owner);
-      return 0.75 + 0.25 * (tier ? 0.4 + 0.1 * tier : 0);
+      return 0.75;
     }
     if (
       weather === "wet" &&
@@ -123,6 +128,27 @@ export function weatherYieldFactor(
   }
   return 1;
 }
+/** Resilience is the strongest applicable local method, never stacked immunity. */
+export function weatherYieldFactor(
+  tile: Hex,
+  raw: Raw,
+  season: Season,
+  weather: Weather,
+  owner?: number,
+): number {
+  const base = nativeWeatherFactor(tile, raw, season, weather);
+  if (base >= 1 || !["dry", "wet", "cold"].includes(weather)) return base;
+  return (
+    base +
+    (1 - base) *
+      infrastructureProtection(
+        tile,
+        raw,
+        weather as "dry" | "wet" | "cold",
+        owner,
+      )
+  );
+}
 export function weatherAdjustedYield(
   tile: Hex,
   stock: Stock,
@@ -137,9 +163,13 @@ export function weatherAdjustedYield(
   )
     return stock;
   const output: Stock = {};
+  const game = huntingYield(tile, owner, season);
   for (const [good, amount] of Object.entries(stock)) {
     const raw = good as Raw,
-      wildlife = Math.min(amount!, tile.geography?.fauna?.[raw] ?? 0);
+      wildlife = Math.min(
+        amount!,
+        game[raw] ?? tile.geography?.fauna?.[raw] ?? 0,
+      );
     const base = amount! - wildlife;
     // Wild animals react by migration. Weather does not multiply herd size.
     const adjusted = Math.round(

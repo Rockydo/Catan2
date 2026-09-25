@@ -17,11 +17,12 @@ export const DEVELOPMENT_NAMES_FR = [
 export const DEVELOPMENT_ART_LIMIT = 1000;
 
 /** Appearance only. Several basic projects cannot imply a steam-powered site.
+ * Hunting has no approved development paintings; it must not select logging art.
  * Utility projects keep their existing visuals and do not set production level. */
 export function developmentLevel(tile: Hex): DevelopmentLevel {
   let highest = 0;
   for (const [kind, project] of Object.entries(tile.geography?.projects ?? {}))
-    if (project && isInfrastructure(kind))
+    if (project && isInfrastructure(kind) && kind !== "hunting")
       highest = Math.max(highest, project.tier ?? 1);
   return highest >= 4 ? 3 : highest >= 3 ? 2 : highest > 0 ? 1 : 0;
 }

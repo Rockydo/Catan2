@@ -187,6 +187,7 @@ describe("climate-specific infrastructure", () => {
     );
     expect(weatherYieldFactor(sunflower, "oil", "autumn", "dry", 1)).toBe(0.75);
     t.biome = "golden-fields";
+    t.geography!.floodplain = true;
     t.geography!.projects = {
       drainage: { owner: 0, born: 1, tier: 4 },
     };

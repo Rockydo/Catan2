@@ -107,3 +107,5 @@ Git). Previous built-in-tool experiment prompts remain documented separately in
 The board loads only referenced images. The selected image ID is part of the
 GPU terrain cache key, so upgrading, seasonal changes and destruction refresh
 the corresponding painting without adding per-frame composition work.
+
+Hunting improvements do not select forestry development paintings. Hunting alone leaves the original habitat and wildlife art intact; a separate forestry investment can still select its own exact-source painting. This remains an artwork-only distinction and has no effect on production.

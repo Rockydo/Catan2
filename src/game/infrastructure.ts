@@ -1,6 +1,8 @@
 import { BIOME_INFO, biomeYield, type Climate } from "./climate-content";
 import type { Hex, Stock, Raw } from "./types";
 import type { Season } from "./seasons";
+import { localTechnique } from "./infrastructure-techniques";
+import { wildHabitat } from "./wildlife-habitat";
 
 export const INFRASTRUCTURE = {
   irrigation: {
@@ -111,6 +113,30 @@ export const INFRASTRUCTURE = {
       "Integrated salt refinery",
     ],
   },
+  catchments: {
+    name: "Rainwater harvesting",
+    cost: { stone: 3, lumber: 1, ore: 1 },
+    description:
+      "Runoff basins and bunds support existing rainfed dryland crops without creating a river or another harvest season.",
+    stages: [
+      "Runoff planting basins",
+      "Contour bunds and cisterns",
+      "Runoff distribution pumps",
+      "Managed microcatchments",
+    ],
+  },
+  hunting: {
+    name: "Hunting infrastructure",
+    cost: { lumber: 2, stone: 1, hides: 1, salt: 1 },
+    description:
+      "Tracking shelters and game handling improve returns from visiting wildlife. Empty habitat still produces nothing.",
+    stages: [
+      "Tracking shelters",
+      "Hides and curing racks",
+      "Game-handling depot",
+      "Regional game cold store",
+    ],
+  },
   fishery: {
     name: "Fishery infrastructure",
     cost: { lumber: 3, salt: 2, wool: 1 },
@@ -202,6 +228,24 @@ const UPGRADE_COSTS: Record<
     { planks: 4, masonry: 12, ceramics: 6, steel: 10, coal: 45 },
     { planks: 8, masonry: 24, ceramics: 12, steel: 24, coal: 110, coke: 12 },
   ],
+  catchments: [
+    { stone: 6, masonry: 3, ceramics: 3, steel: 2, coal: 4 },
+    { stone: 12, masonry: 8, ceramics: 6, steel: 8, coal: 30 },
+    { stone: 18, masonry: 18, ceramics: 12, steel: 18, coal: 80, coke: 8 },
+  ],
+  hunting: [
+    { planks: 5, leather: 3, salt: 3, steel: 2, coal: 4 },
+    { planks: 8, masonry: 5, leather: 4, salt: 6, steel: 6, coal: 24 },
+    {
+      planks: 14,
+      masonry: 12,
+      leather: 6,
+      salt: 10,
+      steel: 16,
+      coal: 60,
+      coke: 6,
+    },
+  ],
   fishery: [
     { planks: 6, masonry: 4, cloth: 3, steel: 2, coal: 6 },
     { planks: 10, masonry: 10, cloth: 4, steel: 12, coal: 40 },
@@ -211,11 +255,18 @@ const UPGRADE_COSTS: Record<
 export function infrastructureCost(
   kind: InfrastructureKind,
   tier: number,
+  tile?: Hex,
 ): Stock {
-  if (tier === 1) return { ...INFRASTRUCTURE[kind].cost };
-  const cost = UPGRADE_COSTS[kind][tier - 2];
+  const cost: Stock | undefined =
+    tier === 1 ? INFRASTRUCTURE[kind].cost : UPGRADE_COSTS[kind][tier - 2];
   if (!cost) throw new Error(`Invalid infrastructure tier: ${tier}`);
-  return { ...cost };
+  const materials = tile ? localTechnique(tile, kind).materials : undefined;
+  return Object.fromEntries(
+    Object.entries(cost).map(([good, n]) => [
+      good,
+      Math.ceil(n! * (materials?.[good as keyof Stock] ?? 1)),
+    ]),
+  );
 }
 
 type Agronomy = {
@@ -325,6 +376,7 @@ export function infrastructureSuitable(
   tile: Hex,
   kind: InfrastructureKind,
 ): boolean {
+  if (kind === "hunting") return !!tile.geography && wildHabitat(tile);
   if (
     !tile.geography ||
     ["ice", "peaks", "snow", "desert"].includes(tile.resource) ||
@@ -335,6 +387,22 @@ export function infrastructureSuitable(
     b = tile.biome!;
   const yields = biomeYield(b, tile.climate);
   switch (kind) {
+    case "catchments":
+      return (
+        isCrop(tile) &&
+        ["semiarid", "savanna", "steppe", "prairie", "mediterranean"].includes(
+          tile.climate ?? "",
+        ) &&
+        ![
+          "rice-field",
+          "flood-rice",
+          "delta-gardens",
+          "chinampa-gardens",
+          "sago-grove",
+          "oasis",
+        ].includes(b) &&
+        !tile.geography.floodplain
+      );
     case "irrigation":
       return isCrop(tile) && a.irrigation > 0;
     case "soil":
@@ -377,7 +445,10 @@ export function improvedGoods(tile: Hex, kind: InfrastructureKind): Raw[] {
     case "soil":
     case "drainage":
     case "terraces":
+    case "catchments":
       return ["grain", "oil"];
+    case "hunting":
+      return ["meat", "hides", "wool", "oil"];
     case "husbandry":
       return ["meat", "wool", "hides"];
     case "forestry":
@@ -398,41 +469,97 @@ export function annualInfrastructureBonus(
   tier: number,
 ): number {
   if (!tier || !infrastructureSuitable(tile, kind)) return 0;
-  const a = AGRONOMY[tile.climate ?? "temperate"];
-  const response =
-    kind === "irrigation"
-      ? a.irrigation
-      : kind === "soil"
-        ? a.moisture === "wet"
-          ? 3
-          : 2
-        : kind === "drainage"
-          ? a.moisture === "wet"
-            ? 3
-            : 1
-          : kind === "terraces"
-            ? ["alpine", "andean"].includes(tile.climate ?? "")
-              ? 3
-              : 2
-            : kind === "husbandry"
-              ? a.heat === "cool" || a.moisture === "dry"
-                ? 3
-                : 2
-              : kind === "forestry"
-                ? a.moisture === "wet"
-                  ? 3
-                  : 2
-                : kind === "saltworks"
-                  ? a.moisture === "dry"
-                    ? 4
-                    : 2
-                  : kind === "fishery"
-                    ? a.heat === "hot"
-                      ? 4
-                      : 3
-                    : 4;
-  return response + [0, 0, 2, 3, 4][tier];
+  return localTechnique(tile, kind).annual[tier - 1] ?? 0;
 }
+
+export function infrastructureProtection(
+  tile: Hex,
+  raw: Raw,
+  weather: "dry" | "wet" | "cold",
+  owner?: number,
+): number {
+  let protection = 0;
+  for (const kind of Object.keys(tile.geography?.projects ?? {}).filter(
+    isInfrastructure,
+  )) {
+    const tier = effectiveTier(tile, kind, owner);
+    if (
+      !tier ||
+      !infrastructureSuitable(tile, kind) ||
+      !improvedGoods(tile, kind).includes(raw)
+    )
+      continue;
+    protection = Math.max(
+      protection,
+      localTechnique(tile, kind).protection?.[weather]?.[tier - 1] ?? 0,
+    );
+  }
+  return protection;
+}
+
+/** One shared budget per track, split over eligible seasons, then existing goods.
+ * This prevents a meat/hide/wool tile multiplying a single project's bonus. */
+export function infrastructureExtras(
+  tile: Hex,
+  kind: InfrastructureKind,
+  tier: number,
+  native: Record<Season, Stock>,
+): Record<Season, Stock> {
+  const seasons = ["spring", "summer", "autumn", "winter"] as const;
+  const output: Record<Season, Stock> = {
+    spring: {},
+    summer: {},
+    autumn: {},
+    winter: {},
+  };
+  const bonus = annualInfrastructureBonus(tile, kind, tier);
+  if (!bonus) return output;
+  const goods = improvedGoods(tile, kind),
+    profile = localTechnique(tile, kind);
+  const amounts = seasons.map((season) =>
+    goods.map((raw) =>
+      kind === "hunting"
+        ? (tile.geography?.fauna?.[raw] ?? 0)
+        : (native[season][raw] ?? 0),
+    ),
+  );
+  const totals = amounts.map(
+    (row, i) => row.reduce((a, b) => a + b, 0) * (profile.seasons?.[i] ?? 1),
+  );
+  const budgets = allocateAnnual(bonus, totals);
+  seasons.forEach((season, i) => {
+    const extra = allocateAnnual(budgets[i], amounts[i]);
+    goods.forEach((raw, j) => {
+      if (extra[j]) output[season][raw] = extra[j];
+    });
+  });
+  return output;
+}
+export function huntingYield(
+  tile: Hex,
+  owner?: number,
+  season?: Season,
+): Stock {
+  const fauna = tile.geography?.fauna ?? {};
+  const result: Stock = Object.fromEntries(
+    improvedGoods(tile, "hunting")
+      .filter((g) => fauna[g])
+      .map((g) => [g, fauna[g]]),
+  );
+  if (!season) return result;
+  const tier = effectiveTier(tile, "hunting", owner);
+  if (!tier) return result;
+  const extra = infrastructureExtras(tile, "hunting", tier, {
+    spring: fauna,
+    summer: fauna,
+    autumn: fauna,
+    winter: fauna,
+  })[season];
+  for (const raw of improvedGoods(tile, "hunting"))
+    if (extra[raw]) result[raw] = (result[raw] ?? 0) + extra[raw]!;
+  return result;
+}
+
 /** Allocate whole cards without creating new harvest seasons or compounding upgrades. */
 export function allocateAnnual(total: number, weights: number[]): number[] {
   const sum = weights.reduce((a, b) => a + b, 0);

@@ -88,7 +88,7 @@ export function freshwaterSite(s: Game, tile: Hex): boolean {
 export function projectCost(tile: Hex, kind: Project): Stock {
   if (!isInfrastructure(kind)) return PROJECTS[kind].cost;
   const next = tierOf(tile, kind) + 1;
-  return next > 4 ? {} : infrastructureCost(kind, next);
+  return next > 4 ? {} : infrastructureCost(kind, next, tile);
 }
 export function geographyCommand(s: Game, c: Command): boolean {
   if (

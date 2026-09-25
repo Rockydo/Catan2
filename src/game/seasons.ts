@@ -1,8 +1,7 @@
 import {
   isInfrastructure,
   effectiveTier,
-  improvedGoods,
-  annualInfrastructureBonus,
+  infrastructureExtras,
   allocateAnnual,
   cropHarvestWindow,
 } from "./infrastructure";
@@ -531,16 +530,11 @@ export function seasonalProfile(
       ) as Record<Season, Stock>;
       for (const kind of projects) {
         const tier = effectiveTier(tile, kind, owner);
-        const bonus = annualInfrastructureBonus(tile, kind, tier);
-        if (!bonus) continue;
-        for (const good of improvedGoods(tile, kind)) {
-          const amounts = SEASONS.map((season) => native[season][good] ?? 0);
-          if (!amounts.some(Boolean)) continue;
-          const extra = allocateAnnual(bonus, amounts);
-          SEASONS.forEach((season, i) => {
-            result[season][good] = (result[season][good] ?? 0) + extra[i];
-          });
-        }
+        const extra = infrastructureExtras(tile, kind, tier, native);
+        for (const season of SEASONS)
+          for (const [good, n] of Object.entries(extra[season]))
+            result[season][good as Raw] =
+              (result[season][good as Raw] ?? 0) + n!;
       }
     }
     if (

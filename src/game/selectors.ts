@@ -1,3 +1,4 @@
+import { huntingYield } from "./infrastructure";
 import { fishingRange } from "./content";
 import { pieceAccess } from "./geography";
 import { maxValue, minValue } from "./aggregate";
@@ -1055,6 +1056,15 @@ function readProduction(
     }
     return output;
   };
+  const huntingAt = (id: string, owner: number): Stock => {
+    const key = `hunting/${owner}/${id}`;
+    let output = yields.get(key);
+    if (!output) {
+      output = huntingYield(tiles[id], owner, season);
+      yields.set(key, output);
+    }
+    return output;
+  };
   const harvestAt = (
     id: string,
     owner: number,
@@ -1197,8 +1207,7 @@ function readProduction(
                     u.kind === "hunter"
                       ? Math.min(
                           amount!,
-                          (tiles[id].geography?.fauna?.[raw as Good] ?? 0) *
-                            u.tier,
+                          (huntingAt(id, u.owner)[raw as Good] ?? 0) * u.tier,
                         )
                       : amount!,
                 });

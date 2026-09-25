@@ -229,7 +229,7 @@ describe("resource-specific regional weather", () => {
     t.geography!.projects = { irrigation: { owner: 0, born: 1 } };
     expect(weatherYieldFactor(t, "grain", "autumn", "dry")).toBe(0.875);
   });
-  it("changes salt and logging while leaving mines and wild herds alone", () => {
+  it("changes exposed extraction, salt and logging while preserving wild herd output", () => {
     const t = tile("forest", "cold");
     t.geography!.weather = "wet";
     t.geography!.fauna = { hides: 3, meat: 2 };
@@ -239,7 +239,7 @@ describe("resource-specific regional weather", () => {
         { lumber: 4, salt: 4, ore: 3, hides: 3, meat: 2 },
         "summer",
       ),
-    ).toEqual({ lumber: 3, salt: 2, ore: 3, hides: 3, meat: 2 });
+    ).toEqual({ lumber: 3, salt: 2, ore: 2, hides: 3, meat: 2 });
     t.geography!.weather = "dry";
     expect(weatherAdjustedYield(t, { salt: 2 }, "summer").salt).toBe(3);
   });
