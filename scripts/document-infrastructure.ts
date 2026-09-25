@@ -22,7 +22,7 @@ const output = methods
           site.delta && "Delta",
           site.floodplain && "Floodplain",
           site.minElevation !== undefined && `Elevation ≥${site.minElevation}`,
-          site.maxElevation !== undefined && `Elevation ≤${site.maxElevation}`,
+          site.maxElevation !== undefined && `Elevation <${site.maxElevation}`,
           site.landmark,
         ]
           .filter(Boolean)

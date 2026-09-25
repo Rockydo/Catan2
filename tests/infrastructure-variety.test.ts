@@ -26,12 +26,14 @@ import {
   infrastructureSuitable,
   improvedGoods,
   huntingYield,
+  allocateInfrastructureBonus,
 } from "../src/game/infrastructure";
 import { seasonalProfile, seasonalYield, SEASONS } from "../src/game/seasons";
 import { generateHex } from "../src/game/world";
 import { developmentLevel } from "../src/ui/development-level";
 import fr from "../src/i18n/fr.json";
 import type { Hex, Stock } from "../src/game/types";
+import { REGIONAL_METHODS } from "../src/game/infrastructure-regional";
 const sum = (s: Stock) => Object.values(s).reduce((a, b) => a + b!, 0);
 const annual = (t: Hex, owner = 0) =>
   SEASONS.reduce((n, s) => n + sum(seasonalProfile(t, owner)[s]), 0);
@@ -91,7 +93,12 @@ function examples(rule: SpecializedTechnique, nativeOnly = true): Hex[] {
         g = t.geography!;
       Object.assign(g, {
         elevation:
-          rule.site.minElevation ?? (rule.kind === "terraces" ? 0.65 : 0.4),
+          rule.site.minElevation ??
+          (rule.site.maxElevation !== undefined
+            ? rule.site.maxElevation - 0.02
+            : rule.kind === "terraces"
+              ? 0.65
+              : 0.4),
         coastal: rule.site.coastal ?? false,
         delta: rule.site.delta ?? false,
         floodplain: rule.site.floodplain ?? rule.kind === "drainage",
@@ -109,9 +116,10 @@ function examples(rule: SpecializedTechnique, nativeOnly = true): Hex[] {
   return out;
 }
 describe("geographically specialized production catalogue", () => {
-  it("contains at least three times the original methods, with unique IDs and complete localization", () => {
+  it("doubles the 134-method catalogue, with unique IDs and complete localization", () => {
     const methods = Object.values(TECHNIQUES);
-    expect(methods.length).toBeGreaterThanOrEqual(43 * 3);
+    expect(methods.length).toBeGreaterThanOrEqual(134 * 2);
+    expect(REGIONAL_METHODS).toHaveLength(134);
     expect(new Set(methods.map((m) => m.id)).size).toBe(methods.length);
     for (const m of methods) {
       for (const text of [m.name, m.description, ...m.stages])
@@ -120,6 +128,41 @@ describe("geographically specialized production catalogue", () => {
       for (const n of m.annual)
         expect(Number.isInteger(n) && n >= 0 && n <= 9).toBe(true);
     }
+  });
+  it("never removes previously allocated seasonal cards when an upgrade grows the budget", () => {
+    // Largest-remainder rounding loses the first season's card at 3 -> 4.
+    for (const weights of [
+      [1, 3, 3, 0],
+      [1, 1, 2, 2],
+      [0, 5, 1, 2],
+      [2, 0, 0, 0],
+    ]) {
+      let previous = weights.map(() => 0);
+      for (let total = 1; total <= 9; total++) {
+        const next = allocateInfrastructureBonus(total, weights);
+        expect(next.reduce((a, b) => a + b, 0)).toBe(total);
+        next.forEach((n, i) => {
+          expect(n).toBeGreaterThanOrEqual(previous[i]);
+          if (!weights[i]) expect(n).toBe(0);
+        });
+        previous = next;
+      }
+    }
+    expect(allocateInfrastructureBonus(9, [0, 0, 0, 0])).toEqual([0, 0, 0, 0]);
+  });
+  it("rechecks geography after cached terrain lookup and keeps landmark methods distinctive", () => {
+    const t = fixture("iron", "temperate");
+    t.geography!.elevation = 0.48;
+    const low = localTechnique(t, "mining").id;
+    expect(low).toBe("regional-temperate-lowland-iron-drainage");
+    t.geography!.elevation = 0.8;
+    expect(localTechnique(t, "mining").id).not.toBe(low);
+    t.geography!.elevation = 0.48;
+    expect(localTechnique(t, "mining").id).toBe(low);
+    t.geography!.landmark = "mineral-vein";
+    expect(localTechnique(t, "mining").id).toBe("rich-vein-selective-dressing");
+    delete t.geography!.landmark;
+    expect(localTechnique(t, "mining").id).toBe(low);
   });
   it("gives every specialization a reachable suitable site, without shadowed dead definitions", () => {
     const missing = SPECIALIZATIONS.filter((r) => !examples(r).length).map(

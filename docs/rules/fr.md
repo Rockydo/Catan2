@@ -173,7 +173,7 @@ Les infrastructures productives exigent votre agglomération adjacente non assi�
 
 ### Infrastructures adaptées au climat
 
-Quatorze filières utilisent 134 méthodes locales (91 ajouts spécialisés et 43 méthodes générales conservées). Terrain et saisons → Infrastructure de production montre la technique, le niveau urbain requis, les matériaux exacts, les gains annuels et saisonniers et les protections météo.
+Quatorze filières utilisent 268 méthodes locales (225 méthodes spécialisées et 43 méthodes générales conservées). Terrain et saisons → Infrastructure de production montre la technique, le niveau urbain requis, les matériaux exacts, les gains annuels et saisonniers et les protections météo.
 
 - L’agriculture distingue rizières régulées, jardins surélevés alimentés par canaux, oasis, gestion de décrue, vergers, rotations des terres noires, nutriments tropicaux, racines et paillage sec. Les terrasses diffèrent entre hautes terres pierreuses, rizières en cascade et versants secs.
 - La collecte des eaux pluviales est une filière distincte : cuvettes, cordons et citernes soutiennent les cultures pluviales existantes en Semi-aride, Savane, Steppe, Prairie et Méditerranéen. Aucune rivière requise, mais plaines inondables, rizières, chinampas, jardins du delta, sagoutiers et oasis sont exclus. Ni irrigation du désert absolu ni saison supplémentaire. Bonus annuel général I–IV : 2/3/4/5 ; les méthodes spécialisées varient.
@@ -298,6 +298,12 @@ Les méthodes distinguent cultures, climat, côtes, deltas, cours d’eau, altit
 La cueillette des landes à baies ajoute 1/2/3/4 cartes annuelles partagées aux niveaux I–IV, pendant la courte récolte native. Les ateliers baleiniers marins nécessitent un bâtiment adjacent et le passage de baleines. Les méthodes froides/chaudes/tempérées ajoutent respectivement 2/3/4/5, 3/4/5/6 ou 2/4/5/6 cartes annuelles partagées, en privilégiant l’Huile. Sans baleine, aucun gain ; rivières, lacs et accès gelés restent exclus. Les priorités répartissent un seul bonus entre les produits existants, sans multiplier son total. Ces ouvrages conservent l’image du terrain.
 
 Tous les ouvrages industriels paient leur charbon à la construction dès le niveau II ; aucun entretien ni coût en Or ou Lingots. Les niveaux supérieurs coûtent de plus en plus cher pour des gains marginaux décroissants. Les projets existants gardent propriétaire et niveau, avec la méthode locale actuelle. Une nouvelle campagne n’est pas nécessaire.
+
+### Méthodes d’ingénierie régionales
+
+Les 134 nouvelles méthodes distinguent exposition côtière, altitude, basses terres, deltas et voies d’eau au sein des ressources existantes : relevage du blé en pente, billons du maïs de prairie, ensilage bovin océanique, débardage câblé alpin, exhaure minière basse, criblage sec ou salines insulaires protégées. Les 14 filières restent les mêmes : une méthode plus précise remplace celle de la filière, sans ajouter un bonus empilable.
+
+Le panneau indique le site, les matériaux et les gains saisonniers exacts. Un site élevé a un indice d’altitude d’au moins 0,72 ; les basses terres sont sous 0,52. Ce sont des indices de jeu, pas des mètres. Admissibilité, eau douce, niveau urbain voisin, crues et faune présente restent requis. Aucun nouvel entretien ni substitution d’image. Une amélioration conserve les cartes bonus déjà attribuées aux saisons et produits, puis ajoute les gains du niveau suivant ; les calendriers natifs et d’irrigation sont inchangés.
 
 ## Saisons et récoltes
 

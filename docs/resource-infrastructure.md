@@ -6,33 +6,20 @@ Select a tile, open **Terrain & seasons → Production infrastructure**. The pan
 
 Improvements belong to their builder. Their extra production and weather protection apply only to that faction's producers. Rival or allied settlements sharing a tile do not inherit the investment. The dice number still has to roll. Cities, camps and merchants apply their ordinary production multipliers; processed output follows the resulting raw harvest.
 
-## Fourteen investment tracks, 134 local methods
+## Fourteen investment tracks, 268 local methods
 
 The track is the investment category; the **local method** determines its actual technique, seasonal returns, weather protection and material bill. The inspector shows the method and its four development stages. A rice paddy, an oasis, a black-soil wheat field and a cold mine no longer use interchangeable improvements.
 
-| Track | Specific additions and distinct choices |
-|---|---|
-| Irrigation | 10 new methods: layered oases, hyperarid lined canals, three rice settings, maize/potato furrows, olive basins, desert alluvial wheat and delta garden distribution |
-| Soil husbandry | 12: millet, sorghum, maize, sunflower, barley, oats, turnips, Andean potatoes, olives, breadfruit, sago and chinampas |
-| Drainage | 6: delta outfalls, monsoon paddy spillways, raised wetland beds, oceanic tile drains, coastal field sluices and root-bed underdrains |
-| Terraces | 6: Andean potatoes, highland barley, olives, high rice cascades, Mesoamerican maize and dry cereal contours |
-| Rainwater harvesting | 5: millet planting pits, dry cereal half-moons, olive jessour, steppe snow retention and prairie contour catchments |
-| Husbandry | 8: alpaca fleece, goat browse, coastal sheep, savanna cattle, continental cattle, flood-meadow hay, alpine fodder and temperate sheep |
-| Forestry | 8: ancient groves, mangroves, river woodlands, cloud forest cable haulage, rainforest spars, dry coppice, island palms and tropical coastal yards |
-| Mining | 7: rich-vein dressing, polar iron thawing, boreal coal drifts, Andean gold stamps, desert dry sorting, wet-coal pumps and highland winding |
-| Quarrying | 7: polar stone shelters, volcanic blocks, coastal derricks, alluvial clay settling, shaded dry-clay pits, mountain inclines and cold peat lofts |
-| Saltworks | 5: sheltered-harbor salt yards, hyperarid crusts, desert crystallizers, Mediterranean salines and cold-season covered pans |
-| Fishery | 6: delta landings, reef handling, shoal net yards, cold-coast stockfish racks, monsoon-river smoking and lake icehouses |
-| Hunting | 7: coastal seal caches, polar tracking, reindeer drive markers, musk-ox fleece recovery, turkey cover, river woodland tracking and oasis gazelle observation |
-| Wild harvest **new track** | Berry gathering and preservation on existing tundra heath only |
-| Whale products **new track** | Polar, warm and temperate tryworks; Oil receives priority within the shared bonus |
+The current catalogue contains **225 site specializations plus 43 general/legacy methods**. The latest expansion adds another **134 methods**, distributed across all 14 tracks. See the catalogue for the full breakdown and exact selection conditions.
 
-These are **91 new methods**, supplementing the 43 general methods and fallbacks. Four stages per method retain the existing city-tier system. Exact budgets vary by method; the inspector previews the actual tile and its current wildlife.
-See the [complete method catalogue and research](local-production-methods.md) for all 134 methods, exact seasonal weights, protection percentages, costs and selection rules.
+Regional methods now distinguish uplands, low ground, coastlines, deltas and waterway types within a resource. For example, lowland iron uses dewatering, high iron uses winding or dry preparation, while cold iron can use sheltered thawing works. Coastal livestock can use dry pads or silage, exposed sheep favor fleece handling, and dry-country goats favor browse reserves.
+
+A more specific method **replaces the method of the same track**; it does not create another stackable improvement. Existing installed projects keep their owner and tier. Their local method is recalculated from stable site geography; weather and migration never change construction recipes.
+See the [complete method catalogue and research](local-production-methods.md) for all 268 methods, exact seasonal weights, protection percentages, costs and selection rules.
 
 Annual additions mean the sum of the four **per-roll seasonal amounts**, before weather, access and producer multipliers. Each season normally lasts two rounds. This is not a guaranteed annual payout: the matching number must roll. **Each track has one shared budget across its affected goods**, not a separate bonus for each good. A livestock tile cannot multiply one investment into three full bonuses for meat, hides and wool.
 
-Bonuses are divided across native productive seasons and goods in whole cards. Winter timber haulage favors winter; hay stores favor autumn/winter; solar salt and peat drying favor summer. No improvement creates a new resource, mineral deposit, forest or permanent wildlife population. Different tracks add bonuses from the original baseline; they never multiply one another. Irrigation alone can redistribute crops through the existing legal planting windows.
+Bonuses are divided across native productive seasons and goods in whole cards. The allocation is stable as levels rise: an upgrade cannot remove an existing seasonal or product bonus when the site and wildlife are unchanged. Winter timber haulage favors winter; hay stores favor autumn/winter; solar salt and peat drying favor summer. No improvement creates a new resource, mineral deposit, forest or permanent wildlife population. Different tracks add bonuses from the original baseline; they never multiply one another. Irrigation alone can redistribute crops through the existing legal planting windows.
 
 Rainwater harvesting requires an existing rainfed crop in Semiarid, Savanna, Steppe, Prairie or Mediterranean climates. It excludes floodplains, paddies, chinampas, delta gardens, sago and oases. Seasonal runoff is sufficient; a freshwater neighbor is not required. It cannot turn a true Desert/Hyperarid tile into irrigated farmland.
 

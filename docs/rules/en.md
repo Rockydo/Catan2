@@ -166,7 +166,7 @@ Production infrastructure requires your adjacent, unbesieged settlement/city: ti
 
 ### Climate-specific production infrastructure
 
-Fourteen investment tracks use 134 local methods (91 specific additions and 43 retained general methods). Open Terrain & seasons → Production infrastructure to see the technique, required city tier, exact material bill, annual and seasonal extra harvest, and weather protection.
+Fourteen investment tracks use 268 local methods (225 specific site methods and 43 retained general methods). Open Terrain & seasons → Production infrastructure to see the technique, required city tier, exact material bill, annual and seasonal extra harvest, and weather protection.
 
 - Agriculture distinguishes paddy water control, canal-fed raised gardens, oasis distribution, recession-water gates, orchard basins, black-soil rotations, tropical nutrient cycling, root-crop rotations and dryland mulch. Terraces distinguish highland stonework, rice cascades and dry-stone slopes.
 - Rainwater harvesting is a separate track: runoff basins, bunds and cisterns improve existing rainfed crops in Semiarid, Savanna, Steppe, Prairie and Mediterranean settings. No river is required, but floodplains, paddies, chinampas, delta gardens, sago and oases are excluded. It cannot irrigate true desert or add harvest seasons. General-method annual extra I–IV: 2/3/4/5; specialized methods vary.
@@ -313,6 +313,12 @@ Methods now distinguish crops, climate, coasts, deltas, waterways, elevation and
 Berry-heath gathering adds 1/2/3/4 shared annual extra cards at tiers I–IV, within the existing short berry season. Marine whale works require nearby owned settlements/cities and visiting whales. Cold/warm/temperate methods add respectively 2/3/4/5, 3/4/5/6 or 2/4/5/6 shared annual cards, favoring Oil recovery. No whales means no extra output; rivers, lakes and frozen access are excluded. Product preferences allocate a single shared bonus across existing goods, not a full bonus per good. These works preserve existing artwork.
 
 All industrial works use upfront coal from tier II; there is no upkeep and no gold or gold-bar construction charge. Higher tiers remain increasingly expensive for diminishing extra returns. Existing projects keep their owner and level and use the current local method. No new campaign is required.
+
+### Regional engineering methods
+
+The latest 134 methods distinguish coastal exposure, upland work, low ground, deltas and waterway types within existing resource families. Examples include hillside wheat feeder lifts, prairie maize tied ridges, oceanic cattle silage, alpine cable logging, lowland mine dewatering, dry ore screening and protected island salt pans. These use the existing 14 investment tracks: a narrower method replaces that track’s general method rather than adding another stacking bonus.
+
+The inspector identifies the site and shows exact costs and seasonal returns. Upland is elevation index 0.72 or higher; low ground is below 0.52. These are game terrain indices, not meters. Eligibility, freshwater access, adjacent city tiers, flood closures and wildlife presence still apply. There is no new upkeep or painting substitution. Upgrading preserves already allocated seasonal and product bonus cards while adding the next level’s gains; native harvest and irrigation calendars remain unchanged.
 
 ## Seasons and harvests
 

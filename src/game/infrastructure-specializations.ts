@@ -1,3 +1,4 @@
+import { REGIONAL_METHODS } from "./infrastructure-regional";
 import type { Hex } from "./types";
 import type { Biome, Climate } from "./climate-content";
 import type { InfrastructureKind } from "./infrastructure";
@@ -24,6 +25,7 @@ export type SpecializedTechnique = {
 /** Specific rules precede broad fallback methods. Only stable site attributes
  * choose a method: migrating herds and current weather never change recipes. */
 export const SPECIALIZATIONS: readonly SpecializedTechnique[] = [
+  ...REGIONAL_METHODS,
   {
     kind: "irrigation",
     site: {
@@ -2509,6 +2511,10 @@ for (const rule of SPECIALIZATIONS) {
   group.push(rule);
   byKind.set(rule.kind, group);
 }
+// Unique landmarks retain their dedicated engineering method even when the
+// surrounding terrain also qualifies for a newer regional method.
+for (const group of byKind.values())
+  group.sort((a, b) => Number(!!b.site.landmark) - Number(!!a.site.landmark));
 export function matchesTechniqueSite(tile: Hex, site: TechniqueSite): boolean {
   const g = tile.geography;
   return (
@@ -2529,9 +2535,27 @@ export function specializedTechnique(
   tile: Hex,
   kind: InfrastructureKind,
 ): LocalTechnique | undefined {
-  return byKind.get(kind)?.find((rule) => matchesTechniqueSite(tile, rule.site))
+  const climate = tile.climate ?? "temperate";
+  const key = `${kind}/${tile.biome ?? ""}/${climate}`;
+  let candidates = candidatesByTerrain.get(key);
+  if (!candidates) {
+    candidates = (byKind.get(kind) ?? []).filter(
+      ({ site }) =>
+        (!site.biomes || site.biomes.includes(tile.biome!)) &&
+        (!site.excludeBiomes || !site.excludeBiomes.includes(tile.biome!)) &&
+        (!site.climates || site.climates.includes(climate)),
+    );
+    candidatesByTerrain.set(key, candidates);
+  }
+  // Only static catalogue filtering is cached. Elevation, coastal flags and
+  // landmarks are always rechecked, including after loading an older save.
+  return candidates.find((rule) => matchesTechniqueSite(tile, rule.site))
     ?.method;
 }
+
+// Finite key space: investment kind × terrain type × climate. Repeated rolls
+// need not scan every regional recipe on a large map.
+const candidatesByTerrain = new Map<string, readonly SpecializedTechnique[]>();
 
 const sitesByMethod = new Map(
   SPECIALIZATIONS.map(({ method, site }) => [method.id, site]),

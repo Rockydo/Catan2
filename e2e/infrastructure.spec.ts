@@ -174,11 +174,23 @@ for (const locale of ["en", "fr"])
   });
 
 for (const locale of ["en", "fr"])
-  for (const kind of ["foraging", "whaling"] as const)
+  for (const kind of ["foraging", "whaling", "mining"] as const)
     test(`${kind} upgrades persist and explain their site in ${locale}`, async ({
       page,
     }) => {
       let s = newGame(`new-production-${kind}`);
+      const climate = kind === "mining" ? "tropical" : "tundra";
+      const nativeSites = () =>
+        Object.values(s.tiles).filter(
+          (t) =>
+            t.climate === climate &&
+            !["water", "ice", "peaks"].includes(t.resource),
+        );
+      if (kind !== "whaling") {
+        for (let attempt = 0; !nativeSites().length && attempt < 80; attempt++)
+          s = newGame(`regional-browser-${climate}-${attempt}`);
+        expect(nativeSites().length).toBeGreaterThan(0);
+      }
       while (s.phase.startsWith("setup")) s = run(s, chooseAIAction(s));
       s.active = 0;
       s.phase = "economy";
@@ -186,12 +198,33 @@ for (const locale of ["en", "fr"])
       const town = ownTowns(s, 0)[0];
       town.level = town.turnLevel = 4;
       for (const good of GOODS) town.stock[good] = 500;
-      const id = s.vertices[town.vertex].tiles.find(
+      let id = s.vertices[town.vertex].tiles.find(
         (id) => s.tiles[id].resource !== "peaks",
       )!;
+      if (kind !== "whaling") {
+        const target = nativeSites().find((t) =>
+          t.vertices.some(
+            (v) => !Object.values(s.towns).some((other) => other.vertex === v),
+          ),
+        )!;
+        town.vertex = target.vertices.find(
+          (v) => !Object.values(s.towns).some((other) => other.vertex === v),
+        )!;
+        id = target.id;
+      }
       const tile = s.tiles[id];
-      tile.resource = kind === "whaling" ? "water" : "grain";
-      tile.biome = kind === "whaling" ? "water" : "tundra-heath";
+      tile.resource =
+        kind === "whaling" ? "water" : kind === "mining" ? "ore" : "grain";
+      tile.biome =
+        kind === "whaling"
+          ? "water"
+          : kind === "mining"
+            ? "iron"
+            : "tundra-heath";
+      if (kind !== "whaling") {
+        tile.geography!.elevation = kind === "mining" ? 0.48 : 0.76;
+        if (kind === "foraging") tile.geography!.coastal = false;
+      }
       Object.assign(tile.geography!, {
         pass: false,
         waterway: kind === "whaling" ? "coast" : undefined,
@@ -239,6 +272,13 @@ for (const locale of ["en", "fr"])
       } else await expect(row.locator("[data-method-site]")).toBeVisible();
       await row.locator(".infrastructure-effects summary").click();
       await expect(row.locator(".geography-calendar > div")).toHaveCount(4);
+      if (kind !== "whaling")
+        await expect(row).toHaveAttribute(
+          "data-infrastructure-method",
+          kind === "mining"
+            ? "regional-tropical-lowland-iron-dewatering"
+            : "regional-upland-tundra-berry-sorting-caches",
+        );
       for (const tier of ["I", "II", "III", "IV"]) {
         await row.getByRole("button").click();
         await expect(row.locator("b").first()).toContainText(` · ${tier}`);
@@ -246,7 +286,7 @@ for (const locale of ["en", "fr"])
       await expect(row.getByRole("button")).toHaveCount(0);
       await expect(page.locator("[data-development-level]")).toHaveAttribute(
         "data-development-level",
-        "0",
+        kind === "mining" ? "3" : "0",
       );
       await row.scrollIntoViewIfNeeded();
       await page.screenshot({

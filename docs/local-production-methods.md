@@ -26,9 +26,11 @@ A project changes recovery, management and risk on an **existing resource**. It 
 
 ## How the method is selected
 
-There are **134 named methods across 14 investment tracks**: 91 specific site methods and 43 retained general methods/fallbacks. This is just over three times the previous catalogue. Each method has four development stages; these are not 134 additional buttons on every tile.
+There are **268 named methods across 14 investment tracks**: 225 specific site methods and 43 retained general methods/fallbacks. This doubles the previous 134-method catalogue. Each method has four development stages; these are not 268 additional buttons on every tile.
 
-Eligibility is checked first: real freshwater for irrigation, existing crops for field works, actual deposits for extraction, natural habitat for hunting, and adjacent owned settlements/cities of the required tier. Within a track, the first matching specific method wins; otherwise its general method remains. Crop, climate, waterway, coastal/delta position, elevation and rare landmarks determine the result. Current weather and visiting wildlife never change the method or bill. Suitable methods are listed below with their site conditions, in priority order after the retained general catalogue.
+The latest 134 additions distinguish coastal exposure, upland work, low ground, delta position and waterway type within the same crop or resource. Dedicated landmark methods retain first priority; selection then tries the narrower regional methods, previous specializations and general fallbacks. They replace the applicable method of an existing investment track; they do not add stackable copies of the same bonus. No extra site records are stored in saves.
+
+Eligibility is checked first: real freshwater for irrigation, existing crops for field works, actual deposits for extraction, natural habitat for hunting, and adjacent owned settlements/cities of the required tier. Within a track, matching landmark methods take priority, followed by the first matching regional/site method; otherwise its general method remains. Crop, climate, waterway, coastal/delta position, elevation and rare landmarks determine the result. Current weather and visiting wildlife never change the method or bill. All definitions are listed below with site conditions. The precedence rules above apply independently of catalogue display order.
 
 This is deterministic and needs no new save data. Existing projects retain owner and tier and adopt the method appropriate to their current site on loading. These are production choices, not terrain conversion: a volcanic quarry cannot be built on ordinary farmland, harbor salt yards still need native salt, and irrigation cannot invent a river or spring.
 
@@ -45,6 +47,39 @@ Different investments remain separate and can coexist where suitable. A Mediterr
 | [FAO non-wood forest products](https://www.fao.org/sustainable-forest-management-toolbox/modules/management-of-non-wood-forest-products/en) | Berry gathering, sorting and preservation form a separate modest investment on existing berry heath. No berries appear on barren ground and the native short harvest stays short. |
 | [NPS whale products](https://www.nps.gov/nebe/learn/historyculture/whaleproducts.htm) | Coastal tryworks and handling recover more usable whale products, favoring the existing Oil card. This is a recovery improvement, not an increase in whale abundance. The existing Hides card remains a game abstraction. |
 
+## Latest expansion: 134 additional methods
+
+| Investment | Additional methods | Examples |
+|---|---:|---|
+| Irrigation | 12 | Hillside wheat lifts, lowland barley check basins, boreal root furrows, plateau wheat channels, delta paddy divisions, island breadfruit lifts |
+| Soil husbandry | 12 | Coastal wheat shelter strips, plateau residue retention, boreal seed selection, raised lowland maize rows, high puna seed stores |
+| Drainage | 10 | Coastal cereal collectors, root underdrains, delta wheat outfalls, paddy drawdown trenches, sago access drains |
+| Terraces | 10 | Alpine root pockets, high Andean potato drainage terraces, maize vegetated benches, olive retaining benches, paddy spillways |
+| Rainwater harvesting | 8 | Millet stone lines, barley contour furrows, olive crescent basins, snow-trapping stubble, prairie tied ridges |
+| Domestic herds | 12 | Exposed-steppe fleece shelters, boreal hay barns, Mediterranean fodder reserves, goat browse stores, oceanic silage, high puna fleece handling |
+| Forestry | 14 | Ridge cable landings, coastal wet timber yards, winter sled landings, upland skyline extraction, mangrove sorting platforms |
+| Mining | 16 | Lowland iron drainage, alpine winding stages, dry Andean ore dressing, coal ventilation, monsoon sump pumps, polar thawing sheds |
+| Quarrying | 14 | Coastal derricks, dry-wedge benches, volcanic block cutting, mountain inclines, clay collector sumps, sheltered peat racks |
+| Saltworks | 8 | Dry crust grading, sequential coastal pans, covered island salt stores, continental protected concentration |
+| Fisheries | 8 | Polar catch shelters, lake ice stores, oceanic covered landings, Mediterranean curing, tropical insulated boxes, humid smoke racks |
+| Hunting | 6 | Steppe observation shelters, prairie handling yards, boreal caches, upland smokehouses, oasis curing, glacial seal handling |
+| Berry gathering | 2 | Coastal wind shelters and upland sorting caches |
+| Whale products | 2 | Tropical-island shore slips and heavy cold-water landing works |
+
+Sites differ in annual recovery budget, distribution across productive seasons, weather-loss protection, construction materials or priority among native products. Related sites can share an engineering progression, but their climate and baseline crop determine the actual value. Each listed method still uses the track's ordinary eligibility and four city tiers. Upland means the existing world elevation index is at least 0.72; low ground is below 0.52. Those indices are map abstractions, not meters or measured slope. Irrigation still requires a real freshwater connection. Wet mine workings need no invented stream: dewatering handles ingress rather than supplying washing water.
+
+A deterministic 32-map sample (10,240 tiles) encountered 80 of the 134 new methods and 1,202 habitat-compatible regional investments, before supporting-city and freshwater checks. The remainder include rarer habitat/climate/relief combinations; not every campaign contains every method. Separate eligibility tests exercise all definitions on compatible sites. Reproduce the map sample with `npx tsx scripts/audit-infrastructure-sites.ts`.
+
+### Research supporting the engineering distinctions
+
+- [FAO water-harvesting techniques](https://www.fao.org/4/u3160e/u3160e07.htm): contour ridges, tree microcatchments and bunds address different crops and runoff settings. These inform rainwater works on existing dryland agriculture, never new water sources.
+- [FAO wood transport on steep terrain](https://www.fao.org/4/x0622e/x0622e15.htm): cable and ground extraction have different terrain requirements and costs. Upland forestry therefore pays more steel and lifting equipment for bounded recovery gains; no mountain road is created.
+- [FAO hay and dry-residue use](https://www.fao.org/4/x7660e/x7660e0e.htm): cold winters and dry summers create different fodder gaps. Winter shelters and dry-season reserves therefore allocate bonuses differently.
+- [FAO improved fish handling](https://www.fao.org/4/v7180e/v7180e08.htm): insulation and prompt handling limit spoilage, especially in warm settings. Fisheries improve the usable current catch and cannot create fish or bypass ice.
+- [NPS nineteenth-century mining](https://home.nps.gov/articles/000/19th-century-copper-mining.htm): winding, ventilation and water removal were distinct engineering problems. Their general principles inform mine methods here; copper history does not imply the game contains copper deposits.
+
+These sources support mechanisms, not the game's numerical coefficients. No new spoilage timer, maintenance cost, fuel upkeep or resource type is introduced.
+
 ## Reading the numbers
 
 `Annual extra` is one shared budget summed over the four per-roll seasonal profiles. It is not guaranteed income. The number must roll, access must remain legal and migratory animals must be present. Ordinary city/camp/unit multipliers still apply.
@@ -52,6 +87,8 @@ Different investments remain separate and can coexist where suitable. A Mediterr
 `Season weights` favor a season's share of the bonus, multiplied by its native productive amount. A zero native crop harvest stays zero. Wildlife uses the current visiting animals as a conditional four-season snapshot. Hunting and whaling get no bonus when that snapshot is empty. Fishery gains likewise require fish. Berry improvements use the crop’s native calendar.
 
 `Product weights` allocate the same shared bonus preferentially to existing goods (for example fleece or whale oil). A weight of 2 does **not** double total production. Missing goods are never created.
+
+Infrastructure bonus cards use a stable highest-averages allocation: increasing a tier cannot remove a card already allocated to a season or product, assuming the same site and wildlife. Native harvest calendars and irrigation redistribution retain their own rules.
 
 `Protection` is the fraction of a **negative weather penalty** removed. For example 80% protection changes a 25% loss into a 5% loss. Only the strongest applicable owned method applies; different tracks cannot stack protections into immunity. Positive weather remains positive, and flood/ice access rules still win.
 
@@ -61,7 +98,7 @@ The catalogue below is generated from the same definitions used by the game (`np
 
 <!-- GENERATED METHODS -->
 
-134 local methods.
+268 local methods.
 
 ### Oasis water distribution
 
@@ -579,6 +616,1748 @@ Small tracking shelters near scrub and oases improve recovery from visiting gaze
 - Loss protection I–IV: None.
 - Construction adjustments: salt ×1.25, lumber ×1.2, planks ×1.2.
 
+### Mediterranean hillside feeder lifts
+
+Small lifts and contour feeders deliver existing freshwater uphill to wheat.
+
+- Investment track: Irrigation.
+- Site selection: Golden fields; Mediterranean; Elevation ≥0.72.
+- Stages I–IV: Mediterranean hillside feeder lifts → Lined lift channels → Steam lift station → Regulated lift network.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 2 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: dry: 35% / 50% / 65% / 75%.
+- Construction adjustments: steel ×1.35, masonry ×1.2, coal ×1.1.
+
+### Semiarid barley check basins
+
+Shallow checked plots distribute scarce freshwater evenly across low barley fields.
+
+- Investment track: Irrigation.
+- Site selection: Barley fields; Hot Semi-Arid; Elevation <0.52.
+- Stages I–IV: Semiarid barley check basins → Masonry distribution gates → Field distribution pumps → Metered basin network.
+- Annual extra I–IV: **4 / 5 / 6 / 7**.
+- Spring / summer / autumn / winter weights: 2 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: dry: 50% / 60% / 70% / 80%.
+- Construction adjustments: ceramics ×1.25, masonry ×1.1.
+
+### Alpine meadow-fed barley channels
+
+Short protected channels reduce cold-season damage to highland water distribution; the crop still needs summer warmth.
+
+- Investment track: Irrigation.
+- Site selection: Barley fields; Alpine; Elevation ≥0.72.
+- Stages I–IV: Alpine meadow-fed barley channels → Covered stone channels → Protected lift machinery → Cold-region channel network.
+- Annual extra I–IV: **1 / 2 / 3 / 4**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: dry: 25% / 40% / 50% / 60%; cold: 15% / 25% / 40% / 50%.
+- Construction adjustments: masonry ×1.3, coal ×1.2.
+
+### Boreal root-bed feeder furrows
+
+Low root beds receive small controlled deliveries without waterlogging their crowns.
+
+- Investment track: Irrigation.
+- Site selection: Turnip fields; Cold; Elevation <0.52.
+- Stages I–IV: Boreal root-bed feeder furrows → Partitioned field inlets → Small lift pumps → Controlled furrow distribution.
+- Annual extra I–IV: **2 / 3 / 4 / 5**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: dry: 30% / 45% / 60% / 70%.
+- Construction adjustments: ceramics ×1.15, steel ×0.9.
+
+### Coastal oat supplemental feeders
+
+Already moist coastal oats gain modest drought insurance from controlled freshwater deliveries.
+
+- Investment track: Irrigation.
+- Site selection: Oat fields; Oceanic / Temperate; Coastal.
+- Stages I–IV: Coastal oat supplemental feeders → Partitioned field inlets → Small lift pumps → Controlled furrow distribution.
+- Annual extra I–IV: **1 / 2 / 3 / 4**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: dry: 30% / 45% / 60% / 70%.
+- Construction adjustments: ceramics ×1.15, steel ×0.9.
+
+### Black-earth plateau lift channels
+
+Plateau wheat needs more lifting equipment and gets less benefit than naturally low alluvial fields.
+
+- Investment track: Irrigation.
+- Site selection: Black-soil wheat; Steppe; Elevation ≥0.72.
+- Stages I–IV: Black-earth plateau lift channels → Lined lift channels → Steam lift station → Regulated lift network.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: dry: 35% / 50% / 65% / 75%.
+- Construction adjustments: steel ×1.35, masonry ×1.2, coal ×1.1.
+
+### Savanna millet pulse irrigation
+
+Small doses limit runoff and evaporation on existing millet plots; no river is created.
+
+- Investment track: Irrigation.
+- Site selection: Millet fields; Savanna; Elevation <0.52.
+- Stages I–IV: Savanna millet pulse irrigation → Masonry distribution gates → Field distribution pumps → Metered basin network.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: dry: 50% / 60% / 70% / 80%.
+- Construction adjustments: ceramics ×1.25, masonry ×1.1.
+
+### Delta recession-sorghum gates
+
+Partitioned gates retain useful recession water after flood access returns.
+
+- Investment track: Irrigation.
+- Site selection: Recession sorghum; Hot Semi-Arid; Delta.
+- Stages I–IV: Delta recession-sorghum gates → Masonry sluice gates → Lift and return pumps → Integrated sluice network.
+- Annual extra I–IV: **4 / 5 / 6 / 7**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 2 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: dry: 40% / 55% / 70% / 80%; wet: 10% / 20% / 30% / 40%.
+- Construction adjustments: masonry ×1.25, steel ×1.1.
+
+### Monsoon delta paddy divisions
+
+Separate field inlets make variable delta freshwater easier to distribute; levees still determine flood access.
+
+- Investment track: Irrigation.
+- Site selection: Rice field / River rice; Monsoon; Delta.
+- Stages I–IV: Monsoon delta paddy divisions → Masonry sluice gates → Lift and return pumps → Integrated sluice network.
+- Annual extra I–IV: **4 / 5 / 6 / 7**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: dry: 40% / 55% / 70% / 80%; wet: 10% / 20% / 30% / 40%.
+- Construction adjustments: masonry ×1.25, steel ×1.1.
+
+### Coastal raised-garden freshwater gates
+
+Gates distribute available freshwater to raised gardens; seawater is never an irrigation source.
+
+- Investment track: Irrigation.
+- Site selection: Chinampa gardens; Mesoamerican; Coastal.
+- Stages I–IV: Coastal raised-garden freshwater gates → Masonry sluice gates → Lift and return pumps → Integrated sluice network.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: dry: 40% / 55% / 70% / 80%; wet: 10% / 20% / 30% / 40%.
+- Construction adjustments: masonry ×1.25, steel ×1.1.
+
+### Island breadfruit lift basins
+
+Small upland basins deliver freshwater to established island trees without changing fruit seasons.
+
+- Investment track: Irrigation.
+- Site selection: Breadfruit grove; Tropical Maritime; Elevation ≥0.72.
+- Stages I–IV: Island breadfruit lift basins → Lined lift channels → Steam lift station → Regulated lift network.
+- Annual extra I–IV: **2 / 3 / 4 / 5**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: dry: 35% / 50% / 65% / 75%.
+- Construction adjustments: steel ×1.35, masonry ×1.2, coal ×1.1.
+
+### Delta sago channel regulation
+
+Controlled feeder cuts stabilize water distribution through existing sago stands; abundant water limits added yield.
+
+- Investment track: Irrigation.
+- Site selection: Sago grove; Equatorial Wetlands; Delta.
+- Stages I–IV: Delta sago channel regulation → Masonry sluice gates → Lift and return pumps → Integrated sluice network.
+- Annual extra I–IV: **1 / 2 / 3 / 4**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: dry: 40% / 55% / 70% / 80%; wet: 10% / 20% / 30% / 40%.
+- Construction adjustments: masonry ×1.25, steel ×1.1.
+
+### Coastal wheat shelter strips
+
+Field-edge residue strips and careful seedbeds reduce exposure and preserve soil moisture.
+
+- Investment track: Soil husbandry.
+- Site selection: Golden fields; Temperate; Coastal.
+- Stages I–IV: Coastal wheat shelter strips → Protected seedbed stores → Residue drilling equipment → Integrated cover-crop works.
+- Annual extra I–IV: **2 / 3 / 4 / 5**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: dry: 30% / 45% / 60% / 70%.
+- Construction adjustments: grain ×1.25, steel ×1.1, reagents ×0.85.
+
+### Plateau black-earth residue retention
+
+Retained cereal residues protect exposed fertile topsoil; high native fertility limits added returns.
+
+- Investment track: Soil husbandry.
+- Site selection: Black-soil wheat; Steppe; Elevation ≥0.72.
+- Stages I–IV: Plateau black-earth residue retention → Protected seedbed stores → Residue drilling equipment → Integrated cover-crop works.
+- Annual extra I–IV: **1 / 2 / 3 / 4**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: dry: 30% / 45% / 60% / 70%.
+- Construction adjustments: grain ×1.25, steel ×1.1, reagents ×0.85.
+
+### Boreal barley seed selection
+
+Locally selected seed and sheltered seed stores improve the short barley growing window.
+
+- Investment track: Soil husbandry.
+- Site selection: Barley fields; Cold; Elevation ≥0.72.
+- Stages I–IV: Boreal barley seed selection → Ventilated seed shelters → Seed sorting machinery → Protected seed preparation works.
+- Annual extra I–IV: **2 / 3 / 4 / 5**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: cold: 20% / 35% / 50% / 65%.
+- Construction adjustments: planks ×1.25, grain ×1.2, coal ×1.1.
+
+### Coastal dry-barley residue beds
+
+Residue cover conserves moisture in coastal dryland barley without adding water.
+
+- Investment track: Soil husbandry.
+- Site selection: Barley fields; Hot Semi-Arid; Coastal.
+- Stages I–IV: Coastal dry-barley residue beds → Protected seedbed stores → Residue drilling equipment → Integrated cover-crop works.
+- Annual extra I–IV: **2 / 3 / 4 / 5**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: dry: 30% / 45% / 60% / 70%.
+- Construction adjustments: grain ×1.25, steel ×1.1, reagents ×0.85.
+
+### Rainforest oat aerated beds
+
+Raised seed rows and organic structure improve wet lowland oat roots; flood closures still apply.
+
+- Investment track: Soil husbandry.
+- Site selection: Oat fields; Temperate Rainforest; Elevation <0.52.
+- Stages I–IV: Rainforest oat aerated beds → Structured root beds → Bed-forming machinery → Integrated raised-bed works.
+- Annual extra I–IV: **2 / 3 / 4 / 5**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 25% / 40% / 60% / 75%.
+- Construction adjustments: steel ×1.2, planks ×1.1.
+
+### Alpine root seed stores
+
+Protected seed handling and root-bed preparation reduce cold losses in the existing short season.
+
+- Investment track: Soil husbandry.
+- Site selection: Turnip fields; Alpine; Elevation ≥0.72.
+- Stages I–IV: Alpine root seed stores → Ventilated seed shelters → Seed sorting machinery → Protected seed preparation works.
+- Annual extra I–IV: **2 / 3 / 4 / 5**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: cold: 20% / 35% / 50% / 65%.
+- Construction adjustments: planks ×1.25, grain ×1.2, coal ×1.1.
+
+### Plateau millet residue drills
+
+Residue-covered seed drills preserve moisture on exposed millet fields.
+
+- Investment track: Soil husbandry.
+- Site selection: Millet fields; Steppe; Elevation ≥0.72.
+- Stages I–IV: Plateau millet residue drills → Protected seedbed stores → Residue drilling equipment → Integrated cover-crop works.
+- Annual extra I–IV: **2 / 3 / 4 / 5**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: dry: 30% / 45% / 60% / 70%.
+- Construction adjustments: grain ×1.25, steel ×1.1, reagents ×0.85.
+
+### Prairie lowland maize ridges
+
+Raised maize rows aerate low soils while retaining organic matter between rows.
+
+- Investment track: Soil husbandry.
+- Site selection: Maize fields; Prairie; Elevation <0.52.
+- Stages I–IV: Prairie lowland maize ridges → Structured root beds → Bed-forming machinery → Integrated raised-bed works.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 25% / 40% / 60% / 75%.
+- Construction adjustments: steel ×1.2, planks ×1.1.
+
+### High puna potato seed shelters
+
+Sheltered seed-tuber selection improves recovery in high cold fields without creating winter growth.
+
+- Investment track: Soil husbandry.
+- Site selection: Potato fields; Andean; Elevation ≥0.72.
+- Stages I–IV: High puna potato seed shelters → Ventilated seed shelters → Seed sorting machinery → Protected seed preparation works.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: cold: 20% / 35% / 50% / 65%.
+- Construction adjustments: planks ×1.25, grain ×1.2, coal ×1.1.
+
+### Upland sunflower residue rotations
+
+Residue cover and deeper-root rotations support exposed oilseed fields.
+
+- Investment track: Soil husbandry.
+- Site selection: Sunflower fields; Prairie; Elevation ≥0.72.
+- Stages I–IV: Upland sunflower residue rotations → Protected seedbed stores → Residue drilling equipment → Integrated cover-crop works.
+- Annual extra I–IV: **2 / 3 / 4 / 5**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: oil ×2.
+- Loss protection I–IV: dry: 30% / 45% / 60% / 70%.
+- Construction adjustments: grain ×1.25, steel ×1.1, reagents ×0.85.
+
+### Coastal tropical rice compost beds
+
+Composted crop residues replenish existing paddies while controlled incorporation limits wet losses.
+
+- Investment track: Soil husbandry.
+- Site selection: Rice field; Tropical; Coastal.
+- Stages I–IV: Coastal tropical rice compost beds → Covered compost stores → Compost handling machinery → Integrated organic-matter works.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 15% / 30% / 45% / 60%; dry: 15% / 25% / 40% / 50%.
+- Construction adjustments: planks ×1.2, reagents ×0.8, steel ×1.1.
+
+### High-slope olive pruning terraces
+
+Pruned material and ground cover protect existing olive roots on exposed slopes.
+
+- Investment track: Soil husbandry.
+- Site selection: Olive grove; Mediterranean; Elevation ≥0.72.
+- Stages I–IV: High-slope olive pruning terraces → Protected seedbed stores → Residue drilling equipment → Integrated cover-crop works.
+- Annual extra I–IV: **2 / 3 / 4 / 5**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: oil ×2.
+- Loss protection I–IV: dry: 30% / 45% / 60% / 70%.
+- Construction adjustments: grain ×1.25, steel ×1.1, reagents ×0.85.
+
+### Coastal wheat collector drains
+
+Linked field drains remove excess freshwater from wet coastal wheat soils.
+
+- Investment track: Field drainage.
+- Site selection: Golden fields; Temperate; Coastal.
+- Stages I–IV: Coastal wheat collector drains → Fired field drainpipes → Collector pumping station → Regulated field drainage.
+- Annual extra I–IV: **2 / 3 / 4 / 5**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 25% / 40% / 60% / 75%.
+- Construction adjustments: ceramics ×1.3, steel ×1.1.
+
+### Rainforest oat interception drains
+
+Collector drains intercept persistent lowland seepage before it saturates oat roots.
+
+- Investment track: Field drainage.
+- Site selection: Oat fields; Temperate Rainforest; Elevation <0.52.
+- Stages I–IV: Rainforest oat interception drains → Fired field drainpipes → Collector pumping station → Regulated field drainage.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 25% / 40% / 60% / 75%.
+- Construction adjustments: ceramics ×1.3, steel ×1.1.
+
+### Atlantic root-field underdrains
+
+Shallow underdrains protect root crops from prolonged wet-soil losses.
+
+- Investment track: Field drainage.
+- Site selection: Turnip fields; Oceanic; Coastal.
+- Stages I–IV: Atlantic root-field underdrains → Linked root underdrains → Bed drainage pumps → Regulated root-zone drainage.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 35% / 50% / 65% / 80%.
+- Construction adjustments: ceramics ×1.4, masonry ×0.9.
+
+### Mediterranean delta wheat outfalls
+
+Outfall gates empty agricultural drains after high river levels fall; they do not stop deep floods.
+
+- Investment track: Field drainage.
+- Site selection: Alluvial wheat; Mediterranean; Delta.
+- Stages I–IV: Mediterranean delta wheat outfalls → Gated collector outlets → Outfall lift pumps → Regulated outfall works.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 30% / 45% / 65% / 80%.
+- Construction adjustments: masonry ×1.25, steel ×1.2, coal ×1.1.
+
+### Steppe recession-field outlets
+
+Low field outlets remove residual water after recession without permitting winter flooding or winter crops.
+
+- Investment track: Field drainage.
+- Site selection: Recession sorghum; Steppe; Elevation <0.52.
+- Stages I–IV: Steppe recession-field outlets → Gated collector outlets → Outfall lift pumps → Regulated outfall works.
+- Annual extra I–IV: **2 / 3 / 4 / 5**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 30% / 45% / 65% / 80%.
+- Construction adjustments: masonry ×1.25, steel ×1.2, coal ×1.1.
+
+### Subtropical paddy drawdown trenches
+
+Separate drawdown trenches improve paddy drying and root conditions between existing crops.
+
+- Investment track: Field drainage.
+- Site selection: Rice field; Subtropical; Elevation <0.52.
+- Stages I–IV: Subtropical paddy drawdown trenches → Partitioned escape gates → Paddy drainage pumps → Integrated paddy drainage.
+- Annual extra I–IV: **2 / 3 / 4 / 5**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 20% / 40% / 60% / 75%.
+- Construction adjustments: ceramics ×1.2, masonry ×1.15.
+
+### Coastal monsoon paddy escape drains
+
+Controlled escape drains reduce losses during wet spells but cannot override a flooded tile.
+
+- Investment track: Field drainage.
+- Site selection: River rice; Monsoon; Coastal.
+- Stages I–IV: Coastal monsoon paddy escape drains → Partitioned escape gates → Paddy drainage pumps → Integrated paddy drainage.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 20% / 40% / 60% / 75%.
+- Construction adjustments: ceramics ×1.2, masonry ×1.15.
+
+### Coastal sago access drains
+
+Limited drainage improves harvest access around wetland palms without draining or converting the whole habitat.
+
+- Investment track: Field drainage.
+- Site selection: Sago grove; Equatorial Wetlands; Coastal.
+- Stages I–IV: Coastal sago access drains → Gated collector outlets → Outfall lift pumps → Regulated outfall works.
+- Annual extra I–IV: **1 / 2 / 3 / 4**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 30% / 45% / 65% / 80%.
+- Construction adjustments: masonry ×1.25, steel ×1.2, coal ×1.1.
+
+### Delta chinampa root aeration
+
+Raised bed outlets improve root aeration above persistent canal water.
+
+- Investment track: Field drainage.
+- Site selection: Chinampa gardens; Mesoamerican; Delta.
+- Stages I–IV: Delta chinampa root aeration → Linked root underdrains → Bed drainage pumps → Regulated root-zone drainage.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 35% / 50% / 65% / 80%.
+- Construction adjustments: ceramics ×1.4, masonry ×0.9.
+
+### Tropical clay-bank field drains
+
+Collectors improve drainage beside existing clay banks.
+
+- Investment track: Quarry infrastructure.
+- Site selection: Alluvial clay banks; Tropical; Delta.
+- Stages I–IV: Tropical clay-bank field drains → Covered settling floors → Clay lifting and sump pumps → Integrated clay drainage works.
+- Annual extra I–IV: **2 / 3 / 4 / 5**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 25% / 40% / 60% / 75%.
+- Construction adjustments: masonry ×1.25, steel ×1.15, planks ×1.2.
+
+### High alpine barley retaining walls
+
+Thick stone faces retain shallow highland barley soils and protect field edges.
+
+- Investment track: Agricultural terraces.
+- Site selection: Barley fields; Alpine; Elevation ≥0.72.
+- Stages I–IV: High alpine barley retaining walls → Drained masonry benches → Terrace lifting machinery → Integrated stone terrace works.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: dry: 20% / 35% / 50% / 60%; wet: 15% / 30% / 40% / 50%.
+- Construction adjustments: stone ×1.4, masonry ×1.25, steel ×1.1.
+
+### Alpine root-pocket terraces
+
+Small supported planting pockets hold root beds on cold high slopes.
+
+- Investment track: Agricultural terraces.
+- Site selection: Turnip fields; Alpine; Elevation ≥0.72.
+- Stages I–IV: Alpine root-pocket terraces → Drained masonry benches → Terrace lifting machinery → Integrated stone terrace works.
+- Annual extra I–IV: **2 / 3 / 4 / 5**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: dry: 20% / 35% / 50% / 60%; wet: 15% / 30% / 40% / 50%.
+- Construction adjustments: stone ×1.4, masonry ×1.25, steel ×1.1.
+
+### High Andean potato drainage terraces
+
+Retaining walls with permeable backfill keep high potato soils usable during wet and cold spells.
+
+- Investment track: Agricultural terraces.
+- Site selection: Potato fields; Andean; Elevation ≥0.72.
+- Stages I–IV: High Andean potato drainage terraces → Drained masonry benches → Terrace lifting machinery → Integrated stone terrace works.
+- Annual extra I–IV: **4 / 5 / 6 / 7**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: dry: 20% / 35% / 50% / 60%; wet: 15% / 30% / 40% / 50%.
+- Construction adjustments: stone ×1.4, masonry ×1.25, steel ×1.1.
+
+### Highland maize vegetated benches
+
+Vegetated terrace lips retain soil and slow runoff across existing highland maize.
+
+- Investment track: Agricultural terraces.
+- Site selection: Maize fields; Mesoamerican; Elevation ≥0.72.
+- Stages I–IV: Highland maize vegetated benches → Reinforced earth benches → Contour grading machinery → Integrated earth terrace works.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: dry: 25% / 40% / 55% / 65%; wet: 20% / 35% / 50% / 60%.
+- Construction adjustments: stone ×0.85, planks ×1.2, steel ×1.15.
+
+### Upper-slope olive retaining benches
+
+Stone-supported benches protect exposed orchard soils and hold useful rainwater.
+
+- Investment track: Agricultural terraces.
+- Site selection: Olive grove; Mediterranean; Elevation ≥0.72.
+- Stages I–IV: Upper-slope olive retaining benches → Drained masonry benches → Terrace lifting machinery → Integrated stone terrace works.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: oil ×2.
+- Loss protection I–IV: dry: 20% / 35% / 50% / 60%; wet: 15% / 30% / 40% / 50%.
+- Construction adjustments: stone ×1.4, masonry ×1.25, steel ×1.1.
+
+### Mediterranean wheat rubble terraces
+
+Rubble walls support existing cereal plots without opening mountain passes.
+
+- Investment track: Agricultural terraces.
+- Site selection: Golden fields; Mediterranean; Elevation ≥0.72.
+- Stages I–IV: Mediterranean wheat rubble terraces → Drained masonry benches → Terrace lifting machinery → Integrated stone terrace works.
+- Annual extra I–IV: **2 / 3 / 4 / 5**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: dry: 20% / 35% / 50% / 60%; wet: 15% / 30% / 40% / 50%.
+- Construction adjustments: stone ×1.4, masonry ×1.25, steel ×1.1.
+
+### Semiarid barley runoff benches
+
+Contour banks retain runoff and topsoil on existing dry barley slopes.
+
+- Investment track: Agricultural terraces.
+- Site selection: Barley fields; Hot Semi-Arid; Elevation ≥0.72.
+- Stages I–IV: Semiarid barley runoff benches → Reinforced earth benches → Contour grading machinery → Integrated earth terrace works.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: dry: 25% / 40% / 55% / 65%; wet: 20% / 35% / 50% / 60%.
+- Construction adjustments: stone ×0.85, planks ×1.2, steel ×1.15.
+
+### Savanna millet grass-strip terraces
+
+Grassed terrace margins slow intense seasonal runoff around millet plots.
+
+- Investment track: Agricultural terraces.
+- Site selection: Millet fields; Savanna; Elevation ≥0.72.
+- Stages I–IV: Savanna millet grass-strip terraces → Reinforced earth benches → Contour grading machinery → Integrated earth terrace works.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: dry: 25% / 40% / 55% / 65%; wet: 20% / 35% / 50% / 60%.
+- Construction adjustments: stone ×0.85, planks ×1.2, steel ×1.15.
+
+### Upper monsoon paddy spillway terraces
+
+Linked spillways reduce wet-spell losses between high paddy benches; real freshwater is still needed for irrigation.
+
+- Investment track: Agricultural terraces.
+- Site selection: Rice field; Monsoon; Elevation ≥0.72.
+- Stages I–IV: Upper monsoon paddy spillway terraces → Masonry spillway steps → Cascade lift machinery → Regulated paddy cascades.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 30% / 45% / 60% / 75%; dry: 15% / 25% / 40% / 50%.
+- Construction adjustments: masonry ×1.3, steel ×1.2.
+
+### Island breadfruit contour ledges
+
+Short planted ledges retain soil beneath existing island fruit trees.
+
+- Investment track: Agricultural terraces.
+- Site selection: Breadfruit grove; Tropical Maritime; Elevation ≥0.72.
+- Stages I–IV: Island breadfruit contour ledges → Reinforced earth benches → Contour grading machinery → Integrated earth terrace works.
+- Annual extra I–IV: **2 / 3 / 4 / 5**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: dry: 25% / 40% / 55% / 65%; wet: 20% / 35% / 50% / 60%.
+- Construction adjustments: stone ×0.85, planks ×1.2, steel ×1.15.
+
+### Savanna millet stone lines
+
+Permeable stone lines spread slope runoff into millet seedbeds without storing an extra harvest.
+
+- Investment track: Rainwater harvesting.
+- Site selection: Millet fields; Savanna; Elevation ≥0.72.
+- Stages I–IV: Savanna millet stone lines → Linked retention banks → Runoff grading machinery → Managed runoff distribution.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: dry: 35% / 50% / 65% / 75%.
+- Construction adjustments: stone ×1.2, steel ×1.1.
+
+### Dry barley contour furrows
+
+Contour furrows intercept runoff on existing upland barley fields.
+
+- Investment track: Rainwater harvesting.
+- Site selection: Barley fields; Hot Semi-Arid; Elevation ≥0.72.
+- Stages I–IV: Dry barley contour furrows → Linked retention banks → Runoff grading machinery → Managed runoff distribution.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: dry: 35% / 50% / 65% / 75%.
+- Construction adjustments: stone ×1.2, steel ×1.1.
+
+### Mediterranean wheat runoff checks
+
+Small checked furrows hold winter rain for the native cereal harvest.
+
+- Investment track: Rainwater harvesting.
+- Site selection: Golden fields; Mediterranean; Elevation ≥0.72.
+- Stages I–IV: Mediterranean wheat runoff checks → Linked retention banks → Runoff grading machinery → Managed runoff distribution.
+- Annual extra I–IV: **2 / 3 / 4 / 5**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: dry: 35% / 50% / 65% / 75%.
+- Construction adjustments: stone ×1.2, steel ×1.1.
+
+### Lowland olive crescent basins
+
+Crescent earth banks concentrate nearby runoff around existing tree roots.
+
+- Investment track: Rainwater harvesting.
+- Site selection: Olive grove; Mediterranean; Elevation <0.52.
+- Stages I–IV: Lowland olive crescent basins → Reinforced orchard banks → Basin maintenance machinery → Integrated orchard catchments.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: oil ×2.
+- Loss protection I–IV: dry: 40% / 55% / 65% / 75%.
+- Construction adjustments: stone ×1.25, ceramics ×0.85.
+
+### Black-earth snow-trapping stubble
+
+Standing stubble traps drifting snow whose melt supplies the next growing season.
+
+- Investment track: Rainwater harvesting.
+- Site selection: Black-soil wheat; Steppe; Elevation ≥0.72.
+- Stages I–IV: Black-earth snow-trapping stubble → Reinforced snow barriers → Residue sowing machinery → Managed meltwater field works.
+- Annual extra I–IV: **2 / 3 / 4 / 5**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: dry: 25% / 40% / 55% / 65%.
+- Construction adjustments: lumber ×1.25, steel ×1.15, stone ×0.85.
+
+### Low-steppe millet meltwater strips
+
+Residue strips retain local meltwater for summer millet without generating winter grain.
+
+- Investment track: Rainwater harvesting.
+- Site selection: Millet fields; Steppe; Elevation <0.52.
+- Stages I–IV: Low-steppe millet meltwater strips → Reinforced snow barriers → Residue sowing machinery → Managed meltwater field works.
+- Annual extra I–IV: **2 / 3 / 4 / 5**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: dry: 25% / 40% / 55% / 65%.
+- Construction adjustments: lumber ×1.25, steel ×1.15, stone ×0.85.
+
+### Prairie maize tied ridges
+
+Tied ridges concentrate short summer showers around maize roots.
+
+- Investment track: Rainwater harvesting.
+- Site selection: Maize fields; Prairie; Elevation ≥0.72.
+- Stages I–IV: Prairie maize tied ridges → Linked retention banks → Runoff grading machinery → Managed runoff distribution.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: dry: 35% / 50% / 65% / 75%.
+- Construction adjustments: stone ×1.2, steel ×1.1.
+
+### Prairie sunflower basin strips
+
+Shallow basin strips retain runoff around oilseed plots.
+
+- Investment track: Rainwater harvesting.
+- Site selection: Sunflower fields; Prairie; Elevation <0.52.
+- Stages I–IV: Prairie sunflower basin strips → Linked retention banks → Runoff grading machinery → Managed runoff distribution.
+- Annual extra I–IV: **2 / 3 / 4 / 5**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: oil ×2.
+- Loss protection I–IV: dry: 35% / 50% / 65% / 75%.
+- Construction adjustments: stone ×1.2, steel ×1.1.
+
+### Exposed-steppe fleece shelters
+
+Wind shelters and clean sorting improve existing sheep wool recovery.
+
+- Investment track: Livestock improvements.
+- Site selection: Pasture; Steppe; Elevation ≥0.72.
+- Stages I–IV: Exposed-steppe fleece shelters → Clean fleece sorting sheds → Fleece handling machinery → Integrated fleece preparation.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 2 / 1 / 1.
+- Shared bonus product weights: wool ×2.
+- Loss protection I–IV: wet: 25% / 40% / 55% / 65%; cold: 10% / 20% / 30% / 40%.
+- Construction adjustments: planks ×1.3, steel ×1.1.
+
+### Coastal sheep drying yards
+
+Dry roofed handling areas reduce losses from wet fleeces.
+
+- Investment track: Livestock improvements.
+- Site selection: Pasture; Temperate; Coastal.
+- Stages I–IV: Coastal sheep drying yards → Clean fleece sorting sheds → Fleece handling machinery → Integrated fleece preparation.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: wool ×2.
+- Loss protection I–IV: wet: 25% / 40% / 55% / 65%; cold: 10% / 20% / 30% / 40%.
+- Construction adjustments: planks ×1.3, steel ×1.1.
+
+### Boreal upland sheep hay barns
+
+Raised hay stores and winter shelters sustain exposed domestic sheep.
+
+- Investment track: Livestock improvements.
+- Site selection: Rough pasture; Cold; Elevation ≥0.72.
+- Stages I–IV: Boreal upland sheep hay barns → Sheltered winter stalls → Fodder handling machinery → Integrated winter fodder works.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 2 / 3.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: cold: 30% / 45% / 60% / 75%.
+- Construction adjustments: planks ×1.25, grain ×1.2, coal ×1.1.
+
+### Coastal Mediterranean hay reserves
+
+Stored spring fodder supports domestic flocks during the dry summer.
+
+- Investment track: Livestock improvements.
+- Site selection: Rough pasture; Mediterranean; Coastal.
+- Stages I–IV: Coastal Mediterranean hay reserves → Covered hay reserves → Fodder cutting machinery → Dry-season fodder works.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 3 / 2 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: dry: 35% / 50% / 65% / 75%.
+- Construction adjustments: grain ×1.3, planks ×1.15.
+
+### Semiarid slope goat browse stores
+
+Cut browse and protected pens support existing goats on dry slopes.
+
+- Investment track: Livestock improvements.
+- Site selection: Goat pasture; Hot Semi-Arid; Elevation ≥0.72.
+- Stages I–IV: Semiarid slope goat browse stores → Covered browse feed yards → Browse preparation machinery → Integrated browse reserves.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: meat ×1.5.
+- Loss protection I–IV: dry: 30% / 45% / 60% / 70%.
+- Construction adjustments: grain ×0.8, planks ×1.35, steel ×1.1.
+
+### Desert goat shaded fodder courts
+
+Shade and covered fodder storage improve recovery in extreme dry heat; they do not create grazing land.
+
+- Investment track: Livestock improvements.
+- Site selection: Goat pasture; Desert; Elevation <0.52.
+- Stages I–IV: Desert goat shaded fodder courts → Covered hay reserves → Fodder cutting machinery → Dry-season fodder works.
+- Annual extra I–IV: **2 / 3 / 4 / 5**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: dry: 35% / 50% / 65% / 75%.
+- Construction adjustments: grain ×1.3, planks ×1.15.
+
+### Alpine goat winter stalls
+
+Insulated stalls and stored hay protect domestic goats during the cold season.
+
+- Investment track: Livestock improvements.
+- Site selection: Goat pasture; Alpine; Elevation ≥0.72.
+- Stages I–IV: Alpine goat winter stalls → Sheltered winter stalls → Fodder handling machinery → Integrated winter fodder works.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 2 / 3.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: cold: 30% / 45% / 60% / 75%.
+- Construction adjustments: planks ×1.25, grain ×1.2, coal ×1.1.
+
+### Oceanic cattle silage clamps
+
+Covered ensiled fodder bridges wet weather that prevents reliable hay drying.
+
+- Investment track: Livestock improvements.
+- Site selection: Cattle pasture; Oceanic; Coastal.
+- Stages I–IV: Oceanic cattle silage clamps → Masonry silage clamps → Fodder cutting and packing → Integrated fodder storage.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 2 / 2.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 30% / 45% / 60% / 75%; dry: 10% / 20% / 30% / 40%.
+- Construction adjustments: masonry ×1.3, steel ×1.2.
+
+### Subtropical cattle fodder silos
+
+Protected fodder stores stabilize domestic cattle output across humid and dry spells.
+
+- Investment track: Livestock improvements.
+- Site selection: Cattle pasture; Subtropical; Elevation <0.52.
+- Stages I–IV: Subtropical cattle fodder silos → Masonry silage clamps → Fodder cutting and packing → Integrated fodder storage.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 30% / 45% / 60% / 75%; dry: 10% / 20% / 30% / 40%.
+- Construction adjustments: masonry ×1.3, steel ×1.2.
+
+### Savanna plateau cattle hay yards
+
+Dry-season fodder reserves use the existing grass harvest to support cattle through seasonal scarcity.
+
+- Investment track: Livestock improvements.
+- Site selection: Cattle range; Savanna; Elevation ≥0.72.
+- Stages I–IV: Savanna plateau cattle hay yards → Covered hay reserves → Fodder cutting machinery → Dry-season fodder works.
+- Annual extra I–IV: **4 / 5 / 6 / 7**.
+- Spring / summer / autumn / winter weights: 1 / 2 / 2 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: dry: 35% / 50% / 65% / 75%.
+- Construction adjustments: grain ×1.3, planks ×1.15.
+
+### High puna alpaca fleece shelters
+
+Protected highland sorting keeps more usable fleece from existing alpaca production.
+
+- Investment track: Livestock improvements.
+- Site selection: Alpaca pasture; Andean; Elevation ≥0.72.
+- Stages I–IV: High puna alpaca fleece shelters → Clean fleece sorting sheds → Fleece handling machinery → Integrated fleece preparation.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: wool ×2.5.
+- Loss protection I–IV: wet: 25% / 40% / 55% / 65%; cold: 10% / 20% / 30% / 40%.
+- Construction adjustments: planks ×1.3, steel ×1.1.
+
+### Rainforest coast livestock dry pads
+
+Raised dry pads and covered fodder handling limit persistent wet-weather losses.
+
+- Investment track: Livestock improvements.
+- Site selection: Coastal pasture; Temperate Rainforest; Elevation <0.52.
+- Stages I–IV: Rainforest coast livestock dry pads → Masonry silage clamps → Fodder cutting and packing → Integrated fodder storage.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 30% / 45% / 60% / 75%; dry: 10% / 20% / 30% / 40%.
+- Construction adjustments: masonry ×1.3, steel ×1.2.
+
+### Temperate ridge cable landings
+
+Cable extraction recovers timber on high ground with expensive lifting gear.
+
+- Investment track: Forestry infrastructure.
+- Site selection: Woods; Temperate; Elevation ≥0.72.
+- Stages I–IV: Temperate ridge cable landings → Reinforced cable anchors → Steam timber winches → Integrated skyline haulage.
+- Annual extra I–IV: **2 / 3 / 4 / 5**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 25% / 40% / 60% / 75%.
+- Construction adjustments: steel ×1.4, leather ×1.2, coal ×1.15.
+
+### Oceanic shore timber landings
+
+Raised shore yards keep felled timber accessible in persistent wet coastal conditions.
+
+- Investment track: Forestry infrastructure.
+- Site selection: Woods; Oceanic; Coastal.
+- Stages I–IV: Oceanic shore timber landings → Covered log landings → Timber handling cranes → Integrated protected timber yard.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 30% / 45% / 60% / 75%.
+- Construction adjustments: planks ×1.3, masonry ×1.15.
+
+### Mediterranean slope coppice stools
+
+Managed coppice stools and careful haulage preserve wood recovery through summer dryness.
+
+- Investment track: Forestry infrastructure.
+- Site selection: Woods; Mediterranean; Elevation ≥0.72.
+- Stages I–IV: Mediterranean slope coppice stools → Managed dry woodland plots → Selective timber equipment → Integrated dry woodland works.
+- Annual extra I–IV: **2 / 3 / 4 / 5**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: dry: 25% / 40% / 55% / 65%.
+- Construction adjustments: steel ×1.1, coal ×0.85.
+
+### Steppe woodland moisture strips
+
+Protected ground cover and selective felling conserve scarce woodland moisture.
+
+- Investment track: Forestry infrastructure.
+- Site selection: Woods; Steppe; Elevation <0.52.
+- Stages I–IV: Steppe woodland moisture strips → Managed dry woodland plots → Selective timber equipment → Integrated dry woodland works.
+- Annual extra I–IV: **2 / 3 / 4 / 5**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: dry: 25% / 40% / 55% / 65%.
+- Construction adjustments: steel ×1.1, coal ×0.85.
+
+### Boreal ridge sled landings
+
+Prepared short sled approaches favor winter timber recovery on frozen ground.
+
+- Investment track: Forestry infrastructure.
+- Site selection: Forest; Cold; Elevation ≥0.72.
+- Stages I–IV: Boreal ridge sled landings → Raised winter log landings → Winter haulage winches → Integrated seasonal timber depot.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 2 / 3.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: cold: 20% / 35% / 50% / 65%.
+- Construction adjustments: leather ×1.35, planks ×1.2, coal ×1.15.
+
+### Alpine skyline timber yards
+
+Cable-supported extraction reduces difficult highland timber losses without making mountain roads.
+
+- Investment track: Forestry infrastructure.
+- Site selection: Forest; Alpine; Elevation ≥0.72.
+- Stages I–IV: Alpine skyline timber yards → Reinforced cable anchors → Steam timber winches → Integrated skyline haulage.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 25% / 40% / 60% / 75%.
+- Construction adjustments: steel ×1.4, leather ×1.2, coal ×1.15.
+
+### Cold-coast mixed woodland yards
+
+Roofed handling protects coastal timber; hunting returns remain separate.
+
+- Investment track: Forestry infrastructure.
+- Site selection: Hunting forest; Cold; Coastal.
+- Stages I–IV: Cold-coast mixed woodland yards → Covered log landings → Timber handling cranes → Integrated protected timber yard.
+- Annual extra I–IV: **2 / 3 / 4 / 5**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 30% / 45% / 60% / 75%.
+- Construction adjustments: planks ×1.3, masonry ×1.15.
+
+### Rainforest upland skyline extraction
+
+Selective cable extraction handles difficult upland logs; extra machinery costs keep gains modest.
+
+- Investment track: Forestry infrastructure.
+- Site selection: Old-growth forest; Temperate Rainforest; Elevation ≥0.72.
+- Stages I–IV: Rainforest upland skyline extraction → Reinforced cable anchors → Steam timber winches → Integrated skyline haulage.
+- Annual extra I–IV: **2 / 3 / 4 / 5**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 25% / 40% / 60% / 75%.
+- Construction adjustments: steel ×1.4, leather ×1.2, coal ×1.15.
+
+### Fern woodland raised haulways
+
+Short raised haulways preserve access over wet ground; wildlife is not increased.
+
+- Investment track: Forestry infrastructure.
+- Site selection: Fern hunting grounds; Temperate Rainforest; Elevation <0.52.
+- Stages I–IV: Fern woodland raised haulways → Covered log landings → Timber handling cranes → Integrated protected timber yard.
+- Annual extra I–IV: **2 / 3 / 4 / 5**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 30% / 45% / 60% / 75%.
+- Construction adjustments: planks ×1.3, masonry ×1.15.
+
+### Prairie estuary timber yards
+
+Covered bank landings improve wood handling where river woodland reaches the coast.
+
+- Investment track: Forestry infrastructure.
+- Site selection: River woods; Prairie; Coastal.
+- Stages I–IV: Prairie estuary timber yards → Covered log landings → Timber handling cranes → Integrated protected timber yard.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 30% / 45% / 60% / 75%.
+- Construction adjustments: planks ×1.3, masonry ×1.15.
+
+### Andean river-gorge timber cables
+
+Local cable lifts recover timber from high river woodland without creating crossings.
+
+- Investment track: Forestry infrastructure.
+- Site selection: River woods; Andean; Elevation ≥0.72.
+- Stages I–IV: Andean river-gorge timber cables → Reinforced cable anchors → Steam timber winches → Integrated skyline haulage.
+- Annual extra I–IV: **2 / 3 / 4 / 5**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 25% / 40% / 60% / 75%.
+- Construction adjustments: steel ×1.4, leather ×1.2, coal ×1.15.
+
+### Tropical upland selective cable yards
+
+Selective lifting limits recovery losses on humid high forest ground.
+
+- Investment track: Forestry infrastructure.
+- Site selection: Jungle; Tropical; Elevation ≥0.72.
+- Stages I–IV: Tropical upland selective cable yards → Reinforced cable anchors → Steam timber winches → Integrated skyline haulage.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 25% / 40% / 60% / 75%.
+- Construction adjustments: steel ×1.4, leather ×1.2, coal ×1.15.
+
+### Monsoon coastal timber shelters
+
+Roofed landings and raised stacks protect cut timber from wet-season exposure.
+
+- Investment track: Forestry infrastructure.
+- Site selection: Tropical woods; Monsoon; Coastal.
+- Stages I–IV: Monsoon coastal timber shelters → Covered log landings → Timber handling cranes → Integrated protected timber yard.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 30% / 45% / 60% / 75%.
+- Construction adjustments: planks ×1.3, masonry ×1.15.
+
+### Delta mangrove pole platforms
+
+Raised sorting platforms improve existing mangrove wood recovery while flood access remains unchanged.
+
+- Investment track: Forestry infrastructure.
+- Site selection: Mangroves; Equatorial Wetlands; Delta.
+- Stages I–IV: Delta mangrove pole platforms → Covered log landings → Timber handling cranes → Integrated protected timber yard.
+- Annual extra I–IV: **2 / 3 / 4 / 5**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 30% / 45% / 60% / 75%.
+- Construction adjustments: planks ×1.3, masonry ×1.15.
+
+### Temperate lowland iron drainage
+
+Sumps and staged pumps reduce groundwater-related recovery losses in existing lowland iron workings.
+
+- Investment track: Mining infrastructure.
+- Site selection: Iron mountains; Temperate; Elevation <0.52.
+- Stages I–IV: Temperate lowland iron drainage → Linked drainage galleries → Staged steam mine pumps → Integrated dewatering works.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 20% / 40% / 65% / 80%.
+- Construction adjustments: steel ×1.3, coal ×1.25, masonry ×1.2.
+
+### Oceanic coastal iron sump works
+
+Protected sump equipment handles wet coastal conditions without creating new ore.
+
+- Investment track: Mining infrastructure.
+- Site selection: Iron mountains; Oceanic; Coastal.
+- Stages I–IV: Oceanic coastal iron sump works → Linked drainage galleries → Staged steam mine pumps → Integrated dewatering works.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 20% / 40% / 65% / 80%.
+- Construction adjustments: steel ×1.3, coal ×1.25, masonry ×1.2.
+
+### Boreal ridge iron covered workings
+
+Protected entrances and thawing equipment preserve access to existing iron during cold spells.
+
+- Investment track: Mining infrastructure.
+- Site selection: Iron mountains; Cold; Elevation ≥0.72.
+- Stages I–IV: Boreal ridge iron covered workings → Protected mine galleries → Steam ground-working equipment → Integrated cold-region mine works.
+- Annual extra I–IV: **2 / 3 / 4 / 5**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: cold: 25% / 40% / 60% / 75%.
+- Construction adjustments: coal ×1.4, planks ×1.25, masonry ×1.15.
+
+### Alpine iron winding stages
+
+Staged winding gear reduces difficult highland ore haulage losses.
+
+- Investment track: Mining infrastructure.
+- Site selection: Iron mountains; Alpine; Elevation ≥0.72.
+- Stages I–IV: Alpine iron winding stages → Reinforced winding towers → Steam ore hoists → Integrated staged mine haulage.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: cold: 20% / 35% / 50% / 65%.
+- Construction adjustments: steel ×1.4, leather ×1.25, coal ×1.15.
+
+### High Andean iron dry dressing
+
+Dry crushing and screening suit scarce highland water; no ore washing is assumed.
+
+- Investment track: Mining infrastructure.
+- Site selection: Iron mountains; Andean; Elevation ≥0.72.
+- Stages I–IV: High Andean iron dry dressing → Covered crushing sheds → Dry crushing and screening → Integrated dry ore preparation.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: dry: 15% / 25% / 35% / 45%.
+- Construction adjustments: steel ×1.25, masonry ×1.15, coal ×1.1.
+
+### Tropical lowland iron dewatering
+
+Staged dewatering reduces persistent wet-spell losses in iron workings.
+
+- Investment track: Mining infrastructure.
+- Site selection: Iron mountains; Tropical; Elevation <0.52.
+- Stages I–IV: Tropical lowland iron dewatering → Linked drainage galleries → Staged steam mine pumps → Integrated dewatering works.
+- Annual extra I–IV: **4 / 5 / 6 / 7**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 20% / 40% / 65% / 80%.
+- Construction adjustments: steel ×1.3, coal ×1.25, masonry ×1.2.
+
+### Semiarid iron screening floors
+
+Dry screening and covered ore floors avoid dependence on absent wash water.
+
+- Investment track: Mining infrastructure.
+- Site selection: Iron mountains; Hot Semi-Arid; Elevation ≥0.72.
+- Stages I–IV: Semiarid iron screening floors → Covered crushing sheds → Dry crushing and screening → Integrated dry ore preparation.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: dry: 15% / 25% / 35% / 45%.
+- Construction adjustments: steel ×1.25, masonry ×1.15, coal ×1.1.
+
+### Temperate coal ventilation shafts
+
+Airways and mechanical fans improve usable extraction from existing lowland coal seams.
+
+- Investment track: Mining infrastructure.
+- Site selection: Coal hills; Temperate; Elevation <0.52.
+- Stages I–IV: Temperate coal ventilation shafts → Ventilation shafts → Mechanical mine fans → Integrated mine ventilation.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 10% / 20% / 30% / 40%.
+- Construction adjustments: planks ×1.25, steel ×1.3, coal ×1.15.
+
+### Boreal upland coal entrance shelters
+
+Protected drift entrances and thawing gear reduce cold-working losses.
+
+- Investment track: Mining infrastructure.
+- Site selection: Coal hills; Cold; Elevation ≥0.72.
+- Stages I–IV: Boreal upland coal entrance shelters → Protected mine galleries → Steam ground-working equipment → Integrated cold-region mine works.
+- Annual extra I–IV: **2 / 3 / 4 / 5**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: cold: 25% / 40% / 60% / 75%.
+- Construction adjustments: coal ×1.4, planks ×1.25, masonry ×1.15.
+
+### Monsoon coal staged sump pumps
+
+Successive sump stages handle heavy wet-season inflow; deep flood closures remain.
+
+- Investment track: Mining infrastructure.
+- Site selection: Coal hills; Monsoon; Elevation <0.52.
+- Stages I–IV: Monsoon coal staged sump pumps → Linked drainage galleries → Staged steam mine pumps → Integrated dewatering works.
+- Annual extra I–IV: **4 / 5 / 6 / 7**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 20% / 40% / 65% / 80%.
+- Construction adjustments: steel ×1.3, coal ×1.25, masonry ×1.2.
+
+### Prairie coal ridge airways
+
+Prepared airways and hoisting plant improve recovery on elevated prairie coal sites.
+
+- Investment track: Mining infrastructure.
+- Site selection: Coal hills; Prairie; Elevation ≥0.72.
+- Stages I–IV: Prairie coal ridge airways → Ventilation shafts → Mechanical mine fans → Integrated mine ventilation.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 10% / 20% / 30% / 40%.
+- Construction adjustments: planks ×1.25, steel ×1.3, coal ×1.15.
+
+### Desert coal dry sorting sheds
+
+Shade and dry screening separate usable coal without an invented water supply.
+
+- Investment track: Mining infrastructure.
+- Site selection: Coal hills; Desert; Elevation ≥0.72.
+- Stages I–IV: Desert coal dry sorting sheds → Covered crushing sheds → Dry crushing and screening → Integrated dry ore preparation.
+- Annual extra I–IV: **2 / 3 / 4 / 5**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: dry: 15% / 25% / 35% / 45%.
+- Construction adjustments: steel ×1.25, masonry ×1.15, coal ×1.1.
+
+### Andean high-vein dry crushing
+
+Covered crushing and sorting recover more existing vein material on water-limited high ground.
+
+- Investment track: Mining infrastructure.
+- Site selection: Gold mountains; Andean; Elevation ≥0.72.
+- Stages I–IV: Andean high-vein dry crushing → Covered crushing sheds → Dry crushing and screening → Integrated dry ore preparation.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: dry: 15% / 25% / 35% / 45%.
+- Construction adjustments: steel ×1.25, masonry ×1.15, coal ×1.1.
+
+### Humid lowland gold sump galleries
+
+Drainage protects existing hard-rock gold workings; this does not turn veins into placer deposits.
+
+- Investment track: Mining infrastructure.
+- Site selection: Gold mountains; Tropical; Elevation <0.52.
+- Stages I–IV: Humid lowland gold sump galleries → Linked drainage galleries → Staged steam mine pumps → Integrated dewatering works.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 20% / 40% / 65% / 80%.
+- Construction adjustments: steel ×1.3, coal ×1.25, masonry ×1.2.
+
+### Hyperarid gold hand-sort terraces
+
+Dry sorting platforms and protected crushers minimize material losses without wash water.
+
+- Investment track: Mining infrastructure.
+- Site selection: Gold mountains; Hyperarid; Elevation ≥0.72.
+- Stages I–IV: Hyperarid gold hand-sort terraces → Covered crushing sheds → Dry crushing and screening → Integrated dry ore preparation.
+- Annual extra I–IV: **2 / 3 / 4 / 5**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: dry: 15% / 25% / 35% / 45%.
+- Construction adjustments: steel ×1.25, masonry ×1.15, coal ×1.1.
+
+### Arctic coastal gold thawing sheds
+
+Protected coastal workings use costly heat and tools to recover existing cold-region gold.
+
+- Investment track: Mining infrastructure.
+- Site selection: Arctic gold mountains; Arctic; Coastal.
+- Stages I–IV: Arctic coastal gold thawing sheds → Protected mine galleries → Steam ground-working equipment → Integrated cold-region mine works.
+- Annual extra I–IV: **2 / 3 / 4 / 5**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: cold: 25% / 40% / 60% / 75%.
+- Construction adjustments: coal ×1.4, planks ×1.25, masonry ×1.15.
+
+### Temperate ridge stone derricks
+
+Derricks lift sound blocks from elevated existing stone faces.
+
+- Investment track: Quarry infrastructure.
+- Site selection: Stone quarry; Temperate; Elevation ≥0.72.
+- Stages I–IV: Temperate ridge stone derricks → Reinforced quarry derricks → Steam block cranes → Integrated quarry lifting yard.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 25% / 40% / 60% / 75%.
+- Construction adjustments: steel ×1.35, leather ×1.2, masonry ×1.15.
+
+### Boreal stone covered splitting floors
+
+Protected splitting floors reduce cold losses in existing low stone sites.
+
+- Investment track: Quarry infrastructure.
+- Site selection: Stone quarry; Cold; Elevation <0.52.
+- Stages I–IV: Boreal stone covered splitting floors → Sheltered stone handling → Heated cutting sheds → Integrated cold quarry yard.
+- Annual extra I–IV: **2 / 3 / 4 / 5**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: cold: 20% / 35% / 50% / 65%.
+- Construction adjustments: coal ×1.3, planks ×1.25.
+
+### Semiarid stone dry-wedge benches
+
+Controlled wedges and bench cutting improve block recovery with little water demand.
+
+- Investment track: Quarry infrastructure.
+- Site selection: Stone quarry; Hot Semi-Arid; Elevation ≥0.72.
+- Stages I–IV: Semiarid stone dry-wedge benches → Prepared stone cutting floors → Powered cutting equipment → Integrated block dressing works.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: dry: 10% / 20% / 30% / 40%.
+- Construction adjustments: steel ×1.3, coal ×1.1.
+
+### Desert stone shaded working floors
+
+Shade and protected handling reduce damage during recovery from existing desert stone.
+
+- Investment track: Quarry infrastructure.
+- Site selection: Stone quarry; Desert; Elevation <0.52.
+- Stages I–IV: Desert stone shaded working floors → Prepared stone cutting floors → Powered cutting equipment → Integrated block dressing works.
+- Annual extra I–IV: **2 / 3 / 4 / 5**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: dry: 10% / 20% / 30% / 40%.
+- Construction adjustments: steel ×1.3, coal ×1.1.
+
+### Mediterranean escarpment landing cranes
+
+Staged cranes lower existing escarpment stone toward coastal handling yards.
+
+- Investment track: Quarry infrastructure.
+- Site selection: Escarpment; Mediterranean; Coastal.
+- Stages I–IV: Mediterranean escarpment landing cranes → Reinforced quarry derricks → Steam block cranes → Integrated quarry lifting yard.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 25% / 40% / 60% / 75%.
+- Construction adjustments: steel ×1.35, leather ×1.2, masonry ×1.15.
+
+### Oceanic cliff block shelters
+
+Sheltered coastal loading and lifting reduce wet-weather block losses.
+
+- Investment track: Quarry infrastructure.
+- Site selection: Coastal cliffs; Oceanic; Coastal.
+- Stages I–IV: Oceanic cliff block shelters → Reinforced quarry derricks → Steam block cranes → Integrated quarry lifting yard.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 25% / 40% / 60% / 75%.
+- Construction adjustments: steel ×1.35, leather ×1.2, masonry ×1.15.
+
+### Andean high quarry gravity inclines
+
+Short gravity inclines move quarried stone to local yards without crossing a mountain pass.
+
+- Investment track: Quarry infrastructure.
+- Site selection: Mountain quarry; Andean; Elevation ≥0.72.
+- Stages I–IV: Andean high quarry gravity inclines → Reinforced quarry derricks → Steam block cranes → Integrated quarry lifting yard.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 25% / 40% / 60% / 75%.
+- Construction adjustments: steel ×1.35, leather ×1.2, masonry ×1.15.
+
+### Mesoamerican volcanic block benches
+
+Bench cutting follows existing volcanic rock rather than assuming limestone or marble.
+
+- Investment track: Quarry infrastructure.
+- Site selection: Volcanic quarry; Mesoamerican; Elevation ≥0.72.
+- Stages I–IV: Mesoamerican volcanic block benches → Prepared stone cutting floors → Powered cutting equipment → Integrated block dressing works.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: dry: 10% / 20% / 30% / 40%.
+- Construction adjustments: steel ×1.3, coal ×1.1.
+
+### Island volcanic quay cranes
+
+Compact lifting stages recover island stone at existing coastal quarries.
+
+- Investment track: Quarry infrastructure.
+- Site selection: Volcanic quarry; Tropical Maritime; Coastal.
+- Stages I–IV: Island volcanic quay cranes → Reinforced quarry derricks → Steam block cranes → Integrated quarry lifting yard.
+- Annual extra I–IV: **2 / 3 / 4 / 5**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 25% / 40% / 60% / 75%.
+- Construction adjustments: steel ×1.35, leather ×1.2, masonry ×1.15.
+
+### Temperate clay pit collector sumps
+
+Collector sumps and covered settling floors reduce lowland clay losses.
+
+- Investment track: Quarry infrastructure.
+- Site selection: Clay hills; Temperate; Elevation <0.52.
+- Stages I–IV: Temperate clay pit collector sumps → Covered settling floors → Clay lifting and sump pumps → Integrated clay drainage works.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 25% / 40% / 60% / 75%.
+- Construction adjustments: masonry ×1.25, steel ×1.15, planks ×1.2.
+
+### Monsoon clay covered settling yards
+
+Roofed settling and lifting equipment protect workable clay during persistent rain.
+
+- Investment track: Quarry infrastructure.
+- Site selection: Alluvial clay banks; Monsoon; Elevation <0.52.
+- Stages I–IV: Monsoon clay covered settling yards → Covered settling floors → Clay lifting and sump pumps → Integrated clay drainage works.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 25% / 40% / 60% / 75%.
+- Construction adjustments: masonry ×1.25, steel ×1.15, planks ×1.2.
+
+### Hyperarid clay shaded sorting courts
+
+Shaded sorting and covered stockpiles handle existing clay without constructing new deposits.
+
+- Investment track: Quarry infrastructure.
+- Site selection: Clay hills; Hyperarid; Elevation <0.52.
+- Stages I–IV: Hyperarid clay shaded sorting courts → Covered clay stockpiles → Dry clay preparation machinery → Integrated sheltered clay works.
+- Annual extra I–IV: **2 / 3 / 4 / 5**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: dry: 20% / 35% / 45% / 55%.
+- Construction adjustments: planks ×1.3, steel ×1.1.
+
+### Tundra coastal peat drying shelters
+
+Sheltered racks preserve a short seasonal peat-working window.
+
+- Investment track: Quarry infrastructure.
+- Site selection: Peat bog; Tundra; Coastal.
+- Stages I–IV: Tundra coastal peat drying shelters → Covered peat lofts → Peat pressing equipment → Integrated protected peat stores.
+- Annual extra I–IV: **1 / 2 / 3 / 4**.
+- Spring / summer / autumn / winter weights: 1 / 3 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 30% / 45% / 60% / 75%.
+- Construction adjustments: planks ×1.4, steel ×0.9.
+
+### Upland Mediterranean salt grading
+
+Covered grading handles an existing inland salt deposit without assuming seawater channels.
+
+- Investment track: Saltworks.
+- Site selection: Salt flats; Mediterranean; Elevation ≥0.72.
+- Stages I–IV: Upland Mediterranean salt grading → Covered salt grading stores → Salt crushing and screening → Integrated dry salt works.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 3 / 2 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 20% / 35% / 50% / 65%.
+- Construction adjustments: steel ×1.15, ceramics ×0.85, coal ×0.9.
+
+### Desert coastal sequential salt pans
+
+Sequential shallow pans use strong evaporation at existing coastal salt sites.
+
+- Investment track: Saltworks.
+- Site selection: Salt flats; Desert; Coastal.
+- Stages I–IV: Desert coastal sequential salt pans → Gated concentration cells → Brine transfer machinery → Regulated solar salt works.
+- Annual extra I–IV: **4 / 5 / 6 / 7**.
+- Spring / summer / autumn / winter weights: 1 / 3 / 2 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 10% / 25% / 40% / 55%.
+- Construction adjustments: masonry ×1.2, ceramics ×1.25, coal ×0.85.
+
+### Hyperarid upland salt crust sheds
+
+Dry crust screening improves native salt recovery without new brine water.
+
+- Investment track: Saltworks.
+- Site selection: Salt flats; Hyperarid; Elevation ≥0.72.
+- Stages I–IV: Hyperarid upland salt crust sheds → Covered salt grading stores → Salt crushing and screening → Integrated dry salt works.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 3 / 2 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 20% / 35% / 50% / 65%.
+- Construction adjustments: steel ×1.15, ceramics ×0.85, coal ×0.9.
+
+### Subtropical coastal gated salt pans
+
+Controlled pan connections and covered stockpiles separate evaporation from wet-weather storage.
+
+- Investment track: Saltworks.
+- Site selection: Salt flats; Subtropical; Coastal.
+- Stages I–IV: Subtropical coastal gated salt pans → Gated concentration cells → Brine transfer machinery → Regulated solar salt works.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 10% / 25% / 40% / 55%.
+- Construction adjustments: masonry ×1.2, ceramics ×1.25, coal ×0.85.
+
+### Island coastal salt rain shelters
+
+Movable covers protect existing island brine and harvested salt from frequent rain.
+
+- Investment track: Saltworks.
+- Site selection: Salt flats; Tropical Maritime; Coastal.
+- Stages I–IV: Island coastal salt rain shelters → Protected brine stores → Heated concentration equipment → Integrated sheltered salt works.
+- Annual extra I–IV: **2 / 3 / 4 / 5**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 30% / 50% / 65% / 80%; cold: 20% / 35% / 50% / 65%.
+- Construction adjustments: coal ×1.3, planks ×1.2, ceramics ×1.15.
+
+### Prairie upland salt protected pans
+
+Covered concentration and drying preserve native salt through continental cold and rain.
+
+- Investment track: Saltworks.
+- Site selection: Salt flats; Prairie; Elevation ≥0.72.
+- Stages I–IV: Prairie upland salt protected pans → Protected brine stores → Heated concentration equipment → Integrated sheltered salt works.
+- Annual extra I–IV: **2 / 3 / 4 / 5**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 30% / 50% / 65% / 80%; cold: 20% / 35% / 50% / 65%.
+- Construction adjustments: coal ×1.3, planks ×1.2, ceramics ×1.15.
+
+### Andean high salt grading floors
+
+Dry sorting and covered drying fit an existing highland salt site.
+
+- Investment track: Saltworks.
+- Site selection: Salt flats; Andean; Elevation ≥0.72.
+- Stages I–IV: Andean high salt grading floors → Covered salt grading stores → Salt crushing and screening → Integrated dry salt works.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 2 / 2 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 20% / 35% / 50% / 65%.
+- Construction adjustments: steel ×1.15, ceramics ×0.85, coal ×0.9.
+
+### Savanna seasonal salt pans
+
+Seasonal pan divisions concentrate native brine during dry work periods.
+
+- Investment track: Saltworks.
+- Site selection: Salt flats; Savanna; Elevation <0.52.
+- Stages I–IV: Savanna seasonal salt pans → Gated concentration cells → Brine transfer machinery → Regulated solar salt works.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 3 / 2 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 10% / 25% / 40% / 55%.
+- Construction adjustments: masonry ×1.2, ceramics ×1.25, coal ×0.85.
+
+### Polar shore fish shelter stages
+
+Sheltered handling improves a visiting catch only when water is accessible; ice remains a closure.
+
+- Investment track: Fishery infrastructure.
+- Site selection: Arctic / Glacial; coast.
+- Stages I–IV: Polar shore fish shelter stages → Insulated catch stores → Powered ice handling → Integrated cold landing depot.
+- Annual extra I–IV: **1 / 2 / 3 / 4**.
+- Spring / summer / autumn / winter weights: 1 / 2 / 2 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: None.
+- Construction adjustments: planks ×1.2, masonry ×1.2, coal ×0.9.
+
+### Boreal lake catch ice stores
+
+Insulated stores preserve fish landed on cold lakes without freezing new water or generating fish.
+
+- Investment track: Fishery infrastructure.
+- Site selection: Cold / Tundra; lake.
+- Stages I–IV: Boreal lake catch ice stores → Insulated catch stores → Powered ice handling → Integrated cold landing depot.
+- Annual extra I–IV: **2 / 3 / 4 / 5**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: None.
+- Construction adjustments: planks ×1.2, masonry ×1.2, coal ×0.9.
+
+### Oceanic shore fish covered auctions
+
+Covered landing and rapid sorting improve usable catch in wet coastal weather.
+
+- Investment track: Fishery infrastructure.
+- Site selection: Oceanic; coast.
+- Stages I–IV: Oceanic shore fish covered auctions → Covered smoking stores → Controlled smoking equipment → Integrated humid-climate fish works.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: None.
+- Construction adjustments: planks ×1.3, coal ×1.15, masonry ×1.1.
+
+### Mediterranean shoal curing sheds
+
+Shaded curing and rapid handling improve fish from existing shoals.
+
+- Investment track: Fishery infrastructure.
+- Site selection: Mediterranean; shoal.
+- Stages I–IV: Mediterranean shoal curing sheds → Insulated curing stores → Steam chilling equipment → Integrated warm-coast fish depot.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: None.
+- Construction adjustments: salt ×1.2, masonry ×1.3, coal ×1.2.
+
+### Island reef chilled landing boxes
+
+Insulated landing boxes reduce spoilage of reef catches in tropical heat.
+
+- Investment track: Fishery infrastructure.
+- Site selection: Tropical Maritime; reef.
+- Stages I–IV: Island reef chilled landing boxes → Insulated curing stores → Steam chilling equipment → Integrated warm-coast fish depot.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: None.
+- Construction adjustments: salt ×1.2, masonry ×1.3, coal ×1.2.
+
+### Equatorial river covered smoke racks
+
+Protected smoking and covered racks preserve visiting river catches in humid conditions.
+
+- Investment track: Fishery infrastructure.
+- Site selection: Equatorial Wetlands; river.
+- Stages I–IV: Equatorial river covered smoke racks → Covered smoking stores → Controlled smoking equipment → Integrated humid-climate fish works.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: None.
+- Construction adjustments: planks ×1.3, coal ×1.15, masonry ×1.1.
+
+### Continental lake seasonal fish stores
+
+Seasonal curing and protected storage improve available inland catch; freeze closures still apply.
+
+- Investment track: Fishery infrastructure.
+- Site selection: Steppe / Prairie; lake.
+- Stages I–IV: Continental lake seasonal fish stores → Insulated curing stores → Steam chilling equipment → Integrated warm-coast fish depot.
+- Annual extra I–IV: **2 / 3 / 4 / 5**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: None.
+- Construction adjustments: salt ×1.2, masonry ×1.3, coal ×1.2.
+
+### Monsoon lake raised fish racks
+
+Raised drying and smoking structures improve fish handling during wet-season access windows.
+
+- Investment track: Fishery infrastructure.
+- Site selection: Monsoon; lake.
+- Stages I–IV: Monsoon lake raised fish racks → Covered smoking stores → Controlled smoking equipment → Integrated humid-climate fish works.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: None.
+- Construction adjustments: planks ×1.3, coal ×1.15, masonry ×1.1.
+
+### Steppe ridge game observation shelters
+
+Lookouts and shaded recovery yards improve passing game without holding animals in place.
+
+- Investment track: Hunting infrastructure.
+- Site selection: Steppe plain; Steppe; Elevation ≥0.72.
+- Stages I–IV: Steppe ridge game observation shelters → Shaded game handling yards → Game curing machinery → Integrated dry-country game depot.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: hides ×1.5.
+- Loss protection I–IV: None.
+- Construction adjustments: salt ×1.3, leather ×1.15.
+
+### Prairie lowland communal game yards
+
+Communal handling improves meat recovered from whatever eligible wildlife visits.
+
+- Investment track: Hunting infrastructure.
+- Site selection: Bison range; Prairie; Elevation <0.52.
+- Stages I–IV: Prairie lowland communal game yards → Shaded game handling yards → Game curing machinery → Integrated dry-country game depot.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: meat ×2.
+- Loss protection I–IV: None.
+- Construction adjustments: salt ×1.3, leather ×1.15.
+
+### Boreal ridge game caches
+
+Cold protected caches preserve visiting woodland game while leaving timber production unchanged.
+
+- Investment track: Hunting infrastructure.
+- Site selection: Hunting forest; Cold; Elevation ≥0.72.
+- Stages I–IV: Boreal ridge game caches → Cold game handling shelters → Game preparation machinery → Integrated cold game depot.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 2 / 2.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: None.
+- Construction adjustments: planks ×1.2, coal ×0.85, leather ×1.2.
+
+### Mesoamerican upland game smokehouses
+
+Protected smoking improves the existing small-game catch on wet highland habitat.
+
+- Investment track: Hunting infrastructure.
+- Site selection: Turkey grounds; Mesoamerican; Elevation ≥0.72.
+- Stages I–IV: Mesoamerican upland game smokehouses → Protected smoke shelters → Game smoking machinery → Integrated humid game depot.
+- Annual extra I–IV: **2 / 3 / 4 / 5**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: meat ×2.
+- Loss protection I–IV: None.
+- Construction adjustments: planks ×1.3, coal ×1.15.
+
+### Coastal oasis game curing shelters
+
+Shaded handling recovers visiting game products; date and wood production are unaffected.
+
+- Investment track: Hunting infrastructure.
+- Site selection: Oasis; Desert / Hyperarid; Coastal.
+- Stages I–IV: Coastal oasis game curing shelters → Shaded game handling yards → Game curing machinery → Integrated dry-country game depot.
+- Annual extra I–IV: **2 / 3 / 4 / 5**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: hides ×1.5.
+- Loss protection I–IV: None.
+- Construction adjustments: salt ×1.3, leather ×1.15.
+
+### Polar seal shore product shelters
+
+Protected shore handling favors existing seal oil while animals are present.
+
+- Investment track: Hunting infrastructure.
+- Site selection: Seal hunting grounds; Glacial; Coastal.
+- Stages I–IV: Polar seal shore product shelters → Cold game handling shelters → Game preparation machinery → Integrated cold game depot.
+- Annual extra I–IV: **2 / 3 / 4 / 5**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: oil ×2.
+- Loss protection I–IV: None.
+- Construction adjustments: planks ×1.2, coal ×0.85, leather ×1.2.
+
+### Coastal tundra berry wind shelters
+
+Small wind shelters and clean sorting improve the existing short berry harvest without enclosing the habitat.
+
+- Investment track: Wild harvest infrastructure.
+- Site selection: Berry heath; Tundra; Coastal.
+- Stages I–IV: Coastal tundra berry wind shelters → Clean berry sorting stores → Berry handling equipment → Integrated berry preservation.
+- Annual extra I–IV: **1 / 2 / 3 / 4**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 20% / 35% / 50% / 60%.
+- Construction adjustments: cloth ×1.25, planks ×1.2.
+
+### Upland tundra berry sorting caches
+
+Protected picking baskets and sorting caches reduce losses during the brief highland berry harvest.
+
+- Investment track: Wild harvest infrastructure.
+- Site selection: Berry heath; Tundra; Elevation ≥0.72.
+- Stages I–IV: Upland tundra berry sorting caches → Clean berry sorting stores → Berry handling equipment → Integrated berry preservation.
+- Annual extra I–IV: **1 / 2 / 3 / 4**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 20% / 35% / 50% / 60%.
+- Construction adjustments: cloth ×1.25, planks ×1.2.
+
+### Island coastal whale recovery slips
+
+Sheltered shore slips and rendering pots improve products of visiting whales; no whales are created or held in place.
+
+- Investment track: Whale-product infrastructure.
+- Site selection: Tropical Maritime; coast.
+- Stages I–IV: Island coastal whale recovery slips → Covered rendering yards → Steam rendering equipment → Integrated warm-coast tryworks.
+- Annual extra I–IV: **3 / 4 / 5 / 6**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: oil ×2.5.
+- Loss protection I–IV: None.
+- Construction adjustments: masonry ×1.25, ceramics ×1.3, coal ×1.15.
+
+### Cold offshore whale landing works
+
+Heavy landing tackle improves existing whale recovery beside an eligible city on deep coastal water.
+
+- Investment track: Whale-product infrastructure.
+- Site selection: Cold / Oceanic; deep.
+- Stages I–IV: Cold offshore whale landing works → Protected rendering sheds → Steam landing and rendering → Integrated deep-coast tryworks.
+- Annual extra I–IV: **2 / 3 / 4 / 5**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: oil ×2.
+- Loss protection I–IV: None.
+- Construction adjustments: steel ×1.3, planks ×1.2, coal ×1.1.
+
+### Oceanic barley field collectors
+
+Graded collectors drain existing low barley soils after persistent rain without adding a harvest season.
+
+- Investment track: Field drainage.
+- Site selection: Barley fields; Oceanic; Elevation <0.52.
+- Stages I–IV: Oceanic barley field collectors → Fired field drainpipes → Collector pumping station → Regulated field drainage.
+- Annual extra I–IV: **2 / 3 / 4 / 5**.
+- Spring / summer / autumn / winter weights: 1 / 1 / 1 / 1.
+- Shared bonus product weights: Native product proportions.
+- Loss protection I–IV: wet: 25% / 40% / 60% / 75%.
+- Construction adjustments: ceramics ×1.3, steel ×1.1.
+
 ### Layered oasis channels
 
 Small basins irrigate existing date gardens beneath the palms; evaporation control matters more than extra harvest dates.
@@ -935,7 +2714,7 @@ Gated outlets control local drainage on coastal farmland without desalinating th
 Underdrains keep tuber beds workable in damp lowlands, concentrating recovery in the existing lifting season.
 
 - Investment track: Field drainage.
-- Site selection: Turnip fields / Potato fields; Elevation ≤0.58.
+- Site selection: Turnip fields / Potato fields; Elevation <0.58.
 - Stages I–IV: Root-bed ditches → Porous underdrains → Root-field drain pumps → Integrated root-bed drainage.
 - Annual extra I–IV: **3 / 4 / 5 / 6**.
 - Spring / summer / autumn / winter weights: 1 / 1 / 2 / 1.

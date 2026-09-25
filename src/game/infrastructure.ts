@@ -574,14 +574,39 @@ export function infrastructureExtras(
   const totals = amounts.map(
     (row, i) => row.reduce((a, b) => a + b, 0) * (profile.seasons?.[i] ?? 1),
   );
-  const budgets = allocateAnnual(bonus, totals);
+  const budgets = allocateInfrastructureBonus(bonus, totals);
   seasons.forEach((season, i) => {
-    const extra = allocateAnnual(budgets[i], amounts[i]);
+    const extra = allocateInfrastructureBonus(budgets[i], amounts[i]);
     goods.forEach((raw, j) => {
       if (extra[j]) output[season][raw] = extra[j];
     });
   });
   return output;
+}
+
+/** Highest averages keeps every allocated card when a tier adds to the budget.
+ * Largest-remainder rounding can take a card away as the total increases.
+ * This applies only to small infrastructure bonuses, not native harvests or
+ * irrigation calendars. Stable ties make save/reload and previews identical. */
+export function allocateInfrastructureBonus(
+  total: number,
+  weights: number[],
+): number[] {
+  const result = weights.map(() => 0);
+  for (let card = 0; card < total; card++) {
+    let best = -1,
+      priority = 0;
+    for (let i = 0; i < weights.length; i++) {
+      const score = weights[i] / (2 * result[i] + 1);
+      if (score > priority) {
+        priority = score;
+        best = i;
+      }
+    }
+    if (best < 0) break;
+    result[best]++;
+  }
+  return result;
 }
 export function huntingYield(
   tile: Hex,
