@@ -1,3 +1,5 @@
+import { syncSeasonSurfaces } from "../src/game/seasons";
+import { generateWorld } from "../src/game/world";
 import { chooseAIAction } from "../src/game/ai";
 import { run } from "../tests/helpers";
 import { test, expect } from "@playwright/test";
@@ -19,7 +21,13 @@ test("karst campaign loads, names its terrain and renders the regional relief", 
       control: i === 0 ? ("human" as const) : ("standard" as const),
     })),
   );
-  while (s.phase.startsWith("setup")) s = run(s, chooseAIAction(s));
+  s = { ...s, ...generateWorld(s.seed, Object.keys(s.tiles).length, true, 10) };
+  delete s.wildlife;
+  delete s.environmentRound;
+  syncSeasonSurfaces(s);
+  for (let i = 0; s.phase.startsWith("setup") && i < 60; i++)
+    s = run(s, chooseAIAction(s));
+  expect(s.phase.startsWith("setup")).toBe(false);
   s.phase = "economy";
   s.active = 0;
   expect(s.geographyVersion).toBe(10);

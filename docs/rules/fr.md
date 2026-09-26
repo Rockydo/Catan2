@@ -307,7 +307,7 @@ Le panneau indique le site, les matériaux et les gains saisonniers exacts. Un s
 
 ### Investissements complémentaires
 
-Les onglets Principales, Compléments et Rotations séparent les choix. Aux ouvrages existants s’ajoutent 103 branches complémentaires de quatre étapes achetées séparément : 412 projets facultatifs. Plusieurs branches peuvent coexister sur un terrain. Chaque étape exige votre ville adjacente du même niveau et les étapes précédentes. Une étape productive ajoute une carte partagée entre les quatre profils saisonniers, uniquement aux produits présents et aux saisons productives. Une étape protectrice réduit de 10 % la perte météo restante, jusqu’à 90 % de protection totale. La construction coûte au moins 2,25 fois les matériaux de l’ouvrage principal local, plus des matériaux de finition. Le charbon est payé à la construction dès II ; aucun entretien ni coût en or. Les ouvrages appartiennent au constructeur et peuvent être ravagés.
+Les onglets Principales, Compléments et Rotations séparent les choix. Aux ouvrages existants s’ajoutent 103 branches complémentaires de quatre étapes achetées séparément : 412 projets facultatifs. Plusieurs branches peuvent coexister sur un terrain. Chaque étape exige votre ville adjacente du même niveau et les étapes précédentes. Une étape productive ajoute une carte partagée entre les quatre profils saisonniers, uniquement aux produits présents et aux saisons productives. Une étape protectrice réduit de 10 % la perte météo restante, jusqu’à 90 % de protection totale. Les 37 familles de recettes emploient des matériaux propres au métier : laine et tissu pour les filets, argile et poterie pour les bassins, peaux et fer pour les treuils, sel pour la conservation et acier pour les outils industriels. Avant les économies locales, leur valeur équivalente en matières premières dépasse 2,25 fois celle de l’ouvrage principal local, sans recopier sa recette. Le charbon est payé à la construction dès II ; aucun entretien ni coût en or. Les ouvrages appartiennent au constructeur et peuvent être ravagés.
 
 ### Petites cultures secondaires
 
@@ -354,6 +354,16 @@ Les nouvelles campagnes utilisent la génération 10 et peuvent contenir 34 form
 - **Terrasses marines soulevées**: Des gradins côtiers successifs dominent la mer. Replats d’établissement et escarpements alternent au-dessus du rivage inférieur.
 
 - **Pays des escarpements de faille**: Des blocs décalés forment des escarpements abrupts et discontinus. De longues vallées suivent leur pied ; les interruptions ouvrent des voies à travers les hauteurs.
+
+### Régions plus petites et mondes fragmentés
+
+La génération 11 favorise les côtes fragmentées (52 %) et les mers insulaires (30 %), tout en conservant des mondes continentaux (18 %). Des provinces géographiques et climatiques plus petites créent davantage de contrastes proches. Les chaînes courbes concentrent les sommets infranchissables sur leurs crêtes ; des détroits étroits divisent les terres sans exiger beaucoup plus d’océan. Les restrictions des cols, la compatibilité climatique et les rivières descendantes restent en vigueur. Les campagnes existantes conservent leur générateur ; une nouvelle campagne est nécessaire.
+
+### Des métiers complémentaires plus variés
+
+62 branches proposent désormais 25 services. Les tourteaux d’olives ou de tournesol alimentent le bétail après récolte. La fonte des graisses fournit de l’huile pendant les récoltes de viande ; le fumage côtier en récupère en présence de poissons marins. Les canaux de plaine inondable récupèrent de l’argile au printemps et en automne, hors Arctique et Glaciaire. La finition chauffée du sel ajoute une récolte hivernale en climat froid ; la réouverture des mines et carrières renforce une récolte printanière existante. Ces budgets supplémentaires passent de +1 au II à +2 au IV, répartis entre les saisons admissibles. Glace, occupation et fermeture ordinaire par crue continuent de bloquer la collecte.
+
+La réparation réduit les futures factures locales de minerai de fer et d’acier ; les contenants réutilisables réduisent les planches et le tissu. Économie de 10/20/30/40 %, arrondie à l’entier inférieur et plafonnée à 1/2/3/4 de chaque matériau par facture. Même propriétaire et même tuile requis. Ces trois familles de réemploi ne réduisent jamais leurs propres constructions ni celles des autres familles ; le charbon reste intégralement payé à la construction. Les cartes indiquent les conditions et les prévisions réelles.
 
 ## Saisons et récoltes
 

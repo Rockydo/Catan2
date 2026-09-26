@@ -1,3 +1,4 @@
+import { structuredElevation } from "./world-structure";
 import { EXTRA_LANDFORM_IDS, isExtraLandform } from "./landform-catalogue";
 import { expandedHeight, formationAffinity } from "./landform-expansion";
 import { coord, key, randomAt } from "./world";
@@ -28,7 +29,7 @@ export const LANDFORMS = [
   ...EXTRA_LANDFORM_IDS,
 ] as const;
 export type PhysicalLandform = (typeof LANDFORMS)[number];
-export const worldLandform = (seed: string, version = 10): PhysicalLandform =>
+export const worldLandform = (seed: string, version = 11): PhysicalLandform =>
   LANDFORMS[
     Math.floor(
       randomAt(seed, "world", "landform") *
@@ -56,14 +57,15 @@ function province(
     cacheKey = `${seed}/${id}/${version}`,
     cached = provinceCache.get(cacheKey);
   if (cached) return cached;
-  const span = version >= 8 ? 24 : 16;
-  const c = regionalClimateFields(seed, key(q * span, r * span));
+  const span = version >= 11 ? 11 : version >= 8 ? 24 : 16;
+  const c = regionalClimateFields(seed, key(q * span, r * span), version);
   const worldForm = worldLandform(seed, version);
   const weights: [PhysicalLandform, number][] = [
     [
       worldForm,
       version >= 10 && isExtraLandform(worldForm)
-        ? 28 * formationAffinity(worldForm, c.temperature, c.moisture)
+        ? (version >= 11 ? 12 : 28) *
+          formationAffinity(worldForm, c.temperature, c.moisture)
         : (version >= 8 && worldForm === "great-river-basins") ||
             (version >= 9 && worldForm === "karst-uplands")
           ? 16
@@ -132,10 +134,10 @@ function province(
 export function regionalLandform(
   seed: string,
   id: string,
-  version = 10,
+  version = 11,
 ): PhysicalLandform {
   const [q, r] = coord(id);
-  const span = version >= 8 ? 24 : 16;
+  const span = version >= 11 ? 11 : version >= 8 ? 24 : 16;
   return province(seed, Math.round(q / span), Math.round(r / span), version);
 }
 function height(
@@ -349,10 +351,10 @@ function height(
 export function physicalElevation(
   seed: string,
   id: string,
-  version = 10,
+  version = 11,
 ): number {
   const [q, r] = coord(id),
-    span = version >= 8 ? 24 : 16,
+    span = version >= 11 ? 11 : version >= 8 ? 24 : 16,
     x = q / span,
     y = r / span,
     a = Math.floor(x),
@@ -371,15 +373,20 @@ export function physicalElevation(
     const form = forms[i];
     let n = samples.get(form);
     if (n === undefined) {
-      n = height(seed, q, r, form);
+      const scale =
+        version >= 11 &&
+        !["great-river-basins", "outwash-plains"].includes(form)
+          ? 1.35
+          : 1;
+      n = height(seed, q * scale, r * scale, form);
       samples.set(form, n);
     }
     return n;
   };
-  return (
+  const blended =
     at(0) * (1 - u) * (1 - v) +
     at(1) * u * (1 - v) +
     at(2) * (1 - u) * v +
-    at(3) * u * v
-  );
+    at(3) * u * v;
+  return version >= 11 ? structuredElevation(seed, id, blended) : blended;
 }

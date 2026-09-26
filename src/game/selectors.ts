@@ -1067,21 +1067,25 @@ function readProduction(
     if (!output) {
       output = huntingYield(tiles[id], owner, season);
       const g = tiles[id].geography;
-      if (
-        season &&
-        g?.weather === "cold" &&
-        hasSpecialistHarvestService(tiles[id], owner) &&
-        (!g.weatherSeason || g.weatherSeason === season)
-      ) {
-        const extra = specialistServiceProfile(
-          tiles[id],
-          ordinarySeasonalProfile(tiles[id], owner),
-          owner,
-          "cold",
-          "hunting",
-        )[season];
-        for (const [raw, n] of Object.entries(extra))
-          output[raw as Raw] = (output[raw as Raw] ?? 0) + n!;
+      if (season && hasSpecialistHarvestService(tiles[id], owner)) {
+        const native = ordinarySeasonalProfile(tiles[id], owner);
+        const weather =
+          g?.weather && (!g.weatherSeason || g.weatherSeason === season)
+            ? g.weather
+            : "normal";
+        for (const condition of weather === "normal"
+          ? ["normal" as const]
+          : ["normal" as const, weather]) {
+          const extra = specialistServiceProfile(
+            tiles[id],
+            native,
+            owner,
+            condition,
+            "hunting",
+          )[season];
+          for (const [raw, n] of Object.entries(extra))
+            output[raw as Raw] = (output[raw as Raw] ?? 0) + n!;
+        }
       }
       yields.set(key, output);
     }
@@ -1218,7 +1222,7 @@ function readProduction(
             ))
               if (
                 u.kind !== "hunter" ||
-                (tiles[id].geography?.fauna?.[raw as Good] ?? 0) > 0
+                (huntingAt(id, u.owner)[raw as Good] ?? 0) > 0
               )
                 sources.push({
                   owner: u.owner,

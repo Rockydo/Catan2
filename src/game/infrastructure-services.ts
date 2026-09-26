@@ -6,9 +6,11 @@ import {
 } from "./infrastructure";
 import {
   SERVICE_RULES,
+  MATERIAL_SERVICES,
+  NON_HARVEST_SERVICES,
   type SpecialistService,
 } from "./infrastructure-service-rules";
-import type { Hex, Raw, Stock } from "./types";
+import type { Hex, Raw, Good, Stock } from "./types";
 import type { Season } from "./seasons";
 import { neighbors } from "./world";
 import {
@@ -44,14 +46,7 @@ const sheep = new Set([
 const orchards = new Set(["olive-grove", "oasis", "breadfruit-grove"]);
 export function hasSpecialistHarvestService(tile: Hex, owner?: number) {
   return installedSpecialists(tile, owner).some(
-    ([b]) =>
-      b.service &&
-      ![
-        "flood-rescue",
-        "material-reuse",
-        "habitat-margins",
-        "fish-nursery",
-      ].includes(b.service),
+    ([b]) => b.service && !NON_HARVEST_SERVICES.includes(b.service),
   );
 }
 /** At most two secondary cards (four for dedicated production branches) across a four-season calendar for each distinct
@@ -75,12 +70,7 @@ export function specialistServiceProfile(
     if (
       !role ||
       (onlyService && role !== onlyService) ||
-      [
-        "flood-rescue",
-        "material-reuse",
-        "habitat-margins",
-        "fish-nursery",
-      ].includes(role) ||
+      NON_HARVEST_SERVICES.includes(role) ||
       (branch.primary !== false && tier < 2)
     )
       continue;
@@ -150,6 +140,48 @@ export function specialistServiceProfile(
         ),
       );
       byproduct = "meat";
+    }
+    if (role === "press-feed") {
+      if (!["olive-grove", "sunflower-fields"].includes(tile.biome ?? ""))
+        continue;
+      weights = seasons.map(
+        (_, i) =>
+          (native[seasons[(i + 3) % 4]].oil ?? 0) +
+          (native[seasons[(i + 3) % 4]].grain ?? 0),
+      );
+      byproduct = "meat";
+    }
+    if (role === "fat-rendering") {
+      weights = seasons.map((s) => native[s].meat ?? 0);
+      byproduct = "oil";
+    }
+    if (role === "fish-oil") {
+      if (
+        !tile.geography?.fauna?.fish ||
+        ["river", "lake"].includes(tile.geography.waterway ?? "")
+      )
+        continue;
+      weights = seasons.map((s) => native[s].fish ?? 0);
+      byproduct = "oil";
+    }
+    if (role === "canal-clay") {
+      if (
+        !tile.geography?.floodplain ||
+        ["arctic", "glacial"].includes(tile.climate ?? "")
+      )
+        continue;
+      weights = [1, 0, 1, 0];
+      byproduct = "brick";
+    }
+    if (role === "heated-salt") {
+      if (!cold.has(tile.climate ?? "") || !seasons.some((s) => native[s].salt))
+        continue;
+      weights = [0, 0, 0, 1];
+      byproduct = "salt";
+    }
+    if (role === "spring-reopening") {
+      if (!cold.has(tile.climate ?? "")) continue;
+      weights = weights.map((n, i) => (i === 0 ? n : 0));
     }
     if (!weights.some(Boolean)) continue;
     if (role === "fodder" || role === "prunings") {
@@ -242,11 +274,17 @@ export function specialistMaterialSavings(
   if (
     owner === undefined ||
     (isSpecialist(project) &&
-      SPECIALIST_PROJECTS[project].branch.service === "material-reuse")
+      MATERIAL_SERVICES.includes(SPECIALIST_PROJECTS[project].branch.service!))
   )
     return {};
-  const tiers: Partial<Record<Raw, number>> = {};
+  const tiers: Partial<Record<Good, number>> = {};
   for (const [b, tier] of installedSpecialists(tile, owner)) {
+    if (b.service === "tool-repair" || b.service === "returnable-containers") {
+      const goods: Good[] =
+        b.service === "tool-repair" ? ["ore", "steel"] : ["planks", "cloth"];
+      for (const good of goods) tiers[good] = Math.max(tiers[good] ?? 0, tier);
+      continue;
+    }
     if (b.service !== "material-reuse") continue;
     for (const raw of ["lumber", "stone"] as const)
       if (
@@ -258,7 +296,14 @@ export function specialistMaterialSavings(
         tiers[raw] = Math.max(tiers[raw] ?? 0, tier);
   }
   const saved: Stock = {};
-  for (const raw of ["lumber", "stone"] as const) {
+  for (const raw of [
+    "lumber",
+    "stone",
+    "ore",
+    "steel",
+    "planks",
+    "cloth",
+  ] as const) {
     const tier = tiers[raw] ?? 0;
     const n = Math.min(tier, Math.floor(((cost[raw] ?? 0) * tier) / 10));
     if (n) saved[raw] = n;

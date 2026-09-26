@@ -22,14 +22,16 @@ export function physicalField(
 }
 /** Temperature and moisture potential, independent of relief and climate labels.
  * Shared by landforms and climate selection to avoid generation-order feedback. */
-export function regionalClimateFields(seed: string, id: string) {
+export function regionalClimateFields(seed: string, id: string, version = 10) {
   const [q, r] = coord(id);
+  const scale = version >= 11 ? 7 : 11;
   return {
     temperature: clamp(
-      (physicalField(seed, q, r, 11, "regional-temperature") - 0.5) * 1.6 + 0.5,
+      (physicalField(seed, q, r, scale, "regional-temperature") - 0.5) * 1.6 +
+        0.5,
     ),
     moisture: clamp(
-      (physicalField(seed, q, r, 11, "regional-moisture") - 0.5) * 1.6 + 0.5,
+      (physicalField(seed, q, r, scale, "regional-moisture") - 0.5) * 1.6 + 0.5,
     ),
   };
 }

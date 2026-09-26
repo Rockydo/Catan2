@@ -1,6 +1,6 @@
 import type { SpecialistBranch } from "./infrastructure-specialists";
 /** These branches have their own output or ecological role, not an additional
- * generic +yield layer. Recipes retain the normal local construction costs. */
+ * generic +yield layer. Recipes use craft-specific materials scaled to the local construction budget. */
 export const PRACTICE_BRANCHES: readonly SpecialistBranch[] = [
   {
     id: "resin-tapping",

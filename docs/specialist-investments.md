@@ -12,7 +12,9 @@ Each stage needs your adjacent, unbesieged settlement/city of at least the same 
 
 ## Costs and diminishing value
 
-Each stage costs **2.25 times its matching local main-track construction materials**, rounded up, plus branch-specific finishing materials: timber/planks, drainage pottery, cold-weather insulation, or curing salt. Coal is included from tier II, with much larger industrial construction bills at III–IV. These are one-time bills: **no upkeep, gold or gold bars**.
+Specialists now use **37 craft-specific recipe families**, covering all 103 branches and 16 rotations. Nets emphasize wool and later cloth; winches use timber, iron and hides; washing basins use clay and stone; smokehouses require salt; industrial cutting and repair emphasize steel. Tier I uses raw materials, while later tiers increasingly use manufactured fittings. Recipes target 2.35 times the local main work's raw-equivalent investment before rounding and finishing materials (manufactured goods count as 2.5 raw resources for this balancing calculation). They remain at least 2.25 times that value before any earned local discount. This is an investment budget, not a multiplier on each original ingredient.
+
+Coal is included from tier II, with technique-dependent quantities and larger industrial bills at III–IV. Forging and heated processing demand more than covers or seed work. These are one-time bills: **no upkeep, gold or gold bars**. Existing specialist IDs and purchases remain valid.
 
 A conventional yield specialist adds **one shared card across the four seasonal profiles per stage**, for totals of 1/2/3/4. Multiple eligible products share that increment. Native productive seasons and products determine its allocation. Some specialists emphasize particular seasons: peat drying favors summer, while snow-country game hauling favors winter. These weights redistribute the same small annual increment, never creating a new native harvest season. All four seasonal weights stay positive, so a viable native harvest remains eligible. Harvest handling, sorting, grading and better recovery are represented by these modest extra cards; there is no separate inventory-spoilage simulation.
 
@@ -39,7 +41,7 @@ For example, a one-Wood tile already retains its Wood during rain because of the
 
 ## Working practices and connected livelihoods
 
-**44 branches** offer **17 services**. Including the nineteen pantry, habitat, salvage and rock-recovery branches above, **63 branches** now have dedicated roles. Original primary yields, protection and saved projects remain. Four new dedicated branches use their stated service instead of a generic yield increment. Production and material savings are owner-specific; ecological benefits affect visiting wildlife. Forest food, resin and supported secondary crops have the weather exposure stated below. Other recovered by-products are sheltered from subsequent weather penalties; closures still apply unless flood salvage is explicitly listed. These small bonuses do not consume resources each turn.
+**62 branches** offer **25 services**. Including the nineteen pantry, habitat, salvage and rock-recovery branches above, **79 branches** now have dedicated roles. Original primary yields, protection and saved projects remain. Four new dedicated branches use their stated service instead of a generic yield increment. Production and material savings are owner-specific; ecological benefits affect visiting wildlife. Forest food, resin and supported secondary crops have the weather exposure stated below. Other recovered by-products are sheltered from subsequent weather penalties; closures still apply unless flood salvage is explicitly listed. These small bonuses do not consume resources each turn.
 
 ### stubble-grazing
 
@@ -1944,3 +1946,23 @@ Sheltered valley plots provide young quinoa leaves in spring before the later po
 - Secondary season: spring, only when the main crop leaves it free.
 - Requirements: owned irrigation; floodplain, delta, black earth or fertile-basin soil; elevation index below 0.52.
 - Stages: Valley potato and quinoa greens: trial plots → Valley potato and quinoa greens: seed nursery → Valley potato and quinoa greens: sowing equipment → Valley potato and quinoa greens: rotation station.
+
+
+## Eight additional working practices
+
+These services deepen existing branches. Production budgets are per producer across four seasonal profiles, starting at +1 at tier II and +2 at tier IV. Matching rolls, ownership, wildlife availability and access rules still apply. Duplicate services use the strongest installed capacity.
+
+| Practice | Where it applies | Additional effect |
+|---|---|---|
+| Press-cake feeding | Olive and sunflower pressing | Meat allocated after the crop's productive seasons, representing feeding stock from recovered pressings. |
+| Fat rendering | Stock handling, game curing, woodland smoking and seal handling | Oil allocated to seasons with a meat harvest. Wild sites still need visiting game. |
+| Fish-oil recovery | Coastal fish smokehouses | Oil from visiting marine fish. River and lake catches do not receive this service. |
+| Canal sediment recovery | Canal silt traps and paddy return-water works on floodplains | Clay shared between spring and autumn. Arctic and glacial sites are excluded. |
+| Heated salt finishing | Brine settling and salt-pan covers in cold climates | Additional winter Salt where the site normally produces salt. Frozen access still blocks harvesting. |
+| Tool repair | Forest toolcare, quarry wedge sets and mine surveying | Later local works save 10/20/30/40% of Iron ore and Steel, rounded down and capped at 1/2/3/4 of each per bill. |
+| Returnable containers | Fish crates and berry sorting | The same bounded savings for Planks and Cloth in later local works. |
+| Spring reopening | Cold mine portals and quarry shelters | Additional output in an already productive spring in cold continental or mountain climates. |
+
+Material savings require the same owner and tile. Repair, packing and material-yard investments never discount one another, and coal is never discounted. These benefits do not add any ongoing costs.
+
+Real-world references inform the techniques, while the numerical returns are game balance values: [FAO oilseed by-products in animal feeding](https://www.fao.org/4/s4314e/s4314e05.htm), [FAO fish processing and oil recovery](https://www.fao.org/4/X6899E/X6899E04.htm), and [FAO animal-fat processing](https://www.fao.org/4/y2774e/y2774e05.htm).

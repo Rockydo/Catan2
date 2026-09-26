@@ -1,5 +1,38 @@
 /** Shared, save-independent service rules. Existing project IDs remain valid. */
 export const SERVICE_RULES = {
+  "press-feed": {
+    en: "Press-cake feed: +1 Meat at II, +2 at IV, shared between seasons immediately following an oilseed or olive harvest. Spent pressings supplement livestock feed. Only the best press-feed works apply.",
+    fr: "Tourteaux fourragers : +1 viande au II, +2 au IV, répartie entre les saisons suivant une récolte d’oléagineux ou d’olives. Les résidus du pressage complètent la ration du bétail. Seuls les meilleurs ouvrages s’appliquent.",
+  },
+  "fat-rendering": {
+    en: "Fat rendering: +1 Oil across meat-producing seasons at II, +2 at IV. Hunting works require game to be present; only the best rendering works apply.",
+    fr: "Fonte des graisses : +1 huile répartie entre les saisons de viande au II, +2 au IV. Les ateliers de chasse exigent la présence de gibier ; seuls les meilleurs ateliers s’appliquent.",
+  },
+  "fish-oil": {
+    en: "Fish-trimming recovery: +1 Oil across fishing seasons at II, +2 at IV, while marine fish are present. River and lake catches are excluded. Only the best recovery works apply.",
+    fr: "Valorisation des parures : +1 huile répartie entre les saisons de pêche au II, +2 au IV, en présence de poissons marins. Les prises fluviales et lacustres sont exclues. Seuls les meilleurs ateliers s’appliquent.",
+  },
+  "canal-clay": {
+    en: "Canal desilting: +1 Clay at II, +2 at IV, shared between spring and autumn on river floodplains. Recovered sediment supplies local earthworks. Only the best desilting works apply.",
+    fr: "Curage des canaux : +1 argile au II, +2 au IV, répartie entre printemps et automne sur les plaines alluviales. Les sédiments récupérés servent aux ouvrages locaux. Seuls les meilleurs ouvrages s’appliquent.",
+  },
+  "heated-salt": {
+    en: "Heated brine pans: +1 Salt in winter at II, +2 at IV, in snowy climates with a seasonal salt harvest. Construction includes the furnace and fuel reserve; ice and occupation still close the site. Only the best heated pans apply.",
+    fr: "Poêles à saumure chauffées : +1 sel en hiver au II, +2 au IV, dans les climats enneigés où le sel est saisonnier. La construction comprend le fourneau et sa réserve de combustible ; glace et occupation ferment toujours le site. Seuls les meilleurs ouvrages s’appliquent.",
+  },
+  "tool-repair": {
+    en: "Tool fitting and repair: later works here save 10/20/30/40% of Iron ore and Steel, rounded down, at most 1/2/3/4 of each per purchase. Tool workshops and other reuse yards keep their full price. Only the best workshop applies.",
+    fr: "Ajustage et réparation : les futurs ouvrages économisent 10/20/30/40 % du minerai de fer et de l’acier, arrondi inférieur, au plus 1/2/3/4 de chaque par achat. Ateliers et autres chantiers de réemploi gardent leur prix intégral. Seul le meilleur atelier s’applique.",
+  },
+  "returnable-containers": {
+    en: "Reusable packing: later works here save 10/20/30/40% of Planks and Cloth, rounded down, at most 1/2/3/4 of each per purchase. Packing workshops and other reuse yards keep their full price. Only the best packing yard applies.",
+    fr: "Emballages réutilisables : les futurs ouvrages économisent 10/20/30/40 % des planches et du tissu, arrondi inférieur, au plus 1/2/3/4 de chaque par achat. Ateliers et autres chantiers de réemploi gardent leur prix intégral. Seul le meilleur atelier s’applique.",
+  },
+  "spring-reopening": {
+    en: "Spring reopening: +1 site resource in spring at II, +2 at IV, in snowy climates with a spring working season. Prepared portals and shelters speed the return to work. Only the best reopening works apply.",
+    fr: "Reprise printanière : +1 ressource du site au printemps au II, +2 au IV, dans les climats enneigés ayant une saison de travail printanière. Entrées préparées et abris accélèrent la reprise. Seuls les meilleurs ouvrages s’appliquent.",
+  },
+
   "stubble-grazing": {
     en: "Stubble grazing: +1 Meat across free seasons immediately after a grain harvest at II, +2 at IV. A standing main crop or secondary rotation takes priority; snow-country winters are excluded. Best paddock works apply.",
     fr: "Pâturage des chaumes : +1 viande répartie entre les saisons libres juste après une moisson au II, +2 au IV. Culture principale et rotation restent prioritaires ; les hivers enneigés sont exclus. Seuls les meilleurs ouvrages s’appliquent.",
@@ -75,6 +108,25 @@ export const SERVICE_RULES = {
 } as const;
 export type SpecialistService = keyof typeof SERVICE_RULES;
 export const SERVICE_BY_BRANCH: Readonly<Record<string, SpecialistService>> = {
+  "press-settling": "press-feed",
+  "sunflower-dehulling": "press-feed",
+  "stock-handling": "fat-rendering",
+  "game-curing": "fat-rendering",
+  "woodland-game-smoking": "fat-rendering",
+  "coastal-seal-handling": "fat-rendering",
+  "fish-smokehouses": "fish-oil",
+  "canal-silt-traps": "canal-clay",
+  "paddy-return-water": "canal-clay",
+  "brine-settling": "heated-salt",
+  "salt-pan-cover": "heated-salt",
+  "forest-toolcare": "tool-repair",
+  "quarry-wedge-sets": "tool-repair",
+  "mine-survey": "tool-repair",
+  "fish-crates": "returnable-containers",
+  "berry-sorting": "returnable-containers",
+  "cold-mine-portals": "spring-reopening",
+  "quarry-shelter": "spring-reopening",
+
   "field-gleaning": "stubble-grazing",
   "clean-threshing": "stubble-grazing",
   "maize-cribs": "stubble-grazing",
@@ -134,3 +186,15 @@ export function serviceRisks(
   const weather = serviceWeather(service);
   return weather ? [weather] : [];
 }
+
+export const MATERIAL_SERVICES: readonly SpecialistService[] = [
+  "material-reuse",
+  "tool-repair",
+  "returnable-containers",
+];
+export const NON_HARVEST_SERVICES: readonly SpecialistService[] = [
+  ...MATERIAL_SERVICES,
+  "flood-rescue",
+  "habitat-margins",
+  "fish-nursery",
+];

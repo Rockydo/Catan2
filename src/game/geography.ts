@@ -1,3 +1,4 @@
+import { worldStructure, mountainBelt } from "./world-structure";
 import {
   EXTRA_LANDFORMS,
   isExtraLandform,
@@ -99,7 +100,7 @@ export interface Wildlife {
   lastRound: number;
   dormant?: true;
 }
-export const GEOGRAPHY_VERSION = 10;
+export const GEOGRAPHY_VERSION = 11;
 export const landform = (
   seed: string,
   version = GEOGRAPHY_VERSION,
@@ -218,7 +219,16 @@ export function seaLevel(seed: string, version = GEOGRAPHY_VERSION) {
         "karst-uplands": 0.28,
       }[form];
   const level =
-    heights[Math.floor(heights.length * water * (version >= 3 ? 0.75 : 1))];
+    heights[
+      Math.floor(
+        heights.length *
+          (version >= 11 && worldStructure(seed) !== "continental"
+            ? worldStructure(seed) === "island-seas"
+              ? 0.36
+              : 0.32
+            : water * (version >= 3 ? 0.75 : 1)),
+      )
+    ];
   if (seaLevels.size > 256) seaLevels.clear();
   seaLevels.set(levelKey, level);
   return level;
@@ -853,10 +863,14 @@ export function geographicLandChoices(
     ["mesa-country", "lava-plateaus", "raised-beaches", "canyonlands"].includes(
       setting.landform ?? "",
     );
+  const belt = version >= 11 ? mountainBelt(seed, tile.id) : 0;
   const mountains =
-    !shelf &&
-    (relative > 0.15 ||
-      (["alpine", "andean"].includes(climate) && relative > 0.04));
+    version >= 11
+      ? relative > 0.045 &&
+        (belt > 0.3 || (!shelf && relative > 0.19 && slope > 0.12))
+      : !shelf &&
+        (relative > 0.15 ||
+          (["alpine", "andean"].includes(climate) && relative > 0.04));
   const floodplain = river && relative < 0.19 && slope < 0.13;
   const delta = floodplain && around.some((n) => n.mouth);
   const weights = new Map<Biome, number>();
@@ -934,7 +948,7 @@ export function geographicLandChoices(
   // High ridges contain minerals, impassable summits and a smaller pass share.
   if (mountains) {
     const total = [...weights.values()].reduce((a, b) => a + b, 0);
-    add("bare-peaks", total * 0.32);
+    add("bare-peaks", total * (version >= 11 && belt > 0.5 ? 4 : 0.32));
     add("mountain-pass", total * 0.11);
   }
   if (floodplain) {

@@ -1,3 +1,5 @@
+import { syncSeasonSurfaces } from "../src/game/seasons";
+import { generateWorld } from "../src/game/world";
 import { test, expect } from "@playwright/test";
 import { newGame } from "../src/game/engine";
 import { chooseAIAction } from "../src/game/ai";
@@ -18,7 +20,16 @@ for (const [index, form] of EXTRA_LANDFORM_IDS.entries())
         control: i === 0 ? ("human" as const) : ("standard" as const),
       })),
     );
-    while (s.phase.startsWith("setup")) s = run(s, chooseAIAction(s));
+    s = {
+      ...s,
+      ...generateWorld(s.seed, Object.keys(s.tiles).length, true, 10),
+    };
+    delete s.wildlife;
+    delete s.environmentRound;
+    syncSeasonSurfaces(s);
+    for (let i = 0; s.phase.startsWith("setup") && i < 60; i++)
+      s = run(s, chooseAIAction(s));
+    expect(s.phase.startsWith("setup")).toBe(false);
     s.active = 0;
     s.phase = "economy";
     const locale = index % 2 ? "fr" : "en",

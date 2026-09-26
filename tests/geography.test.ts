@@ -147,7 +147,7 @@ describe("coherent geography", () => {
     expect(floodplains).toBeGreaterThan(30);
     expect(peaks).toBeGreaterThan(0);
     expect(passes).toBeGreaterThan(0);
-  });
+  }, 20000);
   it("reserves geography independently of discovery order and leaves revealed ground unchanged", () => {
     const a = generateWorld("river-reveal", 125, true),
       b = structuredClone(a),

@@ -41,7 +41,7 @@ import {
 import { income, moveTargets } from "../src/game/selectors";
 import { production } from "../src/game/economy";
 import { tileYield } from "../src/game/maritime";
-import type { Raw } from "../src/game/types";
+import type { Raw, Hex } from "../src/game/types";
 import { maritimeFixture } from "./maritime-fixture";
 import { piece } from "./helpers";
 
@@ -232,8 +232,18 @@ describe("extreme climate generation", () => {
       )!;
       addHexes(s, s.seed, expeditionFootprint(s, vertex, 3, turn));
       syncSeasonSurfaces(s);
+      // Exploration can reveal marine populations which immediately seek open
+      // water beside existing ice. Those visitors are dynamic, not terrain.
+      const fixedTerrain = (hex: Hex) => {
+        const copy = structuredClone(hex);
+        if (copy.geography) {
+          delete copy.geography.fauna;
+          delete copy.geography.animals;
+        }
+        return copy;
+      };
       for (const [id, hex] of Object.entries(original))
-        expect(s.tiles[id]).toEqual(hex);
+        expect(fixedTerrain(s.tiles[id])).toEqual(fixedTerrain(hex));
       for (const [id, climate] of Object.entries(reserved))
         expect(s.climatePlan![id]).toBe(climate);
       for (const hex of Object.values(s.tiles))

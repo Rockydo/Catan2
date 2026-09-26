@@ -1,3 +1,4 @@
+import { specialistConstruction } from "./specialist-recipes";
 import {
   SPECIALIST_PROJECTS,
   SPECIALISTS_BY_TRACK,
@@ -857,32 +858,11 @@ export function specialistTier(
 }
 export function specialistCost(tile: Hex, id: SpecialistProject): Stock {
   const { branch, tier } = SPECIALIST_PROJECTS[id];
-  // At least twice the local primary recipe for a smaller annual increment.
-  // Fuel here represents construction and commissioning, never upkeep.
-  const cost: Stock = Object.fromEntries(
-    Object.entries(infrastructureCost(branch.track, tier, tile)).map(
-      ([good, n]) => [good, Math.ceil(n! * 2.25)],
-    ),
+  return specialistConstruction(
+    branch,
+    tier,
+    infrastructureCost(branch.track, tier, tile),
   );
-  const extra =
-    branch.id.includes("curing") || branch.id.includes("hide")
-      ? "salt"
-      : branch.effect === "wet"
-        ? tier === 1
-          ? "stone"
-          : "ceramics"
-        : branch.effect === "cold"
-          ? tier === 1
-            ? "wool"
-            : "cloth"
-          : tier === 1
-            ? "lumber"
-            : "planks";
-  cost[extra] = (cost[extra] ?? 0) + tier * 2;
-  for (const [good, amount] of Object.entries(branch.finishing ?? {}))
-    cost[good as keyof Stock] =
-      (cost[good as keyof Stock] ?? 0) + amount! * tier;
-  return cost;
 }
 /** Only inspect installed projects during production, never the whole catalogue. */
 export function installedSpecialists(
@@ -1107,9 +1087,13 @@ export function specialistRoleGain(
   if (branch.service) {
     const capacity = (n: number) =>
       branch.primary === false ||
-      ["material-reuse", "fish-nursery", "habitat-margins"].includes(
-        branch.service!,
-      )
+      [
+        "material-reuse",
+        "tool-repair",
+        "returnable-containers",
+        "fish-nursery",
+        "habitat-margins",
+      ].includes(branch.service!)
         ? n * 0.5
         : branch.service === "flood-rescue"
           ? Math.ceil(n / 2)

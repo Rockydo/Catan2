@@ -195,7 +195,9 @@ export function planClimates(world: World, seed: string, revealed: string[]) {
           Math.floor(randomAt(seed, id, "climate-parent") * adjacent.length)
         ];
       const same = adjacent.every((c) => c === base),
-        stay = randomAt(seed, id, "climate-stay") < CLIMATE_CONTINUITY;
+        stay =
+          randomAt(seed, id, "climate-stay") <
+          ((world.geographyVersion ?? 0) >= 11 ? 0.74 : CLIMATE_CONTINUITY);
       let climate = base;
       if (!same || !stay) {
         let choices = CLIMATES.filter((c) =>

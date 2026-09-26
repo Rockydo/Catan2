@@ -322,7 +322,7 @@ The inspector identifies the site and shows exact costs and seasonal returns. Up
 
 ### Optional specialist investments
 
-The Main, Specialists and Rotations tabs separate production choices. In addition to the existing works, 99 specialist branches each offer four separately purchased stages: 412 optional projects. Several different specialists can share a tile. Each stage requires your adjacent city of the same tier and the earlier stages of that branch. A yield stage adds one shared card across its four seasonal profiles, only to available products and productive seasons. A protection stage reduces the remaining loss from its stated weather condition by 10%, capped at 90% total protection. Construction costs are at least 2.25 times the corresponding local main recipe, plus finishing materials. Coal is paid at construction from tier II; there is no upkeep and no gold construction bill. These works belong to their builder and can be ravaged.
+The Main, Specialists and Rotations tabs separate production choices. In addition to the existing works, 103 specialist branches each offer four separately purchased stages: 412 optional projects. Several different specialists can share a tile. Each stage requires your adjacent city of the same tier and the earlier stages of that branch. A yield stage adds one shared card across its four seasonal profiles, only to available products and productive seasons. A protection stage reduces the remaining loss from its stated weather condition by 10%, capped at 90% total protection. Construction uses 37 craft-specific recipe families: wool and cloth for nets, clay and pottery for basins, hides and iron for winches, salt for curing and steel for industrial tools. Investment stays above 2.25 times the local main work’s raw-equivalent value before local savings, without copying its material list. Coal is paid at construction from tier II; there is no upkeep and no gold construction bill. These works belong to their builder and can be ravaged.
 
 ### Small secondary crops
 
@@ -369,6 +369,16 @@ New campaigns use generation 10 and can contain 34 regional formations. These fi
 - **Raised beach terraces**: Successive coastal benches rise above the sea. Flat settlement shelves alternate with steeper scarps and protected lower shoreline.
 
 - **Fault scarp country**: Offset blocks form abrupt, interrupted scarps. Longer valleys follow their feet while broken sections provide routes across the uplands.
+
+### Smaller regions and divided worlds
+
+Generation 11 favors broken coasts (52%) and island seas (30%), while continental worlds remain possible (18%). Smaller geographic provinces and climate regions create more nearby contrasts. Curved mountain chains concentrate impassable peaks on their crests, and narrow straits divide land without requiring much more ocean. Pass restrictions, climate compatibility and downhill rivers still apply. Existing campaigns retain their original generator; these changes require a new campaign.
+
+### More distinct specialist crafts
+
+62 branches now offer 25 working services. Press-cake feeding adds Meat after olive or sunflower harvests. Fat rendering adds Oil during meat-producing seasons; coastal fish smoking recovers Oil while marine shoals visit. Floodplain canal works recover Clay in spring and autumn outside Arctic and Glacial climates. Heated salt finishing adds winter Salt in cold climates, while mine and quarry reopening improves an existing spring harvest. These additional seasonal budgets begin at +1 at II and +2 at IV, shared across eligible seasons. Ice, occupation and ordinary flood closures still apply.
+
+Tool repair reduces later local Iron ore and Steel bills; returnable containers reduce Planks and Cloth. Savings are 10/20/30/40%, rounded down, capped at 1/2/3/4 of each material per bill. They apply only to the owner’s works on that tile. Repair, container and material-yard purchases never discount each other; coal remains fully paid at construction. Each card gives the applicable conditions and actual harvest preview.
 
 ## Seasons and harvests
 

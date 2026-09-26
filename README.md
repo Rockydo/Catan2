@@ -2,6 +2,8 @@
 
 A turn-based strategy game about building towns, trading resources and conquering a randomly generated archipelago. Play against the AI or share one computer in local hotseat mode. The game and illustrated rules are available in English and French.
 
+See [smaller regions and fractured coastlines](docs/geography-fracture-v11.md) for the latest map-generation changes.
+
 See [the 15 new geographic formations and example seeds](docs/geography-expansion-v10.md) for the latest map-generation expansion.
 
 ## Launch the game

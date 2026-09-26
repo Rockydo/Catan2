@@ -1,0 +1,345 @@
+[
+  {
+    "seed": "gen10-compatibility-0",
+    "hash": "2e96d00d468ab0588d4cd75235d2906c0292229b3fda2c40ed9b34b2b9d07735",
+    "samples": [
+      {
+        "id": "0,0",
+        "height": 0.27398601201532014,
+        "climate": {
+          "temperature": 0.7531973413228988,
+          "moisture": 0.2243194264173507,
+          "altitude": 0,
+          "maritime": 1,
+          "landform": "archipelago"
+        },
+        "geo": {
+          "elevation": 0.27398601201532014,
+          "water": true,
+          "lake": false,
+          "mouth": false
+        }
+      },
+      {
+        "id": "15,-12",
+        "height": 0.6440237916879948,
+        "climate": {
+          "temperature": 0.5560313603604743,
+          "moisture": 0.01722951740015834,
+          "altitude": 0.6508397068630896,
+          "maritime": 0.1428571428571429,
+          "landform": "great-river-basins"
+        },
+        "geo": {
+          "elevation": 0.6440237916879948,
+          "water": false,
+          "lake": false,
+          "mouth": false
+        }
+      },
+      {
+        "id": "-40,25",
+        "height": 0.5806227570790954,
+        "climate": {
+          "temperature": 0.3555787179580812,
+          "moisture": 0.2159324981591092,
+          "altitude": 0.416021060163462,
+          "maritime": 0.8571428571428572,
+          "landform": "lava-plateaus"
+        },
+        "geo": {
+          "elevation": 0.5806227570790954,
+          "water": false,
+          "lake": false,
+          "mouth": false
+        }
+      }
+    ]
+  },
+  {
+    "seed": "gen10-compatibility-1",
+    "hash": "665512bfb4fd47508620abc803cd6fe0faf9590c0af5f299e308f79d978a46b5",
+    "samples": [
+      {
+        "id": "0,0",
+        "height": 0.23466831552295406,
+        "climate": {
+          "temperature": 0.5204518062323332,
+          "moisture": 0,
+          "altitude": 0,
+          "maritime": 1,
+          "landform": "dissected-plateaus"
+        },
+        "geo": {
+          "elevation": 0.23466831552295406,
+          "water": true,
+          "lake": false,
+          "mouth": false
+        }
+      },
+      {
+        "id": "15,-12",
+        "height": 0.49513126619725667,
+        "climate": {
+          "temperature": 0.15092114397411346,
+          "moisture": 0.4160913764946437,
+          "altitude": 0,
+          "maritime": 1,
+          "landform": "dissected-plateaus"
+        },
+        "geo": {
+          "elevation": 0.49513126619725667,
+          "water": true,
+          "lake": false,
+          "mouth": false
+        }
+      },
+      {
+        "id": "-40,25",
+        "height": 0.6368779478150662,
+        "climate": {
+          "temperature": 0.3688743391669294,
+          "moisture": 0.6305502541839461,
+          "altitude": 0.44649001800600097,
+          "maritime": 0.7142857142857143,
+          "landform": "island-chains"
+        },
+        "geo": {
+          "elevation": 0.6368779478150662,
+          "water": false,
+          "lake": false,
+          "mouth": false
+        }
+      }
+    ]
+  },
+  {
+    "seed": "gen10-compatibility-2",
+    "hash": "3ea5d9a486424268acb8467774cef397225b8fc6147554533894272ab237611e",
+    "samples": [
+      {
+        "id": "0,0",
+        "height": 0.39387270489548476,
+        "climate": {
+          "temperature": 0.5497867772835552,
+          "moisture": 0.230062231832396,
+          "altitude": 0.008653036320725057,
+          "maritime": 0.8571428571428572,
+          "landform": "lava-plateaus"
+        },
+        "geo": {
+          "elevation": 0.39387270489548476,
+          "water": false,
+          "lake": false,
+          "mouth": false
+        }
+      },
+      {
+        "id": "15,-12",
+        "height": 0.5535529510253449,
+        "climate": {
+          "temperature": 0.6899733376417044,
+          "moisture": 0.3585104257186316,
+          "altitude": 0.6000613553202069,
+          "maritime": 0.4285714285714286,
+          "landform": "lava-plateaus"
+        },
+        "geo": {
+          "elevation": 0.5535529510253449,
+          "water": false,
+          "lake": false,
+          "mouth": false
+        }
+      },
+      {
+        "id": "-40,25",
+        "height": 0.33344731758886315,
+        "climate": {
+          "temperature": 0.3655743826852809,
+          "moisture": 0.6199999999999999,
+          "altitude": 0,
+          "maritime": 1,
+          "landform": "fjords"
+        },
+        "geo": {
+          "elevation": 0.33344731758886315,
+          "water": true,
+          "lake": false,
+          "mouth": false
+        }
+      }
+    ]
+  },
+  {
+    "seed": "gen10-compatibility-3",
+    "hash": "08f35145b9f04c54cf5307f67cbe6b007b2a1c3a868e00836efd4e91c5b7e735",
+    "samples": [
+      {
+        "id": "0,0",
+        "height": 0.4524890546413695,
+        "climate": {
+          "temperature": 0.27844917165974126,
+          "moisture": 0.45350538149575076,
+          "altitude": 0.07554723937999493,
+          "maritime": 0.4285714285714286,
+          "landform": "lake-districts"
+        },
+        "geo": {
+          "elevation": 0.4524890546413695,
+          "water": false,
+          "lake": false,
+          "mouth": false
+        }
+      },
+      {
+        "id": "15,-12",
+        "height": 0.3418446223135323,
+        "climate": {
+          "temperature": 0.23351525047633442,
+          "moisture": 0.4102972652439587,
+          "altitude": 0,
+          "maritime": 1,
+          "landform": "volcanic-arcs"
+        },
+        "geo": {
+          "elevation": 0.3418446223135323,
+          "water": true,
+          "lake": false,
+          "mouth": false
+        }
+      },
+      {
+        "id": "-40,25",
+        "height": 0.3700737656490091,
+        "climate": {
+          "temperature": 0.5894408567849018,
+          "moisture": 0.5015381275256913,
+          "altitude": 0,
+          "maritime": 1,
+          "landform": "tidal-estuaries"
+        },
+        "geo": {
+          "elevation": 0.3700737656490091,
+          "water": true,
+          "lake": false,
+          "mouth": false
+        }
+      }
+    ]
+  },
+  {
+    "seed": "gen10-compatibility-4",
+    "hash": "7f2a3378d5129bbd2ad31af6c1efb0ef0c83c01cd573abe2b5bd4e8d404639ae",
+    "samples": [
+      {
+        "id": "0,0",
+        "height": 0.5296862674649176,
+        "climate": {
+          "temperature": 0.9293004234433109,
+          "moisture": 0.5431172934367433,
+          "altitude": 0.00967339993300293,
+          "maritime": 0.8571428571428572,
+          "landform": "cuesta-belts"
+        },
+        "geo": {
+          "elevation": 0.5296862674649176,
+          "water": false,
+          "lake": false,
+          "mouth": false
+        }
+      },
+      {
+        "id": "15,-12",
+        "height": 0.47936720655142184,
+        "climate": {
+          "temperature": 0.48686835964243186,
+          "moisture": 0.3952082596282274,
+          "altitude": 0,
+          "maritime": 1,
+          "landform": "great-river-basins"
+        },
+        "geo": {
+          "elevation": 0.47936720655142184,
+          "water": true,
+          "lake": false,
+          "mouth": false
+        }
+      },
+      {
+        "id": "-40,25",
+        "height": 0.40705660162817797,
+        "climate": {
+          "temperature": 0.47675675431604814,
+          "moisture": 0.4575546521233735,
+          "altitude": 0,
+          "maritime": 1,
+          "landform": "dissected-plateaus"
+        },
+        "geo": {
+          "elevation": 0.40705660162817797,
+          "water": true,
+          "lake": false,
+          "mouth": false
+        }
+      }
+    ]
+  },
+  {
+    "seed": "gen10-compatibility-5",
+    "hash": "a6d64ecc7ef3afed3f8d2ea6486bb810d460a095e115f5f400e2c8caba7360b6",
+    "samples": [
+      {
+        "id": "0,0",
+        "height": 0.805877570735326,
+        "climate": {
+          "temperature": 0.7498102449642325,
+          "moisture": 0.7565829207901531,
+          "altitude": 0.9120225202652193,
+          "maritime": 0.5714285714285714,
+          "landform": "barrier-coasts"
+        },
+        "geo": {
+          "elevation": 0.805877570735326,
+          "water": true,
+          "downstream": "-1,0",
+          "lake": false,
+          "mouth": false
+        }
+      },
+      {
+        "id": "15,-12",
+        "height": 0.45922878846816684,
+        "climate": {
+          "temperature": 0.43822157894455777,
+          "moisture": 0.5684679406484879,
+          "altitude": 0,
+          "maritime": 1,
+          "landform": "caldera-highlands"
+        },
+        "geo": {
+          "elevation": 0.45922878846816684,
+          "water": true,
+          "lake": false,
+          "mouth": false
+        }
+      },
+      {
+        "id": "-40,25",
+        "height": 0.6711436995194607,
+        "climate": {
+          "temperature": 0.5550759158901746,
+          "moisture": 0.8892579529549745,
+          "altitude": 0.4130081824286815,
+          "maritime": 0.7142857142857143,
+          "landform": "rift-valleys"
+        },
+        "geo": {
+          "elevation": 0.6711436995194607,
+          "water": false,
+          "lake": false,
+          "mouth": false
+        }
+      }
+    ]
+  }
+]

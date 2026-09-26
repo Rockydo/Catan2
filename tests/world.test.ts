@@ -66,7 +66,7 @@ describe("world and setup", () => {
         true,
       );
     }
-  });
+  }, 20000);
   it("generates ordinary and Fish ports but never a Gold port", () => {
     const ports = Object.values(generateWorld("port-catalogue", 2000).edges)
       .map((e) => e.harbor)

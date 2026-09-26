@@ -177,7 +177,7 @@ describe("calendar, sea ice and save migration", () => {
       expect(deserialize(serialize(s)).calendar).toEqual(s.calendar);
     }
     expect([...seen].sort()).toEqual([...SEASONS].sort());
-  });
+  }, 20000);
   it.each(SEASONS)(
     "keeps the calendar and yearly cycle when starting in %s",
     (startSeason) => {

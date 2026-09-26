@@ -49,7 +49,7 @@ export function climateSetting(
   const windward = clamp(
     (height - elevationAt(seed, key(q + wq * 3, r + wr * 3), version)) / 0.18,
   );
-  const potential = regionalClimateFields(seed, id),
+  const potential = regionalClimateFields(seed, id, version),
     thermal = potential.temperature;
   const result = {
     temperature: clamp(

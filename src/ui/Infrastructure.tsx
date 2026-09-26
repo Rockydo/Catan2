@@ -8,6 +8,7 @@ import {
 } from "../game/infrastructure-specialists";
 import {
   SERVICE_RULES,
+  MATERIAL_SERVICES,
   serviceRisks,
 } from "../game/infrastructure-service-rules";
 import {
@@ -49,7 +50,7 @@ import {
   seasonalProfile,
   seasonYear,
 } from "../game/seasons";
-import { affordable, inventory } from "../game/selectors";
+import { affordable, inventory, recipePayment } from "../game/selectors";
 import { localTechnique } from "../game/infrastructure-techniques";
 import { techniqueSite } from "../game/infrastructure-specializations";
 import { CLIMATE_INFO, BIOME_INFO } from "../game/climate-content";
@@ -252,7 +253,8 @@ function ProjectCard({
   const foreign = installed && installed.owner !== viewer,
     full = tier >= 4;
   const allowed = !blocked && projectSite(s, tile, id, viewer),
-    cost = full ? {} : projectCost(tile, id, viewer);
+    cost = full ? {} : projectCost(tile, id, viewer),
+    payment = recipePayment(s, cost, viewer);
   const beforeTile = full ? withoutInvestment(tile, id) : tile;
   const current = seasonalProfile(beforeTile, viewer);
   const main = Object.hasOwn(INFRASTRUCTURE, id);
@@ -290,7 +292,7 @@ function ProjectCard({
       ? `${fr ? "Préférence des poissons" : "Fish habitat preference"}: +${strength[0] * 20}% → +${strength[1] * 20}%`
       : role === "habitat-margins"
         ? `${fr ? "Réduction des perturbations voisines" : "Neighboring disturbance reduction"}: ${strength[0] * 10}% → ${strength[1] * 10}%`
-        : role === "material-reuse"
+        : role && MATERIAL_SERVICES.includes(role)
           ? `${fr ? "Plafond d’économie par matériau admissible" : "Saving ceiling per eligible material"}: ${strength[0]} → ${strength[1]}`
           : undefined;
   const saved = full
@@ -474,7 +476,19 @@ function ProjectCard({
                   <GoodsList stock={saved} />
                 </small>
               )}
-              <Cost cost={cost} available={inventory(s, viewer)} />
+              <Cost
+                cost={cost}
+                available={inventory(s, viewer)}
+                payment={payment}
+              />
+              {Object.entries(payment).some(
+                ([good, n]) => n !== (cost[good as Good] ?? 0),
+              ) && (
+                <small data-infrastructure-payment>
+                  {fr ? "Paiement : " : "Payment: "}
+                  <GoodsList stock={payment} />
+                </small>
+              )}
               {!allowed && (
                 <small className="infrastructure-requirement">
                   {blocked ??
@@ -490,7 +504,7 @@ function ProjectCard({
               <button
                 className="primary"
                 disabled={
-                  !interactive || !allowed || !affordable(s, cost, viewer)
+                  !interactive || !allowed || !affordable(s, payment, viewer)
                 }
                 onClick={() =>
                   onAction({ type: "project", tile: tile.id, kind: id })

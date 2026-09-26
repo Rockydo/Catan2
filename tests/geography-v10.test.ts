@@ -39,7 +39,7 @@ it("preserves generation 9 climate, relief and drainage exactly", () => {
   }
 });
 it("adds fifteen distinct complete formations and finite nonidentical relief", () => {
-  expect(GEOGRAPHY_VERSION).toBe(10);
+  expect(GEOGRAPHY_VERSION).toBeGreaterThanOrEqual(10);
   expect(LANDFORMS).toHaveLength(34);
   expect(EXTRA_LANDFORM_IDS).toHaveLength(15);
   const shapes = new Set<string>();
@@ -68,7 +68,7 @@ for (const form of EXTRA_LANDFORM_IDS)
       expect(worldLandform(seed, 10)).toBe(form);
       expect(regionalLandform(seed, "0,0", 10)).toBe(form);
       const count = index ? 125 : 320,
-        world = generateWorld(seed, count, true),
+        world = generateWorld(seed, count, true, 10),
         old = structuredClone(world.tiles);
       const tiles = Object.values(world.tiles);
       expect(
@@ -101,8 +101,8 @@ for (const form of EXTRA_LANDFORM_IDS)
         }
         if (t.geography?.downstream) {
           expect(neighbors(t.id)).toContain(t.geography.downstream);
-          expect(elevationAt(seed, t.geography.downstream)).toBeLessThan(
-            elevationAt(seed, t.id),
+          expect(elevationAt(seed, t.geography.downstream, 10)).toBeLessThan(
+            elevationAt(seed, t.id, 10),
           );
         }
         if (BIOME_INFO[t.biome!].family === "rugged")
@@ -173,7 +173,7 @@ it("keeps level plateau tops usable while preserving steep mountain rims", () =>
   ] as const) {
     const seed = seeds[form][0];
     const at = {
-      ...geographyAt(seed, "0,0"),
+      ...geographyAt(seed, "0,0", 10),
       elevation: 0.9,
       water: false,
       lake: false,
@@ -185,6 +185,7 @@ it("keeps level plateau tops usable while preserving steep mountain rims", () =>
       { id: "0,0", climate: "temperate" },
       at,
       around,
+      10,
     );
     expect(
       flat.choices.some(([b]) => b === "bare-peaks" || b === "mountain-pass"),
@@ -194,6 +195,7 @@ it("keeps level plateau tops usable while preserving steep mountain rims", () =>
       { id: "0,0", climate: "temperate" },
       at,
       around.map((n) => ({ ...n, elevation: 0.6 })),
+      10,
     );
     expect(rim.choices.some(([b]) => b === "bare-peaks")).toBe(true);
   }
