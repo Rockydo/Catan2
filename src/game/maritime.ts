@@ -1,3 +1,4 @@
+import { cultivatedFish } from "./infrastructure-services";
 import {
   canSail,
   baseGeographicYield,
@@ -86,7 +87,10 @@ const primaryGoods = Object.fromEntries(
 ) as Partial<Record<(typeof BIOMES)[number], Raw>>;
 export function tileGood(tile: Hex, owner?: number): Raw | undefined {
   if (tile.geography)
-    return Object.keys(tileYield(tile, owner))[0] as Raw | undefined;
+    return (
+      (Object.keys(tileYield(tile, owner))[0] as Raw | undefined) ??
+      (cultivatedFish(tile, owner) ? "fish" : undefined)
+    );
   if (tile.biome === "woods")
     return tile.woodsChoices?.[owner ?? -1] ?? "lumber";
   if (tile.biome) return primaryGoods[tile.biome];
@@ -166,6 +170,7 @@ export const terrainName = (tile: Hex) =>
 export const marineResource = (tile: Hex) =>
   tile.resource === "water" &&
   !!(
+    cultivatedFish(tile) ||
     tile.fish ||
     tile.whale ||
     tile.biome === "cod" ||

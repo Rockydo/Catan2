@@ -9,7 +9,7 @@ import { serialize, assertInvariants } from "../src/game/save";
 test("floodplain selection explains water level, lost harvest and protection", async ({
   page,
 }) => {
-  let s = newGame("flood-clarity");
+  let s = newGame("karst-flood-0");
   while (s.phase.startsWith("setup")) s = run(s, chooseAIAction(s));
   s.calendar = { ...s.calendar!, startSeason: "spring" };
   s.phase = "economy";

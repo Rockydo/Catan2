@@ -1,3 +1,4 @@
+import { specialistMaterialSavings } from "./infrastructure-services";
 import {
   isSpecialist,
   SPECIALIST_PROJECTS,
@@ -124,11 +125,22 @@ export function freshwaterSite(s: Game, tile: Hex): boolean {
     })
   );
 }
-export function projectCost(tile: Hex, kind: Project): Stock {
-  if (isSpecialist(kind)) return specialistCost(tile, kind);
-  if (!isInfrastructure(kind)) return PROJECTS[kind].cost;
-  const next = tierOf(tile, kind) + 1;
-  return next > 4 ? {} : infrastructureCost(kind, next, tile);
+export function projectCost(tile: Hex, kind: Project, owner?: number): Stock {
+  const next = isInfrastructure(kind) ? tierOf(tile, kind) + 1 : 1;
+  const base = isSpecialist(kind)
+    ? specialistCost(tile, kind)
+    : isInfrastructure(kind)
+      ? next > 4
+        ? {}
+        : infrastructureCost(kind, next, tile)
+      : PROJECTS[kind].cost;
+  const savings = specialistMaterialSavings(tile, base, kind, owner);
+  return Object.fromEntries(
+    Object.entries(base).map(([good, n]) => [
+      good,
+      n! - (savings[good as keyof Stock] ?? 0),
+    ]),
+  );
 }
 export function geographyCommand(s: Game, c: Command): boolean {
   if (
@@ -148,7 +160,7 @@ export function geographyCommand(s: Game, c: Command): boolean {
       projectSite(s, tile, kind),
       "This site cannot support that improvement or is not connected to your faction.",
     );
-    pay(s, projectCost(tile, kind));
+    pay(s, projectCost(tile, kind, s.active));
     const tier = isInfrastructure(kind) ? tierOf(tile, kind) + 1 : 1;
     (g.projects ??= {})[kind] = {
       owner: s.active,

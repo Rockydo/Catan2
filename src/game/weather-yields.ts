@@ -183,6 +183,38 @@ export function weatherAdjustedYield(
   const opportunity = native
     ? specialistServiceProfile(tile, native, owner, weather)[season]
     : {};
+  const rotationSupport = native
+    ? (specialistServiceProfile(
+        tile,
+        native,
+        owner,
+        "normal",
+        undefined,
+        "rotation-support",
+      )[season].grain ?? 0)
+    : 0;
+  const food =
+    native && (weather === "dry" || weather === "cold")
+      ? (specialistServiceProfile(
+          tile,
+          native,
+          owner,
+          "normal",
+          undefined,
+          "forest-food",
+        )[season].grain ?? 0)
+      : 0;
+  const resin =
+    native && (weather === "wet" || weather === "cold")
+      ? (specialistServiceProfile(
+          tile,
+          native,
+          owner,
+          "normal",
+          undefined,
+          "resin",
+        )[season].oil ?? 0)
+      : 0;
   const stored = specialistPantryCapacity(tile, owner)
     ? (specialistUtilityExtras(
         tile,
@@ -208,13 +240,18 @@ export function weatherAdjustedYield(
         game[raw] ?? tile.geography?.fauna?.[raw] ?? 0,
       );
     const rotationAmount =
-      raw === "grain" ? Math.min(amount! - wildlife, secondary) : 0;
+      raw === "grain"
+        ? Math.min(amount! - wildlife, secondary + rotationSupport)
+        : 0;
     const preserved =
       raw === "grain"
         ? Math.min(stored, amount! - wildlife - rotationAmount)
         : 0;
     const serviceAmount = Math.min(
-      service[raw] ?? 0,
+      Math.max(
+        0,
+        (service[raw] ?? 0) - (raw === "grain" ? rotationSupport : 0),
+      ),
       amount! - wildlife - rotationAmount - preserved,
     );
     const base =
@@ -226,7 +263,15 @@ export function weatherAdjustedYield(
     output[raw] =
       wildlife +
       preserved +
-      serviceAmount +
+      Math.max(
+        0,
+        serviceAmount -
+          (raw === "grain"
+            ? Math.ceil(food / 2)
+            : raw === "oil" && resin
+              ? 1
+              : 0),
+      ) +
       (rotationAmount && rotation
         ? Math.round(
             rotationAmount *

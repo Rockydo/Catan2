@@ -18,7 +18,7 @@ import { piece, run } from "./helpers";
 
 it("repairs the reproduced all-generic Grand Campaign without rerolling its ports or terrain", () => {
   const seed = "port-audit-13";
-  const world = generateWorld(seed, 320, true);
+  const world = generateWorld(seed, 320, true, 8);
   // Remove only the coverage additions to reconstruct the old seeded result.
   for (const e of Object.values(world.edges))
     if (randomAt(seed, e.id, "harbor") >= 0.1) delete e.harbor;

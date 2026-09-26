@@ -678,6 +678,7 @@ export function specialistSuitable(
     a = AGRONOMY[climate],
     native = biomeYield(tile.biome!, climate);
   if (
+    (branch.waterways && !branch.waterways.includes(g.waterway!)) ||
     (branch.biomes && !branch.biomes.includes(tile.biome!)) ||
     (branch.climates && !branch.climates.includes(climate)) ||
     (branch.minElevation !== undefined && g.elevation < branch.minElevation) ||
@@ -720,6 +721,7 @@ export function specialistSuitable(
     );
   }
   if (
+    branch.primary !== false &&
     branch.effect === "yield" &&
     !["hunting", "whaling", "fishery"].includes(branch.track) &&
     !branch.goods.some((raw) => native[raw])
@@ -915,6 +917,7 @@ export function specialistExtras(
   for (const [branch, tier] of installedSpecialists(tile, owner)) {
     if (
       branch.rotation ||
+      branch.primary === false ||
       branch.effect !== "yield" ||
       (onlyTrack && branch.track !== onlyTrack)
     )
@@ -1103,7 +1106,14 @@ export function specialistRoleGain(
   let serviceGain = 0;
   if (branch.service) {
     const capacity = (n: number) =>
-      branch.service === "flood-rescue" ? Math.ceil(n / 2) : Math.floor(n / 2);
+      branch.primary === false ||
+      ["material-reuse", "fish-nursery", "habitat-margins"].includes(
+        branch.service!,
+      )
+        ? n * 0.5
+        : branch.service === "flood-rescue"
+          ? Math.ceil(n / 2)
+          : Math.floor(n / 2);
     let prior = 0;
     for (const [b, n] of installedSpecialists(tile, owner))
       if (b.service === branch.service) prior = Math.max(prior, capacity(n));

@@ -22,13 +22,20 @@ export const LANDFORMS = [
   "cuesta-belts",
   "lake-districts",
   "badlands",
+  "karst-uplands",
 ] as const;
 export type PhysicalLandform = (typeof LANDFORMS)[number];
-export const worldLandform = (seed: string, version = 8): PhysicalLandform =>
+export const worldLandform = (seed: string, version = 9): PhysicalLandform =>
   LANDFORMS[
     Math.floor(
       randomAt(seed, "world", "landform") *
-        (version >= 8 ? LANDFORMS.length : version >= 5 ? 14 : 10),
+        (version >= 9
+          ? LANDFORMS.length
+          : version >= 8
+            ? 18
+            : version >= 5
+              ? 14
+              : 10),
     )
   ];
 const provinceCache = new Map<string, PhysicalLandform>();
@@ -49,7 +56,8 @@ function province(
   const weights: [PhysicalLandform, number][] = [
     [
       worldLandform(seed, version),
-      version >= 8 && worldLandform(seed, version) === "great-river-basins"
+      (version >= 8 && worldLandform(seed, version) === "great-river-basins") ||
+      (version >= 9 && worldLandform(seed, version) === "karst-uplands")
         ? 16
         : 5,
     ],
@@ -90,6 +98,11 @@ function province(
       weights.push(["lake-districts", 5]);
     if (c.moisture < 0.42) weights.push(["badlands", 5]);
   }
+  if (version >= 9)
+    weights.push([
+      "karst-uplands",
+      c.moisture > 0.45 && c.temperature > 0.35 ? 4 : 1,
+    ]);
   let roll =
     randomAt(seed, id, "landform-province") *
     weights.reduce((s, [, w]) => s + w, 0);
@@ -108,7 +121,7 @@ function province(
 export function regionalLandform(
   seed: string,
   id: string,
-  version = 8,
+  version = 9,
 ): PhysicalLandform {
   const [q, r] = coord(id);
   const span = version >= 8 ? 24 : 16;
@@ -130,6 +143,37 @@ function height(
     warp = (field(seed, q, r, 8, "coast-warp") - 0.5) * 5;
   const climate = regionalClimateFields(seed, key(q, r));
   switch (form) {
+    case "karst-uplands": {
+      // Uneven soluble-rock massifs stand above enclosed low ground. Jittered
+      // centers and unequal radii avoid a grid of identical cones; humid warm
+      // provinces have sharper towers, cooler ones broader limestone hills.
+      const spacing = 5.5,
+        cq = Math.round(u / spacing),
+        cr = Math.round(v / spacing);
+      let relief = 0;
+      const humid = climate.moisture > 0.5 && climate.temperature > 0.5;
+      for (let x = cq - 1; x <= cq + 1; x++)
+        for (let y = cr - 1; y <= cr + 1; y++) {
+          const cell = key(x, y);
+          const cx = x * spacing + (randomAt(seed, cell, "karst-x") - 0.5) * 3;
+          const cy = y * spacing + (randomAt(seed, cell, "karst-y") - 0.5) * 3;
+          const radius =
+            (humid ? 1.1 : 1.6) + randomAt(seed, cell, "karst-radius") * 1.5;
+          const d = Math.hypot(
+            u - cx,
+            (v - cy) * (0.7 + randomAt(seed, cell, "karst-stretch") * 0.6),
+          );
+          const mass = Math.exp(-Math.pow(d / radius, humid ? 3 : 2));
+          relief = Math.max(
+            relief,
+            mass * (0.7 + randomAt(seed, cell, "karst-mass") * 0.3),
+          );
+        }
+      const hollow = field(seed, u + 71, v - 31, 4.5, "karst-hollows");
+      return (
+        0.32 + broad * 0.14 + relief * 0.36 + fine * 0.014 - hollow * 0.065
+      );
+    }
     case "great-river-basins": {
       // Long, gently graded catchments: small-scale relief cannot repeatedly
       // trap the trunk in a puddle. Broad valley shoulders still divide basins.
@@ -293,7 +337,7 @@ function height(
 export function physicalElevation(
   seed: string,
   id: string,
-  version = 8,
+  version = 9,
 ): number {
   const [q, r] = coord(id),
     span = version >= 8 ? 24 : 16,

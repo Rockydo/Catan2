@@ -1315,11 +1315,14 @@ export function economyProjects(s: Game): Project[] {
         const specialistAvailability =
           specialist &&
           ["hunting", "whaling", "fishery"].includes(specialist.branch.track)
-            ? specialist.branch.goods.some((raw) => g.fauna?.[raw])
-              ? 0.35
-              : specialist.branch.specialty === "refuge"
-                ? 0.12
-                : 0.02
+            ? specialist.branch.service === "shellfish"
+              ? 1
+              : specialist.branch.goods.some((raw) => g.fauna?.[raw])
+                ? 0.35
+                : specialist.branch.specialty === "refuge" ||
+                    specialist.branch.service === "fish-nursery"
+                  ? 0.12
+                  : 0.02
             : 1;
         const score = specialist
           ? (production *
@@ -1357,7 +1360,7 @@ export function economyProjects(s: Game): Project[] {
                     : 2;
         add(
           { type: "project", tile: id, kind },
-          projectCost(tile, kind),
+          projectCost(tile, kind, s.active),
           score,
           `Adapt to local geography: ${PROJECTS[kind].name}`,
         );

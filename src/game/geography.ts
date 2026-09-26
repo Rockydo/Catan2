@@ -94,7 +94,7 @@ export interface Wildlife {
   lastRound: number;
   dormant?: true;
 }
-export const GEOGRAPHY_VERSION = 8;
+export const GEOGRAPHY_VERSION = 9;
 export const landform = (
   seed: string,
   version = GEOGRAPHY_VERSION,
@@ -207,6 +207,7 @@ export function seaLevel(seed: string, version = GEOGRAPHY_VERSION) {
     "cuesta-belts": 0.32,
     "lake-districts": 0.32,
     badlands: 0.28,
+    "karst-uplands": 0.28,
   }[landform(seed, version)];
   const level =
     heights[Math.floor(heights.length * water * (version >= 3 ? 0.75 : 1))];
@@ -313,7 +314,11 @@ function watershed(
   const supplied =
     version < 2 ||
     (randomAt(seed, source, "watershed-rain") <
-      (longBasin ? 0.4 + rain * 0.6 : 0.18 + rain * 0.82) &&
+      (longBasin ? 0.4 + rain * 0.6 : 0.18 + rain * 0.82) *
+        (version >= 9 &&
+        regionalLandform(seed, source, version) === "karst-uplands"
+          ? 0.55
+          : 1) &&
       (version < 6 ||
         longBasin ||
         elevationAt(seed, source, version) > seaLevel(seed, version) + 0.12 ||
@@ -860,6 +865,19 @@ export function geographicLandChoices(
     )
       continue;
     let w = original;
+    if (version >= 9 && setting.landform === "karst-uplands") {
+      const yields = BIOME_INFO[b].yield;
+      // Limestone outcrops favor building stone, not a blanket ore windfall.
+      // Low pockets retain the climate's own crops and pastures.
+      if (yields.stone) w *= mountains || slope > 0.09 ? 2.2 : 1.25;
+      if (yields.ore || yields.coal || yields.gold) w *= 0.65;
+      if (
+        relative < 0.13 &&
+        slope < 0.13 &&
+        around.filter((n) => n.elevation > at.elevation).length >= 4
+      )
+        if (yields.grain || yields.wool) w *= 1.65;
+    }
     if (version >= 8 && setting.landform === "badlands") {
       // Eroded sediment favors the climate's own exposed hills/minerals,
       // without importing warm clay or farmland into inappropriate biomes.

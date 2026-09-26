@@ -27,5 +27,6 @@ export const LANDFORM_LABELS: Record<
     en: "Glacial lake district",
     fr: "Région de lacs glaciaires",
   },
+  "karst-uplands": { en: "Karst uplands", fr: "Hauts plateaux karstiques" },
   badlands: { en: "Badlands", fr: "Terres ravinées" },
 };

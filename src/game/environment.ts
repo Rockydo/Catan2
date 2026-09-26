@@ -1,3 +1,4 @@
+import { specialistEcology } from "./infrastructure-services";
 import { specialistRefuge } from "./infrastructure";
 import type { Game, Hex, Stock } from "./types";
 import { randomAt, neighbors, canOccupy, distance } from "./world";
@@ -628,6 +629,7 @@ export function syncEnvironment(s: Game): void {
   restoreWildlifeHabitats(s);
   escapeFormingIce(s);
   if (advance && seasonHalf(s) === "early") {
+    const ecology = specialistEcology(s.tiles);
     const developed = development(s),
       crowding = new Map<string, number>(),
       refuges = new Map<string, number>();
@@ -646,7 +648,10 @@ export function syncEnvironment(s: Game): void {
           g = tile.geography!;
         let refuge = refuges.get(id);
         if (refuge === undefined) {
-          refuge = specialistRefuge(tile);
+          refuge = Math.max(
+            specialistRefuge(tile),
+            ecology.margins.get(id) ?? 0,
+          );
           refuges.set(id, refuge);
         }
         let weight =
@@ -661,6 +666,8 @@ export function syncEnvironment(s: Game): void {
           (g.access === "flooded" && !marine(herd.kind))
         )
           weight *= 0.2;
+        if (herd.kind === "fish" || herd.kind === "cod")
+          weight *= 1 + (ecology.nurseries.get(id) ?? 0);
         if (herd.kind === "gazelle") weight *= gazelleHabitatWeight(s, tile);
         if (g.waterway === "river" && herd.kind === "fish") weight *= 1.8;
         if (season === "summer" && g.elevation > 0.6 && !marine(herd.kind))

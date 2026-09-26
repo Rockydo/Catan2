@@ -1,8 +1,8 @@
 # Specialist investments and secondary crops
 
-The existing **14 main tracks and 268 local methods are retained**. Alongside them, **99 independent specialist branches add 396 separately purchased projects** (four stages per branch). A tile can build several different specialist branches at once. These are additional investments, not replacements for its local main method.
+The existing **14 main tracks and 268 local methods are retained**. Alongside them, **103 independent specialist branches add 412 separately purchased projects** (four stages per branch). A tile can build several different specialist branches at once. These are additional investments, not replacements for its local main method.
 
-The later rotation request adds **16 alternative secondary-crop rotations, each with four stages**. A field can follow only one rotation. Together, specialists and rotations offer 460 stage purchases. The latest expansion adds 32 specialist branches (128 stages), preserving the previous 67 branches and all rotations.
+The later rotation request adds **16 alternative secondary-crop rotations, each with four stages**. A field can follow only one rotation. Together, specialists and rotations offer 476 stage purchases. The latest expansion adds four dedicated production/ecology branches and deepens 19 existing branches, retaining all earlier purchases and rotations.
 
 ## Finding and building them
 
@@ -14,7 +14,7 @@ Each stage needs your adjacent, unbesieged settlement/city of at least the same 
 
 Each stage costs **2.25 times its matching local main-track construction materials**, rounded up, plus branch-specific finishing materials: timber/planks, drainage pottery, cold-weather insulation, or curing salt. Coal is included from tier II, with much larger industrial construction bills at III–IV. These are one-time bills: **no upkeep, gold or gold bars**.
 
-A yield specialist adds **one shared card across the four seasonal profiles per stage**, for totals of 1/2/3/4. Multiple eligible products share that increment. Native productive seasons and products determine its allocation. Some specialists emphasize particular seasons: peat drying favors summer, while snow-country game hauling favors winter. These weights redistribute the same small annual increment, never creating a new native harvest season. All four seasonal weights stay positive, so a viable native harvest remains eligible. Harvest handling, sorting, grading and better recovery are represented by these modest extra cards; there is no separate inventory-spoilage simulation.
+A conventional yield specialist adds **one shared card across the four seasonal profiles per stage**, for totals of 1/2/3/4. Multiple eligible products share that increment. Native productive seasons and products determine its allocation. Some specialists emphasize particular seasons: peat drying favors summer, while snow-country game hauling favors winter. These weights redistribute the same small annual increment, never creating a new native harvest season. All four seasonal weights stay positive, so a viable native harvest remains eligible. Harvest handling, sorting, grading and better recovery are represented by these modest extra cards; there is no separate inventory-spoilage simulation.
 
 Risk specialists remove **10% of the remaining loss per stage** for the stated dry, wet or cold spell. Four stages protect 34.39% of the loss remaining after main protection. Percentage protection is capped at 90%; selected salvage shelters then recover a bounded number of whole resources actually lost. Flood access and ice closures remain separate. Whole-card weather rounding can make a small improvement invisible on a low-yield roll.
 
@@ -22,24 +22,72 @@ Water-washing projects require a local river, lake, spring or oasis; seawater do
 
 These coefficients are deliberately game balance values, not claims of measured historical productivity. The main works normally offer better returns per construction resource. Specialists are expensive ways to develop an important protected site further or hedge a particular weather risk.
 
-Wildlife specialists require visiting animals and the relevant products. Empty habitat produces no hunting bonus. Hunters receive the same owned hunting improvements as other producers. Fish and whale products are separate. No artwork or terrain is replaced.
+Hunting and capture-fishing specialists require visiting animals and the relevant products. Empty habitat produces no hunting bonus. Hunters receive the same owned hunting improvements as other producers. Fish and whale products are separate. No artwork or terrain is replaced.
 
 ## Distinct specialist services
 
-Twelve branches now have an additional role while retaining their original yield or percentage protection. All benefits stay owner-specific except the ecological effect of quieter habitat. Equivalent services use the strongest installed capacity, preventing duplicate stacking. Existing purchases gain their service immediately.
+Nineteen branches now have an additional role while retaining their original yield or percentage protection. All benefits stay owner-specific except the ecological effect of quieter habitat. Equivalent services use the strongest installed capacity, preventing duplicate stacking. Existing purchases gain their service immediately.
 
 | Role | Branches | Rules |
 | --- | --- | --- |
 | Pantries | Harvest drying, root clamps, breadfruit fermentation | At II, +1 Grain across the leanest ordinary crop seasons; at IV, +2. Food is protected from weather penalties, but access closures still apply. Matching dice rolls are required. This abstracts preserved food into seasonal production, without a stored-stock counter or upkeep. |
 | Quiet habitat | Woodland tracking, open-range scouting | Development disturbance is reduced by 15/30/45/60%. Habitat suitability, crowding, weather and migration randomness remain. It changes destination weights, not population size, and benefits visiting wildlife irrespective of faction. |
-| Weather salvage | Covered timber, mine runoff, mine shelters, lambing shelters, pasture shade | After percentage protection and rounding, recover at most 1 actually lost resource per harvest at I–II, 2 at III–IV. Capacity is shared across eligible goods; the strongest capacity applies for each weather condition. Never exceeds the unaffected harvest or bypasses floods/ice. |
+| Weather salvage | Timber, mine, quarry, salt-pan, heath, upland and nursery shelters | After percentage protection and rounding, recover at most 1 actually lost resource per harvest at I–II, 2 at III–IV. Capacity is shared across eligible goods; the strongest capacity applies for each weather condition. Never exceeds the unaffected harvest or bypasses floods/ice. |
 | Rock recovery | Ore sorting, water-jig ore separation | At II, +1 Stone across ore-producing seasons; at IV, +2. Represents selected usable waste rock, not all mine tailings. Best recovery works apply. |
 
 For example, a one-Wood tile already retains its Wood during rain because of the forest production floor. Covered stacks cannot rescue an additional card there: the card explicitly reports unchanged rounded harvest. On a larger forest that loses Wood during rain, the salvage allowance can have an immediate visible benefit. A 10% reduction in remaining losses means a 25% loss becomes 22.5%, not a flat +10% yield.
 
-## Working practices: 28 further branches
+## Working practices and connected livelihoods
 
-A further **28 existing branches (112 stages)** now offer **nine additional services**, taking the number of branches with dedicated secondary roles to **40**. Every original primary yield/protection, construction price and saved project remains. All the following bonuses are owner-specific. Normal by-products are recovered output, sheltered from subsequent weather penalties; closures still apply unless flood salvage is explicitly listed. These small bonuses do not consume resources each turn.
+**44 branches** offer **17 services**. Including the nineteen pantry, habitat, salvage and rock-recovery branches above, **63 branches** now have dedicated roles. Original primary yields, protection and saved projects remain. Four new dedicated branches use their stated service instead of a generic yield increment. Production and material savings are owner-specific; ecological benefits affect visiting wildlife. Forest food, resin and supported secondary crops have the weather exposure stated below. Other recovered by-products are sheltered from subsequent weather penalties; closures still apply unless flood salvage is explicitly listed. These small bonuses do not consume resources each turn.
+
+### stubble-grazing
+
+Stubble grazing: +1 Meat across free seasons immediately after a grain harvest at II, +2 at IV. A standing main crop or secondary rotation takes priority; snow-country winters are excluded. Best paddock works apply.
+
+Branches: Harvest recovery, Clean threshing floors, Ventilated maize cribs.
+
+### rotation-support
+
+Nursery support: +1 secondary food at II, +2 at IV, shared across an active owned rotation’s harvests. Requires a free rotation season and its water/drainage works. Best nursery support applies.
+
+Branches: Seed selection, Potato seed stores.
+
+### forest-food
+
+Woodland food: 1/2/3/4 Grain in autumn, representing mushrooms. Dry or cold spells halve this harvest, rounded down. Timber and visiting wildlife keep their own harvests.
+
+Branches: Woodland food gardens.
+
+### resin
+
+Resin collection: 1/2/3/4 Oil in summer. A wet or cold spell removes one Oil from that harvest. Requires conifer woodland in a cold or Alpine climate.
+
+Branches: Conifer resin yards.
+
+### shellfish
+
+Settled shellfish: 1/2/3/4 Fish shared across the four seasons, even when shoals have migrated away. Matching rolls are required. Ice, flooding and enemy blockades still prevent collection.
+
+Branches: Coastal shellfish beds.
+
+### fish-nursery
+
+Fish refuge: visiting fish are 20/40/60/80% more likely to choose this habitat, before other migration factors. Shoals remain mobile; only the strongest nursery applies.
+
+Branches: Reed spawning refuges, Reef catch landings.
+
+### habitat-margins
+
+Shelter margins: reduce development disturbance in adjacent wild habitat by 10/20/30/40%. A stronger local refuge takes priority. Animals still choose among suitable habitats.
+
+Branches: Field windbreaks, Contour planting strips, Orchard mulch beds.
+
+### material-reuse
+
+Local material yard: reduces eligible Wood or Stone costs of later works on this tile by 10/20/30/40%, rounded down, saving at most 1/2/3/4 of each material per bill. Coal and manufactured goods retain their full cost. Material yards do not discount each other.
+
+Branches: Log sorting, Stone dressing, Extraction loading bays.
 
 ### fodder
 
@@ -95,7 +143,7 @@ Flood salvage: recover up to 1 existing crop or timber resource per flooded harv
 
 Branches: Raised crop rows, Field outfalls, Wetland timber access.
 
-These are shared four-season budgets, **not +2 on every seasonal harvest**. Normal by-products and weather opportunities begin at II (one extra card), increase at IV (two), and preserve the original branch progression at I and III. Weather windows activate only in the stated weather and season; the calendar previews show the actual before/after output under that condition. An older saved investment receives its new service automatically.
+These are shared four-season budgets, **not +2 on every seasonal harvest**. Additional by-products and weather opportunities on existing branches begin at II (one extra card), increase at IV (two), and preserve the original branch progression at I and III. Weather windows activate only in the stated weather and season; the calendar previews show the actual before/after output under that condition. An older saved investment receives its new service automatically. Dedicated mushroom, resin and shellfish production instead grows 1/2/3/4; their calendar and weather conditions are stated above. Reed refuges act from I. Cost reductions and ecological services also progress at every tier. All production still needs the matching dice roll.
 
 - **Fodder:** meat from well-fed domestic stock is allocated to the lowest ordinary Wool/Meat/Hides grazing yields. It is not wild-game attraction or a new herd.
 - **Prunings:** only olive groves, date oases and breadfruit groves qualify; recovery avoids maximum-yield fruit seasons where there is a seasonal peak.
@@ -105,6 +153,15 @@ These are shared four-season budgets, **not +2 on every seasonal harvest**. Norm
 - **Winter hauling:** cold, tundra, arctic, glacial, alpine, Andean, steppe and prairie climates qualify, only in winter during a cold spell. Hunters receive the same owned snow-haulage improvement as settlement producers.
 - **Low water:** a river/lake waterway or floodplain is required; ordinary upland clay works do not receive this bonus. No winter benefit.
 - **Flood salvage:** raised rows, field outfalls and swamp timber walks recover only an actually productive resource up to the shared cap. Grain and Oil share the cap; two rescue branches do not double it. Movement remains blocked. Levees remain the way to retain a full harvest and normal access. Ice, damage and enemy blockade still prevent collection.
+
+## New combinations and tradeoffs
+
+- **Harvested stubble or another crop:** gleaning and threshing branches can support limited grazing after the grain harvest. A secondary crop occupying that season takes priority. Cold continental winters do not become grazing seasons.
+- **Seed selection with a rotation:** nursery support adds only to an actually available secondary crop, never to an occupied main-crop season. That food retains the secondary crop's weather sensitivity.
+- **Forest livelihoods:** conifer resin produces summer Oil; mushroom beds produce autumn food in the Grain category. Both leave timber and migrating animals intact. Neither is a generic additional timber multiplier.
+- **Settled coastal food or mobile shoals:** shellfish beds work in eligible coastal shallows and reefs, independently of fish migration. Reed refuges instead attract existing fish to freshwater habitats. They do not increase population or attract whales.
+- **Field margins and nearby hunting:** crop windbreaks, contour strips and orchard mulch soften development pressure on neighboring eligible wild habitats. A stronger local hunting refuge takes priority; fields do not become wildlife tiles.
+- **Local material economy:** timber sorting and stone dressing/loading can reduce later raw Wood/Stone bills on the same site. Only materials actually native to the site qualify. Discounts do not apply to another material yard, coal or manufactured goods, and never refund earlier construction.
 
 ## Secondary-crop rotations
 
@@ -157,7 +214,9 @@ The system does not assume an extra crop is possible in every climate. Exposed h
 
 The seasonal mappings are broad strategy-game abstractions of these mechanisms. Hemisphere, cultivar, exact sowing dates and local soil measurements are not simulated. Existing mining, livestock and forestry evidence is catalogued in [local production methods](local-production-methods.md).
 
-## The 396 specialist projects
+Additional evidence: [FAO crop/livestock integration](https://www.fao.org/agriculture/crops/thematic-sitemap/theme/spi/scpi-home/managing-ecosystems/integrated-crop-livestock-systems/icls-how/en/), [FAO non-wood forest products](https://www.fao.org/forestry/nwfp/en), [FAO conifer products](https://www.fao.org/4/x0453e/x0453e.pdf), and [FAO shellfish cultivation](https://www.fao.org/4/t8598e/t8598e05.htm). These support the techniques and environmental constraints, not the numerical game bonuses.
+
+## The 412 specialist projects
 
 ### Oasis pollination
 
@@ -285,6 +344,7 @@ Cool, softly lit stores keep seed tubers sound and encourage sturdy sprouts befo
 - Additional site filter: `roots` (in addition to the main track’s resource and climate eligibility).
 - Terrains: Potato fields.
 - Climates: Andean, Prairie, Mesoamerican.
+- Additional working practice: rotation-support.
 - Products: grain.
 - Effect: +1 shared annual-profile card per purchased stage.
 
@@ -693,12 +753,82 @@ Evenly cut blubber exposes more material to the rendering kettles and improves o
 3. **Mechanical blubber slicer** — adjacent settlement/city tier 3.
 4. **Integrated cutting house** — adjacent settlement/city tier 4.
 
+### Conifer resin yards
+
+Shallow tapping cuts and collection cups gather resin from conifers during the warm growing season.
+
+- Main track: Forestry infrastructure.
+- Additional site filter: `forest` (in addition to the main track’s resource and climate eligibility).
+- Terrains: Forest, Old-growth forest, Woods.
+- Climates: Cold, Alpine.
+- Additional working practice: resin.
+- Additional fittings per stage number: 2 ceramics.
+- Products: oil.
+- Effect: +1 shared annual-profile card per purchased stage.
+
+1. **Resin cups** — adjacent settlement/city tier 1.
+2. **Managed tapping rounds** — adjacent settlement/city tier 2.
+3. **Resin collection pumps** — adjacent settlement/city tier 3.
+4. **Integrated resin yard** — adjacent settlement/city tier 4.
+
+### Woodland food gardens
+
+Shaded beds of fallen wood and leaf litter support an autumn mushroom harvest beneath the trees.
+
+- Main track: Forestry infrastructure.
+- Additional site filter: `forest` (in addition to the main track’s resource and climate eligibility).
+- Climates: Temperate, Oceanic, Temperate Rainforest, Cold, Alpine.
+- Additional working practice: forest-food.
+- Additional fittings per stage number: 2 lumber, 1 ceramics.
+- Products: grain.
+- Effect: +1 shared annual-profile card per purchased stage.
+
+1. **Shaded mushroom beds** — adjacent settlement/city tier 1.
+2. **Managed woodland beds** — adjacent settlement/city tier 2.
+3. **Spawn nursery** — adjacent settlement/city tier 3.
+4. **Forest food nursery** — adjacent settlement/city tier 4.
+
+### Coastal shellfish beds
+
+Stakes, baskets and suspended ropes raise mussels and oysters in sheltered coastal water.
+
+- Main track: Fishery infrastructure.
+- Additional site filter: `any` (in addition to the main track’s resource and climate eligibility).
+- Climates: Temperate, Oceanic, Temperate Rainforest, Mediterranean, Subtropical, Tropical, Tropical Maritime, Monsoon, Mesoamerican.
+- Additional working practice: shellfish.
+- Coastal site.
+- Additional fittings per stage number: 2 lumber, 1 wool.
+- Products: fish.
+- Effect: +1 shared annual-profile card per purchased stage.
+
+1. **Shellfish stakes** — adjacent settlement/city tier 1.
+2. **Basket beds** — adjacent settlement/city tier 2.
+3. **Suspended culture ropes** — adjacent settlement/city tier 3.
+4. **Managed shellfish park** — adjacent settlement/city tier 4.
+
+### Reed spawning refuges
+
+Protected reed margins and quiet coves offer shelter for visiting fish along the freshwater shore.
+
+- Main track: Fishery infrastructure.
+- Additional site filter: `any` (in addition to the main track’s resource and climate eligibility).
+- Additional working practice: fish-nursery.
+- Additional fittings per stage number: 1 lumber, 1 stone.
+- Products: fish.
+- Effect: +1 shared annual-profile card per purchased stage.
+
+1. **Protected reed margin** — adjacent settlement/city tier 1.
+2. **Quiet spawning coves** — adjacent settlement/city tier 2.
+3. **Managed reed nursery** — adjacent settlement/city tier 3.
+4. **Connected spawning refuges** — adjacent settlement/city tier 4.
+
 ### Seed selection
 
 Graded seed and careful nursery selection improve the usable cereal harvest.
 
 - Main track: Soil husbandry.
 - Additional site filter: `cereal` (in addition to the main track’s resource and climate eligibility).
+- Additional working practice: rotation-support.
 - Products: grain.
 - Effect: +1 shared annual-profile card per purchased stage.
 
@@ -713,6 +843,7 @@ Collection baskets and cleaner handling recover grain left behind during harvest
 
 - Main track: Soil husbandry.
 - Additional site filter: `cereal` (in addition to the main track’s resource and climate eligibility).
+- Additional working practice: stubble-grazing.
 - Products: grain.
 - Effect: +1 shared annual-profile card per purchased stage.
 
@@ -727,6 +858,7 @@ Sheltered field margins slow drying winds and conserve soil moisture.
 
 - Main track: Soil husbandry.
 - Additional site filter: `dry-crop` (in addition to the main track’s resource and climate eligibility).
+- Additional working practice: habitat-margins.
 - Products: grain, oil.
 - Effect: 10% of remaining dry-spell losses removed per stage.
 
@@ -826,6 +958,7 @@ Open-sided cribs dry harvested cobs before shelling, preserving more sound kerne
 
 - Main track: Soil husbandry.
 - Additional site filter: `maize` (in addition to the main track’s resource and climate eligibility).
+- Additional working practice: stubble-grazing.
 - Products: grain.
 - Effect: +1 shared annual-profile card per purchased stage.
 
@@ -840,6 +973,7 @@ Firm threshing floors separate cereal grain cleanly from earth and chaff.
 
 - Main track: Soil husbandry.
 - Additional site filter: `cereal` (in addition to the main track’s resource and climate eligibility).
+- Additional working practice: stubble-grazing.
 - Products: grain.
 - Effect: +1 shared annual-profile card per purchased stage.
 
@@ -910,6 +1044,7 @@ Closely spaced contour strips retain productive soil on cultivated slopes.
 
 - Main track: Agricultural terraces.
 - Additional site filter: `any` (in addition to the main track’s resource and climate eligibility).
+- Additional working practice: habitat-margins.
 - Products: grain, oil.
 - Effect: +1 shared annual-profile card per purchased stage.
 
@@ -968,6 +1103,7 @@ Organic mulch shades orchard soil and slows moisture loss around the roots.
 
 - Main track: Soil husbandry.
 - Additional site filter: `thirsty-orchard` (in addition to the main track’s resource and climate eligibility).
+- Additional working practice: habitat-margins.
 - Products: grain.
 - Effect: 10% of remaining dry-spell losses removed per stage.
 
@@ -1095,6 +1231,7 @@ Grading timber before haulage recovers more useful wood from each felling.
 
 - Main track: Forestry infrastructure.
 - Additional site filter: `any` (in addition to the main track’s resource and climate eligibility).
+- Additional working practice: material-reuse.
 - Products: lumber.
 - Effect: +1 shared annual-profile card per purchased stage.
 
@@ -1308,6 +1445,7 @@ Dressing benches and careful splitting recover more usable blocks from quarried 
 
 - Main track: Quarry infrastructure.
 - Additional site filter: `stone` (in addition to the main track’s resource and climate eligibility).
+- Additional working practice: material-reuse.
 - Products: stone.
 - Effect: +1 shared annual-profile card per purchased stage.
 
@@ -1379,6 +1517,7 @@ Organized loading bays preserve useful material and reduce losses in handling.
 
 - Main track: Quarry infrastructure.
 - Additional site filter: `any` (in addition to the main track’s resource and climate eligibility).
+- Additional working practice: material-reuse.
 - Products: stone, brick, coal.
 - Effect: +1 shared annual-profile card per purchased stage.
 
@@ -1493,6 +1632,7 @@ Small landing stages and careful sorting recover reef catches with less damage.
 
 - Main track: Fishery infrastructure.
 - Additional site filter: `reef` (in addition to the main track’s resource and climate eligibility).
+- Additional working practice: fish-nursery.
 - Products: fish.
 - Effect: +1 shared annual-profile card per purchased stage.
 

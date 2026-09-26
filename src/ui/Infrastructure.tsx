@@ -1,6 +1,14 @@
 import {
+  specialistServiceTier,
+  specialistMaterialSavings,
+} from "../game/infrastructure-services";
+import {
+  SPECIALIST_PROJECTS,
+  isSpecialist,
+} from "../game/infrastructure-specialists";
+import {
   SERVICE_RULES,
-  serviceWeather,
+  serviceRisks,
 } from "../game/infrastructure-service-rules";
 import {
   floodComparison,
@@ -244,7 +252,7 @@ function ProjectCard({
   const foreign = installed && installed.owner !== viewer,
     full = tier >= 4;
   const allowed = !blocked && projectSite(s, tile, id, viewer),
-    cost = full ? {} : projectCost(tile, id);
+    cost = full ? {} : projectCost(tile, id, viewer);
   const beforeTile = full ? withoutInvestment(tile, id) : tile;
   const current = seasonalProfile(beforeTile, viewer);
   const main = Object.hasOwn(INFRASTRUCTURE, id);
@@ -269,6 +277,25 @@ function ProjectCard({
   const weather = (protection ?? []).map((risk) =>
     weatherComparison(beforeTile, preview, viewer, risk, current, future),
   );
+  const branch = isSpecialist(id) ? SPECIALIST_PROJECTS[id].branch : undefined;
+  const role = branch?.service;
+  const strength = role
+    ? [
+        specialistServiceTier(beforeTile, role, viewer),
+        specialistServiceTier(preview, role, viewer),
+      ]
+    : [0, 0];
+  const serviceChange =
+    role === "fish-nursery"
+      ? `${fr ? "Préférence des poissons" : "Fish habitat preference"}: +${strength[0] * 20}% → +${strength[1] * 20}%`
+      : role === "habitat-margins"
+        ? `${fr ? "Réduction des perturbations voisines" : "Neighboring disturbance reduction"}: ${strength[0] * 10}% → ${strength[1] * 10}%`
+        : role === "material-reuse"
+          ? `${fr ? "Plafond d’économie par matériau admissible" : "Saving ceiling per eligible material"}: ${strength[0]} → ${strength[1]}`
+          : undefined;
+  const saved = full
+    ? {}
+    : specialistMaterialSavings(tile, projectCost(tile, id), id, viewer);
   const flood = floodRescue
     ? floodComparison(beforeTile, preview, viewer, current, future)
     : undefined;
@@ -344,13 +371,14 @@ function ProjectCard({
             ) : (
               !conditional && (
                 <span>
-                  {protection
-                    ? fr
-                      ? "Récolte normale inchangée"
-                      : "Normal-weather harvest unchanged"
-                    : fr
-                      ? "Aucun gain dans les conditions actuelles"
-                      : "No added harvest under current conditions"}
+                  {serviceChange ??
+                    (protection?.length
+                      ? fr
+                        ? "Récolte normale inchangée"
+                        : "Normal-weather harvest unchanged"
+                      : fr
+                        ? "Aucun gain dans les conditions actuelles"
+                        : "No added harvest under current conditions")}
                 </span>
               )
             )}
@@ -438,6 +466,14 @@ function ProjectCard({
           {!full && (
             <footer>
               <small>{fr ? "Coût de construction" : "Construction cost"}</small>
+              {Object.keys(saved).length > 0 && (
+                <small data-material-savings>
+                  {fr
+                    ? "Réemploi local déjà déduit : "
+                    : "Local material reuse already deducted: "}
+                  <GoodsList stock={saved} />
+                </small>
+              )}
               <Cost cost={cost} available={inventory(s, viewer)} />
               {!allowed && (
                 <small className="infrastructure-requirement">
@@ -599,6 +635,7 @@ function SpecialistCard(props: PanelProps & { branch: SpecialistBranch }) {
                 : "Build the required irrigation and, on wet ground, drainage first."
               : undefined;
   const waiting =
+    branch.primary !== false &&
     ["hunting", "whaling", "fishery"].includes(branch.track) &&
     !branch.goods.some((g) => tile.geography?.fauna?.[g]);
   return (
@@ -629,9 +666,7 @@ function SpecialistCard(props: PanelProps & { branch: SpecialistBranch }) {
       protection={Array.from(
         new Set<WeatherRisk>([
           ...(branch.effect !== "yield" ? [branch.effect] : []),
-          ...(serviceWeather(branch.service)
-            ? [serviceWeather(branch.service)!]
-            : []),
+          ...serviceRisks(branch.service),
         ]),
       )}
       floodRescue={branch.service === "flood-rescue"}

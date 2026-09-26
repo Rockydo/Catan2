@@ -1,3 +1,4 @@
+import { PRACTICE_BRANCHES } from "./infrastructure-practices";
 import {
   SERVICE_BY_BRANCH,
   type SpecialistService,
@@ -44,6 +45,8 @@ export type SpecialistSite =
   | "open"
   | "seal";
 export interface SpecialistBranch {
+  primary?: false;
+  waterways?: readonly import("./geography").Waterway[];
   service?: SpecialistService;
   rotation?: RotationPattern;
   specialty?: "pantry" | "refuge" | "recovery" | "aggregate";
@@ -74,6 +77,7 @@ export interface SpecialistBranch {
  * Site selection never depends on current weather or visiting animals. */
 const BASE_BRANCHES: readonly SpecialistBranch[] = [
   ...NICHE_BRANCHES,
+  ...PRACTICE_BRANCHES,
   {
     id: "seed-selection",
     track: "soil",
@@ -203,6 +207,7 @@ const BASE_BRANCHES: readonly SpecialistBranch[] = [
   },
   {
     id: "nursery-shelters",
+    specialty: "recovery",
     track: "soil",
     name: "Nursery shelters",
     fr: "Abris de pépinière",
@@ -730,6 +735,7 @@ const BASE_BRANCHES: readonly SpecialistBranch[] = [
   },
   {
     id: "upland-wind-shelters",
+    specialty: "recovery",
     track: "husbandry",
     name: "Upland wind shelters",
     fr: "Abris de montagne",
@@ -1184,6 +1190,7 @@ const BASE_BRANCHES: readonly SpecialistBranch[] = [
   },
   {
     id: "quarry-drains",
+    specialty: "recovery",
     track: "quarrying",
     name: "Quarry drainage",
     fr: "Drainage des carrières",
@@ -1234,6 +1241,7 @@ const BASE_BRANCHES: readonly SpecialistBranch[] = [
   },
   {
     id: "quarry-shelter",
+    specialty: "recovery",
     track: "quarrying",
     name: "Quarry work shelters",
     fr: "Abris de carrière",
@@ -1309,6 +1317,7 @@ const BASE_BRANCHES: readonly SpecialistBranch[] = [
   },
   {
     id: "salt-shelters",
+    specialty: "recovery",
     track: "saltworks",
     name: "Salt storage shelters",
     fr: "Abris à sel",
@@ -1384,6 +1393,7 @@ const BASE_BRANCHES: readonly SpecialistBranch[] = [
   },
   {
     id: "salt-pan-cover",
+    specialty: "recovery",
     track: "saltworks",
     name: "Sheltered salt pans",
     fr: "Salines abritées",
@@ -1686,6 +1696,7 @@ const BASE_BRANCHES: readonly SpecialistBranch[] = [
   },
   {
     id: "berry-covers",
+    specialty: "recovery",
     track: "foraging",
     name: "Heath harvest shelters",
     fr: "Abris de récolte des landes",

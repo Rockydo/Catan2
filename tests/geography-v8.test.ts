@@ -25,7 +25,7 @@ it("preserves version 7 terrain, drainage and climate exactly", () => {
 });
 
 it("generates the four new landforms with usable starts, lawful passes and stable expedition seams", () => {
-  for (const form of LANDFORMS.slice(14)) {
+  for (const form of LANDFORMS.slice(14, 18)) {
     let seed = "";
     for (let i = 0; i < 1000; i++)
       if (worldLandform(`new-basin-${i}`, 8) === form) {
@@ -35,7 +35,7 @@ it("generates the four new landforms with usable starts, lawful passes and stabl
     expect(seed, form).not.toBe("");
     expect(LANDFORM_LABELS[form].en).toBeTruthy();
     expect(LANDFORM_LABELS[form].fr).toBeTruthy();
-    const world = generateWorld(seed, 320, true);
+    const world = generateWorld(seed, 320, true, 8);
     expect(world.geographyVersion).toBe(8);
     const tiles = Object.values(world.tiles);
     expect(
@@ -101,6 +101,6 @@ it("sustains a long connected mainland river without cycles or fake uphill links
       longest = Math.max(longest, seen.size - 1);
     }
   expect(longest).toBeGreaterThanOrEqual(20);
-  expect(GEOGRAPHY_VERSION).toBe(8);
+  expect(GEOGRAPHY_VERSION).toBeGreaterThanOrEqual(8);
   expect(LANDFORMS).toContain(regionalLandform(seed, "0,0", 8));
 }, 15000);

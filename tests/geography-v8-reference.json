@@ -1,0 +1,1376 @@
+[
+  {
+    "seed": "v8-preserved-0",
+    "id": "0,0",
+    "form": "inland-seas",
+    "height": 0.5512932276787174,
+    "geography": {
+      "elevation": 0.5512932276787174,
+      "water": false,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.7894887224869795,
+      "moisture": 0.6827318218936722,
+      "altitude": 0.645295294283397,
+      "maritime": 0.7142857142857143,
+      "landform": "barrier-coasts"
+    }
+  },
+  {
+    "seed": "v8-preserved-0",
+    "id": "-8,3",
+    "form": "inland-seas",
+    "height": 0.6294080028782736,
+    "geography": {
+      "elevation": 0.6294080028782736,
+      "water": false,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.08182725708946725,
+      "moisture": 1,
+      "altitude": 0.9346092765039756,
+      "maritime": 0.5714285714285714,
+      "landform": "barrier-coasts"
+    }
+  },
+  {
+    "seed": "v8-preserved-0",
+    "id": "19,-11",
+    "form": "inland-seas",
+    "height": 0.45075347342426414,
+    "geography": {
+      "elevation": 0.45075347342426414,
+      "water": false,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.658180543331181,
+      "moisture": 0.7710806412095904,
+      "altitude": 0.2729258340817185,
+      "maritime": 0.7142857142857143,
+      "landform": "barrier-coasts"
+    }
+  },
+  {
+    "seed": "v8-preserved-1",
+    "id": "0,0",
+    "form": "drowned-valleys",
+    "height": 0.5384796637858152,
+    "geography": {
+      "elevation": 0.5384796637858152,
+      "water": false,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.9273837377716623,
+      "moisture": 0.49304375575488474,
+      "altitude": 0.018385607531405616,
+      "maritime": 0.8571428571428572,
+      "landform": "continent"
+    }
+  },
+  {
+    "seed": "v8-preserved-1",
+    "id": "-8,3",
+    "form": "drowned-valleys",
+    "height": 0.5355855134917972,
+    "geography": {
+      "elevation": 0.5355855134917972,
+      "water": false,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.7709321329546625,
+      "moisture": 0.8698446770794785,
+      "altitude": 0.00766653236837572,
+      "maritime": 0.8571428571428572,
+      "landform": "continent"
+    }
+  },
+  {
+    "seed": "v8-preserved-1",
+    "id": "19,-11",
+    "form": "drowned-valleys",
+    "height": 0.6513218895807549,
+    "geography": {
+      "elevation": 0.6513218895807549,
+      "water": false,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0,
+      "moisture": 0.3012752586590823,
+      "altitude": 0.43631977714229314,
+      "maritime": 0.1428571428571429,
+      "landform": "barrier-coasts"
+    }
+  },
+  {
+    "seed": "v8-preserved-2",
+    "id": "0,0",
+    "form": "dissected-plateaus",
+    "height": 0.26591528495903083,
+    "geography": {
+      "elevation": 0.26591528495903083,
+      "water": true,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.08,
+      "moisture": 0.469940970629039,
+      "altitude": 0,
+      "maritime": 1,
+      "landform": "dissected-plateaus"
+    }
+  },
+  {
+    "seed": "v8-preserved-2",
+    "id": "-8,3",
+    "form": "dissected-plateaus",
+    "height": 0.5251707851732873,
+    "geography": {
+      "elevation": 0.5251707851732873,
+      "water": true,
+      "downstream": "-7,3",
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.35472866026146954,
+      "moisture": 0.6418462124373712,
+      "altitude": 0.6727961331908479,
+      "maritime": 0.4285714285714286,
+      "landform": "dissected-plateaus"
+    }
+  },
+  {
+    "seed": "v8-preserved-2",
+    "id": "19,-11",
+    "form": "dissected-plateaus",
+    "height": 0.6223891450808869,
+    "geography": {
+      "elevation": 0.6223891450808869,
+      "water": false,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.7571428571428572,
+      "moisture": 0.6057739415847847,
+      "altitude": 1,
+      "maritime": 0.2857142857142857,
+      "landform": "great-river-basins"
+    }
+  },
+  {
+    "seed": "v8-preserved-3",
+    "id": "0,0",
+    "form": "atolls",
+    "height": 0.5630193082961917,
+    "geography": {
+      "elevation": 0.5630193082961917,
+      "water": true,
+      "downstream": "-1,1",
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.30465823343863047,
+      "moisture": 0.025051446099990188,
+      "altitude": 0.14393386172016415,
+      "maritime": 0.5714285714285714,
+      "landform": "badlands"
+    }
+  },
+  {
+    "seed": "v8-preserved-3",
+    "id": "-8,3",
+    "form": "atolls",
+    "height": 0.5109210185200175,
+    "geography": {
+      "elevation": 0.5109210185200175,
+      "water": true,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.37736580224979965,
+      "moisture": 0.03745642283772854,
+      "altitude": 0,
+      "maritime": 1,
+      "landform": "badlands"
+    }
+  },
+  {
+    "seed": "v8-preserved-3",
+    "id": "19,-11",
+    "form": "atolls",
+    "height": 0.3624980816154455,
+    "geography": {
+      "elevation": 0.3624980816154455,
+      "water": true,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.9199999999999999,
+      "moisture": 0.543094944855012,
+      "altitude": 0,
+      "maritime": 1,
+      "landform": "continent"
+    }
+  },
+  {
+    "seed": "v8-preserved-4",
+    "id": "0,0",
+    "form": "archipelago",
+    "height": 0.6158758644485324,
+    "geography": {
+      "elevation": 0.6158758644485324,
+      "water": true,
+      "downstream": "0,1",
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.1567265828711352,
+      "moisture": 0.6505719687944423,
+      "altitude": 0.08277107015071938,
+      "maritime": 0.7142857142857143,
+      "landform": "skerries"
+    }
+  },
+  {
+    "seed": "v8-preserved-4",
+    "id": "-8,3",
+    "form": "archipelago",
+    "height": 0.6110240660930241,
+    "geography": {
+      "elevation": 0.6110240660930241,
+      "water": false,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.3912823227457131,
+      "moisture": 0.6616066156492142,
+      "altitude": 0.06480144661179973,
+      "maritime": 0.8571428571428572,
+      "landform": "skerries"
+    }
+  },
+  {
+    "seed": "v8-preserved-4",
+    "id": "19,-11",
+    "form": "archipelago",
+    "height": 0.5360190803030086,
+    "geography": {
+      "elevation": 0.5360190803030086,
+      "water": true,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.6044213925757796,
+      "moisture": 0.48741916810188235,
+      "altitude": 0,
+      "maritime": 1,
+      "landform": "barrier-coasts"
+    }
+  },
+  {
+    "seed": "v8-preserved-5",
+    "id": "0,0",
+    "form": "lake-districts",
+    "height": 0.319430243907379,
+    "geography": {
+      "elevation": 0.319430243907379,
+      "water": true,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.8868033233582973,
+      "moisture": 0.40987438374757756,
+      "altitude": 0,
+      "maritime": 1,
+      "landform": "barrier-coasts"
+    }
+  },
+  {
+    "seed": "v8-preserved-5",
+    "id": "-8,3",
+    "form": "lake-districts",
+    "height": 0.6029641692003145,
+    "geography": {
+      "elevation": 0.6029641692003145,
+      "water": true,
+      "downstream": "-7,2",
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0,
+      "moisture": 0.6551192220410944,
+      "altitude": 0.6843167533757774,
+      "maritime": 0.1428571428571429,
+      "landform": "barrier-coasts"
+    }
+  },
+  {
+    "seed": "v8-preserved-5",
+    "id": "19,-11",
+    "form": "lake-districts",
+    "height": 0.4084726521507144,
+    "geography": {
+      "elevation": 0.4084726521507144,
+      "water": true,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.24742034252520834,
+      "moisture": 0.038370251760799834,
+      "altitude": 0,
+      "maritime": 1,
+      "landform": "dissected-plateaus"
+    }
+  },
+  {
+    "seed": "v8-preserved-6",
+    "id": "0,0",
+    "form": "barrier-coasts",
+    "height": 0.5062004583063928,
+    "geography": {
+      "elevation": 0.5062004583063928,
+      "water": true,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.6468637098520993,
+      "moisture": 0.8014616044611665,
+      "altitude": 0,
+      "maritime": 1,
+      "landform": "rift-valleys"
+    }
+  },
+  {
+    "seed": "v8-preserved-6",
+    "id": "-8,3",
+    "form": "barrier-coasts",
+    "height": 0.7034756628106693,
+    "geography": {
+      "elevation": 0.7034756628106693,
+      "water": false,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0,
+      "moisture": 0.34453176656745693,
+      "altitude": 0.5819526343129067,
+      "maritime": 0.5714285714285714,
+      "landform": "rift-valleys"
+    }
+  },
+  {
+    "seed": "v8-preserved-6",
+    "id": "19,-11",
+    "form": "barrier-coasts",
+    "height": 0.5114066618673436,
+    "geography": {
+      "elevation": 0.5114066618673436,
+      "water": true,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.7421278787980866,
+      "moisture": 0.3962394189496725,
+      "altitude": 0,
+      "maritime": 1,
+      "landform": "continent"
+    }
+  },
+  {
+    "seed": "v8-preserved-7",
+    "id": "0,0",
+    "form": "archipelago",
+    "height": 0.39401878792777084,
+    "geography": {
+      "elevation": 0.39401878792777084,
+      "water": true,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.9199999999999999,
+      "moisture": 0.00572139647518391,
+      "altitude": 0,
+      "maritime": 1,
+      "landform": "barrier-coasts"
+    }
+  },
+  {
+    "seed": "v8-preserved-7",
+    "id": "-8,3",
+    "form": "archipelago",
+    "height": 0.48263692797673136,
+    "geography": {
+      "elevation": 0.48263692797673136,
+      "water": false,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.9081362538937005,
+      "moisture": 0.05870081352861968,
+      "altitude": 0.10587417061305027,
+      "maritime": 0.8571428571428572,
+      "landform": "barrier-coasts"
+    }
+  },
+  {
+    "seed": "v8-preserved-7",
+    "id": "19,-11",
+    "form": "archipelago",
+    "height": 0.5396523382583931,
+    "geography": {
+      "elevation": 0.5396523382583931,
+      "water": false,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.8845363957806003,
+      "moisture": 0.04867551703864826,
+      "altitude": 0.31704235684142706,
+      "maritime": 0.5714285714285714,
+      "landform": "fjords"
+    }
+  },
+  {
+    "seed": "v8-preserved-8",
+    "id": "0,0",
+    "form": "volcanic-arcs",
+    "height": 0.5256992982645172,
+    "geography": {
+      "elevation": 0.5256992982645172,
+      "water": false,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.34652647085874316,
+      "moisture": 0.6801201713737041,
+      "altitude": 0.10008397111242934,
+      "maritime": 0.8571428571428572,
+      "landform": "drowned-valleys"
+    }
+  },
+  {
+    "seed": "v8-preserved-8",
+    "id": "-8,3",
+    "form": "volcanic-arcs",
+    "height": 0.4173256970348756,
+    "geography": {
+      "elevation": 0.4173256970348756,
+      "water": true,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.4484741118290476,
+      "moisture": 0.15030524773643034,
+      "altitude": 0,
+      "maritime": 1,
+      "landform": "drowned-valleys"
+    }
+  },
+  {
+    "seed": "v8-preserved-8",
+    "id": "19,-11",
+    "form": "volcanic-arcs",
+    "height": 0.5058459336607706,
+    "geography": {
+      "elevation": 0.5058459336607706,
+      "water": false,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.06272977052974694,
+      "moisture": 0.3752764453673394,
+      "altitude": 0.026552991098552872,
+      "maritime": 0.8571428571428572,
+      "landform": "cuesta-belts"
+    }
+  },
+  {
+    "seed": "v8-preserved-9",
+    "id": "0,0",
+    "form": "lake-districts",
+    "height": 0.5487835625464316,
+    "geography": {
+      "elevation": 0.5487835625464316,
+      "water": false,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.7799523300790457,
+      "moisture": 0.5865542807390925,
+      "altitude": 0.2619454631915284,
+      "maritime": 0.4285714285714286,
+      "landform": "lake-districts"
+    }
+  },
+  {
+    "seed": "v8-preserved-9",
+    "id": "-8,3",
+    "form": "lake-districts",
+    "height": 0.46425177877693624,
+    "geography": {
+      "elevation": 0.46425177877693624,
+      "water": true,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.3323968393028593,
+      "moisture": 0.24453533128509555,
+      "altitude": 0,
+      "maritime": 1,
+      "landform": "lake-districts"
+    }
+  },
+  {
+    "seed": "v8-preserved-9",
+    "id": "19,-11",
+    "form": "lake-districts",
+    "height": 0.6799958554443033,
+    "geography": {
+      "elevation": 0.6799958554443033,
+      "water": false,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0,
+      "moisture": 0.8007675917110084,
+      "altitude": 0.747916918368831,
+      "maritime": 0.5714285714285714,
+      "landform": "fjords"
+    }
+  },
+  {
+    "seed": "v8-preserved-10",
+    "id": "0,0",
+    "form": "lake-districts",
+    "height": 0.7078755632677842,
+    "geography": {
+      "elevation": 0.7078755632677842,
+      "water": false,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.5173331132123373,
+      "moisture": 0.37852385359928686,
+      "altitude": 0.3269631027416418,
+      "maritime": 0.1428571428571429,
+      "landform": "great-river-basins"
+    }
+  },
+  {
+    "seed": "v8-preserved-10",
+    "id": "-8,3",
+    "form": "lake-districts",
+    "height": 0.5835955533022582,
+    "geography": {
+      "elevation": 0.5835955533022582,
+      "water": true,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.28460173238479425,
+      "moisture": 0.5659441294422125,
+      "altitude": 0,
+      "maritime": 1,
+      "landform": "great-river-basins"
+    }
+  },
+  {
+    "seed": "v8-preserved-10",
+    "id": "19,-11",
+    "form": "lake-districts",
+    "height": 0.5035625016288746,
+    "geography": {
+      "elevation": 0.5035625016288746,
+      "water": true,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.8520210991903612,
+      "moisture": 0.30057946247158845,
+      "altitude": 0,
+      "maritime": 1,
+      "landform": "lake-districts"
+    }
+  },
+  {
+    "seed": "v8-preserved-11",
+    "id": "0,0",
+    "form": "skerries",
+    "height": 0.1673976784461067,
+    "geography": {
+      "elevation": 0.1673976784461067,
+      "water": true,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.4018759920299053,
+      "moisture": 0.6199999999999999,
+      "altitude": 0,
+      "maritime": 1,
+      "landform": "inland-seas"
+    }
+  },
+  {
+    "seed": "v8-preserved-11",
+    "id": "-8,3",
+    "form": "skerries",
+    "height": 0.6235645768666728,
+    "geography": {
+      "elevation": 0.6235645768666728,
+      "water": false,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.5829135164341258,
+      "moisture": 0.24929655519382615,
+      "altitude": 0.3991660423088874,
+      "maritime": 0.7142857142857143,
+      "landform": "inland-seas"
+    }
+  },
+  {
+    "seed": "v8-preserved-11",
+    "id": "19,-11",
+    "form": "skerries",
+    "height": 0.4992076128482504,
+    "geography": {
+      "elevation": 0.4992076128482504,
+      "water": true,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.5790053167831709,
+      "moisture": 0.25812506324007334,
+      "altitude": 0,
+      "maritime": 1,
+      "landform": "skerries"
+    }
+  },
+  {
+    "seed": "v8-preserved-12",
+    "id": "0,0",
+    "form": "barrier-coasts",
+    "height": 0.39485705463367776,
+    "geography": {
+      "elevation": 0.39485705463367776,
+      "water": true,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.5685624471753836,
+      "moisture": 0.6617917987361958,
+      "altitude": 0,
+      "maritime": 1,
+      "landform": "barrier-coasts"
+    }
+  },
+  {
+    "seed": "v8-preserved-12",
+    "id": "-8,3",
+    "form": "barrier-coasts",
+    "height": 0.5090027677187527,
+    "geography": {
+      "elevation": 0.5090027677187527,
+      "water": false,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.37038111511737665,
+      "moisture": 0.3855764229331827,
+      "altitude": 0.0920494014386085,
+      "maritime": 0.8571428571428572,
+      "landform": "barrier-coasts"
+    }
+  },
+  {
+    "seed": "v8-preserved-12",
+    "id": "19,-11",
+    "form": "barrier-coasts",
+    "height": 0.4921734971297442,
+    "geography": {
+      "elevation": 0.4921734971297442,
+      "water": false,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.21649099157197915,
+      "moisture": 0.4336834344855836,
+      "altitude": 0.02971876962746564,
+      "maritime": 0.8571428571428572,
+      "landform": "great-river-basins"
+    }
+  },
+  {
+    "seed": "v8-preserved-13",
+    "id": "0,0",
+    "form": "barrier-coasts",
+    "height": 0.3139100108661116,
+    "geography": {
+      "elevation": 0.3139100108661116,
+      "water": true,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.7757642109841109,
+      "moisture": 0.6461741335369107,
+      "altitude": 0,
+      "maritime": 1,
+      "landform": "barrier-coasts"
+    }
+  },
+  {
+    "seed": "v8-preserved-13",
+    "id": "-8,3",
+    "form": "barrier-coasts",
+    "height": 0.34407792054929676,
+    "geography": {
+      "elevation": 0.34407792054929676,
+      "water": true,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.13845318474384327,
+      "moisture": 0.17403496713790292,
+      "altitude": 0,
+      "maritime": 1,
+      "landform": "barrier-coasts"
+    }
+  },
+  {
+    "seed": "v8-preserved-13",
+    "id": "19,-11",
+    "form": "barrier-coasts",
+    "height": 0.5485624482163809,
+    "geography": {
+      "elevation": 0.5485624482163809,
+      "water": false,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.11278539660765594,
+      "moisture": 0.6652224908962329,
+      "altitude": 0.5413480080829025,
+      "maritime": 0,
+      "landform": "barrier-coasts"
+    }
+  },
+  {
+    "seed": "v8-preserved-14",
+    "id": "0,0",
+    "form": "peninsulas",
+    "height": 0.8802375405182441,
+    "geography": {
+      "elevation": 0.8802375405182441,
+      "water": false,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.7342857142857143,
+      "moisture": 0.6734725532744612,
+      "altitude": 1,
+      "maritime": 0.5714285714285714,
+      "landform": "volcanic-arcs"
+    }
+  },
+  {
+    "seed": "v8-preserved-14",
+    "id": "-8,3",
+    "form": "peninsulas",
+    "height": 0.3345630715143442,
+    "geography": {
+      "elevation": 0.3345630715143442,
+      "water": true,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.4528725349129301,
+      "moisture": 0.35345175306507953,
+      "altitude": 0,
+      "maritime": 1,
+      "landform": "volcanic-arcs"
+    }
+  },
+  {
+    "seed": "v8-preserved-14",
+    "id": "19,-11",
+    "form": "peninsulas",
+    "height": 0.6278111009385694,
+    "geography": {
+      "elevation": 0.6278111009385694,
+      "water": true,
+      "downstream": "20,-11",
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0,
+      "moisture": 0.33755406178417463,
+      "altitude": 0.8204140952192615,
+      "maritime": 0,
+      "landform": "continent"
+    }
+  },
+  {
+    "seed": "v8-preserved-15",
+    "id": "0,0",
+    "form": "drowned-valleys",
+    "height": 0.43133253115119957,
+    "geography": {
+      "elevation": 0.43133253115119957,
+      "water": true,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.9199999999999999,
+      "moisture": 0.6669563132978142,
+      "altitude": 0,
+      "maritime": 1,
+      "landform": "barrier-coasts"
+    }
+  },
+  {
+    "seed": "v8-preserved-15",
+    "id": "-8,3",
+    "form": "drowned-valleys",
+    "height": 0.5112204853372864,
+    "geography": {
+      "elevation": 0.5112204853372864,
+      "water": false,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.40595696482738863,
+      "moisture": 0.9327644178478939,
+      "altitude": 0.16202585510899986,
+      "maritime": 0.8571428571428572,
+      "landform": "barrier-coasts"
+    }
+  },
+  {
+    "seed": "v8-preserved-15",
+    "id": "19,-11",
+    "form": "drowned-valleys",
+    "height": 0.6219502935245859,
+    "geography": {
+      "elevation": 0.6219502935245859,
+      "water": false,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.6003064428640479,
+      "moisture": 0.696696401666835,
+      "altitude": 0.5721362558027017,
+      "maritime": 0.2857142857142857,
+      "landform": "continent"
+    }
+  },
+  {
+    "seed": "v8-preserved-16",
+    "id": "0,0",
+    "form": "barrier-coasts",
+    "height": 0.25026262956354206,
+    "geography": {
+      "elevation": 0.25026262956354206,
+      "water": true,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.9199999999999999,
+      "moisture": 0.3319126957788003,
+      "altitude": 0,
+      "maritime": 1,
+      "landform": "barrier-coasts"
+    }
+  },
+  {
+    "seed": "v8-preserved-16",
+    "id": "-8,3",
+    "form": "barrier-coasts",
+    "height": 0.6448568117270023,
+    "geography": {
+      "elevation": 0.6448568117270023,
+      "water": false,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0,
+      "moisture": 0.6130601744330167,
+      "altitude": 1,
+      "maritime": 0.1428571428571429,
+      "landform": "barrier-coasts"
+    }
+  },
+  {
+    "seed": "v8-preserved-16",
+    "id": "19,-11",
+    "form": "barrier-coasts",
+    "height": 0.3774858603568595,
+    "geography": {
+      "elevation": 0.3774858603568595,
+      "water": false,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.3163233213261258,
+      "moisture": 0.017777010755240713,
+      "altitude": 0.011333336836745735,
+      "maritime": 0.8571428571428572,
+      "landform": "barrier-coasts"
+    }
+  },
+  {
+    "seed": "v8-preserved-17",
+    "id": "0,0",
+    "form": "great-river-basins",
+    "height": 0.5910764512093873,
+    "geography": {
+      "elevation": 0.5910764512093873,
+      "water": false,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0,
+      "moisture": 0.8471123625562194,
+      "altitude": 0.2641919782775409,
+      "maritime": 0.4285714285714286,
+      "landform": "lake-districts"
+    }
+  },
+  {
+    "seed": "v8-preserved-17",
+    "id": "-8,3",
+    "form": "great-river-basins",
+    "height": 0.5206459564940383,
+    "geography": {
+      "elevation": 0.5206459564940383,
+      "water": false,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.2821938948577128,
+      "moisture": 0.2535715796698826,
+      "altitude": 0.00333829414661864,
+      "maritime": 0.8571428571428572,
+      "landform": "lake-districts"
+    }
+  },
+  {
+    "seed": "v8-preserved-17",
+    "id": "19,-11",
+    "form": "great-river-basins",
+    "height": 0.6649954775773058,
+    "geography": {
+      "elevation": 0.6649954775773058,
+      "water": false,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.49544005166616173,
+      "moisture": 0.6981578239578825,
+      "altitude": 0.5379661500105722,
+      "maritime": 0.8571428571428572,
+      "landform": "skerries"
+    }
+  },
+  {
+    "seed": "v8-preserved-18",
+    "id": "0,0",
+    "form": "barrier-coasts",
+    "height": 0.41962323707939503,
+    "geography": {
+      "elevation": 0.41962323707939503,
+      "water": false,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.6235822310602683,
+      "moisture": 0.9208279229938378,
+      "altitude": 0.19107485566161658,
+      "maritime": 0.8571428571428572,
+      "landform": "barrier-coasts"
+    }
+  },
+  {
+    "seed": "v8-preserved-18",
+    "id": "-8,3",
+    "form": "barrier-coasts",
+    "height": 0.6035241563385161,
+    "geography": {
+      "elevation": 0.6035241563385161,
+      "water": false,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.796689766855478,
+      "moisture": 0.5673361568555684,
+      "altitude": 0.872189371436139,
+      "maritime": 0.1428571428571429,
+      "landform": "barrier-coasts"
+    }
+  },
+  {
+    "seed": "v8-preserved-18",
+    "id": "19,-11",
+    "form": "barrier-coasts",
+    "height": 0.4291906917472418,
+    "geography": {
+      "elevation": 0.4291906917472418,
+      "water": false,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.007310685093870811,
+      "moisture": 0.07346503744842577,
+      "altitude": 0.22650987294993788,
+      "maritime": 0.7142857142857143,
+      "landform": "drowned-valleys"
+    }
+  },
+  {
+    "seed": "v8-preserved-19",
+    "id": "0,0",
+    "form": "peninsulas",
+    "height": 0.4352031670108899,
+    "geography": {
+      "elevation": 0.4352031670108899,
+      "water": true,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.7395460391193629,
+      "moisture": 0.6199999999999999,
+      "altitude": 0,
+      "maritime": 1,
+      "landform": "archipelago"
+    }
+  },
+  {
+    "seed": "v8-preserved-19",
+    "id": "-8,3",
+    "form": "peninsulas",
+    "height": 0.6575795702416761,
+    "geography": {
+      "elevation": 0.6575795702416761,
+      "water": false,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.08509334852734685,
+      "moisture": 1,
+      "altitude": 0.568293265807096,
+      "maritime": 0.7142857142857143,
+      "landform": "archipelago"
+    }
+  },
+  {
+    "seed": "v8-preserved-19",
+    "id": "19,-11",
+    "form": "peninsulas",
+    "height": 0.5698951711252609,
+    "geography": {
+      "elevation": 0.5698951711252609,
+      "water": false,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.8479527373594312,
+      "moisture": 0.8174399313986203,
+      "altitude": 0.24353623204259517,
+      "maritime": 0.7142857142857143,
+      "landform": "continent"
+    }
+  },
+  {
+    "seed": "v8-preserved-20",
+    "id": "0,0",
+    "form": "drowned-valleys",
+    "height": 0.23841226006528943,
+    "geography": {
+      "elevation": 0.23841226006528943,
+      "water": true,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.08,
+      "moisture": 0.3314987351000309,
+      "altitude": 0,
+      "maritime": 1,
+      "landform": "drowned-valleys"
+    }
+  },
+  {
+    "seed": "v8-preserved-20",
+    "id": "-8,3",
+    "form": "drowned-valleys",
+    "height": 0.5710719917149577,
+    "geography": {
+      "elevation": 0.5710719917149577,
+      "water": true,
+      "downstream": "-7,2",
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.2398857722158206,
+      "moisture": 0.3392459169726427,
+      "altitude": 0.4595410520246339,
+      "maritime": 0.7142857142857143,
+      "landform": "drowned-valleys"
+    }
+  },
+  {
+    "seed": "v8-preserved-20",
+    "id": "19,-11",
+    "form": "drowned-valleys",
+    "height": 0.712607028463623,
+    "geography": {
+      "elevation": 0.712607028463623,
+      "water": false,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.5593523672491895,
+      "moisture": 0.2335609299053081,
+      "altitude": 0.9837448918345053,
+      "maritime": 0,
+      "landform": "cuesta-belts"
+    }
+  },
+  {
+    "seed": "v8-preserved-21",
+    "id": "0,0",
+    "form": "volcanic-arcs",
+    "height": 0.7907961493605273,
+    "geography": {
+      "elevation": 0.7907961493605273,
+      "water": false,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0,
+      "moisture": 0.7212195267505167,
+      "altitude": 1,
+      "maritime": 0.5714285714285714,
+      "landform": "volcanic-arcs"
+    }
+  },
+  {
+    "seed": "v8-preserved-21",
+    "id": "-8,3",
+    "form": "volcanic-arcs",
+    "height": 0.5520806214125334,
+    "geography": {
+      "elevation": 0.5520806214125334,
+      "water": false,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.8351530852140074,
+      "moisture": 0.39520399955084273,
+      "altitude": 0.6973561061700957,
+      "maritime": 0.1428571428571429,
+      "landform": "volcanic-arcs"
+    }
+  },
+  {
+    "seed": "v8-preserved-21",
+    "id": "19,-11",
+    "form": "volcanic-arcs",
+    "height": 0.6857726479097064,
+    "geography": {
+      "elevation": 0.6857726479097064,
+      "water": false,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0,
+      "moisture": 0.3770318594952767,
+      "altitude": 1,
+      "maritime": 0.4285714285714286,
+      "landform": "volcanic-arcs"
+    }
+  },
+  {
+    "seed": "v8-preserved-22",
+    "id": "0,0",
+    "form": "barrier-coasts",
+    "height": 0.6355089852090892,
+    "geography": {
+      "elevation": 0.6355089852090892,
+      "water": false,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.043109774298181844,
+      "moisture": 0.5040556904641318,
+      "altitude": 0.1157347921511215,
+      "maritime": 0.8571428571428572,
+      "landform": "fjords"
+    }
+  },
+  {
+    "seed": "v8-preserved-22",
+    "id": "-8,3",
+    "form": "barrier-coasts",
+    "height": 0.4952613972350174,
+    "geography": {
+      "elevation": 0.4952613972350174,
+      "water": true,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.5459687352885485,
+      "moisture": 0.5261540069595032,
+      "altitude": 0,
+      "maritime": 1,
+      "landform": "fjords"
+    }
+  },
+  {
+    "seed": "v8-preserved-22",
+    "id": "19,-11",
+    "form": "barrier-coasts",
+    "height": 0.6146057507911553,
+    "geography": {
+      "elevation": 0.6146057507911553,
+      "water": false,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.20686586500991805,
+      "moisture": 0.3907442782073645,
+      "altitude": 0.038315405418033174,
+      "maritime": 0.8571428571428572,
+      "landform": "great-river-basins"
+    }
+  },
+  {
+    "seed": "v8-preserved-23",
+    "id": "0,0",
+    "form": "barrier-coasts",
+    "height": 0.5850251129904841,
+    "geography": {
+      "elevation": 0.5850251129904841,
+      "water": false,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.27122912266781785,
+      "moisture": 0.3489520231499886,
+      "altitude": 0.49197811530126634,
+      "maritime": 0.5714285714285714,
+      "landform": "dissected-plateaus"
+    }
+  },
+  {
+    "seed": "v8-preserved-23",
+    "id": "-8,3",
+    "form": "barrier-coasts",
+    "height": 0.583882682871355,
+    "geography": {
+      "elevation": 0.583882682871355,
+      "water": false,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.21143521253580536,
+      "moisture": 0.5567120518686837,
+      "altitude": 0.4877468926378254,
+      "maritime": 0.4285714285714286,
+      "landform": "dissected-plateaus"
+    }
+  },
+  {
+    "seed": "v8-preserved-23",
+    "id": "19,-11",
+    "form": "barrier-coasts",
+    "height": 0.5545574675940735,
+    "geography": {
+      "elevation": 0.5545574675940735,
+      "water": false,
+      "lake": false,
+      "mouth": false
+    },
+    "climate": {
+      "temperature": 0.7458810433514736,
+      "moisture": 0.01824367912901287,
+      "altitude": 0.3791349842034495,
+      "maritime": 0.2857142857142857,
+      "landform": "badlands"
+    }
+  }
+]

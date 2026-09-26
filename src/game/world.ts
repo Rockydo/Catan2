@@ -347,12 +347,13 @@ export function generateWorld(
   seed: string,
   count = 125,
   geography = false,
+  geographyVersion = GEOGRAPHY_VERSION,
 ): World {
   const world: World = {
     tiles: {},
     vertices: {},
     edges: {},
-    ...(geography ? { geographyVersion: GEOGRAPHY_VERSION } : {}),
+    ...(geography ? { geographyVersion } : {}),
   };
   let radius = 0;
   while (1 + 3 * radius * (radius + 1) < count) radius++;

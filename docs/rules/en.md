@@ -322,11 +322,19 @@ The inspector identifies the site and shows exact costs and seasonal returns. Up
 
 ### Optional specialist investments
 
-The Main, Specialists and Rotations tabs separate production choices. In addition to the existing works, 99 specialist branches each offer four separately purchased stages: 396 optional projects. Several different specialists can share a tile. Each stage requires your adjacent city of the same tier and the earlier stages of that branch. A yield stage adds one shared card across its four seasonal profiles, only to available products and productive seasons. A protection stage reduces the remaining loss from its stated weather condition by 10%, capped at 90% total protection. Construction costs are at least 2.25 times the corresponding local main recipe, plus finishing materials. Coal is paid at construction from tier II; there is no upkeep and no gold construction bill. These works belong to their builder and can be ravaged.
+The Main, Specialists and Rotations tabs separate production choices. In addition to the existing works, 99 specialist branches each offer four separately purchased stages: 412 optional projects. Several different specialists can share a tile. Each stage requires your adjacent city of the same tier and the earlier stages of that branch. A yield stage adds one shared card across its four seasonal profiles, only to available products and productive seasons. A protection stage reduces the remaining loss from its stated weather condition by 10%, capped at 90% total protection. Construction costs are at least 2.25 times the corresponding local main recipe, plus finishing materials. Coal is paid at construction from tier II; there is no upkeep and no gold construction bill. These works belong to their builder and can be ravaged.
 
 ### Small secondary crops
 
 Sixteen crop- and climate-specific rotations offer four stages each. Choose one rotation per field. Secondary crops need suitable soil, a free harvest season and, for demanding patterns, your irrigation and drainage. Tier I adds 1 secondary food; II adds 1 main-crop yield; III raises secondary food to 2; IV raises the main-crop bonus to 2. These are sums across four seasonal per-roll profiles, before weather and producer multipliers. Secondary food uses Grain. The original main harvest is preserved. Cold highlands do not gain a general winter crop. A fully spread main harvest may occupy the rotation’s seasonal window and suspend its gains. The inspector previews both calendars. All normal dice, flood, frost and occupation rules remain in force.
+
+### Specialist livelihoods
+
+103 specialist branches now offer 412 stages, alongside 16 four-stage rotations. Of these branches, 63 have dedicated services: grazing harvested stubble, supporting a free rotation season, gathering autumn mushrooms or summer conifer resin, cultivating shellfish, sheltering visiting fish, softening development disturbance in neighboring habitat, reusing local Wood or Stone, and salvaging weather-damaged production. Existing main benefits remain. Four new dedicated branches use their stated service instead of an additional generic yield bonus. Exact seasonal and weather previews appear on each card. Ecological effects improve habitat preference rather than adding animal populations. Equivalent services use the strongest capacity. No upkeep; coal is paid during construction.
+
+### Karst uplands
+
+Generation 9 adds one new formation: irregular limestone hills and towers around enclosed low ground. Warm humid karst has steeper isolated towers; cooler regions have broader hills. Exposed slopes favor the local climate’s stone resources, with fewer metal and coal deposits; suitable low pockets favor local farming and grazing. Porous rock reduces surface river sources, but surviving rivers still follow connected downhill courses. Existing peak, pass, road, flood and navigation rules apply. Existing campaigns retain their original geography version and terrain.
 
 ## Seasons and harvests
 
