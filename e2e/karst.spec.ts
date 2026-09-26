@@ -13,7 +13,7 @@ test("karst campaign loads, names its terrain and renders the regional relief", 
   page,
 }) => {
   let s = newGame(
-    "karst-survey-63",
+    "karst-survey-56",
     Array.from({ length: 12 }, (_, i) => ({
       name: `Realm ${i + 1}`,
       control: i === 0 ? ("human" as const) : ("standard" as const),
@@ -22,12 +22,12 @@ test("karst campaign loads, names its terrain and renders the regional relief", 
   while (s.phase.startsWith("setup")) s = run(s, chooseAIAction(s));
   s.phase = "economy";
   s.active = 0;
-  expect(s.geographyVersion).toBe(9);
+  expect(s.geographyVersion).toBe(10);
   expect(Object.keys(s.tiles)).toHaveLength(320);
   assertInvariants(deserialize(serialize(s)));
   const t = Object.values(s.tiles).find(
     (t) =>
-      regionalLandform(s.seed, t.id, 9) === "karst-uplands" &&
+      regionalLandform(s.seed, t.id, 10) === "karst-uplands" &&
       !["water", "ice", "peaks"].includes(t.resource),
   )!;
   const errors: string[] = [];

@@ -14,6 +14,7 @@ import { canApplyCommand, newGame } from "../src/game/engine";
 import { harvestTiles, tileYield } from "../src/game/maritime";
 import {
   addHexes,
+  generateWorld,
   expeditionFootprint,
   hash,
   randomAt,
@@ -26,7 +27,12 @@ import { maritimeFixture } from "./maritime-fixture";
 import { piece } from "./helpers";
 
 const coldClimates = ["arctic", "alpine", "cold"] as const;
-const shoulderClimates = [...coldClimates, "prairie", "steppe", "tundra"] as const;
+const shoulderClimates = [
+  ...coldClimates,
+  "prairie",
+  "steppe",
+  "tundra",
+] as const;
 const frozenClimates = [...shoulderClimates, "glacial"] as const;
 const shoulders = ["spring", "autumn"] as const;
 
@@ -170,6 +176,10 @@ describe("stable shoulder-season sea ice", () => {
 
   it("keeps legacy harvest rolls and frost patterns stable across years, saves and discovery", () => {
     const s = newGame("stable-shoulder-ice-5");
+    // Legacy frost discovery needs the original coast, independent of new generators.
+    Object.assign(s, generateWorld(s.seed, 125, true, 9));
+    delete s.wildlife;
+    delete s.environmentRound;
     s.calendar!.iceModel = 1;
     delete s.calendar!.roundsPerSeason;
     syncSeasonSurfaces(s);

@@ -1,3 +1,4 @@
+import { EXTRA_LANDFORMS, isExtraLandform } from "../game/landform-catalogue";
 import { UTILITY_PROJECTS } from "../game/geography-actions";
 import { InfrastructurePanel, IrrigationCalendar } from "./Infrastructure";
 import { isInfrastructure } from "../game/infrastructure";
@@ -270,7 +271,15 @@ export function GeographyPanel({
         </div>
       )}
       {s.geographyVersion && s.geographyVersion >= 3 ? (
-        <p className="landform-label">
+        <p
+          className="landform-label"
+          title={(() => {
+            const form = regionalLandform(s.seed, tile.id, s.geographyVersion);
+            return isExtraLandform(form)
+              ? EXTRA_LANDFORMS[form][locale === "fr" ? "detailFr" : "detail"]
+              : undefined;
+          })()}
+        >
           {locale === "fr" ? "Paysage régional : " : "Regional landscape: "}
           <strong>
             {

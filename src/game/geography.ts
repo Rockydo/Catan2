@@ -1,4 +1,9 @@
 import {
+  EXTRA_LANDFORMS,
+  isExtraLandform,
+  formationResourceWeight,
+} from "./landform-expansion";
+import {
   SPECIALIST_PROJECTS,
   type SpecialistProject,
 } from "./infrastructure-specialists";
@@ -94,7 +99,7 @@ export interface Wildlife {
   lastRound: number;
   dormant?: true;
 }
-export const GEOGRAPHY_VERSION = 9;
+export const GEOGRAPHY_VERSION = 10;
 export const landform = (
   seed: string,
   version = GEOGRAPHY_VERSION,
@@ -188,27 +193,30 @@ export function seaLevel(seed: string, version = GEOGRAPHY_VERSION) {
       if (Math.abs(q + r) <= 8)
         heights.push(elevationAt(seed, key(q, r), version));
   heights.sort((a, b) => a - b);
-  const water = {
-    continent: 0.38,
-    archipelago: 0.57,
-    "inland-seas": 0.4,
-    peninsulas: 0.48,
-    "island-chains": 0.58,
-    skerries: 0.57,
-    fjords: 0.43,
-    "barrier-coasts": 0.5,
-    atolls: 0.61,
-    "rift-valleys": 0.38,
-    "drowned-valleys": 0.5,
-    "volcanic-arcs": 0.58,
-    "basin-ranges": 0.3,
-    "dissected-plateaus": 0.32,
-    "great-river-basins": 0.27,
-    "cuesta-belts": 0.32,
-    "lake-districts": 0.32,
-    badlands: 0.28,
-    "karst-uplands": 0.28,
-  }[landform(seed, version)];
+  const form = landform(seed, version);
+  const water = isExtraLandform(form)
+    ? EXTRA_LANDFORMS[form].water
+    : {
+        continent: 0.38,
+        archipelago: 0.57,
+        "inland-seas": 0.4,
+        peninsulas: 0.48,
+        "island-chains": 0.58,
+        skerries: 0.57,
+        fjords: 0.43,
+        "barrier-coasts": 0.5,
+        atolls: 0.61,
+        "rift-valleys": 0.38,
+        "drowned-valleys": 0.5,
+        "volcanic-arcs": 0.58,
+        "basin-ranges": 0.3,
+        "dissected-plateaus": 0.32,
+        "great-river-basins": 0.27,
+        "cuesta-belts": 0.32,
+        "lake-districts": 0.32,
+        badlands: 0.28,
+        "karst-uplands": 0.28,
+      }[form];
   const level =
     heights[Math.floor(heights.length * water * (version >= 3 ? 0.75 : 1))];
   if (seaLevels.size > 256) seaLevels.clear();
@@ -308,13 +316,17 @@ function watershed(
   }
   const rain =
     version >= 2 ? climateSetting(seed, source, version).moisture : 1;
+  const sourceForm = regionalLandform(seed, source, version);
   const longBasin =
-    version >= 8 &&
-    regionalLandform(seed, source, version) === "great-river-basins";
+    (version >= 8 && sourceForm === "great-river-basins") ||
+    (version >= 10 && sourceForm === "outwash-plains");
   const supplied =
     version < 2 ||
     (randomAt(seed, source, "watershed-rain") <
       (longBasin ? 0.4 + rain * 0.6 : 0.18 + rain * 0.82) *
+        (version >= 10 && isExtraLandform(sourceForm)
+          ? EXTRA_LANDFORMS[sourceForm].runoff
+          : 1) *
         (version >= 9 &&
         regionalLandform(seed, source, version) === "karst-uplands"
           ? 0.55
@@ -833,12 +845,20 @@ export function geographicLandChoices(
     (max, n) => Math.max(max, Math.abs(n.elevation - at.elevation)),
     0,
   );
+  const setting = climateSetting(seed, tile.id, version);
+  // Broad uplifted benches stay usable; their steep rims carry the obstacles.
+  const shelf =
+    version >= 10 &&
+    slope < 0.065 &&
+    ["mesa-country", "lava-plateaus", "raised-beaches", "canyonlands"].includes(
+      setting.landform ?? "",
+    );
   const mountains =
-    relative > 0.15 ||
-    (["alpine", "andean"].includes(climate) && relative > 0.04);
+    !shelf &&
+    (relative > 0.15 ||
+      (["alpine", "andean"].includes(climate) && relative > 0.04));
   const floodplain = river && relative < 0.19 && slope < 0.13;
   const delta = floodplain && around.some((n) => n.mouth);
-  const setting = climateSetting(seed, tile.id, version);
   const weights = new Map<Biome, number>();
   const add = (b: Biome, w: number) => {
     if (w > 0) weights.set(b, (weights.get(b) ?? 0) + w);
@@ -865,6 +885,14 @@ export function geographicLandChoices(
     )
       continue;
     let w = original;
+    if (version >= 10 && setting.landform && isExtraLandform(setting.landform))
+      w *= formationResourceWeight(
+        setting.landform,
+        b,
+        slope,
+        relative,
+        setting.moisture,
+      );
     if (version >= 9 && setting.landform === "karst-uplands") {
       const yields = BIOME_INFO[b].yield;
       // Limestone outcrops favor building stone, not a blanket ore windfall.

@@ -321,6 +321,40 @@ Seize rotations adaptées à la culture et au climat offrent chacune quatre éta
 
 La génération 9 ajoute une formation : collines et tours calcaires irrégulières autour de dépressions fermées. Le karst chaud et humide porte des tours plus abruptes ; les régions fraîches, des collines plus larges. Les pentes exposées favorisent les pierres locales, avec moins de métaux et de charbon ; les poches basses adaptées favorisent cultures et pâturages du climat. La roche poreuse réduit les sources de cours d’eau de surface ; les rivières restantes suivent toujours un cours descendant connecté. Les règles existantes des pics, cols, routes, crues et navires restent applicables. Les campagnes existantes conservent leur version géographique et leurs terrains.
 
+### Quinze formations géographiques supplémentaires
+
+Les nouvelles campagnes utilisent la génération 10 et peuvent contenir 34 formations régionales. Ces quinze ajouts modifient relief, drainage et ressources admissibles. Les campagnes existantes conservent leur géographie, y compris lors des expéditions futures. Survolez le paysage régional dans l’inspecteur pour lire son explication.
+
+- **Pays des canyons**: Des vallées profondes et ramifiées divisent les hauteurs. Épaulements pierreux et couloirs bas étroits donnent de la valeur aux passages.
+
+- **Pays des mesas et buttes**: Des massifs isolés à sommet plat dominent les espaces ouverts. Leurs bordures rocheuses séparent les plateaux des voies environnantes.
+
+- **Piémont à cônes alluviaux**: Des pentes en éventail s’étendent au pied des montagnes. Les bas de cônes doux favorisent les cultures locales ; les hauts restent pierreux et dépendants de l’eau.
+
+- **Collines de lœss**: Des collines de limon arrondies sont entaillées de ravins sinueux. Les sols doux favorisent céréales locales et argile, avec moins de roche dure.
+
+- **Champ de drumlins**: Des collines glaciaires allongées suivent une ancienne direction d’écoulement des glaces. Routes et eaux se glissent entre leurs crêtes irrégulières.
+
+- **Ceinture morainique**: Des cordons courbes de débris glaciaires entourent des creux irréguliers. Les crêtes pierreuses interrompent les voies ; les poches humides favorisent les tourbières locales.
+
+- **Plaine fluvioglaciaire**: Une large plaine de graviers descend doucement des hauteurs. Couloirs ouverts et drainage connecté favorisent la circulation plutôt qu’une agriculture dense.
+
+- **Côte à tombolos**: Des caps rocheux sont reliés par de bas cordons sédimentaires. Les ponts de terre émergés offrent des routes étroites entre des baies abritées.
+
+- **Hautes terres à caldeiras**: Des remparts volcaniques discontinus entourent de larges dépressions. Les brèches concentrent les accès ; les sols bas altérés peuvent porter les cultures locales.
+
+- **Plateau de lave**: D’anciennes coulées superposées forment des hauts plateaux étagés. La pierre est favorisée ; les sols poreux portent moins de cours d’eau de surface.
+
+- **Plaine à inselbergs**: Des massifs rocheux espacés surgissent d’une plaine ouverte. Des sources de pierre isolées ponctuent de longs couloirs de pâturage et de circulation.
+
+- **Champ de dunes**: Des crêtes sableuses suivent le vent et alternent avec des couloirs bas. Les sables désertiques locaux deviennent plus fréquents, les rivières plus rares ; les oasis exigent toujours de l’eau adaptée.
+
+- **Côte à estuaires**: De larges bras de mer en entonnoir se ramifient dans les basses côtes. Baies et embouchures créent des approches navales et de rares liaisons terrestres.
+
+- **Terrasses marines soulevées**: Des gradins côtiers successifs dominent la mer. Replats d’établissement et escarpements alternent au-dessus du rivage inférieur.
+
+- **Pays des escarpements de faille**: Des blocs décalés forment des escarpements abrupts et discontinus. De longues vallées suivent leur pied ; les interruptions ouvrent des voies à travers les hauteurs.
+
 ## Saisons et récoltes
 
 ### Campagnes à géographie vivante

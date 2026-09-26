@@ -1,0 +1,17 @@
+{
+  "tombolo-coasts": ["landscape-3", "landscape-88"],
+  "raised-beaches": ["landscape-6", "landscape-91"],
+  "alluvial-fans": ["landscape-7", "landscape-22"],
+  "fault-scarps": ["landscape-15", "landscape-98"],
+  "drumlin-fields": ["landscape-20", "landscape-437"],
+  "canyonlands": ["landscape-27", "landscape-64"],
+  "tidal-estuaries": ["landscape-30", "landscape-121"],
+  "inselberg-plains": ["landscape-43", "landscape-56"],
+  "lava-plateaus": ["landscape-47", "landscape-197"],
+  "dune-seas": ["landscape-50", "landscape-521"],
+  "outwash-plains": ["landscape-54", "landscape-58"],
+  "moraine-belts": ["landscape-73", "landscape-372"],
+  "caldera-highlands": ["landscape-82", "landscape-230"],
+  "mesa-country": ["landscape-107", "landscape-369"],
+  "loess-hills": ["landscape-290", "landscape-402"]
+}

@@ -1,3 +1,5 @@
+import { EXTRA_LANDFORM_IDS, isExtraLandform } from "./landform-catalogue";
+import { expandedHeight, formationAffinity } from "./landform-expansion";
 import { coord, key, randomAt } from "./world";
 import {
   physicalField as field,
@@ -23,19 +25,22 @@ export const LANDFORMS = [
   "lake-districts",
   "badlands",
   "karst-uplands",
+  ...EXTRA_LANDFORM_IDS,
 ] as const;
 export type PhysicalLandform = (typeof LANDFORMS)[number];
-export const worldLandform = (seed: string, version = 9): PhysicalLandform =>
+export const worldLandform = (seed: string, version = 10): PhysicalLandform =>
   LANDFORMS[
     Math.floor(
       randomAt(seed, "world", "landform") *
-        (version >= 9
+        (version >= 10
           ? LANDFORMS.length
-          : version >= 8
-            ? 18
-            : version >= 5
-              ? 14
-              : 10),
+          : version >= 9
+            ? 19
+            : version >= 8
+              ? 18
+              : version >= 5
+                ? 14
+                : 10),
     )
   ];
 const provinceCache = new Map<string, PhysicalLandform>();
@@ -53,13 +58,16 @@ function province(
   if (cached) return cached;
   const span = version >= 8 ? 24 : 16;
   const c = regionalClimateFields(seed, key(q * span, r * span));
+  const worldForm = worldLandform(seed, version);
   const weights: [PhysicalLandform, number][] = [
     [
-      worldLandform(seed, version),
-      (version >= 8 && worldLandform(seed, version) === "great-river-basins") ||
-      (version >= 9 && worldLandform(seed, version) === "karst-uplands")
-        ? 16
-        : 5,
+      worldForm,
+      version >= 10 && isExtraLandform(worldForm)
+        ? 28 * formationAffinity(worldForm, c.temperature, c.moisture)
+        : (version >= 8 && worldForm === "great-river-basins") ||
+            (version >= 9 && worldForm === "karst-uplands")
+          ? 16
+          : 5,
     ],
     ["continent", 1],
     ["archipelago", 1],
@@ -103,6 +111,9 @@ function province(
       "karst-uplands",
       c.moisture > 0.45 && c.temperature > 0.35 ? 4 : 1,
     ]);
+  if (version >= 10)
+    for (const form of EXTRA_LANDFORM_IDS)
+      weights.push([form, formationAffinity(form, c.temperature, c.moisture)]);
   let roll =
     randomAt(seed, id, "landform-province") *
     weights.reduce((s, [, w]) => s + w, 0);
@@ -121,7 +132,7 @@ function province(
 export function regionalLandform(
   seed: string,
   id: string,
-  version = 9,
+  version = 10,
 ): PhysicalLandform {
   const [q, r] = coord(id);
   const span = version >= 8 ? 24 : 16;
@@ -133,6 +144,7 @@ function height(
   r: number,
   form: PhysicalLandform,
 ): number {
+  if (isExtraLandform(form)) return expandedHeight(seed, q, r, form);
   const angle = randomAt(seed, "world", "tectonic-bearing") * Math.PI,
     u = q * Math.cos(angle) + r * Math.sin(angle),
     v = -q * Math.sin(angle) + r * Math.cos(angle);
@@ -337,7 +349,7 @@ function height(
 export function physicalElevation(
   seed: string,
   id: string,
-  version = 9,
+  version = 10,
 ): number {
   const [q, r] = coord(id),
     span = version >= 8 ? 24 : 16,
@@ -348,10 +360,26 @@ export function physicalElevation(
     smooth = (n: number) => n * n * (3 - 2 * n),
     u = smooth(x - a),
     v = smooth(y - b);
+  const forms = [
+    province(seed, a, b, version),
+    province(seed, a + 1, b, version),
+    province(seed, a, b + 1, version),
+    province(seed, a + 1, b + 1, version),
+  ];
+  const samples = new Map<PhysicalLandform, number>();
+  const at = (i: number) => {
+    const form = forms[i];
+    let n = samples.get(form);
+    if (n === undefined) {
+      n = height(seed, q, r, form);
+      samples.set(form, n);
+    }
+    return n;
+  };
   return (
-    height(seed, q, r, province(seed, a, b, version)) * (1 - u) * (1 - v) +
-    height(seed, q, r, province(seed, a + 1, b, version)) * u * (1 - v) +
-    height(seed, q, r, province(seed, a, b + 1, version)) * (1 - u) * v +
-    height(seed, q, r, province(seed, a + 1, b + 1, version)) * u * v
+    at(0) * (1 - u) * (1 - v) +
+    at(1) * u * (1 - v) +
+    at(2) * (1 - u) * v +
+    at(3) * u * v
   );
 }

@@ -2,6 +2,8 @@
 
 A turn-based strategy game about building towns, trading resources and conquering a randomly generated archipelago. Play against the AI or share one computer in local hotseat mode. The game and illustrated rules are available in English and French.
 
+See [the 15 new geographic formations and example seeds](docs/geography-expansion-v10.md) for the latest map-generation expansion.
+
 ## Launch the game
 
 Install [Node.js 22.12 or newer](https://nodejs.org/) with npm. Then run:

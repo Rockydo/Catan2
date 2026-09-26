@@ -336,6 +336,40 @@ Sixteen crop- and climate-specific rotations offer four stages each. Choose one 
 
 Generation 9 adds one new formation: irregular limestone hills and towers around enclosed low ground. Warm humid karst has steeper isolated towers; cooler regions have broader hills. Exposed slopes favor the local climate’s stone resources, with fewer metal and coal deposits; suitable low pockets favor local farming and grazing. Porous rock reduces surface river sources, but surviving rivers still follow connected downhill courses. Existing peak, pass, road, flood and navigation rules apply. Existing campaigns retain their original geography version and terrain.
 
+### Fifteen further geographic formations
+
+New campaigns use generation 10 and can contain 34 regional formations. These fifteen additions reshape terrain, drainage and eligible resources. Existing campaigns keep their geography, including future expeditions. Hover the regional landscape name in the terrain inspector for a short explanation.
+
+- **Canyon country**: Branching, deeply cut valleys divide high ground. Stone-rich shoulders and narrow low corridors make crossings valuable.
+
+- **Mesa and butte country**: Isolated flat-topped massifs stand above open ground. Rocky rims separate sheltered interiors from surrounding routes.
+
+- **Alluvial fan apron**: Fan-shaped slopes spread beneath mountain fronts. Gentle lower fans favor local crops; upper fans remain stony and water-dependent.
+
+- **Loess hill country**: Rounded silt hills are cut by winding gullies. Gentle ground favors local grain and clay, with fewer hard-rock deposits.
+
+- **Drumlin field**: Elongated glacial hills line up along an old ice-flow direction. Routes and drainage thread between their uneven ridges.
+
+- **Moraine belt**: Curving ridges of glacial debris enclose irregular hollows. Stony ridges interrupt movement while wetter pockets favor local bogs.
+
+- **Glacial outwash plain**: A broad, gently graded gravel plain descends from uplands. Open corridors and connected meltwater-style drainage favor movement over dense farming.
+
+- **Tombolo coast**: Offshore rocky heads are linked by low sediment necks. Surviving land bridges offer narrow routes between sheltered bays.
+
+- **Caldera highlands**: Broken volcanic rims surround broad depressed interiors. Gaps in the rim concentrate access; weathered low ground can support local crops.
+
+- **Lava plateau**: Overlapping ancient flow benches form stepped uplands. Building stone is favored, while porous ground carries fewer surface streams.
+
+- **Inselberg plain**: Widely spaced rock massifs rise from an otherwise open plain. Isolated stone sources punctuate long grazing and travel corridors.
+
+- **Dune field**: Wind-aligned sand ridges alternate with low corridors. Existing desert sands become more common and surface rivers rarer; oases still require suitable water conditions.
+
+- **Estuary coast**: Broad funnel-shaped inlets branch into low coastal ground. Bays and river mouths create naval approaches and scarce land connections.
+
+- **Raised beach terraces**: Successive coastal benches rise above the sea. Flat settlement shelves alternate with steeper scarps and protected lower shoreline.
+
+- **Fault scarp country**: Offset blocks form abrupt, interrupted scarps. Longer valleys follow their feet while broken sections provide routes across the uplands.
+
 ## Seasons and harvests
 
 ### New geography campaigns

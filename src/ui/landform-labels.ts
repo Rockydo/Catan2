@@ -1,9 +1,11 @@
+import { EXTRA_LANDFORMS } from "../game/landform-catalogue";
 import type { PhysicalLandform } from "../game/physical-landforms";
 /** Region-scale landforms; these do not override a tile's climate or access. */
 export const LANDFORM_LABELS: Record<
   PhysicalLandform,
   { en: string; fr: string }
 > = {
+  ...EXTRA_LANDFORMS,
   continent: { en: "Continental interior", fr: "Intérieur continental" },
   archipelago: { en: "Archipelago", fr: "Archipel" },
   "inland-seas": { en: "Inland sea basin", fr: "Bassin de mer intérieure" },
