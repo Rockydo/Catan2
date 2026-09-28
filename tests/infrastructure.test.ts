@@ -132,7 +132,7 @@ describe("climate-specific infrastructure", () => {
     geographyCommand(s, { type: "project", tile: tile.id, kind: "irrigation" });
     expect(tile.geography!.projects!.irrigation!.tier).toBe(2);
     expect(projectSite(s, tile, "irrigation", 1)).toBe(false);
-    expect(infrastructureCost("irrigation", 4).coal).toBe(100);
+    expect(infrastructureCost("irrigation", 4).coal).toBe(75);
   });
   it("requires freshwater, rejects crops for mines, and rejects wild game for ranches", () => {
     const { s, tile } = site();
@@ -154,7 +154,7 @@ describe("climate-specific infrastructure", () => {
         tile: tile.id,
         kind: "irrigation",
       });
-    expect(inventory(s, 0).coal).toBe(before - 6 - 40 - 100);
+    expect(inventory(s, 0).coal).toBe(before - 6 - 34 - 75);
     expect(effectiveTier(tile, "irrigation", 0)).toBe(4);
     expect(projectCost(tile, "irrigation")).toEqual({});
     expect(projectSite(s, tile, "irrigation")).toBe(false);

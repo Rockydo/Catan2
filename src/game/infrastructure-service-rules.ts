@@ -1,5 +1,22 @@
 /** Shared, save-independent service rules. Existing project IDs remain valid. */
 export const SERVICE_RULES = {
+  "winter-coppice": {
+    en: "Winter poles: 1/2/3/4 Wood in winter from managed broadleaved regrowth. The best coppice or pollard works apply; flooding and occupation still close the site.",
+    fr: "Perches hivernales : 1/2/3/4 bois en hiver issus des rejets de feuillus. Seuls les meilleurs taillis ou têtards s’appliquent ; crue et occupation ferment le site.",
+  },
+  "summer-honey": {
+    en: "Summer honey: 1/2/3/4 Grain in summer, representing gathered honey. Dry or cold spells halve this harvest, rounded down. Only the best local apiary applies.",
+    fr: "Miel estival : 1/2/3/4 céréales en été, représentant le miel récolté. Sécheresse ou froid divisent la récolte par deux, arrondi inférieur. Seul le meilleur rucher local s’applique.",
+  },
+  "paddy-ducks": {
+    weather: "wet",
+    en: "Rice–duck husbandry: during wet spells, 1/2/3/4 Meat shared across productive rice seasons. Requires freshwater access. Flood closure and enemy occupation still prevent collection.",
+    fr: "Élevage riz-canards : en période pluvieuse, 1/2/3/4 viandes réparties entre les saisons rizicoles productives. Accès à l’eau douce requis. Crue et occupation bloquent la collecte.",
+  },
+  "autumn-pannage": {
+    en: "Autumn pannage: 1/2/3/4 Meat in autumn from domestic pigs feeding on woodland mast. Wild herds remain independent. Dry spells halve this harvest, rounded down; only the best pannage works apply.",
+    fr: "Glandée automnale : 1/2/3/4 viandes en automne grâce aux porcs domestiques nourris de glands et faînes. Le gibier reste indépendant. La sécheresse divise cette récolte par deux, arrondi inférieur ; seul le meilleur ouvrage s’applique.",
+  },
   "press-feed": {
     en: "Press-cake feed: +1 Meat at II, +2 at IV, shared between seasons immediately following an oilseed or olive harvest. Spent pressings supplement livestock feed. Only the best press-feed works apply.",
     fr: "Tourteaux fourragers : +1 viande au II, +2 au IV, répartie entre les saisons suivant une récolte d’oléagineux ou d’olives. Les résidus du pressage complètent la ration du bétail. Seuls les meilleurs ouvrages s’appliquent.",
@@ -108,6 +125,13 @@ export const SERVICE_RULES = {
 } as const;
 export type SpecialistService = keyof typeof SERVICE_RULES;
 export const SERVICE_BY_BRANCH: Readonly<Record<string, SpecialistService>> = {
+  "coppice-stools": "winter-coppice",
+  "river-pollards": "winter-coppice",
+  "heath-apiaries": "summer-honey",
+  "meadow-apiaries": "summer-honey",
+  "paddy-ducks": "paddy-ducks",
+  "woodland-pannage": "autumn-pannage",
+  "quarry-return-crates": "returnable-containers",
   "press-settling": "press-feed",
   "sunflower-dehulling": "press-feed",
   "stock-handling": "fat-rendering",
@@ -181,7 +205,9 @@ export function serviceWeather(service?: SpecialistService) {
 export function serviceRisks(
   service?: SpecialistService,
 ): ("dry" | "wet" | "cold")[] {
-  if (service === "forest-food") return ["dry", "cold"];
+  if (service === "autumn-pannage") return ["dry"];
+  if (service === "forest-food" || service === "summer-honey")
+    return ["dry", "cold"];
   if (service === "resin") return ["wet", "cold"];
   const weather = serviceWeather(service);
   return weather ? [weather] : [];

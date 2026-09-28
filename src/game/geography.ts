@@ -89,6 +89,7 @@ export interface Geography {
   damagedUntil?: number;
   newlyRevealed?: boolean;
   gazelleSurveyed?: boolean;
+  sealSurveyed?: boolean;
   nextHarvestMode?: "concentrated" | "spread";
   harvestChosenYear?: number;
   harvestMode?: "concentrated" | "spread";
@@ -100,7 +101,7 @@ export interface Wildlife {
   lastRound: number;
   dormant?: true;
 }
-export const GEOGRAPHY_VERSION = 11;
+export const GEOGRAPHY_VERSION = 12;
 export const landform = (
   seed: string,
   version = GEOGRAPHY_VERSION,
@@ -944,6 +945,17 @@ export function geographicLandChoices(
       if (["iron", "stone", "gold", "coal"].includes(b)) w *= 1.5;
     }
     add(b, w);
+  }
+  // Open, gently sloping polar shores provide haul-out habitat rather than
+  // becoming an uninterrupted ring of extractive resource sites.
+  if (
+    version >= 12 &&
+    coast &&
+    !mountains &&
+    slope < 0.13 &&
+    ["arctic", "glacial", "tundra"].includes(climate)
+  ) {
+    add("snow-plain", [...weights.values()].reduce((n, w) => n + w, 0) * 0.3);
   }
   // High ridges contain minerals, impassable summits and a smaller pass share.
   if (mountains) {

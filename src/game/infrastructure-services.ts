@@ -141,6 +141,22 @@ export function specialistServiceProfile(
       );
       byproduct = "meat";
     }
+    if (role === "winter-coppice") {
+      weights = [0, 0, 0, 1];
+      byproduct = "lumber";
+    }
+    if (role === "summer-honey") {
+      weights = [0, 1, 0, 0];
+      byproduct = "grain";
+    }
+    if (role === "autumn-pannage") {
+      weights = [0, 0, 1, 0];
+      byproduct = "meat";
+    }
+    if (role === "paddy-ducks") {
+      weights = seasons.map((s) => native[s].grain ?? 0);
+      byproduct = "meat";
+    }
     if (role === "press-feed") {
       if (!["olive-grove", "sunflower-fields"].includes(tile.biome ?? ""))
         continue;

@@ -1,4 +1,7 @@
-import { specialistConstruction } from "./specialist-recipes";
+import {
+  specialistConstruction,
+  reduceConstructionBill,
+} from "./specialist-recipes";
 import {
   SPECIALIST_PROJECTS,
   SPECIALISTS_BY_TRACK,
@@ -304,12 +307,15 @@ export function infrastructureCost(
     tier === 1 ? INFRASTRUCTURE[kind].cost : UPGRADE_COSTS[kind][tier - 2];
   if (!cost) throw new Error(`Invalid infrastructure tier: ${tier}`);
   const materials = tile ? localTechnique(tile, kind).materials : undefined;
-  return Object.fromEntries(
+  const local = Object.fromEntries(
     Object.entries(cost).map(([good, n]) => [
       good,
       Math.ceil(n! * (materials?.[good as keyof Stock] ?? 1)),
     ]),
   );
+  return tier >= 3
+    ? reduceConstructionBill(local, tier === 4 ? 0.25 : 0.15)
+    : local;
 }
 
 type Agronomy = {

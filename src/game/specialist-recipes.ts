@@ -177,7 +177,8 @@ export const SPECIALIST_RECIPES = {
 export type SpecialistRecipe = keyof typeof SPECIALIST_RECIPES;
 /** Explicit craft assignments: changing a display name never changes its recipe. */
 const GROUPS: Record<SpecialistRecipe, string> = {
-  crates: "orchard-handling fish-crates berry-sorting",
+  crates:
+    "meadow-apiaries quarry-return-crates orchard-handling fish-crates berry-sorting",
   seed: "seed-selection potato-sprouting",
   nursery: "date-pollination chinampa-silt-nurseries nursery-shelters",
   covers: "date-bunch-covers cistern-covers berry-covers salt-pan-cover",
@@ -186,12 +187,14 @@ const GROUPS: Record<SpecialistRecipe, string> = {
   nets: "olive-catching-nets river-net-yards",
   press: "sunflower-dehulling press-settling whale-oil-settling",
   mulch: "dryland-dust-mulch orchard-mulch stubble-snow",
-  hayloft: "mountain-haylofts browse-fodder flood-meadow-hay fodder-reserves",
+  hayloft:
+    "woodland-pannage mountain-haylofts browse-fodder flood-meadow-hay fodder-reserves",
   shade: "pasture-shade upland-wind-shelters fish-shade lambing-shelters",
   scour: "wool-washing fleece-grading",
-  winch: "river-log-booms cable-landings mine-loading quarry-loading",
+  winch:
+    "coppice-stools river-log-booms cable-landings mine-loading quarry-loading",
   timberyard: "humid-timber-stickers covered-timber log-sorting",
-  chute: "slope-log-chutes upland-ore-ramps swamp-log-walks",
+  chute: "river-pollards slope-log-chutes upland-ore-ramps swamp-log-walks",
   screening: "ore-jigging ore-sorting coal-screening gold-recovery",
   coalwash: "coal-washing",
   sluice: "gold-riffle-boxes",
@@ -205,14 +208,14 @@ const GROUPS: Record<SpecialistRecipe, string> = {
   smoking: "fish-smokehouses woodland-game-smoking game-curing",
   sledges: "snow-game-sledges",
   cutting: "whale-blubber-cutting stock-handling coastal-seal-handling",
-  pots: "resin-tapping woodland-mushrooms",
+  pots: "heath-apiaries resin-tapping woodland-mushrooms",
   spawning: "shellfish-beds spawning-reeds reef-handling lake-landing",
   terraces: "contour-strips",
   survey: "paddy-level-surveys mine-survey",
-  fences: "crop-windbreaks pasture-rotation",
+  fences: "paddy-ducks crop-windbreaks pasture-rotation",
   curing: "hide-curing wild-hide-frames whale-hide-handling",
   repair: "forest-toolcare",
-  tracking: "woodland-tracking open-range-tracking",
+  tracking: "seal-haulout-wardens woodland-tracking open-range-tracking",
   threshing: "field-gleaning paddy-threshing clean-threshing",
   raisedbeds: "raised-rows field-outfalls quarry-drains mine-runoff",
 };
@@ -240,6 +243,34 @@ export function constructionValue(stock: Stock): number {
     0,
   );
 }
+/** Reduce the finished material investment, including coal.
+ * Whole-card apportionment retains at least one of each required material.
+ * Only one rounding pass per ingredient is needed, independent of bill size. */
+export function reduceConstructionBill(
+  original: Stock,
+  reduction: number,
+): Stock {
+  const bill = { ...original };
+  const target = constructionValue(original) * reduction;
+  const entries = Object.entries(original).map(([g, n]) => {
+    const good = g as Good,
+      unit = processed.has(good) ? 2.5 : 1;
+    const removed = Math.min(n! - 1, Math.floor(n! * reduction));
+    bill[good] = n! - removed;
+    return { good, unit, removed, remainder: n! * reduction - removed };
+  });
+  let saved = entries.reduce((n, e) => n + e.removed * e.unit, 0);
+  entries.sort((a, b) => b.remainder * b.unit - a.remainder * a.unit);
+  for (const e of entries) {
+    if (bill[e.good]! > 1 && saved + e.unit <= target + 1e-9) {
+      bill[e.good]!--;
+      saved += e.unit;
+    }
+  }
+  return bill;
+}
+export const specialistCostReduction = (bill: Stock) =>
+  reduceConstructionBill(bill, 0.15);
 export function specialistConstruction(
   branch: SpecialistBranch,
   tier: number,
@@ -258,5 +289,5 @@ export function specialistConstruction(
   if (coal) bill.coal = coal;
   for (const [good, n] of Object.entries(branch.finishing ?? {}))
     bill[good as Good] = (bill[good as Good] ?? 0) + n! * tier;
-  return bill;
+  return specialistCostReduction(bill);
 }

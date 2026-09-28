@@ -354,7 +354,7 @@ export function nativeWildlifeKind(
       kind,
       weight:
         kind === "seal"
-          ? 4
+          ? 7
           : kind === "musk-ox" || kind === "reindeer"
             ? 3
             : kind === habitatKind(tile)
@@ -369,6 +369,7 @@ export function nativeWildlifeKind(
 /** Ocean area is 75% of the previous target; compensate per-water-hex density.
  * Freshwater populations are unchanged. */
 export function wildlifeSpawnChance(tile: Hex, geographyVersion = 0): number {
+  if (suitableWildlifeHabitat(tile, "seal")) return 0.5;
   if (gazelleHabitat(tile)) {
     if (tile.biome === "oasis") return 0.35;
     if (tile.biome === "desert")
@@ -435,7 +436,11 @@ export function migrationCandidates(s: Game, population: Wildlife) {
           (!["whale", "cod"].includes(population.kind) ||
             !["river", "lake"].includes(tile.geography?.waterway ?? ""))
         : ["water", "ice"].includes(tile.resource)
-          ? tile.surface === "frozen" && nearSolidLand(s, tile.id)
+          ? (tile.surface === "frozen" ||
+              (population.kind === "seal" &&
+                tile.resource === "water" &&
+                !["river", "lake"].includes(tile.geography?.waterway ?? ""))) &&
+            nearSolidLand(s, tile.id)
           : canOccupy(tile);
       if (!traverse) continue;
       found.add(next);
@@ -472,6 +477,45 @@ export function restoreWildlifeHabitats(s: Game): void {
         tile: tile.id,
         lastRound: s.round,
       });
+      known.add(id);
+      added = true;
+    }
+  }
+  // Survey each eligible shore once, including older campaigns. A small
+  // resident population remains discoverable even when all random rolls miss.
+  const sealPopulationLimit = Object.keys(s.tiles).length;
+  const shores = Object.values(s.tiles).filter((t) =>
+    suitableWildlifeHabitat(t, "seal"),
+  );
+  const unsurveyed = shores.filter((t) => !t.geography!.sealSurveyed);
+  for (const t of unsurveyed) {
+    t.geography!.sealSurveyed = true;
+    const id = `wild:${t.id}`;
+    if (
+      !known.has(id) &&
+      s.wildlife.length < sealPopulationLimit &&
+      nativeWildlifeKind(s.seed, t) === "seal" &&
+      randomAt(s.seed, t.id, "wildlife-density") < wildlifeSpawnChance(t)
+    ) {
+      s.wildlife.push({ id, kind: "seal", tile: t.id, lastRound: s.round });
+      known.add(id);
+      added = true;
+    }
+  }
+  if (
+    unsurveyed.length &&
+    !s.wildlife.some((h) => h.kind === "seal") &&
+    s.wildlife.length < sealPopulationLimit
+  ) {
+    const t = unsurveyed.reduce((a, b) =>
+      randomAt(s.seed, a.id, "seal-refuge") <
+      randomAt(s.seed, b.id, "seal-refuge")
+        ? a
+        : b,
+    );
+    const id = `seal:${t.id}`;
+    if (!known.has(id)) {
+      s.wildlife.push({ id, kind: "seal", tile: t.id, lastRound: s.round });
       known.add(id);
       added = true;
     }

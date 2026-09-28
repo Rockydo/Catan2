@@ -29,7 +29,7 @@ export const LANDFORMS = [
   ...EXTRA_LANDFORM_IDS,
 ] as const;
 export type PhysicalLandform = (typeof LANDFORMS)[number];
-export const worldLandform = (seed: string, version = 11): PhysicalLandform =>
+export const worldLandform = (seed: string, version = 12): PhysicalLandform =>
   LANDFORMS[
     Math.floor(
       randomAt(seed, "world", "landform") *
@@ -134,7 +134,7 @@ function province(
 export function regionalLandform(
   seed: string,
   id: string,
-  version = 11,
+  version = 12,
 ): PhysicalLandform {
   const [q, r] = coord(id);
   const span = version >= 11 ? 11 : version >= 8 ? 24 : 16;
@@ -351,7 +351,7 @@ function height(
 export function physicalElevation(
   seed: string,
   id: string,
-  version = 11,
+  version = 12,
 ): number {
   const [q, r] = coord(id),
     span = version >= 11 ? 11 : version >= 8 ? 24 : 16,
@@ -388,5 +388,7 @@ export function physicalElevation(
     at(1) * u * (1 - v) +
     at(2) * (1 - u) * v +
     at(3) * u * v;
-  return version >= 11 ? structuredElevation(seed, id, blended) : blended;
+  return version >= 11
+    ? structuredElevation(seed, id, blended, version)
+    : blended;
 }

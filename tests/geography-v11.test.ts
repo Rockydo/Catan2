@@ -72,7 +72,7 @@ it("preserves complete generation-10 worlds and distant physical fields", () => 
   }
 }, 15000);
 it("produces smaller land and climate blocks, more islands and connected mountain chains across fixed seeds", () => {
-  expect(GEOGRAPHY_VERSION).toBe(11);
+  expect(GEOGRAPHY_VERSION).toBeGreaterThanOrEqual(11);
   const old: ReturnType<typeof distribution>[] = [],
     current: ReturnType<typeof distribution>[] = [],
     modes = new Set<string>();
@@ -141,9 +141,9 @@ it("supports twelve-faction starts, intact saves and stable new frontiers in eac
         );
       }
       if (t.geography?.downstream)
-        expect(elevationAt(seed, t.geography.downstream, 11)).toBeLessThan(
-          elevationAt(seed, t.id, 11),
-        );
+        expect(
+          elevationAt(seed, t.geography.downstream, s.geographyVersion),
+        ).toBeLessThan(elevationAt(seed, t.id, s.geographyVersion));
     }
   }
   expect(seen.size).toBe(3);

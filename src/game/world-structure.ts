@@ -12,6 +12,36 @@ export function worldStructure(seed: string): WorldStructure {
   const n = randomAt(seed, "world", "crust-structure");
   return n < 0.18 ? "continental" : n < 0.7 ? "broken-coasts" : "island-seas";
 }
+export const COASTAL_PATTERNS = [
+  "island-mosaic",
+  "ribbon-islands",
+  "sweeping-arcs",
+  "crossed-straits",
+] as const;
+export function coastalPattern(seed: string) {
+  return COASTAL_PATTERNS[
+    Math.floor(
+      randomAt(seed, "world", "coastal-pattern") * COASTAL_PATTERNS.length,
+    )
+  ];
+}
+/** Smooth coordinate warps change island proportions without seams or rerolls. */
+function crustCoordinates(seed: string, x: number, y: number, version: number) {
+  if (version < 12) return [x, y];
+  const angle = randomAt(seed, "world", "coast-bearing") * Math.PI;
+  const u = x * Math.cos(angle) + y * Math.sin(angle);
+  const v = -x * Math.sin(angle) + y * Math.cos(angle);
+  switch (coastalPattern(seed)) {
+    case "ribbon-islands":
+      return [u / 1.65, v * 1.3];
+    case "sweeping-arcs":
+      return [u, v + Math.sin(u / 7) * 3.2];
+    case "crossed-straits":
+      return [u + v * 0.55, v * 0.92 + Math.sin(u / 9) * 1.4];
+    default:
+      return [u, v];
+  }
+}
 /** Continuous curved belts share a bearing across provinces. Low saddles break
  * some crests without turning the entire high plateau into random mountains. */
 export function mountainBelt(seed: string, id: string): number {
@@ -33,15 +63,17 @@ export function structuredElevation(
   seed: string,
   id: string,
   relief: number,
+  version = 11,
 ): number {
   const mode = worldStructure(seed);
   const belt = mountainBelt(seed, id);
   if (mode === "continental") return relief + belt * 0.12;
   const [q, r] = coord(id),
-    x = q + r * 0.5 + (field(seed, q, r, 5, "crust-warp-x") - 0.5) * 1.8,
-    y =
+    rawX = q + r * 0.5 + (field(seed, q, r, 5, "crust-warp-x") - 0.5) * 1.8,
+    rawY =
       (r * Math.sqrt(3)) / 2 +
       (field(seed, q, r, 5, "crust-warp-y") - 0.5) * 1.8,
+    [x, y] = crustCoordinates(seed, rawX, rawY, version),
     spacing =
       (mode === "island-seas" ? 5.6 : 7.2) *
       (0.9 + randomAt(seed, "world", "crust-scale") * 0.2),

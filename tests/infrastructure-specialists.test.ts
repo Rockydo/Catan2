@@ -1,5 +1,6 @@
 import {
   constructionValue,
+  specialistCostReduction,
   specialistRecipe,
   SPECIALIST_RECIPES,
 } from "../src/game/specialist-recipes";
@@ -167,16 +168,16 @@ function site(b: Biome = "golden-fields", c: Climate = "temperate") {
   return { s, t, town };
 }
 describe("independent specialist investments", () => {
-  it("adds 412 purchases in 103 branches, plus 16 separate rotation choices", () => {
-    expect(SPECIALIST_BRANCHES).toHaveLength(103);
+  it("adds 444 purchases in 111 branches, plus 16 separate rotation choices", () => {
+    expect(SPECIALIST_BRANCHES).toHaveLength(111);
     expect(ROTATION_BRANCHES).toHaveLength(16);
     expect(
       Object.values(SPECIALIST_PROJECTS).filter((p) => !p.branch.rotation),
-    ).toHaveLength(412);
+    ).toHaveLength(444);
     expect(
       new Set([...SPECIALIST_BRANCHES, ...ROTATION_BRANCHES].map((b) => b.id))
         .size,
-    ).toBe(119);
+    ).toBe(127);
     for (const p of Object.values(SPECIALIST_PROJECTS)) {
       expect(p.branch.stages).toHaveLength(4);
       expect(p.branch.stagesFr).toHaveLength(4);
@@ -184,7 +185,7 @@ describe("independent specialist investments", () => {
       expect(p.branch.descriptionFr).toBeTruthy();
     }
   });
-  it("makes all 103 branches reachable on native resource habitats, with several simultaneous choices", () => {
+  it("makes all 111 branches reachable on native resource habitats, with several simultaneous choices", () => {
     for (const b of SPECIALIST_BRANCHES)
       expect(
         habitats().some((t) => specialistSuitable(t, b)),
@@ -212,7 +213,7 @@ describe("independent specialist investments", () => {
         expect(
           constructionValue(cost),
           `${b.id}/${tier}`,
-        ).toBeGreaterThanOrEqual(constructionValue(main) * 2.25);
+        ).toBeGreaterThanOrEqual(constructionValue(main) * 1.9);
         if (tier > 1) {
           const previous = specialistCost(t, specialistId(b, tier - 1));
           expect(constructionValue(cost)).toBeGreaterThan(
@@ -683,9 +684,9 @@ describe("distinct specialist roles", () => {
 });
 
 describe("specialist working practices", () => {
-  it("assigns 25 distinct services to 62 branches with four stages each", () => {
-    expect(Object.keys(SERVICE_BY_BRANCH)).toHaveLength(62);
-    expect(new Set(Object.values(SERVICE_BY_BRANCH)).size).toBe(25);
+  it("assigns 29 distinct services to 69 branches with four stages each", () => {
+    expect(Object.keys(SERVICE_BY_BRANCH)).toHaveLength(69);
+    expect(new Set(Object.values(SERVICE_BY_BRANCH)).size).toBe(29);
     for (const id of Object.keys(SERVICE_BY_BRANCH))
       expect(branch(id).service).toBe(SERVICE_BY_BRANCH[id]);
   });
@@ -937,7 +938,7 @@ it("flood rescue does not turn a pantry into a harvest on dormant fields", () =>
   expect(seasonalYield(t, 0, season)).toEqual({});
 });
 
-it("all 62 working practices have an eligible site with a real secondary benefit", () => {
+it("all 69 working practices have an eligible site with a real secondary benefit", () => {
   for (const b of SPECIALIST_BRANCHES.filter((b) => b.service)) {
     const reachable = habitats().some((candidate) => {
       if (!specialistSuitable(candidate, b)) return false;
@@ -1252,4 +1253,86 @@ describe("craft-specific construction and recovery", () => {
       ),
     ).toEqual({});
   });
+});
+
+describe("woodland and mixed-farming practices", () => {
+  it("keeps coppice and pollards to a shared winter wood budget", () => {
+    const t = tile("woods", "oceanic");
+    install(t, branch("coppice-stools"), 4);
+    install(t, branch("river-pollards"), 4);
+    const p = specialistServiceProfile(t, ordinarySeasonalProfile(t, 0), 0);
+    expect(p.winter.lumber).toBe(4);
+    expect(sum(p.spring) + sum(p.summer) + sum(p.autumn)).toBe(0);
+    t.climate = "arctic";
+    expect(
+      sum(specialistServiceProfile(t, ordinarySeasonalProfile(t, 0), 0).winter),
+    ).toBe(0);
+  });
+  it("makes honey seasonal and weather-sensitive without awarding it to hunters", () => {
+    const t = tile("tundra-heath", "tundra"),
+      base = structuredClone(t);
+    install(t, branch("heath-apiaries"), 4);
+    for (const h of [t, base])
+      Object.assign(h.geography!, { weather: "normal", access: "normal" });
+    const gain = () =>
+      (seasonalYield(t, 0, "summer").grain ?? 0) -
+      (seasonalYield(base, 0, "summer").grain ?? 0);
+    expect(gain()).toBe(4);
+    for (const h of [t, base]) h.geography!.weather = "dry";
+    expect(gain()).toBe(2);
+    expect(huntingYield(t, 0, "summer")).toEqual({});
+    expect(
+      specialistServiceProfile(t, ordinarySeasonalProfile(t, 0), 1).summer,
+    ).toEqual({});
+  });
+  it("raises paddy ducks only during wet productive rice seasons", () => {
+    const t = tile("rice-field", "tropical");
+    install(t, branch("paddy-ducks"), 4);
+    const native = ordinarySeasonalProfile(t, 0);
+    const normal = specialistServiceProfile(t, native, 0),
+      wet = specialistServiceProfile(t, native, 0, "wet");
+    expect(SEASONS.reduce((n, s) => n + (normal[s].meat ?? 0), 0)).toBe(0);
+    expect(SEASONS.reduce((n, s) => n + (wet[s].meat ?? 0), 0)).toBe(4);
+    for (const s of SEASONS)
+      if (!native[s].grain) expect(wet[s].meat ?? 0).toBe(0);
+    t.geography!.access = "flooded";
+    t.geography!.weather = "wet";
+    expect(seasonalYield(t, 0, "summer")).toEqual({});
+  });
+  it("gives pannage an autumn harvest with drought loss independent of wild herds", () => {
+    const t = tile("woods", "temperate"),
+      base = structuredClone(t);
+    install(t, branch("woodland-pannage"), 4);
+    const gain = () =>
+      (seasonalYield(t, 0, "autumn").meat ?? 0) -
+      (seasonalYield(base, 0, "autumn").meat ?? 0);
+    expect(gain()).toBe(4);
+    expect(huntingYield(t, 0, "autumn")).toEqual({});
+    for (const h of [t, base]) h.geography!.weather = "dry";
+    expect(gain()).toBe(2);
+    t.geography!.access = "flooded";
+    expect(seasonalYield(t, 0, "autumn")).toEqual({});
+  });
+});
+
+it("reduces specialist bills by roughly fifteen percent without losing recipe ingredients", () => {
+  for (const bill of [
+    { lumber: 8, ore: 5, wool: 2 },
+    { steel: 24, coal: 30, planks: 18, leather: 7 },
+    { lumber: 1, ore: 2, wool: 9 },
+  ]) {
+    const reduced = specialistCostReduction(bill),
+      originalValue = constructionValue(bill),
+      value = constructionValue(reduced);
+    expect(value).toBeLessThan(originalValue);
+    expect(value).toBeGreaterThanOrEqual(originalValue * 0.85 - 1e-8);
+    expect(value - originalValue * 0.85).toBeLessThan(2.5);
+    for (const [good, n] of Object.entries(bill)) {
+      expect(reduced[good as keyof Stock]).toBeGreaterThanOrEqual(1);
+      expect(reduced[good as keyof Stock]).toBeLessThanOrEqual(n!);
+    }
+  }
+  expect(specialistCostReduction({ steel: 24, coal: 30 }).coal).toBeLessThan(
+    30,
+  );
 });

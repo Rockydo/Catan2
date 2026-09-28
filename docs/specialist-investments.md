@@ -1,8 +1,8 @@
 # Specialist investments and secondary crops
 
-The existing **14 main tracks and 268 local methods are retained**. Alongside them, **103 independent specialist branches add 412 separately purchased projects** (four stages per branch). A tile can build several different specialist branches at once. These are additional investments, not replacements for its local main method.
+The existing **14 main tracks and 268 local methods are retained**. Alongside them, **111 independent specialist branches add 444 separately purchased projects** (four stages per branch). A tile can build several different specialist branches at once. These are additional investments, not replacements for its local main method.
 
-The later rotation request adds **16 alternative secondary-crop rotations, each with four stages**. A field can follow only one rotation. Together, specialists and rotations offer 476 stage purchases. The latest expansion adds four dedicated production/ecology branches and deepens 19 existing branches, retaining all earlier purchases and rotations.
+The later rotation request adds **16 alternative secondary-crop rotations, each with four stages**. A field can follow only one rotation. Together, specialists and rotations offer 508 stage purchases. The current expansion adds eight local branches for coppice, pollards, apiaries, rice–duck husbandry, woodland pannage, seal haul-outs and reusable stone cradles, retaining all earlier purchases and rotations.
 
 ## Finding and building them
 
@@ -12,7 +12,7 @@ Each stage needs your adjacent, unbesieged settlement/city of at least the same 
 
 ## Costs and diminishing value
 
-Specialists now use **37 craft-specific recipe families**, covering all 103 branches and 16 rotations. Nets emphasize wool and later cloth; winches use timber, iron and hides; washing basins use clay and stone; smokehouses require salt; industrial cutting and repair emphasize steel. Tier I uses raw materials, while later tiers increasingly use manufactured fittings. Recipes target 2.35 times the local main work's raw-equivalent investment before rounding and finishing materials (manufactured goods count as 2.5 raw resources for this balancing calculation). They remain at least 2.25 times that value before any earned local discount. This is an investment budget, not a multiplier on each original ingredient.
+Specialists now use **37 craft-specific recipe families**, covering all 111 branches and 16 rotations. Nets emphasize wool and later cloth; winches use timber, iron and hides; washing basins use clay and stone; smokehouses require salt; industrial cutting and repair emphasize steel. Tier I uses raw materials, while later tiers increasingly use manufactured fittings. Recipes target 2.35 times the local main work's raw-equivalent investment before rounding and finishing materials (manufactured goods count as 2.5 raw resources for this balancing calculation). The finished specialist bill now receives a 15% reduction, including coal and finishing materials, with whole-card rounding and at least one of every required ingredient retained. This is an investment budget, not a multiplier on each original ingredient. Main infrastructure also receives a 15% reduction at tier III and 25% at tier IV; specialists inherit those reduced base budgets before their own reduction. Tier I–II main costs and all benefits are unchanged.
 
 Coal is included from tier II, with technique-dependent quantities and larger industrial bills at III–IV. Forging and heated processing demand more than covers or seed work. These are one-time bills: **no upkeep, gold or gold bars**. Existing specialist IDs and purchases remain valid.
 
@@ -41,7 +41,7 @@ For example, a one-Wood tile already retains its Wood during rain because of the
 
 ## Working practices and connected livelihoods
 
-**62 branches** offer **25 services**. Including the nineteen pantry, habitat, salvage and rock-recovery branches above, **79 branches** now have dedicated roles. Original primary yields, protection and saved projects remain. Four new dedicated branches use their stated service instead of a generic yield increment. Production and material savings are owner-specific; ecological benefits affect visiting wildlife. Forest food, resin and supported secondary crops have the weather exposure stated below. Other recovered by-products are sheltered from subsequent weather penalties; closures still apply unless flood salvage is explicitly listed. These small bonuses do not consume resources each turn.
+**69 branches** offer **29 services**. Including the nineteen pantry, habitat, salvage and rock-recovery branches above, **87 branches** now have dedicated roles. Original primary yields, protection and saved projects remain. Four new dedicated branches use their stated service instead of a generic yield increment. Production and material savings are owner-specific; ecological benefits affect visiting wildlife. Forest food, resin and supported secondary crops have the weather exposure stated below. Other recovered by-products are sheltered from subsequent weather penalties; closures still apply unless flood salvage is explicitly listed. These small bonuses do not consume resources each turn.
 
 ### stubble-grazing
 
@@ -1966,3 +1966,5 @@ These services deepen existing branches. Production budgets are per producer acr
 Material savings require the same owner and tile. Repair, packing and material-yard investments never discount one another, and coal is never discounted. These benefits do not add any ongoing costs.
 
 Real-world references inform the techniques, while the numerical returns are game balance values: [FAO oilseed by-products in animal feeding](https://www.fao.org/4/s4314e/s4314e05.htm), [FAO fish processing and oil recovery](https://www.fao.org/4/X6899E/X6899E04.htm), and [FAO animal-fat processing](https://www.fao.org/4/y2774e/y2774e05.htm).
+
+See [coastal livelihoods](coastal-livelihoods-v12.md) for the eight newest branches, their exact seasonal effects and habitat restrictions.

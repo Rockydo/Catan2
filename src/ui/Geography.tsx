@@ -1,3 +1,4 @@
+import { coastalPattern, worldStructure } from "../game/world-structure";
 import { EXTRA_LANDFORMS, isExtraLandform } from "../game/landform-catalogue";
 import { UTILITY_PROJECTS } from "../game/geography-actions";
 import { InfrastructurePanel, IrrigationCalendar } from "./Infrastructure";
@@ -290,6 +291,34 @@ export function GeographyPanel({
           </strong>
         </p>
       ) : null}
+      {(s.geographyVersion ?? 0) >= 12 &&
+        worldStructure(s.seed) !== "continental" && (
+          <p className="landform-label" data-coastal-pattern>
+            {locale === "fr" ? "Organisation des îles : " : "Island layout: "}
+            <strong>
+              {
+                {
+                  "island-mosaic": {
+                    en: "Island mosaic",
+                    fr: "Mosaïque d’îles",
+                  },
+                  "ribbon-islands": {
+                    en: "Ribbon islands",
+                    fr: "Îles en rubans",
+                  },
+                  "sweeping-arcs": {
+                    en: "Sweeping island arcs",
+                    fr: "Arcs insulaires",
+                  },
+                  "crossed-straits": {
+                    en: "Crossed straits",
+                    fr: "Détroits entrecroisés",
+                  },
+                }[coastalPattern(s.seed)][locale === "fr" ? "fr" : "en"]
+              }
+            </strong>
+          </p>
+        )}
       <div className="geography-status">
         {environmentSummary(tile, s.tiles).map((text) => (
           <span key={text}>{tx(text)}</span>
