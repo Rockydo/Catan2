@@ -237,6 +237,17 @@ export function weatherAdjustedYield(
           "autumn-pannage",
         )[season].meat ?? 0)
       : 0;
+  const sap =
+    native && (weather === "dry" || weather === "cold")
+      ? (specialistServiceProfile(
+          tile,
+          native,
+          owner,
+          "normal",
+          undefined,
+          "spring-sap",
+        )[season].grain ?? 0)
+      : 0;
   const stored = specialistPantryCapacity(tile, owner)
     ? (specialistUtilityExtras(
         tile,
@@ -289,7 +300,7 @@ export function weatherAdjustedYield(
         0,
         serviceAmount -
           (raw === "grain"
-            ? Math.ceil(food / 2) + Math.ceil(honey / 2)
+            ? Math.ceil(food / 2) + Math.ceil(honey / 2) + Math.ceil(sap / 2)
             : raw === "meat"
               ? Math.ceil(pannage / 2)
               : raw === "oil" && resin

@@ -1315,14 +1315,20 @@ export function economyProjects(s: Game): Project[] {
         const specialistAvailability =
           specialist &&
           ["hunting", "whaling", "fishery"].includes(specialist.branch.track)
-            ? specialist.branch.service === "shellfish"
+            ? ["shellfish", "seaweed", "winter-reeds"].includes(
+                specialist.branch.service ?? "",
+              )
               ? 1
-              : specialist.branch.goods.some((raw) => g.fauna?.[raw])
-                ? 0.35
-                : specialist.branch.specialty === "refuge" ||
-                    specialist.branch.service === "fish-nursery"
-                  ? 0.12
+              : specialist.branch.service === "spring-underwool"
+                ? g.animals?.includes("musk-ox")
+                  ? 0.35
                   : 0.02
+                : specialist.branch.goods.some((raw) => g.fauna?.[raw])
+                  ? 0.35
+                  : specialist.branch.specialty === "refuge" ||
+                      specialist.branch.service === "fish-nursery"
+                    ? 0.12
+                    : 0.02
             : 1;
         const score = specialist
           ? (production *

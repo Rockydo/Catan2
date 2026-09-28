@@ -326,3 +326,5 @@ New campaigns generate connected continents, islands, rivers, lakes and mountain
 Use the map view selector for Weather, Wildlife and Access. Open **Geography and wildlife** in the English or French guide for illustrated rules, seasonal tables, unit roles and construction costs. A technical rules summary is in [docs/living-geography.md](docs/living-geography.md).
 
 Existing campaigns keep their original map and fixed animal production. Start a new campaign to use the new geography. Save loading never replaces an existing map.
+
+See [Local livelihoods](docs/local-livelihoods.md) for twelve new geographically restricted specialist branches and their exact seasonal benefits.

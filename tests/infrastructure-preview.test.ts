@@ -70,3 +70,30 @@ describe("honest infrastructure previews", () => {
       );
   });
 });
+
+it("recognizes a weather-only resource absent from the ordinary harvest", () => {
+  const before: Hex = {
+    ...forest(),
+    biome: "rice-field",
+    climate: "monsoon",
+    resource: "grain",
+  };
+  const after = structuredClone(before);
+  const b = SPECIALIST_BRANCHES.find((b) => b.id === "rice-fish-refuges")!;
+  for (let tier = 1; tier <= 4; tier++)
+    after.geography!.projects![specialistId(b, tier)] = {
+      owner: 0,
+      born: 1,
+      tier: 1,
+    };
+  const comparison = weatherComparison(before, after, 0, "wet");
+  expect(SEASONS.every((s) => !seasonalProfile(after, 0)[s].fish)).toBe(true);
+  expect(comparison.improved).toBe(true);
+  expect(
+    comparison.seasons.reduce(
+      (n, s) => n + (s.to.fish ?? 0) - (s.from.fish ?? 0),
+      0,
+    ),
+  ).toBe(4);
+  expect(weatherComparison(before, after, 1, "wet").improved).toBe(false);
+});

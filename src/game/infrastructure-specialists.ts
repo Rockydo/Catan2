@@ -1,4 +1,5 @@
 import { PRACTICE_BRANCHES } from "./infrastructure-practices";
+import { LIVELIHOOD_BRANCHES } from "./infrastructure-livelihoods";
 import {
   SERVICE_BY_BRANCH,
   type SpecialistService,
@@ -78,6 +79,7 @@ export interface SpecialistBranch {
 const BASE_BRANCHES: readonly SpecialistBranch[] = [
   ...NICHE_BRANCHES,
   ...PRACTICE_BRANCHES,
+  ...LIVELIHOOD_BRANCHES,
   {
     id: "seed-selection",
     track: "soil",

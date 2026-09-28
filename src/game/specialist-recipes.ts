@@ -184,20 +184,22 @@ const GROUPS: Record<SpecialistRecipe, string> = {
   covers: "date-bunch-covers cistern-covers berry-covers salt-pan-cover",
   basin: "sago-washing canal-silt-traps paddy-return-water pit-sediment",
   fermentation: "breadfruit-fermentation root-clamps",
-  nets: "olive-catching-nets river-net-yards",
-  press: "sunflower-dehulling press-settling whale-oil-settling",
+  nets: "fog-orchard-screens kelp-longlines olive-catching-nets river-net-yards",
+  press:
+    "date-pit-feeders sunflower-dehulling press-settling whale-oil-settling",
   mulch: "dryland-dust-mulch orchard-mulch stubble-snow",
   hayloft:
-    "woodland-pannage mountain-haylofts browse-fodder flood-meadow-hay fodder-reserves",
+    "upland-leaf-hay reed-thatch-beds woodland-pannage mountain-haylofts browse-fodder flood-meadow-hay fodder-reserves",
   shade: "pasture-shade upland-wind-shelters fish-shade lambing-shelters",
-  scour: "wool-washing fleece-grading",
+  scour: "coconut-coir-yards wool-washing fleece-grading",
   winch:
     "coppice-stools river-log-booms cable-landings mine-loading quarry-loading",
   timberyard: "humid-timber-stickers covered-timber log-sorting",
   chute: "river-pollards slope-log-chutes upland-ore-ramps swamp-log-walks",
-  screening: "ore-jigging ore-sorting coal-screening gold-recovery",
+  screening:
+    "mine-stone-stowing ore-jigging ore-sorting coal-screening gold-recovery",
   coalwash: "coal-washing",
-  sluice: "gold-riffle-boxes",
+  sluice: "salt-graduation-walls gold-riffle-boxes",
   frostworks: "cold-mine-portals mine-shelters quarry-shelter winter-log-depot",
   claywash: "clay-levigation clay-grading",
   forge: "quarry-wedge-sets stone-dressing",
@@ -208,14 +210,16 @@ const GROUPS: Record<SpecialistRecipe, string> = {
   smoking: "fish-smokehouses woodland-game-smoking game-curing",
   sledges: "snow-game-sledges",
   cutting: "whale-blubber-cutting stock-handling coastal-seal-handling",
-  pots: "heath-apiaries resin-tapping woodland-mushrooms",
-  spawning: "shellfish-beds spawning-reeds reef-handling lake-landing",
+  pots: "spring-sap-groves heath-apiaries resin-tapping woodland-mushrooms",
+  spawning:
+    "recession-fish-pools rice-fish-refuges shellfish-beds spawning-reeds reef-handling lake-landing",
   terraces: "contour-strips",
   survey: "paddy-level-surveys mine-survey",
   fences: "paddy-ducks crop-windbreaks pasture-rotation",
   curing: "hide-curing wild-hide-frames whale-hide-handling",
   repair: "forest-toolcare",
-  tracking: "seal-haulout-wardens woodland-tracking open-range-tracking",
+  tracking:
+    "qiviut-gathering seal-haulout-wardens woodland-tracking open-range-tracking",
   threshing: "field-gleaning paddy-threshing clean-threshing",
   raisedbeds: "raised-rows field-outfalls quarry-drains mine-runoff",
 };

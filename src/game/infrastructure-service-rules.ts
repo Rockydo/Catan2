@@ -1,5 +1,47 @@
 /** Shared, save-independent service rules. Existing project IDs remain valid. */
 export const SERVICE_RULES = {
+  "leaf-fodder": {
+    en: "Leaf-hay reserves: 1/2/3/4 Meat shared across the woodland’s leanest timber seasons. Conserved leaves supplement small livestock; this harvest is sheltered from weather and independent of wild herds.",
+    fr: "Réserves de foin de feuilles : 1/2/3/4 viandes réparties entre les saisons forestières les moins productives en bois. Le feuillage conservé nourrit le petit bétail ; cette récolte est protégée de la météo et indépendante du gibier.",
+  },
+  "rice-fish": {
+    weather: "wet",
+    en: "Paddy fish: 1/2/3/4 Fish shared across productive rice seasons during wet spells. Cultured stock remains in the refuge ponds when wild shoals migrate. Flooding, ice and occupation still close the site.",
+    fr: "Poissons de rizière : 1/2/3/4 poissons répartis entre les saisons rizicoles productives en période pluvieuse. L’élevage reste dans les refuges après la migration des bancs sauvages. Crue, glace et occupation ferment le site.",
+  },
+  "spring-sap": {
+    en: "Spring sap: 1/2/3/4 Grain in spring, representing syrup. Dry spells or prolonged cold halve this harvest, rounded down. Other seasons yield no sap.",
+    fr: "Sève printanière : 1/2/3/4 céréales au printemps, représentant le sirop. Sécheresse ou froid prolongé divisent cette récolte par deux, arrondi inférieur. Aucune sève aux autres saisons.",
+  },
+  seaweed: {
+    en: "Edible seaweed: 1/2/3/4 Fish shared between spring and autumn, representing coastal seafood. Harvest persists after shoals leave, but ice and enemy occupation prevent collection.",
+    fr: "Algues comestibles : 1/2/3/4 poissons répartis entre printemps et automne, représentant les aliments marins. La récolte reste possible sans bancs de poissons ; glace et occupation bloquent la collecte.",
+  },
+  "winter-reeds": {
+    en: "Winter thatch: 1/2/3/4 Wood in winter from mature reed stems. Open freshwater access is required; frozen water, flooding and occupation block collection.",
+    fr: "Chaume hivernal : 1/2/3/4 bois en hiver issus des tiges de roseaux mûres. Accès à l’eau douce libre requis ; gel, crue et occupation bloquent la collecte.",
+  },
+  "fibre-substitution": {
+    en: "Local coir: later works on this tile save 10/20/30/40% of Wool and Cloth, rounded down, at most 1/2/3/4 of each. Fibre workshops and other reuse yards keep their full price. Shared cloth savings use the strongest workshop.",
+    fr: "Coir local : les futurs ouvrages de cette tuile économisent 10/20/30/40 % de laine et de tissu, arrondi inférieur, au plus 1/2/3/4 de chaque. Ateliers de fibres et autres chantiers de réemploi gardent leur prix intégral. La meilleure réduction de tissu s’applique.",
+  },
+  "stone-substitution": {
+    en: "Mine backfill: later works on this tile save 10/20/30/40% of Stone and Blocks, rounded down, at most 1/2/3/4 of each. Backfill works and other reuse yards keep their full price. Coal is paid in full.",
+    fr: "Remblai minier : les futurs ouvrages de cette tuile économisent 10/20/30/40 % de pierre et de blocs, arrondi inférieur, au plus 1/2/3/4 de chaque. Ouvrages de remblai et autres chantiers de réemploi gardent leur prix intégral. Le charbon est payé intégralement.",
+  },
+  "date-feed": {
+    en: "Date-stone feed: 1/2/3/4 Meat shared between seasons immediately following the largest date harvests. Stored and milled residues shelter this small livestock supplement from weather.",
+    fr: "Noyaux fourragers : 1/2/3/4 viandes réparties entre les saisons suivant les plus grandes récoltes de dattes. Résidus conservés et moulus protègent ce complément d’élevage de la météo.",
+  },
+  "recession-fish": {
+    weather: "wet",
+    en: "Recession pools: in wet spells, 1/2/3/4 Fish shared across idle seasons immediately after a cereal harvest. A standing crop or secondary rotation takes priority. Flood closure and occupation still prevent collection.",
+    fr: "Bassins de décrue : en période pluvieuse, 1/2/3/4 poissons répartis entre les saisons libres suivant une moisson. Culture principale et rotation restent prioritaires. Crue et occupation bloquent la collecte.",
+  },
+  "spring-underwool": {
+    en: "Spring moult: 1/2/3/4 extra Wool in spring while musk oxen are present. Gathering follows the visiting herd and stops when it leaves; ordinary hides and meat are unchanged.",
+    fr: "Mue printanière : 1/2/3/4 laines supplémentaires au printemps en présence de bœufs musqués. La collecte suit le troupeau et cesse à son départ ; peaux et viande ordinaires restent inchangées.",
+  },
   "winter-coppice": {
     en: "Winter poles: 1/2/3/4 Wood in winter from managed broadleaved regrowth. The best coppice or pollard works apply; flooding and occupation still close the site.",
     fr: "Perches hivernales : 1/2/3/4 bois en hiver issus des rejets de feuillus. Seuls les meilleurs taillis ou têtards s’appliquent ; crue et occupation ferment le site.",
@@ -125,6 +167,16 @@ export const SERVICE_RULES = {
 } as const;
 export type SpecialistService = keyof typeof SERVICE_RULES;
 export const SERVICE_BY_BRANCH: Readonly<Record<string, SpecialistService>> = {
+  "rice-fish-refuges": "rice-fish",
+  "spring-sap-groves": "spring-sap",
+  "kelp-longlines": "seaweed",
+  "reed-thatch-beds": "winter-reeds",
+  "coconut-coir-yards": "fibre-substitution",
+  "mine-stone-stowing": "stone-substitution",
+  "date-pit-feeders": "date-feed",
+  "upland-leaf-hay": "leaf-fodder",
+  "recession-fish-pools": "recession-fish",
+  "qiviut-gathering": "spring-underwool",
   "coppice-stools": "winter-coppice",
   "river-pollards": "winter-coppice",
   "heath-apiaries": "summer-honey",
@@ -206,7 +258,11 @@ export function serviceRisks(
   service?: SpecialistService,
 ): ("dry" | "wet" | "cold")[] {
   if (service === "autumn-pannage") return ["dry"];
-  if (service === "forest-food" || service === "summer-honey")
+  if (
+    service === "forest-food" ||
+    service === "summer-honey" ||
+    service === "spring-sap"
+  )
     return ["dry", "cold"];
   if (service === "resin") return ["wet", "cold"];
   const weather = serviceWeather(service);
@@ -217,6 +273,8 @@ export const MATERIAL_SERVICES: readonly SpecialistService[] = [
   "material-reuse",
   "tool-repair",
   "returnable-containers",
+  "fibre-substitution",
+  "stone-substitution",
 ];
 export const NON_HARVEST_SERVICES: readonly SpecialistService[] = [
   ...MATERIAL_SERVICES,

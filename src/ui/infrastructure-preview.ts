@@ -73,6 +73,8 @@ export function weatherComparison(
     for (const raw of Object.keys({
       ...current[season],
       ...future[season],
+      ...from,
+      ...to,
     }) as Raw[]) {
       if ((to[raw] ?? 0) > (from[raw] ?? 0)) improved = true;
       const oldFactor = weatherYieldFactor(before, raw, season, weather, owner);

@@ -157,6 +157,49 @@ export function specialistServiceProfile(
       weights = seasons.map((s) => native[s].grain ?? 0);
       byproduct = "meat";
     }
+    if (role === "rice-fish") {
+      weights = seasons.map((s) => native[s].grain ?? 0);
+      byproduct = "fish";
+    }
+    if (role === "spring-sap") {
+      weights = [1, 0, 0, 0];
+      byproduct = "grain";
+    }
+    if (role === "seaweed") {
+      weights = [1, 0, 1, 0];
+      byproduct = "fish";
+    }
+    if (role === "winter-reeds") {
+      weights = [0, 0, 0, 1];
+      byproduct = "lumber";
+    }
+    if (role === "spring-underwool") {
+      if (!tile.geography?.animals?.includes("musk-ox")) continue;
+      weights = [1, 0, 0, 0];
+      byproduct = "wool";
+    }
+    if (role === "date-feed") {
+      const peak = seasons.reduce(
+        (n, s) => Math.max(n, native[s].grain ?? 0),
+        0,
+      );
+      if (!peak) continue;
+      weights = seasons.map((_, i) =>
+        Number(native[seasons[(i + 3) % 4]].grain === peak),
+      );
+      byproduct = "meat";
+    }
+    if (role === "recession-fish") {
+      if (!tile.geography?.floodplain) continue;
+      const rotation = rotationExtras(tile, native, owner);
+      weights = seasons.map((s, i) =>
+        Number(
+          (native[seasons[(i + 3) % 4]].grain ?? 0) > 0 &&
+            !(native[s].grain || native[s].oil || rotation[s].grain),
+        ),
+      );
+      byproduct = "fish";
+    }
     if (role === "press-feed") {
       if (!["olive-grove", "sunflower-fields"].includes(tile.biome ?? ""))
         continue;
@@ -200,13 +243,13 @@ export function specialistServiceProfile(
       weights = weights.map((n, i) => (i === 0 ? n : 0));
     }
     if (!weights.some(Boolean)) continue;
-    if (role === "fodder" || role === "prunings") {
+    if (role === "fodder" || role === "leaf-fodder" || role === "prunings") {
       const min = weights.reduce((n, x) => Math.min(n, x), Infinity);
       const max = weights.reduce((n, x) => Math.max(n, x), 0);
       weights = weights.map((n) =>
-        Number(role === "fodder" ? n === min : n < max || min === max),
+        Number(role !== "prunings" ? n === min : n < max || min === max),
       );
-      byproduct = role === "fodder" ? "meat" : "lumber";
+      byproduct = role === "prunings" ? "lumber" : "meat";
     }
     if (role === "wool-oil") {
       weights = seasons.map((s) => native[s].wool ?? 0);
@@ -276,7 +319,9 @@ export function hasSpecialistFloodRescue(tile: Hex, owner?: number): boolean {
 export function cultivatedFish(tile: Hex, owner?: number): boolean {
   return (
     !!tile.geography?.projects &&
-    installedSpecialists(tile, owner).some(([b]) => b.service === "shellfish")
+    installedSpecialists(tile, owner).some(
+      ([b]) => b.service === "shellfish" || b.service === "seaweed",
+    )
   );
 }
 /** Owner-specific material savings, computed from the existing works before
@@ -295,9 +340,20 @@ export function specialistMaterialSavings(
     return {};
   const tiers: Partial<Record<Good, number>> = {};
   for (const [b, tier] of installedSpecialists(tile, owner)) {
-    if (b.service === "tool-repair" || b.service === "returnable-containers") {
+    if (
+      b.service === "tool-repair" ||
+      b.service === "returnable-containers" ||
+      b.service === "fibre-substitution" ||
+      b.service === "stone-substitution"
+    ) {
       const goods: Good[] =
-        b.service === "tool-repair" ? ["ore", "steel"] : ["planks", "cloth"];
+        b.service === "tool-repair"
+          ? ["ore", "steel"]
+          : b.service === "fibre-substitution"
+            ? ["wool", "cloth"]
+            : b.service === "stone-substitution"
+              ? ["stone", "masonry"]
+              : ["planks", "cloth"];
       for (const good of goods) tiers[good] = Math.max(tiers[good] ?? 0, tier);
       continue;
     }
@@ -319,6 +375,8 @@ export function specialistMaterialSavings(
     "steel",
     "planks",
     "cloth",
+    "wool",
+    "masonry",
   ] as const) {
     const tier = tiers[raw] ?? 0;
     const n = Math.min(tier, Math.floor(((cost[raw] ?? 0) * tier) / 10));

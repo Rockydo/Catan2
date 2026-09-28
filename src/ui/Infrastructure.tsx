@@ -407,9 +407,13 @@ function ProjectCard({
               </div>
             )}
             <small>
-              {fr
-                ? "Par producteur, au bon jet de dé ; les gains sont répartis entre les saisons indiquées."
-                : "Per producer, on the matching dice roll; gains are split between the listed seasons."}
+              {role && MATERIAL_SERVICES.includes(role)
+                ? fr
+                  ? "Économie par achat ultérieur sur cette tuile. Aucun jet de dé requis."
+                  : "Savings per later purchase on this tile. No dice roll required."
+                : fr
+                  ? "Par producteur, au bon jet de dé ; les gains sont répartis entre les saisons indiquées."
+                  : "Per producer, on the matching dice roll; gains are split between the listed seasons."}
             </small>
           </div>
           <details className="infrastructure-effects">
@@ -649,9 +653,11 @@ function SpecialistCard(props: PanelProps & { branch: SpecialistBranch }) {
                 : "Build the required irrigation and, on wet ground, drainage first."
               : undefined;
   const waiting =
-    branch.primary !== false &&
-    ["hunting", "whaling", "fishery"].includes(branch.track) &&
-    !branch.goods.some((g) => tile.geography?.fauna?.[g]);
+    branch.service === "spring-underwool"
+      ? !tile.geography?.animals?.includes("musk-ox")
+      : branch.primary !== false &&
+        ["hunting", "whaling", "fishery"].includes(branch.track) &&
+        !branch.goods.some((g) => tile.geography?.fauna?.[g]);
   return (
     <ProjectCard
       {...props}

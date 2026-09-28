@@ -168,16 +168,16 @@ function site(b: Biome = "golden-fields", c: Climate = "temperate") {
   return { s, t, town };
 }
 describe("independent specialist investments", () => {
-  it("adds 444 purchases in 111 branches, plus 16 separate rotation choices", () => {
-    expect(SPECIALIST_BRANCHES).toHaveLength(111);
+  it("adds 492 purchases in 123 branches, plus 16 separate rotation choices", () => {
+    expect(SPECIALIST_BRANCHES).toHaveLength(123);
     expect(ROTATION_BRANCHES).toHaveLength(16);
     expect(
       Object.values(SPECIALIST_PROJECTS).filter((p) => !p.branch.rotation),
-    ).toHaveLength(444);
+    ).toHaveLength(492);
     expect(
       new Set([...SPECIALIST_BRANCHES, ...ROTATION_BRANCHES].map((b) => b.id))
         .size,
-    ).toBe(127);
+    ).toBe(139);
     for (const p of Object.values(SPECIALIST_PROJECTS)) {
       expect(p.branch.stages).toHaveLength(4);
       expect(p.branch.stagesFr).toHaveLength(4);
@@ -185,7 +185,7 @@ describe("independent specialist investments", () => {
       expect(p.branch.descriptionFr).toBeTruthy();
     }
   });
-  it("makes all 111 branches reachable on native resource habitats, with several simultaneous choices", () => {
+  it("makes all 123 branches reachable on native resource habitats, with several simultaneous choices", () => {
     for (const b of SPECIALIST_BRANCHES)
       expect(
         habitats().some((t) => specialistSuitable(t, b)),
@@ -684,9 +684,9 @@ describe("distinct specialist roles", () => {
 });
 
 describe("specialist working practices", () => {
-  it("assigns 29 distinct services to 69 branches with four stages each", () => {
-    expect(Object.keys(SERVICE_BY_BRANCH)).toHaveLength(69);
-    expect(new Set(Object.values(SERVICE_BY_BRANCH)).size).toBe(29);
+  it("assigns 39 distinct services to 79 branches with four stages each", () => {
+    expect(Object.keys(SERVICE_BY_BRANCH)).toHaveLength(79);
+    expect(new Set(Object.values(SERVICE_BY_BRANCH)).size).toBe(39);
     for (const id of Object.keys(SERVICE_BY_BRANCH))
       expect(branch(id).service).toBe(SERVICE_BY_BRANCH[id]);
   });
@@ -938,14 +938,19 @@ it("flood rescue does not turn a pantry into a harvest on dormant fields", () =>
   expect(seasonalYield(t, 0, season)).toEqual({});
 });
 
-it("all 69 working practices have an eligible site with a real secondary benefit", () => {
+it("all 79 working practices have an eligible site with a real secondary benefit", () => {
   for (const b of SPECIALIST_BRANCHES.filter((b) => b.service)) {
     const reachable = habitats().some((candidate) => {
       if (!specialistSuitable(candidate, b)) return false;
       const t = structuredClone(candidate);
       install(t, b, 4);
-      if (b.service === "rotation-support" || b.service === "stubble-grazing")
+      if (
+        b.service === "rotation-support" ||
+        b.service === "stubble-grazing" ||
+        b.service === "recession-fish"
+      )
         t.geography!.fauna = {};
+      if (b.service === "spring-underwool") t.geography!.animals = ["musk-ox"];
       const native = ordinarySeasonalProfile(t, 0);
       if (b.service === "fish-nursery")
         return (specialistEcology({ [t.id]: t }).nurseries.get(t.id) ?? 0) > 0;
@@ -958,9 +963,13 @@ it("all 69 working practices have an eligible site with a real secondary benefit
         );
       }
       if (
-        ["material-reuse", "tool-repair", "returnable-containers"].includes(
-          b.service!,
-        )
+        [
+          "material-reuse",
+          "tool-repair",
+          "returnable-containers",
+          "fibre-substitution",
+          "stone-substitution",
+        ].includes(b.service!)
       )
         return (
           sum(
@@ -973,6 +982,8 @@ it("all 69 working practices have an eligible site with a real secondary benefit
                 steel: 100,
                 planks: 100,
                 cloth: 100,
+                wool: 100,
+                masonry: 100,
               },
               "forestry",
               0,
@@ -1335,4 +1346,191 @@ it("reduces specialist bills by roughly fifteen percent without losing recipe in
   expect(specialistCostReduction({ steel: 24, coal: 30 }).coal).toBeLessThan(
     30,
   );
+});
+
+describe("local livelihood seasons and construction substitutions", () => {
+  it("keeps spring sap in spring and exposes it to dry and prolonged cold weather", () => {
+    const t = tile("woods", "temperate");
+    install(t, branch("spring-sap-groves"), 4);
+    expect(SEASONS.map((s) => seasonalYield(t, 0, s).grain ?? 0)).toEqual([
+      4, 0, 0, 0,
+    ]);
+    expect(seasonalYield(t, 1, "spring").grain ?? 0).toBe(0);
+    for (const weather of ["dry", "cold"] as const) {
+      t.geography!.weather = weather;
+      expect(seasonalYield(t, 0, "spring").grain).toBe(2);
+    }
+    t.geography!.damagedUntil = 9;
+    expect(seasonalYield(t, 0, "spring")).toEqual({});
+  });
+  it("farms paddy fish only in wet rice seasons without requiring wild shoals", () => {
+    const { s, t } = site("rice-field", "monsoon");
+    expect(
+      projectSite(s, t, specialistId(branch("rice-fish-refuges"), 1)),
+    ).toBe(true);
+    install(t, branch("rice-fish-refuges"), 4);
+    const native = ordinarySeasonalProfile(t, 0);
+    expect(
+      SEASONS.reduce((n, k) => n + (seasonalYield(t, 0, k).fish ?? 0), 0),
+    ).toBe(0);
+    t.geography!.weather = "wet";
+    expect(
+      SEASONS.reduce((n, k) => n + (seasonalYield(t, 0, k).fish ?? 0), 0),
+    ).toBe(4);
+    for (const season of SEASONS)
+      if (!native[season].grain)
+        expect(seasonalYield(t, 0, season).fish ?? 0).toBe(0);
+    t.geography!.access = "flooded";
+    for (const season of SEASONS)
+      expect(seasonalYield(t, 0, season)).toEqual({});
+  });
+  it("harvests seaweed in spring and autumn without shoals, but never through ice", () => {
+    const { s, t } = site("water", "oceanic");
+    Object.assign(t.geography!, {
+      waterway: "shoal",
+      coastal: true,
+      fauna: {},
+    });
+    install(t, branch("kelp-longlines"), 4);
+    expect(cultivatedFish(t, 0)).toBe(true);
+    expect(SEASONS.map((k) => seasonalYield(t, 0, k).fish ?? 0)).toEqual([
+      2, 0, 2, 0,
+    ]);
+    s.calendar = {
+      startRound: s.round,
+      startSeason: "spring",
+      roundsPerSeason: 2,
+    };
+    delete t.surface;
+    expect(
+      productionSources(s).some(
+        (p) => p.tile === t.id && p.owner === 0 && p.good === "fish",
+      ),
+    ).toBe(true);
+    t.surface = "frozen";
+    t.iceWeather = { round: s.round, season: "spring", half: "early" };
+    expect(seasonalYield(t, 0, "spring")).toEqual({});
+    t.geography!.waterway = "river";
+    expect(cultivatedFish(t, 0)).toBe(false);
+  });
+  it("cuts reeds only in accessible freshwater winters", () => {
+    const t = tile("water", "temperate");
+    t.geography!.waterway = "river";
+    install(t, branch("reed-thatch-beds"), 4);
+    expect(SEASONS.map((k) => seasonalYield(t, 0, k).lumber ?? 0)).toEqual([
+      0, 0, 0, 4,
+    ]);
+    t.surface = "frozen";
+    t.iceWeather = { round: 1, season: "winter", half: "early" };
+    expect(seasonalYield(t, 0, "winter")).toEqual({});
+    t.geography!.waterway = "coast";
+    expect(specialistSuitable(t, branch("reed-thatch-beds"))).toBe(false);
+  });
+  it("substitutes only named construction materials, with caps and no mutual yard discounts", () => {
+    const bill = { wool: 50, cloth: 50, stone: 50, masonry: 50, coal: 50 };
+    for (const [biome, climate, id, expected] of [
+      [
+        "island-palms",
+        "tropical-maritime",
+        "coconut-coir-yards",
+        { wool: 4, cloth: 4 },
+      ],
+      ["iron", "temperate", "mine-stone-stowing", { stone: 4, masonry: 4 }],
+    ] as const) {
+      const t = tile(biome, climate);
+      install(t, branch(id), 4);
+      expect(specialistMaterialSavings(t, bill, "forestry", 0)).toEqual(
+        expected,
+      );
+      expect(specialistMaterialSavings(t, bill, "forestry", 1)).toEqual({});
+      for (const yard of [id, "quarry-return-crates", "forest-toolcare"])
+        expect(
+          specialistMaterialSavings(t, bill, specialistId(branch(yard), 1), 0),
+        ).toEqual({});
+    }
+  });
+  it("reserves recession pools for wet idle seasons and yields to secondary crops", () => {
+    const t = tile("flood-sorghum", "semiarid");
+    t.geography!.floodplain = true;
+    install(t, branch("recession-fish-pools"), 4);
+    const native = { spring: {}, summer: { grain: 6 }, autumn: {}, winter: {} };
+    expect(
+      specialistServiceProfile(t, native, 0, "normal").autumn.fish ?? 0,
+    ).toBe(0);
+    expect(specialistServiceProfile(t, native, 0, "wet").autumn.fish).toBe(4);
+    native.autumn = { grain: 1 };
+    expect(specialistServiceProfile(t, native, 0, "wet").autumn.fish ?? 0).toBe(
+      0,
+    );
+    expect(specialistServiceProfile(t, native, 1, "wet").autumn.fish ?? 0).toBe(
+      0,
+    );
+  });
+  it("uses stored date residues after the peak harvest and preserves the main crop", () => {
+    const t = tile("oasis", "desert"),
+      base = structuredClone(t);
+    install(t, branch("date-pit-feeders"), 4);
+    const native = {
+      spring: { grain: 1 },
+      summer: { grain: 6 },
+      autumn: { grain: 1 },
+      winter: { grain: 1 },
+    };
+    expect(specialistServiceProfile(t, native, 0).autumn.meat).toBe(4);
+    for (const season of SEASONS)
+      expect(seasonalYield(t, 0, season).grain).toBe(
+        seasonalYield(base, 0, season).grain,
+      );
+    t.geography!.damagedUntil = 10;
+    expect(seasonalYield(t, 0, "autumn")).toEqual({});
+  });
+  it("delivers gathered underwool to hunters only during the musk-ox spring moult", () => {
+    const { s, t } = site("snow-plain", "arctic");
+    delete t.surface;
+    s.calendar = {
+      startRound: s.round,
+      startSeason: "spring",
+      roundsPerSeason: 2,
+    };
+    Object.assign(t.geography!, {
+      fauna: { wool: 2, meat: 2 },
+      animals: ["musk-ox"],
+      weather: "normal",
+    });
+    install(t, branch("qiviut-gathering"), 4);
+    const deliveries = () =>
+      productionSources(s)
+        .filter((p) => p.tile === t.id && p.owner === 0 && p.good === "wool")
+        .reduce((n, p) => n + p.amount, 0);
+    const before = deliveries();
+    piece(s, t.id, 0, "hunter");
+    expect(deliveries() - before).toBe(6);
+    expect(
+      specialistServiceProfile(t, ordinarySeasonalProfile(t, 0), 0).summer
+        .wool ?? 0,
+    ).toBe(0);
+    t.geography!.animals = ["reindeer"];
+    t.geography!.fauna = { hides: 2, meat: 3 };
+    expect(deliveries()).toBe(0);
+    t.geography!.animals = ["musk-ox"];
+    t.geography!.fauna = { wool: 2, meat: 2 };
+    piece(s, t.id, 1, "heavy");
+    expect(deliveries()).toBe(0);
+  });
+  it("restricts fog screens to dry coastal orchards and leaf hay to broadleaved uplands", () => {
+    const o = tile("oasis", "desert");
+    expect(specialistSuitable(o, branch("fog-orchard-screens"))).toBe(false);
+    o.geography!.coastal = true;
+    expect(specialistSuitable(o, branch("fog-orchard-screens"))).toBe(true);
+    install(o, branch("fog-orchard-screens"), 4);
+    expect(infrastructureProtection(o, "grain", "dry", 0)).toBeGreaterThan(0);
+    const t = tile("woods", "temperate");
+    expect(specialistSuitable(t, branch("upland-leaf-hay"))).toBe(false);
+    t.geography!.elevation = 0.8;
+    install(t, branch("upland-leaf-hay"), 4);
+    expect(
+      SEASONS.reduce((n, k) => n + (seasonalYield(t, 0, k).meat ?? 0), 0),
+    ).toBe(4);
+    expect(huntingYield(t, 0, "winter")).toEqual({});
+  });
 });
